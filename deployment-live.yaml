@@ -96,6 +96,7 @@ spec:
   selector:
     app: "ng-home-ui"
     tier: frontend
+    
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
