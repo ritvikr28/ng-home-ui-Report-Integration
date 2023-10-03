@@ -1,0 +1,126 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: platform
+  name: ng-home-web-config
+data:
+  web.properties: |
+    window.REACT_API_URL= "$(home-api-url)"
+    window.REACT_CLIENT_ID = "$(sims-clientid-home)"
+    window.REACT_AUTH_ENDPOINT = "$(sims-auth-endpoint)"
+    window.REACT_REDIRECT_URI = "$(sims-redirecturi)"
+    window.AppInsightsConnectionString = "$(AppInsightsConnectionString)"
+    window.ASPNETCORE_ENVIRONMENT= "$(ASPNETCORE_ENVIRONMENT)"
+    window.LOG_LEVEL = "$(LOG_LEVEL)"
+    window.APP_NAME = "$(APP_NAME)"
+    window.REACT_GA_TRACKING_ID = "GTM-5LBSRF3"
+    window.AUTH_API_URL = "$(AUTH_API_URL)"
+    window.APPLICATION = "$(APPLICATION)"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: platform
+  name: "ng-home-ui"
+
+spec:
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: "ng-home-ui"
+      tier: frontend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: "ng-home-ui"
+        tier: frontend
+    spec:
+      containers:
+        - name: "ng-home-ui"
+          image: "$(containerRegistry).azurecr.io/ng-home-ui:$(Build.BuildId)"
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              cpu: 160m
+              memory: 150Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          volumeMounts:
+            #override config.js file
+            - name: config
+              mountPath: "/usr/share/nginx/html/config.js"
+              subPath: "config.js"
+      volumes:
+        - name: config
+          configMap:
+            name: ng-home-web-config
+            items:
+              - key: "web.properties"
+                path: "config.js"
+          # livenessProbe:
+          #   initialDelaySeconds: 30
+          #   periodSeconds: 10
+          #   failureThreshold: 3
+          #   tcpSocket:
+          #     port: 80
+          # readinessProbe:
+          #   initialDelaySeconds: 30
+          #   failureThreshold: 7
+          #   periodSeconds: 15
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          # startupProbe:
+          #   httpGet:
+          #     path: /health
+          #     port: 80
+          #   failureThreshold: 30
+          #   periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: "ng-home-ui"
+    tier: frontend
+  name: "ng-home-ui"
+  namespace: platform
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: "ng-home-ui"
+    tier: frontend
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: ng-home-ui-hpa
+spec:
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 120
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: ng-home-ui
+  minReplicas: 2
+  maxReplicas: 3
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 71
