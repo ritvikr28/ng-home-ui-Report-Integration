@@ -1,0 +1,112 @@
+{
+  "homePage": {
+    "appTitle": "Home",
+    "headerTitle": "Welcome to SIMS Next Gen",
+    "headerSubTitle": "Below are your available Next Gen functionalities",
+    "fetchingDataText": "Fetching school data",
+    "btnText": "Take me there"
+  },
+  "slices": {
+    "TakeRegister": {
+      "title": "Registers",
+      "description": "Record lesson or session attendance or search for a register to complete.",
+      "link": "",
+      "linkText": ""
+    },
+    "PupilProfile": {
+      "title": "Pupil profile",
+      "description": "You can find a pupil's profile by entering at least two characters from the pupil's preferred name. Our advanced search will allow you to obtain basic pupil information and contact information more quickly.",
+      "link": "",
+      "linkText": ""
+    },
+    "PrimaryAssessment": {
+      "title": "Primary Assessments",
+      "description": "Capture termly or half-termly assessments in reading, writing, and maths of pupils in year 1-6. View insights around class and year group performance and track pupil progress.",
+      "link": "",
+      "linkText": ""
+    },
+    "StaffProfile": {
+      "title": "Staff profile",
+      "description": "Search through all current staff members at the school and access their public profile.",
+      "link": "",
+      "linkText": ""
+    },
+    "SchoolManagement":{
+      "title": "Staff timetables",
+      "description": "View and print your own timetable or other staff members’ timetables easily from the Staff Timetable Calendar.",
+      "link": "",
+      "linkText": ""
+    },
+    "AssessmentMarksheets":{
+      "title": "My Markbook",
+      "description": "A fast and intuitive new way for teachers to record their own assessments for the classes they teach",
+      "link": "",
+      "linkText": ""
+      
+    },
+    "PupilAttendance":{
+      "title": "Pupil Attendance",
+      "description": "Pupil Attendance description",
+      "link": "",
+      "linkText": ""
+    },
+    "CustomGroups":{
+      "title": "Custom groups",
+      "description": "Create, manage, and view your own customised pupil groups. All data syncs back to SIMS 7, ensuring effective monitoring and reporting of your groups.",
+      "link": "",
+      "linkText": ""
+    },
+    "ManagePermissions":{
+      "title": "Manage Permissions",
+      "description": "View permission groups and their members, and easily edit the group permissions to meet your school's needs.",
+      "link": "",
+      "linkText": ""
+    },
+    "Seatingplans":{
+      "title": "Seating plans",
+      "description": "Create room layouts and seating plans for your classes and lessons",
+      "link": "",
+      "linkText": ""
+    },
+    "Conduct":{
+      "title": "Conduct",
+      "description": "Create and maintain exclusions and suspensions.",
+      "link": "",
+      "linkText": ""
+    }
+  },
+  "pageNotFound": {
+    "headingTitle": "Sorry, the page you requested cannot be found",
+    "bodyText": {
+      "text": "Reasons:",
+      "linkText1": "Wrong link or address.",
+      "linkText2": "The page may have been removed."
+    }
+  },
+  "noAccess": {
+    "headingTitle": "Sorry, you don't have access to SIMS Next Gen",
+    "bodyText": {
+      "text": "This may be due to one of the reasons below",
+      "point1": "Your school has not been onboarded to Next Gen",
+      "point2": "Your Administrator has not invited you to Next Gen"
+    },
+    "moduleBlock": {
+      "heading": "Things to try",
+      "item1": {
+        "title": "Not onboarded to Next Gen?",
+        "content": "Contact our ",
+        "content1": "Onboarding Team",
+        "content2": " to express your interest in using Next Gen"
+      },
+      "item2": {
+        "title": "Not invited to Next Gen?",
+        "content": "Ask your Administrator to invite you to Next Gen, this is an individual invitation that will be sent to your work email address"
+      },
+      "item3": {
+        "title": "Onboarded and invited, but still not able to access?",
+        "content": "Please raise the issue with ",
+        "content1": "ESS Support"
+      }
+    }
+  }
+}

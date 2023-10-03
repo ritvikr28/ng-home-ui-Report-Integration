@@ -1,0 +1,27 @@
+version: "3.7"
+
+services:
+  react-app:
+    container_name: learnerapp
+    build:
+      context: ./app
+      dockerfile: Dockerfile
+      args:
+        CUSTOM_ENV: production
+        SERVER_URL: http://localhost:7001
+    ports:
+      - 3001:80
+    networks:
+      - react
+  mock-server:
+    container_name: mockserver
+    build:
+      context: ./mock-server
+      dockerfile: Dockerfile
+    ports:
+      - 7001:5001
+    networks:
+      - react
+networks:
+  react:
+    driver: bridge

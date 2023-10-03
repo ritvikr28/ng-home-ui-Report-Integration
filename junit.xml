@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="27" failures="0" errors="0" time="11.03">
+  <testsuite name="Constants tests" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.453" tests="2">
+    <testcase classname="Constants tests envConfig is set correctly" name="Constants tests envConfig is set correctly" time="0.004">
+    </testcase>
+    <testcase classname="Constants tests Updates envConfig correctly" name="Constants tests Updates envConfig correctly" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="appPermissionActions" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.382" tests="6">
+    <testcase classname="appPermissionActions saveAppPermission dispatches the correct action and payload" name="appPermissionActions saveAppPermission dispatches the correct action and payload" time="0.005">
+    </testcase>
+    <testcase classname="appPermissionActions saveAppPermission dispatches the fail saveAppPermission action" name="appPermissionActions saveAppPermission dispatches the fail saveAppPermission action" time="0.001">
+    </testcase>
+    <testcase classname="appPermissionActions saveAppPermission should return a function that dispatches a REMOVE_APP_MODULES action" name="appPermissionActions saveAppPermission should return a function that dispatches a REMOVE_APP_MODULES action" time="0.001">
+    </testcase>
+    <testcase classname="appPermissionActions saveAppPermission dispatches the fail clearAppPermission action on an REMOVE_APP_MODULES action" name="appPermissionActions saveAppPermission dispatches the fail clearAppPermission action on an REMOVE_APP_MODULES action" time="0.001">
+    </testcase>
+    <testcase classname="appPermissionActions saveAppPermission should return a function that dispatches a REMOVE_APP_MODULES action" name="appPermissionActions saveAppPermission should return a function that dispatches a REMOVE_APP_MODULES action" time="0.001">
+    </testcase>
+    <testcase classname="appPermissionActions saveAppPermission dispatches the fail startRequest action on an REMOVE_APP_MODULES action" name="appPermissionActions saveAppPermission dispatches the fail startRequest action on an REMOVE_APP_MODULES action" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="No Access page" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.522" tests="1">
+    <testcase classname="No Access page should render the component" name="No Access page should render the component" time="0.08">
+    </testcase>
+  </testsuite>
+  <testsuite name="undefined" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.634" tests="1">
+    <testcase classname=" searchByAll should return search groups" name=" searchByAll should return search groups" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="isUserAdmin" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.651" tests="3">
+    <testcase classname="isUserAdmin returns true for an admin user" name="isUserAdmin returns true for an admin user" time="0.006">
+    </testcase>
+    <testcase classname="isUserAdmin returns false for a regular user" name="isUserAdmin returns false for a regular user" time="0.001">
+    </testcase>
+    <testcase classname="isUserAdmin returns false if the ID token is not set" name="isUserAdmin returns false if the ID token is not set" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="Page Not Found page" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="7.981" tests="1">
+    <testcase classname="Page Not Found page should render the component" name="Page Not Found page should render the component" time="0.055">
+    </testcase>
+  </testsuite>
+  <testsuite name="Given ErrorMsg" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.084" tests="1">
+    <testcase classname="Given ErrorMsg WHEN title and description is given THEN title and description should be rendered" name="Given ErrorMsg WHEN title and description is given THEN title and description should be rendered" time="0.05">
+    </testcase>
+  </testsuite>
+  <testsuite name="fetchConfigData" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.106" tests="3">
+    <testcase classname="fetchConfigData should return the config key/value pairs" name="fetchConfigData should return the config key/value pairs" time="0.008">
+    </testcase>
+    <testcase classname="fetchConfigData should update the envConfig" name="fetchConfigData should update the envConfig" time="0.005">
+    </testcase>
+    <testcase classname="fetchConfigData should promise failed" name="fetchConfigData should promise failed" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Given ErrorBoundary" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.258" tests="1">
+    <testcase classname="Given ErrorBoundary SHOULD render Fallback UI WHEN error is thrown in its children component" name="Given ErrorBoundary SHOULD render Fallback UI WHEN error is thrown in its children component" time="0.109">
+    </testcase>
+  </testsuite>
+  <testsuite name="Landing Page tests" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.443" tests="1">
+    <testcase classname="Landing Page tests should render the loading spinner while fetching data" name="Landing Page tests should render the loading spinner while fetching data" time="0.053">
+    </testcase>
+  </testsuite>
+  <testsuite name="Layout component" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.637" tests="4">
+    <testcase classname="Layout component renders the NotFound component" name="Layout component renders the NotFound component" time="0.033">
+    </testcase>
+    <testcase classname="Layout component renders the NoAccess component" name="Layout component renders the NoAccess component" time="0.11">
+    </testcase>
+    <testcase classname="Layout component renders the LandingPage component" name="Layout component renders the LandingPage component" time="0.037">
+    </testcase>
+    <testcase classname="Layout component renders the Header component" name="Layout component renders the Header component" time="0.022">
+    </testcase>
+  </testsuite>
+  <testsuite name="AppRoutes" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.623" tests="2">
+    <testcase classname="AppRoutes Should render the NoAccess page" name="AppRoutes Should render the NoAccess page" time="0.079">
+    </testcase>
+    <testcase classname="AppRoutes Should render the NoAccess page with header" name="AppRoutes Should render the NoAccess page with header" time="0.063">
+    </testcase>
+  </testsuite>
+  <testsuite name="Testing App Component" errors="0" failures="0" skipped="0" timestamp="2023-02-14T09:29:42" time="8.636" tests="1">
+    <testcase classname="Testing App Component Testing the routes should render pagenotfound page on invalid route" name="Testing App Component Testing the routes should render pagenotfound page on invalid route" time="0.116">
+    </testcase>
+  </testsuite>
+</testsuites>

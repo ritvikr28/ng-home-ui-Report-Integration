@@ -1,0 +1,16 @@
+{
+  "extends": "stylelint-config-sass-guidelines",
+  "rules": {
+    "string-quotes": "double",
+    "selector-max-id": null,
+    "order/properties-alphabetical-order": null,
+    "selector-max-compound-selectors": 6,
+    "selector-no-qualifying-type": null,
+    "max-nesting-depth": [
+      6,
+      {
+        "ignoreAtRules": ["each", "media", "supports", "include"]
+      }
+    ]
+  }
+}

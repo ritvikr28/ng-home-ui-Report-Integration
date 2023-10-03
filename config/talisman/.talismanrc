@@ -1,0 +1,21 @@
+fileignoreconfig:
+- filename: .env
+  checksum: e7c51b72c168e4a2895d460d7b5c9abc5e658a7faf587759d24aecc8bf3758fd
+- filename: .env.prod
+  checksum: b8880f4e57c592e8b6147a53ce90a0e382f7457556a4f93b3023071e07c500ec
+- filename: cypress/support/commands.js
+  checksum: fe05ae48c75b1b0b0cfb43acd03f3cdee3f744069df0296fd86ee4da1081b680
+- filename: src/api/api.ts
+  checksum: d3dbe016e1a0fc8777cfc2b9a64f5c0745d92ff847cbceebb45c963071973301
+- filename: src/components/Hobbies/Hobbies.tsx
+  checksum: 91721552ef91037e96181666d099e190d67b7e1dc2a12128235a9e0d78d33a32
+- filename: src/talismanfailure.js
+  checksum: 5a228830b97b6dd15f341e1783d0bfcc6441a736527300ce831dbfbd7fd6080c
+- filename: mock-server/yarn.lock
+  checksum: 2f9cfa8bb2605d8fdf82b65efbf5446dc1d3a2c7771b748702c3af87bb0dbf4f
+- filename: yarn.lock
+  checksum: 14986067896e24e6f841afe00a881fed760993bda3c25c0f376bcbe63ef9ca1c
+- filename: .github/workflows/s3upload.yml
+  checksum: dfc2f5e63a42a28240c65082c920bf1bf1fc9d8aae821a43890eb02ee45f47ad
+scopeconfig:
+  - scope: node

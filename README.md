@@ -1,20 +1,83 @@
-# Introduction 
-TODO: Give a short introduction of your project. Let this section explain the objectives or the motivation behind this project. 
+# ng-home-ui
 
-# Getting Started
-TODO: Guide users through getting your code up and running on their own system. In this section you can talk about:
-1.	Installation process
-2.	Software dependencies
-3.	Latest releases
-4.	API references
+This starter pack will provide feature driven solution structure for a react application.
 
-# Build and Test
-TODO: Describe and show how to build your code and run the tests. 
+## Prerequisites
 
-# Contribute
-TODO: Explain how other users and developers can contribute to make your code better. 
+- Node
+- npm
 
-If you want to learn more about creating good readme files then refer the following [guidelines](https://docs.microsoft.com/en-us/azure/devops/repos/git/create-a-readme?view=azure-devops). You can also seek inspiration from the below readme files:
-- [ASP.NET Core](https://github.com/aspnet/Home)
-- [Visual Studio Code](https://github.com/Microsoft/vscode)
-- [Chakra Core](https://github.com/Microsoft/ChakraCore)
+## Features
+- Feature driven folder structure
+- Redux state handling
+- Customizable configurations
+- ui-kit is pre-installed
+- Examples for ui-kit usage is available
+- CI pipeline script is available
+- Deployment script is available
+- githooks are added
+- Linting is configured
+- Unit test is configured
+- SingleSpa integration support is configured
+
+## Commands
+
+### Set up
+
+Clone this repository
+
+```bash
+
+git clone https://essnextgen@dev.azure.com/essnextgen/Staff%20and%20Administration/_git/ng-home-ui
+
+cd ng-home-ui
+```
+
+Please run the below command for installing the dependencies.
+
+```bash
+
+npm install
+
+```
+
+### Build
+Please run the below command for building the application
+
+```bash
+
+npm run build
+
+```
+
+> Please check the `dist` folder for the output
+
+
+### Run
+Please run the below command for running the application
+
+```bash
+
+npm start
+
+```
+
+### Test
+
+Please run the below command for running unit test cases for this library
+
+```bash
+
+npm run test
+
+```
+
+> Please check the coverage folder for the reports
+
+
+## Usage
+
+Once you cloned the repo in your local, pls copy the entire files/folder from ui-react-starter into your target folder.
+
+- Update name, description and repository details in package.json file
+- Update the image name in pipeline yaml file

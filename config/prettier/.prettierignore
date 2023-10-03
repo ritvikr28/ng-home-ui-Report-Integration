@@ -1,0 +1,7 @@
+../packages/**/*/coverage
+../packages/**/*/dist
+../packages/**/*/node_modules
+../packages/**/*/storybook-static
+../app/coverage
+../app/dist
+

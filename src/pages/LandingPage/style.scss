@@ -1,0 +1,103 @@
+#app-module-wrapper {
+  max-width: 1136px;
+  margin: auto;
+
+  .page-heading {
+    padding-top: 64px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
+    display: flex;
+    color: #303030;
+  }
+
+  .page-subheading {
+    height: 24px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 24px;
+    display: flex;
+    color: #303030;
+    opacity: 0.8;
+    display: block;
+    margin-top: 20px;
+  }
+
+  .essui-grid-col {
+    padding: 0;
+  }
+
+  .module-block {
+    height: 300px;
+    width: 355px;
+    background-color: #fff;
+    font-size: 16px;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 8px;
+    position: relative;
+    margin-right: 25px;
+    float: left;
+    white-space: pre-line;
+
+    h4 {
+      margin: 10px auto;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #c3c3c3;
+    }
+
+    a.app-link {
+      position: absolute;
+      bottom: 25px;
+      right: 25px;
+      text-decoration: none;
+    }
+  }
+
+  @media only screen and (min-width: 1135px) {
+    div.module-block:nth-child(3n) {
+      margin-right: 0 !important;
+    }
+  }
+
+  @media only screen and (max-width: 900px) {
+    div.module-block:nth-child(odd) {
+      margin-right: 0 !important;
+    }
+
+    .essui-grid-col {
+      padding: 16px;
+    }
+
+    .page-heading {
+      padding-top: 16px;
+    }
+  }
+
+  @media only screen and (max-width: 768px) {
+    .essui-grid-col--sm-12 {
+      padding: 16px;
+
+      .page-heading {
+        padding-top: 0;
+        font-size: 24px;
+      }
+
+      .page-subheading {
+        font-size: 16px;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 650px) {
+    .module-block {
+      margin-right: 0 !important;
+    }
+
+    .essui-grid-col--sm-12 {
+      padding: 8px;
+    }
+  }
+}

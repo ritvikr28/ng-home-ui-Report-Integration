@@ -1,0 +1,8 @@
+; begin auth token
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/registry/:username=essnextgen
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/registry/:_password=azureArtifactPAT
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/registry/:email=nextgen-staff-and-administration@educationsoftwaresolutions.co.uk
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/:username=essnextgen
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/:_password=azureArtifactPAT
+//pkgs.dev.azure.com/essnextgen/_packaging/essnextgen/npm/:email=nextgen-staff-and-administration@educationsoftwaresolutions.co.uk
+; end auth token

@@ -1,0 +1,112 @@
+{
+  "homePage": {
+    "appTitle": "Cartref",
+    "headerTitle": "Croeso i SIMS Next Gen",
+    "headerSubTitle": "Isod mae eich apiau sydd ar gael",
+    "fetchingDataText": "Nôl data ysgol",
+    "btnText": "Ewch â fi yno"
+  },
+  "slices": {
+    "TakeRegister": {
+      "title": "Cofrestri",
+      "description": "Cofnodwch bresenoldeb mewn gwersi neu sesiwn neu chwiliwch am gofrestr i'w chwblhau.",
+      "link": "",
+      "linkText": ""
+      
+    },    
+    "PupilProfile": {
+      "title": "Proffil y disgybl",
+      "description": "Gallwch ddod o hyd i broffil disgybl trwy nodi o leiaf ddau lythyren o enw dewisol y disgybl. Bydd ein chwiliad manwl yn eich galluogi i gael gwybodaeth sylfaenol am ddisgyblion a gwybodaeth gyswllt yn gyflymach.",
+      "link": "",
+      "linkText": ""
+    },    
+    "PrimaryAssessment": {
+      "title": "Asesiadau cynradd",
+      "description": "Cofnodi asesiadau tymhorol neu hanner tymor mewn darllen, ysgrifennu a mathemateg disgyblion ym mlwyddyn 1-6. Gweld mewnwelediadau ynghylch perfformiad dosbarth a grŵp blwyddyn ac olrhain cynnydd disgyblion.",
+      "link": "",
+      "linkText": ""
+    },  
+    "StaffProfile": {
+      "title": "Proffil Staff",
+      "description": "Chwiliwch drwy'r holl aelodau staff presennol yn yr ysgol a chael mynediad at eu proffil cyhoeddus.",
+      "link": "",
+      "linkText": ""
+    },
+    "SchoolManagement":{
+      "title": "Calendars",
+      "description": "Plan, manage and track all your school and work events in one safe place",
+      "link": "",
+      "linkText": ""
+    },
+    "AssessmentMarksheets":{
+      "title": "My Markbook",
+      "description": "A fast and intuitive new way for teachers to record their own assessments for the classes they teach",
+      "link": "",
+      "linkText": ""
+    },
+    "PupilAttendance":{
+      "title": "Pupil Attendance",
+      "description": "Pupil Attendance description",
+      "link": "",
+      "linkText": ""
+    },
+    "CustomGroups":{
+      "title": "Custom groups",
+      "description": "Create, manage, and view your own customised pupil groups. All data syncs back to SIMS 7, ensuring effective monitoring and reporting of your groups.",
+      "link": "",
+      "linkText": ""
+    },
+    "ManagePermissions":{
+      "title": "Manage Permissions",
+      "description": "View permission groups and their members, and easily edit the group permissions to meet your school's needs.",
+      "link": "",
+      "linkText": ""
+    },
+    "Seatingplans":{
+      "title": "Seating plans",
+      "description": "Create room layouts and seating plans for your classes and lessons",
+      "link": "",
+      "linkText": ""
+    },
+    "Conduct":{
+      "title": "Ymddygiad",
+      "description": "Creu a chynnal gwarhaddiadau parhaol a phenodol.",
+      "link": "",
+      "linkText": ""
+    }
+  },
+  "pageNotFound": {
+    "headingTitle": "Sorry, the page you requested cannot be found",
+    "bodyText": {
+      "text": "This may be due to one of the reasons below",
+      "linkText1": "Wrong link or address.",
+      "linkText2": "The page may have been removed."
+    }
+  },
+  "noAccess": {
+    "headingTitle": "Mae'n ddrwg gennym, nid oes gennych fynediad at SIMS Next Gen",
+    "bodyText": {
+      "text": "Rhesymau:",
+      "point1": "Nid yw eich ysgol wedi cael ei llwytho i Next Gen",
+      "point2": "Nid yw'ch Gweinyddwr wedi eich gwahodd i Next Gen"
+    },
+    "moduleBlock": {
+      "heading": "Pethau i roi cynnig arnynt:",
+      "item1": {
+        "title": "Heb gael eich llwytho i Next Gen?",
+        "content": "Cysylltwch â'n ",
+        "content1": "Tîm Llwytho i fynegi ",
+        "content2": "eich diddordeb mewn defnyddio Next Gen"
+      },
+      "item2": {
+        "title": "Heb gael eich gwahodd i Next Gen?",
+        "content": "Gofynnwch i'ch Gweinyddwr eich gwahodd i Next Gen, gwahoddiad unigol yw hwn a fydd yn cael ei anfon i'ch cyfeiriad e-bost gwaith"
+      },
+      "item3": {
+        "title": "Wedi cael eich llwytho a’ch gwahodd, ond yn dal i fod yn methu â chael mynediad?",
+        "content": "Codwch y mater gyda ",
+        "content1": "ESS Support"
+      }
+    }
+  }
+}
