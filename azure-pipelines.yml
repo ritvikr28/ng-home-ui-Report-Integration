@@ -1,0 +1,410 @@
+# NG-Home-UI Pipeline
+trigger:
+- main
+
+# schedules:
+#   - cron: "40 01 * * 2"
+#     displayName: "Kiuwan Baseline"
+#     branches:
+#       include:
+#         - main
+#     always: true
+
+resources:
+  repositories:
+    - repository: platformPipelineRepo
+      type: git
+      name: Platform/az-pipelines-application-yaml-kit
+      ref: main
+
+variables:
+  - group: ng-home-ui-Dev
+  - name: tag
+    value: '$(Build.BuildId)'
+  - name: buildConfiguration
+    value: 'Release'
+  - name: location
+    value: 'South UK'
+  - name: acrName
+    value: 'acrtrcommonuksouth'
+  - name: imageName
+    value: 'ng-home-ui'
+  - name: acr_url
+    value: 'acrtrcommonuksouth.azurecr.io'
+
+pool:
+  name: paz-vmss-pool
+
+stages:
+  - stage: Build
+    jobs:
+      - job: BuildApplication
+        timeoutInMinutes: 20
+        cancelTimeoutInMinutes: 3
+        displayName: "Install, lint, test & build"
+        steps:
+          - task: Bash@3
+            displayName: "Create npmrc for artifact permission"
+            inputs:
+              targetType: "inline"
+              script: |
+                sed -i 's-azureArtifactPAT-$(azureArtifactPAT)-g' usernpmrc.txt
+                cat usernpmrc.txt 
+                mv -v usernpmrc.txt /home/$USER/.npmrc
+          
+          - task: Bash@3
+            inputs:
+              targetType: inline
+              script: |
+                ls
+                cat .npmrc                              
+          
+          - task: NodeTool@0
+            inputs:
+              versionSource: 'spec'
+              versionSpec: '16.14.2'
+            displayName: "Install Node.js"
+          - script: |
+              echo "Check version"
+              which node
+              echo "Node Version: " 
+              node -v
+              echo "NPM Version: " 
+              npm -v
+            displayName: "Node Version check"
+          - script: npm install
+            displayName: "Installing Package"
+          # - script: npm audit
+          #   displayName: "Audit vulnerabilities in packages"
+          - script: CI=true npm run coverage
+            displayName: "Test with coverage"
+          - script: npm run eslint:check
+            displayName: "Typescript Linting"
+          # - script: npm run stylelint:check
+          #   displayName: "Style Linting"
+          - script: npm run build
+            displayName: "Application Build"
+            env:
+              CI: true      
+          - script: npm run build:singlespa
+            displayName: "Micro frontend Build"
+            env:
+              CI: true
+
+          - script: |
+              FORMATTEDMESSAGE=$(echo '$(Build.SourceVersionMessage)' | sed -r 's/[#]+/:/g')
+              echo "##vso[task.setvariable variable=commitMessage]$FORMATTEDMESSAGE"
+            displayName: "Format Commit Message"    
+          
+          # - task: Bash@3
+          #   displayName: 'Secret scanning' 
+          #   inputs:
+          #     targetType: 'inline'
+          #     script: |
+          #       docker build -t staff-ui-scanner -f ./.husky/talisman/CI.Dockerfile . || exit 1
+          #       docker run staff-ui-scanner || exit 1
+          #     workingDirectory: '$(System.DefaultWorkingDirectory)'
+
+          # - task: kiuwan-delivery-analysis-task@2
+          #   displayName: "Kiuwan Delivery Analysis"
+          #   inputs:
+          #     kiuwanConnection: 'Kiuwan-Staff-BuildAgentConnection'
+          #     projectnameselector: 'kiuwanapp'
+          #     kiuwanappname: 'ng-home-ui'
+          #     changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
+          #     overridedeliverylabel: true
+          #     deliverylabel: "$(Build.BuildNumber)-$(commitMessage)"
+          #     analysisscope: "completeDelivery"
+          #     includeinsight: true
+          #     failonaudit: true
+          #     uploadsnippets: true
+          #     uploadfiles: false
+          #     skipclones: false
+          #     overridedotkiuwan: false
+          #     excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
+          #     dbanalysis: false
+          #   condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['kiuwanScan'], 'baseline'))
+            
+          # - task: kiuwan-baseline-analysis-task@2
+          #   displayName: 'Kiuwan Baseline Analysis'
+          #   inputs:
+          #     kiuwanConnection: 'Kiuwan-Staff-BuildAgentConnection'
+          #     projectnameselector: 'kiuwanapp'
+          #     kiuwanappname: 'ng-home-ui'
+          #     includeinsight: true
+          #     uploadsnippets: true
+          #     uploadfiles: false
+          #     skipclones: false
+          #     overridedotkiuwan: false
+          #     overrideappmodel: false
+          #     excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
+          #     dbanalysis: false
+          #   condition: and(succeeded(), or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['kiuwanScan'], 'baseline')))
+          
+          - task: PublishTestResults@2
+            displayName: "Publish Test Results"
+            inputs:
+              testResultsFormat: "JUnit"
+              testResultsFiles: "junit.xml"
+              searchFolder: "app"
+              mergeTestResults: true
+            condition: succeededOrFailed()
+         
+          - task: PublishCodeCoverageResults@1
+            displayName: "Publish Code Coverage"
+            inputs:
+              codeCoverageTool: Cobertura
+              summaryFileLocation: "./coverage/cobertura-coverage.xml"
+              reportDirectory: "app/coverage"
+              failIfCoverageEmpty: true
+            
+          - task: BuildQualityChecks@8
+            displayName: "Build Quality Checks for lines"
+            inputs:
+              checkCoverage: true
+              coverageFailOption: "fixed"
+              coverageType: "lines"
+              coverageThreshold: "85"
+              explicitFilter: true
+            
+          # - task: Docker@2
+          #   inputs:
+          #     containerRegistry: 'dev_staff_service_connection_shared_acr'
+          #     repository: '$(moduleName-ng-home)-ui'
+          #     command: 'buildAndPush'
+          #     Dockerfile: '**/Dockerfile' 
+
+          - task: Bash@3
+            displayName: 'Build image'
+            inputs:
+              targetType: 'inline'
+              script: |
+                docker build -t $(imageName) .       
+                docker tag $(imageName):latest $(acr_url)/$(imageName):$(Build.BuildId) 
+
+          - task: Bash@3
+            displayName: 'Push image'
+            inputs:
+              targetType: 'inline'
+              script: |
+                az login --identity
+                az acr login --name acrtrcommonuksouth
+                docker push $(acr_url)/$(imageName):$(Build.BuildId)
+
+          - task: CopyFiles@2
+            inputs:
+              Contents: "deployment.yaml"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"
+            
+          - task: CopyFiles@2
+            inputs:
+              Contents: "deployment-live.yaml"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"
+              
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+  #   - stage: DevDeploy
+  #     displayName: Deployment to Dev
+  #     dependsOn: Build
+  #     pool:
+  #       name: 'staff-vmss-pool'
+  #     variables:
+  #       - group: 'ng-home-ui-Dev'
+  #     jobs:
+  #       - deployment: Deploy_nghomeui_Dev
+  #         displayName: "Deployment to Dev"
+  #         environment: Dev   
+  #         strategy:
+  #           runOnce:
+  #             deploy:
+  #               steps:
+  #                 - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+  #                   displayName: 'Replace tokens in ng-home/deployment.yaml'
+  #                   inputs:
+  #                     rootDirectory: '$(Pipeline.Workspace)/drop'
+  #                     targetFiles: 'deployment.yaml'
+  #                     tokenPattern: azpipelines
+  #                     actionOnMissing: fail
+  #                   timeoutInMinutes: 1
+                  
+  #                 - task: KubernetesManifest@0
+  #                   displayName: 'Create secret'
+  #                   inputs:
+  #                     action: createSecret
+  #                     kubernetesServiceConnection: 'staff-shared-k8s-dev-connection'
+  #                     secretName: 'dev-ng-home-aksdevopsacr-secret'
+  #                     dockerRegistryEndpoint: 'dev_staff_service_connection_shared_acr'
+                      
+  #                 - task: Kubernetes@1
+  #                   displayName: 'kubectl apply'
+  #                   inputs:
+  #                     kubernetesServiceEndpoint: 'staff-shared-k8s-dev-connection'
+  #                     namespace: staff
+  #                     command: apply
+  #                     useConfigurationFile: true
+  #                     configuration: '$(Pipeline.Workspace)/drop/deployment.yaml' 
+
+              
+        # - job: WaitForValidation
+        #   displayName: "Validate Deployment"
+        #   # dependsOn: Deploy_nghomeui_Dev
+        #   pool: server 
+        #   steps:
+        #   - task: ManualValidation@0
+        #     inputs:
+        #     notifyUsers: 'Manual Validation'
+
+                  # - task: Bash@3
+                  #   displayName: 'Checking Pod Status'
+                  #   inputs:
+                  #     targetType: 'inline'
+                  #     script: |
+                  #       ###############Checking Pod-Status############
+                  #       sleep 120                
+                  #       az login --identity                
+                  #       az aks get-credentials --resource-group rg-learners-dev-uksouth --name k8s-learners-dev-uksouth 2> /dev/null                
+                  #       deployment_name=ng-home-ui
+                  #       ns=staff
+                  #       rs_name=$(kubectl describe deployment $deployment_name -n $ns |grep NewReplicaSet: | awk '{print $2}')
+                  #       desired_count=$(kubectl describe deployment $deployment_name -n $ns |grep desired | awk '{print $2}')
+                  #       echo -e "Desired Pods Count :" $desired_count
+                        
+                  #       for i in $(seq $desired_count); do
+                  #           ready_count=$(kubectl get replicaset $rs_name -n $ns  -o=jsonpath='{.status.replicas}')
+                        
+                  #           echo -e "Ready Pods Count :" $ready_count
+                        
+                  #           if [  "$desired_count" -ne "$ready_count" ]; then
+                  #               echo -e "Waiting for pod's running state"
+                  #               isFailing=true
+                  #               sleep 50
+                        
+                  #           else
+                  #               echo -e "Pods are up and running"
+                  #               isFailing=false
+                  #               break
+                  #           fi
+                  #       done
+                  #           if [ $isFailing == "true" ]; then
+                  #             echo -e "Error - either deployment failed or pods taking longer time to get running state." >&2
+                  #           fi
+                  #     failOnStderr: true
+
+  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+  #   - stage: QADeploy
+  #     displayName: Deployment to QA
+  #     dependsOn: DevDeploy
+  #     pool:
+  #       name: 'staff-vmss-pool'
+  #     variables:
+  #       - group: 'ng-home-ui-QA'
+  #     jobs: 
+  #       - deployment: deploy_nghomeui_QA
+  #         displayName: "Deployment to QA"
+  #         environment: QA           
+  #         strategy:
+  #           runOnce:
+  #             deploy:
+  #               steps:  
+  #                 - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+  #                   displayName: 'Replace tokens in ng-home/deployment.yaml'
+  #                   inputs:
+  #                     rootDirectory: '$(Pipeline.Workspace)/drop'
+  #                     targetFiles: 'deployment.yaml'
+  #                     tokenPattern: azpipelines
+  #                     actionOnMissing: fail
+  #                   timeoutInMinutes: 1
+                  
+  #                 - task: KubernetesManifest@0
+  #                   displayName: 'Create secret'
+  #                   inputs:
+  #                     action: createSecret
+  #                     kubernetesServiceConnection: 'staff-shared-k8s-qa-connection'
+  #                     secretName: 'qa-ng-home-aksdevopsacr-secret'
+  #                     dockerRegistryEndpoint: 'dev_staff_service_connection_shared_acr'
+                      
+  #                 - task: Kubernetes@1
+  #                   displayName: 'kubectl apply'
+  #                   inputs:
+  #                     kubernetesServiceEndpoint: 'staff-shared-k8s-qa-connection'
+  #                     namespace: staff
+  #                     command: apply
+  #                     useConfigurationFile: true
+  #                     configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'
+
+  #       - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+  #         parameters:
+  #           snowConfig:    
+  #             serviceConnection: 'Staff-ServiceNow-Connection'
+  #           component:
+  #             name: 'nghomeui'
+  #             selfhostedpool: 'staff-vmss-pool'
+  #           env_name: QA
+  #           config:
+  #               autoTestConfig:
+  #                 enabled: false
+
+  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+  #   - stage: LiveDeploy
+  #     displayName: Deployment to Live
+  #     dependsOn: QADeploy
+  #     pool:
+  #       name: 'staff-vmss-pool'
+  #     variables:
+  #       - group: 'ng-home-ui-Live'
+  #     jobs:
+  #       - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
+  #         parameters:
+  #           snowConfig:    
+  #             serviceConnection: 'Staff-ServiceNow-Connection'
+  #           component:
+  #             name: 'nghomeui'
+  #             selfhostedpool: 'staff-vmss-pool'
+
+  #       - deployment: deploy_nghomeui_prod
+  #         displayName: "Deployment to Live"
+  #         dependsOn: addStartTime
+  #         environment: prod        
+  #         strategy:
+  #           runOnce:
+  #             deploy:
+  #               steps:
+  #                 - task: qetza.replacetokens.replacetokens-task.replacetokens@5
+  #                   displayName: 'Replace tokens in ng-home/deployment.yaml'
+  #                   inputs:
+  #                     rootDirectory: '$(Pipeline.Workspace)/drop'
+  #                     targetFiles: 'deployment.yaml'
+  #                     tokenPattern: azpipelines
+  #                     actionOnMissing: fail
+  #                   timeoutInMinutes: 1
+                  
+  #                 - task: KubernetesManifest@0
+  #                   displayName: 'Create secret'
+  #                   inputs:
+  #                     action: createSecret
+  #                     kubernetesServiceConnection: 'staff-shared-k8s-live-connection'
+  #                     secretName: 'live-ng-home-aksdevopsacr-secret'
+  #                     dockerRegistryEndpoint: 'dev_staff_service_connection_shared_acr'
+                      
+  #                 - task: Kubernetes@1
+  #                   displayName: 'kubectl apply'
+  #                   inputs:
+  #                     kubernetesServiceEndpoint: 'staff-shared-k8s-live-connection'
+  #                     namespace: staff
+  #                     command: apply
+  #                     useConfigurationFile: true
+  #                     configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'
+
+  #       - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
+  #         parameters:
+  #           snowConfig:    
+  #             serviceConnection: 'Staff-ServiceNow-Connection'
+  #           component:
+  #             name: 'nghomeui'
+  #             selfhostedpool: 'staff-vmss-pool'
+  #           env_name: prod
