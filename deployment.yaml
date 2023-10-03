@@ -21,24 +21,24 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   namespace: platform
-  name: "ng-home-ui"
+  name: ng-home-ui
 
 spec:
   minReadySeconds: 30
   selector:
     matchLabels:
-      app: "ng-home-ui"
+      app: ng-home-ui
       tier: frontend
   replicas: 2
   template:
     metadata:
       labels:
-        app: "ng-home-ui"
+        app: ng-home-ui
         tier: frontend
     spec:
       containers:
-        - name: "ng-home-ui"
-          image: "$(containerRegistry).azurecr.io/ng-home-ui:$(Build.BuildId)"
+        - name: ng-home-ui
+          image: acrtrcommonuksouth.azurecr.io/ng-home-ui:$(Build.BuildId)
           ports:
             - containerPort: 80
           resources:
@@ -51,15 +51,15 @@ spec:
           volumeMounts:
             #override config.js file
             - name: config
-              mountPath: "/usr/share/nginx/html/config.js"
-              subPath: "config.js"
+              mountPath: '/usr/share/nginx/html/config.js'
+              subPath: 'config.js'
       volumes:
         - name: config
           configMap:
             name: ng-home-web-config
             items:
-              - key: "web.properties"
-                path: "config.js"
+              - key: 'web.properties'
+                path: 'config.js'
           # livenessProbe:
           #   initialDelaySeconds: 30
           #   periodSeconds: 10
@@ -79,15 +79,15 @@ spec:
           #     port: 80
           #   failureThreshold: 30
           #   periodSeconds: 10
-          
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app: "ng-home-ui"
+    app: ng-home-ui
     tier: frontend
-  name: "ng-home-ui"
+  name: ng-home-ui
   namespace: platform
 spec:
   ports:
@@ -95,7 +95,7 @@ spec:
       protocol: TCP
       targetPort: 80
   selector:
-    app: "ng-home-ui"
+    app: ng-home-ui
     tier: frontend
 ---
 apiVersion: autoscaling/v2
