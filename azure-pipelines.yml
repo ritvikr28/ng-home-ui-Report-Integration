@@ -352,7 +352,7 @@ stages:
       name: 'paz-vmss-pool'
     variables:
       - group: 'ng-home-ui-Live'
-  #   jobs:
+    jobs:
   #     - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
   #       parameters:
   #         snowConfig:    
