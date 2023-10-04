@@ -5,17 +5,17 @@ metadata:
   name: ng-home-web-config
 data:
   web.properties: |
-    window.REACT_API_URL= "$(home-api-url)"
-    window.REACT_CLIENT_ID = "$(sims-clientid-home)"
-    window.REACT_AUTH_ENDPOINT = "$(sims-auth-endpoint)"
-    window.REACT_REDIRECT_URI = "$(sims-redirecturi)"
-    window.AppInsightsConnectionString = "$(AppInsightsConnectionString)"
-    window.ASPNETCORE_ENVIRONMENT= "$(ASPNETCORE_ENVIRONMENT)"
-    window.LOG_LEVEL = "$(LOG_LEVEL)"
-    window.APP_NAME = "$(APP_NAME)"
+    window.REACT_API_URL= "#{home-api-url}#"
+    window.REACT_CLIENT_ID = "#{sims-clientid-home}#"
+    window.REACT_AUTH_ENDPOINT = "#{sims-auth-endpoint}#"
+    window.REACT_REDIRECT_URI = "#{sims-redirecturi}#"
+    window.AppInsightsConnectionString = "#{AppInsightsConnectionString}#"
+    window.ASPNETCORE_ENVIRONMENT= "#{ASPNETCORE_ENVIRONMENT}#"
+    window.LOG_LEVEL = "#{LOG_LEVEL}#"
+    window.APP_NAME = "#{APP_NAME}#"
     window.REACT_GA_TRACKING_ID = "GTM-5LBSRF3"
-    window.AUTH_API_URL = "$(AUTH_API_URL)"
-    window.APPLICATION = "$(APPLICATION)"
+    window.AUTH_API_URL = "#{AUTH_API_URL}#"
+    window.APPLICATION = "#{APPLICATION}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: ng-home-ui
-          image: acrtrcommonuksouth.azurecr.io/ng-home-ui:"$(Build.BuildId)"
+          image: acrtrcommonuksouth.azurecr.io/ng-home-ui:#{Build.BuildId}#
           ports:
             - containerPort: 80
           resources:
