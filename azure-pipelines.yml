@@ -208,44 +208,44 @@ stages:
               publishLocation: 'Container'
 
   # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-  # - stage: DevDeploy
-  #   displayName: Deployment to Dev
-  #   dependsOn: Build
-  #   pool:
-  #     name: 'paz-vmss-pool'
-  #   variables:
-  #     - group: 'ng-home-ui-Dev'
-  #   jobs:
-  #     - deployment: Deploy_nghomeapi_Dev
-  #       displayName: "Deployment to Dev"
-  #       environment: Dev   
-  #       # dependsOn: BuildApplication
-  #       #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #               - task: DownloadPipelineArtifact@2
-  #                 inputs:
-  #                   buildType: 'current'
-  #                   artifactName: 'drop'
-  #                   targetPath: '$(Pipeline.Workspace)/drop'
+  - stage: DevDeploy
+    displayName: Deployment to Dev
+    dependsOn: Build
+    pool:
+      name: 'paz-vmss-pool'
+    variables:
+      - group: 'ng-home-ui-Dev'
+    jobs:
+      - deployment: Deploy_nghomeui_Dev
+        displayName: "Deployment to Dev"
+        environment: dev   
+        # dependsOn: BuildApplication
+        #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  inputs:
+                    buildType: 'current'
+                    artifactName: 'drop'
+                    targetPath: '$(Pipeline.Workspace)/drop'
 
-  #               - task: replacetokens@5
-  #                 displayName: 'Replace Token in Deployment.YAML'
-  #                 inputs:
-  #                     rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                     targetFiles: 'deployment.yaml'
-  #                     encoding: 'auto'
-  #                     tokenPattern: 'default'
-  #                     writeBOM: true
-  #                     actionOnMissing: 'warn'
-  #                     keepToken: false
-  #                     actionOnNoFiles: 'continue'
-  #                     enableTransforms: false
-  #                     enableRecursion: false
-  #                     useLegacyPattern: false
-  #                     enableTelemetry: true
+                - task: replacetokens@5
+                  displayName: 'Replace Token in Deployment.YAML'
+                  inputs:
+                      rootDirectory: '$(Pipeline.Workspace)/drop'
+                      targetFiles: 'deployment.yaml'
+                      encoding: 'auto'
+                      tokenPattern: 'default'
+                      writeBOM: true
+                      actionOnMissing: 'warn'
+                      keepToken: false
+                      actionOnNoFiles: 'continue'
+                      enableTransforms: false
+                      enableRecursion: false
+                      useLegacyPattern: false
+                      enableTelemetry: true
  
                 
   #               # - task: KubernetesManifest@0
@@ -265,17 +265,18 @@ stages:
   #               #     useConfigurationFile: true
   #               #     configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'    
 
-  #               - task: Bash@3
-  #                 displayName: 'Kubectl apply'
-  #                 inputs:
-  #                   targetType: 'inline'
-  #                   script: |
-  #                     cd $(Pipeline.Workspace)/drop
-  #                     az login --identity
-  #                     az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
-  #                     kubectl apply -f deployment.yml
-  #                     kubectl rollout restart deployment ng-home-ui -n platform
-  #                   failOnStderr: true
+                - task: Bash@3
+                  displayName: 'Kubectl apply'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      cd $(Pipeline.Workspace)/drop
+                      az login --identity
+                      az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                      az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
+                      kubectl apply -f deployment.yml
+                      kubectl rollout restart deployment ng-home-ui -n platform
+                    failOnStderr: true
   
   # - stage: QADeploy
   #   displayName: Deployment to QA
