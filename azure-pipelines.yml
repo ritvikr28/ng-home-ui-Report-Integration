@@ -345,13 +345,13 @@ stages:
       #           enabled: false
  
 
-  # - stage: LiveDeploy
-  #   displayName: Deployment to Live
-  #   dependsOn: QADeploy
-  #   pool:
-  #     name: 'paz-vmss-pool'
-  #   variables:
-  #     - group: 'ng-home-ui-Live'
+  - stage: LiveDeploy
+    displayName: Deployment to Live
+    dependsOn: QADeploy
+    pool:
+      name: 'paz-vmss-pool'
+    variables:
+      - group: 'ng-home-ui-Live'
   #   jobs:
   #     - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
   #       parameters:
@@ -362,22 +362,41 @@ stages:
   #           name: 'nghomeapi'
   #           selfhostedpool: 'paz-vmss-pool'
 
-  #     - deployment: deploy_nghomeapi_prod
-  #       displayName: "Deployment to Live"
+      - deployment: deploy_nghomeui_live_snow
+        displayName: "Deployment to Live"
   #       dependsOn: addStartTime
-  #       environment: prod        
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #               - task: qetza.replacetokens.replacetokens-task.replacetokens@5
-  #                 displayName: 'Replace tokens in ng-home/deployment.yaml'
-  #                 inputs:
-  #                   rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                   targetFiles: 'deployment.yaml'
-  #                   tokenPattern: azpipelines
-  #                   actionOnMissing: fail
-  #                 timeoutInMinutes: 1
+        environment: live_snow         
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: replacetokens@5
+                  displayName: 'Replace Token in Deployment.YAML'
+                  inputs:
+                      rootDirectory: '$(Pipeline.Workspace)/drop'
+                      targetFiles: 'deployment-live.yaml'
+                      encoding: 'auto'
+                      tokenPattern: 'default'
+                      writeBOM: true
+                      actionOnMissing: 'warn'
+                      keepToken: false
+                      actionOnNoFiles: 'continue'
+                      enableTransforms: false
+                      enableRecursion: false
+                      useLegacyPattern: false
+                      enableTelemetry: true
+
+                - task: bash@3
+                  displayName: 'Kubectl apply'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                       cd $(Pipeline.Workspace)/drop
+                       az login --identity
+                       az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
+                       az aks get-credentials --resource-group paz-prd-ess-ng-rg --name paz-prd-ess-ng-aks  --admin 2> /dev/null 
+                       kubectl apply -f deployment-live.yaml 
+                       kubectl rollout restart deployment ng-home-ui -n platform
                 
   #               - task: KubernetesManifest@0
   #                 displayName: 'Create secret'
