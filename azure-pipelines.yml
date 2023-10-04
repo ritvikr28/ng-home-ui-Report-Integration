@@ -274,7 +274,7 @@ stages:
                       az login --identity
                       az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
                       az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
-                      kubectl apply -f deployment.yml
+                      kubectl apply -f deployment.yaml
                       kubectl rollout restart deployment ng-home-ui -n platform
                     failOnStderr: true
   
