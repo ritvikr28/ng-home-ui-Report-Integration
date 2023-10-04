@@ -278,60 +278,72 @@ stages:
                       kubectl rollout restart deployment ng-home-ui -n platform
                     failOnStderr: true
   
-  # - stage: QADeploy
-  #   displayName: Deployment to QA
-  #   dependsOn: DevDeploy
-  #   pool:
-  #     name: 'paz-vmss-pool'
-  #   variables:
-  #     - group: 'ng-home-uii-QA'
-  #   jobs:
-  #     - deployment: Deploy_nghomeapi_QA
-  #       displayName: "Deployment to QA"
-  #       environment: QA  
-  #       # dependsOn: BuildApplication
-  #       #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
-  #       strategy:
-  #         runOnce:
-  #           deploy:
-  #             steps:
-  #               - task: DownloadPipelineArtifact@2
-  #                 inputs:
-  #                   buildType: 'current'
-  #                   artifactName: 'drop'
-  #                   targetPath: '$(Pipeline.Workspace)/drop'          
+  - stage: QADeploy
+    displayName: Deployment to QA
+    dependsOn: DevDeploy
+    pool:
+      name: 'paz-vmss-pool'
+    variables:
+      - group: 'ng-home-ui-QA'
+    jobs:
+      - deployment: Deploy_nghomeui_QA
+        displayName: "Deployment to QA"
+        environment: qa_snow 
+        # dependsOn: BuildApplication
+        #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - task: DownloadPipelineArtifact@2
+                  inputs:
+                    buildType: 'current'
+                    artifactName: 'drop'
+                    targetPath: '$(Pipeline.Workspace)/drop'          
 
-  #               - task: qetza.replacetokens.replacetokens-task.replacetokens@5
-  #                 displayName: 'Replace tokens in ng-home/deployment.yaml'
-  #                 inputs:
-  #                   rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                   targetFiles: 'deployment.yaml'
-  #                   tokenPattern: azpipelines
-  #                   actionOnMissing: fail
-  #                 timeoutInMinutes: 1
+                - task: replacetokens@5
+                  displayName: 'Replace Token in Deployment.YAML'
+                  inputs:
+                      rootDirectory: '$(Pipeline.Workspace)/drop'
+                      targetFiles: 'deployment.yaml'
+                      encoding: 'auto'
+                      tokenPattern: 'default'
+                      writeBOM: true
+                      actionOnMissing: 'warn'
+                      keepToken: false
+                      actionOnNoFiles: 'continue'
+                      enableTransforms: false
+                      enableRecursion: false
+                      useLegacyPattern: false
+                      enableTelemetry: true
                 
                     
-  #               - task: Kubernetes@1
-  #                 displayName: 'kubectl apply'
-  #                 inputs:
-  #                   kubernetesServiceEndpoint: 'staff-shared-k8s-qa-connection'
-  #                   namespace: platform
-  #                   command: apply
-  #                   useConfigurationFile: true
-  #                   configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'
+                - task: Bash@3
+                  displayName: 'Kubectl apply'
+                  inputs:
+                    targetType: 'inline'
+                    script: |
+                      cd $(Pipeline.Workspace)/drop
+                      az login --identity
+                      az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                      az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks --admin 2> /qa/null
+                      kubectl apply -f deployment.yaml
+                      kubectl rollout restart deployment ng-home-ui -n platform
+                    failOnStderr: true
 
-  #     - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-  #       parameters:
-  #           snowConfig:    
-  #             serviceConnection: 'Staff-ServiceNow-Connection'
-  #             requireManualValidation: true 
-  #           component:
-  #             name: 'nghomeapi'
-  #             selfhostedpool: 'paz-vmss-pool'
-  #           env_name: QA
-  #           config:
-  #             autoTestConfig:
-  #               enabled: false
+      # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+      #   parameters:
+      #       snowConfig:    
+      #         serviceConnection: 'Staff-ServiceNow-Connection'
+      #         requireManualValidation: true 
+      #       component:
+      #         name: 'nghomeapi'
+      #         selfhostedpool: 'paz-vmss-pool'
+      #       env_name: QA
+      #       config:
+      #         autoTestConfig:
+      #           enabled: false
+ 
 
   # - stage: LiveDeploy
   #   displayName: Deployment to Live

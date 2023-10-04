@@ -38,7 +38,7 @@ spec:
     spec:
       containers:
         - name: ng-home-ui
-          image: acrtrcommonuksouth.azurecr.io/ng-home-ui:$(Build.BuildId)
+          image: acrtrcommonuksouth.azurecr.io/ng-home-ui:"$(Build.BuildId)"
           ports:
             - containerPort: 80
           resources:
