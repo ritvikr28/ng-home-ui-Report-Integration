@@ -286,7 +286,7 @@ stages:
     variables:
       - group: 'ng-home-ui-QA'
     jobs:
-      - deployment: Deploy_nghomeui_qa_snow
+      - deployment:  deploy_nghomeui_qa_snow
         displayName: "Deployment to QA"
         environment: qa_snow 
         # dependsOn: BuildApplication
