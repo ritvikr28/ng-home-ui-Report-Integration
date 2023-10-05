@@ -337,7 +337,7 @@ stages:
             serviceConnection: 'ServiceNow-Connection'
             requireManualValidation: true          
           component:
-            name: 'ng-home-ui'
+            name: 'nghomeui'
             selfhostedpool: 'paz-vmss-pool'
           env_name: qa_snow  
           config:
@@ -419,6 +419,6 @@ stages:
             serviceConnection: 'ServiceNow-Connection'
             requireManualValidation: false          
           component:
-            name: 'ng-home-ui'
+            name: 'nghomeui'
             selfhostedpool: 'paz-vmss-pool'
           env_name: live_snow
