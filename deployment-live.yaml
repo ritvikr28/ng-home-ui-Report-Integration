@@ -5,10 +5,10 @@ metadata:
   name: ng-home-web-config-live
 data:
   web.properties: |
-    window.REACT_API_URL= "#{home-api-url}#"
-    window.REACT_CLIENT_ID = "#{sims-clientid-home}#"
-    window.REACT_AUTH_ENDPOINT = "#{sims-auth-endpoint}#"
-    window.REACT_REDIRECT_URI = "#{sims-redirecturi}#"
+    window.REACT_API_URL= "#{REACT_API_URL}#"
+    window.REACT_CLIENT_ID = "#{REACT_CLIENT_ID}#"
+    window.REACT_AUTH_ENDPOINT = "#{REACT_AUTH_ENDPOINT}#"
+    window.REACT_REDIRECT_URI = "#{REACT_REDIRECT_URI}#"
     window.AppInsightsConnectionString = "#{AppInsightsConnectionString}#"
     window.ASPNETCORE_ENVIRONMENT= "#{ASPNETCORE_ENVIRONMENT}#"
     window.LOG_LEVEL = "#{LOG_LEVEL}#"
