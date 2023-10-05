@@ -331,18 +331,16 @@ stages:
                       kubectl rollout restart deployment ng-home-ui -n platform
                     failOnStderr: true
 
-      # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-      #   parameters:
-      #       snowConfig:    
-      #         serviceConnection: 'Staff-ServiceNow-Connection'
-      #         requireManualValidation: true 
-      #       component:
-      #         name: 'nghomeapi'
-      #         selfhostedpool: 'paz-vmss-pool'
-      #       env_name: QA
-      #       config:
-      #         autoTestConfig:
-      #           enabled: false
+      - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+        parameters:
+          snowConfig:    
+            serviceConnection: 'ServiceNow-Connection'
+            requireManualValidation: true          
+          component:
+            name: 'ng-home-ui'
+            selfhostedpool: 'paz-vmss-pool'
+          env_name: qa_snow  
+          config:
  
 
   - stage: LiveDeploy
@@ -353,18 +351,18 @@ stages:
     variables:
       - group: 'ng-home-ui-Live'
     jobs:
-  #     - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
-  #       parameters:
-  #         snowConfig:    
-  #           serviceConnection: 'Staff-ServiceNow-Connection'
-  #           requireManualValidation: false
-  #         component:
-  #           name: 'nghomeapi'
-  #           selfhostedpool: 'paz-vmss-pool'
+      - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
+        parameters:
+          snowConfig:    
+            serviceConnection: 'ServiceNow-Connection'
+            requireManualValidation: false
+          component:
+            name: 'ng-home-ui'
+            selfhostedpool: 'paz-vmss-pool' 
 
       - deployment: deploy_nghomeui_live_snow
         displayName: "Deployment to Live"
-  #       dependsOn: addStartTime
+        dependsOn: addStartTime
         environment: live_snow         
         strategy:
           runOnce:
@@ -415,12 +413,12 @@ stages:
   #                   useConfigurationFile: true
   #                   configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'
 
-  #     - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
-  #       parameters:
-  #         snowConfig:    
-  #           serviceConnection: 'Staff-ServiceNow-Connection'
-  #           requireManualValidation: false          
-  #         component:
-  #           name: 'nghomeapi'
-  #           selfhostedpool: 'paz-vmss-pool'
-  #         env_name: prod
+      - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
+        parameters:
+          snowConfig:    
+            serviceConnection: 'ServiceNow-Connection'
+            requireManualValidation: false          
+          component:
+            name: 'ng-home-ui'
+            selfhostedpool: 'paz-vmss-pool'
+          env_name: live_snow
