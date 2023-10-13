@@ -88,10 +88,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     );
     const modules: IAppModule[] = filteredModules.map(
       (x: IApplicationMenu) => ({
-        appUrl:
-          isStandaloneApp === false && x.appCode === "PupilProfile"
-            ? "/learner"
-            : x.absolutePath,
+        appUrl: x.absolutePath,
         title: t(`slices.${x.appCode}.title`),
         description: t(`slices.${x.appCode}.description`),
         code: x.appCode,
