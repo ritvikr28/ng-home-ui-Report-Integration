@@ -7,6 +7,7 @@ declare global {
     REACT_API_URL: string;
     AppInsightsConnectionString: string;
     REACT_GA_TRACKING_ID: string;
+    IS_NEWHOMEPAGE_ACCESSIBLE: boolean;
   }
 }
 
@@ -40,11 +41,14 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.REACT_API_URL = configData.REACT_API_URL;
     window.AppInsightsConnectionString = configData.AppInsightsConnectionString;
     window.REACT_GA_TRACKING_ID = configData.REACT_GA_TRACKING_ID;
+    window.IS_NEWHOMEPAGE_ACCESSIBLE = configData.IS_NEWHOMEPAGE_ACCESSIBLE;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
       AppInsightsConnectionString: window.AppInsightsConnectionString,
-      REACT_GA_TRACKING_ID: window.REACT_GA_TRACKING_ID
+      REACT_GA_TRACKING_ID: window.REACT_GA_TRACKING_ID,
+      IS_NEWHOMEPAGE_ACCESSIBLE: window.IS_NEWHOMEPAGE_ACCESSIBLE
+
     });
   } catch (ex) {
     console.log(ex);

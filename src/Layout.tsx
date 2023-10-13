@@ -1,7 +1,11 @@
 import { Suspense, lazy, LazyExoticComponent, FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ProtectedRoute, Auth } from "@essnextgen/auth-ui";
-import { Switch, Route, BrowserRouter as Router } from "react-router-dom";
+import {
+  Switch,
+  Route,
+  BrowserRouter as Router
+ } from "react-router-dom";
 import {
   Header,
   IApplicationMenu,
@@ -16,6 +20,8 @@ import {
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
+import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
+
 
 const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
   () => import("./pages/LandingPage")
@@ -50,7 +56,7 @@ export const getMenus: (
 };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
-  baseRouteName
+  baseRouteName,
 }: ILayoutProps) => {
   const dispatch: any = useDispatch();
 
@@ -58,7 +64,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     useTranslation();
   useEffect(() => {
     const fetchAllData: () => Promise<void> = async () => {
-     getAppModulesPermissions()
+      getAppModulesPermissions()
         .then((response: any) => {
           const menusWithPermission: IApplicationMenu[] = getMenus(
             response.data,
@@ -82,13 +88,16 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     );
     const modules: IAppModule[] = filteredModules.map(
       (x: IApplicationMenu) => ({
-        appUrl: isStandaloneApp===false && x.appCode==="PupilProfile"? "/learner":x.absolutePath,
+        appUrl:
+          isStandaloneApp === false && x.appCode === "PupilProfile"
+            ? "/learner"
+            : x.absolutePath,
         title: t(`slices.${x.appCode}.title`),
         description: t(`slices.${x.appCode}.description`),
         code: x.appCode,
         canView: true,
         linkText: t(`slices.${x.appCode}.linkText`),
-        link: t(`slices.${x.appCode}.link`)
+        link: t(`slices.${x.appCode}.link`),
       })
     );
 
@@ -116,10 +125,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             className="loader-wrapper"
             loaderText="Loading..."
             loaderType={LoaderType.Circular}
-          />         
+          />
         }
       >
         <Switch>
+          <ProtectedRoute exact path="/new-home" component={NewHomepageView} />
           <ProtectedRoute exact path="/" component={LandingPage} />
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}

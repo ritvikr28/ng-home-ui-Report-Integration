@@ -16,6 +16,7 @@ data:
     window.REACT_GA_TRACKING_ID = "GTM-5LBSRF3"
     window.AUTH_API_URL = "#{AUTH_API_URL}#"
     window.APPLICATION = "#{APPLICATION}#"
+    window.IS_NEWHOMEPAGE_ACCESSIBLE = "#{IS_NEWHOMEPAGE_ACCESSIBLE}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
