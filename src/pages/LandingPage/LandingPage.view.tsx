@@ -32,9 +32,10 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
     }
   ];
   const history = useHistory();
-  const createEventButton =
-    authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
-    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True" ? (
+  const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
+    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+    
+  const createEventButton = showButton ?  (
       <Button
         size={ButtonSize.Small}
         dataTestId="create-event-button"
@@ -85,7 +86,8 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
 
   return (
     <>
-      <div className="newhomepagemar">
+    
+        <div className={showButton ? "newhomepagemar" : ""}>
         <Grid
           align="flex-start"
           dataTestId="LandingPageTestId1"
@@ -107,7 +109,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
           className="landing-page"
         >
           <GridItem sm={12}>
-            <span className="page-heading">{t("homePage.headerTitle")}</span>
+          { showButton ? ( <span className="page-heading" >{t("homePage.headerTitle")}</span> )  : <span className="page-heading-hide-button" >{t("homePage.headerTitle")}</span> }
             <span className="page-subheading">
               {t("homePage.headerSubTitle")}
             </span>
