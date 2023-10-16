@@ -3,13 +3,24 @@
   margin: auto;
 
   .page-heading {
-    //padding-top: 64px;
+    padding-top: 0;
     font-style: normal;
     font-weight: 400;
     font-size: 36px;
     line-height: 40px;
     display: flex;
     color: #303030;
+  }
+
+  .page-heading-hide-button {
+    padding-top: 64px;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
+    display: flex;
+    color: #303030;
+
   }
 
   .page-subheading {

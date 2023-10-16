@@ -1,27 +1,23 @@
 import {
   useTranslation,
-  UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import {
   Button,
   ButtonSize,
   Grid,
   GridItem,
   Loader,
-  LoaderType } from "@essnextgen/ui-kit";
+  LoaderType
+} from "@essnextgen/ui-kit";
 import "./style.scss";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { useHistory } from "react-router-dom";
 import { IAppModule } from "../../types/AppPermission";
 import { envConfig } from "../../shared/utils";
 
-const requiredPermissions: Permission[] = [
-  {
-    Securable: "NG.Homepage",
-    Operation: "View"
-  }
-];
 interface IProps {
-  data: Array<IAppModule>
+  data: Array<IAppModule>;
 }
 
 const LandingPageView: ({}: IProps) => JSX.Element = ({
@@ -29,6 +25,12 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
 }: IProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+  const requiredPermissions: Permission[] = [
+    {
+      Securable: "NG.Homepage",
+      Operation: "View",
+    }
+  ];
   const history = useHistory();
   const createEventButton =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
