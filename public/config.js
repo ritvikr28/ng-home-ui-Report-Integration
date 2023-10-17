@@ -4,7 +4,8 @@ window.REACT_AUTH_ENDPOINT =
   "https://simsid-partner-stsserver.azurewebsites.net/connect";
 window.REACT_REDIRECT_URI = "http://localhost:3000/auth";
 window.REACT_ENVIRONMENT = "localhost";
-window.REACT_GA_TRACKING_ID = "";
+window.REACT_GA_TRACKING_ID = "GTM-5LBSRF3";
 window.AppInsightsConnectionString = "";
-window.AUTH_API_URL = "http://localhost:5010/api";
+window.AUTH_API_URL = "http://localhost:5013/api";
 window.APPLICATION = "Home";
+window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";

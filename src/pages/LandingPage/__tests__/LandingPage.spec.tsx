@@ -1,15 +1,23 @@
-import { RenderResult, render, waitFor } from "@testing-library/react";
+import { RenderResult, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider} from "react-redux";
 import { createBrowserHistory } from "history";
 import * as redux from "react-redux";
 import { Router } from "react-router-dom";
+import { authService } from "@essnextgen/auth-ui";
 import configureStore from "../../../redux/store";
 import LandingPage from "../index";
 import { AppPermissionState } from "../../../types/AppPermission";
 import LandingPageView from "../LandingPage.view";
 
+jest.mock('../../../shared/utils', () => ({
+  envConfig: {
+    IS_NEWHOMEPAGE_ACCESSIBLE: 'True',
+  },
+}));
+
 describe("Landing Page", () => { 
   jest.mock("@essnextgen/ui-intl-kit");
+  
   const history = createBrowserHistory();
  
   beforeEach(() => {  
@@ -96,7 +104,19 @@ describe("Landing Page", () => {
   });
 });
 
+jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
+    const mockHistoryPush = jest.fn();
+
+  jest.mock('react-router-dom', () => ({
+    ...jest.requireActual('react-router-dom'),
+    useHistory: () => ({
+      push: mockHistoryPush,
+    }),
+  }));
 describe("Landing Page tests", () => { 
+
+  
+ 
   jest.mock("react-redux", () => ({
     ...jest.requireActual("react-redux"),
     useSelector: jest.fn(
@@ -155,7 +175,29 @@ describe("Landing Page tests", () => {
       expect(getByTestId("LandingPageTestId")).toBeInTheDocument();      
     });
   });
- 
+
+  test('shows the New Homepage button when authorized and config is True', () => {
+    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
+    const { queryByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
+    expect(queryByTestId('create-event-button')).toBeInTheDocument();
+  });
+
+  test('does not render "New Homepage" button if not authorised', () => {
+    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => false);
+
+    const { queryByText } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
+    expect(queryByText('New Homepage')).toBeNull();
+  });
+  
+  test('redirects to "/new-home" when the "New Homepage" button is clicked', () => {
+    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
+    const { getByText,getByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
+    const button = getByText(/New Homepage/i);
+    expect(button).toBeInTheDocument();
+    fireEvent.click(getByTestId('create-event-button'));
+
+    expect(mockHistoryPush).toHaveBeenCalledWith('/new-home');
+  });
 });
 
 function renderWithProvider() {

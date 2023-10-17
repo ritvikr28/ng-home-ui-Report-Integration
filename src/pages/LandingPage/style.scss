@@ -3,6 +3,16 @@
   margin: auto;
 
   .page-heading {
+    padding-top: 0;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 40px;
+    display: flex;
+    color: #303030;
+  }
+
+  .page-heading-hide-button {
     padding-top: 64px;
     font-style: normal;
     font-weight: 400;
@@ -10,6 +20,7 @@
     line-height: 40px;
     display: flex;
     color: #303030;
+
   }
 
   .page-subheading {
@@ -100,4 +111,17 @@
       padding: 8px;
     }
   }
+
+}
+
+.newhomepagespan {
+  width: 80%;
+}
+
+.gridhomepagespan {
+  width: 20%;
+}
+
+.newhomepagemar {
+  margin-top: 30px;
 }

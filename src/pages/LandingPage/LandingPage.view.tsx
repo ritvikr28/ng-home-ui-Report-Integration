@@ -2,20 +2,48 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import { Grid, GridItem, Loader, LoaderType } from "@essnextgen/ui-kit";
-
-import { IAppModule } from "../../types/AppPermission";
+import {
+  Button,
+  ButtonSize,
+  Grid,
+  GridItem,
+  Loader,
+  LoaderType
+} from "@essnextgen/ui-kit";
 import "./style.scss";
+import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
+import { useHistory } from "react-router-dom";
+import { IAppModule } from "../../types/AppPermission";
+import { envConfig } from "../../shared/utils";
 
 interface IProps {
   data: Array<IAppModule>;
 }
 
 const LandingPageView: ({}: IProps) => JSX.Element = ({
-  data
+  data,
 }: IProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+  const requiredPermissions: Permission[] = [
+    {
+      Securable: "NG.Homepage",
+      Operation: "View",
+    }
+  ];
+  const history = useHistory();
+  const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
+    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+    
+  const createEventButton = showButton ?  (
+      <Button
+        size={ButtonSize.Small}
+        dataTestId="create-event-button"
+        onClick={() => history.push("/new-home")}
+      >
+        New Homepage
+      </Button>
+    ) : null;
 
   const renderModule: (x: IAppModule, i: number) => JSX.Element | null = (
     x: IAppModule,
@@ -36,7 +64,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
         )}
         <a
           className="essui-button essui-button--primary essui-button--small app-link"
-          href={x.appUrl}          
+          href={x.appUrl}
           rel="noopener noreferrer"
           key={`module-link-${i}`}
         >
@@ -57,19 +85,40 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
   }
 
   return (
-    <Grid
-      align="flex-start"
-      dataTestId="LandingPageTestId"
-      id="app-module-wrapper"
-      className="landing-page"
-    >
-      <GridItem sm={12}>
-        <span className="page-heading">{t("homePage.headerTitle")}</span>
-        <span className="page-subheading">{t("homePage.headerSubTitle")}</span>
-        <br />
-        {data.map(renderModule)}
-      </GridItem>
-    </Grid>
+    <>
+    
+        <div className={showButton ? "newhomepagemar" : ""}>
+        <Grid
+          align="flex-start"
+          dataTestId="LandingPageTestId1"
+          id="app-module-wrapper1"
+          className="landing-page"
+        >
+          <span className="newhomepagespan">
+            <GridItem sm={10}>{}</GridItem>
+          </span>
+          <span className="gridhomepagespan">
+            <GridItem sm={2}>{createEventButton}</GridItem>
+          </span>
+        </Grid>
+
+        <Grid
+          align="flex-start"
+          dataTestId="LandingPageTestId"
+          id="app-module-wrapper"
+          className="landing-page"
+        >
+          <GridItem sm={12}>
+          { showButton ? ( <span className="page-heading" >{t("homePage.headerTitle")}</span> )  : <span className="page-heading-hide-button" >{t("homePage.headerTitle")}</span> }
+            <span className="page-subheading">
+              {t("homePage.headerSubTitle")}
+            </span>
+            <br />
+            {data.map(renderModule)}
+          </GridItem>
+        </Grid>
+      </div>
+    </>
   );
 };
 
