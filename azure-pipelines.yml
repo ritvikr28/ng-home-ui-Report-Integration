@@ -297,7 +297,7 @@ stages:
                       script: |
                         cd $(Pipeline.Workspace)/drop
                         az login --identity
-                        # az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
                         az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks  --admin 2> /dev/null  
                         kubectl apply -f deployment.yaml
                         kubectl rollout restart deployment ng-home-ui -n platform
