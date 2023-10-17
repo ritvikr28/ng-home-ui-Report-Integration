@@ -165,14 +165,7 @@ stages:
               coverageFailOption: "fixed"
               coverageType: "lines"
               coverageThreshold: "85"
-              explicitFilter: true
-            
-          # - task: Docker@2
-          #   inputs:
-          #     containerRegistry: 'dev_staff_service_connection_shared_acr'
-          #     repository: '$(moduleName-ng-home)-ui'
-          #     command: 'buildAndPush'
-          #     Dockerfile: '**/Dockerfile' 
+              explicitFilter: true                       
 
           - task: Bash@3
             displayName: 'Build image'
@@ -207,218 +200,180 @@ stages:
               ArtifactName: 'drop'
               publishLocation: 'Container'
 
-  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-  - stage: DevDeploy
-    displayName: Deployment to Dev
-    dependsOn: Build
-    pool:
-      name: 'paz-vmss-pool'
-    variables:
-      - group: 'ng-home-ui-Dev'
-    jobs:
-      - deployment: Deploy_nghomeui_Dev
-        displayName: "Deployment to Dev"
-        environment: dev   
-        # dependsOn: BuildApplication
-        #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: DownloadPipelineArtifact@2
-                  inputs:
-                    buildType: 'current'
-                    artifactName: 'drop'
-                    targetPath: '$(Pipeline.Workspace)/drop'
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    - stage: DevDeploy
+      displayName: Deployment to Dev
+      dependsOn: Build
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-Dev'
+      jobs:
+        - deployment: Deploy_nghomeui_Dev
+          displayName: "Deployment to Dev"
+          environment: dev             
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'
 
-                - task: replacetokens@5
-                  displayName: 'Replace Token in Deployment.YAML'
-                  inputs:
-                      rootDirectory: '$(Pipeline.Workspace)/drop'
-                      targetFiles: 'deployment.yaml'
-                      encoding: 'auto'
-                      tokenPattern: 'default'
-                      writeBOM: true
-                      actionOnMissing: 'warn'
-                      keepToken: false
-                      actionOnNoFiles: 'continue'
-                      enableTransforms: false
-                      enableRecursion: false
-                      useLegacyPattern: false
-                      enableTelemetry: true
- 
-                
-  #               # - task: KubernetesManifest@0
-  #               #   displayName: 'Create secret'
-  #               #   inputs:
-  #               #     action: createSecret
-  #               #     kubernetesServiceConnection: 'staff-shared-k8s-dev-connection'
-  #               #     secretName: 'dev-ng-home-aksdevopsacr-secret'
-  #               #     dockerRegistryEndpoint: 'dev_staff_service_connection_shared_acr'
-                    
-  #               # - task: Kubernetes@1
-  #               #   displayName: 'kubectl apply'
-  #               #   inputs:
-  #               #     kubernetesServiceEndpoint: 'staff-shared-k8s-dev-connection'
-  #               #     namespace: platform
-  #               #     command: apply
-  #               #     useConfigurationFile: true
-  #               #     configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'    
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true   
 
-                - task: Bash@3
-                  displayName: 'Kubectl apply'
-                  inputs:
-                    targetType: 'inline'
-                    script: |
-                      cd $(Pipeline.Workspace)/drop
-                      az login --identity
-                      az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                      az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
-                      kubectl apply -f deployment.yaml
-                      kubectl rollout restart deployment ng-home-ui -n platform
-                    failOnStderr: true
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
+                        kubectl apply -f deployment.yaml
+                        kubectl rollout restart deployment ng-home-ui -n platform
+                      failOnStderr: true
   
-  - stage: QADeploy
-    displayName: Deployment to QA
-    dependsOn: DevDeploy
-    pool:
-      name: 'paz-vmss-pool'
-    variables:
-      - group: 'ng-home-ui-QA'
-    jobs:
-      - deployment: deploy_nghomeui_qa_snow
-        displayName: "Deployment to QA"
-        environment: qa_snow 
-        # dependsOn: BuildApplication
-        #condition: and(succeeded(), eq(variables['runDevDeployment'], 'true'))
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: DownloadPipelineArtifact@2
-                  inputs:
-                    buildType: 'current'
-                    artifactName: 'drop'
-                    targetPath: '$(Pipeline.Workspace)/drop'          
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
+    - stage: QADeploy
+      displayName: Deployment to QA
+      dependsOn: DevDeploy
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-QA'
+      jobs:
+        - deployment: deploy_nghomeui_qa_snow
+          displayName: "Deployment to QA"
+          environment: qa_snow          
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'          
 
-                - task: replacetokens@5
-                  displayName: 'Replace Token in Deployment.YAML'
-                  inputs:
-                      rootDirectory: '$(Pipeline.Workspace)/drop'
-                      targetFiles: 'deployment.yaml'
-                      encoding: 'auto'
-                      tokenPattern: 'default'
-                      writeBOM: true
-                      actionOnMissing: 'warn'
-                      keepToken: false
-                      actionOnNoFiles: 'continue'
-                      enableTransforms: false
-                      enableRecursion: false
-                      useLegacyPattern: false
-                      enableTelemetry: true
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true
                 
                     
-                - task: Bash@3
-                  displayName: 'Kubectl apply'
-                  inputs:
-                    targetType: 'inline'
-                    script: |
-                      cd $(Pipeline.Workspace)/drop
-                      az login --identity
-                      # az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                      az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks  --admin 2> /dev/null  
-                      kubectl apply -f deployment.yaml
-                      kubectl rollout restart deployment ng-home-ui -n platform
-                    failOnStderr: true
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        # az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks  --admin 2> /dev/null  
+                        kubectl apply -f deployment.yaml
+                        kubectl rollout restart deployment ng-home-ui -n platform
+                      failOnStderr: true
 
-      - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-        parameters:
-          snowConfig:    
-            serviceConnection: 'ServiceNow-Connection'
-            requireManualValidation: true          
-          component:
-            name: 'nghomeui'
-            selfhostedpool: 'paz-vmss-pool'
-          env_name: qa_snow  
-          config:
+        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: true          
+            component:
+              name: 'nghomeui'
+              selfhostedpool: 'paz-vmss-pool'
+            env_name: qa_snow  
+            config:
  
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
+    - stage: LiveDeploy
+      displayName: Deployment to Live
+      dependsOn: QADeploy
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-Live'
+      jobs:
+        - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: false
+            component:
+              name: 'ng-home-ui'
+              selfhostedpool: 'paz-vmss-pool' 
 
-  - stage: LiveDeploy
-    displayName: Deployment to Live
-    dependsOn: QADeploy
-    pool:
-      name: 'paz-vmss-pool'
-    variables:
-      - group: 'ng-home-ui-Live'
-    jobs:
-      - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
-        parameters:
-          snowConfig:    
-            serviceConnection: 'ServiceNow-Connection'
-            requireManualValidation: false
-          component:
-            name: 'ng-home-ui'
-            selfhostedpool: 'paz-vmss-pool' 
+        - deployment: deploy_nghomeui_live_snow
+          displayName: "Deployment to Live"
+          dependsOn: addStartTime
+          environment: live_snow         
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment-live.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true
 
-      - deployment: deploy_nghomeui_live_snow
-        displayName: "Deployment to Live"
-        dependsOn: addStartTime
-        environment: live_snow         
-        strategy:
-          runOnce:
-            deploy:
-              steps:
-                - task: replacetokens@5
-                  displayName: 'Replace Token in Deployment.YAML'
-                  inputs:
-                      rootDirectory: '$(Pipeline.Workspace)/drop'
-                      targetFiles: 'deployment-live.yaml'
-                      encoding: 'auto'
-                      tokenPattern: 'default'
-                      writeBOM: true
-                      actionOnMissing: 'warn'
-                      keepToken: false
-                      actionOnNoFiles: 'continue'
-                      enableTransforms: false
-                      enableRecursion: false
-                      useLegacyPattern: false
-                      enableTelemetry: true
+                  - task: bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
+                        az aks get-credentials --resource-group paz-prd-ess-ng-rg --name paz-prd-ess-ng-aks  --admin 2> /dev/null 
+                        kubectl apply -f deployment-live.yaml 
+                        kubectl rollout restart deployment ng-home-ui -n platform
 
-                - task: bash@3
-                  displayName: 'Kubectl apply'
-                  inputs:
-                    targetType: 'inline'
-                    script: |
-                       cd $(Pipeline.Workspace)/drop
-                       az login --identity
-                       az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
-                       az aks get-credentials --resource-group paz-prd-ess-ng-rg --name paz-prd-ess-ng-aks  --admin 2> /dev/null 
-                       kubectl apply -f deployment-live.yaml 
-                       kubectl rollout restart deployment ng-home-ui -n platform
-                
-  #               - task: KubernetesManifest@0
-  #                 displayName: 'Create secret'
-  #                 inputs:
-  #                   action: createSecret
-  #                   kubernetesServiceConnection: 'staff-shared-k8s-live-connection'
-  #                   secretName: 'live-ng-home-aksdevopsacr-secret'
-  #                   dockerRegistryEndpoint: 'dev_staff_service_connection_shared_acr'
-                    
-  #               - task: Kubernetes@1
-  #                 displayName: 'kubectl apply'
-  #                 inputs:
-  #                   kubernetesServiceEndpoint: 'staff-shared-k8s-live-connection'
-  #                   namespace: platform
-  #                   command: apply
-  #                   useConfigurationFile: true
-  #                   configuration: '$(Pipeline.Workspace)/drop/deployment.yaml'
-
-      - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
-        parameters:
-          snowConfig:    
-            serviceConnection: 'ServiceNow-Connection'
-            requireManualValidation: false          
-          component:
-            name: 'nghomeui'
-            selfhostedpool: 'paz-vmss-pool'
-          env_name: live_snow
+        - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: false          
+            component:
+              name: 'nghomeui'
+              selfhostedpool: 'paz-vmss-pool'
+            env_name: live_snow
