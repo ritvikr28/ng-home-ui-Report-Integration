@@ -7,3 +7,34 @@
   font-size: 22px;
   font-weight: 600;
 }
+
+.welcomemsg {
+  height: 72px;
+  width: 735px;
+  font-size: 48px;
+  line-height: 72px;
+  margin-left: 296px;
+  font-weight: 400;
+
+  @media only screen and (min-width: 260px) and (max-width: 391px) {
+    font-size: 15px;
+    height: 20px;
+    margin-left: 25px;
+  }
+
+  @media only screen and (min-width: 392px) and (max-width: 767px) {
+    font-size: 20px;
+    margin-left: 38px;
+  }
+
+  @media only screen and (min-width: 768px) and (max-width: 1024px) {
+    font-size: 23px;
+    margin-left: 100px;
+  }
+}
+
+.welcone {
+  padding-top: 72px;
+}
+
+

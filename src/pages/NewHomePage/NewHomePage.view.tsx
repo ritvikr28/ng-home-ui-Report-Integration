@@ -1,22 +1,61 @@
-import "./style.scss";
-import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Redirect } from "react-router-dom";
+import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
+import { Notification, NotificationStatus } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
+import "./style.scss";
 
 const requiredPermissions: Permission[] = [
   {
     Securable: "NG.Homepage",
-    Operation: "View",
+
+    Operation: "View"
   }
 ];
 
-export const NewHomepageView = () => (
-  authService.isAuthorised(requiredPermissions, MatchPermissions.all) && envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True" 
-  ? (
-    <div className="newhomepage">
-      <span className="newhomepagetext">New homepage in the making! </span>
-    </div>
-  )
-  : <Redirect to="/noAccess" />
-);
+export const NewHomepageView = () => {
+  const userFullname: string | null = authService.getUsername();
+  const isPermission =
+    authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
+    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
 
+  const handleClickAction = () => {
+    // your implementation
+  };
+
+  const handleCloseAction = () => {
+    // your implementation
+  };
+
+  return isPermission ? (
+    <div>
+      <div style={{ marginLeft: "500px" }}>
+        <Notification
+          dataTestId="test-id"
+          escapeExits
+          id="element-id"
+          onClickAction={handleClickAction}
+          onClickClose={handleCloseAction}
+          title="New homepage in the making!"
+          status={NotificationStatus.HIGHLIGHT}
+        />
+      </div>
+      <div className="page-heading welcone">
+        {userFullname.length > 30 ? (
+          <>
+            <span className="welcomemsg">
+              Hi <strong>{userFullname}</strong>,
+            </span>
+            <br />
+            <span className="welcomemsg">welcome back!</span>
+          </>
+        ) : (
+          <span className="welcomemsg">
+            Hi <strong>{userFullname}</strong>, welcome back!
+          </span>
+        )}
+      </div>
+    </div>
+  ) : (
+    <Redirect to="/noAccess" />
+  );
+};
