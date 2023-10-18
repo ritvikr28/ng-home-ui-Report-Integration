@@ -5,14 +5,14 @@ import { NewHomepageView } from "../NewHomePage.view";
 
 jest.mock("../../../shared/utils", () => ({
   envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: "True",
-  },
+    IS_NEWHOMEPAGE_ACCESSIBLE: "True"
+  }
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
 
-  Redirect: jest.fn(() => null),
+  Redirect: jest.fn(() => null)
 }));
 
 describe("<NewHomepageView />", () => {
@@ -29,7 +29,15 @@ describe("<NewHomepageView />", () => {
 
     expect(getByText("John Doe")).toBeInTheDocument();
   });
+  test("renders welcome message when authorized with a long username", () => {
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
+    jest
+      .spyOn(authService, "getUsername")
+      .mockImplementation(() => "John is my name doe is my surname");
+    const { getByText } = render(<NewHomepageView />);
+    expect(getByText("John is my name doe is my surname")).toBeInTheDocument();
+  });
 
   test("renders Redirect component if not authorised or envConfig is not set to True", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => false);

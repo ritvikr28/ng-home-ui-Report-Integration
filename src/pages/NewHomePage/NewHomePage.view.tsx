@@ -19,11 +19,11 @@ export const NewHomepageView = () => {
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
 
   const handleClickAction = () => {
-    // your implementation
+    // implementation
   };
 
   const handleCloseAction = () => {
-    // your implementation
+    // implementation
   };
 
   return isPermission ? (
@@ -35,7 +35,7 @@ export const NewHomepageView = () => {
           id="element-id"
           onClickAction={handleClickAction}
           onClickClose={handleCloseAction}
-          title="New homepage in the making!"
+          title="A new homepage is under development!"
           status={NotificationStatus.HIGHLIGHT}
         />
       </div>
