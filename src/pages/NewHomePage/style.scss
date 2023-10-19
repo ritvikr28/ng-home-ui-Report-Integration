@@ -10,31 +10,81 @@
 
 .welcomemsg {
   height: 72px;
-  width: 735px;
+  //width: 735px;
   font-size: 48px;
   line-height: 72px;
-  margin-left: 296px;
+  //margin-left: 296px;
   font-weight: 400;
 
-  @media only screen and (min-width: 260px) and (max-width: 391px) {
+  @media only screen and (min-width: 280px) and (max-width: 289px) {
     font-size: 15px;
     height: 20px;
-    margin-left: 25px;
+    margin-left: -280px;
+  }
+  @media only screen and (min-width: 290px) and (max-width: 391px) {
+    font-size: 15px;
+    height: 20px;
+    margin-left: -235px;
   }
 
   @media only screen and (min-width: 392px) and (max-width: 767px) {
     font-size: 20px;
-    margin-left: 38px;
+    margin-left: -269px;
   }
 
-  @media only screen and (min-width: 768px) and (max-width: 1024px) {
-    font-size: 23px;
-    margin-left: 100px;
+  @media only screen and (min-width: 768px) and (max-width: 990px) {
+    font-size: 16px;
+    margin-left: -152px;
+  }
+
+  @media only screen and (min-width: 991px) and (max-width: 1025px) {
+    font-size: 48px;
+    margin-left: -99px;
   }
 }
 
 .welcone {
-  padding-top: 72px;
+  height: 72px;
+  width: 100%;
+  max-width: 1116px;
+  padding-top: 88px;
+  justify-content: space-between;
+}
+
+.welcomemsg2 {
+  width: 735px;
+  height: 72px;
+  padding-top: 16px;
+}
+
+.notificationmsg {
+  margin-left: 100px;
+  @media only screen and (min-width: 250px) and (max-width: 280px) {
+    margin-left: -327px;
+  }
+  @media only screen and (min-width: 360px) and (max-width: 415px) {
+    margin-left: -317px;
+  }
+
+  @media only screen and (min-width: 1025px) and (max-width: 2000px) {
+    margin-left: 110px;
+  }
+
+  @media only screen and (min-width: 500px) and (max-width: 540px) {
+    margin-left: -326px;
+  }
+
+  @media only screen and (min-width: 767px) and (max-width: 913px) {
+    margin-left: -154px;
+  }
+  @media only screen and (min-width: 990px) and (max-width: 1024px) {
+    margin-left: -50px;
+  }
 }
 
 
+.newhomewid {
+  margin-left: 296px;
+  height: 670px;
+  padding-left: 28px;
+}

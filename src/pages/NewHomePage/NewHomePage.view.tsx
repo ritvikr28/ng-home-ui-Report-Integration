@@ -27,8 +27,8 @@ export const NewHomepageView = () => {
   };
 
   return isPermission ? (
-    <div>
-      <div style={{ marginLeft: "500px" }}>
+    <div className="newhomewid">
+     <div className="notificationmsg">
         <Notification
           dataTestId="test-id"
           escapeExits
@@ -36,24 +36,24 @@ export const NewHomepageView = () => {
           onClickAction={handleClickAction}
           onClickClose={handleCloseAction}
           title="A new homepage is under development!"
-          status={NotificationStatus.HIGHLIGHT}
-        />
-      </div>
-      <div className="page-heading welcone">
-        {userFullname.length > 30 ? (
-          <>
+          status={NotificationStatus.HIGHLIGHT} />
+      </div><div className="page-heading welcone">
+        <span>
+          {userFullname.length > 30 ? (
+            <>
+              <span className="welcomemsg2">
+                Hi <strong>{userFullname}</strong>,
+              </span>
+              <br />
+              <span className="welcomemsg">welcome back!</span>
+            </>
+          ) : (
             <span className="welcomemsg">
-              Hi <strong>{userFullname}</strong>,
+              Hi <strong>{userFullname}</strong>, welcome back!
             </span>
-            <br />
-            <span className="welcomemsg">welcome back!</span>
-          </>
-        ) : (
-          <span className="welcomemsg">
-            Hi <strong>{userFullname}</strong>, welcome back!
+          )}
           </span>
-        )}
-      </div>
+        </div>
     </div>
   ) : (
     <Redirect to="/noAccess" />
