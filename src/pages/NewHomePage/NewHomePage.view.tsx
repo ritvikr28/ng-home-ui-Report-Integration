@@ -29,7 +29,7 @@ export const NewHomepageView = () => {
           status={NotificationStatus.HIGHLIGHT} />
       </div><div className="page-heading welcone">
         <span>
-          {userFullname.length > 30 ? (
+          {userFullname.length > 60 ? (
             <>
               <span className="welcomemsg2">
                 Hi <strong>{userFullname}</strong>,

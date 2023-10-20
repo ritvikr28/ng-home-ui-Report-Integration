@@ -34,9 +34,16 @@ describe("<NewHomepageView />", () => {
 
     jest
       .spyOn(authService, "getUsername")
-      .mockImplementation(() => "John is my name doe is my surname");
+      .mockImplementation(
+        () =>
+          "John is my name doe is my surname username with welcomeback message"
+      );
     const { getByText } = render(<NewHomepageView />);
-    expect(getByText("John is my name doe is my surname")).toBeInTheDocument();
+    expect(
+      getByText(
+        "John is my name doe is my surname username with welcomeback message"
+      )
+    ).toBeInTheDocument();
   });
 
   test("renders Redirect component if not authorised or envConfig is not set to True", () => {
