@@ -18,14 +18,6 @@ export const NewHomepageView = () => {
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
 
-  const handleClickAction = () => {
-    // implementation
-  };
-
-  const handleCloseAction = () => {
-    // implementation
-  };
-
   return isPermission ? (
     <div className="newhomewid">
      <div className="notificationmsg">
@@ -33,8 +25,6 @@ export const NewHomepageView = () => {
           dataTestId="test-id"
           escapeExits
           id="element-id"
-          onClickAction={handleClickAction}
-          onClickClose={handleCloseAction}
           title="A new homepage is under development!"
           status={NotificationStatus.HIGHLIGHT} />
       </div><div className="page-heading welcone">
@@ -48,7 +38,7 @@ export const NewHomepageView = () => {
               <span className="welcomemsg">welcome back!</span>
             </>
           ) : (
-            <span className="welcomemsg">
+            <span className="welcomemsg welcomemsg2">
               Hi <strong>{userFullname}</strong>, welcome back!
             </span>
           )}
@@ -58,4 +48,5 @@ export const NewHomepageView = () => {
   ) : (
     <Redirect to="/noAccess" />
   );
+
 };
