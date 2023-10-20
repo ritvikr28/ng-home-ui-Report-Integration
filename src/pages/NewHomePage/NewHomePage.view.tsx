@@ -14,6 +14,8 @@ const requiredPermissions: Permission[] = [
 
 export const NewHomepageView = () => {
   const userFullname: string | null = authService.getUsername();
+  const fullNameArray: string[] = userFullname.split(' ');
+
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
@@ -29,22 +31,23 @@ export const NewHomepageView = () => {
           status={NotificationStatus.HIGHLIGHT} />
       </div><div className="page-heading welcone">
         <span>
-          {userFullname.length > 60 ? (
+          {fullNameArray[0].length > 60 ? (
             <>
-              <span className="welcomemsg2">
-                Hi <strong>{userFullname}</strong>,
+              <span className="welcomemsg welcomemsg2">
+                Hi <strong>{fullNameArray[0]}</strong>,
               </span>
               <br />
               <span className="welcomemsg">welcome back!</span>
             </>
           ) : (
             <span className="welcomemsg welcomemsg2">
-              Hi <strong>{userFullname}</strong>, welcome back!
+              Hi <strong>{fullNameArray[0]}</strong>, welcome back!
             </span>
           )}
           </span>
         </div>
     </div>
+    
   ) : (
     <Redirect to="/noAccess" />
   );

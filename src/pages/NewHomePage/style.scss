@@ -20,21 +20,25 @@
     font-size: 15px;
     height: 20px;
     margin-left: -280px;
+    line-height: 5px;
   }
   @media only screen and (min-width: 290px) and (max-width: 391px) {
     font-size: 15px;
     height: 20px;
+    line-height: 5px;
     margin-left: -235px;
   }
 
   @media only screen and (min-width: 392px) and (max-width: 767px) {
     font-size: 20px;
     margin-left: -269px;
+    line-height: 5px;
   }
 
   @media only screen and (min-width: 768px) and (max-width: 990px) {
     font-size: 16px;
     margin-left: -152px;
+    line-height: 5px;
   }
 
   @media only screen and (min-width: 991px) and (max-width: 1025px) {
@@ -88,3 +92,4 @@
   height: 670px;
   padding-left: 28px;
 }
+
