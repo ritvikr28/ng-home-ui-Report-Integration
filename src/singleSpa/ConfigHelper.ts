@@ -17,7 +17,7 @@ export const fetchConfigData = async () => {
     "config.js",
     ApplicationConfig.buildApplicationUrl([
       { env: "dev", url: "https://dev-mfe.home.sims.co.uk" },
-      { env: "qa", url: "https://qa.home.sims.co.uk" },
+      { env: "qa", url: "https://qa-mfe.home.sims.co.uk" },
       { env: "prod", url: "https://www.home.sims.co.uk" },
       { env: "perf", url: "https://perf.home.sims.co.uk" }
     ])
