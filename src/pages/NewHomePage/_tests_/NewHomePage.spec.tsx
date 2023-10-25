@@ -16,20 +16,35 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("<NewHomepageView />", () => {
-  // test("renders welcome message if authorized and envConfig is set to True", () => {
-  //   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+  test("renders welcome message if authorized and envConfig is set to True", () => {
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
-  //   jest
+    jest
 
-  //     .spyOn(authService, "getUsername")
+      .spyOn(authService, "getUsername")
 
-  //     .mockImplementation(() => "John Doe");
+      .mockImplementation(() => "John");
 
-  //   const { getByText } = render(<NewHomepageView />);
+    const { getByText } = render(<NewHomepageView />);
 
-  //   expect(getByText("John Doe")).toBeInTheDocument();
-  // });
+    expect(getByText("John")).toBeInTheDocument();
+  });
+  test("renders welcome message when authorized with a long username", () => {
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
+    jest
+      .spyOn(authService, "getUsername")
+      .mockImplementation(
+        () =>
+          "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
+      );
+    const { getByText } = render(<NewHomepageView />);
+    expect(
+      getByText(
+        "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
+      )
+    ).toBeInTheDocument();
+  });
   test("renders Redirect component if not authorised or envConfig is not set to True", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => false);
 

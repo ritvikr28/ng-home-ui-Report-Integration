@@ -10,10 +10,8 @@
 
 .welcomemsg {
   height: 72px;
-  //width: 735px;
   font-size: 48px;
   line-height: 72px;
-  //margin-left: 296px;
   font-weight: 400;
 
   @media only screen and (min-width: 280px) and (max-width: 289px) {
@@ -51,7 +49,7 @@
   height: 72px;
   width: 100%;
   max-width: 1116px;
-  padding-top: 88px;
+  padding-top: 28px;
   justify-content: space-between;
 }
 
@@ -92,4 +90,3 @@
   height: 670px;
   padding-left: 28px;
 }
-
