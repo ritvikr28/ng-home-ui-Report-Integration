@@ -2,6 +2,7 @@ import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { Notification, NotificationStatus } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
+import { WidgetView } from "../../features/widget/Widget.view";
 import "./style.scss";
 
 const requiredPermissions: Permission[] = [
@@ -29,7 +30,8 @@ export const NewHomepageView = () => {
           id="element-id"
           title="A new homepage is under development!"
           status={NotificationStatus.HIGHLIGHT} />
-      </div><div className="page-heading welcone">
+      </div>
+      <div className="page-heading welcone">
         <span>
           {fullNameArray[0].length > 60 ? (
             <>
@@ -46,8 +48,9 @@ export const NewHomepageView = () => {
           )}
           </span>
         </div>
+        <WidgetView/>
     </div>
-    
+
   ) : (
     <Redirect to="/noAccess" />
   );

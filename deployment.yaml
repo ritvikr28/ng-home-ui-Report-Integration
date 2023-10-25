@@ -17,6 +17,7 @@ data:
     window.AUTH_API_URL = "#{AUTH_API_URL}#"
     window.APPLICATION = "#{APPLICATION}#"
     window.IS_NEWHOMEPAGE_ACCESSIBLE = "#{IS_NEWHOMEPAGE_ACCESSIBLE}#"
+    window.SCHOOL_BASE_URL = "#{SCHOOL_BASE_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
