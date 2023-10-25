@@ -12,7 +12,7 @@ export const TimeTableView= () => (
                 <span  className="timetable-link-url">
                 <Link
                  data-testid="link"
-                href={`${envConfig.SCHOOL_BASE_URL}/getStaffTimetableEvents`}
+                href={`${envConfig.SCHOOL_BASE_URL}/staff-timetable`}
                  >View full timetables</Link>
                 </span>
             </div>
