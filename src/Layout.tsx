@@ -88,7 +88,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     );
     const modules: IAppModule[] = filteredModules.map(
       (x: IApplicationMenu) => ({
-        appUrl: x.absolutePath,
+        appUrl: x.isStandalone === false ? x.relativePath: x.absolutePath,
         title: t(`slices.${x.appCode}.title`),
         description: t(`slices.${x.appCode}.description`),
         code: x.appCode,
