@@ -3,15 +3,15 @@ import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { Notification, NotificationStatus } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
 import "./style.scss";
-import Welcomeview from "./Welcome.view";
-import SidePanel from "../SidePanel/SidePanel.view";
-import WidgetView from "../../features/widget/Widget.view";
+import WelcomeUser from "../../features/WelcomeUser/WelcomeUser.logic";
+import SidePanel from "../../features/SidePanel/SidePanel.logic";
+import TeacherPanelView from "../../features/TeacherPanel/TeacherPanel.view";
 
 const requiredPermissions: Permission[] = [
   {
     Securable: "NG.Homepage",
 
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
@@ -35,8 +35,8 @@ export const NewHomepageView = () => {
             status={NotificationStatus.HIGHLIGHT}
           />
         </div>
-        <Welcomeview />
-        <WidgetView />
+        <WelcomeUser />
+        <TeacherPanelView />
       </div>
     </div>
   ) : (

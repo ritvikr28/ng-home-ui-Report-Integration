@@ -1,5 +1,4 @@
-// Import necessary modules and components
-import React, { useState } from "react";
+import "./style.scss";
 import {
   Button,
   ButtonColor,
@@ -7,17 +6,12 @@ import {
   Icon,
   IconColor
 } from "@essnextgen/ui-kit";
-import "../NewHomePage/style.scss";
+import { ISidePanelViewProps } from "./props";
 
-const SidePanel = () => {
-  const [isOpen, setIsOpen] = useState(true);
-  const togglePanel = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const closePanel = () => {
-    setIsOpen(false);
-  };
+const SidePanelView: (props: ISidePanelViewProps) => JSX.Element = (
+  props: ISidePanelViewProps
+) => {
+  const { isOpen, closePanel, togglePanel }: ISidePanelViewProps = props;
 
   return (
     <div className={`side-view ${isOpen ? "open" : "side-view-closed"}`}>
@@ -52,4 +46,4 @@ const SidePanel = () => {
   );
 };
 
-export default SidePanel;
+export default SidePanelView;

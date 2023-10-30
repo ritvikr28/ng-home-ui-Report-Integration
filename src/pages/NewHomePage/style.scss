@@ -9,7 +9,7 @@
   font-size: 16px;
   font-weight: 700;
   line-height: 24px;
-  letter-spacing: 0px;
+  letter-spacing: 0;
   text-align: left;
 }
 
@@ -21,20 +21,6 @@
   display: flex;
 }
 
-.side-view {
-  width: 264px;
-  height: 972px;
-  top: 64px;
-  padding: 24px 0 24px 0;
-  gap: 24px;
-  background-color: white;
-}
-
-.side-view-closed {
-  // visibility: hidden;
-  background-color: #f0f0f0;
-}
-
 .body-panel {
   flex: 1;
   max-width: 1116px;
@@ -43,62 +29,10 @@
   left: 296px;
   gap: 28px;
   padding: 20px;
-  background-color: #f0f0f0;
-}
-
-.parent1 {
-  width: 1116px;
-  height: 96px;
-}
-
-.parent2 {
-  width: 1116px;
-  height: 168px;
-}
-
-.parent1-subparent {
-  width: 1116px;
-  height: 72px;
-  //styleName: default/Display;
-  font-family: Segoe UI;
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 72px;
-  letter-spacing: 0px;
-  text-align: left;
-}
-
-.parent2-subparent {
-  width: 1116px;
-  height: 144px;
-  font-family: Segoe UI;
-  font-size: 48px;
-  font-weight: 400;
-  line-height: 72px;
-  letter-spacing: 0px;
-  text-align: left;
 }
 
 .welcomemsg {
   padding-top: 20px;
 }
 
-.open-panel
-  .essui-button
-  .essui-button--utility
-  .essui-button-icon-only--small
-  .base-class {
-  width: 40px;
-  height: 40px;
-  // top: 88px;
-  left: 16px;
-  padding: 8px;
-  border-radius: 8px;
-  border: 1px;
-}
 
-.Register-panel {
-  width: 1116px;
-  height: 146px;
-  gap: 20px;
-}
