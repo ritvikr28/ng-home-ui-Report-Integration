@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import SidePanelView from "./SidePanel.view";
 
 const SidePanel: () => JSX.Element = () => {
@@ -8,14 +8,10 @@ const SidePanel: () => JSX.Element = () => {
     setIsOpen(!isOpen);
   };
 
-  const closePanel: () => void = () => {
-    setIsOpen(false);
-  };
-
   return (
     <SidePanelView
+      data-testid="toggle-button"
       isOpen={isOpen}
-      closePanel={closePanel}
       togglePanel={togglePanel}
     />
   );

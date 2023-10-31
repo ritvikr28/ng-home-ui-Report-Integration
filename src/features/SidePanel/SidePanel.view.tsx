@@ -11,37 +11,38 @@ import { ISidePanelViewProps } from "./props";
 const SidePanelView: (props: ISidePanelViewProps) => JSX.Element = (
   props: ISidePanelViewProps
 ) => {
-  const { isOpen, closePanel, togglePanel }: ISidePanelViewProps = props;
+  const { isOpen, togglePanel }: ISidePanelViewProps = props;
 
   return (
-    <div className={`side-view ${isOpen ? "open" : "side-view-closed"}`}>
+    <div
+      data-testid="toggle-button"
+      className={`side-view ${isOpen ? "open" : "side-view-closed"} `}
+    >
       {isOpen ? (
         <div>
           <div>
             <Icon
               color={IconColor.Primary500}
-              dataTestId="btn-90"
               id="variable-2"
               name="close"
-              onClick={closePanel}
+              onClick={togglePanel}
               size={16}
             />
           </div>
         </div>
       ) : (
-        <div className="open-panel">
+        <div className="open-panel" data-testid="toggle-button">
           <Button
             className="base-class"
             color={ButtonColor.Utility}
-            dataTestId="btn-save"
+            data-testid="side-panel-view"
             iconColor={IconColor.Neutral800}
-            iconName={isOpen ? "close" : "open-panel--left--filled"}
-            onClick={isOpen ? closePanel : togglePanel}
+            iconName="open-panel--left--filled"
+            onClick={togglePanel}
             size={ButtonSize.Small}
           />
         </div>
       )}
-      <div />
     </div>
   );
 };
