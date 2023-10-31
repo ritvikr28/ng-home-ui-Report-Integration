@@ -9,6 +9,7 @@ declare global {
     REACT_GA_TRACKING_ID: string;
     IS_NEWHOMEPAGE_ACCESSIBLE: boolean;
     SCHOOL_BASE_URL:string;
+    REGISTER_BASE_URL: string;
   }
 }
 
@@ -44,13 +45,15 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.REACT_GA_TRACKING_ID = configData.REACT_GA_TRACKING_ID;
     window.IS_NEWHOMEPAGE_ACCESSIBLE = configData.IS_NEWHOMEPAGE_ACCESSIBLE;
     window.SCHOOL_BASE_URL = configData.SCHOOL_BASE_URL;
+    window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
       AppInsightsConnectionString: window.AppInsightsConnectionString,
       REACT_GA_TRACKING_ID: window.REACT_GA_TRACKING_ID,
       IS_NEWHOMEPAGE_ACCESSIBLE: window.IS_NEWHOMEPAGE_ACCESSIBLE,
-      SCHOOL_BASE_URL:window.SCHOOL_BASE_URL
+      SCHOOL_BASE_URL:window.SCHOOL_BASE_URL,
+      REGISTER_BASE_URL: window.REGISTER_BASE_URL
 
     });
   } catch (ex) {
