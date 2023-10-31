@@ -3,4 +3,8 @@ export interface IWelcomeUserViewProps {
   isLongName: boolean;
   parentClassName: string;
   subparentClassName: string;
+  organisationName: string;
+    isApiError: boolean;
+    
 }
+
