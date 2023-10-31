@@ -1,5 +1,7 @@
 import "./style.scss";
+import { Grid, GridItem } from "@essnextgen/ui-kit";
 import { IWelcomeUserViewProps } from "./props";
+
 
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps
@@ -29,7 +31,16 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
             Hi <strong>{fullName}</strong>, welcome back!
           </div>
         )}
-        <div className="schoolname"> {isApiError === false ? organisationName : ""}</div>
+        <Grid>
+        <GridItem lg={10}>
+          <div className="schoolname"> {isApiError === false ? organisationName : ""}</div>
+          </GridItem>
+          <GridItem lg={2}>
+            {}
+          </GridItem>
+        
+        </Grid>
+        
       </div>
     </div>
   );
