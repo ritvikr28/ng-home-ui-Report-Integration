@@ -10,3 +10,5 @@ window.AUTH_API_URL = "http://localhost:5013/api";
 window.APPLICATION = "Home";
 window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";
 window.SCHOOL_BASE_URL="";
+window.REGISTER_BASE_URL="";
+

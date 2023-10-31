@@ -18,6 +18,7 @@ data:
     window.APPLICATION = "#{APPLICATION}#"
     window.IS_NEWHOMEPAGE_ACCESSIBLE = "#{IS_NEWHOMEPAGE_ACCESSIBLE}#"
     window.SCHOOL_BASE_URL = "#{SCHOOL_BASE_URL}#"
+    window.REGISTER_BASE_URL = "#{REGISTER_BASE_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
