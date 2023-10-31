@@ -8,7 +8,10 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     fullName,
     isLongName,
     parentClassName,
-    subparentClassName
+    subparentClassName,
+    organisationName,
+    isApiError
+   
   }: IWelcomeUserViewProps = props;
 
   return (
@@ -26,7 +29,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
             Hi <strong>{fullName}</strong>, welcome back!
           </div>
         )}
-        <div className="schoolname"> </div>
+        <div className="schoolname"> {isApiError === false ? organisationName : ""}</div>
       </div>
     </div>
   );
