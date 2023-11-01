@@ -9,7 +9,7 @@ const TakeRegistersLinkview: () => JSX.Element = () => (
     <span className="register-link-url">
       <Link
         data-testid="link"
-        href={`${envConfig.REGISTER_BASE_URL}/takes-registers`}      
+        href={`${envConfig.REGISTER_BASE_URL}`}      
         target="_self"
       >
        View all registers
