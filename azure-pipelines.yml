@@ -327,7 +327,7 @@ stages:
           parameters:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false
+              requireManualValidation: true
             component:
               name: 'ng-home-ui'
               selfhostedpool: 'paz-vmss-pool' 
