@@ -1,7 +1,7 @@
 import { authService } from "@essnextgen/auth-ui";
 import { render } from "@testing-library/react";
 import WelcomeUser from "../WelcomeUser.logic";
-import * as schoolName from "../../../shared/services/schoolDetails/schoolName";
+import * as schoolName from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolName } from "../model";
 
 

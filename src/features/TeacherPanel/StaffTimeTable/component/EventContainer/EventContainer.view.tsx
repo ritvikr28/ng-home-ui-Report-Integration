@@ -1,3 +1,3 @@
-const EventContainerView: () => JSX.Element = () => <div />;
+export const EventContainerView: () => JSX.Element = () => <div/>;
 
 export default EventContainerView;

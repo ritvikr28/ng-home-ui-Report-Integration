@@ -1,7 +1,7 @@
 import { authService } from "@essnextgen/auth-ui";
 import { useEffect, useState } from "react";
 import WelcomeUserView from "./WelcomeUser.view";
-import { useFetchSchoolNameData } from "../../shared/services/schoolDetails/schoolName";
+import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 import { capitalizeFirstLetterOfEachWord } from "./utils/newHomePageUtils";
 
 const WelcomeUser: () => JSX.Element = () => {

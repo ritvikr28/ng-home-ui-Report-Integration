@@ -11,7 +11,7 @@ const StaffTimeTableLinkview: () => JSX.Element = () => (
         href={`${envConfig.SCHOOL_BASE_URL}/staff-timetable`}
         target="_self"
       >
-        View full timetables
+        View full timetable
       </Link>
     </span>
   </div>
