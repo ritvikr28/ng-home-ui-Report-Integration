@@ -9,7 +9,7 @@ test("toggles isOpen state when togglePanel is called", () => {
     <SidePanelView isOpen togglePanel={() => {}} />
   );
 
-  fireEvent.click(getByTestId("toggle-button"));
+  fireEvent.click(getByTestId("undefined-btn"));
 
   expect(mockTogglePanel).toHaveBeenCalledTimes(0);
 });
@@ -44,7 +44,7 @@ it("toggles isOpen state when togglePanel is called", () => {
 
   expect(getByTestId("undefined-btn")).toHaveClass(" essui-icon-button");
 
-  fireEvent.click(getByTestId("toggle-button"));
+  fireEvent.click(getByTestId("undefined-btn"));
 
   expect(getByTestId("undefined-btn")).toHaveClass(" essui-icon-button");
 });

@@ -2,7 +2,6 @@ import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import { IWelcomeUserViewProps } from "./props";
 
-
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps
 ) => {
@@ -12,17 +11,18 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     parentClassName,
     subparentClassName,
     organisationName,
-    isApiError
-   
+    isApiError,
   }: IWelcomeUserViewProps = props;
 
   return (
-    <div className={`welcome-parent ${parentClassName}`}>
-      <div>
+    <Grid className={`welcome-parent ${parentClassName}`}>
+      <GridItem>
         {isLongName ? (
           <>
             <div className={`subparent ${subparentClassName}`}>
-              <div>Hi <strong>{fullName}</strong>,</div>
+              <div>
+                Hi <strong>{fullName}</strong>,
+              </div>
               <span>welcome back!</span>
             </div>
           </>
@@ -31,18 +31,14 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
             Hi <strong>{fullName}</strong>, welcome back!
           </div>
         )}
-        <Grid>
-        <GridItem lg={10}>
-          <div className="schoolname"> {isApiError === false ? organisationName : ""}</div>
-          </GridItem>
-          <GridItem lg={2}>
-            {}
-          </GridItem>
-        
-        </Grid>
-        
-      </div>
-    </div>
+      </GridItem>
+      <GridItem lg={10}>
+        <div className="schoolname">
+          {" "}
+          {isApiError === false ? organisationName : ""}
+        </div>
+      </GridItem>
+    </Grid>
   );
 };
 
