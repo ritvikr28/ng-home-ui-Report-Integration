@@ -5,7 +5,7 @@ import { envConfig } from "../../../../../../shared/utils";
  
 const TakeRegistersLinkview: () => JSX.Element = () => (
   <div className="register-link-container">
-    <span className="register-link-lable">Your registers </span>
+    <span className="your-registers">Your registers </span>
     <span className="register-link-url">
       <Link
         data-testid="link"

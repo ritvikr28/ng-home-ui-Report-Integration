@@ -4,7 +4,7 @@ import TakeRegistersLinkview from "./component/EventContainer/TakeRegisterLink/T
 
 export const TakeRegisterView: () => JSX.Element = () => (
   <Grid>
-  <GridItem lg ={12}md = {8} sm = {4} className="upcoming-register-conatiner">
+  <GridItem lg ={12}md = {8} sm = {4} className="register-container">
    
    <TakeRegistersLinkview />
   </GridItem>
