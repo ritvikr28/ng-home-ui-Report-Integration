@@ -314,10 +314,25 @@ stages:
             env_name: qa_snow  
             config:
  
+    - stage: PreLive
+      displayName: "Pre-Live Stage"
+      dependsOn: QADeploy
+      jobs:
+        - deployment: PreLiveDeploy
+          displayName: "Deployment Job"
+          environment: PreLive
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - script: |
+                      echo "Approval has been given for Live"
+                    displayName: 'Deployment to Pre-Live'
+
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
     - stage: LiveDeploy
       displayName: Deployment to Live
-      dependsOn: QADeploy
+      dependsOn: PreLive
       pool:
         name: 'paz-vmss-pool'
       variables:
