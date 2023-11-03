@@ -1,6 +1,6 @@
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
-import { IWelcomeUserViewProps } from "./props";
+import { IWelcomeUserViewProps } from "./WelcomeUserProps";
 
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps

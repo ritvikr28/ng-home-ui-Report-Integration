@@ -3,9 +3,8 @@ import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import SidePanel from "../../features/SidePanel/SidePanel.logic";
-import TeacherPanelView from "../../features/TeacherPanel/TeacherPanel.view";
 import { envConfig } from "../../shared/utils";
-import WelcomeUser from "../../features/WelcomeUser/WelcomeUser.logic";
+import MainPanelView from "../../features/MainPanel/MainPanel.view";
 
 const requiredPermissions: Permission[] = [
   {
@@ -21,16 +20,15 @@ export const NewHomepageView = () => {
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
 
   return isPermission ? (
-    <Grid className="app">
-      <GridItem lg ={12}md = {8} sm = {4} >
+    <Grid className="app" >
+      <GridItem lg ={2}>
         <SidePanel />
       </GridItem>
-      <GridItem lg ={12}md = {8} sm = {4} className="body-panel">
-        <WelcomeUser />
-        <TeacherPanelView />
+      <GridItem  className="body-panel" lg ={10}>
+        <MainPanelView />
       </GridItem>
     </Grid>
   ) : (
     <Redirect to="/noAccess" />
   );
-};
+  }

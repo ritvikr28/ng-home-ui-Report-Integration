@@ -1,3 +1,4 @@
+
 import "./style.scss";
 import {
   Button,
@@ -8,7 +9,12 @@ import {
   Icon,
   IconColor
 } from "@essnextgen/ui-kit";
-import { ISidePanelViewProps } from "./props";
+
+
+interface ISidePanelViewProps {
+  isOpen: boolean;
+  togglePanel: () => void;
+}
 
 const SidePanelView: (props: ISidePanelViewProps) => JSX.Element = (
   props: ISidePanelViewProps
