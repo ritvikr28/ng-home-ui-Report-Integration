@@ -1,6 +1,6 @@
 import "../../../style.scss";
 import { Link } from "@essnextgen/ui-kit";
-import { envConfig } from "../../../../../../shared/utils";
+import { envConfig } from "../../../../../shared/utils";
 
  
 const TakeRegistersLinkview: () => JSX.Element = () => (
