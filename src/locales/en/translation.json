@@ -4,7 +4,8 @@
     "headerTitle": "Welcome to SIMS Next Gen",
     "headerSubTitle": "Below are your available Next Gen functionalities",
     "fetchingDataText": "Fetching school data",
-    "btnText": "Take me there"
+    "btnText": "Take me there",
+    "newHomepagebtnText": "Register your interest"
   },
   "slices": {
     "TakeRegister": {
@@ -73,6 +74,12 @@
       "description": "Create and maintain exclusions and suspensions.",
       "link": "",
       "linkText": ""
+    },
+    "NewHomePage":{
+      "title": "New Homepage",
+      "description": "Easily access information relevant to your role directly from the homepage. Sign up to become an early adopter for our first role-based homepage tailored for teachers.",
+      "link": "",
+      "linkText": ""     
     }
   },
   "pageNotFound": {
