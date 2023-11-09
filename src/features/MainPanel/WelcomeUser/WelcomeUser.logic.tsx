@@ -15,13 +15,13 @@ const WelcomeUser: () => JSX.Element = () => {
 
   async function fetchSchoolNames() {
     setIsError(false);
-
     try {
       const schoolData = await useFetchSchoolNameData();
       const name  = schoolData.schoolName.toLowerCase();
       const schoolName= capitalizeFirstLetterOfEachWord(name);
       setSchoolNames(schoolName);
-     
+      setIsError(false);
+
     } catch (error) {
       setIsError(true);
     }

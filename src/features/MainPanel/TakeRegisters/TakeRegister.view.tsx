@@ -1,11 +1,14 @@
 import "./style.scss";
-import TakeRegistersLinkview from "./component/TakeRegisterLink/TakeRegisterLink.view";
+import { Grid, GridItem } from "@essnextgen/ui-kit";
+import TakeRegisterEvent from "./component/EventContainer/TakeRegisterEvent.logic";
 
 export const TakeRegisterView: () => JSX.Element = () => (
-  <div className="register-container">
-    <TakeRegistersLinkview />
-    
-  </div>
+  <Grid>
+<GridItem  lg ={12}md = {8} sm = {4} className="register-container">
+<TakeRegisterEvent/>
+</GridItem>
+</Grid>
+
 );
 
 export default TakeRegisterView;

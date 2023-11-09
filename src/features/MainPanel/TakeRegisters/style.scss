@@ -1,6 +1,5 @@
 .register-container {
   max-width: 1116px;
-  height: 153px;
   gap: 20px;
   margin-top: 28px;
   font-size: 24px;
@@ -8,7 +7,6 @@
 
 .register-link-container {
   width: 1116px;
-  height: 40px;
   gap: 8px;
   display: flex;
   align-items: baseline;
@@ -33,3 +31,18 @@
   line-height: 24px;
   text-decoration-line: underline;
 }
+
+.register-icon .essui-button-icon-only--small {
+
+  margin-right: 8px;
+}
+
+.slider-div {
+  margin-top: 20px;
+}
+
+.actioncard-div {
+  margin: 0 12px;
+}
+
+
