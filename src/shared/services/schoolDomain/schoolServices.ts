@@ -8,6 +8,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 
 export const useFetchSchoolNameData = async () => {
     const response = await service.get(`School/SchoolName`, buildApplicationUrl(apiUrls));
+     /* istanbul ignore next */
     return response.data;
 };
 

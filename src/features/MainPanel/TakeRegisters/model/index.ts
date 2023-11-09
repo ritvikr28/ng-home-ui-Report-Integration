@@ -1,9 +1,12 @@
 export interface IRegistersDetails  {
     externalId?: string;
-    type?: string;
     narrative?: string;
+    classPeriodExternalId?: string;
+    eventInstanceExternalId?: string;
     startDateTime?: string;
     endDateTime?: string;
+    isCompleted?: boolean;
+    
     baseGroup: {
       externalId?: string;
       code?: string;
@@ -19,9 +22,6 @@ export interface IRegistersDetails  {
       roomCode?: string;
       roomDescription?: string;
     };
-
-    isCompleted?: boolean;
     isLesson?: boolean;
-    classPeriodExternalId?: string;
-    eventInstanceExternalId?: string;
+    
   };
