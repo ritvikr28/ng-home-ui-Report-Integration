@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
+
 import Carousel from "react-multi-carousel";
-import "react-multi-carousel/lib/styles.css";
+
 import {
   ActionCard,
   Button,
@@ -13,6 +14,7 @@ import {
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
 import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
+import "./carousalstyle.scss";
 import { responsive } from "./carousel";
 
 

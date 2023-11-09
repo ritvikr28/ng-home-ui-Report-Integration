@@ -18,7 +18,6 @@ const TakeRegisterEvent: () => JSX.Element = () => {
           const RegisterEventDetails = await FetchRegisterEventData();
           if(RegisterEventDetails !=null)
           {
-            console.log(JSON.stringify(RegisterEventDetails),"Data:");
             setRegisterEventApiData(RegisterEventDetails);
             setIsError(false);
           } 
