@@ -4,7 +4,8 @@
     "headerTitle": "Croeso i SIMS Next Gen",
     "headerSubTitle": "Isod mae eich apiau sydd ar gael",
     "fetchingDataText": "Nôl data ysgol",
-    "btnText": "Ewch â fi yno"
+    "btnText": "Ewch â fi yno",
+    "newHomepagebtnText": "Register your interest"
   },
   "slices": {
     "TakeRegister": {
@@ -71,6 +72,12 @@
     "Conduct":{
       "title": "Ymddygiad",
       "description": "Creu a chynnal gwarhaddiadau parhaol a phenodol.",
+      "link": "",
+      "linkText": ""
+    },
+    "NewHomePage":{
+      "title": "New Homepage",
+      "description": "Easily access information relevant to your role directly from the homepage. Sign up to become an early adopter for our first role-based homepage tailored for teachers.",
       "link": "",
       "linkText": ""
     }
