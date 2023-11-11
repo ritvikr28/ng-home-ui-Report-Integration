@@ -153,7 +153,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                       primaryText={(item.baseGroup.code!) + (item.isLesson ? (+" | " +item.room.roomDescription!) : "")}
                       
                       tagText = {item.isCompleted ? "Completed" : "Ready"}
-                      isShowTag={true}
+                      isShowTag
                       tagColor= {item.isCompleted ? TagColor.Success : TagColor.Outstanding}
                     />
                   </div>

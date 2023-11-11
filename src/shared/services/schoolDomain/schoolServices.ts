@@ -1,18 +1,48 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../utils/api-service";
-import {IStaffTimeTableEventsResponse} from "../../model/SchoolDomain/responsemodels"
-
+import { IStaffTimeTableEventsResponse} from "../../model/SchoolDomain/responsemodels"
 import apiUrls from "../../hook/ApiConfig.json";
 
 
 export const useFetchSchoolNameData = async () => {
     const response = await service.get(`School/SchoolName`, buildApplicationUrl(apiUrls));
-     /* istanbul ignore next */
     return response.data;
 };
 
+
 export const FetchStaffTimeTableEventsData = async () => {
-  const response: AxiosResponse<IStaffTimeTableEventsResponse[]> = await service.get(`StaffTimetable/StaffTimetableEvents`, buildApplicationUrl(apiUrls));
-  return response.data;
+  try {
+
+    const response: AxiosResponse<IStaffTimeTableEventsResponse[]>= await service.get(
+      `StaffTimetable/StaffTimetableEvents`,
+      buildApplicationUrl(apiUrls)
+    );
+    const {status} = response;
+    const responseData = response.data;
+    return { status, responseData };
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
 };
+
+
+export const FetchGroupMemberDetailsData = async (
+  groupExternalId:string,
+  startDate: string,
+  endDate: string
+) => {
+  try {
+
+    const responseData =await service.get(
+      `School/GroupMemberDetails?groupExternalId=${groupExternalId}&startDate=${startDate}&endDate=${endDate}`,
+      buildApplicationUrl(apiUrls)
+    );
+    return responseData.data.data;
+  } catch (error) {
+    console.error('Error fetching group member details:', error);
+    throw new Error('Failed to fetch group member details');
+  }
+};
+

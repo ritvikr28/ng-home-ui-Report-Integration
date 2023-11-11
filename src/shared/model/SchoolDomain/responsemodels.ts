@@ -1,22 +1,22 @@
 export interface IStaffTimeTableEventsResponse {
     externalId: string;
-    startdate: string;
-    enddate: string;
+    eventStart: string;
+    eventEnd: string;
     eventDescription: string;
-    levelCode: string;
-    eventtype: string;
+    levelCode?: string | null;
+    eventTypeCode: string;
     subjectColor: string;
     yearGroupColor: string;
     userPreference: string;
     yearGroupId: string;
     group: {
         externalId:string;
-        description:string;
+        shortName:string;
     }
     room:{
         externalId:string;
-        code:string;
-        description:string;
+        roomCode:string;
+        roomName:string;
     }
     subject:{
         externalId:string;
@@ -26,10 +26,45 @@ export interface IStaffTimeTableEventsResponse {
       externalId: string;
       forename: string;
       surname: string;
-      preferredForename: string;
-      preferredSurname: string;
+      preferredForename?: string | null; 
+      preferredSurname?: string | null;
     }[]
-    isCovered:boolean |null
-    isCovering:boolean |null
-    originalStaffExternalID:string
+    isCovered:boolean |null;
+    isCovering:boolean |null;
+    originalStaffExternalID?: string | null;
+    coveringStaffExternalID: string | null;
+  }
+  
+  export interface IGroupMemberDetailsResponse {
+    membershipId: string;
+    pupilExternalId: string;
+    startDate: string;
+    endDate: string;
+    yearGroup: {
+        externalId:string;
+        name:string;
+    }
+    regGroup: {
+        externalId: string,
+        name: string
+    }
+    personalInfo:{
+        preferredForename:string;
+        preferredSurname:string;
+        preferredName:string;
+        legalForename:string;
+        legalSurname:string;
+        legalName:string;
+    }
+    personImage:{
+        organisationId:string;
+        personExternalId:string;
+        photoDate:string|null;
+        createdDate:string|null;
+        createdBy:string|null;
+        updatedDate:string|null;
+        updatedBy:string|null;
+        imagePath:string|null;
+        isThumbnailPresent:boolean;
+    }|null;
   } 

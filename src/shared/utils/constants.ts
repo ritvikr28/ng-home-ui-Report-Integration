@@ -7,7 +7,8 @@ export const envConfig: any = {
   AppInsightsConnectionString: (window as any).AppInsightsConnectionString,
   IS_NEWHOMEPAGE_ACCESSIBLE: (window as any).IS_NEWHOMEPAGE_ACCESSIBLE,
   SCHOOL_BASE_URL: (window as any).SCHOOL_BASE_URL,
-  REGISTER_BASE_URL: (window as any).REGISTER_BASE_URL
+  REGISTER_BASE_URL: (window as any).REGISTER_BASE_URL,
+  LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
 };
 
 export const UpdateEnvConfig = ({
@@ -16,7 +17,8 @@ export const UpdateEnvConfig = ({
   REACT_GA_TRACKING_ID,
   IS_NEWHOMEPAGE_ACCESSIBLE,
   SCHOOL_BASE_URL,
-  REGISTER_BASE_URL
+  REGISTER_BASE_URL,
+  LEARNER_UI_URL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -24,4 +26,5 @@ export const UpdateEnvConfig = ({
   envConfig.IS_NEWHOMEPAGE_ACCESSIBLE = IS_NEWHOMEPAGE_ACCESSIBLE;
   envConfig.SCHOOL_BASE_URL=SCHOOL_BASE_URL;
   envConfig.REGISTER_BASE_URL = REGISTER_BASE_URL;
+  envConfig.LEARNER_UI_URL = LEARNER_UI_URL;
 };

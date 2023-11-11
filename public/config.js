@@ -11,4 +11,4 @@ window.APPLICATION = "Home";
 window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";
 window.SCHOOL_BASE_URL="";
 window.REGISTER_BASE_URL="";
-
+window.LEARNER_UI_URL="";
