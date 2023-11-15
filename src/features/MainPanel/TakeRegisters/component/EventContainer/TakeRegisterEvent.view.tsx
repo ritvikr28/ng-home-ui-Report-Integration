@@ -17,26 +17,23 @@ import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
 import "./carousalstyle.scss";
 import { responsive } from "./carousel";
 
-
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
-  apiError
+  apiError,
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
   const [currentSlide, setCurrentSlide] = useState(
     apiRegsiterEventData ? 0 : 0
   );
 
-
   const nextSlide = () => {
-      /* istanbul ignore next */
+    /* istanbul ignore next */
     if (carouselRef.current) {
       carouselRef.current.next();
       setCurrentSlide((prevSlide) => prevSlide + 1);
     }
   };
 
-  
   const previousSlide = () => {
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
@@ -45,8 +42,14 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   };
 
   const FilledGraphDataIcon = () => (
-      /* istanbul ignore next */
-    <svg width="54" height="54" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    /* istanbul ignore next */
+    <svg
+      width="54"
+      height="54"
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <path
         d="M14 21V27"
         stroke="#18A0FB"
@@ -75,10 +78,17 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <circle opacity="0.05" cx="20" cy="20" r="20" transform="rotate(-90 20 20)" fill="#18A0FB" />
+      <circle
+        opacity="0.05"
+        cx="20"
+        cy="20"
+        r="20"
+        transform="rotate(-90 20 20)"
+        fill="#18A0FB"
+      />
     </svg>
   );
- 
+
   return (
     <>
       <Grid>
@@ -121,73 +131,73 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       <div className="slider-div">
         <Grid>
           <GridItem lg={12} md={8} sm={4}>
-          {(apiError === false && apiRegsiterEventData) &&
-            <Carousel 
-              ref={carouselRef}
-              slidesToSlide={3}
-              arrows={false}
-              swipeable={false}
-              draggable={false}
-              showDots={false}
-              responsive={responsive}
-              infinite={false}
-              keyBoardControl
-              customTransition="all .5"
-              transitionDuration={500}
-              containerClass="carousel-container"
-              removeArrowOnDeviceType={["tablet", "mobile"]}
-              itemClass="carousel-item-padding-40-px"
-            >
-              
-             {apiError === false &&
-              (apiRegsiterEventData &&
-              apiRegsiterEventData.length > 0) ? (
-                apiRegsiterEventData.map((item, index) => (
-                  
-                  <div key={index} className="actioncard-div">
+            {apiError === false && apiRegsiterEventData && (
+              <Carousel
+                ref={carouselRef}
+                slidesToSlide={3}
+                arrows={false}
+                swipeable={false}
+                draggable={false}
+                showDots={false}
+                responsive={responsive}
+                infinite={false}
+                keyBoardControl
+                customTransition="all .5"
+                transitionDuration={500}
+                containerClass="carousel-container"
+                removeArrowOnDeviceType={["tablet", "mobile"]}
+                itemClass="carousel-item-padding-40-px"
+              >
+                {apiError === false &&
+                apiRegsiterEventData &&
+                apiRegsiterEventData.length > 0 ? (
+                  apiRegsiterEventData.map((item, index) => (
+                    <div key={index} className="actioncard-div">
+                      <ActionCard
+                        dataTestId={`test-id${index}`}
+                        icon={<FilledGraphDataIcon />}
+                        id={`action-card${index}`}
+                        onClickActionCard={() => {}}
+                        primaryText={
+                          item.baseGroup.code! +
+                          (item.isLesson
+                            ? +" | " + item.room.roomDescription!
+                            : "")
+                        }
+                        tagText={item.isCompleted ? "Completed" : "Ready"}
+                        isShowTag
+                        tagColor={
+                          item.isCompleted
+                            ? TagColor.Success
+                            : TagColor.Outstanding
+                        }
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <div className="actioncard-div">
                     <ActionCard
-                      dataTestId={`test-id${  index}`}
+                      dataTestId="test-id"
                       icon={<FilledGraphDataIcon />}
-                      id={`action-card${  index}`}
-                      onClickActionCard={ () => {}}
-                      primaryText={(item.baseGroup.code!) + (item.isLesson ? (+" | " +item.room.roomDescription!) : "")}
-                      
-                      tagText = {item.isCompleted ? "Completed" : "Ready"}
-                      isShowTag
-                      tagColor= {item.isCompleted ? TagColor.Success : TagColor.Outstanding}
+                      id="action-card"
+                      onClickActionCard={() => {}}
+                      primaryText="No registers"
                     />
                   </div>
-                    
-                )
-                
-                 )
-                 
-                
-              ) :
-              <div className="actioncard-div">
-              <ActionCard
-                dataTestId="test-id"
-                icon={<FilledGraphDataIcon />}
-                id="action-card"
-                onClickActionCard={ () => {}}
-                primaryText="No registers today"
-              />
-            </div>
-              }
-                { apiRegsiterEventData.length > 0 &&
+                )}
+                {/* { apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div">
                 <ActionCard
                   dataTestId="test-id"
-                  icon={<FilledGraphDataIcon />}
+                  icon={<></>}
                   id="action-card"
                   onClickActionCard={ () => {}}
                   primaryText="No more registers"
                 />
               </div>
-              }
-            </Carousel>
-            
-}
+              } */}
+              </Carousel>
+            )}
           </GridItem>
         </Grid>
       </div>

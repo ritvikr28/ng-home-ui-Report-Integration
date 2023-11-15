@@ -1,16 +1,14 @@
 .side-view {
   width: 264px;
   height: 972px;
-  top: 64px;
-  padding: 24px 0;
-  gap: 24px;
+  padding: 16px 0;
   background-color: #fff;
 }
-  
+
 .side-view-closed {
   background-color: #f7f7f7;
 }
-  
+
 .open-panel
 .essui-button
 .essui-button--utility
@@ -22,4 +20,18 @@
   padding: 8px;
   border-radius: 8px;
   border: 1px;
+}
+
+.open-panel .essui-icon--16 {
+  min-height: 16px;
+  min-width: 16px;
+  margin-left: 230px;
+}
+
+.essui-open-panel-filled .essui-button-icon-only--small {
+  height: 40px;
+  margin: 0;
+  padding: 0;
+  width: 40px;
+  margin-left: 20px;
 }

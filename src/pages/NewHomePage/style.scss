@@ -3,8 +3,6 @@
 }
 
 .schoolname {
-  width: 735px;
-  height: 24px;
   font-family: Segoe UI;
   font-size: 16px;
   font-weight: 700;
@@ -13,26 +11,16 @@
   text-align: left;
 }
 
-.notificationmsg {
-  margin-left: 190px;
-}
-
 .app {
   display: flex;
 }
 
 .body-panel {
   flex: 1;
-  //max-width: 1116px;
-  //height: 694px;
   top: 88px;
-  left: 296px;
   gap: 28px;
-  //padding: 20px;
 }
 
 .welcomemsg {
   padding-top: 20px;
 }
-
-

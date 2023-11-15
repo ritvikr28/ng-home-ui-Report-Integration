@@ -1,50 +1,51 @@
-import { fireEvent, render } from "@testing-library/react";
+import { render, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom/extend-expect";
-import SidePanel from "../SidePanel.logic";
-import SidePanelView from "../SidePanel.view";
+import SidePanel from "../SidePanel.view";
 
-test("toggles isOpen state when togglePanel is called", () => {
-  const mockTogglePanel = jest.fn();
-  const { getByTestId } = render(
-    <SidePanelView isOpen togglePanel={() => {}} />
-  );
+describe("SidePanel Component", () => {
+  it("renders correctly when open", () => {
+    const { getByTestId } = render(
+      <SidePanel isOpen togglePanel={() => {}} closePanel={() => {}} />
+    );
 
-  fireEvent.click(getByTestId("undefined-btn"));
+    expect(getByTestId("btn-90")).toBeInTheDocument();
+  });
 
-  expect(mockTogglePanel).toHaveBeenCalledTimes(0);
-});
+  it("renders correctly when closed", () => {
+    const { getByTestId } = render(
+      <SidePanel isOpen={false} togglePanel={() => {}} closePanel={() => {}} />
+    );
 
-test("renders SidePanel with default open state", () => {
-  const { getByTestId } = render(<SidePanel />);
-  const closeButton = getByTestId("undefined-btn");
+    expect(getByTestId("btn-save")).toBeInTheDocument();
+  });
 
-  expect(closeButton).toBeInTheDocument();
-});
+  test("calls closePanel when close button is clicked", () => {
+    const closePanelMock = jest.fn();
+    const { getByTestId } = render(
+      <SidePanel
+        isOpen
+        togglePanel={() => {}}
+        closePanel={closePanelMock}
+      />
+    );
 
-test("renders SidePanel with default open state", () => {
-  const { getByTestId } = render(<SidePanel />);
-  const closeButton = getByTestId("undefined-btn");
+    fireEvent.click(getByTestId("btn-90"));
 
-  expect(closeButton).toBeInTheDocument();
-});
+    expect(closePanelMock).toHaveBeenCalled();
+  });
 
-test("closes SidePanel when close button is clicked", () => {
-  const { getByTestId } = render(<SidePanel />);
-  const closeButton = getByTestId("undefined-btn");
+  test("calls togglePanel when save button is clicked", () => {
+    const togglePanelMock = jest.fn();
+    const { getByTestId } = render(
+      <SidePanel
+        isOpen={false}
+        togglePanel={togglePanelMock}
+        closePanel={() => {}}
+      />
+    );
 
-  fireEvent.click(closeButton);
+    fireEvent.click(getByTestId("btn-save"));
 
-  expect(closeButton).not.toBeInTheDocument();
-});
-
-it("toggles isOpen state when togglePanel is called", () => {
-  const { getByTestId } = render(
-    <SidePanelView isOpen togglePanel={() => {}} />
-  );
-
-  expect(getByTestId("undefined-btn")).toHaveClass(" essui-icon-button");
-
-  fireEvent.click(getByTestId("undefined-btn"));
-
-  expect(getByTestId("undefined-btn")).toHaveClass(" essui-icon-button");
+    expect(togglePanelMock).toHaveBeenCalled();
+  });
 });
