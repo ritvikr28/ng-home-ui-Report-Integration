@@ -1,0 +1,50 @@
+.sims-container {
+  display: flex;
+  width: 1116px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.sims-link-container {
+  display: flex;
+  width: 1116px;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sims-updates {
+  color: var(--neutral-800, #303030);
+
+  /* default/H4 */
+  font-family: Segoe UI;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 32px;
+  /* 133.333% */
+}
+
+.sims-link-url {
+  color: var(--primary-500, #2177c2);
+  text-align: center;
+
+  /* default/ButtonSmall */
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  /* 150% */
+}
+
+.primary-text {
+  color: var(--neutral-800, #303030);
+}
+
+.action-card-container {
+  color: Neutral/800;
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}

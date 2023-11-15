@@ -1,8 +1,9 @@
-import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
+import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
+import "./style.scss";
 
 const MainPanelView: () => JSX.Element = () => (
   <Grid>
@@ -10,6 +11,8 @@ const MainPanelView: () => JSX.Element = () => (
       <WelcomeUser />
       <StaffTimeTableView />
       <TakeRegisterView />
+      <div className="divider-container"/>            
+      <SIMSupdatesView/>
     </GridItem>
   </Grid>
 );
