@@ -22,17 +22,12 @@
 }
 
 .body-panel {
-  flex: 1;
-  //max-width: 1116px;
-  //height: 694px;
-  top: 88px;
-  left: 296px;
-  gap: 28px;
-  //padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 40px;
 }
 
 .welcomemsg {
   padding-top: 20px;
 }
-
-
