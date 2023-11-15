@@ -1,10 +1,13 @@
 import "./DiscoverStyle.scss";
+import { Grid, GridItem } from "@essnextgen/ui-kit";
 import DiscoverMoreView from "./Components/DiscoverMore.view";
 
 export const SIMSupdatesView: () => JSX.Element = () => (
-  <div className="sims-container">
+  <Grid>
+  <GridItem className="sims-container">
     <DiscoverMoreView />
-  </div>
+  </GridItem>
+  </Grid>
 );
 
 export default SIMSupdatesView;
