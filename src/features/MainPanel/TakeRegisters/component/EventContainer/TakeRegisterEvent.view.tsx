@@ -7,8 +7,6 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
-  Grid,
-  GridItem,
   IconColor,
   TagColor
 } from "@essnextgen/ui-kit";
@@ -91,101 +89,104 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
 
   return (
     <>
-      <Grid>
-        <GridItem lg={11} md={8} sm={4}>
-          <TakeRegistersLinkview />
-        </GridItem>
-        <GridItem lg={1} md={8} sm={4}>
-          <div style={{ display: "flex" }} className="register-icon">
-            <div style={{ marginRight: "1px" }}>
-              <Button
-                className="base-class"
-                iconColor={IconColor.Neutral800}
-                dataTestId="btn-previous"
-                color={ButtonColor.Utility}
-                iconName="chevron--left"
-                onClick={previousSlide}
-                size={ButtonSize.Small}
-                type="button"
-                disabled={currentSlide === 0}
-              />
-            </div>
-            <div>
-              <Button
-                className="base-class"
-                iconColor={IconColor.Neutral800}
-                dataTestId="btn-next"
-                color={ButtonColor.Utility}
-                iconName="chevron--right"
-                onClick={nextSlide}
-                size={ButtonSize.Small}
-                type="button"
-                disabled={
-                  currentSlide === (apiRegsiterEventData?.length ?? 0) - 1
-                }
-              />
-            </div>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <TakeRegistersLinkview />
+        <div
+          style={{
+            display: "flex",
+            marginRight: "6px",
+          }}
+          className="register-icon"
+        >
+          <div>
+            <Button
+              className="base-class"
+              iconColor={IconColor.Neutral800}
+              dataTestId="btn-previous"
+              color={ButtonColor.Utility}
+              iconName="chevron--left"
+              onClick={previousSlide}
+              size={ButtonSize.Small}
+              type="button"
+              disabled={currentSlide === 0}
+            />
           </div>
-        </GridItem>
-      </Grid>
+          <div>
+            <Button
+              className="base-class"
+              iconColor={IconColor.Neutral800}
+              dataTestId="btn-next"
+              color={ButtonColor.Utility}
+              iconName="chevron--right"
+              onClick={nextSlide}
+              size={ButtonSize.Small}
+              type="button"
+              disabled={
+                currentSlide === (apiRegsiterEventData?.length ?? 0) - 1
+              }
+            />
+          </div>
+        </div>
+      </div>
+
       <div className="slider-div">
-        <Grid>
-          <GridItem lg={12} md={8} sm={4}>
-            {apiError === false && apiRegsiterEventData && (
-              <Carousel
-                ref={carouselRef}
-                slidesToSlide={3}
-                arrows={false}
-                swipeable={false}
-                draggable={false}
-                showDots={false}
-                responsive={responsive}
-                infinite={false}
-                keyBoardControl
-                customTransition="all .5"
-                transitionDuration={500}
-                containerClass="carousel-container"
-                removeArrowOnDeviceType={["tablet", "mobile"]}
-                itemClass="carousel-item-padding-40-px"
-              >
-                {apiError === false &&
-                apiRegsiterEventData &&
-                apiRegsiterEventData.length > 0 ? (
-                  apiRegsiterEventData.map((item, index) => (
-                    <div key={index} className="actioncard-div">
-                      <ActionCard
-                        dataTestId={`test-id${index}`}
-                        icon={<FilledGraphDataIcon />}
-                        id={`action-card${index}`}
-                        onClickActionCard={() => {}}
-                        primaryText={
-                          item.baseGroup.code! +
-                          (item.isLesson
-                            ? +" | " + item.room.roomDescription!
-                            : "")
-                        }
-                        tagText={item.isCompleted ? "Completed" : "Ready"}
-                        isShowTag
-                        tagColor={
-                          item.isCompleted
-                            ? TagColor.Success
-                            : TagColor.Outstanding
-                        }
-                      />
-                    </div>
-                  ))
-                ) : (
-                  <div className="actioncard-div">
-                    <ActionCard
-                      dataTestId="test-id"
-                      icon={<FilledGraphDataIcon />}
-                      id="action-card"
-                      onClickActionCard={() => {}}
-                      primaryText="No registers"
-                    />
-                  </div>
-                )}
-                {/* { apiRegsiterEventData.length > 0 &&
+        {apiError === false && apiRegsiterEventData && (
+          <Carousel
+            ref={carouselRef}
+            slidesToSlide={3}
+            arrows={false}
+            swipeable={false}
+            draggable={false}
+            showDots={false}
+            responsive={responsive}
+            infinite={false}
+            keyBoardControl
+            customTransition="all .5"
+            transitionDuration={500}
+            containerClass="carousel-container"
+            removeArrowOnDeviceType={["tablet", "mobile"]}
+            itemClass="carousel-item-padding-40-px"
+          >
+            {apiError === false &&
+            apiRegsiterEventData &&
+            apiRegsiterEventData.length > 0 ? (
+              apiRegsiterEventData.map((item, index) => (
+                <div key={index} className="actioncard-div">
+                  <ActionCard
+                    dataTestId={`test-id${index}`}
+                    icon={<FilledGraphDataIcon />}
+                    id={`action-card${index}`}
+                    onClickActionCard={() => {}}
+                    primaryText={
+                      item.baseGroup.code! +
+                      (item.isLesson ? +" | " + item.room.roomDescription! : "")
+                    }
+                    tagText={item.isCompleted ? "Completed" : "Ready"}
+                    isShowTag
+                    tagColor={
+                      item.isCompleted ? TagColor.Success : TagColor.Outstanding
+                    }
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="actioncard-div">
+                <ActionCard
+                  dataTestId="test-id"
+                  icon={<FilledGraphDataIcon />}
+                  id="action-card"
+                  onClickActionCard={() => {}}
+                  primaryText="No registers"
+                />
+              </div>
+            )}
+            {/* { apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div">
                 <ActionCard
                   dataTestId="test-id"
@@ -196,13 +197,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 />
               </div>
               } */}
-              </Carousel>
-            )}
-          </GridItem>
-        </Grid>
+          </Carousel>
+        )}
       </div>
     </>
   );
 };
-
 export default TakeRegisterEventView;

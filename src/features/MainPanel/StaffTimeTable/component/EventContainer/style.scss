@@ -2,3 +2,15 @@
   float: left;
   margin-right: 16px;
 }
+
+.event-primary-text {
+  /* stylelint-disable */
+  .essui-event__primaryfont {
+/* stylelint-enable */
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+  }
+}
+

@@ -1,4 +1,6 @@
 .schoolname {
+  width: 735px;
+  height: 24px;
   font-family: "Segoe UI", "sans-serif";
   font-size: 16px;
   font-weight: 700;
@@ -7,8 +9,21 @@
   text-align: left;
   margin-bottom: 24px;
 }
-  
+
+// .parent1 {
+//  // width: 1116px;
+//  // height: 96px;
+// }
+
+// .parent2 {
+//   //width: 1116px;
+//  // height: 168px;
+// }
+
 .parent1-subparent {
+  //width: 1116px;
+  //height: 72px;
+  //styleName: default/Display;
   font-family: Segoe UI;
   font-size: 48px;
   font-weight: 400;
@@ -16,8 +31,10 @@
   letter-spacing: 0;
   text-align: left;
 }
-  
+
 .parent2-subparent {
+  //width: 1116px;
+  //height: 144px;
   font-family: Segoe UI;
   font-size: 48px;
   font-weight: 400;

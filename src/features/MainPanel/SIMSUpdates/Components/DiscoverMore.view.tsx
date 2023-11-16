@@ -23,7 +23,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
             className="base-class"
             color={ButtonColor.Secondary}
             dataTestId="btn-save"
-            onClick={onButtonClick}            
+            onClick={onButtonClick}
             size={ButtonSize.Small}
           >
             Discover more with SIMS Next Gen
@@ -47,7 +47,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
             />
           </Link>
         </span>
-        <span>
+        <span className="action-card">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"

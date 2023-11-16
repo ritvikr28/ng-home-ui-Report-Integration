@@ -9,6 +9,7 @@
   align-items: center;
   overflow: hidden;
   position: relative;
+  margin-left: -9px;
 }
 
 .react-multi-carousel-track {
@@ -28,11 +29,11 @@
   backface-visibility: hidden;
 }
 
-@media all and (-ms-high-contrast:none), (-ms-high-contrast:active) {
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
   .react-multi-carousel-item {
     flex-shrink: 0 !important;
   }
-  
+
   .react-multi-carousel-track {
     overflow: visible !important;
   }

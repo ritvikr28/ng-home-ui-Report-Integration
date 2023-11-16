@@ -64,7 +64,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (pro
                   setErrCodeMessage(true);
                   setLoader(true);
                   setPupilDetailErrorCodeMessage(
-                    'The pupil register service is currently unavailable. Please try again in a bit.'
+                    "We've experienced a technical issue that's stopped us from showing pupil information for this register. Please check back in a bit."
                   );
                 }
               }; 

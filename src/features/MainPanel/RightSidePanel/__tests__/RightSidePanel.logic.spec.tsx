@@ -336,7 +336,7 @@ describe('RigthSidePanel', () => {
 
             expect(setLoader).toHaveBeenCalledWith(true);
             expect(setErrCodeMessage).toHaveBeenCalledWith(true);
-            expect(setPupilDetailErrorCodeMessage).toHaveBeenCalledWith('The pupil register service is currently unavailable. Please try again in a bit.');
+            expect(setPupilDetailErrorCodeMessage).toHaveBeenCalledWith(  "We've experienced a technical issue that's stopped us from showing pupil information for this register. Please check back in a bit.");
           });
     });
    
