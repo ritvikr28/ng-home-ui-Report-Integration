@@ -160,12 +160,12 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 <div key={index} className="actioncard-div">
                   <ActionCard
                     dataTestId={`test-id${index}`}
+                    isTextTruncate
                     icon={<FilledGraphDataIcon />}
                     id={`action-card${index}`}
                     onClickActionCard={() => {}}
                     primaryText={
-                      item.baseGroup.code! +
-                      (item.isLesson ? +" | " + item.room.roomDescription! : "")
+                      `${item.baseGroup.code!} ${item.isLesson ?  ` | ${  item?.room?.roomDescription!}` : ""}`                      
                     }
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag

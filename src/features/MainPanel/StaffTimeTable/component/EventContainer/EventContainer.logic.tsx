@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
+import { getBackgroundColor } from "../../../../../shared/utils/colors";
 
 const EventContainer: React.FC = () => {
   const [isError, setIsError] = useState<boolean>(false);
@@ -69,7 +70,7 @@ const EventContainer: React.FC = () => {
         id="no-events-today-id"
         primaryText=""
         secondaryText=""
-        status={EventCardStatus.HIGHLIGHT}
+        status={EventCardStatus.NEUTRAL}
         title="No events today"
         inputWidth={166}
         inputHeight={67}
@@ -96,6 +97,7 @@ const EventContainer: React.FC = () => {
             GroupDescription={item?.group?.shortName ?? ""}
             StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
             index={index}
+            EventCardColor={getBackgroundColor(item)}
           />
         </div>
       ))}
@@ -105,10 +107,10 @@ const EventContainer: React.FC = () => {
           id="no-events-to-display-id"
           primaryText=""
           secondaryText=""
-          status={EventCardStatus.HIGHLIGHT}
+          status={EventCardStatus.NEUTRAL}
           title="No events to display"
           inputWidth={166}
-          inputHeight={67}
+          inputHeight={75}
           className="dynamiceventcard event-primary-text"
         />
       )}

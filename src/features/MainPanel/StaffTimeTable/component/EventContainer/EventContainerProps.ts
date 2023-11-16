@@ -1,3 +1,5 @@
+import { EventCardStatus } from "@essnextgen/ui-kit";
+
 export interface IEventContainerProps {
     SchoolEventexternalId:string;
     EventTitle:string;
@@ -12,4 +14,5 @@ export interface IEventContainerProps {
     GroupDescription:string |null;
     StaffName:string |null;
     index:number;
+    EventCardColor: EventCardStatus
   }
