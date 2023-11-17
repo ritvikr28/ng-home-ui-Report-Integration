@@ -182,7 +182,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   icon={<FilledGraphDataIcon />}
                   id="action-card"
                   onClickActionCard={() => {}}
-                  primaryText="No registers"
+                  primaryText="No registers today"
                 />
               </div>
             )}
