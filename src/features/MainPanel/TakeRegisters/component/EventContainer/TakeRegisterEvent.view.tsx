@@ -136,7 +136,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       </div>
 
       <div className="slider-div">
-        {apiError === false && apiRegsiterEventData && (
+        {apiError === false && (
           <Carousel
             ref={carouselRef}
             slidesToSlide={3}
@@ -186,7 +186,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 />
               </div>
             )}
-            {/* { apiRegsiterEventData.length > 0 &&
+            { apiRegsiterEventData !=null && apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div">
                 <ActionCard
                   dataTestId="test-id"
@@ -196,7 +196,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   primaryText="No more registers"
                 />
               </div>
-              } */}
+              }
           </Carousel>
         )}
       </div>
