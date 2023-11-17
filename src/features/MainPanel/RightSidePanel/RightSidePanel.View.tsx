@@ -140,6 +140,7 @@ export const RightSidePanelView: (
                   />
                 )
               )}
+              
               {isLoader ? (
                 <Loader
                   data-testid="data-loader"
