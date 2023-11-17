@@ -409,6 +409,7 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     StaffName="John Doe"
     index={0}
     EventCardColor={EventCardStatus.PRIMARY}
+    EventTypeCode='TTPeriod'    
   />;
 
 

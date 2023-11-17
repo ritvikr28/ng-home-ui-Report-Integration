@@ -7,7 +7,8 @@ export interface IEventContainerProps {
     RoomCode:string;
     EventStartDate:string;
     EventEndDate:string;
-    GroupExternalId:string;
+    EventTypeCode:string;
+    GroupExternalId:string;    
     EventPeriodNum:string;
     togglePanel: (SchoolEventexternalId:string) => void;
     isOpen:boolean;
