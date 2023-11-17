@@ -5,8 +5,8 @@ export interface IStaffTimeTableEventsResponse {
     eventDescription: string;
     levelCode?: string | null;
     eventTypeCode: string;
-    subjectColor: string;
-    yearGroupColor: string;
+    subjectColor: string | null;
+    yearGroupColor: string | null;
     userPreference: string;
     yearGroupId: string;
     group: {

@@ -1,5 +1,5 @@
 import "./style.scss";
-import { EventCard, EventCardStatus } from "@essnextgen/ui-kit";
+import { EventCard } from "@essnextgen/ui-kit";
 import { IEventContainerProps } from "./EventContainerProps";
 import { RightSidePanel } from "../../../RightSidePanel/RightSidePanel.logic";
 
@@ -20,6 +20,7 @@ export const EventContainerView: (
     GroupDescription,
     StaffName,
     index,
+    EventCardColor
   }: IEventContainerProps = props;
 
   return (
@@ -30,7 +31,7 @@ export const EventContainerView: (
         onClick={() => togglePanel(SchoolEventexternalId)}
         primaryText={EventTime}
         secondaryText={RoomCode}
-        status={EventCardStatus.HIGHLIGHT}
+        status={EventCardColor}
         title={EventTitle}
         inputWidth={166}
         dataTestId={`eventid${index}`}

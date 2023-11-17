@@ -1,4 +1,5 @@
 import { RenderResult, render, waitFor } from '@testing-library/react';
+import { EventCardStatus } from '@essnextgen/ui-kit';
 import EventContainerView from '../EventContainer.view';
 
 describe('EventContainerView component', () => {
@@ -21,7 +22,7 @@ const mockProps = {
     isOpen: true,
     GroupDescription: 'Test Group',
     StaffName: 'John Doe',
-    index: 0,
+    index: 0
   };
 
 
@@ -43,6 +44,7 @@ const mockProps = {
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
         index={mockProps.index}
+        EventCardColor={EventCardStatus.PRIMARY}
       />
     );
   

@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen, act} from '@testing-library/react';
+import { EventCardStatus } from '@essnextgen/ui-kit';
 import userEvent from "@testing-library/user-event";
 import EventContainer from '../EventContainer.logic';
 import {EventContainerView} from '../EventContainer.view';
 import * as schoolDomainservices from "../../../../../../shared/services/schoolDomain/schoolServices";
 import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/SchoolDomain/responsemodels';
-
 
  const mockStaffTimeTableEventsResponseWithSixRecords:IStaffTimeTableEventsResponse[]=[
     {
@@ -408,6 +408,7 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     GroupDescription="Group 1"
     StaffName="John Doe"
     index={0}
+    EventCardColor={EventCardStatus.PRIMARY}
   />;
 
 
