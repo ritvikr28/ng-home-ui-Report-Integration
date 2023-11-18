@@ -70,7 +70,7 @@ const EventContainer: React.FC = () => {
         id="no-events-today-id"
         primaryText=""
         secondaryText=""
-        status={EventCardStatus.NEUTRAL}
+        status={EventCardStatus.DEFAULT}
         title="No events today"
         inputWidth={166}
         inputHeight={67}
@@ -108,7 +108,7 @@ const EventContainer: React.FC = () => {
           id="no-events-to-display-id"
           primaryText=""
           secondaryText=""
-          status={EventCardStatus.NEUTRAL}
+          status={EventCardStatus.DEFAULT}
           title="No events to display"
           inputWidth={166}
           inputHeight={75}
