@@ -22,7 +22,8 @@ const mockProps = {
     isOpen: true,
     GroupDescription: 'Test Group',
     StaffName: 'John Doe',
-    index: 0
+    index: 0,
+    EventTypeCode:'TTPeriod',    
   };
 
 
@@ -45,6 +46,7 @@ const mockProps = {
         StaffName={mockProps.StaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
+        EventTypeCode={mockProps.EventTypeCode}        
       />
     );
   
