@@ -1,7 +1,5 @@
-import React, { useRef, useState } from "react";
-
+import React, {useRef, useEffect,useState } from "react";
 import Carousel from "react-multi-carousel";
-
 import {
   ActionCard,
   Button,
@@ -20,25 +18,65 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiError,
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
+  const [effectTriggered, setEffectTriggered] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(
     apiRegsiterEventData ? 0 : 0
   );
 
-  const nextSlide = () => {
+  const setDefaultSlide = (index: number) => {    
     /* istanbul ignore next */
-    if (carouselRef.current) {
+    carouselRef.current.goToSlide(index);
+  };
+
+  useEffect(() => {
+    const datetime = (text: string): string =>
+    text.split('T')[1];   
+    const currentTime= new Date();   
+     const formattedLocalTime = `${currentTime.getUTCHours()}:${currentTime.getUTCMinutes()}:${currentTime.getUTCSeconds()}`;
+      if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
+      {
+        if (carouselRef && carouselRef.current && !effectTriggered) {
+        const Index=apiRegsiterEventData.findIndex((x)=>{
+          if(x.startDateTime!=null && x.endDateTime!=null)
+           return (datetime(x.startDateTime) <= formattedLocalTime  && formattedLocalTime<= datetime(x.endDateTime))|| datetime(x.startDateTime) > formattedLocalTime
+          
+           return -1;
+          })
+       
+        setEffectTriggered(true); 
+        if(Index <0)
+        {setDefaultSlide(apiRegsiterEventData.length);
+          setCurrentSlide(apiRegsiterEventData.length-1)
+        }        
+      else 
+      {setDefaultSlide(Index);
+        if((apiRegsiterEventData.length-Index)<=3)
+        setCurrentSlide(apiRegsiterEventData.length-1)
+      else
+      setCurrentSlide(Index);
+      }      
+      }     
+    }
+  });
+
+  const nextSlide = () => {    
+    /* istanbul ignore next */
+    const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
+    if (carouselRef.current) {     
       carouselRef.current.next();
-      setCurrentSlide((prevSlide) => prevSlide + 1);
+      setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3)
+      );
     }
   };
 
   const previousSlide = () => {
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
-      setCurrentSlide((prevSlide) => prevSlide - 1);
+      setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
+      );
     }
   };
-
+ 
   const FilledGraphDataIcon = () => (
     /* istanbul ignore next */
     <svg
@@ -114,7 +152,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={currentSlide === 0}
+              disabled={apiRegsiterEventData==null?true:currentSlide === 0}
             />
           </div>
           <div>
@@ -127,7 +165,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={nextSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={
+              disabled={apiRegsiterEventData==null?true:
                 currentSlide === (apiRegsiterEventData?.length ?? 0) - 1
               }
             />
@@ -136,10 +174,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       </div>
 
       <div className="slider-div">
-        {apiError === false && (
+        {apiError === false && apiRegsiterEventData &&  apiRegsiterEventData.length > 0?   (
           <Carousel
             ref={carouselRef}
-            slidesToSlide={3}
+            slidesToSlide={4}
             arrows={false}
             swipeable={false}
             draggable={false}
@@ -153,9 +191,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
           >
-            {apiError === false &&
-            apiRegsiterEventData &&
-            apiRegsiterEventData.length > 0 ? (
+            {
+            apiRegsiterEventData &&  (
               apiRegsiterEventData.map((item, index) => (
                 <div key={index} className="actioncard-div">
                   <ActionCard
@@ -175,19 +212,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   />
                 </div>
               ))
-            ) : (
-              <div className="actioncard-div">
-                <ActionCard
-                  dataTestId="test-id"
-                  icon={<FilledGraphDataIcon />}
-                  id="action-card"
-                  onClickActionCard={() => {}}
-                  primaryText="No registers today"
-                />
-              </div>
-            )}
-            { apiRegsiterEventData !=null && apiRegsiterEventData.length > 0 &&
-              <div className="actioncard-div">
+            )
+            }
+            { apiRegsiterEventData.length > 0 &&
+              <div className="actioncard-div noregister">
                 <ActionCard
                   dataTestId="test-id"
                   icon={<></>}
@@ -198,6 +226,17 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               </div>
               }
           </Carousel>
+        ): (         
+          <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
+            <ActionCard
+              dataTestId="test-id1"
+              icon={<></>}
+              id="no-register-id"
+              onClickActionCard={() => {}}
+              primaryText="No registers today"
+            />
+          </div>
+          
         )}
       </div>
     </>
