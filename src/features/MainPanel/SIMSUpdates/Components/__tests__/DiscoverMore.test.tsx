@@ -4,7 +4,7 @@ import DiscoverMoreView from "../DiscoverMore.view";
 describe("DiscoverMoreView Component", () => {
   it("renders without crashing", () => {
     render(<DiscoverMoreView />);
-    expect(screen.getByText("SIMS Next Gen updates")).toBeInTheDocument();
+    expect(screen.getByText("Find out more about SIMS Next Gen")).toBeInTheDocument();
   });
 
   it("renders Discover more button with correct properties", () => {

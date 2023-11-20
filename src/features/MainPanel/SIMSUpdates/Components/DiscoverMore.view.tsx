@@ -17,7 +17,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
   return (
     <>
       <div className="sims-link-container">
-        <span className="sims-updates">SIMS Next Gen updates </span>
+        <span className="sims-updates">Find out more about SIMS Next Gen </span>
         <span className="sims-link-url ">
           <Button
             className="base-class"
@@ -30,7 +30,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
           </Button>
         </span>
       </div>
-      <div className="action-card-container">
+      <div className="action-card-container sims-ng">
         <span>
           <Link
             dataTestId="link1"
@@ -47,7 +47,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
             />
           </Link>
         </span>
-        <span className="action-card">
+        <span className=" what-new action-card">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
