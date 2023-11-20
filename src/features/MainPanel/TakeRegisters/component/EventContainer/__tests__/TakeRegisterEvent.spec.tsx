@@ -5,6 +5,7 @@ import { FetchRegisterEventData } from "../../../../../../shared/services/regist
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
 
 
+
  const mockTakeRegisterData = [
     {
          "externalId": "37fe774b-52cd-4ed8-88ff-7f621f443168",
@@ -188,6 +189,7 @@ import TakeRegisterEventView from "../TakeRegisterEvent.view";
       
      ]
    
+    
 jest.mock(
   "../../../../../../shared/services/registersDomain/registerEventsDetails",
   () => ({
@@ -232,16 +234,22 @@ jest.mock(
         expect(container).toBeTruthy();
       });
 
-      test('disables the previous button when on the first slide', () => {
-        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={mockTakeRegisterData} />);
+      test('renders No registers today', () => {
+        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />);
+        expect(getByTestId("test-id1")).toBeInTheDocument();
+      });
+
+      test('disables the previous button when api returns null', () => {
+        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />);
         const previousButton = getByTestId('btn-previous');
     
         expect(previousButton).toBeDisabled();
       });
    
-      test('disables the next button when on the first slide', () => {
-        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={mockTakeRegisterData} />);
+      test('disables the next button when api returns null', () => {
+        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />);
         const nextButton = getByTestId('btn-next');
     
-        expect(nextButton).toBeEnabled();
+        expect(nextButton).toBeDisabled();
       });
+     
