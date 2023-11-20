@@ -16,7 +16,7 @@
     "@essnextgen/ui-application-kit": "1.0.2-alpha.35",
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-intl-kit": "^0.0.9",
-    "@essnextgen/ui-kit": "^0.14.3-alpha.0",
+    "@essnextgen/ui-kit": "^0.14.3",
     "@microsoft/applicationinsights-react-js": "^3.4.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
     "axios": "0.27.2",
