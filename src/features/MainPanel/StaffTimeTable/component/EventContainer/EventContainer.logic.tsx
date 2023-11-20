@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { EventCard } from "@essnextgen/ui-kit";
+import { EventCard, EventCardStatus } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
@@ -70,7 +70,7 @@ const EventContainer: React.FC = () => {
         id="no-events-today-id"
         primaryText=""
         secondaryText=""
-       // status={EventCardStatus.DEFAULT}
+       status={EventCardStatus.DEFAULT}
         title="No events today"
         inputWidth={166}
         inputHeight={75}
@@ -108,14 +108,14 @@ const EventContainer: React.FC = () => {
           id="no-events-to-display-id"
           primaryText=""
           secondaryText=""
-          // status={EventCardStatus.DEFAULT}
+          status={EventCardStatus.DEFAULT}
           title="No events to display"
           inputWidth={166}
           inputHeight={75}
           className="dynamiceventcard event-primary-text"
         />
       )}
-    </div>
+    </div> 
   );
 };
 
