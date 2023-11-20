@@ -13,14 +13,14 @@ const SidePanel = ({ isOpen, togglePanel, closePanel }: any) => (
     >
       {isOpen ? (
         <div>
-          <div>
+          <div className="close-icon">
             <Icon
               color={IconColor.Primary500}
               dataTestId="btn-90"
               id="variable-2"
               name="close"
               onClick={closePanel}
-              size={16}
+              size={24}
             />
           </div>
         </div>
@@ -42,3 +42,4 @@ const SidePanel = ({ isOpen, togglePanel, closePanel }: any) => (
   );
 
 export default SidePanel;
+

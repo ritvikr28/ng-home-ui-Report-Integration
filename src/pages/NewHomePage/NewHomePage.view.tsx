@@ -33,10 +33,10 @@ export const NewHomepageView = () => {
 
   return isPermission ? (
     <Grid className="app">
-    <GridItem lg={isOpen ? 2 : 1}>
+    <GridItem lg={isOpen ? 2 : 1} sm = {isOpen ? 3 : 2}>
       <SidePanelView isOpen={isOpen} togglePanel={togglePanel} closePanel={closePanel} />
     </GridItem>
-    <GridItem className="body-panel" lg={isOpen ? 10 : 11}>
+    <GridItem className="body-panel" lg={isOpen ? 10: 11 } sm = {isOpen ? 3 : 2}>
       <MainPanelView />
     </GridItem>
   </Grid>
@@ -44,3 +44,5 @@ export const NewHomepageView = () => {
     <Redirect to="/noAccess" />
   );
   }
+
+  

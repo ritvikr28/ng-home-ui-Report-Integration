@@ -73,8 +73,8 @@ const EventContainer: React.FC = () => {
         status={EventCardStatus.DEFAULT}
         title="No events today"
         inputWidth={166}
-        inputHeight={67}
-        className="dynamiceventcard"
+        inputHeight={75}
+        className="dynamiceventcard event-primary-text"
       />
     );
   }
