@@ -28,23 +28,20 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     carouselRef.current.goToSlide(index);
   };
 
-  useEffect(() => {
-    const datetime = (text: string): string =>
-    text.split('T')[1];  
+  useEffect(() => {   
    
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
       {
         if (carouselRef && carouselRef.current && !effectTriggered) {
         const Index=apiRegsiterEventData.findIndex((x)=>{
-          if(x.startDateTime!=null && x.endDateTime!=null){
-          
+          if(x.startDateTime!=null && x.endDateTime!=null){         
             const formattedLocalTime=new Date();
-            const currentUTCDateTime=formattedLocalTime.toISOString();            
-           return ((datetime(x.startDateTime) <= datetime(currentUTCDateTime)  && datetime(currentUTCDateTime) <= datetime(x.endDateTime)) || datetime(x.startDateTime) > datetime(currentUTCDateTime))
+            const currentUTCDateTime=formattedLocalTime.toISOString().split('.')[0]; 
+            return ((Date.parse(x.startDateTime) <= Date.parse(currentUTCDateTime)  && Date.parse(currentUTCDateTime) <= Date.parse(x.endDateTime)) || Date.parse(x.startDateTime) > Date.parse(currentUTCDateTime))            
           }  
           return -1;
           })
-       
+                 
         setEffectTriggered(true);
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
