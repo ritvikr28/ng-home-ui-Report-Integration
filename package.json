@@ -7,7 +7,6 @@
     "type": "git",
     "url": "https://dev.azure.com/essnextgen/Staff%20and%20Administration/_git/ng-home-ui"
   },
-  
   "author": "",
   "license": "",
   "private": true,
@@ -16,7 +15,7 @@
     "@essnextgen/ui-application-kit": "1.0.2-alpha.35",
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-intl-kit": "^0.0.9",
-    "@essnextgen/ui-kit": "^0.14.3",
+    "@essnextgen/ui-kit": "^0.14.4-alpha.1",
     "@microsoft/applicationinsights-react-js": "^3.4.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
     "axios": "0.27.2",

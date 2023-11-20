@@ -41,7 +41,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           }  
           return -1;
           })
-                 
+
         setEffectTriggered(true);
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
@@ -225,8 +225,11 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               </div>
               }
           </Carousel>
-        ): (         
-          <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
+        ): (   
+          <>
+          
+          { apiError=== false && apiRegsiterEventData === null  &&
+            <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
             <ActionCard
               dataTestId="test-id1"
               icon={<></>}
@@ -235,6 +238,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               primaryText="No registers today"
             />
           </div>
+          }
+          </>
           
         )}
       </div>
