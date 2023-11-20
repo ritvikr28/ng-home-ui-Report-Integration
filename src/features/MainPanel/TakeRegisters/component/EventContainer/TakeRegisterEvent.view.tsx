@@ -30,20 +30,22 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
 
   useEffect(() => {
     const datetime = (text: string): string =>
-    text.split('T')[1];   
-    const currentTime= new Date();   
-     const formattedLocalTime = `${currentTime.getUTCHours()}:${currentTime.getUTCMinutes()}:${currentTime.getUTCSeconds()}`;
+    text.split('T')[1];  
+   
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
       {
         if (carouselRef && carouselRef.current && !effectTriggered) {
         const Index=apiRegsiterEventData.findIndex((x)=>{
-          if(x.startDateTime!=null && x.endDateTime!=null)
-           return (datetime(x.startDateTime) <= formattedLocalTime  && formattedLocalTime<= datetime(x.endDateTime))|| datetime(x.startDateTime) > formattedLocalTime
+          if(x.startDateTime!=null && x.endDateTime!=null){
           
-           return -1;
+            const formattedLocalTime=new Date();
+            const currentUTCDateTime=formattedLocalTime.toISOString();            
+           return ((datetime(x.startDateTime) <= datetime(currentUTCDateTime)  && datetime(currentUTCDateTime) <= datetime(x.endDateTime)) || datetime(x.startDateTime) > datetime(currentUTCDateTime))
+          }  
+          return -1;
           })
        
-        setEffectTriggered(true); 
+        setEffectTriggered(true);
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
           setCurrentSlide(apiRegsiterEventData.length-1)
@@ -219,7 +221,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 <ActionCard
                   dataTestId="test-id"
                   icon={<></>}
-                  id="action-card"
+                  id="no-more-register-id"
                   onClickActionCard={ () => {}}
                   primaryText="No more registers"
                 />

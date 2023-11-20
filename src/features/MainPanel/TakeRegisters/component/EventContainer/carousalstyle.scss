@@ -43,7 +43,9 @@
   direction: rtl;
 }
 
-#no-more-register-id,
+#no-more-register-id {
+  min-height: 93px;
+}
  
 #no-register-id {
   min-height: 93px;
