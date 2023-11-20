@@ -16,7 +16,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
 
   return (
     <Grid className={`welcome-parent ${parentClassName}`}>
-      <GridItem>
+      <GridItem lg ={10} >
         {isLongName ? (
           <>
             <div className={`subparent ${subparentClassName}`}>
@@ -43,3 +43,4 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
 };
 
 export default WelcomeUserView;
+
