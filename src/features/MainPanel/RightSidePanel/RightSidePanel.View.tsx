@@ -32,6 +32,7 @@ export const RightSidePanelView: (
     isLoader,
     errCodeMessage,
     pupilDetailErrorCodeMessage,
+    isPupilSectionEnable
   }: IRightSidePanelViewProps = props;
 
   const handlePanelClose = () => {
@@ -100,6 +101,7 @@ export const RightSidePanelView: (
               />
             </div>
 
+            {isPupilSectionEnable &&
             <div
               data-testid="register-label"
               className="essui-global-typography-default-subtitle margin-24 div-container"
@@ -121,6 +123,7 @@ export const RightSidePanelView: (
                 </Button>
               </span>
             </div>
+}
 
             <div>
               {errCodeMessage ? (

@@ -30,6 +30,8 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   const [groupMemberDetails, setGroupMemberDetailsData] = useState<
     IGroupMemberDetailsResponse[]
   >([]);
+  const [isPupilSectionEnable, setPupilSection] = useState(true);
+
   const formatEventTimeData = (
     EventStartDate: string,
     EventEndDate: string,
@@ -67,6 +69,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
           setErrCodeMessage(false);
           setLoader(false);
           setGroupMemberDetailsData([]);
+          setPupilSection(false)
         } else {
           const responseData = await FetchGroupMemberDetailsData(
             groupExternalId,
@@ -76,6 +79,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
           pupilSortLogic(responseData);
           setErrCodeMessage(false);
           setLoader(false);
+          setPupilSection(true);
         }
       } catch (error) {
         setErrCodeMessage(true);
@@ -83,6 +87,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         setPupilDetailErrorCodeMessage(
           "We've experienced a technical issue that's stopped us from showing pupil information for this register. Please check back in a bit."
         );
+        setPupilSection(true);
       }
     };
 
@@ -104,6 +109,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         isLoader={isLoader}
         errCodeMessage={errCodeMessage}
         pupilDetailErrorCodeMessage={pupilDetailErrorCodeMessage}
+        isPupilSectionEnable={isPupilSectionEnable}
         data-testid="panel-open"
       />
     </div>

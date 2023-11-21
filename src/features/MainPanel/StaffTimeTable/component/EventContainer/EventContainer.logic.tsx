@@ -54,7 +54,7 @@ const EventContainer: React.FC = () => {
     const day = dayjs(eventTimeData.eventStart).format("ddd");
     const starttime = dayjs(eventTimeData.eventStart).format("HH:mm");
     const endtime = dayjs(eventTimeData.eventEnd).format("HH:mm");
-    const eventPeriodNum = eventTimeData.eventDescription.split(":")[1];
+    const eventPeriodNum = (eventTimeData && eventTimeData.eventDescription) ?eventTimeData.eventDescription.split(":")[1]:"";
 
     return `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };

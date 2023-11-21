@@ -13,5 +13,6 @@ export interface IRightSidePanelViewProps {
     errCodeMessage:boolean;
     pupilDetailErrorCodeMessage:string;
     StaffName:string |null;
+    isPupilSectionEnable:boolean;
   }
 

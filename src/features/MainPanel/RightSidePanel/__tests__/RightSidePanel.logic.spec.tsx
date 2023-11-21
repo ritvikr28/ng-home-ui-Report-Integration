@@ -163,6 +163,7 @@ describe("RigthSidePanel", () => {
   const setErrCodeMessage = jest.fn();
   const setGroupMemberDetailsData = jest.fn();
   const setPupilDetailErrorCodeMessage = jest.fn();
+  const setPupilSection = jest.fn();
 
   test("should set values if eventtitle is not break or meeting or external is not empty", async () => {
     jest
@@ -170,7 +171,8 @@ describe("RigthSidePanel", () => {
       .mockImplementationOnce(() => [false, setLoader])
       .mockImplementationOnce(() => [false, setErrCodeMessage])
       .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
-      .mockImplementationOnce(() => [[], setGroupMemberDetailsData]);
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
 
     jest
       .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
@@ -198,6 +200,7 @@ describe("RigthSidePanel", () => {
       expect(setGroupMemberDetailsData).toHaveBeenCalledWith(
         mockSortedListofGroupExternalIdBySurname
       );
+      expect(setPupilSection).toHaveBeenCalledWith(true);
     });
   });
  
@@ -208,7 +211,8 @@ describe("RigthSidePanel", () => {
       .mockImplementationOnce(() => [true, setLoader])
       .mockImplementationOnce(() => [true, setErrCodeMessage])
       .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
-      .mockImplementationOnce(() => [[], setGroupMemberDetailsData]);
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
 
     jest
       .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
@@ -236,6 +240,8 @@ describe("RigthSidePanel", () => {
       expect(setPupilDetailErrorCodeMessage).toHaveBeenCalledWith(
         "We've experienced a technical issue that's stopped us from showing pupil information for this register. Please check back in a bit."
       );
+      expect(setPupilSection).toHaveBeenCalledWith(true);
+
     });
   });
   test("should not set any values if EventTypecode is ttntper", async () => {
@@ -244,7 +250,8 @@ describe("RigthSidePanel", () => {
       .mockImplementationOnce(() => [true, setLoader])
       .mockImplementationOnce(() => [true, setErrCodeMessage])
       .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
-      .mockImplementationOnce(() => [[], setGroupMemberDetailsData]);
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
     render(
       <RightSidePanel
         SchoolEventexternalId={mockEventTitleMeeting.SchoolEventexternalId}
@@ -265,6 +272,7 @@ describe("RigthSidePanel", () => {
       expect(setLoader).toHaveBeenCalledWith(false);
       expect(setErrCodeMessage).toHaveBeenCalledWith(false);
       expect(setGroupMemberDetailsData).toHaveBeenCalledWith([]);
+      expect(setPupilSection).toHaveBeenCalledWith(false);
     });
   });
 
@@ -274,7 +282,9 @@ describe("RigthSidePanel", () => {
       .mockImplementationOnce(() => [true, setLoader])
       .mockImplementationOnce(() => [true, setErrCodeMessage])
       .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
-      .mockImplementationOnce(() => [[], setGroupMemberDetailsData]);
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
+
     render(
       <RightSidePanel
         SchoolEventexternalId={mockEventTitleMeetingTTPeriod.SchoolEventexternalId}
@@ -295,6 +305,7 @@ describe("RigthSidePanel", () => {
       expect(setLoader).toHaveBeenCalledWith(false);
       expect(setErrCodeMessage).toHaveBeenCalledWith(false);
       expect(setGroupMemberDetailsData).toHaveBeenCalledWith([]);
+      expect(setPupilSection).toHaveBeenCalledWith(false);
     });
   });
 });
