@@ -35,6 +35,7 @@ export const EventContainerView: (
         status={EventCardColor}
         title={EventTitle}
         inputWidth={166}
+        inputHeight={75}
         dataTestId={`eventid${index}`}
         className="dynamiceventcard event-primary-text"
       />
