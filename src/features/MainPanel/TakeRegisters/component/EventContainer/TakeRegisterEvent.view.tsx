@@ -201,7 +201,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     id={`action-card${index}`}
                     onClickActionCard={() => {}}
                     primaryText={
-                      `${item.baseGroup.code!} ${item.isLesson ?  ` | ${  item?.room?.roomDescription!}` : ""}`                      
+                      `${item.baseGroup.code!} ${item.room  ?  ` | ${  item?.room?.roomDescription!}` : ""}`                      
                     }
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag
@@ -226,9 +226,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               }
           </Carousel>
         ): (   
-          <>
           
-          { apiError=== false && apiRegsiterEventData === null  &&
             <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
             <ActionCard
               dataTestId="test-id1"
@@ -238,9 +236,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               primaryText="No registers today"
             />
           </div>
-          }
-          </>
-          
+        
         )}
       </div>
     </>
