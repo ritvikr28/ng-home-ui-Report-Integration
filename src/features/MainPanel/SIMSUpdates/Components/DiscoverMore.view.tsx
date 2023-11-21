@@ -31,7 +31,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
         </span>
       </div>
       <div className="action-card-container sims-ng">
-        <span>
+        <span className=" what-new ">
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
