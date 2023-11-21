@@ -12,6 +12,8 @@ import { IRegisterViewProps } from "./props";
 import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
 import "./carousalstyle.scss";
 import { responsive } from "./carousel";
+import { envConfig } from "../../../../../shared/utils";
+import { IRegistersDetails } from "../../model";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
@@ -27,7 +29,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     /* istanbul ignore next */
     carouselRef.current.goToSlide(index);
   };
-
+  
   useEffect(() => {   
    
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
@@ -41,14 +43,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           }  
           return -1;
           })
-
+          
         setEffectTriggered(true);
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
           setCurrentSlide(apiRegsiterEventData.length-1)
         }        
       else 
-      {setDefaultSlide(Index);
+      {
+        setDefaultSlide(Index);
         if((apiRegsiterEventData.length-Index)<=3)
         setCurrentSlide(apiRegsiterEventData.length-1)
       else
@@ -56,12 +59,13 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       }      
       }     
     }
+    
   });
 
   const nextSlide = () => {    
-    /* istanbul ignore next */
     const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
-    if (carouselRef.current) {     
+    if (carouselRef.current) { 
+       /* istanbul ignore next */    
       carouselRef.current.next();
       setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3)
       );
@@ -69,6 +73,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   };
 
   const previousSlide = () => {
+     /* istanbul ignore next */
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
       setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
@@ -124,6 +129,31 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     </svg>
   );
 
+  const OnRegisterClick = (item: IRegistersDetails) => {
+    /* istanbul ignore next */
+    if (item.isLesson) {
+      // secondary
+      if (
+        item.baseGroup.externalId != null &&
+        item.baseGroup.externalId !== "" &&
+        item.classPeriodExternalId !== "" &&
+        item.classPeriodExternalId != null &&
+        item.eventInstanceExternalId !== "" &&
+        item.eventInstanceExternalId != null
+      ) {
+        window.location.href = `${envConfig.REGISTER_BASE_URL}/${item.classPeriodExternalId}/${item.baseGroup.externalId}/${item.eventInstanceExternalId}`;
+      }
+    } else if (
+      item.baseGroup.externalId != null &&
+      item.baseGroup.externalId !== "" &&
+      item.type !== "" &&
+      item.externalId !== "" &&
+      item.externalId != null
+    ) {
+      // primary
+      window.location.href = `${envConfig.REGISTER_BASE_URL}/${item.type}/${item.baseGroup.externalId}/${item.externalId}`;
+    }
+  };
   return (
     <>
       <div
@@ -151,7 +181,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData==null?true:currentSlide === 0}
+              disabled={apiRegsiterEventData==null?true:(currentSlide === 0 || apiRegsiterEventData?.length<4)}
             />
           </div>
           <div>
@@ -173,6 +203,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       </div>
 
       <div className="slider-div">
+
         {apiError === false && apiRegsiterEventData &&  apiRegsiterEventData.length > 0?   (
           <Carousel
             ref={carouselRef}
@@ -199,7 +230,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     isTextTruncate
                     icon={<FilledGraphDataIcon />}
                     id={`action-card${index}`}
-                    onClickActionCard={() => {}}
+                    onClickActionCard={() => {OnRegisterClick(item)}}
                     primaryText={
                       `${item.baseGroup.code!} ${item.room  ?  ` | ${  item?.room?.roomDescription!}` : ""}`                      
                     }
@@ -226,7 +257,6 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               }
           </Carousel>
         ): (   
-          
             <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
             <ActionCard
               dataTestId="test-id1"
@@ -236,8 +266,9 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               primaryText="No registers today"
             />
           </div>
-        
-        )}
+          
+        )
+        }
       </div>
     </>
   );
