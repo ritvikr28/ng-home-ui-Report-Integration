@@ -21,7 +21,7 @@ export const EventContainerView: (
     StaffName,
     index,
     EventCardColor,
-    EventTypeCode    
+    EventTypeCode
   }: IEventContainerProps = props;
 
   return (
@@ -37,9 +37,9 @@ export const EventContainerView: (
         inputWidth={166}
         inputHeight={75}
         dataTestId={`eventid${index}`}
+        tabIndex={0}
         className="dynamiceventcard event-primary-text"
       />
-
       <div>
         {isOpen && (
           <RightSidePanel
@@ -55,7 +55,7 @@ export const EventContainerView: (
             GroupDescription={GroupDescription}
             StaffName={StaffName}
             data-testid={`right-panel-${index}`}
-            EventTypeCode={EventTypeCode}          
+            EventTypeCode={EventTypeCode}
           />
         )}
       </div>
