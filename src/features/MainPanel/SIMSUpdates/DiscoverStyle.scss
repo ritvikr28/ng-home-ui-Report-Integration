@@ -47,11 +47,13 @@
   display: flex;
   align-items: flex-start;
   gap: 24px;
+  
 
 }
 
 .what-new .essui-activity-card {
   margin-left: 11px;
+  
 }
 
 .sims-ng .essui-activity-card {
@@ -60,6 +62,11 @@
 
 .action-card .essui-activity-card {
   margin-left: -8px;
+ // width: fit-content;
+}
+
+.what-new .essui-activity-card-center {
+   width: fit-content;
 }
 
 
