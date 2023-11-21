@@ -109,7 +109,7 @@ const EventContainer: React.FC = () => {
           primaryText=""
           secondaryText=""
           status={EventCardStatus.DEFAULT}
-          title="No events to display"
+          title="No more events"
           inputWidth={166}
           inputHeight={75}
           className="dynamiceventcard event-primary-text no-events"

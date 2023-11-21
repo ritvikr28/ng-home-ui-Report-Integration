@@ -335,7 +335,7 @@ describe('EventContainer', () => {
     setStatus(mockres.status);
     render(<EventContainer />);
     expect(await screen.findByText(/10x\/Sc2\s*\|\s*Science/)).toBeInTheDocument();
-    expect(await screen.findByText('No events to display')).toBeInTheDocument();
+    expect(await screen.findByText('No more events')).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
   });
