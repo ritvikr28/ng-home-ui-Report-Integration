@@ -141,7 +141,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
         item.eventInstanceExternalId !== "" &&
         item.eventInstanceExternalId != null
       ) {
-        window.location.href = `${envConfig.REGISTER_BASE_URL}/${item.classPeriodExternalId}/${item.baseGroup.externalId}/${item.eventInstanceExternalId}`;
+        window.location.href = `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.baseGroup.externalId}/${item.eventInstanceExternalId}`;
       }
     } else if (
       item.baseGroup.externalId != null &&
@@ -151,7 +151,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       item.externalId != null
     ) {
       // primary
-      window.location.href = `${envConfig.REGISTER_BASE_URL}/${item.type}/${item.baseGroup.externalId}/${item.externalId}`;
+      window.location.href = `${envConfig.REGISTER_BASE_URL}/take-register/${item.type}/${item.baseGroup.externalId}/${item.externalId}`;
     }
   };
   return (
@@ -195,7 +195,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               size={ButtonSize.Small}
               type="button"
               disabled={apiRegsiterEventData==null?true:
-                currentSlide === (apiRegsiterEventData?.length ?? 0) - 1
+                (currentSlide === (apiRegsiterEventData?.length ?? 0) - 1) || (currentSlide +3 >= apiRegsiterEventData?.length)
               }
             />
           </div>
