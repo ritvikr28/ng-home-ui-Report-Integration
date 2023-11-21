@@ -1,5 +1,6 @@
 export interface IRegistersDetails  {
     externalId?: string;
+    type?: string;
     narrative?: string;
     classPeriodExternalId?: string;
     eventInstanceExternalId?: string;
