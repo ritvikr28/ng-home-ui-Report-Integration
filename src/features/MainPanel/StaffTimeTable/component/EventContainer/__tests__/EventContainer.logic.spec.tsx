@@ -417,7 +417,7 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
 
   userEvent.click(getByTestId('eventid0'));
   
-
+  expect(togglePanel1).toHaveBeenCalled();
   expect(togglePanel1).toHaveBeenCalledWith("1");
 
 });
