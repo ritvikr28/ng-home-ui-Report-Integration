@@ -1,4 +1,4 @@
-import { RenderResult, render } from "@testing-library/react";
+import { RenderResult, act, render } from "@testing-library/react";
 import { ActionCard } from "@essnextgen/ui-kit";
 import TakeRegisterEvent from "../TakeRegisterEvent.logic";
 import { FetchRegisterEventData } from "../../../../../../shared/services/registersDomain/registerEventsDetails";
@@ -157,35 +157,30 @@ import TakeRegisterEventView from "../TakeRegisterEvent.view";
           
        },
        {
-         "externalId": "ad724f9c-9f1a-4da0-b2d8-c4fe0ccb6496",
-         
-         "narrative": "Tue:2",
-         "classPeriodExternalId": "86de2ad5-c22a-488e-b8bc-9d52c97b4a48",
-         "eventInstanceExternalId": "5ea5536a-9e0f-46ee-bb42-6051ded34ce5",
-         
-         "startDateTime": "2023-10-31T10:15:00",
-         "endDateTime": "2023-10-31T11:15:00",
+        "externalId": "ad724f9c-9f1a-4da0-b2d8-c4fe0ccb6496",
+        "narrative": "Tue:2",
+        "classPeriodExternalId": "86de2ad5-c22a-488e-b8bc-9d52c97b4a48",
+        "eventInstanceExternalId": "5ea5536a-9e0f-46ee-bb42-6051ded34ce5",
+        "startDateTime": "2023-10-31T10:15:00",
+        "endDateTime": "2023-10-31T11:15:00",
         "isCompleted": false,
-          
-         "baseGroup": {
-           "externalId": "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
-           "code": "9x/Sc3",
-           "description": "9x/Sc3"
-         },
-         "subject": {
-           "subjectExternalId": "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-           "subjectCode": "Sc",
-           "subjectDescription": "Science"
-         },
-         "room": {
-           "roomExternalId": "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
-           "roomCode": "S7",
-           "roomDescription": "Science Lab 7"
-         },
-          
-         "isLesson": true,
-    
-       }
+        "baseGroup": {
+          "externalId": "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
+          "code": "9x/Sc3",
+          "description": "9x/Sc3"
+        },
+        "subject": {
+          "subjectExternalId": "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
+          "subjectCode": "Sc",
+          "subjectDescription": "Science"
+        },
+        "room": {
+          "roomExternalId": "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
+          "roomCode": "S7",
+          "roomDescription": "Science Lab 7"
+        },
+        "isLesson": true
+      }
       
      ]
    
@@ -198,20 +193,25 @@ jest.mock(
 );
 
 
+const setIsError = jest.fn();
 
-
-  test("fetches data on component mount", async () => {
-    (FetchRegisterEventData as jest.Mock).mockReturnValue(mockTakeRegisterData);
+test("fetches data on component mount", async () => {
+  (FetchRegisterEventData as jest.Mock).mockReturnValue(mockTakeRegisterData);
+  await act(async () => {
+    setIsError(false);
     render(<TakeRegisterEvent />);
-
-    expect(FetchRegisterEventData).toHaveBeenCalledTimes(1);
   });
+  expect(setIsError).toHaveBeenCalledWith(false);
+  expect(FetchRegisterEventData).toHaveBeenCalledTimes(1);
+});
 
 
 
   test("fetches null data on component mount", async () => {
     (FetchRegisterEventData as jest.Mock).mockReturnValue([]);
-    render(<TakeRegisterEvent />);
+    await act(async () => {
+      render(<TakeRegisterEvent />);
+    });
 
     expect(FetchRegisterEventData).toHaveBeenCalledTimes(2);
   });
@@ -235,8 +235,8 @@ jest.mock(
       });
 
       test('renders No registers today', () => {
-        const { getByTestId } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />);
-        expect(getByTestId("test-id1")).toBeInTheDocument();
+        const { getByText } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />);
+        expect(getByText('No registers today')).toBeInTheDocument();
       });
 
       test('disables the previous button when api returns null', () => {
@@ -252,4 +252,17 @@ jest.mock(
     
         expect(nextButton).toBeDisabled();
       });
+
+      test('handles errors during data fetching', async () => {
+        const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+        (FetchRegisterEventData as jest.Mock).mockRejectedValue(mockTakeRegisterData);
+        
+         await act(async () => {
+          setIsError(true);
+          render(<TakeRegisterEvent />);
+        });
+        expect(consoleErrorMock).toHaveBeenCalledWith('Error while fetching data:', mockTakeRegisterData);
+        expect(consoleErrorMock).toHaveBeenCalledTimes(1);
+        expect(setIsError).toHaveBeenCalledWith(true);
+        });
      

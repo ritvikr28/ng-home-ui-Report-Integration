@@ -23,6 +23,7 @@ const WelcomeUser: () => JSX.Element = () => {
       setIsError(false);
 
     } catch (error) {
+      console.error("Error while fetching schoolName:", error);
       setIsError(true);
     }
   };

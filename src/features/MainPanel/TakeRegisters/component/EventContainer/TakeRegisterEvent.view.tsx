@@ -257,15 +257,19 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               }
           </Carousel>
         ): (   
-            <div className="carousel-container carousel-item-padding-40-px actioncard-div noregister">
-            <ActionCard
-              dataTestId="test-id1"
-              icon={<></>}
-              id="no-register-id"
-              onClickActionCard={() => {}}
-              primaryText="No registers today"
-            />
-          </div>
+          apiError === false &&
+          (apiRegsiterEventData == null ||
+            apiRegsiterEventData.length === 0) && (
+            <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister ">
+              <ActionCard
+                dataTestId="test-id1"
+                icon={<></>}
+                id="no-register-id"
+                onClickActionCard={() => {}}
+                primaryText="No registers today"
+              />
+            </div>
+          )
           
         )
         }

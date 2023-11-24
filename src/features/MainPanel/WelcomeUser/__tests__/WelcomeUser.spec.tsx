@@ -1,14 +1,17 @@
 import { authService } from "@essnextgen/auth-ui";
-import { render } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import WelcomeUser from "../WelcomeUser.logic";
 import * as schoolName from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolName } from "../model";
 import WelcomeUserView from "../WelcomeUser.view";
+import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 
 const mockApiResponse: ISchoolName = {
   externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
   schoolName: "Waters Edge Primary School",
 };
+
+const setIsError = jest.fn();
 
 test("renders welcome message if authorized and envConfig is set to True", () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
@@ -91,3 +94,18 @@ test("When api is failed then displays school name blank", async () => {
   );
   expect(blankString).toMatch("");
 });
+
+test('handles errors during data fetching', async () => {
+  jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+  const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+  (useFetchSchoolNameData as jest.Mock).mockRejectedValue(mockApiResponse);
+  setIsError(true);
+ 
+   await act(async () => {
+    setIsError(true);
+    render(<WelcomeUser />);
+  });
+  expect(consoleErrorMock).toHaveBeenCalledWith('Error while fetching schoolName:', mockApiResponse);
+  expect(consoleErrorMock).toHaveBeenCalledTimes(1);
+  expect(setIsError).toHaveBeenCalledWith(true);
+  });
