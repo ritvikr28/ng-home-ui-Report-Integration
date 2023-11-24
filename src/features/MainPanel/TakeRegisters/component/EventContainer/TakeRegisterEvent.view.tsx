@@ -62,22 +62,29 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     
   });
 
-  const nextSlide = () => {    
-    const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
+  const nextSlide = () => {
     if (carouselRef.current) { 
        /* istanbul ignore next */    
       carouselRef.current.next();
-      setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3)
-      );
+      setTimeout(moveRight,1000)     
+      
     }
   };
+  const moveRight=()=>{
+    const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
+    setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3))
+  }
+  const moveLeft=()=>{    
+    setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
+    );
+  }
 
   const previousSlide = () => {
      /* istanbul ignore next */
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
-      setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
-      );
+      setTimeout(moveLeft,1000)
+     
     }
   };
  

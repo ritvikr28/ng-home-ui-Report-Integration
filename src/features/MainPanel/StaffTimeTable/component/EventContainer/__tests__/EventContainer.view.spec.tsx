@@ -1,4 +1,4 @@
-import { RenderResult, render, waitFor } from '@testing-library/react';
+import { RenderResult, fireEvent, render, waitFor } from '@testing-library/react';
 import { EventCardStatus } from '@essnextgen/ui-kit';
 import EventContainerView from '../EventContainer.view';
 
@@ -28,8 +28,6 @@ const mockProps = {
 
 
   test('renders EventContainerView component', async() => {
-
-
     const { getByTestId }: RenderResult = render(
       <EventContainerView
         SchoolEventexternalId={mockProps.SchoolEventexternalId}
@@ -61,5 +59,43 @@ const mockProps = {
     expect(roomCode1).toBeInTheDocument();
     });
   });
+  test('renders EventContainerView component with Right Side Panel', async() => {
+const togglePanel=jest.fn();
 
+    const { getByTestId }: RenderResult = render(
+      <EventContainerView
+        SchoolEventexternalId={mockProps.SchoolEventexternalId}
+        EventTitle={mockProps.EventTitle}
+        EventTime={mockProps.EventTime}
+        RoomCode={mockProps.RoomCode}
+        EventStartDate={mockProps.EventStartDate}
+        EventEndDate={mockProps.EventEndDate}
+        GroupExternalId={mockProps.GroupExternalId}
+        EventPeriodNum={mockProps.EventPeriodNum}
+        togglePanel={togglePanel}
+        isOpen={true}
+        GroupDescription={mockProps.GroupDescription}
+        StaffName={mockProps.StaffName}
+        index={mockProps.index}
+        EventCardColor={EventCardStatus.PRIMARY}
+        EventTypeCode={mockProps.EventTypeCode}        
+      />
+    );
+    
+    const rightPanel: HTMLElement = getByTestId("right-panel-sidepanel");
+    const eventTime1: HTMLElement = getByTestId("time-value");
+    const roomCode1: HTMLElement = getByTestId("location-value");
+    const close: HTMLElement = getByTestId("side-panel-close-button");
+    await waitFor(() => {
+      expect(rightPanel).toBeInTheDocument();
+      expect(eventTime1).toBeInTheDocument();
+      expect(roomCode1).toBeInTheDocument();
+       
+       });
+    fireEvent.click(close);
+
+    await waitFor(() => {   
+    expect(togglePanel).toHaveBeenCalled();  
+    });
+  });
 })
