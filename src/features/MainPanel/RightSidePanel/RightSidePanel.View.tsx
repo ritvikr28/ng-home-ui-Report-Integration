@@ -32,13 +32,25 @@ export const RightSidePanelView: (
     isLoader,
     errCodeMessage,
     pupilDetailErrorCodeMessage,
-    isPupilSectionEnable
+    isPupilSectionEnable,
+    EventTypeCode,
+    BaseGroupId,
+    ClassPeriodExternalId,
+    EventInstanceExternalId
   }: IRightSidePanelViewProps = props;
 
   const handlePanelClose = () => {
     togglePanel(SchoolEventexternalId);
   };
 
+  const onTRButtonClick = () => {
+    const url = (EventTypeCode === "AttendanceSession")
+      ? `${envConfig.REGISTER_BASE_URL}/take-register/${BaseGroupId}/${EventInstanceExternalId}`
+      : `${envConfig.REGISTER_BASE_URL}/take-register/${BaseGroupId}/${ClassPeriodExternalId}/${EventInstanceExternalId}`;
+    window.open(url, "_blank");
+  };
+
+  
   return (
     <div
       data-testid="side-panel"
@@ -118,7 +130,8 @@ export const RightSidePanelView: (
                   dataTestId="take-reg-button"
                   size={ButtonSize.Small}
                   color={ButtonColor.Secondary}
-                >
+                  onClick={onTRButtonClick}
+                >                  
                   Take register
                 </Button>
               </span>

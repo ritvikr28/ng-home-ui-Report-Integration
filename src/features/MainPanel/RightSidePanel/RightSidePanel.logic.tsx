@@ -20,7 +20,9 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     isOpen,
     GroupDescription,
     StaffName,
-    EventTypeCode    
+    EventTypeCode,
+    ClassPeriodExternalId,
+    EventInstanceExternalId
   }: IRightSidePanelProps = props;
 
   const [isLoader, setLoader] = useState(true);
@@ -110,6 +112,10 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         errCodeMessage={errCodeMessage}
         pupilDetailErrorCodeMessage={pupilDetailErrorCodeMessage}
         isPupilSectionEnable={isPupilSectionEnable}
+        EventTypeCode={EventTypeCode}
+        BaseGroupId={GroupExternalId}
+        ClassPeriodExternalId={ClassPeriodExternalId}
+        EventInstanceExternalId={EventInstanceExternalId}
         data-testid="panel-open"
       />
     </div>

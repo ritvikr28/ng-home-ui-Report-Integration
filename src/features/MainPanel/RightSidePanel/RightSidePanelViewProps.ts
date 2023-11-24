@@ -14,5 +14,9 @@ export interface IRightSidePanelViewProps {
     pupilDetailErrorCodeMessage:string;
     StaffName:string |null;
     isPupilSectionEnable:boolean;
+    EventTypeCode:string;
+    BaseGroupId:string;
+    ClassPeriodExternalId:string;
+    EventInstanceExternalId:string;
   }
 

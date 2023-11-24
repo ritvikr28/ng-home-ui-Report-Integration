@@ -3,12 +3,14 @@ export interface IStaffTimeTableEventsResponse {
     eventStart: string;
     eventEnd: string;
     eventDescription: string;
+    eventInstanceExternalId:string;
     levelCode?: string | null;
     eventTypeCode: string;
     subjectColor: string | null;
     yearGroupColor: string | null;
     userPreference: string;
     yearGroupId: string;
+    classPeriodExternalId:string;
     group: {
         externalId:string;
         shortName:string;
@@ -32,7 +34,7 @@ export interface IStaffTimeTableEventsResponse {
     isCovered:boolean |null;
     isCovering:boolean |null;
     originalStaffExternalID?: string | null;
-    coveringStaffExternalID: string | null;
+    coveringStaffExternalID: string | null;  
   }
   
   export interface IGroupMemberDetailsResponse {

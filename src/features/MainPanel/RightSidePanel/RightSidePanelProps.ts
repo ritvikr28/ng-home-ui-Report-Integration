@@ -11,4 +11,6 @@ export interface IRightSidePanelProps {
   GroupDescription:string |null;
   StaffName:string |null;  
   EventTypeCode:string;
+  ClassPeriodExternalId:string;
+  EventInstanceExternalId:string;
 }

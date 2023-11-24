@@ -15,5 +15,7 @@ export interface IEventContainerProps {
     GroupDescription:string |null;
     StaffName:string |null;
     index:number;
-    EventCardColor: EventCardStatus
+    EventCardColor: EventCardStatus;
+    ClassPeriodExternalId:string;
+    EventInstanceExternalId:string;
   }

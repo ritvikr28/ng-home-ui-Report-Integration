@@ -21,7 +21,9 @@ export const EventContainerView: (
     StaffName,
     index,
     EventCardColor,
-    EventTypeCode
+    EventTypeCode,
+    ClassPeriodExternalId,
+    EventInstanceExternalId
   }: IEventContainerProps = props;
 
   return (
@@ -56,6 +58,8 @@ export const EventContainerView: (
             StaffName={StaffName}
             data-testid={`right-panel-${index}`}
             EventTypeCode={EventTypeCode}
+            ClassPeriodExternalId={ClassPeriodExternalId}
+            EventInstanceExternalId={EventInstanceExternalId}
           />
         )}
       </div>

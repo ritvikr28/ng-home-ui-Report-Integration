@@ -98,7 +98,9 @@ const EventContainer: React.FC = () => {
             StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
             index={index}
             EventCardColor={getBackgroundColor(item)}
-            EventTypeCode={item.eventTypeCode}           
+            EventTypeCode={item.eventTypeCode}   
+            ClassPeriodExternalId={item.classPeriodExternalId}   
+            EventInstanceExternalId={item.eventInstanceExternalId}   
           />
         </div>
       ))}

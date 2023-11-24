@@ -17,7 +17,9 @@ const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
-  EventTypeCode: "TTPeriod"  
+  EventTypeCode: "TTPeriod",
+  ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+  EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
 };
 const mockEventTitleMeeting: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -31,7 +33,9 @@ const mockEventTitleMeeting: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
-  EventTypeCode: "TTNTPer"
+  EventTypeCode: "TTNTPer",
+  ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+  EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
   
 };
 
@@ -47,7 +51,9 @@ const mockHealthyEvent: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
-  EventTypeCode: "ttperiod"  
+  EventTypeCode: "ttperiod",
+  ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+  EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
 };
 
 const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
@@ -191,7 +197,9 @@ describe("RigthSidePanel", () => {
         isOpen={mockHealthyEvent.isOpen}
         GroupDescription={mockHealthyEvent.GroupDescription}
         StaffName={mockHealthyEvent.StaffName}
-        EventTypeCode=""        
+        EventTypeCode=""
+        ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
+        EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}          
       />
     );
     await waitFor(() => {
@@ -231,7 +239,9 @@ describe("RigthSidePanel", () => {
         isOpen={mockHealthyEvent.isOpen}
         GroupDescription={mockHealthyEvent.GroupDescription}
         StaffName={mockHealthyEvent.StaffName}
-        EventTypeCode={mockHealthyEvent.EventTypeCode}        
+        EventTypeCode={mockHealthyEvent.EventTypeCode} 
+        ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
+        EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}          
       />
     );
     await waitFor(() => {
@@ -265,7 +275,9 @@ describe("RigthSidePanel", () => {
         isOpen={mockEventTitleMeeting.isOpen}
         GroupDescription={mockEventTitleMeeting.GroupDescription}
         StaffName={mockEventTitleMeeting.StaffName}
-        EventTypeCode={mockEventTitleMeeting.EventTypeCode}        
+        EventTypeCode={mockEventTitleMeeting.EventTypeCode}   
+        ClassPeriodExternalId={mockEventTitleMeeting.ClassPeriodExternalId}
+        EventInstanceExternalId={mockEventTitleMeeting.EventInstanceExternalId}        
       />
     );
     await waitFor(() => {
@@ -298,7 +310,9 @@ describe("RigthSidePanel", () => {
         isOpen={mockEventTitleMeetingTTPeriod.isOpen}
         GroupDescription={mockEventTitleMeetingTTPeriod.GroupDescription}
         StaffName={mockEventTitleMeetingTTPeriod.StaffName}
-        EventTypeCode={mockEventTitleMeetingTTPeriod.EventTypeCode}        
+        EventTypeCode={mockEventTitleMeetingTTPeriod.EventTypeCode} 
+        ClassPeriodExternalId={mockEventTitleMeetingTTPeriod.ClassPeriodExternalId}
+        EventInstanceExternalId={mockEventTitleMeetingTTPeriod.EventInstanceExternalId}        
       />
     );
     await waitFor(() => {

@@ -44,7 +44,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
     },
     {
       externalId: "c011c7c7-619e-4372-a384-d7a3e69b1651",
@@ -82,7 +84,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"    
     },
     {
       externalId: "d048c644-e390-4070-b695-24300adcb8c3",
@@ -120,7 +124,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
     },
     {
       externalId: "b31fb65e-2a69-4c22-b71f-736ae14f9dac",
@@ -158,7 +164,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
     },
     {
       externalId: "384d3e59-9e79-4604-a24d-ee3c14ecb41b",
@@ -196,7 +204,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"    
     },
     {
       externalId: "9631c9c7-6c64-495c-ae25-eca00d351f8c",
@@ -234,7 +244,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
     }
 ];
 
@@ -275,7 +287,9 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null
+      coveringStaffExternalID: null,     
+      eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
     }
 ];
 
@@ -409,7 +423,9 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     StaffName="John Doe"
     index={0}
     EventCardColor={EventCardStatus.PRIMARY}
-    EventTypeCode='TTPeriod'    
+    EventTypeCode='TTPeriod' 
+    ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
+    EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"        
   />;
 
 

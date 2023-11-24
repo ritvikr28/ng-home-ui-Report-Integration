@@ -23,7 +23,9 @@ const mockProps = {
     GroupDescription: 'Test Group',
     StaffName: 'John Doe',
     index: 0,
-    EventTypeCode:'TTPeriod',    
+    EventTypeCode:'TTPeriod',
+    ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+    EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"       
   };
 
 
@@ -44,7 +46,9 @@ const mockProps = {
         StaffName={mockProps.StaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
-        EventTypeCode={mockProps.EventTypeCode}        
+        EventTypeCode={mockProps.EventTypeCode}  
+        ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
+        EventInstanceExternalId={mockProps.EventInstanceExternalId}           
       />
     );
   
@@ -78,7 +82,9 @@ const togglePanel=jest.fn();
         StaffName={mockProps.StaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
-        EventTypeCode={mockProps.EventTypeCode}        
+        EventTypeCode={mockProps.EventTypeCode} 
+        ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
+        EventInstanceExternalId={mockProps.EventInstanceExternalId}           
       />
     );
     
