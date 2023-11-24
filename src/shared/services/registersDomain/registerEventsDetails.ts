@@ -6,18 +6,19 @@ import { IRegistersDetails } from "../../../features/MainPanel/TakeRegisters/mod
 
 
 export const FetchRegisterEventData = async () => {
-  const response: AxiosResponse<IRegistersDetails[]> = await service.get(
-    `RegisterDetails/LessonAndClassDetails`,
-    buildApplicationUrl(apiUrls)
-  );
+  try {
+    const response: AxiosResponse<IRegistersDetails[]> = await service.get(
+      `RegisterDetails/LessonAndClassDetails`,
+      buildApplicationUrl(apiUrls)
+    );
 
-  if (response.status === 200) {
-    return response.data;
+    if (response.status === 200 && response !== null) {
+      return response.data;
+    } 
+      return null;
+    
+  } catch (error) {
+    throw new Error("Failed to fetch registers details");
   }
-  if (response.status === 204) {
-    return null;
-  }
-
-  throw new Error(`Unexpected status code: ${response.status}`);
 };
 
