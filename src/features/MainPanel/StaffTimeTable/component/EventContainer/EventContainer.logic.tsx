@@ -13,7 +13,7 @@ const EventContainer: React.FC = () => {
     IStaffTimeTableEventsResponse[]
   >([]);
   const [selectedItem, setSelectedItem] = useState("");
-  const [status, setStatus] = useState(0);
+  const [status, setStatus] = useState(0);  
   const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
 
   const togglePanel = (externalId: string) => {
@@ -21,7 +21,14 @@ const EventContainer: React.FC = () => {
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId],
     }));
-    setSelectedItem(externalId);
+    if(!isOpen || isOpen[externalId])
+    {
+      setSelectedItem(schoolEventsData[0].externalId);
+    }
+    else
+    {
+      setSelectedItem(externalId);      
+    }
   };
 
   useEffect(() => {
@@ -32,7 +39,7 @@ const EventContainer: React.FC = () => {
         setStatus(responseStatus);
         setSchoolEventsData(responseData);
         setIsError(false);
-        if (responseData.length > 0) {
+        if (responseData.length > 0) {          
           setSelectedItem(responseData[0].externalId);
         }
       } catch (error) {

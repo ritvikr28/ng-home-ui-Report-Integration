@@ -27,3 +27,43 @@
   box-shadow: 0 0 0 4px#428fed;
   border-left: 0;
 }
+
+.event-primary-1 {
+  box-shadow: 0 0 0 4px#428fed;
+  outline: none;
+}
+
+.event-highlight-1 {
+  border-left-color: #00a0aa;
+  outline: none;
+}
+
+.event-outstanding-1 {
+  border-left-color: #a974ff;
+  outline: none;
+}
+
+.event-neutral-1 {
+  border-left-color: #8f8f8f;
+  outline: none;
+}
+
+.event-success-1 {
+  border-left-color: #52a15f;
+  outline: none;
+}
+
+.event-improvement-1 {
+  border-left-color: #e8619c;
+  outline: none;
+}
+
+.event-critical-1 {
+  border-left-color: #fc584c;
+  outline: none;
+}
+
+.event-warning-1 {
+  border-left-color: #cb8024;
+  outline: none;
+}

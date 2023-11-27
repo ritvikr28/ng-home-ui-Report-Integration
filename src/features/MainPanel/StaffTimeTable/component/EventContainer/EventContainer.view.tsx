@@ -39,9 +39,10 @@ export const EventContainerView: (
         title={EventTitle}
         inputWidth={166}
         inputHeight={75}
-        dataTestId={`eventid${index}`}
-        tabIndex={0}
-        className={SelectedItem === SchoolEventexternalId ? `dynamiceventcard event-primary-text event-highlight-0` : `dynamiceventcard event-primary-text`}
+        dataTestId={`eventid${index}`}    
+        /* eslint-disable */  
+        className={SelectedItem === SchoolEventexternalId ? (index===0?`dynamiceventcard event-primary-text event-highlight-0`:`dynamiceventcard event-primary-text event-${EventCardColor}-1`) : `dynamiceventcard event-primary-text`}
+        /* eslint-enable  */
       />
 
       <div>
