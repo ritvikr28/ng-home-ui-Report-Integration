@@ -23,7 +23,8 @@ export const EventContainerView: (
     EventCardColor,
     EventTypeCode,
     ClassPeriodExternalId,
-    EventInstanceExternalId
+    EventInstanceExternalId,
+    SelectedItem
   }: IEventContainerProps = props;
 
   return (
@@ -40,8 +41,9 @@ export const EventContainerView: (
         inputHeight={75}
         dataTestId={`eventid${index}`}
         tabIndex={0}
-        className="dynamiceventcard event-primary-text"
+        className={SelectedItem === SchoolEventexternalId ? `dynamiceventcard event-primary-text event-highlight-0` : `dynamiceventcard event-primary-text`}
       />
+
       <div>
         {isOpen && (
           <RightSidePanel

@@ -425,7 +425,9 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     EventCardColor={EventCardStatus.PRIMARY}
     EventTypeCode='TTPeriod' 
     ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
-    EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"        
+    EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
+    SelectedItem="1"        
+      
   />;
 
 

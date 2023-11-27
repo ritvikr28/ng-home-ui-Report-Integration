@@ -48,7 +48,8 @@ const mockProps = {
         EventCardColor={EventCardStatus.PRIMARY}
         EventTypeCode={mockProps.EventTypeCode}  
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
-        EventInstanceExternalId={mockProps.EventInstanceExternalId}           
+        EventInstanceExternalId={mockProps.EventInstanceExternalId}   
+        SelectedItem={mockProps.SchoolEventexternalId}        
       />
     );
   
@@ -84,7 +85,9 @@ const togglePanel=jest.fn();
         EventCardColor={EventCardStatus.PRIMARY}
         EventTypeCode={mockProps.EventTypeCode} 
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
-        EventInstanceExternalId={mockProps.EventInstanceExternalId}           
+        EventInstanceExternalId={mockProps.EventInstanceExternalId} 
+        SelectedItem={mockProps.SchoolEventexternalId}        
+  
       />
     );
     

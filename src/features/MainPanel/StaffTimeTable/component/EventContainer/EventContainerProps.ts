@@ -18,4 +18,6 @@ export interface IEventContainerProps {
     EventCardColor: EventCardStatus;
     ClassPeriodExternalId:string;
     EventInstanceExternalId:string;
+    SelectedItem:string;
+
   }

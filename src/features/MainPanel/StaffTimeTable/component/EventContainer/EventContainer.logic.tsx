@@ -12,6 +12,7 @@ const EventContainer: React.FC = () => {
   const [schoolEventsData, setSchoolEventsData] = useState<
     IStaffTimeTableEventsResponse[]
   >([]);
+  const [selectedItem, setSelectedItem] = useState("");
   const [status, setStatus] = useState(0);
   const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
 
@@ -20,6 +21,7 @@ const EventContainer: React.FC = () => {
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId],
     }));
+    setSelectedItem(externalId);
   };
 
   useEffect(() => {
@@ -30,6 +32,9 @@ const EventContainer: React.FC = () => {
         setStatus(responseStatus);
         setSchoolEventsData(responseData);
         setIsError(false);
+        if (responseData.length > 0) {
+          setSelectedItem(responseData[0].externalId);
+        }
       } catch (error) {
         console.error("Error while fetching data:", error);
         setIsError(true);
@@ -101,6 +106,7 @@ const EventContainer: React.FC = () => {
             EventTypeCode={item.eventTypeCode}   
             ClassPeriodExternalId={item.classPeriodExternalId}   
             EventInstanceExternalId={item.eventInstanceExternalId}   
+            SelectedItem={selectedItem}
           />
         </div>
       ))}
