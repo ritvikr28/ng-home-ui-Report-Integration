@@ -18,5 +18,6 @@ export interface IRightSidePanelViewProps {
     BaseGroupId:string;
     ClassPeriodExternalId:string;
     EventInstanceExternalId:string;
+    EventPeriodNo:string;
   }
 

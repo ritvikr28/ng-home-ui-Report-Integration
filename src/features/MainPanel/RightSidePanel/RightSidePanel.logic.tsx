@@ -116,6 +116,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         BaseGroupId={GroupExternalId}
         ClassPeriodExternalId={ClassPeriodExternalId}
         EventInstanceExternalId={EventInstanceExternalId}
+        EventPeriodNo={EventPeriodNo}
         data-testid="panel-open"
       />
     </div>
