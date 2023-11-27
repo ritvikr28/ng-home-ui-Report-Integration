@@ -62,12 +62,26 @@ const EventContainer: React.FC = () => {
     return `${desc} ${code} ${details}`;
   };
 
+
+  const formateventPeriodNum = (eventTimeData: any) => {
+ 
+        if (eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined) {
+          return eventTimeData.eventDescription.split(":")[1];
+        }
+
+        if (eventTimeData.eventTypeCode === "AttendanceSession") {
+          return eventTimeData.eventDescription;
+        }
+    return "";
+  };
+  
+  
+
   const formatEventTimeData = (eventTimeData: any) => {
     const day = dayjs(eventTimeData.eventStart).format("ddd");
     const starttime = dayjs(eventTimeData.eventStart).format("HH:mm");
     const endtime = dayjs(eventTimeData.eventEnd).format("HH:mm");
-    const eventPeriodNum = (eventTimeData && eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined) ?eventTimeData.eventDescription.split(":")[1]:"";
-
+    const eventPeriodNum =  formateventPeriodNum(eventTimeData);
     return `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 
@@ -103,7 +117,7 @@ const EventContainer: React.FC = () => {
             EventStartDate={item.eventStart}
             EventEndDate={item.eventEnd}
             GroupExternalId={item.group.externalId}
-            EventPeriodNum={item.eventDescription.split(":")[1]}
+            EventPeriodNum={formateventPeriodNum(item)}
             togglePanel={() => togglePanel(item.externalId)}
             isOpen={isOpen[item.externalId]}
             GroupDescription={item?.group?.shortName ?? ""}

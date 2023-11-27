@@ -36,7 +36,8 @@ export const RightSidePanelView: (
     EventTypeCode,
     BaseGroupId,
     ClassPeriodExternalId,
-    EventInstanceExternalId
+    EventInstanceExternalId,
+    EventPeriodNo
   }: IRightSidePanelViewProps = props;
 
   const handlePanelClose = () => {
@@ -45,7 +46,7 @@ export const RightSidePanelView: (
 
   const onTRButtonClick = () => {
     const url = (EventTypeCode === "AttendanceSession")
-      ? `${envConfig.REGISTER_BASE_URL}/take-register/${BaseGroupId}/${EventInstanceExternalId}`
+      ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${BaseGroupId}/${ClassPeriodExternalId}/${EventInstanceExternalId}`;
     window.open(url, "_blank");
   };
