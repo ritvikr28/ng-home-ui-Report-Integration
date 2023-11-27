@@ -75,7 +75,7 @@ const EventContainer: React.FC = () => {
     const starttime = dayjs(eventTimeData.eventStart).format("HH:mm");
     const endtime = dayjs(eventTimeData.eventEnd).format("HH:mm");
     const eventPeriodNum =  formateventPeriodNum(eventTimeData);
-    return `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
+    return (eventTimeData.eventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 
   if (isError || (status !== 200 && status !== 204)) {
