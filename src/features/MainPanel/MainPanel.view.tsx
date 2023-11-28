@@ -4,6 +4,7 @@ import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
 import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
+import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 
 const MainPanelView: () => JSX.Element = () => (
   <Grid>
@@ -13,6 +14,7 @@ const MainPanelView: () => JSX.Element = () => (
       <TakeRegisterView />
       <div className="divider-container"/>            
       <SIMSupdatesView/>
+      <SwitchViewLogic/>
     </GridItem>
   </Grid>
 );
