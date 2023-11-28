@@ -95,7 +95,7 @@ describe("<NewHomepageView />", () => {
     expect(getByTestId("btn-save")).toBeInTheDocument();
     expect(setIsOpen).toHaveBeenCalled();
     expect(setIsOpen).toHaveBeenCalledWith(false);
-    expect(setIsOpen).toHaveBeenCalledTimes(3);
+    expect(setIsOpen).toHaveBeenCalledTimes(4);
    
     
   });
