@@ -1,5 +1,6 @@
 import { authService } from "@essnextgen/auth-ui";
-import { isUserAdmin } from "../auth-helper";
+import { getQuickLinkSecurablesList, isUserAdmin } from "../auth-helper";
+
 
 jest.mock("@essnextgen/auth-ui");
 
@@ -114,5 +115,77 @@ describe("isUserAdmin", () => {
     }));
 
     expect(isUserAdmin()).toBe(true);
+  });
+});
+
+// const getItem= jest.fn();
+// const setItem= jest.fn();
+// const clear= jest.fn();
+// const localstoragemock = (() => {
+//   let store = [{}];
+
+//   return {
+//     getItem(key:any) {
+//       return store[key] || null;
+//     },
+//     setitem(key:any, value:any) {
+//       store[key] = value.tostring();
+//     },
+//     removeitem(key:any) {
+//       delete store[key];
+//     },
+//     clear() {
+//       store = [{}];
+//     }
+//   };
+// })();
+// const localStorageMock = {
+//   getItem: jest.fn(),
+//   setItem: jest.fn(),
+//   clear: jest.fn()
+// };
+// Object.defineProperty(window, 'sessionstorage', {
+//   value: localStorageMock
+// });
+const mockWindowProperty = (property:any, value:any) => {
+  const { [property]: originalProperty } = window;
+  delete window[property];
+  beforeAll(() => {
+    Object.defineProperty(window, property, {
+      configurable: true,
+      writable: true,
+      value,
+    });
+  });
+  afterAll(() => {
+    window[property] = originalProperty;
+  });
+};
+mockWindowProperty('sessionStorage', {
+  setItem: jest.fn(),
+  getItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+});
+describe('getSecurablesList', () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+    jest.restoreAllMocks();
+  });
+  test('should return empty array of permissions if token do not have Quick Links related permissions', () => {
+  
+    window.sessionStorage.setItem('PERMISSIONS', "W3siU2VjdXJhYmxlIjogIkxlYXJuZXIuUmVnaXN0cmF0aW9uIiwgIk9wZXJhdGlvbiI6ICJVcGRhdGUifSx7IlNlY3VyYWJsZSI6ICJMb29rdXAuVHJhbnNwb3J0IiwiT3BlcmF0aW9uIjogIkRlbGV0ZSJ9LHsiU2VjdXJhYmxlIjogIkdTUy5UZWFjaGVyNiIsIk9wZXJhdGlvbiI6ICJEZWxldGUifV0=");
+    const actualvalue = getQuickLinkSecurablesList();
+     expect(actualvalue).toEqual([]);
+
+    expect(window.sessionStorage.getItem).toHaveBeenCalled();
+  });
+
+  test('getQuickLinkSecurablesList returns an empty array when sessionStorage is empty', () => {
+    window.sessionStorage.setItem('PERMISSIONS', "");
+  
+    const result = getQuickLinkSecurablesList();
+  
+    expect(result).toEqual([]);
   });
 });

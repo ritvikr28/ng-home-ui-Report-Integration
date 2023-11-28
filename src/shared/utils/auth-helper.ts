@@ -1,5 +1,5 @@
 import jwtDecode from "jwt-decode";
-import { authService } from "@essnextgen/auth-ui";
+import { Permission, authService } from "@essnextgen/auth-ui";
 
 import { decodedTokenProps } from "../../types/auth";
 
@@ -19,4 +19,21 @@ export const isUserAdmin: () => boolean = () => {
   }
 
   return false;
+};
+export const getQuickLinkSecurablesList: () => Permission[] = () => {
+  const permissionToken:string =  window.sessionStorage.getItem('PERMISSIONS') || '';
+  if(permissionToken!=='')
+  {
+    const allowedPermissions: Permission[] = JSON.parse(
+      atob(permissionToken)
+    ) 
+    
+    const quickLinksPermissions:Permission[] =
+    allowedPermissions.filter((x: Permission)=> (x.Securable==="NG.Homepage.QuickLink.Teacher"|| 
+     x.Securable==="NG.Homepage.QuickLink.SLT" || x.Securable==="NG.Homepage.QuickLink.Admin")
+  )
+    return quickLinksPermissions;
+  } 
+
+  return [];
 };
