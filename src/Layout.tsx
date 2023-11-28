@@ -21,6 +21,7 @@ import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
+import { getQuickLinkSecurablesList } from "./shared/utils";
 
 
 const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
@@ -77,6 +78,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     if (isStandaloneApp === false) {
       fetchAllData();
     }
+    getQuickLinkSecurablesList();
   }, []);
 
   const menuFilterHandler: (
