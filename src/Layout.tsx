@@ -78,7 +78,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     if (isStandaloneApp === false) {
       fetchAllData();
     }
-    getQuickLinkSecurablesList();
+    console.log(getQuickLinkSecurablesList());
   }, []);
 
   const menuFilterHandler: (

@@ -118,35 +118,6 @@ describe("isUserAdmin", () => {
   });
 });
 
-// const getItem= jest.fn();
-// const setItem= jest.fn();
-// const clear= jest.fn();
-// const localstoragemock = (() => {
-//   let store = [{}];
-
-//   return {
-//     getItem(key:any) {
-//       return store[key] || null;
-//     },
-//     setitem(key:any, value:any) {
-//       store[key] = value.tostring();
-//     },
-//     removeitem(key:any) {
-//       delete store[key];
-//     },
-//     clear() {
-//       store = [{}];
-//     }
-//   };
-// })();
-// const localStorageMock = {
-//   getItem: jest.fn(),
-//   setItem: jest.fn(),
-//   clear: jest.fn()
-// };
-// Object.defineProperty(window, 'sessionstorage', {
-//   value: localStorageMock
-// });
 const mockWindowProperty = (property:any, value:any) => {
   const { [property]: originalProperty } = window;
   delete window[property];
