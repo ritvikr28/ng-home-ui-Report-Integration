@@ -303,16 +303,16 @@ stages:
                         kubectl rollout restart deployment ng-home-ui -n platform
                       failOnStderr: true
 
-        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true          
-            component:
-              name: 'nghomeui'
-              selfhostedpool: 'paz-vmss-pool'
-            env_name: qa_snow  
-            config:
+        # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+        #   parameters:
+        #     snowConfig:    
+        #       serviceConnection: 'ServiceNow-Connection'
+        #       requireManualValidation: true          
+        #     component:
+        #       name: 'nghomeui'
+        #       selfhostedpool: 'paz-vmss-pool'
+        #     env_name: qa_snow  
+        #     config:
  
     - stage: PreLive
       displayName: "Pre-Live Stage"

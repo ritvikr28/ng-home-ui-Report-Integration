@@ -13,7 +13,7 @@ import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
 import "./carousalstyle.scss";
 import { responsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
-import { IRegistersDetails } from "../../model";
+import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
@@ -36,10 +36,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       {
         if (carouselRef && carouselRef.current && !effectTriggered) {
         const Index=apiRegsiterEventData.findIndex((x)=>{
-          if(x.startDateTime!=null && x.endDateTime!=null){         
+          if(x.eventStart!=null && x.eventEnd!=null){         
             const formattedLocalTime=new Date();
             const currentUTCDateTime=formattedLocalTime.toISOString().split('.')[0]; 
-            return ((Date.parse(x.startDateTime) <= Date.parse(currentUTCDateTime)  && Date.parse(currentUTCDateTime) <= Date.parse(x.endDateTime)) || Date.parse(x.startDateTime) > Date.parse(currentUTCDateTime))            
+            return ((Date.parse(x.eventStart) <= Date.parse(currentUTCDateTime)  && Date.parse(currentUTCDateTime) <= Date.parse(x.eventEnd)) || Date.parse(x.eventStart) > Date.parse(currentUTCDateTime))            
           }  
           return -1;
           })
@@ -137,29 +137,11 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   );
 
   const OnRegisterClick = (item: IRegistersDetails) => {
-    /* istanbul ignore next */
-    if (item.isLesson) {
-      // secondary
-      if (
-        item.baseGroup.externalId != null &&
-        item.baseGroup.externalId !== "" &&
-        item.classPeriodExternalId !== "" &&
-        item.classPeriodExternalId != null &&
-        item.eventInstanceExternalId !== "" &&
-        item.eventInstanceExternalId != null
-      ) {
-        window.location.href = `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.baseGroup.externalId}/${item.eventInstanceExternalId}`;
-      }
-    } else if (
-      item.baseGroup.externalId != null &&
-      item.baseGroup.externalId !== "" &&
-      item.type !== "" &&
-      item.externalId !== "" &&
-      item.externalId != null
-    ) {
-      // primary
-      window.location.href = `${envConfig.REGISTER_BASE_URL}/take-register/${item.type}/${item.baseGroup.externalId}/${item.externalId}`;
-    }
+
+    const url = (item.eventTypeCode === "AttendanceSession")
+    ? `${envConfig.REGISTER_BASE_URL}/take-register/${item.eventDescription}/${item.group.externalId}/${item.eventInstanceExternalId}`
+    : `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.group.externalId}/${item.eventInstanceExternalId}`;
+  window.open(url, "_blank");
   };
   return (
     <>
@@ -239,7 +221,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     id={`action-card${index}`}
                     onClickActionCard={() => {OnRegisterClick(item)}}
                     primaryText={
-                      `${item.baseGroup.code!} ${item.room  ?  ` | ${  item?.room?.roomDescription!}` : ""}`                      
+                      `${item.group.shortName!} ${item.room  ?  ` | ${  item?.room?.roomName!}` : ""}`                      
                     }
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag
