@@ -2,7 +2,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../utils/api-service";
 import apiUrls from "../../hook/ApiConfig.json";
-import { IRegistersDetails } from "../../../features/MainPanel/TakeRegisters/model";
+import { IRegistersDetails } from "../../model/RegisterDomain/responsemodels";
 
 
 export const FetchRegisterEventData = async () => {

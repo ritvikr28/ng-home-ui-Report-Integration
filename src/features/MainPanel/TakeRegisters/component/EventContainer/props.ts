@@ -1,4 +1,4 @@
-import { IRegistersDetails } from "../../model";
+import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
 export interface IRegisterViewProps {
     apiRegsiterEventData?: IRegistersDetails[] | null;

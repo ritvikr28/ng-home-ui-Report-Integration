@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FetchRegisterEventData } from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "./TakeRegisterEvent.view";
-import { IRegistersDetails } from "../../model";
+import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
 const TakeRegisterEvent: () => JSX.Element = () => {
-  const [registerEventData, setRegisterEventApiData] = useState<
+  const [registerEventData
+    , setRegisterEventApiData] = useState<
     IRegistersDetails[] | null
   >(null);
 
@@ -15,7 +16,6 @@ const TakeRegisterEvent: () => JSX.Element = () => {
     setRegisterEventApiData(null);
     try {
       const RegisterEventDetails = await FetchRegisterEventData();
-
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
     } catch (error) {
