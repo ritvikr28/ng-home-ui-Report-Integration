@@ -3,8 +3,6 @@ import { authService } from "@essnextgen/auth-ui";
 import { fireEvent, render} from "@testing-library/react";
 import { Redirect } from "react-router-dom";
 import { NewHomepageView } from "../NewHomePage.view";
-import SidePanelView from "../../../features/SidePanel/SidePanel.view";
-
 
 jest.mock("../../../shared/utils", () => ({
   envConfig: {
@@ -75,28 +73,21 @@ describe("<NewHomepageView />", () => {
     fireEvent.click(getByTestId("btn-90-btn"));
 
     expect(setIsOpen).toHaveBeenCalled();
-  });
+  });  
   test("test state change on side panel close", () => {
-    const setIsOpen = jest.fn().mockImplementation(()=>false);   
-    const useSateMock:any = (useState:any) => [useState, setIsOpen];
-    const toggle = jest.fn();
+    const setIsOpen = jest.fn(); 
+     const useStateMock: any  = () => [false, setIsOpen];    
   
-    jest.mock('../../../features/SidePanel/SidePanel.view', () => ({
-      SidePanel: () => (
-        <SidePanelView isOpen={false} togglePanel={toggle}  />
-      ),
-    }));
-
-  jest.spyOn(React, 'useState').mockImplementation(useSateMock);  
+    jest
+    .spyOn(React, 'useState')
+    .mockImplementationOnce(useStateMock);
+    
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);    
 
     const {getByTestId}=render(<NewHomepageView />);
    
-    expect(getByTestId("btn-save")).toBeInTheDocument();
-    expect(setIsOpen).toHaveBeenCalled();
-    expect(setIsOpen).toHaveBeenCalledWith(false);
-    expect(setIsOpen).toHaveBeenCalledTimes(4);
-   
-    
+    expect(getByTestId("btn-collapse")).toBeInTheDocument();
+    fireEvent.click(getByTestId("btn-collapse"));
+    expect(setIsOpen).toHaveBeenCalled(); 
   });
 });

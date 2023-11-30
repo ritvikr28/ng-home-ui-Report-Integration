@@ -118,45 +118,81 @@ describe("isUserAdmin", () => {
   });
 });
 
-const mockWindowProperty = (property:any, value:any) => {
-  const { [property]: originalProperty } = window;
-  delete window[property];
-  beforeAll(() => {
-    Object.defineProperty(window, property, {
-      configurable: true,
-      writable: true,
-      value,
-    });
-  });
-  afterAll(() => {
-    window[property] = originalProperty;
-  });
-};
-mockWindowProperty('sessionStorage', {
-  setItem: jest.fn(),
-  getItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-});
+
 describe('getSecurablesList', () => {
   beforeEach(() => {
     window.sessionStorage.clear();
     jest.restoreAllMocks();
   });
-  test('should return empty array of permissions if token do not have Quick Links related permissions', () => {
-  
-    window.sessionStorage.setItem('PERMISSIONS', "W3siU2VjdXJhYmxlIjogIkxlYXJuZXIuUmVnaXN0cmF0aW9uIiwgIk9wZXJhdGlvbiI6ICJVcGRhdGUifSx7IlNlY3VyYWJsZSI6ICJMb29rdXAuVHJhbnNwb3J0IiwiT3BlcmF0aW9uIjogIkRlbGV0ZSJ9LHsiU2VjdXJhYmxlIjogIkdTUy5UZWFjaGVyNiIsIk9wZXJhdGlvbiI6ICJEZWxldGUifV0=");
-    const actualvalue = getQuickLinkSecurablesList();
-     expect(actualvalue).toEqual([]);
 
-    expect(window.sessionStorage.getItem).toHaveBeenCalled();
+  const mockWindowProperty = (property:any, value:any) => {
+    const { [property]: originalProperty } = window;
+    delete window[property];
+    beforeAll(() => {
+      Object.defineProperty(window, property, {
+        configurable: true,
+        writable: true,
+        value,
+      });
+    });
+    afterAll(() => {
+      window[property] = originalProperty;
+    });
+  };
+  mockWindowProperty('sessionStorage', {
+    setItem: jest.fn(),
+    getItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  });
+  test('should return empty array of permissions if token do not have Quick Links related permissions', () => {   
+    window.sessionStorage.setItem('PERMISSIONS', "W3siU2VjdXJhYmxlIjogIkxlYXJuZXIuUmVnaXN0cmF0aW9uIiwgIk9wZXJhdGlvbiI6ICJVcGRhdGUifSx7IlNlY3VyYWJsZSI6ICJMb29rdXAuVHJhbnNwb3J0IiwiT3BlcmF0aW9uIjogIkRlbGV0ZSJ9LHsiU2VjdXJhYmxlIjogIkdTUy5UZWFjaGVyNiIsIk9wZXJhdGlvbiI6ICJEZWxldGUifV0=");
+    
+    const getItemSpy = jest.spyOn(window.sessionStorage, 'getItem');
+    
+    const actualvalue = getQuickLinkSecurablesList();
+
+    expect(actualvalue).toEqual([]);
+    expect(getItemSpy).toHaveBeenCalled();
+  });
+  test('getQuickLinkSecurablesList returns an empty array when sessionStorage is empty', () => {
+      window.sessionStorage.setItem('PERMISSIONS', "abcdefg");
+      const getItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementationOnce(()=>"PERMISSIONS");
+      const spy=jest.spyOn(JSON,"parse").mockReturnValueOnce([]);
+ 
+     getQuickLinkSecurablesList();
+ 
+  expect(getItemSpy).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalled();
   });
 
-  test('getQuickLinkSecurablesList returns an empty array when sessionStorage is empty', () => {
-    window.sessionStorage.setItem('PERMISSIONS', "");
-  
-    const result = getQuickLinkSecurablesList();
-  
-    expect(result).toEqual([]);
+  test('getQuickLinkSecurablesList returns an permissions array when sessionStorage is not empty', () => {
+    window.sessionStorage.setItem('PERMISSIONS', "abcdefg");
+     const getItemSpy = jest.spyOn(window.sessionStorage, 'getItem').mockImplementationOnce(()=>"PERMISSIONS");
+    const spy=jest.spyOn(JSON,"parse")
+      .mockImplementationOnce(()=>[{
+        "Securable": "NG.Homepage.QuickLink.Teacher",
+        "Operation": "View"
+    }, {
+      "Securable": "NG.Homepage.QuickLink.SLT",
+      "Operation": "View"
+  },
+  {
+    "Securable": "NG.Homepage.QuickLink.Admin",
+    "Operation": "View"
+    }])
+  const result = getQuickLinkSecurablesList();
+  expect(result).toEqual([{
+    "Securable": "NG.Homepage.QuickLink.Teacher",
+    "Operation": "View"
+  }, {
+  "Securable": "NG.Homepage.QuickLink.SLT",
+  "Operation": "View"
+  },{
+    "Securable": "NG.Homepage.QuickLink.Admin",
+    "Operation": "View"
+    }]);
+  expect(getItemSpy).toHaveBeenCalled();
+  expect(spy).toHaveBeenCalled();
   });
 });

@@ -25,21 +25,21 @@ const SidePanel = ({ isOpen, togglePanel, closePanel }: any) => (
           </div>
         </div>
       ) : (
-        <div className="open-panel essui-open-panel-filled">
+        <div className="open-panel essui-open-panel-filled" data-testId="close-panel">
           <Button
             className="base-class"
             color={ButtonColor.Utility}
-            dataTestId="btn-save"
+            dataTestId="btn-collapse"
             iconColor={IconColor.Neutral800}
-            iconName={isOpen ? "close" : "open-panel--left--filled"}
-            onClick={isOpen ? closePanel : togglePanel}
+            iconName="open-panel--left--filled"
+            onClick={togglePanel}
             size={ButtonSize.Small}
           />
         </div>
       )}
       <div />
     </div>
-  );
+    );
 
 export default SidePanel;
 
