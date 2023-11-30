@@ -1,7 +1,8 @@
 import jwtDecode from "jwt-decode";
 import { Permission, authService } from "@essnextgen/auth-ui";
-
+import { isEmpty } from "@essnextgen/ui-kit";
 import { decodedTokenProps } from "../../types/auth";
+
 
 const decodeToken: (token: string) => decodedTokenProps = (
   token: string
@@ -36,4 +37,14 @@ export const getQuickLinkSecurablesList: () => Permission[] = () => {
   } 
 
   return [];
+};
+export const getUserOrganisation: () => string = () => {
+  const idToken: string | null = authService.getAuthTokens();
+
+  if (idToken) {
+    const decodedToken: any = decodeToken(idToken);
+    return isEmpty(decodedToken) ? '' : decodedToken['SIMSCX/OrganisationID'];
+  }
+
+  return '';
 };

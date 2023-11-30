@@ -17,11 +17,13 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
-import { getQuickLinkSecurablesList } from "./shared/utils";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+
 
 
 const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
@@ -77,8 +79,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     };
     if (isStandaloneApp === false) {
       fetchAllData();
-    }
-    console.log(getQuickLinkSecurablesList());
+    }    
   }, []);
 
   const menuFilterHandler: (
@@ -128,8 +129,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         }
       >
         <Switch>
-          <ProtectedRoute exact path="/new-home" component={NewHomepageView} />
-          <ProtectedRoute exact path="/" component={LandingPage} />
+          {/* <ProtectedRoute exact path="/new-home" component={NewHomepageView} /> */}
+          <ProtectedRoute exact path="/" component={
+             (hasFeaturePermission('NewHomePage') &&
+             isOrganisationInVariant())? NewHomepageView          
+            :LandingPage} />
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}
