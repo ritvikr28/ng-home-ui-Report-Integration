@@ -22,7 +22,11 @@ describe("QuickLink Component", () => {
   test("renders QuickLink component with BreadcrumbWrapper when authorized", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
-   const {getByText} =  render(<QuickLink />);
+   const {getByText} =  render(
+    <MemoryRouter initialEntries={["/"]}>
+      <Route path="/" component={QuickLink} />
+    </MemoryRouter>
+  );
  
     console.log(getByText);
     expect(getByText("Home")).toBeInTheDocument();

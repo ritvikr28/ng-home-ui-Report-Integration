@@ -1,0 +1,62 @@
+.quicklink #breadcrumbs-wrapper svg {
+  margin-left: 0;
+}
+
+.quicklink-container {
+  margin-bottom: 8px;
+}
+
+.quicklinktext {
+  font-family: "Segoe UI";
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+  /* stylelint-disable */
+  letter-spacing: 0em;
+  /* stylelint-enable */
+  text-align: left;
+  padding-bottom: 24px;
+}
+
+.nopadding {
+  padding-left: 16px;
+}
+
+.quicklinkheading {
+  color: var(--neutral-800, #303030);
+  font-family: Segoe UI;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 32px;
+  margin-bottom: 10px;
+
+}
+
+.quicklinktable {
+  background-color: #fff;
+}
+/* stylelint-disable */
+.essui-table__cell {
+  border: 0px;
+}
+/* stylelint-enable */
+
+.theadercell {
+  width: 60%;
+}
+
+.quicklink-divider-container {
+  width: 1116px;
+  margin-bottom: 8px;
+  margin-top: 32px;
+  align-self: stretch;
+  border-top: 1px solid var(--neutral-200, #c6c6c6);
+  background: var(--neutral-200, #c6c6c6);
+
+} 
+
+.simspadding {
+  padding-top: 28px;
+}
+ 
