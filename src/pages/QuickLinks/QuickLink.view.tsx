@@ -1,9 +1,32 @@
-import React from "react";
+import { Redirect } from "react-router-dom";
+import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
+import { envConfig } from "../../shared/utils";
+import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
-const QuickLink: React.FC = () => (
-  <div className="teacher-panel-container">
-    <span>QuickLink is under development</span>
-  </div>
-);
+
+const requiredPermissions: Permission[] = [
+  {
+    Securable: "NG.Homepage",
+
+    Operation: "View",
+  }
+];
+
+const QuickLink = () => {
+
+  const isPermission =
+  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
+  envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+  
+  return isPermission ? (
+    <div className="teacher-panel-container">
+       <BreadcrumbWrapper  />
+        
+    </div>
+  
+    ): (
+      <Redirect to="/noAccess" />
+    );
+}
 
 export default QuickLink;
