@@ -113,16 +113,14 @@ const SidePanel: React.FC<SidePanelProps> = ({
         </div>
       </div>
     ) : (
-      <div className="open-panel essui-open-panel-filled">
+      <div className="open-panel essui-open-panel-filled" data-testId="close-panel">
         <Button
           className="base-class"
           color={ButtonColor.Utility}
-          dataTestId="btn-save"
-          iconColor={IconColor.Neutral800}
-          /* istanbul ignore next */
-          iconName={isOpen ? "close" : "open-panel--left--filled"}
-          /* istanbul ignore next */
-          onClick={isOpen ? closePanel : togglePanel}
+          dataTestId="btn-collapse"
+          iconColor={IconColor.Neutral800}          
+          iconName= "open-panel--left--filled"          
+          onClick={togglePanel}
           size={ButtonSize.Small}
         />
       </div>

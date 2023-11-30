@@ -21,7 +21,7 @@ describe("SidePanel Component", () => {
       />
     );
 
-    expect(getByTestId("btn-save")).toBeInTheDocument();
+    expect(getByTestId("btn-collapse")).toBeInTheDocument();
   });
 
   // test("calls closePanel when close button is clicked", () => {
@@ -50,8 +50,8 @@ describe("SidePanel Component", () => {
         showMainPanelView={undefined}
       />
     );
-
-    fireEvent.click(getByTestId("btn-save"));
+    expect(getByTestId("close-panel")).toBeInTheDocument();
+    fireEvent.click(getByTestId("btn-collapse"));
 
     expect(togglePanelMock).toHaveBeenCalled();
     expect(togglePanelMock).toBeCalledTimes(1);

@@ -1,9 +1,9 @@
+import React from "react";
 import { RenderResult, act, render } from "@testing-library/react";
 import { ActionCard } from "@essnextgen/ui-kit";
 import TakeRegisterEvent from "../TakeRegisterEvent.logic";
 import { FetchRegisterEventData } from "../../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
-
 
 
  const mockTakeRegisterData = [
@@ -161,8 +161,8 @@ import TakeRegisterEventView from "../TakeRegisterEvent.view";
         "narrative": "Tue:2",
         "classPeriodExternalId": "86de2ad5-c22a-488e-b8bc-9d52c97b4a48",
         "eventInstanceExternalId": "5ea5536a-9e0f-46ee-bb42-6051ded34ce5",
-        "startDateTime": "2023-10-31T10:15:00",
-        "endDateTime": "2023-10-31T11:15:00",
+        "startDateTime": "2023-11-29T13:15:00",
+        "endDateTime": "2023-11-29T15:15:00",
         "isCompleted": false,
         "baseGroup": {
           "externalId": "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
@@ -232,6 +232,21 @@ test("fetches data on component mount", async () => {
       test('renders without errors', () => {
         const { container } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={mockTakeRegisterData} />);
         expect(container).toBeTruthy();
+      });
+
+      test.skip('render tile on basis of time', () => {
+        jest
+  .useFakeTimers()
+  .setSystemTime(new Date('2023-11-29:13:58.00'));
+  const setCurrentSlide = jest.fn(); 
+     const useStateMock: any  = () => [0, setCurrentSlide];    
+  
+    jest
+    .spyOn(React, 'useState')
+    .mockImplementationOnce(useStateMock);
+        const { container } = render(<TakeRegisterEventView apiError={false} apiRegsiterEventData={mockTakeRegisterData} />);
+        expect(container).toBeTruthy();
+        expect(setCurrentSlide).toHaveBeenCalled();
       });
 
       test('renders No registers today', () => {
