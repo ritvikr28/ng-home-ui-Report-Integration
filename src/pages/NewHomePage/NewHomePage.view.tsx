@@ -6,7 +6,7 @@ import { useState } from "react";
 import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
-
+import QuickLink from "../QuickLinks/QuickLink.view";
 
 const requiredPermissions: Permission[] = [
   {
@@ -20,29 +20,47 @@ export const NewHomepageView = () => {
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
-    const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(true);
+  const [showQuickLink, setShowQuickLink] = useState(false);
 
-    const togglePanel = () => {
-      setIsOpen(!isOpen);
-    };
-  
-    const closePanel = () => {
-      setIsOpen(false);
-    };
-  
+  const showQuickLinkView = () => {
+    setShowQuickLink(true);
+  };
+
+  const showMainPanelView = () => {
+    setShowQuickLink(false);
+  };
+  const togglePanel = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const closePanel = () => {
+    setIsOpen(false);
+  };
 
   return isPermission ? (
-    <Grid className="app">
-    <GridItem lg={isOpen ? 2 : 1} sm = {isOpen ? 3 : 2}>
-      <SidePanelView isOpen={isOpen} togglePanel={togglePanel} closePanel={closePanel} />
-    </GridItem>
-    <GridItem className="body-panel" lg={isOpen ? 10: 11 } sm = {isOpen ? 3 : 2}>
-      <MainPanelView />
-    </GridItem>
-  </Grid>
+    <>
+      <Grid className="app">
+        <GridItem lg={isOpen ? 2 : 1} sm={isOpen ? 3 : 2}>
+          <SidePanelView
+            isOpen={isOpen}
+            togglePanel={togglePanel}
+            closePanel={closePanel}
+            showQuickLinkView={showQuickLinkView}
+            showMainPanelView={showMainPanelView}
+            data-testid="btn-show-quick-link"
+          />
+        </GridItem>
+        <GridItem
+          className="body-panel"
+          lg={isOpen ? 10 : 11}
+          sm={isOpen ? 3 : 2}
+        >
+          {showQuickLink ? <QuickLink /> : <MainPanelView />}
+        </GridItem>
+      </Grid>
+    </>
   ) : (
     <Redirect to="/noAccess" />
   );
-  }
-
-  
+};
