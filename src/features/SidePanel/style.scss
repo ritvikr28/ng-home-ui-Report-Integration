@@ -33,11 +33,11 @@
 .open-panel .essui-icon--16 {
   min-height: 16px;
   min-width: 16px;
-  margin-left: 230px;
+  // margin-left: 230px;
 }
 
 .close-icon .essui-icon--24 {
-  margin-left: 210px;
+  margin-left: 260px;
 }
 
 .essui-open-panel-filled .essui-button-icon-only--small {
@@ -48,3 +48,59 @@
   margin-left: 20px;
 }
 
+.quick-panel-cont {
+  display: flex;
+  width: 227px;
+  padding: 12px 16px;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--neutral-800, #303030);
+  font-family: Segoe UI;
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 16px;
+  justify-content: space-between;
+}
+
+.see-all {
+  color: var(--neutral-400, #8f8f8f);
+  display: flex;
+  width: 227px;
+  padding: 12px 16px;
+  align-items: flex-start;
+  gap: 8px;
+  /* default/TextLink */
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px; /* 150% */
+  text-decoration-line: underline;
+  justify-content: space-between;
+}
+
+.quick-link {
+  color: var(--neutral-800, #303030);
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 24px;
+  margin-left: 16px;
+}
+
+.quick-link-padding {
+  padding: 20px;
+}
+
+.quick-link-username {
+  width: 232px;
+  font-size: 16px;
+  padding-left: 16px;
+}
+
+.quick-lint-display {
+  display: flex;
+  margin-bottom: 24px;
+}

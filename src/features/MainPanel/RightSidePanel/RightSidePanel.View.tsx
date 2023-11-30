@@ -48,7 +48,7 @@ export const RightSidePanelView: (
     const url = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
-    window.open(url, "_blank");
+    window.open(url, "_self");
   };
 
   

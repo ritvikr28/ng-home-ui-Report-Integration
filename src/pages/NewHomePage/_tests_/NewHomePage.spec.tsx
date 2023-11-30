@@ -1,6 +1,6 @@
 import React from "react";
 import { authService } from "@essnextgen/auth-ui";
-import { fireEvent, render} from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { Redirect } from "react-router-dom";
 import { NewHomepageView } from "../NewHomePage.view";
 
@@ -56,20 +56,25 @@ describe("<NewHomepageView />", () => {
 
   test("test state change on side panel open", () => {
     const setIsOpen = jest.fn();
-    const useSateMock:any = (useState:any) => [useState, setIsOpen];
-    jest.mock('react', () => {
-      const actualReact = jest.requireActual('react');
-  
-      return {
-          ...actualReact,
-          useState: jest.fn()
-      };
-  });
+    const setShowQuickLink = jest.fn();
+    const useSateMock: any = (useState: any) => [
+      useState,
+      setIsOpen,
+      setShowQuickLink
+    ];
+    //   jest.mock('react', () => {
+    //     const actualReact = jest.requireActual('react');
 
-  jest.spyOn(React, 'useState').mockImplementation(useSateMock);  
-  jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);    
+    //     return {
+    //         ...actualReact,
+    //         useState: jest.fn()
+    //     };
+    // });
 
-    const {getByTestId}=render(<NewHomepageView />);
+    jest.spyOn(React, "useState").mockImplementation(useSateMock);
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+
+    const { getByTestId } = render(<NewHomepageView />);
     fireEvent.click(getByTestId("btn-90-btn"));
 
     expect(setIsOpen).toHaveBeenCalled();
