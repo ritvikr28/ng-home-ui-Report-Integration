@@ -1,6 +1,7 @@
-import { Link, Redirect } from "react-router-dom";
+import {  Redirect } from "react-router-dom";
+
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Icon, IconColor, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
+import { Grid, GridItem, Icon, IconColor, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
@@ -75,10 +76,12 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                   </TableHead>
                   <TableBody>
                     {apiQuickLinkData &&
-                      apiQuickLinkData.map((link, index) => (
-                        <TableRow key={index}>
+                   
+                      apiQuickLinkData.map((link) => (
+                        <TableRow key={link.id}>
                           <TableCell>
-                            <Link data-testid="link" href={link.link} target="_self" to={undefined}>
+                            
+                            <Link data-testid="link" href={link.link} target="_self">
                               {link.name}
                             </Link>
                           </TableCell>

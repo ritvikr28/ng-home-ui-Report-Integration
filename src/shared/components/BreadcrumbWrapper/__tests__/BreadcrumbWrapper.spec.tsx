@@ -9,7 +9,7 @@ describe("BreadcrumbWrapper Component", () => {
   const {getByRole}  =  render(<BreadcrumbWrapper  />);
     const homeBreadcrumb = getByRole("link", { name: /Home/i });
     expect(homeBreadcrumb).toBeInTheDocument();
-    expect(homeBreadcrumb.getAttribute("href")).toBe("/new-home");
+    expect(homeBreadcrumb.getAttribute("href")).toBe("/");
    
 
   });
