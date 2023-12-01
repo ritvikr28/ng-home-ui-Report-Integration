@@ -109,8 +109,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
-  const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
-  isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"))
+  const hasFlagrPermission=(hasFeaturePermission('NewHomePage') &&
+  isOrganisationInVariant())
 
   return (
     /* eslint-disable react/prop-types */
@@ -134,7 +134,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       >
         <Switch>
           
-          { !hasFlagrPermission && <ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
+          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission && <ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
           <ProtectedRoute exact path="/" component={
              hasFlagrPermission? NewHomepageView          
             :LandingPage} />

@@ -39,7 +39,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
     const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
     isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"));
     
-  const createEventButton = showButton && !hasFlagrPermission?  (
+  const createEventButton = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission) ?  (
       <Button
         size={ButtonSize.Small}
         dataTestId="create-event-button"

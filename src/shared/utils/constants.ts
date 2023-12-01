@@ -12,7 +12,7 @@ export const envConfig: any = {
   REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT
 };
 
-export const UpdateEnvConfig = ({
+export const UpdateEnvConfig:any = ({
   REACT_API_URL,
   AppInsightsConnectionString,
   REACT_GA_TRACKING_ID,
