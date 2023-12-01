@@ -13,6 +13,12 @@ const DiscoverMoreView: () => JSX.Element = () => {
       "_blank"
     );
   };
+
+  interface RelType {
+    rel: string;
+  }
+
+  const  rel:RelType={rel:"noopener noreferrer"};
   const onCardClick = () => {};
   return (
     <>
@@ -36,6 +42,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
             target="_blank"
+            {...rel}
           >
             <ActionCard
               className="primary-text"
@@ -51,7 +58,9 @@ const DiscoverMoreView: () => JSX.Element = () => {
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
-            target="_blank"
+            target="_blank" 
+            {...rel}
+    
           >
             <ActionCard
               className="primary-text"

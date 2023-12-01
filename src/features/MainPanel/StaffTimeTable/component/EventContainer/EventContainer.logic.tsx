@@ -8,11 +8,11 @@ import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/Schoo
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 
 const EventContainer: React.FC = () => {
-  const [isError, setIsError] = useState<boolean>(false);
+  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [schoolEventsData, setSchoolEventsData] = useState<
     IStaffTimeTableEventsResponse[]
   >([]);
-  const [selectedItem, setSelectedItem] = useState("");
+  const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [status, setStatus] = useState(0);  
   const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
 
