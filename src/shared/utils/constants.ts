@@ -9,6 +9,7 @@ export const envConfig: any = {
   SCHOOL_BASE_URL: (window as any).SCHOOL_BASE_URL,
   REGISTER_BASE_URL: (window as any).REGISTER_BASE_URL,
   LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
+  REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT
 };
 
 export const UpdateEnvConfig = ({
@@ -18,7 +19,8 @@ export const UpdateEnvConfig = ({
   IS_NEWHOMEPAGE_ACCESSIBLE,
   SCHOOL_BASE_URL,
   REGISTER_BASE_URL,
-  LEARNER_UI_URL
+  LEARNER_UI_URL,
+  REACT_ENVIRONMENT
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -27,4 +29,5 @@ export const UpdateEnvConfig = ({
   envConfig.SCHOOL_BASE_URL=SCHOOL_BASE_URL;
   envConfig.REGISTER_BASE_URL = REGISTER_BASE_URL;
   envConfig.LEARNER_UI_URL = LEARNER_UI_URL;
+  envConfig.REACT_ENVIRONMENT=REACT_ENVIRONMENT
 };

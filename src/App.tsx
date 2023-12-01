@@ -26,7 +26,7 @@ const App: (props: IAppProps) => JSX.Element = ({
     }
   });
   const getFeatureFlags: () => Promise<IResponse> = () =>
-  service.get('v1/feature?EntityType=Home');
+  service.get('v1/features');
 
 const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
   authService.isAuthenticated() ? getFeatureFlags : undefined;

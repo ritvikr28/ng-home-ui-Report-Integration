@@ -23,6 +23,7 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+import { envConfig } from "./shared/utils";
 
 
 
@@ -108,6 +109,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
+  const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
+  isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"))
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -129,10 +133,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         }
       >
         <Switch>
-          {/* <ProtectedRoute exact path="/new-home" component={NewHomepageView} /> */}
+          
+          { !hasFlagrPermission && <ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
           <ProtectedRoute exact path="/" component={
-             (hasFeaturePermission('NewHomePage') &&
-             isOrganisationInVariant())? NewHomepageView          
+             hasFlagrPermission? NewHomepageView          
             :LandingPage} />
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}

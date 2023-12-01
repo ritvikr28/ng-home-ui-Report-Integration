@@ -4,6 +4,7 @@ import { createBrowserHistory } from "history";
 import * as redux from "react-redux";
 import { Router } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import configureStore from "../../../redux/store";
 import LandingPage from "../index";
 import { AppPermissionState } from "../../../types/AppPermission";
@@ -13,6 +14,10 @@ jest.mock('../../../shared/utils', () => ({
   envConfig: {
     IS_NEWHOMEPAGE_ACCESSIBLE: 'True',
   },
+}));
+
+jest.mock('@essnextgen/ui-flagr', () => ({  
+  hasFeaturePermission: jest.fn()
 }));
 
 describe("Landing Page", () => { 
@@ -177,7 +182,8 @@ describe("Landing Page tests", () => {
   });
 
   test('shows the New Homepage button when authorized and config is True', () => {
-    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
+    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);   
     const { queryByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
     expect(queryByTestId('create-event-button')).toBeInTheDocument();
   });
@@ -190,6 +196,7 @@ describe("Landing Page tests", () => {
   });
   
   test('redirects to "/new-home" when the "New Homepage" button is clicked', () => {
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
     jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
     const { getByText,getByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
     const button = getByText(/New Homepage/i);

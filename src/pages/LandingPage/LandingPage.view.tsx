@@ -13,8 +13,10 @@ import {
 import "./style.scss";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { useHistory } from "react-router-dom";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { IAppModule } from "../../types/AppPermission";
 import { envConfig } from "../../shared/utils";
+import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 interface IProps {
   data: Array<IAppModule>;
@@ -34,8 +36,10 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
   const history = useHistory();
   const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+    const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
+    isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"));
     
-  const createEventButton = showButton ?  (
+  const createEventButton = showButton && !hasFlagrPermission?  (
       <Button
         size={ButtonSize.Small}
         dataTestId="create-event-button"
