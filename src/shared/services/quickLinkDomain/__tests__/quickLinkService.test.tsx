@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { waitFor } from "@testing-library/react";
 import { service } from "../../../utils";
 import { IQuickLinkApiResponse } from "../../../model/quickLink/responsemodels";
-import { FetchQuickLinkData } from "../quickLinkService";
+import { FetchQuickLinkData, FetchQuickLinkpost } from "../quickLinkService";
 
 
 const mockApiResponse: IQuickLinkApiResponse[] = [
@@ -56,7 +56,6 @@ const mockApiResponse: IQuickLinkApiResponse[] = [
 const role = "Teacher";
   describe("QuickLink Service tests", () => {
 
-
     test("should return QuickLink data", async () => {
         jest
           .spyOn(service, "get")
@@ -90,4 +89,18 @@ const role = "Teacher";
         
       });
     
+      test("should return QuickLink post data", async () => {
+        const id= 1;
+        const operation = true;
+        jest
+          .spyOn(service, "get")
+          .mockImplementation(() => Promise.resolve(axiosResponse));
+          const response: any = await FetchQuickLinkpost(id,operation);
+      
+        await waitFor(() => {
+          expect(response.status).toBe(200);
+          expect(response.response).toEqual(mockApiResponse);
+        });
+      });
+
 })

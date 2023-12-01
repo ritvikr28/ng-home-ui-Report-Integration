@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   ButtonColor,
@@ -10,8 +10,9 @@ import {
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
-import QuickLinkResponseComponent from "../../shared/components/QuickLink/Quicklinkresponse";
+//import QuickLinkResponseComponent from "../../shared/components/QuickLink/Quicklinkresponse";
 import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 
 const userFullname: string | null = authService.getUsername();
 
@@ -19,19 +20,36 @@ const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   togglePanel,
   closePanel,
-  showQuickLinkView
+  showQuickLinkView,
+  quicklinkData
 }) => {
-  const [quickLinkData, setQuickLinkData]: [IQuickLinkApiResponse[] | null, React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
+  // const [quickLinkData, setQuickLinkData]: [IQuickLinkApiResponse[] | null, React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
   
-  const [isError, setIsError] = useState<boolean>(false);
+  // const [isError, setIsError] = useState<boolean>(false);
+  
+  // useEffect(() => {
+  //   (async () => {
+  //     try {          
+  //       const responseapidata  = await fetchQuickLinkDetails(); 
+  //       console.log("sidepanel" ,responseapidata);
+  //      if( responseapidata !=null )
+  //      { 
+  //       setQuickLinkData(responseapidata?.response);
+  //       setIsError(responseapidata.status);
+  //     console.log("status",responseapidata.status );
+  //      }
+       
+  //     } catch (error) { 
+  //       console.log(error);       
+  //     }      
+  //   })();
+  // }, []); 
   
   return (
   <div
     className={`side-view ${isOpen ? "open open-panel" : "side-view-closed"}`}
   >
-    <QuickLinkResponseComponent setQuickLinkData={setQuickLinkData}
-          setIsError={setIsError} />
-
+  
     {isOpen ? (
       <div>
         <div
@@ -57,15 +75,16 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <div>
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
-            {!isError && quickLinkData && quickLinkData.map((link) => (<div className="quick-panel-cont">
-            <Link data-testid="link" href={link.link} target="_self">
-                              {link.name}
+          
+            {quicklinkData && quicklinkData.map((sidelink) => (<div  className="quick-panel-cont">
+            <Link key={sidelink.id}  data-testid="link" href={sidelink.link} target="_self">
+                              {sidelink.name}
                             </Link>
               <Icon
-                color={link.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
+                color={sidelink.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
                 dataTestId="btn-90"
                 id="variable-2"
-                name={link.favourite ? 'star--filled' : 'star'}
+                name={sidelink.favourite ? 'star--filled' : 'star'}
                 size={16}
               />
             </div>))}

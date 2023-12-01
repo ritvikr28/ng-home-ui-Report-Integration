@@ -3,45 +3,32 @@ import { Icon, IconColor } from "@essnextgen/ui-kit";
 import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import QuickLink from "./QuickLink.view";
 import { FetchQuickLinkData, FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
-import QuickLinkResponseComponent from "../../shared/components/QuickLink/Quicklinkresponse";
+import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
+import { IQuickLinkProps, IQuickLinkViewProps } from './props';
 
 
-const QuickLinkLogic: () => JSX.Element = () => {
-  const [quickLinkData, setQuickLinkData]: [IQuickLinkApiResponse[] | null, React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
+const QuickLinkLogic: ({apiQuickLinkData} :IQuickLinkProps ) => JSX.Element = ({apiQuickLinkData} :IQuickLinkProps  ) => {
   
-    const [isError, setIsError] = useState<boolean>(false);
-     
-        const fetchQuickLinkDetails = async () => {
-          setIsError(true);
-          setQuickLinkData(null);
-          try {
-            const quickLinkDetails = await FetchQuickLinkData("Teacher");
-            console.log(quickLinkDetails);
-            if(quickLinkDetails.status !==200 &&  quickLinkDetails.status !==204)
-            {
-                setIsError(true);
-                setQuickLinkData(null);
-            }
-            else {
-                setQuickLinkData(quickLinkDetails.response);
-                setIsError(false);
-            }
-           
-          } catch (error) {
-            console.error("Error while fetching data:", error);
-            setIsError(true);
-          }
-        };
-        useEffect(() => {
-        fetchQuickLinkDetails();
-      }, []);
+  //  const [quickLinkData, setQuickLinkData]: any = useState<IQuickLinkApiResponse[] | null>(quickLinkData);
+  //    const [isError, setIsError] = useState<boolean>(false);
+   
+  
 
+     
       const handleStarClick = async (id: number, favorite: boolean) => {
         console.log(`Clicked${  id}`);
         try {
           const { status, response } = await FetchQuickLinkpost(id, favorite);
-          console.log(status, response);
-          fetchQuickLinkDetails();
+          
+         const responseapidata =  await fetchQuickLinkDetails();
+         if(responseapidata !=null)
+         {
+          apiQuickLinkData = responseapidata?.response ;
+         }
+         console.log("fetchQuickLinkDetails",responseapidata?.response);
+         console.log("FetchQuickLinkpost",status, response);
+        // setQuickLinkData(apiQuickLinkData);
+       
         } catch (error) {
           console.error("Error making the POST request:", error);
         }
@@ -61,13 +48,10 @@ const QuickLinkLogic: () => JSX.Element = () => {
     return (
       <>
         {" "}
-        <QuickLinkResponseComponent
-          setQuickLinkData={setQuickLinkData}
-          setIsError={setIsError}
-        />
+        
         <QuickLink
-       apiQuickLinkData={quickLinkData}
-        apiError={isError}
+       apiQuickLinkData={apiQuickLinkData}
+        //apiError={isError}
         displaystarredicon = {displaystarredicon}
       />
       </>
