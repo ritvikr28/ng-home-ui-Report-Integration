@@ -141,7 +141,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     const url = (item.eventTypeCode === "AttendanceSession")
     ? `${envConfig.REGISTER_BASE_URL}/take-register/${item.eventDescription}/${item.group.externalId}/${item.eventInstanceExternalId}`
     : `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.group.externalId}/${item.eventInstanceExternalId}`;
-  window.open(url, "_blank");
+  window.open(url, "_self");
   };
   return (
     <>
