@@ -16,7 +16,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   togglePanel,
   closePanel,
-  showQuickLinkView,
+  showQuickLinkView
 }) => (
   <div
     className={`side-view ${isOpen ? "open open-panel" : "side-view-closed"}`}
@@ -106,20 +106,35 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 size={16}
               />
             </div>
-            <div className="see-all" onClick={showQuickLinkView}>
+            {/*
+  eslint-disable jsx-a11y/anchor-is-valid,
+  no-script-url
+*/}
+            <a
+              href="javascript:void(0)"
+              className="see-all"
+              onClick={showQuickLinkView}
+            >
               See all
-            </div>
+            </a>
+            {/*
+  eslint-enable jsx-a11y/anchor-is-valid,
+  no-script-url
+*/}
           </div>
         </div>
       </div>
     ) : (
-      <div className="open-panel essui-open-panel-filled" data-testId="close-panel">
+      <div
+        className="open-panel essui-open-panel-filled"
+        data-testId="close-panel"
+      >
         <Button
           className="base-class"
           color={ButtonColor.Utility}
           dataTestId="btn-collapse"
-          iconColor={IconColor.Neutral800}          
-          iconName= "open-panel--left--filled"          
+          iconColor={IconColor.Neutral800}
+          iconName="open-panel--left--filled"
           onClick={togglePanel}
           size={ButtonSize.Small}
         />
