@@ -11,30 +11,29 @@ import QuickLinkLogic from "../QuickLinks";
 const requiredPermissions: Permission[] = [
   {
     Securable: "NG.Homepage",
-
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
-export const NewHomepageView = () => {
+export const NewHomepageView : () => JSX.Element = () => {
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
-  const [isOpen, setIsOpen] = useState(true);
-  const [showQuickLink, setShowQuickLink] = useState(false);
+  const [isOpen, setIsOpen]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [showQuickLink, setShowQuickLink]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
-  const showQuickLinkView = () => {
+  const showQuickLinkView :()=>void= () => {
     setShowQuickLink(true);
   };
 
-  const showMainPanelView = () => {
+  const showMainPanelView:()=>void= () => {
     setShowQuickLink(false);
   };
-  const togglePanel = () => {
+  const togglePanel:()=>void = () => {
     setIsOpen(!isOpen);
   };
 
-  const closePanel = () => {
+  const closePanel:()=>void = () => {
     setIsOpen(false);
   };
 
