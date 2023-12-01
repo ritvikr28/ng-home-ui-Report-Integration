@@ -1,8 +1,11 @@
   export interface IQuickLinkApiResponse {
-    id: string,
+    id: number,
     name: string;
     link: string;
     favourite: boolean;
-    createdOn: string
+    createdOn: string;
   }
-
+  export interface IQuickLinkPostApiResponse {
+    quickLinkId: any;
+    operation: any;
+  }

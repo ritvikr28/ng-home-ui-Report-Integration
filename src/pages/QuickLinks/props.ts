@@ -3,5 +3,6 @@ import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemode
 
 export interface IQuickLinkViewProps {
     apiQuickLinkData?: IQuickLinkApiResponse[] | null;
-    apiError?: boolean 
+    apiError?: boolean;
+    displaystarredicon: (favorites: boolean, id: number) => JSX.Element
   }

@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   ButtonColor,
   ButtonSize,
   Icon,
-  IconColor
+  IconColor,
+  Link
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
+import QuickLinkResponseComponent from "../../shared/components/QuickLink/Quicklinkresponse";
+import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 
 const userFullname: string | null = authService.getUsername();
 
@@ -17,10 +20,18 @@ const SidePanel: React.FC<SidePanelProps> = ({
   togglePanel,
   closePanel,
   showQuickLinkView
-}) => (
+}) => {
+  const [quickLinkData, setQuickLinkData]: [IQuickLinkApiResponse[] | null, React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
+  
+  const [isError, setIsError] = useState<boolean>(false);
+  
+  return (
   <div
     className={`side-view ${isOpen ? "open open-panel" : "side-view-closed"}`}
   >
+    <QuickLinkResponseComponent setQuickLinkData={setQuickLinkData}
+          setIsError={setIsError} />
+
     {isOpen ? (
       <div>
         <div
@@ -46,66 +57,19 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <div>
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
-            <div className="quick-panel-cont">
-              Take Register{" "}
+            {!isError && quickLinkData && quickLinkData.map((link) => (<div className="quick-panel-cont">
+            <Link data-testid="link" href={link.link} target="_self">
+                              {link.name}
+                            </Link>
               <Icon
-                color={IconColor.Primary500}
+                color={link.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
                 dataTestId="btn-90"
                 id="variable-2"
-                name="star--filled"
+                name={link.favourite ? 'star--filled' : 'star'}
                 size={16}
               />
-            </div>
-            <div className="quick-panel-cont">
-              Pupil Profile
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Staff Profile{" "}
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Seating Plans{" "}
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Staff TimeTable{" "}
-              <Icon
-                color={IconColor.Neutral800}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              My Markbook{" "}
-              <Icon
-                color={IconColor.Neutral800}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star"
-                size={16}
-              />
-            </div>
+            </div>))}
+            
             {/*
   eslint-disable jsx-a11y/anchor-is-valid,
   no-script-url
@@ -142,6 +106,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     )}
     <div />
   </div>
-);
+  )
+};
 
 export default SidePanel;
