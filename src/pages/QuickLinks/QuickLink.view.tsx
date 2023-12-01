@@ -4,10 +4,11 @@ import { Grid, GridItem, Icon, IconColor, Table, TableBody, TableCell, TableHead
 import { envConfig } from "../../shared/utils";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
-import { mockQuickLinks } from "../../shared/model/quickLink/responsemodels";
 import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import "../NewHomePage/style.scss";
+import { IQuickLinkViewProps } from "./props";
+
 
 const requiredPermissions: Permission[] = [
   {
@@ -40,72 +41,65 @@ const displaystarredicon = (favorites: boolean) => {
     />
   );
 };
+const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
+  apiQuickLinkData,
+  apiError,
+}: IQuickLinkViewProps): JSX.Element => {
 
-const QuickLink = () => {
-
-  const isPermission =
+ const isPermission =
   authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
   envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
   
   return isPermission ? (
-    <div className="teacher-panel-container ">
-       <BreadcrumbWrapper  />
-       <Grid className="quicklink">
-       <GridItem
-            lg={12}
-            md={2}
-            sm={2}
-            className="quicklink-container nopadding"
-          >
-            <div className="quicklinkheading">Quick links</div>
-            <div className="quicklinktext">
-              Easy one-click access. Favouriting items will ensure your top
-              selections are always visible.
-            </div>
-             <div > 
-            <TableWrapper>
-              <Table
-                dataTestId="test-id"
-                id="element-id"
-                className="quicklinktable"
-              >
-                <TableHead>
-                  <TableRow>
-                    <TableCell header className="theader">
-                      Name
-                    </TableCell>
-                    <TableCell  header className="theadercell"  >Starred</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-          {mockQuickLinks.map((link, index) => (
-            <TableRow key={index}>
-                 
-              <TableCell><Link
-                data-testid="link"
-                href={link.linkUrl}
-                target="_self" to={undefined}                     
-                      >
-                        {link.linkName}
-                      </Link></TableCell>
-              <TableCell> {displaystarredicon(link.starred)}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-              </Table>
-            </TableWrapper>
-             </div> 
-            <div className="quicklink-divider-container "/>
-            <div className="simspadding"> 
-            <SIMSupdatesView/>
-            </div>
-            </GridItem>
-            </Grid>
+    <div className="teacher-panel-container">
+      <BreadcrumbWrapper />
+      <Grid className="quicklink">
+        <GridItem lg={12} md={2} sm={2} className="quicklink-container nopadding">
+          <div className="quicklinkheading">Quick links</div>
+          <div className="quicklinktext">
+            Easy one-click access. Favouriting items will ensure your top selections are always visible.
+          </div>
+          <div>
+          {!apiError &&  (
+              <TableWrapper>
+                <Table dataTestId="test-id" id="element-id" className="quicklinktable">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell header className="theader">
+                        Name
+                      </TableCell>
+                      <TableCell header className="theadercell">
+                        Starred
+                      </TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {apiQuickLinkData &&
+                      apiQuickLinkData.map((link, index) => (
+                        <TableRow key={index}>
+                          <TableCell>
+                            <Link data-testid="link" href={link.link} target="_self" to={undefined}>
+                              {link.name}
+                            </Link>
+                          </TableCell>
+                          <TableCell>{displaystarredicon(link.favourite)}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableWrapper>
+            )}
+          </div>
+          <div className="quicklink-divider-container" />
+          <div className="simspadding">
+            <SIMSupdatesView />
+          </div>
+        </GridItem>
+      </Grid>
     </div>
-  
-    ): (
-      <Redirect to="/noAccess" />
-    );
-}
+  ) : (
+    <Redirect to="/noAccess" />
+  );
+};
 
 export default QuickLink;

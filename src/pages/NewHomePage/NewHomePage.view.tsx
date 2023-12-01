@@ -6,7 +6,7 @@ import { useState } from "react";
 import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
-import QuickLink from "../QuickLinks/QuickLink.view";
+import QuickLinkLogic from "../QuickLinks";
 
 const requiredPermissions: Permission[] = [
   {
@@ -56,7 +56,7 @@ export const NewHomepageView = () => {
           lg={isOpen ? 10 : 11}
           sm={isOpen ? 3 : 2}
         >
-          {showQuickLink ? <QuickLink /> : <MainPanelView />}
+          {showQuickLink ? <QuickLinkLogic /> : <MainPanelView />}
         </GridItem>
       </Grid>
     </>
