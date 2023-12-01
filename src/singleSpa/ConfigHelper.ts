@@ -49,7 +49,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.SCHOOL_BASE_URL = configData.SCHOOL_BASE_URL;
     window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;    
     window.LEARNER_UI_URL = configData.LEARNER_UI_URL;
-    window.REACT_ENVIRONMENT=configData.REACT_ENVIRONMENT;
+    window.REACT_ENVIRONMENT=configData.ASPNETCORE_ENVIRONMENT;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
