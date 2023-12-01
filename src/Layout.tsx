@@ -17,11 +17,14 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
-import { getQuickLinkSecurablesList } from "./shared/utils";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+import { envConfig } from "./shared/utils";
+
 
 
 const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
@@ -77,8 +80,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     };
     if (isStandaloneApp === false) {
       fetchAllData();
-    }
-    console.log(getQuickLinkSecurablesList());
+    }    
   }, []);
 
   const menuFilterHandler: (
@@ -107,6 +109,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
+  const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
+  isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"))
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -128,8 +133,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         }
       >
         <Switch>
-          <ProtectedRoute exact path="/new-home" component={NewHomepageView} />
-          <ProtectedRoute exact path="/" component={LandingPage} />
+          
+          { !hasFlagrPermission && <ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
+          <ProtectedRoute exact path="/" component={
+             hasFlagrPermission? NewHomepageView          
+            :LandingPage} />
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}

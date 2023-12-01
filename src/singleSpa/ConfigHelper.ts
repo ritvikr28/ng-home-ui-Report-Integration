@@ -11,6 +11,7 @@ declare global {
     SCHOOL_BASE_URL:string;
     REGISTER_BASE_URL: string;    
     LEARNER_UI_URL: string;
+    REACT_ENVIRONMENT:string;
   }
 }
 
@@ -48,6 +49,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.SCHOOL_BASE_URL = configData.SCHOOL_BASE_URL;
     window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;    
     window.LEARNER_UI_URL = configData.LEARNER_UI_URL;
+    window.REACT_ENVIRONMENT=configData.REACT_ENVIRONMENT;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
@@ -56,7 +58,8 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       IS_NEWHOMEPAGE_ACCESSIBLE: window.IS_NEWHOMEPAGE_ACCESSIBLE,
       SCHOOL_BASE_URL:window.SCHOOL_BASE_URL,
       REGISTER_BASE_URL: window.REGISTER_BASE_URL,      
-      LEARNER_UI_URL: window.LEARNER_UI_URL
+      LEARNER_UI_URL: window.LEARNER_UI_URL,
+      REACT_ENVIRONMENT:window.REACT_ENVIRONMENT
     });
   } catch (ex) {
     console.log(ex);
