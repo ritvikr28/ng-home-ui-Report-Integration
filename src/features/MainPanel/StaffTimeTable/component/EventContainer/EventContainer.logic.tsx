@@ -4,19 +4,21 @@ import { EventCard, EventCardStatus } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
-import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
+import { IStaffTimeTableEventsResponse} from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 
 const EventContainer: React.FC = () => {
-  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [schoolEventsData, setSchoolEventsData] = useState<
-    IStaffTimeTableEventsResponse[]
-  >([]);
-  const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
-  const [status, setStatus] = useState(0);  
-  const [isOpen, setIsOpen] = useState<Record<string, boolean>>({});
+  type TogglePanelFunction = (externalId: string) => void;
+  type FormatEventTimeDataFunction =(eventTimeData: IStaffTimeTableEventsResponse)=> string;
+  type FetchStaffTimeTableEventsFunction = () => Promise<void>;
 
-  const togglePanel = (externalId: string) => {
+  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [schoolEventsData, setSchoolEventsData]:[IStaffTimeTableEventsResponse[],React.Dispatch<React.SetStateAction<IStaffTimeTableEventsResponse[]>>] = useState<IStaffTimeTableEventsResponse[]>([]);
+  const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+  const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
+  const [isOpen, setIsOpen]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
+
+  const togglePanel:TogglePanelFunction = (externalId: string) => {
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId],
@@ -32,9 +34,9 @@ const EventContainer: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchStaffTimeTableEvents = async () => {
+    const fetchStaffTimeTableEvents:FetchStaffTimeTableEventsFunction = async () => {
       try {
-        const { status: responseStatus, responseData } =
+        const { status: responseStatus, responseData }:{status:any,responseData:IStaffTimeTableEventsResponse[]} =
           await FetchStaffTimeTableEventsData();
         setStatus(responseStatus);
         setSchoolEventsData(responseData);
@@ -51,19 +53,20 @@ const EventContainer: React.FC = () => {
     fetchStaffTimeTableEvents();
   }, []);
 
+
   const formatEventTitleData = (eventTitleData: any) => {
-    const desc = eventTitleData?.group?.shortName ?? "";
-    const code = eventTitleData?.levelCode ?? "";
-    const subjectName = eventTitleData?.subject?.name ?? "";
-    const details =
-      (desc !== "" || code !== "") && subjectName !== ""
+    const desc:string = eventTitleData?.group?.shortName ?? "";
+    const code:string = eventTitleData?.levelCode ?? "";
+    const subjectName:string = eventTitleData?.subject?.name ?? "";
+    const details:string =
+      (desc  !== "" || code !== "") && subjectName !== ""
         ? `| ${subjectName}`
         : subjectName;
     return `${desc} ${code} ${details}`;
   };
 
 
-  const formateventPeriodNum = (eventTimeData: any) => {
+  const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse):string => {
  
         if (eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined) {
           return eventTimeData.eventDescription.split(":")[1];
@@ -77,11 +80,11 @@ const EventContainer: React.FC = () => {
   
   
 
-  const formatEventTimeData = (eventTimeData: any) => {
-    const day = dayjs(eventTimeData.eventStart).format("ddd");
-    const starttime = dayjs(eventTimeData.eventStart).format("HH:mm");
-    const endtime = dayjs(eventTimeData.eventEnd).format("HH:mm");
-    const eventPeriodNum =  formateventPeriodNum(eventTimeData);
+  const formatEventTimeData:FormatEventTimeDataFunction = (eventTimeData: IStaffTimeTableEventsResponse) => {
+    const day:string  = dayjs(eventTimeData.eventStart).format("ddd");
+    const starttime:string  = dayjs(eventTimeData.eventStart).format("HH:mm");
+    const endtime:string  = dayjs(eventTimeData.eventEnd).format("HH:mm");
+    const eventPeriodNum:string  =  formateventPeriodNum(eventTimeData);
     return (eventTimeData.eventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 

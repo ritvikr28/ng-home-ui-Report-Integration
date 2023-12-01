@@ -40,15 +40,15 @@ export const RightSidePanelView: (
     EventPeriodNo
   }: IRightSidePanelViewProps = props;
 
-  const handlePanelClose = () => {
+  const handlePanelClose:()=>void = () => {
     togglePanel(SchoolEventexternalId);
   };
 
-  const onTRButtonClick = () => {
-    const url = (EventTypeCode === "AttendanceSession")
+  const onTRButtonClick:()=>void = () => {
+    const url:string  = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
-    window.open(url, "_self");
+      window.location.href = url
   };
 
   
