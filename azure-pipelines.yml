@@ -106,24 +106,24 @@ stages:
           #     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
           - task: kiuwan-delivery-analysis-task@2
-           displayName: "Kiuwan Delivery Analysis"
-           inputs:
-             kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
-             projectnameselector: 'kiuwanapp'
-             kiuwanappname: 'ng-home-ui-new'
-             changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
-             overridedeliverylabel: true
-             deliverylabel: "$(Build.BuildNumber)-$(commitMessage)"
-             analysisscope: "completeDelivery"
-             includeinsight: true
-             failonaudit: true
-             uploadsnippets: true
-             uploadfiles: false
-             skipclones: false
-             overridedotkiuwan: false
-             excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
-             dbanalysis: false
-             condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['kiuwanScan'], 'baseline'))
+            displayName: "Kiuwan Delivery Analysis"
+            inputs:
+              kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
+              projectnameselector: 'kiuwanapp'
+              kiuwanappname: 'ng-home-ui-new'
+              changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
+              overridedeliverylabel: true
+              deliverylabel: "$(Build.BuildNumber)-$(commitMessage)"
+              analysisscope: "completeDelivery"
+              includeinsight: true
+              failonaudit: true
+              uploadsnippets: true
+              uploadfiles: false
+              skipclones: false
+              overridedotkiuwan: false
+              excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
+              dbanalysis: false
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['kiuwanScan'], 'baseline'))
             
           - task: kiuwan-baseline-analysis-task@2
             displayName: 'Kiuwan Baseline Analysis'
@@ -139,7 +139,7 @@ stages:
               overrideappmodel: false
               excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
               dbanalysis: false
-              condition: and(succeeded(), or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['kiuwanScan'], 'baseline')))
+            condition: and(succeeded(), or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['kiuwanScan'], 'baseline')))
           
           - task: PublishTestResults@2
             displayName: "Publish Test Results"
