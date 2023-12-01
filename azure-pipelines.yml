@@ -108,7 +108,7 @@ stages:
           - task: kiuwan-delivery-analysis-task@2
             displayName: "Kiuwan Delivery Analysis"
             inputs:
-              kiuwanConnection: 'Kiuwan-Staff-BuildAgentConnection'
+              kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
               projectnameselector: 'kiuwanapp'
               kiuwanappname: 'ng-home-ui-new'
               changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
@@ -128,7 +128,7 @@ stages:
           - task: kiuwan-baseline-analysis-task@2
             displayName: 'Kiuwan Baseline Analysis'
             inputs:
-              kiuwanConnection: 'Kiuwan-Staff-BuildAgentConnection'
+              kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
               projectnameselector: 'kiuwanapp'
               kiuwanappname: 'ng-home-ui-new'
               includeinsight: true
