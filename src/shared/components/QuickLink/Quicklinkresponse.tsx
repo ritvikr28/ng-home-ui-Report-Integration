@@ -12,12 +12,15 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
        const responsesecurable : Permission [] = getQuickLinkSecurablesList();
        const teachersecurable: Permission [] = responsesecurable.filter( x=> x.Securable === "NG.Homepage.QuickLink.Teacher");
       const permission: string=  teachersecurable.length > 0 ? teachersecurable[0].Securable.split(".")[3] : "" ;
-        const quickLinkDetails = await FetchQuickLinkData(permission);        
+        const quickLinkDetails:{
+          status: number;
+          response: IQuickLinkApiResponse[];
+      } = await FetchQuickLinkData(permission);        
       
         if (quickLinkDetails.status === 200 || quickLinkDetails.status === 204) {          
           const response:IQuickLinkApiResponse[] = quickLinkDetails.response;
            /* eslint-enable */
-          const status:boolean = false ;         
+          const status = false ;         
           return  {response,status};          
         } 
 

@@ -11,14 +11,14 @@ interface SchoolNameComponentProps {
  
 const SchoolNameComponent: React.FC<SchoolNameComponentProps> = ({ setSchoolNames, setIsError }) => {
   useEffect(() => {
-    const fetchSchoolNames = async () => {
+    const fetchSchoolNames:() => Promise<void> = async () => {
       setIsError(false);
       try {
         const schoolData:ISchoolNameDataResponse|undefined = await useFetchSchoolNameData(); 
         if(schoolData!==undefined)
         {
-          const name = schoolData.schoolName.toLowerCase();
-          const schoolName = capitalizeFirstLetterOfEachWord(name);
+          const name:string = schoolData.schoolName.toLowerCase();
+          const schoolName:string = capitalizeFirstLetterOfEachWord(name);
           setSchoolNames(schoolName);
           setIsError(false);
         }
