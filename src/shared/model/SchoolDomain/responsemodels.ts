@@ -76,3 +76,8 @@ export interface IStaffTimeTableEventsResponse {
         isThumbnailPresent:boolean;
     }|null;
   } 
+
+export interface ISchoolNameDataResponse {
+    externalId: string;
+    schoolName: string;
+  }
