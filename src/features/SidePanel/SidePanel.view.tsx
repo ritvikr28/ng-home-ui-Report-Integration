@@ -1,14 +1,17 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Button,
   ButtonColor,
   ButtonSize,
   Icon,
-  IconColor
+  IconColor,
+  Link
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
+import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
+import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 
 const userFullname: string | null = authService.getUsername();
 
@@ -16,11 +19,40 @@ const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   togglePanel,
   closePanel,
-  showQuickLinkView
-}) => (
+  showQuickLinkView,
+  quicklinkData,
+  setQuickLinkData
+}) => {   
+  
+   const [isError, setIsError] = useState<boolean>(false);  
+  
+  const handleStarClick = async (id: number, favorite: boolean) => {    
+    try {
+      const { status } = await FetchQuickLinkpost(id, favorite);
+      if(status===200)
+      {
+        const responseapidata =  await fetchQuickLinkDetails();
+        if(responseapidata !=null)
+        {
+         setQuickLinkData(responseapidata?.response) ;
+       
+        }           
+      }
+     else{
+      setIsError(true);
+     }
+   
+    } catch (error) {
+      console.error("Error making the POST request:", error);
+    }
+  };
+
+  
+  return (
   <div
     className={`side-view ${isOpen ? "open open-panel" : "side-view-closed"}`}
   >
+  
     {isOpen ? (
       <div>
         <div
@@ -46,66 +78,21 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <div>
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
-            <div className="quick-panel-cont">
-              Take Register{" "}
+          
+            {!isError && quicklinkData && quicklinkData.slice(0,6).map((sidelink) => (<div  className="quick-panel-cont">
+            <Link key={sidelink.id}  data-testid="link" href={sidelink.link} target="_self">
+                              {sidelink.name}
+                            </Link>
               <Icon
-                color={IconColor.Primary500}
+                color={sidelink.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
                 dataTestId="btn-90"
                 id="variable-2"
-                name="star--filled"
+                name={sidelink.favourite ? 'star--filled' : 'star'}
                 size={16}
+                onClick={() => handleStarClick(sidelink.id, !sidelink.favourite)}
               />
-            </div>
-            <div className="quick-panel-cont">
-              Pupil Profile
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Staff Profile{" "}
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Seating Plans{" "}
-              <Icon
-                color={IconColor.Primary500}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star--filled"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              Staff TimeTable{" "}
-              <Icon
-                color={IconColor.Neutral800}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star"
-                size={16}
-              />
-            </div>
-            <div className="quick-panel-cont">
-              My Markbook{" "}
-              <Icon
-                color={IconColor.Neutral800}
-                dataTestId="btn-90"
-                id="variable-2"
-                name="star"
-                size={16}
-              />
-            </div>
+            </div>))}
+            
             {/*
   eslint-disable jsx-a11y/anchor-is-valid,
   no-script-url
@@ -142,6 +129,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     )}
     <div />
   </div>
-);
+  )
+};
 
 export default SidePanel;

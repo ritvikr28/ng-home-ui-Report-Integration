@@ -1,4 +1,5 @@
 import { pilotReady } from '../flagr-helper';
+import {isOrganisationInVariant} from "../flagr-utils"
 
 jest.mock('@essnextgen/ui-flagr', () => ({
   getFeaturePermission: jest.fn(),
@@ -88,5 +89,15 @@ describe('pilotReady', () => {
     const result = pilotReady('flagName1', 'variantType1');
 
     expect(result).toBe(true);
+  });
+
+  test('test pilot ready to have been called', () => {
+    const pilotreadyfn=jest.fn().mockReturnValueOnce(true);
+    jest.mock('../flagr-helper', () => ({
+      pilotready: pilotreadyfn      
+    }));    
+    const result = isOrganisationInVariant();
+
+    expect(result).toBe(true);   
   });
 });

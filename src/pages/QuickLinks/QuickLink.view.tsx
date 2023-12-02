@@ -1,10 +1,9 @@
 import {  Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Icon, IconColor, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
+import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
-
 import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import "../NewHomePage/style.scss";
@@ -19,38 +18,15 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-const displaystarredicon = (favorites: boolean) => {
-  if (favorites) {
-    return (
-      <Icon
-        color={IconColor.Primary500}
-        dataTestId="btn-90"
-        id="variable-2"
-        name="star--filled"
-        size={16}
-      />
-    );
-  }
-
-  return (
-    <Icon
-      color={IconColor.Neutral800}
-      dataTestId="btn-90"
-      id="variable-2"
-      name="star"
-      size={16}
-    />
-  );
-};
 const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
-}: IQuickLinkViewProps): JSX.Element => {
-
+  displaystarredicon
+}: IQuickLinkViewProps): JSX.Element => {  
  const isPermission =
   authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
   envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
-  
+
   return isPermission ? (
     <div className="teacher-panel-container">
       <BreadcrumbWrapper />
@@ -85,7 +61,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                               {link.name}
                             </Link>
                           </TableCell>
-                          <TableCell>{displaystarredicon(link.favourite)}</TableCell>
+                          <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>

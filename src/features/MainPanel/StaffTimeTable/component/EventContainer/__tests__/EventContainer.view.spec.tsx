@@ -78,7 +78,7 @@ const togglePanel=jest.fn();
         GroupExternalId={mockProps.GroupExternalId}
         EventPeriodNum={mockProps.EventPeriodNum}
         togglePanel={togglePanel}
-        isOpen={true}
+        isOpen
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
         index={mockProps.index}
