@@ -8,14 +8,17 @@ import apiUrls from "../../hook/ApiConfig.json";
 import { IQuickLinkApiResponse } from "../../model/quickLink/responsemodels";
 import { envConfig } from "../../utils";
 
-export const FetchQuickLinkData = async (role: string) => {
+export const FetchQuickLinkData:(role: string) => Promise<{
+  status: number;
+  response: IQuickLinkApiResponse[];
+}> = async (role: string) => {
     try {
         const responseData: AxiosResponse<IQuickLinkApiResponse[]> = await service.get(
           `v1/quicklink?role=${role}`,
           buildApplicationUrl(apiUrls)
         );
-        const {status} = responseData;
-        const response = responseData.data;
+        const {status}: { status: number } = responseData;
+        const response:IQuickLinkApiResponse[]= responseData.data;
         return { status, response };
        
     }
@@ -25,11 +28,14 @@ export const FetchQuickLinkData = async (role: string) => {
   }
 };
 
-export const FetchQuickLinkpost = async (id: number, operation: boolean) => {
+export const FetchQuickLinkpost:(id: number, operation: boolean) => Promise<any> = async (id: number, operation: boolean) => {
   try {
-    const requestData = {
+    const requestData:{
+      quickLinkId: number;
+      operation: boolean;
+  } = {
       quickLinkId: id,
-      operation,
+      operation
     };
     console.log(requestData);
     const response: any = await service.post(
