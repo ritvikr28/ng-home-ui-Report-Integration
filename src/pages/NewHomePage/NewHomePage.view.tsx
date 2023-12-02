@@ -2,7 +2,7 @@ import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
-import { useState } from "react";
+import React,{ useState } from "react";
 import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
