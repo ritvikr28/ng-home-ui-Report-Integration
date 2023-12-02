@@ -18,6 +18,7 @@ describe("SidePanel Component", () => {
         togglePanel={() => {}}
         closePanel={() => {}}
         showMainPanelView={undefined}
+        setQuickLinkData={jest.fn()}
       />
     );
 
@@ -48,6 +49,7 @@ describe("SidePanel Component", () => {
         togglePanel={togglePanelMock}
         closePanel={() => {}}
         showMainPanelView={undefined}
+        setQuickLinkData={jest.fn()}
       />
     );
     expect(getByTestId("close-panel")).toBeInTheDocument();

@@ -22,8 +22,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
   displaystarredicon
-}: IQuickLinkViewProps): JSX.Element => {
-  console.log("Data" ,apiQuickLinkData);
+}: IQuickLinkViewProps): JSX.Element => {  
  const isPermission =
   authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
   envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";

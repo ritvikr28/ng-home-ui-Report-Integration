@@ -90,16 +90,15 @@ const role = "Teacher";
       });
     
       test("should return QuickLink post data", async () => {
-        const id= 1;
+        const id= 2;
         const operation = true;
         jest
-          .spyOn(service, "get")
+          .spyOn(service, "post")
           .mockImplementation(() => Promise.resolve(axiosResponse));
           const response: any = await FetchQuickLinkpost(id,operation);
       
-        await waitFor(() => {
-          expect(response.status).toBe(200);
-          expect(response.response).toEqual(mockApiResponse);
+        await waitFor(() => {          
+          expect(response).toEqual(mockApiResponse);
         });
       });
 

@@ -25,7 +25,7 @@ export const NewHomepageView = () => {
   const [isOpen, setIsOpen] = useState(true);
   const [showQuickLink, setShowQuickLink] = useState(false);
   const [quickLinkData, setQuickLinkData] = useState<IQuickLinkApiResponse[] | null>(null);
-  const [isError, setIsError] = useState<boolean>(false);
+   const [isError, setIsError] = useState<boolean>(false);
   const showQuickLinkView = () => {
     setShowQuickLink(true);
   };
@@ -68,7 +68,8 @@ export const NewHomepageView = () => {
             closePanel={closePanel}
             showQuickLinkView={showQuickLinkView}
             showMainPanelView={showMainPanelView}
-            quicklinkData = {quickLinkData}
+            setQuickLinkData = {setQuickLinkData}
+            quicklinkData = {isError?[]:quickLinkData}
             data-testid="btn-show-quick-link"
           />
         </GridItem>
@@ -77,7 +78,7 @@ export const NewHomepageView = () => {
           lg={isOpen ? 10 : 11}
           sm={isOpen ? 3 : 2}
         >
-          {showQuickLink ? <QuickLinkLogic  apiQuickLinkData = {quickLinkData}  /> : <MainPanelView />}
+          {showQuickLink ? <QuickLinkLogic  setQuickLinkData = {setQuickLinkData}  apiQuickLinkData={isError?[]:quickLinkData}/> : <MainPanelView />}
           
         </GridItem>
       </Grid>

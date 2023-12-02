@@ -35,11 +35,9 @@ export const FetchQuickLinkpost = async (id: number, operation: boolean) => {
     const response: any = await service.post(
           `${envConfig.BASE_URL}/v1/quicklink`,
           requestData
-        );
-        console.log(response);
+        );        
         return response.data;
   } catch (error) {
     throw new Error("Failed to fetch quick link details");
   }
 };
-console.log(`Called${FetchQuickLinkpost}`);

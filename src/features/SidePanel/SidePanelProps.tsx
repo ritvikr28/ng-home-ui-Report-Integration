@@ -1,3 +1,4 @@
+import React from "react";
 import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 
 export interface SidePanelProps {
@@ -7,4 +8,5 @@ export interface SidePanelProps {
   showMainPanelView?: any;
   showQuickLinkView?: any;
   quicklinkData? : IQuickLinkApiResponse[] | null;
+  setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   ButtonColor,
@@ -10,9 +10,8 @@ import {
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
-//import QuickLinkResponseComponent from "../../shared/components/QuickLink/Quicklinkresponse";
-import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
+import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 
 const userFullname: string | null = authService.getUsername();
 
@@ -21,29 +20,33 @@ const SidePanel: React.FC<SidePanelProps> = ({
   togglePanel,
   closePanel,
   showQuickLinkView,
-  quicklinkData
-}) => {
-  // const [quickLinkData, setQuickLinkData]: [IQuickLinkApiResponse[] | null, React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
+  quicklinkData,
+  setQuickLinkData
+}) => {   
   
-  // const [isError, setIsError] = useState<boolean>(false);
+   const [isError, setIsError] = useState<boolean>(false);  
   
-  // useEffect(() => {
-  //   (async () => {
-  //     try {          
-  //       const responseapidata  = await fetchQuickLinkDetails(); 
-  //       console.log("sidepanel" ,responseapidata);
-  //      if( responseapidata !=null )
-  //      { 
-  //       setQuickLinkData(responseapidata?.response);
-  //       setIsError(responseapidata.status);
-  //     console.log("status",responseapidata.status );
-  //      }
+  const handleStarClick = async (id: number, favorite: boolean) => {    
+    try {
+      const { status } = await FetchQuickLinkpost(id, favorite);
+      if(status===200)
+      {
+        const responseapidata =  await fetchQuickLinkDetails();
+        if(responseapidata !=null)
+        {
+         setQuickLinkData(responseapidata?.response) ;
        
-  //     } catch (error) { 
-  //       console.log(error);       
-  //     }      
-  //   })();
-  // }, []); 
+        }           
+      }
+     else{
+      setIsError(true);
+     }
+   
+    } catch (error) {
+      console.error("Error making the POST request:", error);
+    }
+  };
+
   
   return (
   <div
@@ -76,7 +79,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
           
-            {quicklinkData && quicklinkData.map((sidelink) => (<div  className="quick-panel-cont">
+            {!isError && quicklinkData && quicklinkData.slice(0,6).map((sidelink) => (<div  className="quick-panel-cont">
             <Link key={sidelink.id}  data-testid="link" href={sidelink.link} target="_self">
                               {sidelink.name}
                             </Link>
@@ -86,6 +89,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 id="variable-2"
                 name={sidelink.favourite ? 'star--filled' : 'star'}
                 size={16}
+                onClick={() => handleStarClick(sidelink.id, !sidelink.favourite)}
               />
             </div>))}
             

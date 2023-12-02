@@ -101,7 +101,7 @@ describe("QuickLink Component", () => {
     setIsError(false);
  
    await act(async () => {
-       render(<QuickLinkLogic />);
+       render(<QuickLinkLogic setQuickLinkData={jest.fn()}/>);
       
   });
 
