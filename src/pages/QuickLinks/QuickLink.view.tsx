@@ -31,14 +31,14 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
     <div className="teacher-panel-container">
       <BreadcrumbWrapper />
       <Grid className="quicklink">
-        <GridItem lg={12} md={2} sm={2} className="quicklink-container nopadding">
+        <GridItem lg={12} className="quicklink-container nopadding">
           <div className="quicklinkheading">Quick links</div>
           <div className="quicklinktext">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
           </div>
           <div>
           {!apiError &&  (
-              <TableWrapper>
+              <TableWrapper className="quicklinktable" >
                 <Table dataTestId="test-id" id="element-id" className="quicklinktable">
                   <TableHead>
                     <TableRow>
