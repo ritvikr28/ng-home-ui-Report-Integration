@@ -19,7 +19,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
   }
 
   const  rel:RelType={rel:"noopener noreferrer"};
-  const onCardClick = () => {};
+  const onCardClick: () => void = () => {};
   return (
     <>
       <div className="sims-link-container">

@@ -17,7 +17,7 @@ const EventContainer: React.FC = () => {
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId],
+      [externalId]: !prevIsOpen[externalId]
     }));
     if(!isOpen || isOpen[externalId])
     {

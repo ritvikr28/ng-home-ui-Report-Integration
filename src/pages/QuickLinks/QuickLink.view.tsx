@@ -13,8 +13,7 @@ import { IQuickLinkViewProps } from "./props";
 const requiredPermissions: Permission[] = [
   {
     Securable: "NG.Homepage",
-
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
