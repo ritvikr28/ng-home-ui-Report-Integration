@@ -25,17 +25,13 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     EventInstanceExternalId
   }: IRightSidePanelProps = props;
 
-  type FormatEventTimeDataFunction =( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string;
-  type pupilSortLogicFunction = (pupilList: IGroupMemberDetailsResponse[]) => void;
-  type FetchGroupMemberDetailsFunction = (groupExternalId: string,EventStartDate: string,EventEndDate: string) => Promise<void>;
-
   const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [errCodeMessage, setErrCodeMessage]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
   const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
   const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
-  const formatEventTimeData:FormatEventTimeDataFunction = (
+  const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
     EventStartDate: string,
     EventEndDate: string,
     EventPeriodNum: string
@@ -47,7 +43,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     return (EventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 
-  const pupilSortLogic:pupilSortLogicFunction = (pupilList: IGroupMemberDetailsResponse[]) => {
+  const pupilSortLogic:(pupilList: IGroupMemberDetailsResponse[]) => void = (pupilList: IGroupMemberDetailsResponse[]) => {
     const sortedPupilList:IGroupMemberDetailsResponse[] = [...pupilList].sort((a, b) =>
       a.personalInfo.preferredSurname.localeCompare(
         b.personalInfo.preferredSurname
@@ -57,7 +53,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   };
 
   useEffect(() => {
-    const FetchGroupMemberDetails:FetchGroupMemberDetailsFunction = async (
+    const FetchGroupMemberDetails:(groupExternalId: string,EventStartDate: string,EventEndDate: string) => Promise<void> = async (
       groupExternalId: string,
       EventStartDate: string,
       EventEndDate: string

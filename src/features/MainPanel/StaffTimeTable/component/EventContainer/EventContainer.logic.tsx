@@ -8,17 +8,13 @@ import { IStaffTimeTableEventsResponse} from "../../../../../shared/model/School
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 
 const EventContainer: React.FC = () => {
-  type TogglePanelFunction = (externalId: string) => void;
-  type FormatEventTimeDataFunction =(eventTimeData: IStaffTimeTableEventsResponse)=> string;
-  type FetchStaffTimeTableEventsFunction = () => Promise<void>;
-
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [schoolEventsData, setSchoolEventsData]:[IStaffTimeTableEventsResponse[],React.Dispatch<React.SetStateAction<IStaffTimeTableEventsResponse[]>>] = useState<IStaffTimeTableEventsResponse[]>([]);
   const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
   const [isOpen, setIsOpen]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
 
-  const togglePanel:TogglePanelFunction = (externalId: string) => {
+  const togglePanel:(externalId: string) => void = (externalId: string) => {
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId],
@@ -34,7 +30,7 @@ const EventContainer: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchStaffTimeTableEvents:FetchStaffTimeTableEventsFunction = async () => {
+    const fetchStaffTimeTableEvents:() => Promise<void> = async () => {
       try {
         const { status: responseStatus, responseData }:{status:any,responseData:IStaffTimeTableEventsResponse[]} =
           await FetchStaffTimeTableEventsData();
@@ -80,7 +76,7 @@ const EventContainer: React.FC = () => {
   
   
 
-  const formatEventTimeData:FormatEventTimeDataFunction = (eventTimeData: IStaffTimeTableEventsResponse) => {
+  const formatEventTimeData:(eventTimeData: IStaffTimeTableEventsResponse)=> string = (eventTimeData: IStaffTimeTableEventsResponse) => {
     const day:string  = dayjs(eventTimeData.eventStart).format("ddd");
     const starttime:string  = dayjs(eventTimeData.eventStart).format("HH:mm");
     const endtime:string  = dayjs(eventTimeData.eventEnd).format("HH:mm");

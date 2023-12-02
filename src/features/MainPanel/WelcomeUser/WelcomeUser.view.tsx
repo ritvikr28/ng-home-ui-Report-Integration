@@ -11,7 +11,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     parentClassName,
     subparentClassName,
     organisationName,
-    isApiError,
+    isApiError
   }: IWelcomeUserViewProps = props;
 
   return (
