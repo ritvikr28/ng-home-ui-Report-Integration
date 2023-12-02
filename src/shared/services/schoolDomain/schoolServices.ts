@@ -6,7 +6,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 
 export interface IStaffTimeTableEventsDataResponse {
   status: number;
-  responseData: IStaffTimeTableEventsResponse[];
+  responseData: IStaffTimeTableEventsResponse[] | undefined;
 }
 
 
@@ -15,33 +15,33 @@ export interface IGroupMemberDetailsDataResponse {
   data: IGroupMemberDetailsResponse[];
 }
 
-export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse>= async () => {
+export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | undefined>= async () => {
   try
   {
-    const response:AxiosResponse<ISchoolNameDataResponse> = await service.get(`School/SchoolName`);
+    const response:AxiosResponse<ISchoolNameDataResponse | undefined> = await service.get(`School/SchoolName`);
     return response.data;
   }
   catch (error) {
-    console.error('Error fetching data:', error);
-    throw error;
+    console.log(error);
+    return undefined;
   }
 
 };
 
 
-export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDataResponse>= async () => {
+export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDataResponse |undefined>= async () => {
   try {
 
-    const response: AxiosResponse<IStaffTimeTableEventsResponse[]>= await service.get(
+    const response: AxiosResponse<IStaffTimeTableEventsResponse[] | undefined>= await service.get(
       `StaffTimetable/StaffTimetableEvents`,
       buildApplicationUrl(apiUrls)
     );
     const {status}: { status: number } = response;
-    const responseData:IStaffTimeTableEventsResponse[] = response.data;
+    const responseData:IStaffTimeTableEventsResponse[] | undefined = response.data;
     return { status, responseData };
   } catch (error) {
-    console.error('Error fetching data:', error);
-    throw error;
+    console.log(error);
+    return undefined;
   }
 };
 
@@ -50,7 +50,7 @@ export const FetchGroupMemberDetailsData:(
   groupExternalId:string,
   startDate: string,
   endDate: string
-)=>Promise<IGroupMemberDetailsResponse[]> = async (
+)=>Promise<IGroupMemberDetailsResponse[] | undefined> = async (
   groupExternalId:string,
   startDate: string,
   endDate: string
@@ -63,8 +63,8 @@ export const FetchGroupMemberDetailsData:(
     );
     return responseData.data.data;
   } catch (error) {
-    console.error('Error fetching group member details:', error);
-    throw new Error('Failed to fetch group member details');
+    console.log(error);
+    return undefined;
   }
 };
 

@@ -43,7 +43,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
      }
    
     } catch (error) {
-      console.error("Error making the POST request:", error);
+      console.error( error);
     }
   };
 

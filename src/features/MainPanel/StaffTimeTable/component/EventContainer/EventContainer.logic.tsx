@@ -32,16 +32,21 @@ const EventContainer: React.FC = () => {
   useEffect(() => {
     const fetchStaffTimeTableEvents:() => Promise<void> = async () => {
       try {
-        const { status: responseStatus, responseData }:{status:any,responseData:IStaffTimeTableEventsResponse[]} =
-          await FetchStaffTimeTableEventsData();
-        setStatus(responseStatus);
-        setSchoolEventsData(responseData);
-        setIsError(false);
-        if (responseData.length > 0) {          
-          setSelectedItem(responseData[0].externalId);
-        }
+        const { status: responseStatus, responseData }: { status?: number; responseData?: IStaffTimeTableEventsResponse[] } =
+          await FetchStaffTimeTableEventsData() ??{};
+          if(responseStatus!==undefined){
+            setStatus(responseStatus);
+            setIsError(false);
+            if(responseData!==undefined){
+            setSchoolEventsData(responseData);
+            if (responseData.length > 0) {          
+              setSelectedItem(responseData[0].externalId);
+            }
+          }
+          }
+
       } catch (error) {
-        console.error("Error while fetching data:", error);
+        console.error(error);
         setIsError(true);
       }
     };

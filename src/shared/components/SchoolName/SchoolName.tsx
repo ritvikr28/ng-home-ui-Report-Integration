@@ -14,11 +14,14 @@ const SchoolNameComponent: React.FC<SchoolNameComponentProps> = ({ setSchoolName
     const fetchSchoolNames = async () => {
       setIsError(false);
       try {
-        const schoolData:ISchoolNameDataResponse = await useFetchSchoolNameData(); 
-        const name = schoolData.schoolName.toLowerCase();
-        const schoolName = capitalizeFirstLetterOfEachWord(name);
-        setSchoolNames(schoolName);
-        setIsError(false);
+        const schoolData:ISchoolNameDataResponse|undefined = await useFetchSchoolNameData(); 
+        if(schoolData!==undefined)
+        {
+          const name = schoolData.schoolName.toLowerCase();
+          const schoolName = capitalizeFirstLetterOfEachWord(name);
+          setSchoolNames(schoolName);
+          setIsError(false);
+        }
       } catch (error) {
         setIsError(true);
       }

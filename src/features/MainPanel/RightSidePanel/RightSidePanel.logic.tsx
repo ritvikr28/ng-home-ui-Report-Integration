@@ -70,12 +70,12 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
           setGroupMemberDetailsData([]);
           setPupilSection(false)
         } else {
-          const responseData:IGroupMemberDetailsResponse[] = await FetchGroupMemberDetailsData(
+          const responseData:IGroupMemberDetailsResponse[] |undefined = await FetchGroupMemberDetailsData(
             groupExternalId,
             EventStartDate,
             EventEndDate
           );
-          pupilSortLogic(responseData);
+         if(responseData!==undefined){ pupilSortLogic(responseData)}
           setErrCodeMessage(false);
           setLoader(false);
           setPupilSection(true);

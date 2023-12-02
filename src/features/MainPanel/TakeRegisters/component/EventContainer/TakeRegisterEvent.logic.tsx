@@ -16,7 +16,7 @@ const TakeRegisterEvent: () => JSX.Element = () => {
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
     } catch (error) {
-      console.error("Error while fetching data:", error);
+      console.error( error);
       setIsError(true);
     }
   }
