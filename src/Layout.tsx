@@ -1,6 +1,6 @@
 import { Suspense, lazy, LazyExoticComponent, FC, useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { ProtectedRoute, Auth } from "@essnextgen/auth-ui";
+import { ProtectedRoute, Auth, authService, Permission, MatchPermissions } from "@essnextgen/auth-ui";
 import {
   Switch,
   Route,
@@ -110,7 +110,14 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   };
 
   const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
-  isOrganisationInVariant())
+  isOrganisationInVariant());
+  const requiredPermissions: Permission[] = [
+    {
+      Securable: "NG.Homepage",
+      Operation: "View",
+    }
+  ];
+  const showNewHomePage:boolean =  authService.isAuthorised(requiredPermissions, MatchPermissions.all);
 
   return (
     /* eslint-disable react/prop-types */
@@ -134,9 +141,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       >
         <Switch>
           
-          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission && <ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
+          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission && showNewHomePage &&<ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
           <ProtectedRoute exact path="/" component={
-             hasFlagrPermission? NewHomepageView          
+             hasFlagrPermission && showNewHomePage? NewHomepageView          
             :LandingPage} />
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
