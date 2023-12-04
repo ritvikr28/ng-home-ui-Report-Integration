@@ -9,3 +9,8 @@
     quickLinkId: any;
     operation: any;
   }
+
+  export interface IFetchQuickLinkDetailsFunctionResponse{
+    response: IQuickLinkApiResponse[];
+    status: boolean;
+  };
