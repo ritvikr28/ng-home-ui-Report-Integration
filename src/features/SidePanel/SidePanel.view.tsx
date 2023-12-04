@@ -89,6 +89,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                             </Link>
               <Icon
                 color={sidelink.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
+                className="icon-margin"
                 dataTestId="btn-90"
                 id="variable-2"
                 name={sidelink.favourite ? 'star--filled' : 'star'}
