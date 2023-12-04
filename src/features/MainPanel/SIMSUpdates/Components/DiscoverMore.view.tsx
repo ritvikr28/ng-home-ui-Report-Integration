@@ -8,10 +8,7 @@ import {
 
 const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {
-    window.open(
-      "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1",
-      "_blank"
-    );
+    window.location.href = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
   };
 
   interface RelType {

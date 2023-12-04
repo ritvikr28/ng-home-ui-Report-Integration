@@ -8,7 +8,7 @@ import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
-import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 
 const requiredPermissions: Permission[] = [
   {
@@ -55,21 +55,18 @@ export const NewHomepageView: () => JSX.Element = () => {
 
   useEffect(() => {
     (async () => {
-      try {
-        const responseapidata:
-          | {
-              response: IQuickLinkApiResponse[];
-              status: boolean;
-            }
-          | null
-          | undefined = await fetchQuickLinkDetails();
-        if (responseapidata != null) {
-          setQuickLinkData(responseapidata?.response);
-          setIsError(responseapidata.status);
-        }
-      } catch (error) {
-        console.log(error);
-      }
+      try {          
+        const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
+       if( responseapidata !=null )
+       { 
+        setQuickLinkData(responseapidata?.response);
+        setIsError(responseapidata.status);
+
+       }
+       
+      } catch (error) { 
+        console.log(error);       
+      }      
     })();
   }, []);
 
