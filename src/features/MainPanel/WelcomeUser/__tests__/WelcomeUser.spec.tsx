@@ -2,10 +2,10 @@ import { authService } from "@essnextgen/auth-ui";
 import { act, render } from "@testing-library/react";
 import WelcomeUser from "../WelcomeUser.logic";
 import * as schoolName from "../../../../shared/services/schoolDomain/schoolServices";
-import { ISchoolName } from "../model";
+import { ISchoolNameDataResponse} from "../../../../shared/model/SchoolDomain/responsemodels"
 import WelcomeUserView from "../WelcomeUser.view";
 
-const mockApiResponse: ISchoolName = {
+const mockApiResponse: ISchoolNameDataResponse = {
   externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
   schoolName: "Waters Edge Primary School",
 };

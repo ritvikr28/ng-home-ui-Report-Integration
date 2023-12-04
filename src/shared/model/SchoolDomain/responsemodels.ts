@@ -11,30 +11,36 @@ export interface IStaffTimeTableEventsResponse {
     userPreference: string;
     yearGroupId: string;
     classPeriodExternalId:string;
-    group: {
-        externalId:string;
-        shortName:string;
-    }
-    room:{
-        externalId:string;
-        roomCode:string;
-        roomName:string;
-    }
-    subject:{
-        externalId:string;
-        name:string;
-    }
-    supervisors: {
-      externalId: string;
-      forename: string;
-      surname: string;
-      preferredForename?: string | null; 
-      preferredSurname?: string | null;
-    }[]
+    group:IEventGroupData
+    room:IEventRoomData
+    subject:IEventSubjectData
+    supervisors: IEventSupervisorsData[]
     isCovered:boolean |null;
     isCovering:boolean |null;
     originalStaffExternalID?: string | null;
     coveringStaffExternalID: string | null;  
+  }
+  export interface IEventGroupData {
+     externalId:string;
+     shortName?:string;
+  }
+  export interface IEventRoomData {
+        externalId:string;
+        roomCode:string;
+        roomName:string;
+  }
+
+  export interface IEventSubjectData {
+        externalId:string;
+        name:string;
+  }
+
+  export interface IEventSupervisorsData {
+        externalId: string;
+        forename: string;
+        surname: string;
+        preferredForename?: string | null; 
+        preferredSurname?: string | null;
   }
   
   export interface IGroupMemberDetailsResponse {
@@ -70,3 +76,8 @@ export interface IStaffTimeTableEventsResponse {
         isThumbnailPresent:boolean;
     }|null;
   } 
+
+export interface ISchoolNameDataResponse {
+    externalId: string;
+    schoolName: string;
+  }

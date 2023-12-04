@@ -12,6 +12,7 @@ import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
+import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 
 const userFullname: string | null = authService.getUsername();
 
@@ -24,14 +25,17 @@ const SidePanel: React.FC<SidePanelProps> = ({
   setQuickLinkData
 }) => {   
   
-   const [isError, setIsError] = useState<boolean>(false);  
+   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);  
   
-  const handleStarClick = async (id: number, favorite: boolean) => {    
+  const handleStarClick: (id: number, favorite: boolean) => Promise<void> = async (id: number, favorite: boolean) => {    
     try {
-      const { status } = await FetchQuickLinkpost(id, favorite);
+      const { status }:{ status:number } = await FetchQuickLinkpost(id, favorite);
       if(status===200)
       {
-        const responseapidata =  await fetchQuickLinkDetails();
+        const responseapidata : {
+          response: IQuickLinkApiResponse[];
+          status: boolean;
+      } | null | undefined=  await fetchQuickLinkDetails();
         if(responseapidata !=null)
         {
          setQuickLinkData(responseapidata?.response) ;
@@ -43,7 +47,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
      }
    
     } catch (error) {
-      console.error("Error making the POST request:", error);
+      console.error( error);
     }
   };
 

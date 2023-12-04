@@ -1,25 +1,22 @@
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { FetchRegisterEventData } from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "./TakeRegisterEvent.view";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
 const TakeRegisterEvent: () => JSX.Element = () => {
-  const [registerEventData
-    , setRegisterEventApiData] = useState<
-    IRegistersDetails[] | null
-  >(null);
+  const [registerEventData, setRegisterEventApiData]:[IRegistersDetails[] | null,React.Dispatch<React.SetStateAction<IRegistersDetails[] | null>>]  = useState< IRegistersDetails[] | null>(null);
 
-  const [isError, setIsError] = useState<boolean>(false);
+  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false);
 
-  async function fetchRegisterEventDetails() {
+    const  fetchRegisterEventDetails:() => Promise<void>= async ()=>{
     setIsError(true);
     setRegisterEventApiData(null);
     try {
-      const RegisterEventDetails = await FetchRegisterEventData();
+      const RegisterEventDetails:IRegistersDetails[]| null  = await FetchRegisterEventData();
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
     } catch (error) {
-      console.error("Error while fetching data:", error);
+      console.error( error);
       setIsError(true);
     }
   }

@@ -2,7 +2,7 @@ import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
@@ -13,38 +13,42 @@ import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemode
 const requiredPermissions: Permission[] = [
   {
     Securable: "NG.Homepage",
-
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
-export const NewHomepageView = () => {
+export const NewHomepageView : () => JSX.Element = () => {
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
-  const [isOpen, setIsOpen] = useState(true);
-  const [showQuickLink, setShowQuickLink] = useState(false);
-  const [quickLinkData, setQuickLinkData] = useState<IQuickLinkApiResponse[] | null>(null);
-   const [isError, setIsError] = useState<boolean>(false);
-  const showQuickLinkView = () => {
+  const [isOpen, setIsOpen]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [showQuickLink, setShowQuickLink]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+ 
+  const [quickLinkData, setQuickLinkData]:[IQuickLinkApiResponse[] | null,React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>] = useState<IQuickLinkApiResponse[] | null>(null);
+   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+   const showQuickLinkView :()=>void= () => {
     setShowQuickLink(true);
   };
 
-  const showMainPanelView = () => {
+  const showMainPanelView:()=>void= () => {
     setShowQuickLink(false);
   };
-  const togglePanel = () => {
+  const togglePanel:()=>void = () => {
     setIsOpen(!isOpen);
   };
 
-  const closePanel = () => {
+  const closePanel:()=>void = () => {
     setIsOpen(false);
   };
 
   useEffect(() => {
     (async () => {
       try {          
-        const responseapidata  = await fetchQuickLinkDetails(); 
+        const responseapidata: {
+          response: IQuickLinkApiResponse[];
+          status: boolean;
+      } | null | undefined  = await fetchQuickLinkDetails(); 
        if( responseapidata !=null )
        { 
         setQuickLinkData(responseapidata?.response);

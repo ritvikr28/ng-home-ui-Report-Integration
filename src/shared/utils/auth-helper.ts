@@ -22,7 +22,7 @@ export const isUserAdmin: () => boolean = () => {
   return false;
 };
 export const getQuickLinkSecurablesList: () => Permission[] = () => {
-  const permissionToken:string =  window.sessionStorage.getItem('PERMISSIONS') || '';
+  const permissionToken =  window.sessionStorage.getItem('PERMISSIONS') || '';
   if(permissionToken!=='')
   {
     const allowedPermissions: Permission[] = JSON.parse(

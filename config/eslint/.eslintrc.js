@@ -43,6 +43,7 @@ module.exports = {
     "jsx-a11y/no-static-element-interactions": "off",
     "@typescript-eslint/no-empty-pattern": "off",
     "no-empty-pattern": "off",
+    "react/jsx-props-no-spreading": "off",
     "comma-dangle": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",

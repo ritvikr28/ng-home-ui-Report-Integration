@@ -60,7 +60,7 @@ export const getMenus: (
 };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
   const dispatch: any = useDispatch();
 
@@ -98,7 +98,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         code: x.appCode,
         canView: true,
         linkText: t(`slices.${x.appCode}.linkText`),
-        link: t(`slices.${x.appCode}.link`),
+        link: t(`slices.${x.appCode}.link`)
       })
     );
 
@@ -109,7 +109,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
-  const hasFlagrPermission=(hasFeaturePermission('NewHomePage') &&
+  const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
   isOrganisationInVariant())
 
   return (

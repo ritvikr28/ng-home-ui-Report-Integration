@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { IRightSidePanelProps } from "./RightSidePanelProps";
 import { FetchGroupMemberDetailsData } from "../../../shared/services/schoolDomain/schoolServices";
@@ -25,29 +25,26 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     EventInstanceExternalId
   }: IRightSidePanelProps = props;
 
-  const [isLoader, setLoader] = useState(true);
-  const [errCodeMessage, setErrCodeMessage] = useState(true);
-  const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage] =
-    useState("");
-  const [groupMemberDetails, setGroupMemberDetailsData] = useState<
-    IGroupMemberDetailsResponse[]
-  >([]);
-  const [isPupilSectionEnable, setPupilSection] = useState(true);
+  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [errCodeMessage, setErrCodeMessage]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
+  const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
+  const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
-  const formatEventTimeData = (
+  const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
     EventStartDate: string,
     EventEndDate: string,
     EventPeriodNum: string
   ) => {
-    const day = dayjs(EventStartDate).format("dddd");
-    const starttime = dayjs(EventStartDate).format("HH:mm");
-    const endtime = dayjs(EventEndDate).format("HH:mm");
-    const eventPeriodNum = EventPeriodNum;
+    const day:string= dayjs(EventStartDate).format("dddd");
+    const starttime:string = dayjs(EventStartDate).format("HH:mm");
+    const endtime:string = dayjs(EventEndDate).format("HH:mm");
+    const eventPeriodNum:string = EventPeriodNum;
     return (EventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 
-  const pupilSortLogic = (pupilList: IGroupMemberDetailsResponse[]) => {
-    const sortedPupilList = [...pupilList].sort((a, b) =>
+  const pupilSortLogic:(pupilList: IGroupMemberDetailsResponse[]) => void = (pupilList: IGroupMemberDetailsResponse[]) => {
+    const sortedPupilList:IGroupMemberDetailsResponse[] = [...pupilList].sort((a, b) =>
       a.personalInfo.preferredSurname.localeCompare(
         b.personalInfo.preferredSurname
       )
@@ -56,7 +53,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   };
 
   useEffect(() => {
-    const FetchGroupMemberDetails = async (
+    const FetchGroupMemberDetails:(groupExternalId: string,EventStartDate: string,EventEndDate: string) => Promise<void> = async (
       groupExternalId: string,
       EventStartDate: string,
       EventEndDate: string
@@ -73,12 +70,12 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
           setGroupMemberDetailsData([]);
           setPupilSection(false)
         } else {
-          const responseData = await FetchGroupMemberDetailsData(
+          const responseData:IGroupMemberDetailsResponse[] |undefined = await FetchGroupMemberDetailsData(
             groupExternalId,
             EventStartDate,
             EventEndDate
           );
-          pupilSortLogic(responseData);
+         if(responseData!==undefined){ pupilSortLogic(responseData)}
           setErrCodeMessage(false);
           setLoader(false);
           setPupilSection(true);

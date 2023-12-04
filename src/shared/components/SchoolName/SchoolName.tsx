@@ -1,6 +1,7 @@
 import React, {  useEffect } from 'react';
 import { useFetchSchoolNameData } from '../../services/schoolDomain/schoolServices';
 import { capitalizeFirstLetterOfEachWord } from '../../../features/MainPanel/WelcomeUser/utils/newHomePageUtils';
+import {ISchoolNameDataResponse} from "../../model/SchoolDomain/responsemodels"
  
  
 interface SchoolNameComponentProps {
@@ -10,14 +11,16 @@ interface SchoolNameComponentProps {
  
 const SchoolNameComponent: React.FC<SchoolNameComponentProps> = ({ setSchoolNames, setIsError }) => {
   useEffect(() => {
-    const fetchSchoolNames = async () => {
+    const fetchSchoolNames:() => Promise<void> = async () => {
       setIsError(false);
       try {
-        const schoolData = await useFetchSchoolNameData(); 
-        const name = schoolData.schoolName.toLowerCase();
-        const schoolName = capitalizeFirstLetterOfEachWord(name);
-        setSchoolNames(schoolName);
-        setIsError(false);
+        const schoolData:ISchoolNameDataResponse|null = await useFetchSchoolNameData(); 
+
+          const name:string = (schoolData==null)?"":schoolData.schoolName.toLowerCase();
+          const schoolName:string = capitalizeFirstLetterOfEachWord(name);
+          setSchoolNames(schoolName);
+          setIsError(false);
+        
       } catch (error) {
         setIsError(true);
       }

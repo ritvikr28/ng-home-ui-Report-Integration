@@ -5,7 +5,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 import { IRegistersDetails } from "../../model/RegisterDomain/responsemodels";
 
 
-export const FetchRegisterEventData = async () => {
+export const FetchRegisterEventData: () => Promise<IRegistersDetails[] | null> = async () => {
   try {
     const response: AxiosResponse<IRegistersDetails[]> = await service.get(
       `RegisterDetails/LessonAndClassDetails`,

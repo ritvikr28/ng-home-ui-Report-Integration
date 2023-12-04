@@ -6,14 +6,13 @@ import { NewHomepageView } from "../NewHomePage.view";
 
 jest.mock("../../../shared/utils", () => ({
   envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: "True",
-  },
+    IS_NEWHOMEPAGE_ACCESSIBLE: "True"
+  }
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-
-  Redirect: jest.fn(() => null),
+  Redirect: jest.fn(() => null)
 }));
 
 describe("<NewHomepageView />", () => {

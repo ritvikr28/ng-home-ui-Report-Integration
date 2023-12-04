@@ -23,23 +23,23 @@ interface IProps {
 }
 
 const LandingPageView: ({}: IProps) => JSX.Element = ({
-  data,
+  data
 }: IProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
   const requiredPermissions: Permission[] = [
     {
       Securable: "NG.Homepage",
-      Operation: "View",
+      Operation: "View"
     }
   ];
-  const history = useHistory();
+  const history:any = useHistory();
   const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
     const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
     isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"));
     
-  const createEventButton = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission) ?  (
+  const createEventButton: JSX.Element | null = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission) ?  (
       <Button
         size={ButtonSize.Small}
         dataTestId="create-event-button"
