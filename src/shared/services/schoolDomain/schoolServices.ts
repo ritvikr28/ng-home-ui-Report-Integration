@@ -15,15 +15,15 @@ export interface IGroupMemberDetailsDataResponse {
   data: IGroupMemberDetailsResponse[];
 }
 
-export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | undefined>= async () => {
+export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | null>= async () => {
   try
   {
-    const response:AxiosResponse<ISchoolNameDataResponse | undefined> = await service.get(`School/SchoolName`);
+    const response:AxiosResponse<ISchoolNameDataResponse> = await service.get(`School/SchoolName`);
     return response.data;
   }
   catch (error) {
-    console.log(error);
-    return undefined;
+//    console.error(error);
+    return null;
   }
 
 };
@@ -40,7 +40,7 @@ export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDat
     const responseData:IStaffTimeTableEventsResponse[] | undefined = response.data;
     return { status, responseData };
   } catch (error) {
-    console.log(error);
+ //   console.log("error");
     return undefined;
   }
 };
@@ -63,7 +63,7 @@ export const FetchGroupMemberDetailsData:(
     );
     return responseData.data.data;
   } catch (error) {
-    console.log(error);
+   // console.log("error");
     return undefined;
   }
 };
