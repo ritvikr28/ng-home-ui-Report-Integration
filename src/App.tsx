@@ -12,13 +12,10 @@ import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { service } from "./shared/utils";
 
-
-export interface IAppProps extends ILayoutProps {}
-
-const App: (props: IAppProps) => JSX.Element = ({
+const App: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
-}: IAppProps) => {
+}: ILayoutProps) => {
   IntlProvider.init({
     translation: {
       en: translationEn,
