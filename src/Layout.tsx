@@ -114,7 +114,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const requiredPermissions: Permission[] = [
     {
       Securable: "NG.Homepage",
-      Operation: "View",
+      Operation: "View"
     }
   ];
   const showNewHomePage:boolean =  authService.isAuthorised(requiredPermissions, MatchPermissions.all);
