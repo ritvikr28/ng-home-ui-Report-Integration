@@ -32,3 +32,13 @@
     max-width: 19% !important;
   }
 }
+
+
+
+@media only screen and (min-width: 1024px) {
+  .side-margin-closed {
+    flex-basis: 25% !important;
+    max-width: 13% !important;
+  }
+}
+
