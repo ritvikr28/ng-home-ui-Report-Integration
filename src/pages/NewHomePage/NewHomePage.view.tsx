@@ -65,7 +65,7 @@ export const NewHomepageView : () => JSX.Element = () => {
   return isPermission ? (
     <>
       <Grid className="app">
-        <GridItem lg={isOpen ? 2 : 1} sm={isOpen ? 3 : 2}>
+        <GridItem className="side-margin" lg={isOpen ? 3 : 1}   md = {isOpen ? 2 : 1} sm ={isOpen ? 1 : 0}>
           <SidePanelView
             isOpen={isOpen}
             togglePanel={togglePanel}
@@ -79,8 +79,9 @@ export const NewHomepageView : () => JSX.Element = () => {
         </GridItem>
         <GridItem
           className="body-panel"
-          lg={isOpen ? 10 : 11}
-          sm={isOpen ? 3 : 2}
+          lg={isOpen ? 9 : 11}
+          md = {isOpen ? 6 : 7}
+          sm = {isOpen ? 3 : 4}
         >
           {showQuickLink ? <QuickLinkLogic  setQuickLinkData = {setQuickLinkData}  apiQuickLinkData={isError?[]:quickLinkData}/> : <MainPanelView />}
           
