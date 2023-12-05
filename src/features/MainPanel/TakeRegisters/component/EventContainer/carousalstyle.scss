@@ -10,12 +10,14 @@
   overflow: hidden;
   position: relative;
   margin-left: -9px;
+  margin-top: -40px;
+  margin-bottom: -36px;
 }
 
 .react-multi-carousel-track {
   list-style: none;
-  padding: 0;
-  margin: 0;
+  padding: 16px;
+  margin-left: -16px;
   display: flex;
   flex-direction: row;
   position: relative;
