@@ -7,51 +7,67 @@ import { QuicklinkComponentProps } from './props';
 import { IFetchQuickLinkDetailsFunctionResponse } from '../../shared/model/quickLink/responsemodels';
 
 
-const QuickLinkLogic: ({ setQuickLinkData ,apiQuickLinkData}:QuicklinkComponentProps ) => JSX.Element = ({ setQuickLinkData,apiQuickLinkData }:QuicklinkComponentProps ) => {
+const QuickLinkLogic: React.FC<
+  QuicklinkComponentProps & { isOpen: boolean }
+> = ({
+  setQuickLinkData,
+  apiQuickLinkData,
+  isOpen
+}: QuicklinkComponentProps & { isOpen: boolean }) => {
+  const [isError, setIsError]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   
-  
-      const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-   
-      const handleStarClick: (id: number, favorite: boolean) => Promise<void> = async (id: number, favorite: boolean) => {        
-        try {
-          const { status }:{status:number} = await FetchQuickLinkpost(id, favorite);
-          if(status===200)
-          {
-            const responseapidata:IFetchQuickLinkDetailsFunctionResponse | null | undefined=  await fetchQuickLinkDetails();
-            if(responseapidata !=null)
-            {
-             setQuickLinkData(responseapidata?.response) ;             
-            }
-          }
-        else{
-          setIsError(true);
+  const handleStarClick: (
+    id: number,
+    favorite: boolean
+  ) => Promise<void> = async (id: number, favorite: boolean) => {
+    try {
+      const { status }: { status: number } = await FetchQuickLinkpost(
+        id,
+        favorite
+      );
+      if (status === 200) {
+        const responseapidata:
+          | IFetchQuickLinkDetailsFunctionResponse
+          | null
+          | undefined = await fetchQuickLinkDetails();
+        if (responseapidata != null) {
+          setQuickLinkData(responseapidata?.response);
         }
-       
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      const displaystarredicon: (favorites: boolean, id: number) => JSX.Element = (favorites: boolean, id: number) => (
-          <Icon
-            color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
-            dataTestId="btn-90"
-            id="variable-2"
-            name={favorites ? 'star--filled' : 'star'}
-            size={16}
-            onClick={() => handleStarClick(id, !favorites)}
-          />
-        );
-  
-    return (
-     
-        <QuickLink
-       apiQuickLinkData={apiQuickLinkData}
-        apiError={isError}
-        displaystarredicon = {displaystarredicon}
-      />
-    
-    );
-   
+      } else {
+        setIsError(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
-  export default QuickLinkLogic;
+
+  const displaystarredicon: (favorites: boolean, id: number) => JSX.Element = (
+    favorites: boolean,
+    id: number
+  ) => (
+    <Icon
+      color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
+      dataTestId="btn-90"
+      id="variable-2"
+      name={favorites ? "star--filled" : "star"}
+      size={16}
+      onClick={() => handleStarClick(id, !favorites)}
+    />
+  );
+
+  return (
+    <>
+      {" "}
+      <QuickLink
+        apiQuickLinkData={apiQuickLinkData}
+        apiError={isError}
+        displaystarredicon={displaystarredicon}
+        isOpen ={isOpen}
+      />
+    </>
+  );
+};
+export default QuickLinkLogic;

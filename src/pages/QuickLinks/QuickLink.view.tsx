@@ -20,7 +20,8 @@ const requiredPermissions: Permission[] = [
 const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
-  displaystarredicon
+  displaystarredicon,
+  isOpen
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission =
   authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
@@ -36,8 +37,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
           </div>
           <div>
           {!apiError &&  (
-              <TableWrapper className="quicklinktable" >
-                <Table dataTestId="test-id" id="element-id" className="quicklinktable">
+              <TableWrapper  className={isOpen ? "quicklinktable" : "quicklinktable-close"} >
+                <Table dataTestId="test-id" id="element-id" >
                   <TableHead>
                     <TableRow>
                       <TableCell header className="theader">

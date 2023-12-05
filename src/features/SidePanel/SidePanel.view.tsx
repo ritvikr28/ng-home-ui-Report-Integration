@@ -5,7 +5,9 @@ import {
   ButtonSize,
   Icon,
   IconColor,
-  Link
+  Tooltip,
+  TooltipAlign,
+  TooltipPosition
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
@@ -62,28 +64,39 @@ const SidePanel: React.FC<SidePanelProps> = ({
     return null;
   }
   
-  return  (
+  return (
+    <>
   <div
     className={`side-view ${isOpen ? "open open-panel" : "side-view-closed"}`}
   >
   
     {isOpen ? (
       <div>
-        <div
-          className="quick-lint-display"
-          style={{ display: "flex", marginBottom: "24px" }}
-        >
-          <span className="quick-link-username">
-            <strong>{userFullname}</strong>
-          </span>
-          <span>
+        <div className="quick-lint-display">
+      
+        {userFullname && userFullname.length > 24 ? (
+  <Tooltip
+    align={TooltipAlign.Center}
+    position={TooltipPosition.Bottom}
+    content={<span>{userFullname}</span>}
+  >
+    <span className="quick-link-username" style={{ maxWidth: "230px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+      <strong>{userFullname}</strong>
+    </span>
+  </Tooltip>
+) : (
+  <span className="quick-link-username">
+    <strong>{userFullname}</strong>
+  </span>
+)}
+
+		     <span className="icon-close">
             {" "}
             <Icon
               color={IconColor.Primary500}
               dataTestId="btn-90"
               id="variable-2"
               name="close"
-              className="close-icon"
               onClick={closePanel}
               size={24}
             />
@@ -92,21 +105,34 @@ const SidePanel: React.FC<SidePanelProps> = ({
         <div>
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
-          
-            {!isError && quicklinkData && quicklinkData.slice(0,6).map((sidelink) => (<div  className="quick-panel-cont">
-            <Link key={sidelink.id}  data-testid="link" href={sidelink.link} target="_self">
-                              {sidelink.name}
-                            </Link>
-              <Icon
-                color={sidelink.favourite ? IconColor.Primary500 : IconColor.Neutral800 } 
-                className="icon-margin"
-                dataTestId="btn-90"
-                id="variable-2"
-                name={sidelink.favourite ? 'star--filled' : 'star'}
-                size={16}
-                onClick={() => handleStarClick(sidelink.id, !sidelink.favourite)}
-              />
-            </div>))}
+          {/*
+  eslint-disable
+*/}
+          {!isError && quicklinkData && quicklinkData.slice(0, 6).map((sidelink) => (
+  <div
+    className="quick-panel-cont"
+    key={sidelink.id}
+    onClick={() => window.location.href = sidelink.link}
+    style={{ cursor: 'pointer' }}
+  >
+    {sidelink.name}
+    <Icon
+      color={sidelink.favourite ? IconColor.Primary500 : IconColor.Neutral800}
+      className="icon-margin"
+      dataTestId="btn-90"
+      id="variable-2"
+      name={sidelink.favourite ? 'star--filled' : 'star'}
+      size={16}
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent the div click event from being triggered
+        handleStarClick(sidelink.id, !sidelink.favourite);
+      }}
+        /* eslint-enable */
+    />
+  </div>
+))}
+
+
             
             {/*
   eslint-disable jsx-a11y/anchor-is-valid,
@@ -144,8 +170,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
     )}
     <div />
   </div>
+  </>
   )
-  
 };
 
 export default SidePanel;
