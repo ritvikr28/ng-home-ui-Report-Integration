@@ -25,7 +25,7 @@ const requiredPermissionsforquicklink: Permission[] = [
 ];
 
 
-export const NewHomepageView: () => JSX.Element = () => {
+export const NewHomepageView: React.FC = () => {
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";

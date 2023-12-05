@@ -23,8 +23,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   displaystarredicon,
   isOpen
 }: IQuickLinkViewProps): JSX.Element => {  
- const isPermission =
-  authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
+ const isPermission = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
   return isPermission ? (
     <div className="teacher-panel-container">
