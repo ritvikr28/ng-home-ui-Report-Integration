@@ -16,6 +16,10 @@ data:
     window.REACT_GA_TRACKING_ID = "GTM-MSNQP45"
     window.AUTH_API_URL = "#{AUTH_API_URL}#"
     window.APPLICATION = "#{APPLICATION}#"
+    window.IS_NEWHOMEPAGE_ACCESSIBLE = "#{IS_NEWHOMEPAGE_ACCESSIBLE}#"
+    window.SCHOOL_BASE_URL = "#{SCHOOL_BASE_URL}#"
+    window.REGISTER_BASE_URL = "#{REGISTER_BASE_URL}#"
+    window.LEARNER_UI_URL = "#{LEARNER_UI_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
