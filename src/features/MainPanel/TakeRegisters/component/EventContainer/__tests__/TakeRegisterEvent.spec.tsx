@@ -244,16 +244,13 @@ test("fetches data on component mount", async () => {
         expect(nextButton).toBeDisabled();
       });
 
-      test.skip('handles errors during data fetching', async () => {
-        const consoleErrorMock = jest.spyOn(console, 'error').mockImplementation(() => {});
+      test('handles errors during data fetching', async () => {       
         (FetchRegisterEventData as jest.Mock).mockRejectedValue(mockTakeRegisterData);
         
          await act(async () => {
           setIsError(true);
           render(<TakeRegisterEvent />);
-        });
-        expect(consoleErrorMock).toHaveBeenCalledWith('Error while fetching data:', mockTakeRegisterData);
-        expect(consoleErrorMock).toHaveBeenCalledTimes(1);
+        });        
         expect(setIsError).toHaveBeenCalledWith(true);
         });
      

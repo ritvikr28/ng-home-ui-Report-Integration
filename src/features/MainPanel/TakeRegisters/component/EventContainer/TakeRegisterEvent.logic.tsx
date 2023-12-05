@@ -15,8 +15,7 @@ const TakeRegisterEvent: () => JSX.Element = () => {
       const RegisterEventDetails:IRegistersDetails[]| null  = await FetchRegisterEventData();
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
-    } catch (error) {
-      console.error( error);
+    } catch (error) {      
       setIsError(true);
     }
   }
