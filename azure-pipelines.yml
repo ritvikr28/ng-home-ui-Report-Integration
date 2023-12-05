@@ -399,7 +399,7 @@ stages:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
               requireManualValidation: false          
-            component:
+            components:
               - name: 'nghomeui'
                 selfhostedpool: 'paz-vmss-pool'
             env_name: live_snow
