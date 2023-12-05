@@ -12,7 +12,7 @@ const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
       <GridItem lg={10}>
       <div>
           You are viewing {isApiError === false ? organisationName : ""} as a Teacher.{" "}
-          <a className="link-color" href=" ">            
+          <a className="link-color" href="javascript:void(0)">            
             Switch view here
           </a>
         </div>
