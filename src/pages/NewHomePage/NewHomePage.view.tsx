@@ -3,7 +3,6 @@ import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
-import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
@@ -26,7 +25,7 @@ const requiredPermissionsforquicklink: Permission[] = [
 
 
  const NewHomepageView: () => JSX.Element = () => {
-  const isPermission  = authService.isAuthorised(requiredPermissions, MatchPermissions.all) && envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+  const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
 
     const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
 
