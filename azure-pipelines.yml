@@ -15,7 +15,7 @@ resources:
     - repository: platformPipelineRepo
       type: git
       name: Platform/az-pipelines-application-yaml-kit
-      ref: main
+      ref: refs/tags/releases/2.2.0
 
 variables:
   - group: ng-home-ui-Dev
