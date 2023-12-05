@@ -33,11 +33,10 @@
 .open-panel .essui-icon--16 {
   min-height: 16px;
   min-width: 16px;
-  // margin-left: 230px;
 }
 
-.close-icon .essui-icon--24 {
-  margin-left: 260px;
+.icon-close {
+  margin-right: 15px;
 }
 
 .essui-open-panel-filled .essui-button-icon-only--small {
@@ -97,17 +96,18 @@
 }
 
 .quick-link-username {
-  width: 232px;
+
   font-size: 16px;
   padding-left: 16px;
-  word-break: break-all;
 }
 
 .quick-lint-display {
   display: flex;
   margin-bottom: 24px;
+  justify-content: space-between;
 }
 
 .icon-margin {
   margin-top: 5px;
 }
+

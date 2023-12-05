@@ -100,6 +100,7 @@ export const NewHomepageView: () => JSX.Element = () => {
             <QuickLinkLogic
               setQuickLinkData={setQuickLinkData}
               apiQuickLinkData={isError ? [] : quickLinkData}
+              isOpen ={isOpen}
             />
           ) : (
             <MainPanelView />
