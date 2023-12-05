@@ -358,9 +358,9 @@ stages:
             env_name: live_snow  
             config:
 
-        - deployment: deploy_nghomeui_live_snow
+        - deployment: deploy_nghomeui_live
           displayName: "Deployment to Live"
-          dependsOn: addStartTime
+          dependsOn: MoveCR
           environment: live_snow         
           strategy:
             runOnce:
