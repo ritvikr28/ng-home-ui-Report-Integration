@@ -38,7 +38,6 @@ const EventContainer: React.FC = () => {
           }
 
       } catch (error) {
-        console.error(error);
         setIsError(true);
       }
     };
@@ -46,37 +45,33 @@ const EventContainer: React.FC = () => {
     fetchStaffTimeTableEvents();
   }, []);
 
-
+  
   const formatEventTitleData = (eventTitleData: any) => {
-    const desc:string = eventTitleData?.group?.shortName ?? "";
-    const code:string = eventTitleData?.levelCode ?? "";
-    const subjectName:string = eventTitleData?.subject?.name ?? "";
-    const details:string =
-      (desc  !== "" || code !== "") && subjectName !== ""
-        ? `| ${subjectName}`
-        : subjectName;
-    return `${desc} ${code} ${details}`;
-  };
-
-
-  const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse):string => {
- 
-        if (eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined &&eventTimeData.eventDescription.split(":")[1] !== null) {
-          return eventTimeData.eventDescription.split(":")[1];
-        }
-
-        if (eventTimeData.eventTypeCode === "AttendanceSession") {
-          return eventTimeData.eventDescription;
-        }
-    return "";
+    const { group, levelCode, subject } = eventTitleData || {};
     
+    const desc = group?.shortName || "";
+    const code = levelCode || "";
+    const subjectName = subject?.name || "";
+    
+    const details:string = (subjectName && (desc || code)) ? `| ${subjectName}` : subjectName;
+
+    return `${desc} ${code} ${details}`;
+};
+  const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse): string => {
+    const descriptionParts = eventTimeData.eventDescription?.split(":") || [];
+  
+    if (descriptionParts.length > 1 && descriptionParts[1]) {
+      return descriptionParts[1];
+    }
+  
+    if (eventTimeData.eventTypeCode === "AttendanceSession") {
+      return eventTimeData.eventDescription || "";
+    }
+  
+    return "";
   };
-  // const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse): string =>
-  // eventTimeData.eventDescription?.split(":")[1] ?? (eventTimeData.eventTypeCode === "AttendanceSession" ? eventTimeData.eventDescription : "");
-
   
   
-
   const formatEventTimeData:(eventTimeData: IStaffTimeTableEventsResponse)=> string = (eventTimeData: IStaffTimeTableEventsResponse) => {
     const day:string  = dayjs(eventTimeData.eventStart).format("ddd");
     const starttime:string  = dayjs(eventTimeData.eventStart).format("HH:mm");
@@ -85,24 +80,27 @@ const EventContainer: React.FC = () => {
     return (eventTimeData.eventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
   };
 
+  const renderNoEventsCard: () => JSX.Element = () => (
+    <EventCard
+      dataTestId="no-events-today"
+      id="no-events-today-id"
+      primaryText=""
+      secondaryText=""
+      status={EventCardStatus.DEFAULT}
+      title="No events today"
+      inputWidth={166}
+      inputHeight={75}
+      className="dynamiceventcard event-primary-text no-events"
+    />
+  );
+  
+
   if (isError || (status !== 200 && status !== 204)) {
     return null;
   }
 
   if (status === 204 && (!schoolEventsData || schoolEventsData.length === 0)) {
-    return (
-      <EventCard
-        dataTestId="no-events-today"
-        id="no-events-today-id"
-        primaryText=""
-        secondaryText=""
-       status={EventCardStatus.DEFAULT}
-        title="No events today"
-        inputWidth={166}
-        inputHeight={75}
-        className="dynamiceventcard event-primary-text no-events"
-      />
-    );
+    return renderNoEventsCard();
   }
 
   return (

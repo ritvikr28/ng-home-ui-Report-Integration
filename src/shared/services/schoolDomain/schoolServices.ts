@@ -22,10 +22,7 @@ export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | null>
     return response.data;
   }
   catch (error) {
-//    console.error(error);
-    return null;
-  }
-
+    throw new Error('Failed to fetch school name');  }
 };
 
 
@@ -40,8 +37,7 @@ export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDat
     const responseData:IStaffTimeTableEventsResponse[] | null = response.data;
     return { status, responseData };
   } catch (error) {
- //   console.log("error");
-    return null;
+    throw new Error('Failed to fetch staff timetable details');
   }
 };
 
@@ -63,8 +59,7 @@ export const FetchGroupMemberDetailsData:(
     );
     return responseData.data.data;
   } catch (error) {
-   // console.log("error");
-    return null;
+    throw new Error('Failed to fetch group member details');
   }
 };
 
