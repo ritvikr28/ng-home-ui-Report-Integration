@@ -2,7 +2,7 @@ import {  Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
-import { envConfig } from "../../shared/utils";
+
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
@@ -12,7 +12,7 @@ import { IQuickLinkViewProps } from "./props";
 
 const requiredPermissions: Permission[] = [
   {
-    Securable: "NG.Homepage",
+    Securable: "NG.Homepage.QuickLink",
     Operation: "View"
   }
 ];
@@ -23,8 +23,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   displaystarredicon
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission =
-  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
-  envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+  authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
   return isPermission ? (
     <div className="teacher-panel-container">

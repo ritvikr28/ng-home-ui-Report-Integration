@@ -17,10 +17,22 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
+const requiredPermissionsforquicklink: Permission[] = [
+  {
+    Securable: "NG.Homepage.QuickLink",
+    Operation: "View"
+  }
+];
+
+
 export const NewHomepageView: () => JSX.Element = () => {
   const isPermission =
     authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+
+    const isPermissionquicklink =
+    authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
+
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -97,6 +109,7 @@ export const NewHomepageView: () => JSX.Element = () => {
           sm={isOpen ? 3 : 4}
         >
           {showQuickLink ? (
+            isPermissionquicklink &&
             <QuickLinkLogic
               setQuickLinkData={setQuickLinkData}
               apiQuickLinkData={isError ? [] : quickLinkData}
