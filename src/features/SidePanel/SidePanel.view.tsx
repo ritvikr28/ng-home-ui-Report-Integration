@@ -37,7 +37,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 }) => {   
   
    const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-   const isPermissionquicklink = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)  
+   const isPermissionquicklink : boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)  
   
   const handleStarClick: (id: number, favorite: boolean) => Promise<void> = async (id: number, favorite: boolean) => {    
     try {
