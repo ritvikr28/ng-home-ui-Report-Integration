@@ -21,9 +21,10 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
-import { NewHomepageView } from "./pages/NewHomePage/NewHomePage.view";
+
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import { envConfig } from "./shared/utils";
+import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 
 
 

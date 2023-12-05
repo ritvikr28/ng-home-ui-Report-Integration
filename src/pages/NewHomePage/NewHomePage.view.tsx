@@ -25,7 +25,7 @@ const requiredPermissionsforquicklink: Permission[] = [
 ];
 
 
-export const NewHomepageView: React.FC = () => {
+ const NewHomepageView: () => JSX.Element = () => {
   const isPermission  = authService.isAuthorised(requiredPermissions, MatchPermissions.all) && envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
 
     const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
@@ -123,3 +123,4 @@ export const NewHomepageView: React.FC = () => {
   );
 };
 
+export default NewHomepageView;
