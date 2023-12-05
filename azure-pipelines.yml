@@ -342,10 +342,21 @@ stages:
           parameters:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true
-            component:
-              name: 'ng-home-ui'
-              selfhostedpool: 'paz-vmss-pool' 
+              requireManualValidation: false
+            # component:
+            #   name: 'ng-home-ui'
+            #   selfhostedpool: 'paz-vmss-pool' 
+
+        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: true          
+            # component:
+            #   name: 'nghomeui'
+            #   selfhostedpool: 'paz-vmss-pool'
+            env_name: live_snow  
+            config:
 
         - deployment: deploy_nghomeui_live_snow
           displayName: "Deployment to Live"
@@ -389,6 +400,6 @@ stages:
               serviceConnection: 'ServiceNow-Connection'
               requireManualValidation: false          
             component:
-              name: 'nghomeui'
-              selfhostedpool: 'paz-vmss-pool'
+              - name: 'nghomeui'
+                selfhostedpool: 'paz-vmss-pool'
             env_name: live_snow
