@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import  React,{  useState } from 'react';
 import { Icon, IconColor } from "@essnextgen/ui-kit";
 import QuickLink from "./QuickLink.view";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
-import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
-import { QuicklinkComponentProps } from "./props";
-import {
-  IFetchQuickLinkDetailsFunctionResponse,
-  IQuickLinkApiResponse
-} from "../../shared/model/quickLink/responsemodels";
+import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
+import { QuicklinkComponentProps } from './props';
+import { IFetchQuickLinkDetailsFunctionResponse } from '../../shared/model/quickLink/responsemodels';
+
 
 const QuickLinkLogic: React.FC<
   QuicklinkComponentProps & { isOpen: boolean }
@@ -20,25 +18,7 @@ const QuickLinkLogic: React.FC<
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  useEffect(() => {
-    (async () => {
-      try {
-        const responseapidata:
-          | {
-              response: IQuickLinkApiResponse[];
-              status: boolean;
-            }
-          | null
-          | undefined = await fetchQuickLinkDetails();
-        if (responseapidata != null) {
-          setIsError(responseapidata.status);
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    })();
-  }, []);
-
+  
   const handleStarClick: (
     id: number,
     favorite: boolean

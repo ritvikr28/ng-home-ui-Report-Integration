@@ -2,7 +2,8 @@ import React from "react";
 import { authService } from "@essnextgen/auth-ui";
 import { act, fireEvent, render } from "@testing-library/react";
 import { Redirect } from "react-router-dom";
-import { NewHomepageView } from "../NewHomePage.view";
+import NewHomepageView from "../NewHomePage.view";
+
 
 jest.mock("../../../shared/utils", () => ({
   envConfig: {

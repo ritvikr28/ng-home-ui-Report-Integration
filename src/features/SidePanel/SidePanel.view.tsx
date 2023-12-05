@@ -10,13 +10,21 @@ import {
   TooltipPosition
 } from "@essnextgen/ui-kit";
 import "./style.scss";
-import { authService } from "@essnextgen/auth-ui";
+import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
 
 const userFullname: string | null = authService.getUsername();
+
+
+const requiredPermissionsforquicklink: Permission[] = [
+  {
+    Securable: "NG.Homepage.QuickLink",
+    Operation: "View"
+  }
+];
 
 
 const SidePanel: React.FC<SidePanelProps> = ({
@@ -28,8 +36,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
   setQuickLinkData
 }) => {   
   
-   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);  
-
+   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+   const isPermissionquicklink : boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)  
+  
   const handleStarClick: (id: number, favorite: boolean) => Promise<void> = async (id: number, favorite: boolean) => {    
     try {
       const { status }:{ status:number } = await FetchQuickLinkpost(id, favorite);
@@ -50,7 +59,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
       console.error( error);
     }
   };
-
+  if (!isPermissionquicklink) {
+    return null;
+  }
   
   return (
     <>

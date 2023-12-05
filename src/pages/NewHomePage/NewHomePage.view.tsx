@@ -3,7 +3,6 @@ import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
-import { envConfig } from "../../shared/utils";
 import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
@@ -17,10 +16,19 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-export const NewHomepageView: () => JSX.Element = () => {
-  const isPermission =
-    authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
-    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
+const requiredPermissionsforquicklink: Permission[] = [
+  {
+    Securable: "NG.Homepage.QuickLink",
+    Operation: "View"
+  }
+];
+
+
+ const NewHomepageView: () => JSX.Element = () => {
+  const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
+
+    const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
+
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -97,6 +105,7 @@ export const NewHomepageView: () => JSX.Element = () => {
           sm={isOpen ? 3 : 4}
         >
           {showQuickLink ? (
+            isPermissionquicklink &&
             <QuickLinkLogic
               setQuickLinkData={setQuickLinkData}
               apiQuickLinkData={isError ? [] : quickLinkData}
@@ -112,3 +121,5 @@ export const NewHomepageView: () => JSX.Element = () => {
     <Redirect to="/noAccess" />
   );
 };
+
+export default NewHomepageView;
