@@ -6,7 +6,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 
 export interface IStaffTimeTableEventsDataResponse {
   status: number;
-  responseData: IStaffTimeTableEventsResponse[] | undefined;
+  responseData: IStaffTimeTableEventsResponse[] | null;
 }
 
 
@@ -29,19 +29,19 @@ export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | null>
 };
 
 
-export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDataResponse |undefined>= async () => {
+export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDataResponse |null>= async () => {
   try {
 
-    const response: AxiosResponse<IStaffTimeTableEventsResponse[] | undefined>= await service.get(
+    const response: AxiosResponse<IStaffTimeTableEventsResponse[] | null>= await service.get(
       `StaffTimetable/StaffTimetableEvents`,
       buildApplicationUrl(apiUrls)
     );
     const {status}: { status: number } = response;
-    const responseData:IStaffTimeTableEventsResponse[] | undefined = response.data;
+    const responseData:IStaffTimeTableEventsResponse[] | null = response.data;
     return { status, responseData };
   } catch (error) {
  //   console.log("error");
-    return undefined;
+    return null;
   }
 };
 
@@ -50,7 +50,7 @@ export const FetchGroupMemberDetailsData:(
   groupExternalId:string,
   startDate: string,
   endDate: string
-)=>Promise<IGroupMemberDetailsResponse[] | undefined> = async (
+)=>Promise<IGroupMemberDetailsResponse[] | null> = async (
   groupExternalId:string,
   startDate: string,
   endDate: string
@@ -64,7 +64,7 @@ export const FetchGroupMemberDetailsData:(
     return responseData.data.data;
   } catch (error) {
    // console.log("error");
-    return undefined;
+    return null;
   }
 };
 

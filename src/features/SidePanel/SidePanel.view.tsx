@@ -12,9 +12,10 @@ import { authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
-import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
 
 const userFullname: string | null = authService.getUsername();
+
 
 const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
@@ -32,10 +33,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
       const { status }:{ status:number } = await FetchQuickLinkpost(id, favorite);
       if(status===200)
       {
-        const responseapidata : {
-          response: IQuickLinkApiResponse[];
-          status: boolean;
-      } | null | undefined=  await fetchQuickLinkDetails();
+        const responseapidata : IFetchQuickLinkDetailsFunctionResponse | null | undefined=  await fetchQuickLinkDetails();
         if(responseapidata !=null)
         {
          setQuickLinkData(responseapidata?.response) ;

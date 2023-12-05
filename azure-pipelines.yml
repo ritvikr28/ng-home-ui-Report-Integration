@@ -15,7 +15,7 @@ resources:
     - repository: platformPipelineRepo
       type: git
       name: Platform/az-pipelines-application-yaml-kit
-      ref: main
+      ref: refs/tags/releases/2.2.0
 
 variables:
   - group: ng-home-ui-Dev
@@ -342,14 +342,25 @@ stages:
           parameters:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true
-            component:
-              name: 'ng-home-ui'
-              selfhostedpool: 'paz-vmss-pool' 
+              requireManualValidation: false
+            # component:
+            #   name: 'ng-home-ui'
+            #   selfhostedpool: 'paz-vmss-pool' 
 
-        - deployment: deploy_nghomeui_live_snow
+        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: true          
+            # component:
+            #   name: 'nghomeui'
+            #   selfhostedpool: 'paz-vmss-pool'
+            env_name: live_snow  
+            config:
+
+        - deployment: deploy_nghomeui_live
           displayName: "Deployment to Live"
-          dependsOn: addStartTime
+          dependsOn: MoveCR
           environment: live_snow         
           strategy:
             runOnce:
@@ -388,7 +399,7 @@ stages:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
               requireManualValidation: false          
-            component:
-              name: 'nghomeui'
-              selfhostedpool: 'paz-vmss-pool'
+            components:
+              - name: 'nghomeui'
+                selfhostedpool: 'paz-vmss-pool'
             env_name: live_snow

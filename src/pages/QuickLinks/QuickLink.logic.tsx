@@ -4,7 +4,7 @@ import QuickLink from "./QuickLink.view";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { QuicklinkComponentProps } from './props';
-import { IQuickLinkApiResponse } from '../../shared/model/quickLink/responsemodels';
+import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from '../../shared/model/quickLink/responsemodels';
 
 
 const QuickLinkLogic: ({ setQuickLinkData ,apiQuickLinkData}:QuicklinkComponentProps ) => JSX.Element = ({ setQuickLinkData,apiQuickLinkData }:QuicklinkComponentProps ) => {
@@ -35,10 +35,7 @@ const QuickLinkLogic: ({ setQuickLinkData ,apiQuickLinkData}:QuicklinkComponentP
           const { status }:{status:number} = await FetchQuickLinkpost(id, favorite);
           if(status===200)
           {
-            const responseapidata:{
-              response: IQuickLinkApiResponse[];
-              status: boolean;
-          } | null | undefined=  await fetchQuickLinkDetails();
+            const responseapidata:IFetchQuickLinkDetailsFunctionResponse | null | undefined=  await fetchQuickLinkDetails();
             if(responseapidata !=null)
             {
              setQuickLinkData(responseapidata?.response) ;             

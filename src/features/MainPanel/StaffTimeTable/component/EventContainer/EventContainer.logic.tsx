@@ -19,30 +19,22 @@ const EventContainer: React.FC = () => {
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId]
     }));
-    if(!isOpen || isOpen[externalId])
-    {
-      setSelectedItem(schoolEventsData[0].externalId);
-    }
-    else
-    {
-      setSelectedItem(externalId);      
-    }
+    setSelectedItem((!isOpen || isOpen[externalId]) ? schoolEventsData[0].externalId : externalId);
   };
 
   useEffect(() => {
     const fetchStaffTimeTableEvents:() => Promise<void> = async () => {
       try {
-        const { status: responseStatus, responseData }: { status?: number; responseData?: IStaffTimeTableEventsResponse[] } =
-          await FetchStaffTimeTableEventsData() ??{};
-          if(responseStatus!==undefined){
+        const { status: responseStatus, responseData }: { status: number | null; responseData: IStaffTimeTableEventsResponse[] | null } =
+          await FetchStaffTimeTableEventsData() ??{status:null,responseData:null};
+          if(responseStatus!==undefined && responseStatus!==null &&responseData!==undefined &&responseData!==null){
             setStatus(responseStatus);
             setIsError(false);
-            if(responseData!==undefined){
+
             setSchoolEventsData(responseData);
             if (responseData.length > 0) {          
               setSelectedItem(responseData[0].externalId);
-            }
-          }
+            }  
           }
 
       } catch (error) {
@@ -69,7 +61,7 @@ const EventContainer: React.FC = () => {
 
   const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse):string => {
  
-        if (eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined) {
+        if (eventTimeData.eventDescription && eventTimeData.eventDescription.split(":")[1] !== undefined &&eventTimeData.eventDescription.split(":")[1] !== null) {
           return eventTimeData.eventDescription.split(":")[1];
         }
 
@@ -77,7 +69,11 @@ const EventContainer: React.FC = () => {
           return eventTimeData.eventDescription;
         }
     return "";
+    
   };
+  // const formateventPeriodNum = (eventTimeData: IStaffTimeTableEventsResponse): string =>
+  // eventTimeData.eventDescription?.split(":")[1] ?? (eventTimeData.eventTypeCode === "AttendanceSession" ? eventTimeData.eventDescription : "");
+
   
   
 
