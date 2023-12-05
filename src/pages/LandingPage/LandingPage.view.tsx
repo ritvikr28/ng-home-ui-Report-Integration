@@ -37,9 +37,9 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
   const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
     envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
     const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
-    isOrganisationInVariant() && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost"));
+    isOrganisationInVariant());
     
-  const createEventButton: JSX.Element | null = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission) ?  (
+  const createEventButton: JSX.Element | null = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost" || envConfig.REACT_ENVIRONMENT==="QA")? false: !hasFlagrPermission) ?  (
       <Button
         size={ButtonSize.Small}
         dataTestId="create-event-button"

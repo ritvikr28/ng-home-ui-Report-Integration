@@ -30,8 +30,8 @@ export const getQuickLinkSecurablesList: () => Permission[] = () => {
     ) 
     
     const quickLinksPermissions:Permission[] =
-    allowedPermissions.filter((x: Permission)=> (x.Securable==="NG.Homepage.QuickLink.Teacher"|| 
-     x.Securable==="NG.Homepage.QuickLink.SLT" || x.Securable==="NG.Homepage.QuickLink.Admin")
+    allowedPermissions.filter((x: Permission)=> ((x.Securable==="NG.Homepage.QuickLink.Teacher" && x.Operation==="View")|| 
+     (x.Securable==="NG.Homepage.QuickLink.SLT" && x.Operation==="View") || (x.Securable==="NG.Homepage.QuickLink.Admin" &&  x.Operation==="View"))
   )
     return quickLinksPermissions;
   } 

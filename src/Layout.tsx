@@ -141,7 +141,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       >
         <Switch>
           
-          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost")? false: !hasFlagrPermission && showNewHomePage &&<ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
+          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost" || envConfig.REACT_ENVIRONMENT==="QA")? false: !hasFlagrPermission && showNewHomePage &&<ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
           <ProtectedRoute exact path="/" component={
              hasFlagrPermission && showNewHomePage? NewHomepageView          
             :LandingPage} />
