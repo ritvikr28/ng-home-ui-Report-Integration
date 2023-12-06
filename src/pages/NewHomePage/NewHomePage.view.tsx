@@ -9,6 +9,7 @@ import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
+import { getUserOrganisation } from "../../shared/utils";
 
 const requiredPermissions: Permission[] = [
   {
@@ -64,13 +65,13 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   useEffect(() => {
     (async () => {
-      try {          
+      try {   
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        if( responseapidata !=null )
        { 
         setQuickLinkData(responseapidata?.response);
-        setIsError(responseapidata.status);
-        logger.info(`Displayed new Home Page, orgId: ${authService.getOrgId()}`)
+        setIsError(responseapidata.status);        
        }
        
       } catch (error) { 
