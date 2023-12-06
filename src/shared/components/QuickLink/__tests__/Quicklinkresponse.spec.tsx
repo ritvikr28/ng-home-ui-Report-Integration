@@ -69,8 +69,7 @@ describe('fetchQuickLinkDetails', () => {
       .mockResolvedValue(mockres);
       (FetchQuickLinkData as jest.Mock).mockReturnValue(mockres);
       const quickLinkDetails = await FetchQuickLinkData("Teacher");
-      console.log("quickLinkDetails",quickLinkDetails);
-
+      
      expect(quickLinkDetails).toEqual({ responseData: mockApiResponse, status: 200 });
       
       expect(qicklink.FetchQuickLinkData).toHaveBeenCalledWith(expectedPermission);
