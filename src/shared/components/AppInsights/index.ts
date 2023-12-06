@@ -1,6 +1,7 @@
 import {
   ApplicationInsights,
-  ITelemetryItem
+  ITelemetryItem,
+  SeverityLevel
 } from "@microsoft/applicationinsights-web";
 import { ReactPlugin } from "@microsoft/applicationinsights-react-js";
 import { BrowserHistory, createBrowserHistory } from "history";
@@ -41,3 +42,41 @@ else {
   ai.trackPageView();
 }
 export { reactPlugin };
+
+type loggerType = {
+  error: ({
+    error,
+    code,
+    endpoint
+  }: {
+    error: string;
+    code?: string;
+    endpoint?: string;
+  }) => void;
+  info: (message: string) => void;
+};
+
+export const logger: loggerType = {
+  error: ({ error, code, endpoint = "" }) => {
+    if (ai === null) {
+      return;
+    }
+    ai.trackException(
+      { exception: new Error(error) },
+      { code, endpoint, pathName: window.location.pathname }
+    );
+  },
+  info: (message = "") => {
+    if (ai === null) {
+      return;
+    }
+    ai.trackTrace(
+      {
+        message: `Home UI Logs - ${  message}`,
+        severityLevel: SeverityLevel.Information
+      },
+      { pathName: window.location.pathname }
+    );
+  }
+};
+

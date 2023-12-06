@@ -3,6 +3,7 @@ import { AxiosResponse } from "axios";
 import { service } from "../../utils/api-service";
 import { IStaffTimeTableEventsResponse,IGroupMemberDetailsResponse,ISchoolNameDataResponse} from "../../model/SchoolDomain/responsemodels"
 import apiUrls from "../../hook/ApiConfig.json";
+import { logger } from "../../components/AppInsights";
 
 export interface IStaffTimeTableEventsDataResponse {
   status: number;
@@ -36,7 +37,11 @@ export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDat
     const {status}: { status: number } = response;
     const responseData:IStaffTimeTableEventsResponse[] | null = response.data;
     return { status, responseData };
-  } catch (error) {
+  } catch (err:any) {
+    logger.error({
+      error:"Failed to fetch staff timetable details",
+      code: err.name
+    });
     throw new Error('Failed to fetch staff timetable details');
   }
 };
