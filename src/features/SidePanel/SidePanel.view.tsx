@@ -59,9 +59,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
       console.error( error);
     }
   };
-  if (!isPermissionquicklink) {
-    return null;
-  }
+
+   
+  
   
   return (
     <>
@@ -101,6 +101,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             />
           </span>
         </div>
+    { isPermissionquicklink && 
         <div>
           <div className="quick-link">Quick links</div>
           <div className="quick-link-padding">
@@ -150,6 +151,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 */}
           </div>
         </div>
+      }
       </div>
     ) : (
       <div
