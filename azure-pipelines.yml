@@ -1,14 +1,13 @@
-# NG-Home-UI Pipeline
 trigger:
 - main
 
-# schedules:
-#   - cron: "40 01 * * 2"
-#     displayName: "Kiuwan Baseline"
-#     branches:
-#       include:
-#         - main
-#     always: true
+schedules:
+  - cron: "30 01 * * 3"
+    displayName: "Kiuwan Baseline"
+    branches:
+      include:
+        - main
+    always: true
 
 resources:
   repositories:
@@ -123,7 +122,7 @@ stages:
               overridedotkiuwan: false
               excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
               dbanalysis: false
-            condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['kiuwanScan'], 'baseline'))
+            condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'))
             
           - task: kiuwan-baseline-analysis-task@2
             displayName: 'Kiuwan Baseline Analysis'
@@ -139,7 +138,7 @@ stages:
               overrideappmodel: false
               excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
               dbanalysis: false
-            condition: and(succeeded(), or(eq(variables['Build.Reason'], 'Schedule'), eq(variables['kiuwanScan'], 'baseline')))
+            condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule'))
           
           - task: PublishTestResults@2
             displayName: "Publish Test Results"
