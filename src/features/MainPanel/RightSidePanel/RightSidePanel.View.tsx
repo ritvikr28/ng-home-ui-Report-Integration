@@ -191,6 +191,7 @@ export const RightSidePanelView: (
                           <Link
                             dataTestId={`link-${index}`}
                             href={`${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`}
+                            target="_self"
                           >
                               <span onClick={() =>  gtmAnalytics.pushEvent({
                                   event: "click",

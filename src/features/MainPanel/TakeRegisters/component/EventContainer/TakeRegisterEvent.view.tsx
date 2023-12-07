@@ -6,6 +6,8 @@ import {
   ButtonColor,
   ButtonSize,
   IconColor,
+  Loader,
+  LoaderType,
   TagColor
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
@@ -19,6 +21,7 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
   apiError,
+  isLoader
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false)
@@ -197,7 +200,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
         </div>
       </div>
 
-      <div className="slider-div">
+      <div>
 
         {apiError === false && apiRegsiterEventData &&  apiRegsiterEventData.length > 0?   (
           <Carousel
@@ -216,8 +219,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
           >
-            {
-            apiRegsiterEventData &&  (
+           {isLoader ? (
+              <Loader
+                data-testid="data-loader"
+                className="loader-wrapper"
+                loaderText="Loading..."
+                loaderType={LoaderType.Circular}
+              />
+            ) : (
+              apiRegsiterEventData &&
               apiRegsiterEventData.map((item, index) => (
                 <div key={index} className="actioncard-div">
                   <ActionCard
@@ -225,10 +235,12 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     isTextTruncate
                     icon={<FilledGraphDataIcon />}
                     id={`action-card${index}`}
-                    onClickActionCard={() => {OnRegisterClick(item)}}
-                    primaryText={
-                      `${item.group.shortName!} ${item.room  ?  ` | ${  item?.room?.roomName!}` : ""}`                      
-                    }
+                    onClickActionCard={() => {
+                      OnRegisterClick(item);
+                    }}
+                    primaryText={`${item.group.shortName!} ${
+                      item.room ? ` | ${item?.room?.roomName!}` : ""
+                    }`}
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag
                     tagColor={
@@ -237,9 +249,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   />
                 </div>
               ))
-            )
-            }
-            { apiRegsiterEventData.length > 0 &&
+            )}
+            { !isLoader &&  apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div noregister">
                 <ActionCard
                   dataTestId="test-id"

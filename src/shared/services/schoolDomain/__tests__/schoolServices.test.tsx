@@ -3,9 +3,8 @@ import { AxiosResponse } from "axios";
 import { service } from "../../../utils";
 import { FetchGroupMemberDetailsData, FetchStaffTimeTableEventsData, useFetchSchoolNameData } from "../schoolServices";
 import { ISchoolName } from "../../../../features/MainPanel/WelcomeUser/model";
-import { SetupEnvConfig } from "../../../../singleSpa/ConfigHelper";
 import { IGroupMemberDetailsResponse, IStaffTimeTableEventsResponse } from "../../../model/SchoolDomain/responsemodels";
-
+ 
 const mockApiResponse: ISchoolName = {
     externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
     schoolName: "test",
@@ -17,7 +16,7 @@ const axiosResponse: AxiosResponse = {
     config: {},
     headers: {}
   };
-
+ 
   const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
     {
       membershipId: "20be3c01-76c0-4cbe-ba1a-59d91ede62fe",
@@ -329,23 +328,33 @@ const mockStaffResponse: AxiosResponse = {
   config: {},
   headers: {}
 };
-  
+ 
 describe("School Service tests", () => {
-
-
+ 
+ 
     test("should return school Name", async () => {
         jest
           .spyOn(service, "get")
           .mockImplementation(() => Promise.resolve(axiosResponse));
           const schoolData: any = await useFetchSchoolNameData();
-      
+     
         await waitFor(() => {
           expect(schoolData.schoolName).toBe("test");
-          
+         
+        });
+      });
+      test("should return null school Name", async () => {
+        jest
+          .spyOn(service, "get")
+          .mockImplementation(() => Promise.reject(new Error("Failed to fetch school name")));
+     
+        await waitFor(() => {
+          expect(useFetchSchoolNameData()).rejects.toThrow('Failed to fetch school name');
+         
         });
       });
 })
-
+ 
 describe("Fetch group member details tests", () => {
   test("should return group member details", async () => {
     jest
@@ -358,18 +367,13 @@ describe("Fetch group member details tests", () => {
         });
     });
  
-  test.skip("should return error while getting group member details", async () => {
+  test("should return error while getting group member details", async () => {
     const expectedError = new Error('Failed to fetch group member details');
       jest
         .spyOn(service, "get")
         .mockRejectedValue(() => Promise.reject(expectedError));
-        jest.spyOn(console, "error").mockImplementation(() => "error message");
- 
-        await FetchGroupMemberDetailsData('groupExternalId', 'startDate', 'endDate');
- 
-        SetupEnvConfig(undefined);
         await waitFor(() => {
-          expect(console.error).toHaveBeenCalledTimes(1);
+          expect(FetchGroupMemberDetailsData('groupExternalId', 'startDate', 'endDate')).rejects.toThrow('Failed to fetch group member details');        
         });
     });
 })
@@ -386,18 +390,13 @@ describe("Fetch staff time table event details tests", () => {
         });
     });
  
-  test.skip("should return error while getting staff time table details", async () => {
-    const expectedError = new Error('Failed to fetch staff time table details');
+  test("should return null while getting staff time table details", async () => {
+    const expectedError = new Error('Failed to fetch staff timetable details');
       jest
         .spyOn(service, "get")
         .mockRejectedValue(() => Promise.reject(expectedError));
-        jest.spyOn(console, "error").mockImplementation(() => "error message");
- 
-        try {
-          await FetchStaffTimeTableEventsData();
-          SetupEnvConfig(undefined);
-        } catch (error: any) {
-           expect(console.error).toHaveBeenCalledTimes(1);
-        }
+        await waitFor(() => {
+          expect(FetchStaffTimeTableEventsData()).rejects.toThrow("Failed to fetch staff timetable details");        
+        });
     });
 })

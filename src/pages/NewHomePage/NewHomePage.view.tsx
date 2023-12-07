@@ -8,6 +8,8 @@ import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import { logger } from "../../shared/components/AppInsights";
+import { getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 const requiredPermissions: Permission[] = [
@@ -76,13 +78,13 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   useEffect(() => {
     (async () => {
-      try {          
+      try {   
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        if( responseapidata !=null )
        { 
         setQuickLinkData(responseapidata?.response);
-        setIsError(responseapidata.status);
-
+        setIsError(responseapidata.status);        
        }
        
       } catch (error) { 
@@ -90,7 +92,7 @@ const requiredPermissionsforquicklink: Permission[] = [
       }      
     })();
   }, []);
-
+  
   return isPermission ? (
     <>
       <Grid className="app">
