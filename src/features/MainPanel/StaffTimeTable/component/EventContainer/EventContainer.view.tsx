@@ -1,5 +1,5 @@
 import "./style.scss";
-import { EventCard, Loader, LoaderType } from "@essnextgen/ui-kit";
+import { EventCard } from "@essnextgen/ui-kit";
 import { IEventContainerProps } from "./EventContainerProps";
 import { RightSidePanel } from "../../../RightSidePanel/RightSidePanel.logic";
 
@@ -27,18 +27,11 @@ export const EventContainerView: (
     SelectedItem,
     isLoader
   }: IEventContainerProps = props;
-
+  console.log("render stafftimetable view");
+  console.log("render loader",isLoader);
   return (
     <>
-      {isLoader ? (
-        <Loader
-          data-testid="data-loader"
-          className="timetable-loader"
-          loaderText="Loading..."
-          loaderType={LoaderType.Circular}
-        />
-      ) : (
-        <EventCard
+          <EventCard
           key={SchoolEventexternalId}
           id={`elementid-${index}`}
           onClick={() => togglePanel(SchoolEventexternalId)}
@@ -59,8 +52,7 @@ export const EventContainerView: (
           }
           /* eslint-enable  */
         />
-      )}
-
+    
       <div>
         {isOpen && (
           <RightSidePanel

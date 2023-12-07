@@ -28,13 +28,13 @@ const EventContainer: React.FC = () => {
       try {
         const {
           status: responseStatus,
-          responseData,
+          responseData
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
-        } = (await FetchStaffTimeTableEventsData()) ?? {
+        } =  (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null,
+          responseData: null
         };
         if (
           responseStatus !== undefined &&
@@ -47,21 +47,19 @@ const EventContainer: React.FC = () => {
 
           setSchoolEventsData(responseData);
           setLoader(false);
+          
           if (responseData.length > 0) {
             setSelectedItem(responseData[0].externalId);
+            
           }
         }
       } catch (error) {
         setIsError(true);
         setLoader(true);
-      } finally {
-      // setTimeout(() => {
-      setLoader(false);
-   // }, 20);
-      }
+      } 
     };
-    console.log("loader")
     setLoader(true);
+     
     fetchStaffTimeTableEvents();
   }, []);
 
@@ -124,17 +122,19 @@ const EventContainer: React.FC = () => {
     return renderNoEventsCard();
   }
 
+if(isLoader)
+{
+  return (
+  <Loader
+  data-testid="data-loader"
+  className="event-loader"
+  loaderText="Loading..."
+  loaderType={LoaderType.Circular}
+/>)
+}
   return (
     <div>
-      {isLoader ? (
-     
-        <Loader
-          data-testid="data-loader"
-          className="loader-wrapper"
-          loaderText="Loading..."
-          loaderType={LoaderType.Circular}
-        />
-      ): (
+      {
         schoolEventsData.map((item, index) => (
           <div key={item.externalId}>
             <EventContainerView
@@ -160,7 +160,7 @@ const EventContainer: React.FC = () => {
             />
           </div>
         ))
-      ) }
+        }
       {schoolEventsData.length < 6 && !isLoader && (
         <EventCard
           dataTestId="no-events-to-display"
