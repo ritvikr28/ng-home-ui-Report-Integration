@@ -15,6 +15,7 @@ import {
 import "./style.scss";
 import { IRightSidePanelViewProps } from "./RightSidePanelViewProps";
 import { envConfig } from "../../../shared/utils/constants";
+import gtmAnalytics from "../../../shared/utils/analytics";
 
 export const RightSidePanelView: (
   props: IRightSidePanelViewProps
@@ -45,6 +46,12 @@ export const RightSidePanelView: (
   };
 
   const onTRButtonClick:()=>void = () => {
+    gtmAnalytics.pushEvent({
+      event: "click",
+      elementType: "button",
+      elementTextOrLabel: "Take register",
+      elementLocation: "Right side panel"
+    });
     const url:string  = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
@@ -185,8 +192,15 @@ export const RightSidePanelView: (
                             dataTestId={`link-${index}`}
                             href={`${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`}
                           >
-                            {pupil.personalInfo.preferredForename}{" "}
-                            {pupil.personalInfo.preferredSurname}
+                              <span onClick={() =>  gtmAnalytics.pushEvent({
+                                  event: "click",
+                                  elementType: "link",
+                                  elementTextOrLabel: "Pupil profile",
+                                  elementLocation: "Right side panel"
+                                })}>
+                              {pupil.personalInfo.preferredForename}{" "}
+                              {pupil.personalInfo.preferredSurname}
+                              </span>
                           </Link>
                         </span>
                       ))}

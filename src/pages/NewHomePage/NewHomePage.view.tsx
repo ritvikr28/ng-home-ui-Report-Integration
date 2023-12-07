@@ -8,6 +8,7 @@ import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 const requiredPermissions: Permission[] = [
   {
@@ -48,6 +49,12 @@ const requiredPermissionsforquicklink: Permission[] = [
   ] = useState<boolean>(false);
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
+    gtmAnalytics.pushEvent({
+      event: "click",
+      elementType: "link",
+      elementTextOrLabel: "See all",
+      elementLocation: "Left side panel"
+    });
   };
 
   const showMainPanelView: () => void = () => {
@@ -59,6 +66,12 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   const closePanel: () => void = () => {
     setIsOpen(false);
+    gtmAnalytics.pushEvent({
+      event: "click",
+      elementType: "icon",
+      elementTextOrLabel: "close",
+      elementLocation: "left side panel"
+    })
   };
 
   useEffect(() => {
@@ -85,8 +98,7 @@ const requiredPermissionsforquicklink: Permission[] = [
           className={isOpen ? "side-margin" : "side-margin-closed"}
           lg={isOpen ? 3 : 2}
           md={isOpen ? 2 : 1}
-          sm={isOpen ? 1 : 0}
-        >
+          sm={isOpen ? 1 : 0} children={undefined}        >
           <SidePanelView
             isOpen={isOpen}
             togglePanel={togglePanel}
@@ -102,8 +114,7 @@ const requiredPermissionsforquicklink: Permission[] = [
           className="body-panel"
           lg={isOpen ? 9 : 10}
           md={isOpen ? 6 : 7}
-          sm={isOpen ? 3 : 4}
-        >
+          sm={isOpen ? 3 : 4} children={undefined}        >
           {showQuickLink ? (
             isPermissionquicklink &&
             <QuickLinkLogic

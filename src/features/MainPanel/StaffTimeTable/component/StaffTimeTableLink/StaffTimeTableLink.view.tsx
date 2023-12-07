@@ -1,6 +1,7 @@
 import "./style.scss";
 import { Link } from "@essnextgen/ui-kit";
 import { envConfig } from "../../../../../shared/utils";
+import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const StaffTimeTableLinkview: () => JSX.Element = () => (
   <div className="timetable-link-conatiner">
@@ -11,7 +12,14 @@ const StaffTimeTableLinkview: () => JSX.Element = () => (
         href={`${envConfig.SCHOOL_BASE_URL}/staff-timetable`}
         target="_self"
       >
+        <span onClick={() => gtmAnalytics.pushEvent({
+                                  event: "click",
+                                  elementType: "link",
+                                  elementTextOrLabel: "View full timetable",
+                                  elementLocation: "Home page main panel"
+                                })}>
         View full timetable
+        </span>
       </Link>
     </span>
   </div>
