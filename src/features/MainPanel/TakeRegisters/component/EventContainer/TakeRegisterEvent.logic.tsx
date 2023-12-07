@@ -16,14 +16,12 @@ const TakeRegisterEvent: () => JSX.Element = () => {
       const RegisterEventDetails:IRegistersDetails[]| null  = await FetchRegisterEventData();
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
+      setLoader(false);
+    
     } catch (error) {      
       setIsError(true);
     }
-   finally {
-    // setTimeout(() => {
-      setLoader(false);
-    // }, 20);
-  }
+  
   }
 
   useEffect(() => {

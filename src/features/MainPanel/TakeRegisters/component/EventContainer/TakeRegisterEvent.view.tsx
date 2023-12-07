@@ -244,7 +244,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 </div>
               ))
             )}
-            { apiRegsiterEventData.length > 0 &&
+            { !isLoader &&  apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div noregister">
                 <ActionCard
                   dataTestId="test-id"
