@@ -13,7 +13,7 @@ import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
-import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";\
+import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
 import gtmAnalytics from "../../shared/utils/analytics";
 
@@ -119,7 +119,13 @@ const SidePanel: React.FC<SidePanelProps> = ({
                       <div
                         className="quick-panel-cont"
                         key={sidelink.id}
-                        onClick={() => (window.location.href = sidelink.link)}
+                        onClick={() => {(window.location.href = sidelink.link);
+                          gtmAnalytics.pushEvent({
+                            event: "click",
+                            elementType: "quick link",
+                            elementTextOrLabel: sidelink.name,
+                            elementLocation: "Left side panel quick link section"
+                        });}}
                         style={{ cursor: "pointer" }}
                       >
                         {sidelink.name}

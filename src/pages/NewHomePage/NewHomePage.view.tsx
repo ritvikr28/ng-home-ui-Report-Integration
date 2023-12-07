@@ -100,7 +100,7 @@ const requiredPermissionsforquicklink: Permission[] = [
           className={isOpen ? "side-margin" : "side-margin-closed"}
           lg={isOpen ? 3 : 2}
           md={isOpen ? 2 : 1}
-          sm={isOpen ? 1 : 0} children={undefined}        >
+          sm={isOpen ? 1 : 0}>
           <SidePanelView
             isOpen={isOpen}
             togglePanel={togglePanel}
@@ -116,7 +116,7 @@ const requiredPermissionsforquicklink: Permission[] = [
           className="body-panel"
           lg={isOpen ? 9 : 10}
           md={isOpen ? 6 : 7}
-          sm={isOpen ? 3 : 4} children={undefined}        >
+          sm={isOpen ? 3 : 4}>
           {showQuickLink ? (
             isPermissionquicklink &&
             <QuickLinkLogic
