@@ -28,13 +28,13 @@ const EventContainer: React.FC = () => {
       try {
         const {
           status: responseStatus,
-          responseData,
+          responseData
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
         } =  (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null,
+          responseData: null
         };
         if (
           responseStatus !== undefined &&
