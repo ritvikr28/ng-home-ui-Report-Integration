@@ -96,10 +96,14 @@
 }
 
 .quick-link-username {
-
   font-size: 16px;
-  padding-left: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 230px;
+  margin-left: 16px;
 }
+
 
 .quick-lint-display {
   display: flex;

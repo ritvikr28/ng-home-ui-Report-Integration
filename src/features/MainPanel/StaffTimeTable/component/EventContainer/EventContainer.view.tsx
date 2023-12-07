@@ -1,5 +1,5 @@
 import "./style.scss";
-import { EventCard } from "@essnextgen/ui-kit";
+import { EventCard, Loader, LoaderType } from "@essnextgen/ui-kit";
 import { IEventContainerProps } from "./EventContainerProps";
 import { RightSidePanel } from "../../../RightSidePanel/RightSidePanel.logic";
 
@@ -24,26 +24,42 @@ export const EventContainerView: (
     EventTypeCode,
     ClassPeriodExternalId,
     EventInstanceExternalId,
-    SelectedItem
+    SelectedItem,
+    isLoader
   }: IEventContainerProps = props;
 
   return (
     <>
-      <EventCard
-        key={SchoolEventexternalId}
-        id={`elementid-${index}`}
-        onClick={() => togglePanel(SchoolEventexternalId)}
-        primaryText={EventTime}
-        secondaryText={RoomCode}
-        status={EventCardColor}
-        title={EventTitle}
-        inputWidth={166}
-        inputHeight={75}       
-        dataTestId={`eventid${index}`}    
-        /* eslint-disable */  
-        className={SelectedItem === SchoolEventexternalId ? (index===0?`dynamiceventcard event-primary-text event-highlight-0`:`dynamiceventcard event-primary-text event-${EventCardColor}-1`) : `dynamiceventcard event-primary-text`}
-        /* eslint-enable  */
-      />
+      {isLoader ? (
+        <Loader
+          data-testid="data-loader"
+          className="timetable-loader"
+          loaderText="Loading..."
+          loaderType={LoaderType.Circular}
+        />
+      ) : (
+        <EventCard
+          key={SchoolEventexternalId}
+          id={`elementid-${index}`}
+          onClick={() => togglePanel(SchoolEventexternalId)}
+          primaryText={EventTime}
+          secondaryText={RoomCode}
+          status={EventCardColor}
+          title={EventTitle}
+          inputWidth={166}
+          inputHeight={75}
+          dataTestId={`eventid${index}`}
+          /* eslint-disable */
+          className={
+            SelectedItem === SchoolEventexternalId
+              ? index === 0
+                ? `dynamiceventcard event-primary-text event-highlight-0`
+                : `dynamiceventcard event-primary-text event-${EventCardColor}-1`
+              : `dynamiceventcard event-primary-text`
+          }
+          /* eslint-enable  */
+        />
+      )}
 
       <div>
         {isOpen && (

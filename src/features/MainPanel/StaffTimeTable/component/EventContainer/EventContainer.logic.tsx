@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { EventCard, EventCardStatus } from "@essnextgen/ui-kit";
+import { EventCard, EventCardStatus, Loader, LoaderType } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
@@ -13,6 +13,7 @@ const EventContainer: React.FC = () => {
   const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
   const [isOpen, setIsOpen]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
+  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     setIsOpen((prevIsOpen) => ({
@@ -23,27 +24,47 @@ const EventContainer: React.FC = () => {
   };
 
   useEffect(() => {
-    const fetchStaffTimeTableEvents:() => Promise<void> = async () => {
+    const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
       try {
-        const { status: responseStatus, responseData }: { status: number | null; responseData: IStaffTimeTableEventsResponse[] | null } =
-          await FetchStaffTimeTableEventsData() ??{status:null,responseData:null};
-          if(responseStatus!==undefined && responseStatus!==null &&responseData!==undefined &&responseData!==null){
-            setStatus(responseStatus);
-            setIsError(false);
+        const {
+          status: responseStatus,
+          responseData,
+        }: {
+          status: number | null;
+          responseData: IStaffTimeTableEventsResponse[] | null;
+        } = (await FetchStaffTimeTableEventsData()) ?? {
+          status: null,
+          responseData: null,
+        };
+        if (
+          responseStatus !== undefined &&
+          responseStatus !== null &&
+          responseData !== undefined &&
+          responseData !== null
+        ) {
+          setStatus(responseStatus);
+          setIsError(false);
 
-            setSchoolEventsData(responseData);
-            if (responseData.length > 0) {          
-              setSelectedItem(responseData[0].externalId);
-            }  
+          setSchoolEventsData(responseData);
+          setLoader(false);
+          if (responseData.length > 0) {
+            setSelectedItem(responseData[0].externalId);
           }
-
+        }
       } catch (error) {
         setIsError(true);
+        setLoader(true);
+      } finally {
+      // setTimeout(() => {
+      setLoader(false);
+   // }, 20);
       }
     };
-
+    console.log("loader")
+    setLoader(true);
     fetchStaffTimeTableEvents();
   }, []);
+
 
   
   const formatEventTitleData = (eventTitleData: any) => {
@@ -105,31 +126,42 @@ const EventContainer: React.FC = () => {
 
   return (
     <div>
-      {schoolEventsData.map((item, index) => (
-        <div key={item.externalId}>
-          <EventContainerView
-            SchoolEventexternalId={item.externalId}
-            EventTitle={formatEventTitleData(item)}
-            EventTime={formatEventTimeData(item)}
-            RoomCode={item?.room?.roomCode}
-            EventStartDate={item.eventStart}
-            EventEndDate={item.eventEnd}
-            GroupExternalId={item.group.externalId}
-            EventPeriodNum={formateventPeriodNum(item)}
-            togglePanel={() => togglePanel(item.externalId)}
-            isOpen={isOpen[item.externalId]}
-            GroupDescription={item?.group?.shortName ?? ""}
-            StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
-            index={index}
-            EventCardColor={getBackgroundColor(item)}
-            EventTypeCode={item.eventTypeCode}   
-            ClassPeriodExternalId={item.classPeriodExternalId}   
-            EventInstanceExternalId={item.eventInstanceExternalId}   
-            SelectedItem={selectedItem}
-          />
-        </div>
-      ))}
-      {schoolEventsData.length < 6 && (
+      {isLoader ? (
+     
+        <Loader
+          data-testid="data-loader"
+          className="loader-wrapper"
+          loaderText="Loading..."
+          loaderType={LoaderType.Circular}
+        />
+      ): (
+        schoolEventsData.map((item, index) => (
+          <div key={item.externalId}>
+            <EventContainerView
+              SchoolEventexternalId={item.externalId}
+              EventTitle={formatEventTitleData(item)}
+              EventTime={formatEventTimeData(item)}
+              RoomCode={item?.room?.roomCode}
+              EventStartDate={item.eventStart}
+              EventEndDate={item.eventEnd}
+              GroupExternalId={item.group.externalId}
+              EventPeriodNum={formateventPeriodNum(item)}
+              togglePanel={() => togglePanel(item.externalId)}
+              isOpen={isOpen[item.externalId]}
+              GroupDescription={item?.group?.shortName ?? ""}
+              StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
+              index={index}
+              EventCardColor={getBackgroundColor(item)}
+              EventTypeCode={item.eventTypeCode}
+              ClassPeriodExternalId={item.classPeriodExternalId}
+              EventInstanceExternalId={item.eventInstanceExternalId}
+              SelectedItem={selectedItem}
+              isLoader={isLoader}
+            />
+          </div>
+        ))
+      ) }
+      {schoolEventsData.length < 6 && !isLoader && (
         <EventCard
           dataTestId="no-events-to-display"
           id="no-events-to-display-id"
@@ -142,8 +174,9 @@ const EventContainer: React.FC = () => {
           className="dynamiceventcard event-primary-text no-events"
         />
       )}
-    </div> 
+    </div>
   );
-};
-
-export default EventContainer;
+  };
+  
+  export default EventContainer;
+  
