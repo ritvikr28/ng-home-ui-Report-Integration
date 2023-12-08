@@ -101,5 +101,15 @@ const role = "Teacher";
           expect(response).toEqual(mockApiResponse);
         });
       });
-
+      test("should promise failed for fetchQuickLinkpost", async () => {
+        const id= 2;
+        const operation = true;
+        jest
+          .spyOn(service, "post")
+          .mockImplementation(() => Promise.reject(new Error("Failed to mark Favourite/Unfavourite")));
+   
+        await expect(FetchQuickLinkpost(id,operation)).rejects.toThrow(new Error("Failed to mark Favourite/Unfavourite"));
+       
+      });    
+     
 })
