@@ -6,6 +6,7 @@ import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/sc
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse} from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
+import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const EventContainer: React.FC = () => {
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
@@ -16,6 +17,12 @@ const EventContainer: React.FC = () => {
   const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
+    gtmAnalytics.pushEvent({
+      event: "click",
+      elementType: "tile",
+      elementTextOrLabel: "Staff time table event tile",
+      elementLocation: "Staff time table section"
+    });
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId]

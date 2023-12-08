@@ -16,6 +16,7 @@ import "./carousalstyle.scss";
 import { responsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
+import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
@@ -140,7 +141,12 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   );
 
   const OnRegisterClick = (item: IRegistersDetails) => {
-
+    gtmAnalytics.pushEvent({
+      event: "click",
+      elementType: "tile",
+      elementTextOrLabel: "Take register tile",
+      elementLocation: "Take register section"
+    });
     const url = (item.eventTypeCode === "AttendanceSession")
     ? `${envConfig.REGISTER_BASE_URL}/take-register/${item.eventDescription}/${item.group.externalId}/${item.eventInstanceExternalId}`
     : `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.group.externalId}/${item.eventInstanceExternalId}`;
