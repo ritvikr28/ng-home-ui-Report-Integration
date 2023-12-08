@@ -24,7 +24,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
 
   const  rel:RelType={rel:"noopener noreferrer"};
   const onCardClick: (typeValue: number) => void = (typeValue: number) => {
-    const label = typeValue === 1 ? "What's new": "The SIMS Next Gen roadmap";
+    const label : string = typeValue === 1 ? "What's new": "The SIMS Next Gen roadmap";
     gtmAnalytics.pushEvent({
       event: "click",
       elementType: "tile",
