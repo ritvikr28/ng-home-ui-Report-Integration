@@ -3,9 +3,10 @@ import { render, waitFor, queryByAttribute } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { authService } from "@essnextgen/auth-ui";
-
+import * as redux from "react-redux";
 import configureStore from "../redux/store";
 import App from "../App";
+import { AppPermissionState } from "../types/AppPermission";
 
 describe("Testing App Component", () => {
   describe("Testing the routes", () => {
@@ -41,6 +42,21 @@ describe("Testing App Component", () => {
         expect(container).toBeInTheDocument();
       });
     });
+    it("getFetaureFlag to return undefined when is not Authenticated ", async () => {
+      const appPermissions: AppPermissionState = {
+        modules: [],
+        isLoaded: true
+      };
+      const useSelector = jest.spyOn(redux, "useSelector");
+      useSelector.mockReturnValue(appPermissions);
+      jest.spyOn(authService, "isAuthenticated").mockImplementationOnce(() => false);     
+      history.push("/");
+      const RenderedDom= renderWithHistory(history);
+     
+      await waitFor(() => {
+        expect(RenderedDom.getByTestId("NoAccessPageTestId")).toBeInTheDocument();
+      });
+    });    
   });
 
   function renderWithHistory(history: any) {
