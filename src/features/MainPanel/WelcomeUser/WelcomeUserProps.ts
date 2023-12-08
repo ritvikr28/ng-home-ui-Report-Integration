@@ -4,7 +4,12 @@ export interface IWelcomeUserViewProps {
   parentClassName: string;
   subparentClassName: string;
   organisationName: string;
-    isApiError: boolean;
-    
+  isApiError: boolean;    
 }
+
+export interface IWelcomeUserLogicProps {
+  isApiError: boolean;  
+  organisationName: string;
+}
+
 
