@@ -11,16 +11,63 @@
     <meta name="description" content="Next Gen landing page" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="/config.js?123"></script>
+
+    <!-- Google Tag Manager -->
+    <script>
+      (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer', window.REACT_GA_TRACKING_ID);
+    </script>
+  <!-- End Google Tag Manager -->
+
   </head>
 
   <body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript
+      ><iframe 
+        height="0"
+        width="0"
+        style="display: none; visibility: hidden"
+      ></iframe
+    ></noscript>
+    <script>
+      const gaTrackingId = window.REACT_GA_TRACKING_ID;
+      // Create an iframe element
+
+      const iframe = document.createElement("iframe");
+
+      iframe.height = "0";
+
+      iframe.width = "0";
+
+      iframe.style.display = "none";
+
+      iframe.style.visibility = "hidden";
+
+      // Set the src attribute dynamically
+
+      iframe.src = `https://www.googletagmanager.com/ns.html?id=${gaTrackingId}`;
+
+      // Find the noscript tag and replace its content with the dynamic iframe
+
+      const noscriptTag = document.querySelector("noscript");
+
+      if (noscriptTag) {
+        noscriptTag.innerHTML = ""; // Remove existing content
+
+        noscriptTag.appendChild(iframe); // Append the dynamic iframe
+      }
+    </script>
+  <!-- End Google Tag Manager (noscript) -->
     <!--[if lt IE 7]>
       <p class="browsehappy">
         You are using an <strong>outdated</strong> browser. Please
         <a href="#">upgrade your browser</a> to improve your experience.
       </p>
     <![endif]-->
-    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
   </body>
 </html>
