@@ -30,7 +30,7 @@ describe("Testing App Component", () => {
       jest.clearAllMocks();
     });
 
-    test.skip("should render pagenotfound page on invalid route", async () => {
+    test("should render pagenotfound page on invalid route", async () => {
       history.push("/not-found");
       const RenderedDom = renderWithHistory(history);
 
