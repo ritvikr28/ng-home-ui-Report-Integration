@@ -37,13 +37,12 @@ export const FetchQuickLinkpost:(id: number, operation: boolean) => Promise<any>
       quickLinkId: id,
       operation
     };
-    console.log(requestData);
     const response: any = await service.post(
           `${envConfig.BASE_URL}/v1/quicklink`,
           requestData
         );        
         return response.data;
   } catch (error) {
-    throw new Error("Failed to fetch quick link details");
+    throw new Error("Failed to mark Favourite/Unfavourite");
   }
 };
