@@ -16,8 +16,8 @@ const MainPanel: React.FC = () => {
               const schoolData:ISchoolNameDataResponse|null = await useFetchSchoolNameData(); 
       
                 const name:string = (schoolData==null)?"":schoolData.schoolName.toLowerCase();
-                const isSchoolsPrimary = (schoolData==null)?true:schoolData.isSchoolPrimary;
-                const schoolNames = capitalizeFirstLetterOfEachWord(name);
+                const isSchoolsPrimary:boolean = (schoolData==null)?true:schoolData.isSchoolPrimary;
+                const schoolNames:string = capitalizeFirstLetterOfEachWord(name);
                 setSchoolName(schoolNames);
                 setIsError(false);
                 setIsSchoolPrimary(isSchoolsPrimary);
