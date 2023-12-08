@@ -1,10 +1,11 @@
 import { MemoryRouter, Redirect, Route } from "react-router-dom";
-import { act, render } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { authService } from "@essnextgen/auth-ui";
 import QuickLink from "../QuickLink.view";
 import QuickLinkLogic from "../QuickLink.logic";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
 import * as qicklink from "../../../shared/services/quickLinkDomain/quickLinkService";
+import gtmAnalytics from "../../../shared/utils/analytics";
 
 
 
@@ -121,6 +122,28 @@ describe("QuickLink Component", () => {
     expect(getByText('Link 2')).toBeInTheDocument();
     expect(getByText('Link 3')).toBeInTheDocument();
     expect(getByText('Link 4')).toBeInTheDocument();
+  });
+
+  test("should handle click event for link", () => {
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+    const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
+      jest.spyOn(gtmAnalytics, "pushEvent");
+      jest
+      .spyOn(qicklink, "FetchQuickLinkData")
+      .mockResolvedValue(mockres);
+      const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} isOpen={true} apiError={false} displaystarredicon={jest.fn()}/>);
+   
+    const linkElement = getByText("Link 1");
+  
+    fireEvent.click(linkElement);
+    expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
+    
+    expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
+      event: "click",
+      elementType: "link",
+      elementTextOrLabel: "Link 1",
+      elementLocation: "Quick link page",
+    });
   });
 });
 
