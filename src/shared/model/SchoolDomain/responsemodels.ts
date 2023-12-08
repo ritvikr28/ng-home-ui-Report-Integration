@@ -80,4 +80,5 @@ export interface IStaffTimeTableEventsResponse {
 export interface ISchoolNameDataResponse {
     externalId: string;
     schoolName: string;
+    isSchoolPrimary:boolean;
   }

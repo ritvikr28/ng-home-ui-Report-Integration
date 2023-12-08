@@ -1,21 +1,20 @@
-import React,{ useState } from "react";
 import SwitchView from "./SwitchView.view";
 import "./style.scss";
-import SchoolNameComponent from "../../../shared/components/SchoolName/SchoolName";
+import { ISwitchViewProps } from "./SwitchView.props";
 
-const SwitchViewLogic: () => JSX.Element = () => {
-  const [schoolNames, setSchoolNames]:[string,React.Dispatch<React.SetStateAction<string>>]  = useState<string>("");
-  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false);
+const SwitchViewLogic:(props: ISwitchViewProps) => JSX.Element = (
+  props: ISwitchViewProps
+) => {
+  const {
+    isApiError,
+    organisationName
+  }: ISwitchViewProps = props;
 
   return (
     <div className="switch-view">
-      <SchoolNameComponent
-        setSchoolNames={setSchoolNames}
-        setIsError={setIsError}
-      />
       <SwitchView 
-      organisationName={schoolNames}
-      isApiError={isError} />
+      organisationName={organisationName}
+      isApiError={isApiError} />
     </div>
   );
 };
