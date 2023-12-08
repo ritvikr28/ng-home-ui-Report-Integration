@@ -58,7 +58,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
           >
             <ActionCard
               className="primary-text"
-              dataTestId="test-id"
+              dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick(1)}
               primaryText="What's new?"
