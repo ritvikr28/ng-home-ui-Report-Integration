@@ -2,21 +2,10 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import {
-  Button,
-  ButtonSize,
-  Grid,
-  GridItem,
-  Loader,
-  LoaderType
-} from "@essnextgen/ui-kit";
-import "./style.scss";
-import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
-import { useHistory } from "react-router-dom";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { Grid, GridItem, Loader, LoaderType } from "@essnextgen/ui-kit";
+
 import { IAppModule } from "../../types/AppPermission";
-import { envConfig } from "../../shared/utils";
-import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
+import "./style.scss";
 
 interface IProps {
   data: Array<IAppModule>;
@@ -27,27 +16,6 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
 }: IProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-  const requiredPermissions: Permission[] = [
-    {
-      Securable: "NG.Homepage",
-      Operation: "View"
-    }
-  ];
-  const history:any = useHistory();
-  const showButton =  authService.isAuthorised(requiredPermissions, MatchPermissions.all) &&
-    envConfig.IS_NEWHOMEPAGE_ACCESSIBLE === "True";
-    const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
-    isOrganisationInVariant());
-    
-  const createEventButton: JSX.Element | null = showButton && ((envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost" || envConfig.REACT_ENVIRONMENT==="QA")? false: !hasFlagrPermission) ?  (
-      <Button
-        size={ButtonSize.Small}
-        dataTestId="create-event-button"
-        onClick={() => history.push("/new-home")}
-      >
-        New Homepage
-      </Button>
-    ) : null;
 
   const renderModule: (x: IAppModule, i: number) => JSX.Element | null = (
     x: IAppModule,
@@ -68,12 +36,11 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
         )}
         <a
           className="essui-button essui-button--primary essui-button--small app-link"
-          href={x.appUrl}
+          href={x.appUrl}          
           rel="noopener noreferrer"
           key={`module-link-${i}`}
         >
-          {x.code === "NewHomePage"? t("homePage.newHomepagebtnText"): t("homePage.btnText")}
-          
+          {t("homePage.btnText")}
         </a>
       </div>
     );
@@ -90,40 +57,19 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
   }
 
   return (
-    <>
-    
-        <div className={showButton ? "newhomepagemar" : ""}>
-        <Grid
-          align="flex-start"
-          dataTestId="LandingPageTestId1"
-          id="app-module-wrapper1"
-          className="landing-page"
-        >
-          <span className="newhomepagespan">
-            <GridItem sm={10}>{}</GridItem>
-          </span>
-          <span className="gridhomepagespan">
-            <GridItem sm={2}>{createEventButton}</GridItem>
-          </span>
-        </Grid>
-
-        <Grid
-          align="flex-start"
-          dataTestId="LandingPageTestId"
-          id="app-module-wrapper"
-          className="landing-page"
-        >
-          <GridItem sm={12}>
-          { showButton ? ( <span className="page-heading" >{t("homePage.headerTitle")}</span> )  : <span className="page-heading-hide-button" >{t("homePage.headerTitle")}</span> }
-            <span className="page-subheading">
-              {t("homePage.headerSubTitle")}
-            </span>
-            <br />
-            {data.map(renderModule)}
-          </GridItem>
-        </Grid>
-      </div>
-    </>
+    <Grid
+      align="flex-start"
+      dataTestId="LandingPageTestId"
+      id="app-module-wrapper"
+      className="landing-page"
+    >
+      <GridItem sm={12}>
+        <span className="page-heading">{t("homePage.headerTitle")}</span>
+        <span className="page-subheading">{t("homePage.headerSubTitle")}</span>
+        <br />
+        {data.map(renderModule)}
+      </GridItem>
+    </Grid>
   );
 };
 
