@@ -3,7 +3,6 @@ import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
-import MainPanelView from "../../features/MainPanel/MainPanel.view";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
@@ -11,6 +10,7 @@ import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from ".
 import { logger } from "../../shared/components/AppInsights";
 import { getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
+import MainPanel from "../../features/MainPanel/MainPanel.logic";
 
 const requiredPermissions: Permission[] = [
   {
@@ -125,7 +125,8 @@ const requiredPermissionsforquicklink: Permission[] = [
               isOpen ={isOpen}
             />
           ) : (
-            <MainPanelView />
+            <MainPanel 
+            />
           )}
         </GridItem>
       </Grid>

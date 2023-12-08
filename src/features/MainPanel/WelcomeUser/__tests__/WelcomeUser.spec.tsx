@@ -8,6 +8,7 @@ import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain
 const mockApiResponse: ISchoolNameDataResponse = {
   externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
   schoolName: "Waters Edge Primary School",
+  isSchoolPrimary:true
 };
  
 const setIsError = jest.fn();
@@ -24,8 +25,11 @@ test.skip("renders welcome message if authorized and envConfig is set to True", 
     .spyOn(authService, "getUsername")
  
     .mockImplementation(() => "John");
- 
-  const { getByText } = render(<WelcomeUser />);
+
+  const { getByText } = render(<WelcomeUser 
+    organisationName={mockApiResponse.schoolName}
+    isApiError={false}
+  />);
   expect(getByText("John")).toBeInTheDocument();
 });
  
@@ -38,7 +42,10 @@ test.skip("renders welcome message when authorized with a long username", () => 
       () =>
         "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
     );
-  const { getByText } = render(<WelcomeUser />);
+  const { getByText } = render(<WelcomeUser 
+                        organisationName={mockApiResponse.schoolName}
+                        isApiError={false}
+                        />);
   expect(
     getByText(
       "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
@@ -58,8 +65,11 @@ test("fetches and displays school name", async () => {
     .spyOn(authService, "getUsername")
  
     .mockImplementation(() => "John");
- 
-  const { findByText } = render(<WelcomeUser />);
+
+  const { findByText } = render(<WelcomeUser 
+                          organisationName={mockApiResponse.schoolName}
+                          isApiError={false}
+                        />);
   expect(await findByText(/Waters Edge Primary School/i)).toBeInTheDocument();
 });
  
@@ -90,11 +100,14 @@ test("handles errors during data fetching", async () => {
  
   await act(async () => {
     setIsError(true);
-    render(<WelcomeUser />);
+    render(<WelcomeUser 
+      organisationName={mockApiResponse.schoolName}
+      isApiError={false}
+    />);
   });
   expect(setIsError).toHaveBeenCalledWith(true);
-});
- 
+})
+
 test("handles console errors during fetchData function call", async () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
   jest.spyOn(authService, "getUsername").mockImplementation(() => {
@@ -102,7 +115,10 @@ test("handles console errors during fetchData function call", async () => {
   });
  
   setIsError(true);
-  render(<WelcomeUser />);
+  render(<WelcomeUser
+    organisationName={mockApiResponse.schoolName}
+    isApiError={false}
+     />);
   await waitFor(() => {
     expect(console.error).toHaveBeenCalledWith(
       "Error fetching username:",
@@ -116,7 +132,10 @@ test("handles console errors during fetchData function call", async () => {
     jest
     .spyOn(schoolName, "useFetchSchoolNameData")
     .mockResolvedValue(mockApiResponse);
-    const {  getByText  } = render(<WelcomeUser />);
+    const {  getByText  } = render(<WelcomeUser
+      organisationName={mockApiResponse.schoolName}
+      isApiError={false}
+       />);
     const welcomeParentElement = getByText('JohnDoeWithALongSurnameNameSurname').closest('.essui-grid-nested-container');
     expect(welcomeParentElement).toHaveClass('parent2');
    
