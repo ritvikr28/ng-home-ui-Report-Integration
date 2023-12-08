@@ -1,35 +1,35 @@
-import React, {  useEffect } from 'react';
-import { useFetchSchoolNameData } from '../../services/schoolDomain/schoolServices';
-import { capitalizeFirstLetterOfEachWord } from '../../../features/MainPanel/WelcomeUser/utils/newHomePageUtils';
-import {ISchoolNameDataResponse} from "../../model/SchoolDomain/responsemodels"
+// import React, {  useEffect } from 'react';
+// import { useFetchSchoolNameData } from '../../services/schoolDomain/schoolServices';
+// import { capitalizeFirstLetterOfEachWord } from '../../../features/MainPanel/WelcomeUser/utils/newHomePageUtils';
+// import {ISchoolNameDataResponse} from "../../model/SchoolDomain/responsemodels"
  
  
-interface SchoolNameComponentProps {
-  setSchoolNames: React.Dispatch<React.SetStateAction<string>>;
-  setIsError: React.Dispatch<React.SetStateAction<boolean>>;
-}
+// interface SchoolNameComponentProps {
+//   setSchoolNames: React.Dispatch<React.SetStateAction<string>>;
+//   setIsError: React.Dispatch<React.SetStateAction<boolean>>;
+// }
  
-const SchoolNameComponent: React.FC<SchoolNameComponentProps> = ({ setSchoolNames, setIsError }) => {
-  useEffect(() => {
-    const fetchSchoolNames:() => Promise<void> = async () => {
-      setIsError(false);
-      try {
-        const schoolData:ISchoolNameDataResponse|null = await useFetchSchoolNameData(); 
+// const SchoolNameComponent: React.FC<SchoolNameComponentProps> = ({ setSchoolNames, setIsError }) => {
+//   useEffect(() => {
+//     const fetchSchoolNames:() => Promise<void> = async () => {
+//       setIsError(false);
+//       try {
+//         const schoolData:ISchoolNameDataResponse|null = await useFetchSchoolNameData(); 
 
-          const name:string = (schoolData==null)?"":schoolData.schoolName.toLowerCase();
-          const schoolName:string = capitalizeFirstLetterOfEachWord(name);
-          setSchoolNames(schoolName);
-          setIsError(false);
+//           const name:string = (schoolData==null)?"":schoolData.schoolName.toLowerCase();
+//           const schoolName:string = capitalizeFirstLetterOfEachWord(name);
+//           setSchoolNames(schoolName);
+//           setIsError(false);
         
-      } catch (error) {
-        setIsError(true);
-      }
-    };
+//       } catch (error) {
+//         setIsError(true);
+//       }
+//     };
  
-    fetchSchoolNames();
-  }, [setSchoolNames, setIsError]);
+//     fetchSchoolNames();
+//   }, [setSchoolNames, setIsError]);
  
-  return null; 
-};
+//   return null; 
+// };
  
-export default SchoolNameComponent;
+// export default SchoolNameComponent;
