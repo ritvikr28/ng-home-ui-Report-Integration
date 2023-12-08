@@ -86,23 +86,32 @@ describe("Colors tests", () => {
           
      });
     test("should return neutral color when event type code is TTNTPer", () => {
-     mockProps.eventTypeCode="TTNTPer";
+      mockProps.eventTypeCode="TTNTPer";
+      mockProps.userPreference = 'some-user-preference';
+      mockProps.yearGroupColor = 'some-year-group-color';
+      mockProps.subjectColor = 'some-subject-color';
       const  result: string =getBackgroundColor(mockProps); 
     expect(result).toBe(`${EventCardStatus.NEUTRAL}`);
         
     });
     test("should return neutral color when event type code is TTPeriod and base group externalId is 00000000-0000-0000-0000-000000000000 and group shortName is not empty", () => {
-     mockProps.eventTypeCode="TTPeriod";
+      mockProps.eventTypeCode="TTPeriod";
      mockProps.group.externalId="00000000-0000-0000-0000-000000000000";
      mockProps.group.shortName="10x/Sc2";
+     mockProps.userPreference = 'some-user-preference';
+      mockProps.yearGroupColor = 'some-year-group-color';
+      mockProps.subjectColor = 'some-subject-color';
      const result: string =getBackgroundColor(mockProps);
     expect(result).toBe(`${EventCardStatus.NEUTRAL}`);
      
     });
     test("should return primary color when event type code is TTPeriod and base group externalId is 00000000-0000-0000-0000-000000000000 and group shortName is empty", () => {
-     mockProps.eventTypeCode="TTPeriod";
-     mockProps.group.externalId="00000000-0000-0000-0000-000000000000";
-     mockProps.group.shortName= '';
+      mockProps.eventTypeCode="TTPeriod";
+      mockProps.group.externalId="00000000-0000-0000-0000-000000000000";
+      mockProps.group.shortName= '';
+      mockProps.userPreference = 'some-user-preference';
+       mockProps.yearGroupColor = 'some-year-group-color';
+       mockProps.subjectColor = 'some-subject-color';
      const result: string =getBackgroundColor(mockProps);
      expect(result).toBe(`${EventCardStatus.NEUTRAL}`);
      
