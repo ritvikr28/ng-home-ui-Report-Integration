@@ -68,7 +68,7 @@ describe("DiscoverMoreView Component", () => {
       );
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "click",
+        event: "interact_click",
         elementType: "button",
         elementTextOrLabel: "Discover more with SIMS Next Gen",
         elementLocation: "Find out more about SIMS Next Gen section"
@@ -86,7 +86,7 @@ describe("DiscoverMoreView Component", () => {
     await waitFor(() => {
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "click",
+        event: "interact_click",
         elementType: "tile",
         elementTextOrLabel: "What's new",
         elementLocation: "Find out more about SIMS Next Gen section"
@@ -104,7 +104,7 @@ describe("DiscoverMoreView Component", () => {
     await waitFor(() => {
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "click",
+        event: "interact_click",
         elementType: "tile",
         elementTextOrLabel: "The SIMS Next Gen roadmap",
         elementLocation: "Find out more about SIMS Next Gen section"

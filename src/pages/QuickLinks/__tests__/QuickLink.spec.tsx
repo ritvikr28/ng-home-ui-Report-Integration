@@ -139,7 +139,7 @@ describe("QuickLink Component", () => {
     expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
     
     expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-      event: "click",
+      event: "interact_click",
       elementType: "link",
       elementTextOrLabel: "Link 1",
       elementLocation: "Quick link page",
