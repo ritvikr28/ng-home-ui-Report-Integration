@@ -42,12 +42,8 @@ describe('MainPanel', () => {
       }); 
 
       test('renders schoolname successfully when status is successful and school is primary', async () => {
-        const mockres:any={
-          status: 200,
-          responseData:mockSchoolDetailsForPrimary
-        }
       
-        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockres);
+        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockSchoolDetailsForPrimary);
         setSchoolName(mockSchoolDetailsForPrimary.schoolName);
         setIsError(false);
         setIsSchoolPrimary(mockSchoolDetailsForPrimary.isSchoolPrimary);
@@ -57,13 +53,8 @@ describe('MainPanel', () => {
         expect(setIsSchoolPrimary).toHaveBeenCalledWith(true);
       }); 
 
-      test('renders schoolname successfully when status is successful and data is null', async () => {
-        const mockres:any={
-          status: 200,
-          responseData:null
-        }
-      
-        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockres);
+      test('renders schoolname successfully when status is successful and data is null', async () => {      
+        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(null);
         setSchoolName("");
         setIsError(false);
         setIsSchoolPrimary(true);
