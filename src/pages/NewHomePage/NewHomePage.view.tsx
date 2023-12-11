@@ -83,7 +83,7 @@ const requiredPermissionsforquicklink: Permission[] = [
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        if( responseapidata !=null )
        { 
-        setQuickLinkData(responseapidata?.response);
+        setQuickLinkData(responseapidata.response);
         setIsError(responseapidata.status);        
        }
        
