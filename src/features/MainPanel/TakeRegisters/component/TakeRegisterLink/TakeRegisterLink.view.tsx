@@ -15,7 +15,7 @@ const TakeRegistersLinkview: () => JSX.Element = () => (
       >
         <span onClick={() =>  
             gtmAnalytics.pushEvent({
-              event: "click",
+              event: "interact_click",
               elementType: "link",
               elementTextOrLabel: "View all registers",
               elementLocation: "Take register section"

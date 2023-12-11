@@ -9,7 +9,10 @@ describe("SwitchView Component", () => {
       isApiError: false,
     };
  
-    render(<SwitchView {...mockProps} />);
+    render(<SwitchView
+      organisationName={mockProps.organisationName}
+      isApiError={mockProps.isApiError}
+    />);
  
  
     const expectedText = `You are viewing ${mockProps.organisationName} as a Teacher.`;
@@ -25,7 +28,10 @@ describe("SwitchView Component", () => {
       isApiError: true,
     };
  
-    render(<SwitchView {...mockProps} />);
+    render(<SwitchView
+      organisationName={mockProps.organisationName}
+      isApiError={mockProps.isApiError}
+    />);
  
  
     const expectedTextRegex = new RegExp(`You are viewing\\s+as a Teacher\\.`);

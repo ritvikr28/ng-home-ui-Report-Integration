@@ -18,7 +18,7 @@ const EventContainer: React.FC = () => {
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "tile",
       elementTextOrLabel: "Staff time table event tile",
       elementLocation: "Staff time table section"

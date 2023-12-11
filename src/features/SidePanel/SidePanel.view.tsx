@@ -121,7 +121,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                         key={sidelink.id}
                         onClick={() => {(window.location.href = sidelink.link);
                           gtmAnalytics.pushEvent({
-                            event: "click",
+                            event: "interact_click",
                             elementType: "quick link",
                             elementTextOrLabel: sidelink.name,
                             elementLocation: "Left side panel quick link section"

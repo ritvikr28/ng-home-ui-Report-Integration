@@ -1,4 +1,5 @@
-import { pilotReady } from '../flagr-helper';
+import { IFeatureFlag } from '@essnextgen/ui-flagr';
+import { getFeatureFlagVariantAttachment, pilotReady } from '../flagr-helper';
 import {isOrganisationInVariant} from "../flagr-utils"
  
 jest.mock('@essnextgen/ui-flagr', () => ({
@@ -164,4 +165,22 @@ test('should return true if the flag is enabled and variant has Attachment', () 
   const result = pilotReady('valid-flag', 'ActiveOrganisations');
  
   expect(result).toBe(true);
+});
+
+
+
+test('returns default attachment for an invalid variant', () => {
+  const featureFlag: IFeatureFlag = {
+    key: 'invalid-flag',
+    enabled: true,
+    description: 'invalid-flag',
+    variants: []
+  };
+
+  const attachment = getFeatureFlagVariantAttachment(featureFlag, 'InvalidVariant');
+
+  expect(attachment).toEqual({
+    Payload: [],
+    IncludeOrganisations: [],
+  });
 });

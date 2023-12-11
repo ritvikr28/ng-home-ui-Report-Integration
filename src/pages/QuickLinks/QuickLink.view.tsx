@@ -56,7 +56,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                           <TableCell>                            
                             <Link data-testid="link" href={link.link} target="_self" >
                               <span onClick={() =>  gtmAnalytics.pushEvent({
-                                        event: "click",
+                                        event: "interact_click",
                                         elementType: "link",
                                         elementTextOrLabel: link.name,
                                         elementLocation: "Quick link page"

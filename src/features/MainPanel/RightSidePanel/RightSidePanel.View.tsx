@@ -47,7 +47,7 @@ export const RightSidePanelView: (
 
   const onTRButtonClick:()=>void = () => {
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "button",
       elementTextOrLabel: "Take register",
       elementLocation: "Right side panel"
@@ -194,7 +194,7 @@ export const RightSidePanelView: (
                             target="_self"
                           >
                               <span onClick={() =>  gtmAnalytics.pushEvent({
-                                  event: "click",
+                                  event: "interact_click",
                                   elementType: "link",
                                   elementTextOrLabel: "Pupil profile",
                                   elementLocation: "Right side panel"
