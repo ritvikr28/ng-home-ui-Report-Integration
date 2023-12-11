@@ -1,3 +1,4 @@
+import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
@@ -6,7 +7,6 @@ import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
-import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
