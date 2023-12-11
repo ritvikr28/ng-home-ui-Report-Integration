@@ -152,7 +152,7 @@ const mockTakeRegisterData = [
       roomCode: "S7",
       roomName: "Science Lab 7",
     },
-  },
+  }
 ];
 
 jest.mock(
