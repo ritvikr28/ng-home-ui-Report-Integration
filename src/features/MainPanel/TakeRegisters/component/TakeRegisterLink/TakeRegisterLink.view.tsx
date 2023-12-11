@@ -13,7 +13,7 @@ const TakeRegistersLinkview: () => JSX.Element = () => (
         href={`${envConfig.REGISTER_BASE_URL}`}      
         target="_self"
       >
-        <span onClick={() =>  
+        <span data-testid="link-id" onClick={() =>  
             gtmAnalytics.pushEvent({
               event: "interact_click",
               elementType: "link",

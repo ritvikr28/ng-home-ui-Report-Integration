@@ -24,11 +24,10 @@ export const EventContainerView: (
     EventTypeCode,
     ClassPeriodExternalId,
     EventInstanceExternalId,
-    SelectedItem,
-    isLoader
+    SelectedItem
+    
   }: IEventContainerProps = props;
-  console.log("render stafftimetable view");
-  console.log("render loader",isLoader);
+
   return (
     <>
           <EventCard
