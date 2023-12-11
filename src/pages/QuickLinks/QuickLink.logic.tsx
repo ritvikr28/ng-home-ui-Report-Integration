@@ -34,13 +34,13 @@ const QuickLinkLogic: React.FC<
           | null
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
-          setQuickLinkData(responseapidata?.response);
+          setQuickLinkData(responseapidata.response);
         }
       } else {
         setIsError(true);
       }
     } catch (error) {
-      console.error(error);
+      setIsError(true);
     }
   };
 
@@ -50,13 +50,13 @@ const QuickLinkLogic: React.FC<
   ) => (
     <Icon
       color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
-      dataTestId="btn-90"
+      dataTestId="btn-star"
       id="variable-2"
       name={favorites ? "star--filled" : "star"}
       size={16}
       onClick={() => handleStarClick(id, !favorites)}
     />
-  );
+    );
 
   return (
     <>

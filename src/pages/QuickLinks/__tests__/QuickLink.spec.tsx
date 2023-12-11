@@ -1,10 +1,13 @@
 import { MemoryRouter, Redirect, Route } from "react-router-dom";
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render,screen, waitFor } from "@testing-library/react";
+import React from "react";
 import { authService } from "@essnextgen/auth-ui";
+import { AxiosResponse } from "axios";
 import QuickLink from "../QuickLink.view";
 import QuickLinkLogic from "../QuickLink.logic";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
 import * as qicklink from "../../../shared/services/quickLinkDomain/quickLinkService";
+import * as  linkDetails  from "../../../shared/components/QuickLink/Quicklinkresponse";
 import gtmAnalytics from "../../../shared/utils/analytics";
 
 
@@ -62,6 +65,14 @@ jest.mock(
   "../../../shared/services/quickLinkDomain/quickLinkService",
   () => ({
     FetchQuickLinkData: jest.fn(),
+    FetchQuickLinkpost: jest.fn(),
+  })
+);
+jest.mock(
+  "../../../shared/components/QuickLink/Quicklinkresponse",
+  () => ({
+    fetchQuickLinkDetails: jest.fn(),
+    
   })
 );
 
@@ -145,6 +156,49 @@ describe("QuickLink Component", () => {
       elementLocation: "Quick link page",
     });
   });
+
+  test('renders QuickLink component with mock data and star icon', () => {
+    const axiosResponse: AxiosResponse = {
+      data: mockApiResponse,
+      status: 200,
+      statusText: "OK",
+      config: {},
+      headers: {}
+    };
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+
+    jest
+    .spyOn(qicklink, "FetchQuickLinkData")
+    .mockResolvedValue(mockres);  
+    
+
+    const setQuickLinkData = jest.fn(); 
+    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
+ 
+   jest
+   .spyOn(React, 'useState')
+   .mockImplementationOnce(useStateMock);
+
+   const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
+  expect(getByText('Link 1')).toBeInTheDocument();   
+    expect(screen.queryAllByTestId("btn-star-btn", {exact:true}).length).toBe(4);
+    const starClicks = screen.getAllByTestId("btn-star-btn");
+
+    jest
+    .spyOn(qicklink, "FetchQuickLinkpost").mockResolvedValueOnce(() => Promise.resolve(axiosResponse));
+
+    jest
+    .spyOn(linkDetails, "fetchQuickLinkDetails")
+    .mockResolvedValue(mockres);
+    starClicks.forEach((link) => {
+      fireEvent.click(link);     
+    });
+    expect(qicklink.FetchQuickLinkpost).toHaveBeenCalled();
+     waitFor(()=>{expect(linkDetails.fetchQuickLinkDetails).toHaveBeenCalled();
+     expect(setQuickLinkData).toHaveBeenCalled()}) ;
+  
+  });
+ 
 });
 
 
