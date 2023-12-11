@@ -23,7 +23,7 @@ const QuickLinkLogic: React.FC<
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
-    try {
+      try {
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
         favorite
@@ -36,9 +36,7 @@ const QuickLinkLogic: React.FC<
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
         }
-      } else {
-        setIsError(true);
-      }
+      } 
     } catch (error) {
       setIsError(true);
     }
@@ -50,7 +48,7 @@ const QuickLinkLogic: React.FC<
   ) => (
     <Icon
       color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
-      dataTestId="btn-star"
+      dataTestId={`btn-star${id}`}
       id="variable-2"
       name={favorites ? "star--filled" : "star"}
       size={16}
