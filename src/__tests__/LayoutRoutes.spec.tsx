@@ -10,6 +10,8 @@ import { AppPermissionState, IAppModule } from "../types/AppPermission";
 import { Layout } from "../Layout";
 import configureStore from "../redux/store";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
+import * as schoolDomainservices from "../shared/services/schoolDomain/schoolServices";
+import * as registerDomainservices from "../shared/services/registersDomain/registerEventsDetails";
 
 const history = createBrowserHistory();
 const appPermissions: AppPermissionState = {
@@ -31,6 +33,7 @@ const appModules: IAppModule[] = [
   }
 ];
 jest.mock('@essnextgen/ui-flagr', () => ({  
+  getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 describe("Layout component", () => {
@@ -139,5 +142,52 @@ describe("Layout component", () => {
     await waitFor(() => {
       expect(getByTestId("header-menu-icon-btn")).toBeInTheDocument();
     });
+  });
+
+  it("renders the New Home Page component", async () => {
+    const mockres:any={
+      status: 200,
+      responseData:[]
+    }
+    const useSelector = jest.spyOn(redux, "useSelector");
+    useSelector.mockReturnValue(appPermissions);
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(true);  
+    jest.mock('../shared/utils/flagr-utils', () => ({  
+      isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)        
+    
+    })); 
+    jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres);
+    jest.spyOn(registerDomainservices,"FetchRegisterEventData").mockResolvedValue(mockres);
+    jest.spyOn(schoolDomainservices, "useFetchSchoolNameData").mockResolvedValue({
+      externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
+      schoolName: "Waters Edge Primary School",
+      isSchoolPrimary:true
+    });
+    
+    const spy = jest.spyOn(ApplicationConfig, "getApplicationMenus");
+    spy.mockReturnValue([
+      {
+        isStandalone: true,
+        appName: "Home",
+        relativePath: "",
+        allowedRoles: "*",
+        disabled: true,
+        appCode: "Home"
+      }
+    ]);
+    history.push("/");
+    
+     
+      const { getByTestId } = render(
+        <Provider store={configureStore()}>
+          <Router history={history}>
+            <Layout isStandaloneApp baseRouteName="" />
+          </Router>
+        </Provider>
+      );  
+    await waitFor(() => { 
+      expect(getByTestId("NewHomePage")).toBeInTheDocument(); 
+     });      
   });
 });

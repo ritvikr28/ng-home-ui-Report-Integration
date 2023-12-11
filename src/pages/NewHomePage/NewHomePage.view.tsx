@@ -95,7 +95,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   
   return isPermission ? (
     <>
-      <Grid className="app">
+      <Grid className="app" dataTestId="NewHomePage">
         <GridItem
           className={isOpen ? "side-margin" : "side-margin-closed"}
           lg={isOpen ? 3 : 2}
