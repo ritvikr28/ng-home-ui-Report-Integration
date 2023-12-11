@@ -52,7 +52,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "link",
       elementTextOrLabel: "See all",
       elementLocation: "Left side panel"
@@ -69,7 +69,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   const closePanel: () => void = () => {
     setIsOpen(false);
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "icon",
       elementTextOrLabel: "close",
       elementLocation: "left side panel"
@@ -83,7 +83,7 @@ const requiredPermissionsforquicklink: Permission[] = [
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        if( responseapidata !=null )
        { 
-        setQuickLinkData(responseapidata?.response);
+        setQuickLinkData(responseapidata.response);
         setIsError(responseapidata.status);        
        }
        

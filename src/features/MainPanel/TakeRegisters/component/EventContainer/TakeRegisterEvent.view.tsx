@@ -142,7 +142,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
 
   const OnRegisterClick = (item: IRegistersDetails) => {
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "tile",
       elementTextOrLabel: "Take register tile",
       elementLocation: "Take register section"
