@@ -6,6 +6,25 @@ import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
+import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
+
+const requiredStaffTimeTablePermissions: Permission[] = [
+  {
+    Securable: 'NG.Calendar.Staff.Timetable',
+
+    Operation: 'View'
+  },
+  {
+    Securable: 'NG.Staff',
+
+    Operation: 'View'
+  },
+  {
+    Securable: 'NG.Homepage.Timetable',
+
+    Operation: 'View'
+  }
+];
 
 const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
@@ -23,7 +42,10 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       isApiError={isError} 
       organisationName={schoolName}
       />
-      {isSchoolPrimary===false &&<StaffTimeTableView />}
+      {authService.isAuthorised(
+      requiredStaffTimeTablePermissions,
+      MatchPermissions.all
+    ) &&isSchoolPrimary===false &&<StaffTimeTableView />}
       <TakeRegisterView />
       <div className="divider-container"/>            
       <SIMSupdatesView/>
