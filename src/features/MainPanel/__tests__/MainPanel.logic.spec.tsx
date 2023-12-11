@@ -26,12 +26,7 @@ describe('MainPanel', () => {
     const setIsSchoolPrimary = jest.fn();
 
     test('renders schoolname successfully when status is successful', async () => {
-        const mockres:any={
-          status: 200,
-          responseData:mockSchoolDetails
-        }
-      
-        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockres);
+        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockSchoolDetails);
         setSchoolName(mockSchoolDetails.schoolName);
         setIsError(false);
         setIsSchoolPrimary(mockSchoolDetails.isSchoolPrimary);
@@ -71,7 +66,7 @@ describe('MainPanel', () => {
           status: 500
         }
 
-        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockres);
+        jest.spyOn(schoolServices,"useFetchSchoolNameData").mockRejectedValue(mockres);
         setSchoolName("");
         setIsError(true);
         setIsSchoolPrimary(false);
