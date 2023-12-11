@@ -27,7 +27,10 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       <TakeRegisterView />
       <div className="divider-container"/>            
       <SIMSupdatesView/>
-      <SwitchViewLogic/>
+      <SwitchViewLogic
+            organisationName={schoolName}
+            isApiError={isError} 
+      />
     </GridItem>
   </Grid>
   )
