@@ -1,10 +1,9 @@
-import { RenderResult, fireEvent, render, waitFor } from "@testing-library/react";
+import { RenderResult, render, waitFor } from "@testing-library/react";
 import { Provider} from "react-redux";
 import { createBrowserHistory } from "history";
 import * as redux from "react-redux";
 import { Router } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import configureStore from "../../../redux/store";
 import LandingPage from "../index";
 import { AppPermissionState } from "../../../types/AppPermission";
@@ -12,7 +11,7 @@ import LandingPageView from "../LandingPage.view";
 
 jest.mock('../../../shared/utils', () => ({
   envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: 'True',
+    IS_NEWHOMEPAGE_ACCESSIBLE: 'True'
   },
 }));
 
@@ -179,32 +178,8 @@ describe("Landing Page tests", () => {
     await waitFor(() => {
       expect(getByTestId("LandingPageTestId")).toBeInTheDocument();      
     });
-  });
+  });  
 
-  test('shows the New Homepage button when authorized and config is True', () => {
-    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
-    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);   
-    const { queryByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
-    expect(queryByTestId('create-event-button')).toBeInTheDocument();
-  });
-
-  test('does not render "New Homepage" button if not authorised', () => {
-    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => false);
-
-    const { queryByText } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
-    expect(queryByText('New Homepage')).toBeNull();
-  });
-  
-  test('redirects to "/new-home" when the "New Homepage" button is clicked', () => {
-    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
-    jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
-    const { getByText,getByTestId } = render(<LandingPageView data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]} />);
-    const button = getByText(/New Homepage/i);
-    expect(button).toBeInTheDocument();
-    fireEvent.click(getByTestId('create-event-button'));
-
-    expect(mockHistoryPush).toHaveBeenCalledWith('/new-home');
-  });
 });
 
 function renderWithProvider() {

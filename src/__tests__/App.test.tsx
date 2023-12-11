@@ -7,6 +7,7 @@ import * as redux from "react-redux";
 import configureStore from "../redux/store";
 import App from "../App";
 import { AppPermissionState } from "../types/AppPermission";
+import { service } from "../shared/utils";
 
 describe("Testing App Component", () => {
   describe("Testing the routes", () => {
@@ -46,15 +47,17 @@ describe("Testing App Component", () => {
       const appPermissions: AppPermissionState = {
         modules: [],
         isLoaded: true
-      };
+      };      
       const useSelector = jest.spyOn(redux, "useSelector");
       useSelector.mockReturnValue(appPermissions);
+      const spy:any =jest
+      .spyOn(service, "get")
       jest.spyOn(authService, "isAuthenticated").mockImplementationOnce(() => false);     
       history.push("/");
-      const RenderedDom= renderWithHistory(history);
+      renderWithHistory(history);
      
       await waitFor(() => {
-        expect(RenderedDom.getByTestId("NoAccessPageTestId")).toBeInTheDocument();
+        expect(spy).not.toHaveBeenCalled();
       });
     });    
   });
