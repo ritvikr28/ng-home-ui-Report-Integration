@@ -2,6 +2,7 @@ import { render, fireEvent } from "@testing-library/react";
 import TakeRegistersLinkview from "../TakeRegisterLink.view";
 
 import gtmAnalytics from "../../../../../../shared/utils/analytics";
+import { envConfig } from "../../../../../../shared/utils";
 
   jest.mock('../../../../../../shared/utils', () => ({
     envConfig: {
@@ -23,10 +24,11 @@ describe("TakeRegistersLinkview component", () => {
       fireEvent.click(link);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "interact_click",
-        elementType: "link",
-        elementTextOrLabel: "View all registers",
-        elementLocation: "Take register section",
+        event: "click",
+        linkText: "View all registers",
+        linkUrl: envConfig.REGISTER_BASE_URL,
+        linkType: "link",
+        linkLocation: "body"
       });
     });
 });

@@ -13,10 +13,11 @@ const StaffTimeTableLinkview: () => JSX.Element = () => (
         target="_self"
       >
         <span data-testid="link-staffid" onClick={() => gtmAnalytics.pushEvent({
-                                  event: "interact_click",
-                                  elementType: "link",
-                                  elementTextOrLabel: "View full timetable",
-                                  elementLocation: "Home page main panel"
+                                  event: "click",
+                                  linkText: "View full timetable",
+                                  linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
+                                  linkType: "link",
+                                  linkLocation: "body"
                                 })}>
         View full timetable
         </span>

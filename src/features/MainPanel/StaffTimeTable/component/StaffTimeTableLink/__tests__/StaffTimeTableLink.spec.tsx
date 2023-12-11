@@ -2,10 +2,12 @@ import { render, fireEvent } from "@testing-library/react";
 
 import gtmAnalytics from "../../../../../../shared/utils/analytics";
 import StaffTimeTableLinkview from "../StaffTimeTableLink.view";
+import { envConfig } from "../../../../../../shared/utils";
 
   jest.mock('../../../../../../shared/utils', () => ({
     envConfig: {
-        REGISTER_BASE_URL: "https://example.com"
+        REGISTER_BASE_URL: "https://example.com",
+        SCHOOL_BASE_URL: "https://example.com"
     },
   }));
 
@@ -24,10 +26,11 @@ describe("staffTimeTableLink component", () => {
       fireEvent.click(link);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
       expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "interact_click",
-        elementType: "link",
-        elementTextOrLabel: "View full timetable",
-        elementLocation: "Home page main panel"
+        event: "click",
+        linkText: "View full timetable",
+        linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
+        linkType: "link",
+        linkLocation: "body"
       });
     });
 });
