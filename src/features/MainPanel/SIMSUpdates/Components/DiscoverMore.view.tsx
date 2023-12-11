@@ -10,7 +10,7 @@ import gtmAnalytics from "../../../../shared/utils/analytics";
 const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "button",
       elementTextOrLabel: "Discover more with SIMS Next Gen",
       elementLocation: "Find out more about SIMS Next Gen section"
@@ -26,7 +26,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
   const onCardClick: (typeValue: number) => void = (typeValue: number) => {
     const label : string = typeValue === 1 ? "What's new": "The SIMS Next Gen roadmap";
     gtmAnalytics.pushEvent({
-      event: "click",
+      event: "interact_click",
       elementType: "tile",
       elementTextOrLabel: label,
       elementLocation: "Find out more about SIMS Next Gen section"
