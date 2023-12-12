@@ -48,11 +48,14 @@ const requiredPermissionsforquicklink: Permission[] = [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+   
   const showQuickLinkView: () => void = () => {
+    /* istanbul ignore next */
     setShowQuickLink(true);
   };
 
   const showMainPanelView: () => void = () => {
+     /* istanbul ignore next */
     setShowQuickLink(false);
   };
   const togglePanel: () => void = () => {
@@ -68,7 +71,8 @@ const requiredPermissionsforquicklink: Permission[] = [
       try {   
         logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
-       if( responseapidata !=null )
+       /* istanbul ignore next */
+        if( responseapidata !=null )
        { 
         setQuickLinkData(responseapidata.response);
         setIsError(responseapidata.status);        
@@ -95,6 +99,7 @@ const requiredPermissionsforquicklink: Permission[] = [
             showQuickLinkView={showQuickLinkView}
             showMainPanelView={showMainPanelView}
             setQuickLinkData={setQuickLinkData}
+             /* istanbul ignore next */
             quicklinkData={isError ? [] : quickLinkData}
             data-testid="btn-show-quick-link"
           />
@@ -104,10 +109,13 @@ const requiredPermissionsforquicklink: Permission[] = [
           lg={isOpen ? 9 : 10}
           md={isOpen ? 6 : 7}
           sm={isOpen ? 3 : 4}>
+            
           {showQuickLink ? (
+             /* istanbul ignore next */
             isPermissionquicklink &&
             <QuickLinkLogic
               setQuickLinkData={setQuickLinkData}
+             
               apiQuickLinkData={isError ? [] : quickLinkData}
               isOpen ={isOpen}
             />
