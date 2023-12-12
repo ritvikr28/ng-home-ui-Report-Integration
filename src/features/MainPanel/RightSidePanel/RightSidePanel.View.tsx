@@ -46,15 +46,17 @@ export const RightSidePanelView: (
   };
 
   const onTRButtonClick:()=>void = () => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "button",
-      elementTextOrLabel: "Take register",
-      elementLocation: "Right side panel"
-    });
     const url:string  = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
+      
+      gtmAnalytics.pushEvent({
+        event: "click",
+        linkText: "Take register",
+        linkUrl: url,
+        linkType: "button",
+        linkLocation: "right_bar"
+      });
       window.location.href = url
   };
 
@@ -193,11 +195,12 @@ export const RightSidePanelView: (
                             href={`${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`}
                             target="_self"
                           >
-                              <span onClick={() =>  gtmAnalytics.pushEvent({
-                                  event: "interact_click",
-                                  elementType: "link",
-                                  elementTextOrLabel: "Pupil profile",
-                                  elementLocation: "Right side panel"
+                             <span onClick={() =>  gtmAnalytics.pushEvent({
+                                  event: "click",
+                                  linkText: "Take register",
+                                  linkUrl: `${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`,
+                                  linkType: "link",
+                                  linkLocation: "right_bar"
                                 })}>
                               {pupil.personalInfo.preferredForename}{" "}
                               {pupil.personalInfo.preferredSurname}

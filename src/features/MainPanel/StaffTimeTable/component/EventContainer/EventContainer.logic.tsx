@@ -19,9 +19,8 @@ const EventContainer: React.FC = () => {
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     gtmAnalytics.pushEvent({
       event: "interact_click",
-      elementType: "tile",
-      elementTextOrLabel: "Staff time table event tile",
-      elementLocation: "Staff time table section"
+      elementType: "card",
+      elementLocation: "body"
     });
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,

@@ -15,10 +15,11 @@ const TakeRegistersLinkview: () => JSX.Element = () => (
       >
         <span data-testid="link-id" onClick={() =>  
             gtmAnalytics.pushEvent({
-              event: "interact_click",
-              elementType: "link",
-              elementTextOrLabel: "View all registers",
-              elementLocation: "Take register section"
+              event: "click",
+              linkText: "View all registers",
+              linkUrl: envConfig.REGISTER_BASE_URL,
+              linkType: "link",
+              linkLocation: "body"
             })
           }>
        View all registers

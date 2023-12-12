@@ -1,3 +1,4 @@
+import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
@@ -8,10 +9,14 @@ import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quickli
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import { getUserOrganisation } from "../../shared/utils";
-import gtmAnalytics from "../../shared/utils/analytics";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 
-
+const requiredPermissions: Permission[] = [
+  {
+    Securable: "NG.Homepage",
+    Operation: "View"
+  }
+];
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -22,7 +27,7 @@ const requiredPermissionsforquicklink: Permission[] = [
 
 
  const NewHomepageView: () => JSX.Element = () => {
- 
+  const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
 
     const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
 
@@ -45,12 +50,6 @@ const requiredPermissionsforquicklink: Permission[] = [
   ] = useState<boolean>(false);
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "link",
-      elementTextOrLabel: "See all",
-      elementLocation: "Left side panel"
-    });
   };
 
   const showMainPanelView: () => void = () => {
@@ -62,12 +61,6 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   const closePanel: () => void = () => {
     setIsOpen(false);
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "icon",
-      elementTextOrLabel: "close",
-      elementLocation: "left side panel"
-    })
   };
 
   useEffect(() => {
@@ -87,7 +80,7 @@ const requiredPermissionsforquicklink: Permission[] = [
     })();
   }, []);
   
-  return  (
+  return isPermission ? (
     <>
       <Grid className="app" dataTestId="NewHomePage">
         <GridItem
@@ -125,6 +118,8 @@ const requiredPermissionsforquicklink: Permission[] = [
         </GridItem>
       </Grid>
     </>
+  ) : (
+    <Redirect to="/noAccess" />
   );
 };
 

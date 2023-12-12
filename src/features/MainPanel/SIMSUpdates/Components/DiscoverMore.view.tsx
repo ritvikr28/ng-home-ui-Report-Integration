@@ -5,16 +5,9 @@ import {
   ButtonColor,
   ActionCard
 } from "@essnextgen/ui-kit";
-import gtmAnalytics from "../../../../shared/utils/analytics";
 
 const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "button",
-      elementTextOrLabel: "Discover more with SIMS Next Gen",
-      elementLocation: "Find out more about SIMS Next Gen section"
-    });
     window.location.href = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
   };
 
@@ -23,15 +16,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
   }
 
   const  rel:RelType={rel:"noopener noreferrer"};
-  const onCardClick: (typeValue: number) => void = (typeValue: number) => {
-    const label : string = typeValue === 1 ? "What's new": "The SIMS Next Gen roadmap";
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "tile",
-      elementTextOrLabel: label,
-      elementLocation: "Find out more about SIMS Next Gen section"
-    });
-  };
+  const onCardClick: () => void = () => {};
   return (
     <>
       <div className="sims-link-container">
@@ -60,7 +45,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
               className="primary-text"
               dataTestId="what-new-test-id"
               id="action-card"
-              onClickActionCard={() => onCardClick(1)}
+              onClickActionCard={() => onCardClick()}
               primaryText="What's new?"
               secondaryText="Get the latest on SIMS Next Gen - new releases, sign up for early access, and find out what's new."
             />
@@ -78,7 +63,7 @@ const DiscoverMoreView: () => JSX.Element = () => {
               className="primary-text"
               dataTestId="test-id"
               id="action-card"
-              onClickActionCard={() => onCardClick(2)}
+              onClickActionCard={() => onCardClick()}
               primaryText="The SIMS Next Gen roadmap"
               secondaryText="Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap"
             />

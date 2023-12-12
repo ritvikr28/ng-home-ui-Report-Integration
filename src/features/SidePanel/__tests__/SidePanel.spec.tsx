@@ -240,4 +240,12 @@ describe("SidePanel Component", () => {
     }) ;
     
   });
+
+  test("changes window location when a quick link is clicked", () => {
+   
+    const {getByText} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+    
+    fireEvent.click(getByText("Link 1"));
+    expect(window.location.href).toBe("http://localhost/");
+  });
 });

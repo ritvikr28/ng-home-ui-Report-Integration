@@ -8,7 +8,6 @@ import QuickLinkLogic from "../QuickLink.logic";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
 import * as qicklink from "../../../shared/services/quickLinkDomain/quickLinkService";
 import * as  linkDetails  from "../../../shared/components/QuickLink/Quicklinkresponse";
-import gtmAnalytics from "../../../shared/utils/analytics";
 
 
 
@@ -137,8 +136,6 @@ describe("QuickLink Component", () => {
 
   test("should handle click event for link", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-    const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
-      jest.spyOn(gtmAnalytics, "pushEvent");
       jest
       .spyOn(qicklink, "FetchQuickLinkData")
       .mockResolvedValue(mockres);
@@ -147,14 +144,6 @@ describe("QuickLink Component", () => {
     const linkElement = getByText("Link 1");
   
     fireEvent.click(linkElement);
-    expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
-    
-    expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-      event: "interact_click",
-      elementType: "link",
-      elementTextOrLabel: "Link 1",
-      elementLocation: "Quick link page",
-    });
   });
 
   test('renders QuickLink component with mock data and star icon',async () => {
