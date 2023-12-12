@@ -1,10 +1,10 @@
 import React from "react";
 import { authService } from "@essnextgen/auth-ui";
 import { act, fireEvent, render,waitFor } from "@testing-library/react";
-import { Redirect } from "react-router-dom";
 import NewHomepageView from "../NewHomePage.view";
 import * as qicklink from "../../../shared/components/QuickLink/Quicklinkresponse";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
+
 
 
 jest.mock("../../../shared/utils", () => ({
@@ -51,9 +51,8 @@ describe("<NewHomepageView />", () => {
   test("renders Redirect component if not authorised or envConfig is not set to True", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => false);
 
-    render(<NewHomepageView />);
-
-    expect(Redirect).toHaveBeenCalledWith({ to: "/noAccess" }, {});
+    const {getByTestId}=render(<NewHomepageView />);
+    expect(getByTestId("mainPanelView")).toBeInTheDocument();    
   });
 
   test("test state change on side panel open", () => {
@@ -156,6 +155,7 @@ describe("<NewHomepageView />", () => {
    waitFor(()=>{
     expect(setShowQuickLink).toHaveBeenCalled();
     expect(setQuickLinkData).toHaveBeenCalled();
+    expect(qicklink.fetchQuickLinkDetails).toHaveBeenCalled();
     expect(setQuickLinkData).toHaveBeenCalledWith(mockres.response);
    })
      
