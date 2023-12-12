@@ -29,8 +29,8 @@ describe("staffTimeTableLink component", () => {
         event: "click",
         linkText: "View full timetable",
         linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
-        linkType: "link",
-        linkLocation: "body"
+        clickType: "link",
+        clickLocation: "body"
       });
     });
 });

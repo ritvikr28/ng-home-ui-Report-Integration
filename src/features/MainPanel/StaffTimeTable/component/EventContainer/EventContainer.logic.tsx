@@ -20,6 +20,7 @@ const EventContainer: React.FC = () => {
     gtmAnalytics.pushEvent({
       event: "interact_click",
       elementType: "card",
+      elementTextOrLabel: "[RemovedEventName]",
       elementLocation: "body"
     });
     setIsOpen((prevIsOpen) => ({
