@@ -17,7 +17,7 @@ jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(),
 }));
  
-test.skip("renders welcome message if authorized and envConfig is set to True", () => {
+test("renders welcome message if authorized and envConfig is set to True", () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
  
   jest
@@ -33,7 +33,7 @@ test.skip("renders welcome message if authorized and envConfig is set to True", 
   expect(getByText("John")).toBeInTheDocument();
 });
  
-test.skip("renders welcome message when authorized with a long username", () => {
+test("renders welcome message when authorized with a long username", () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
  
   jest

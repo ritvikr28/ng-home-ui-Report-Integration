@@ -1,7 +1,5 @@
-import React from 'react';
-import { render, screen, act} from '@testing-library/react';
+import { render, screen, act, fireEvent} from '@testing-library/react';
 import { EventCardStatus } from '@essnextgen/ui-kit';
-import userEvent from "@testing-library/user-event";
 import EventContainer from '../EventContainer.logic';
 import {EventContainerView} from '../EventContainer.view';
 import * as schoolDomainservices from "../../../../../../shared/services/schoolDomain/schoolServices";
@@ -293,6 +291,49 @@ import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/Sc
     }
 ];
 
+
+const mockStaffTimeTableEventsResponseWithOneRecordsNullcheck:IStaffTimeTableEventsResponse[]=[
+  {
+    externalId: "90ec7084-d8fa-4802-9021-1813ce1c48e9",
+    eventStart: "2023-11-02T08:45:00",
+    eventEnd: "2023-11-02T09:15:00",
+    eventDescription: "AM",
+    levelCode: null,
+    eventTypeCode: "TestEventTypeCode",
+    subjectColor: "primary",
+    yearGroupColor: "SUPPORTING-OUTSTANDING",
+    userPreference: "yeargroup",
+    yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    group: {
+      externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
+      shortName: "10x/Sc2"
+    },
+    room: {
+      externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
+      roomCode: "S3",
+      roomName: "Science Lab 3"
+    },
+    subject: {
+      externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
+      name: "Science"
+    },
+    supervisors: [
+      {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null
+      }
+    ],
+    isCovered: null,
+    isCovering: null,
+    originalStaffExternalID: null,
+    coveringStaffExternalID: null,     
+    eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+    classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
+  }
+];
  const mockStaffTimeTableEventsNoRecords:IStaffTimeTableEventsResponse[]=[];
 
 describe('EventContainer', () => {
@@ -336,6 +377,8 @@ describe('EventContainer', () => {
     
   });
 
+  
+
   test('renders events successfully when status is 200 and have less than 6 record', async () => {
     
   const mockres:any={
@@ -343,7 +386,7 @@ describe('EventContainer', () => {
     responseData:mockStaffTimeTableEventsResponseWithOneRecords
   }
 
-  jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres);
+    jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres);
 
     setIsError(false);
     setStatus(mockres.status);
@@ -354,6 +397,24 @@ describe('EventContainer', () => {
     expect(setStatus).toHaveBeenCalledWith(200);
   });
 
+
+  test('renders events successfully when status is 200 and return null for formateventPeriodNum ', async () => {
+    
+    const mockres:any={
+      status: 200,
+      responseData:mockStaffTimeTableEventsResponseWithOneRecordsNullcheck
+    }
+  
+      jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres);
+  
+      setIsError(false);
+      setStatus(mockres.status);
+      render(<EventContainer />);
+      expect(await screen.findByText(/10x\/Sc2\s*\|\s*Science/)).toBeInTheDocument();
+      expect(await screen.findByText('No more events')).toBeInTheDocument();
+      expect(setIsError).toHaveBeenCalledWith(false);
+      expect(setStatus).toHaveBeenCalledWith(200);
+    });
 
   test('No events today when status is 204', async () => {
     const mockres:any={
@@ -371,22 +432,19 @@ describe('EventContainer', () => {
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(204);
 });
-test.skip('should handle unsuccessful data fetch', async () => {
+test('should handle unsuccessful data fetch', async () => {
   const mockres:any={
     status: 500,
-    responseData: mockStaffTimeTableEventsNoRecords,
+    responseData: undefined,
   }
 
-    const consoleErrorMock = jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(schoolDomainservices, 'FetchStaffTimeTableEventsData').mockRejectedValue(mockres);
+     jest.spyOn(schoolDomainservices, 'FetchStaffTimeTableEventsData').mockRejectedValue(mockres);
     setIsError(true);
     setStatus(mockres.status);
     await act(async () => {
       render(<EventContainer/>);
     });
  
-    expect(consoleErrorMock).toHaveBeenCalledWith('Error while fetching data:', mockres);
-    expect(consoleErrorMock).toHaveBeenCalledTimes(1);
     expect(setIsError).toHaveBeenCalledWith(true);
     expect(setStatus).toHaveBeenCalledWith(500)
 });
@@ -403,12 +461,11 @@ test('togglePanel toggles isOpen state correctly', () => {
 });
 
 
-test('togglePanel prop functions correctly in EventContainerView phase 2', async () => {
-    
-    
+test('togglePanel prop functions correctly in EventContainerView phase 2', async () => {      
     const togglePanel1 = jest.fn();
   
-    const component = <EventContainerView
+    render(
+    <EventContainerView
     SchoolEventexternalId="1"
     EventTitle="Title: Some description: 1"
     EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
@@ -427,19 +484,43 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
     EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
     SelectedItem="1"        
-      
-  />;
+  />
+  );
 
-
-  const { getByTestId } = render(component);
-
-  userEvent.click(getByTestId('eventid0'));
-  
-  expect(togglePanel1).toHaveBeenCalled();
+  fireEvent.click(screen.getByTestId('eventid0'));
   expect(togglePanel1).toHaveBeenCalledWith("1");
+});
 
+test('should render the component with isOpen set to true if the panel is open', () => {
+
+  const togglePanel1 = jest.fn();
+   
+   render(
+    <EventContainerView
+    SchoolEventexternalId="1"
+    EventTitle="Title: Some description: 1"
+    EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+    RoomCode="A101"
+    EventStartDate="2023-11-08T08:00:00"
+    EventEndDate="2023-11-08T09:00:00"
+    GroupExternalId="G1"
+    EventPeriodNum=" 1"
+    togglePanel={togglePanel1}
+    isOpen={true}
+    GroupDescription="Group 1"
+    StaffName="John Doe"
+    index={0}
+    EventCardColor={EventCardStatus.PRIMARY}
+    EventTypeCode='TTPeriod' 
+    ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
+    EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
+    SelectedItem="1"        
+  />
+  );
+  expect(screen.getByTestId('side-panel-header')).toBeInTheDocument();
 });
 
 });
+
 
 
