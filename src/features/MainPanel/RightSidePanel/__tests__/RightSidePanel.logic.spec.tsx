@@ -1,9 +1,11 @@
 import React from "react";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor ,screen} from "@testing-library/react";
 import { RightSidePanel } from "../RightSidePanel.logic";
 import * as schoolDomainservices from "../../../../shared/services/schoolDomain/schoolServices";
 import { IRightSidePanelProps } from "../RightSidePanelProps";
 import { IGroupMemberDetailsResponse } from "../../../../shared/model/SchoolDomain/responsemodels";
+import { RightSidePanelView } from "../RightSidePanel.View";
+import { IRightSidePanelViewProps } from "../RightSidePanelViewProps";
 
 const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -51,7 +53,7 @@ const mockHealthyEvent: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
-  EventTypeCode: "ttperiod",
+  EventTypeCode: "AttendanceSession",
   ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
 };
@@ -211,6 +213,65 @@ describe("RigthSidePanel", () => {
       expect(setPupilSection).toHaveBeenCalledWith(true);
     });
   });
+
+  test("should set values if eventtitle is not break or meeting or external is not empty and group desc is empty", async () => {
+    const mockHealthyEvent1: IRightSidePanelProps = {
+      SchoolEventexternalId: "123",
+      EventTitle: "Test",
+      RoomCode: "Room A",
+      EventStart: "2023-11-10T09:00:00.000Z",
+      EventEnd: "2023-11-10T10:00:00.000Z",
+      GroupExternalId: "20be3c01-76c0-4cbe-ba1a-59d91ede62fe",
+      EventPeriodNo: "1",
+      togglePanel: jest.fn(),
+      isOpen: true,
+      GroupDescription: "",
+      StaffName: "John Doe",
+      EventTypeCode: "AttendanceSession",
+      ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
+      EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
+    };
+    
+    
+    jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [false, setLoader])
+      .mockImplementationOnce(() => [false, setErrCodeMessage])
+      .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
+
+    jest
+      .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
+      .mockResolvedValue(mockListofGroupExternalId);
+
+    render(
+      <RightSidePanel
+        SchoolEventexternalId={mockHealthyEvent1.SchoolEventexternalId}
+        EventTitle={mockHealthyEvent1.EventTitle}
+        RoomCode={mockHealthyEvent1.RoomCode}
+        EventStart={mockHealthyEvent1.EventStart}
+        EventEnd={mockHealthyEvent1.EventEnd}
+        GroupExternalId={mockHealthyEvent1.GroupExternalId}
+        EventPeriodNo={mockHealthyEvent1.EventPeriodNo}
+        togglePanel={mockHealthyEvent1.togglePanel}
+        isOpen={mockHealthyEvent1.isOpen}
+        GroupDescription={mockHealthyEvent1.GroupDescription}
+        StaffName={mockHealthyEvent1.StaffName}
+        EventTypeCode="TTPeriod"
+        ClassPeriodExternalId={mockHealthyEvent1.ClassPeriodExternalId}
+        EventInstanceExternalId={mockHealthyEvent1.EventInstanceExternalId}          
+      />
+    );
+    await waitFor(() => {
+      expect(setLoader).toHaveBeenCalledWith(false);
+      expect(setErrCodeMessage).toHaveBeenCalledWith(false);
+      expect(setGroupMemberDetailsData).toHaveBeenCalledWith(
+        mockSortedListofGroupExternalIdBySurname
+      );
+      expect(setPupilSection).toHaveBeenCalledWith(true);
+    });
+  });
  
 
   test("should handle unsuccessful data fetch", async () => {
@@ -321,5 +382,36 @@ describe("RigthSidePanel", () => {
       expect(setGroupMemberDetailsData).toHaveBeenCalledWith([]);
       expect(setPupilSection).toHaveBeenCalledWith(false);
     });
+  });
+
+  describe('RightSidePanel View', () => {  
+   
+    test('renders loader when isLoader is true', () => {
+      const otherEventTypeProps:IRightSidePanelViewProps = {
+        SchoolEventexternalId: "123",
+        EventTitle: "Test",
+        EventTime:"1 | 09:00 15:30",
+        StaffName:"Abc",
+        Location:"Xyz",
+        GroupMembersData:[],
+        togglePanel:jest.fn(),
+        isOpen:true,
+        GroupDescription:null,
+        isLoader:true,
+        errCodeMessage:false,
+        pupilDetailErrorCodeMessage:"error",
+        isPupilSectionEnable:true,
+        EventTypeCode:"AttendanceSession",
+        BaseGroupId:"123",
+        ClassPeriodExternalId:"123",
+        EventInstanceExternalId:"123",
+        EventPeriodNo:"1"
+      };
+      render(
+        <RightSidePanelView {...otherEventTypeProps}
+        />
+      );
+      expect(screen.getByTestId("error-loader")).toBeInTheDocument();
+    })
   });
 });

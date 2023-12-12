@@ -60,7 +60,7 @@ export const RightSidePanelView: (
       window.location.href = url
   };
 
-  
+ 
   return (
     <div
       data-testid="side-panel"
@@ -128,7 +128,7 @@ export const RightSidePanelView: (
               data-testid="register-label"
               className="essui-global-typography-default-subtitle margin-24 div-container"
             >
-              <span data-testid="register-text">
+              <span data-testid="register-text">               
                 {GroupDescription === null || GroupDescription === undefined
                   ? ""
                   : GroupDescription}{" "}
@@ -159,7 +159,7 @@ export const RightSidePanelView: (
               ) : (
                 isLoader && (
                   <Loader
-                    data-testid="error-loader"
+                    dataTestId="error-loader"
                     className="loader-wrapper"
                     loaderText="Loading..."
                     loaderType={LoaderType.Circular}
@@ -179,7 +179,7 @@ export const RightSidePanelView: (
                 GroupMembersData.length > 0 && (
                   <div className="margin-24">
                     <div className="parent">
-                      {GroupMembersData?.map((pupil, index) => (
+                      {GroupMembersData.map((pupil, index) => (
                         <span className="child">
                           <Avatar
                             imagePath={
