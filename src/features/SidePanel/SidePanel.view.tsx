@@ -17,7 +17,8 @@ import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickL
 import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
 import gtmAnalytics from "../../shared/utils/analytics";
 
-const userFullname: string | null = authService.getUsername();
+
+
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -42,7 +43,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
     requiredPermissionsforquicklink,
     MatchPermissions.all
   );
-
+  const loginFullname: string | null = authService.getUsername();
+ 
   const handleStarClick: (
     id: number,
     favorite: boolean
@@ -58,13 +60,11 @@ const SidePanel: React.FC<SidePanelProps> = ({
           | null
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
-          setQuickLinkData(responseapidata?.response);
+          setQuickLinkData(responseapidata.response);
         }
-      } else {
-        setIsError(true);
-      }
+      } 
     } catch (error) {
-      console.error(error);
+      setIsError(true);
     }
   };
 
@@ -78,19 +78,20 @@ const SidePanel: React.FC<SidePanelProps> = ({
         {isOpen ? (
           <div>
             <div className="quick-lint-display">
-              {userFullname && userFullname.length > 24 ? (
+              {loginFullname && loginFullname.length > 24 ? (
                 <Tooltip
+                dataTestId="test-id"
                   align={TooltipAlign.Center}
                   position={TooltipPosition.Bottom}
-                  content={<span>{userFullname}</span>}
+                  content={<span>{loginFullname}</span>}
                 >
                   <span className="quick-link-username">
-                    <strong>{userFullname}</strong>
+                    <strong>{loginFullname}</strong>
                   </span>
                 </Tooltip>
               ) : (
                 <span className="quick-link-username">
-                  <strong>{userFullname}</strong>
+                  <strong>{loginFullname}</strong>
                 </span>
               )}
 
@@ -130,7 +131,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
                               : IconColor.Neutral800
                           }
                           className="icon-margin"
-                          dataTestId="btn-90"
+                          dataTestId={`btn-star${sidelink.id}`}
+                        
                           id="variable-2"
                           name={sidelink.favourite ? "star--filled" : "star"}
                           size={16}
