@@ -141,15 +141,16 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   );
 
   const OnRegisterClick = (item: IRegistersDetails) => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "tile",
-      elementTextOrLabel: "Take register tile",
-      elementLocation: "Take register section"
-    });
     const url = (item.eventTypeCode === "AttendanceSession")
     ? `${envConfig.REGISTER_BASE_URL}/take-register/${item.eventDescription}/${item.group.externalId}/${item.eventInstanceExternalId}`
     : `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.group.externalId}/${item.eventInstanceExternalId}`;
+    
+    gtmAnalytics.pushEvent({
+      event: "click",
+      linkUrl: url,
+      linkType: "card",
+      linkLocation: "body"
+    });
   window.open(url, "_self");
   };
   return (

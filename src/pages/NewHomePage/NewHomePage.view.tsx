@@ -9,7 +9,6 @@ import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quickli
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import { getUserOrganisation } from "../../shared/utils";
-import gtmAnalytics from "../../shared/utils/analytics";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 
 const requiredPermissions: Permission[] = [
@@ -51,12 +50,6 @@ const requiredPermissionsforquicklink: Permission[] = [
   ] = useState<boolean>(false);
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "link",
-      elementTextOrLabel: "See all",
-      elementLocation: "Left side panel"
-    });
   };
 
   const showMainPanelView: () => void = () => {
@@ -68,12 +61,6 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   const closePanel: () => void = () => {
     setIsOpen(false);
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "icon",
-      elementTextOrLabel: "close",
-      elementLocation: "left side panel"
-    })
   };
 
   useEffect(() => {

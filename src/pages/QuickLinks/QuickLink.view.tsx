@@ -8,7 +8,6 @@ import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.vi
 import "./style.scss";
 import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
-import gtmAnalytics from "../../shared/utils/analytics";
 
 
 const requiredPermissions: Permission[] = [
@@ -55,14 +54,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                         <TableRow key={link.id}>
                           <TableCell>                            
                             <Link data-testid="link" href={link.link} target="_self" >
-                              <span onClick={() =>  gtmAnalytics.pushEvent({
-                                        event: "interact_click",
-                                        elementType: "link",
-                                        elementTextOrLabel: link.name,
-                                        elementLocation: "Quick link page"
-                                })}>
                                 {link.name}
-                              </span>
                             </Link>
                           </TableCell>
                           <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>

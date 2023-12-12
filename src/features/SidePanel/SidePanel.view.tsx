@@ -15,7 +15,6 @@ import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
-import gtmAnalytics from "../../shared/utils/analytics";
 
 
 
@@ -120,13 +119,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                       <div
                         className="quick-panel-cont"
                         key={sidelink.id}
-                        onClick={() => {(window.location.href = sidelink.link);
-                          gtmAnalytics.pushEvent({
-                            event: "interact_click",
-                            elementType: "quick link",
-                            elementTextOrLabel: sidelink.name,
-                            elementLocation: "Left side panel quick link section"
-                        });}}
+                        onClick={() => {(window.location.href = sidelink.link);}}
                         style={{ cursor: "pointer" }}
                       >
                         {sidelink.name}
