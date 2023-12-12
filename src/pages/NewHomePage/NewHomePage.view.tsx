@@ -1,4 +1,3 @@
-import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
@@ -12,12 +11,7 @@ import { getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 
-const requiredPermissions: Permission[] = [
-  {
-    Securable: "NG.Homepage",
-    Operation: "View"
-  }
-];
+
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -28,7 +22,7 @@ const requiredPermissionsforquicklink: Permission[] = [
 
 
  const NewHomepageView: () => JSX.Element = () => {
-  const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
+ 
 
     const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
 
@@ -93,7 +87,7 @@ const requiredPermissionsforquicklink: Permission[] = [
     })();
   }, []);
   
-  return isPermission ? (
+  return  (
     <>
       <Grid className="app" dataTestId="NewHomePage">
         <GridItem
@@ -131,8 +125,6 @@ const requiredPermissionsforquicklink: Permission[] = [
         </GridItem>
       </Grid>
     </>
-  ) : (
-    <Redirect to="/noAccess" />
   );
 };
 

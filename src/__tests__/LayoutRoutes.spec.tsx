@@ -10,8 +10,7 @@ import { AppPermissionState, IAppModule } from "../types/AppPermission";
 import { Layout } from "../Layout";
 import configureStore from "../redux/store";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
-import * as schoolDomainservices from "../shared/services/schoolDomain/schoolServices";
-import * as registerDomainservices from "../shared/services/registersDomain/registerEventsDetails";
+import * as getAppModulesPermissions from "../actions/queries";
 
 const history = createBrowserHistory();
 const appPermissions: AppPermissionState = {
@@ -145,10 +144,6 @@ describe("Layout component", () => {
   });
 
   it("renders the New Home Page component", async () => {
-    const mockres:any={
-      status: 200,
-      responseData:[]
-    }
     const useSelector = jest.spyOn(redux, "useSelector");
     useSelector.mockReturnValue(appPermissions);
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
@@ -157,37 +152,31 @@ describe("Layout component", () => {
       isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)        
     
     })); 
-    jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres);
-    jest.spyOn(registerDomainservices,"FetchRegisterEventData").mockResolvedValue(mockres);
-    jest.spyOn(schoolDomainservices, "useFetchSchoolNameData").mockResolvedValue({
-      externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
-      schoolName: "Waters Edge Primary School",
-      isSchoolPrimary:true
+    
+    const getAppModulePermissionMock: any = jest
+    .spyOn(getAppModulesPermissions, "default")
+    .mockResolvedValueOnce({
+      data: [{ code: "module1" }, { code: "module2" }],
+      status: 200,
+      statusText: "",
+      headers: {},
+      config: {}
     });
-    
-    const spy = jest.spyOn(ApplicationConfig, "getApplicationMenus");
-    spy.mockReturnValue([
-      {
-        isStandalone: true,
-        appName: "Home",
-        relativePath: "",
-        allowedRoles: "*",
-        disabled: true,
-        appCode: "Home"
-      }
-    ]);
-    history.push("/");
-    
+    history.push("/");   
      
-      const { getByTestId } = render(
+      
+   
+      const { getByTestId } = await render(
         <Provider store={configureStore()}>
           <Router history={history}>
-            <Layout isStandaloneApp baseRouteName="" />
+            <Layout isStandaloneApp={false} baseRouteName="" />
           </Router>
         </Provider>
-      );  
-    await waitFor(() => { 
+      );
+     await waitFor(() => { 
+       // expect(schoolDomainservices.useFetchSchoolNameData).toHaveBeenCalled(); 
       expect(getByTestId("NewHomePage")).toBeInTheDocument(); 
-     });      
+     });   
+     expect(getAppModulePermissionMock).toHaveBeenCalled();   
   });
 });
