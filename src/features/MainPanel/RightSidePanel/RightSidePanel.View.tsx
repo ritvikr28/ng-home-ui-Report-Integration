@@ -54,8 +54,8 @@ export const RightSidePanelView: (
         event: "click",
         linkText: "Take register",
         linkUrl: url,
-        linkType: "button",
-        linkLocation: "right_bar"
+        clickType: "button",
+        clickLocation: "right_bar"
       });
       window.location.href = url
   };
@@ -197,10 +197,10 @@ export const RightSidePanelView: (
                           >
                              <span onClick={() =>  gtmAnalytics.pushEvent({
                                   event: "click",
-                                  linkText: "Take register",
+                                  linkText: "[RemovedPupilName]",
                                   linkUrl: `${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`,
-                                  linkType: "link",
-                                  linkLocation: "right_bar"
+                                  clickType: "link",
+                                  clickLocation: "right_bar"
                                 })}>
                               {pupil.personalInfo.preferredForename}{" "}
                               {pupil.personalInfo.preferredSurname}

@@ -27,8 +27,8 @@ describe("TakeRegistersLinkview component", () => {
         event: "click",
         linkText: "View all registers",
         linkUrl: envConfig.REGISTER_BASE_URL,
-        linkType: "link",
-        linkLocation: "body"
+        clickType: "link",
+        clickLocation: "body"
       });
     });
 });
