@@ -90,6 +90,7 @@ describe('RightSidePanelView', () => {
         jest.clearAllMocks();
       });
       
+      
       test('renders correctly', () => {
         const { getByTestId } = render(<RightSidePanelView 
             SchoolEventexternalId={mockEventTitleClass.SchoolEventexternalId}
