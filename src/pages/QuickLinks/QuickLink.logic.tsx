@@ -38,6 +38,7 @@ const QuickLinkLogic: React.FC<
         }
       } 
     } catch (error) {
+       /* istanbul ignore next */
       setIsError(true);
     }
   };

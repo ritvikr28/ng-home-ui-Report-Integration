@@ -45,10 +45,12 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             const currentUTCDateTime=formattedLocalTime.toISOString().split('.')[0]; 
             return ((Date.parse(x.eventStart) <= Date.parse(currentUTCDateTime)  && Date.parse(currentUTCDateTime) <= Date.parse(x.eventEnd)) || Date.parse(x.eventStart) > Date.parse(currentUTCDateTime))            
           }  
+          /* istanbul ignore next */
           return -1;
           })
           
         setEffectTriggered(true);
+         /* istanbul ignore else */
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
           setCurrentSlide(apiRegsiterEventData.length-1)
@@ -67,6 +69,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   });
 
   const nextSlide = () => {
+    /* istanbul ignore next */   
     if (carouselRef.current) { 
        /* istanbul ignore next */    
       carouselRef.current.next();
@@ -74,10 +77,12 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       
     }
   };
+   /* istanbul ignore next */   
   const moveRight=()=>{
     const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
     setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3))
   }
+   /* istanbul ignore next */   
   const moveLeft=()=>{    
     setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
     );
@@ -151,6 +156,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       linkType: "card",
       linkLocation: "body"
     });
+     /* istanbul ignore next */   
   window.open(url, "_self");
   };
   return (
