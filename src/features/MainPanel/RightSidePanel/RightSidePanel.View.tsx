@@ -195,8 +195,16 @@ export const RightSidePanelView: (
                             href={`${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`}
                             target="_self"
                           >
+                             <span onClick={() =>  gtmAnalytics.pushEvent({
+                                  event: "click",
+                                  linkText: "Take register",
+                                  linkUrl: `${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`,
+                                  linkType: "link",
+                                  linkLocation: "right_bar"
+                                })}>
                               {pupil.personalInfo.preferredForename}{" "}
                               {pupil.personalInfo.preferredSurname}
+                              </span>
                           </Link>
                         </span>
                       ))}
