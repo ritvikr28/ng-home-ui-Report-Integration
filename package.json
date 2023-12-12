@@ -133,7 +133,7 @@
     "build:singlespa": "webpack -c ./config/webpack/webpack.singlespa.js --progress",
     "start": "webpack serve -c ./config/webpack/webpack.dev.js --progress --history-api-fallback",
     "start:debug": "NODE_ENV=development DEBUG='express:*' && webpack serve -c ./config/webpack/webpack.dev.js --progress",
-    "test": "jest --config ./config/jest/jest.config.js --coverage",
+    "test": "jest --config ./config/jest/jest.config.js --coverage --detectOpenHandles --forceExit",
     "test:nc": "jest --config ./config/jest/jest.config.js",
     "test:watch": "yarn run test -- --watch",
     "coverage": "npm test -- --coverage --ci --reporters=default --reporters=jest-junit --coverageReporters=cobertura",

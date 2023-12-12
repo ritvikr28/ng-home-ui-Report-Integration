@@ -36,7 +36,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   }: IMainPanelProps = props;
 
   return(
-  <Grid>
+  <Grid dataTestId="mainPanelView">
     <GridItem className="teacher-panel-container">
       <WelcomeUser
       isApiError={isError} 

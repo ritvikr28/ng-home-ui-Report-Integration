@@ -10,6 +10,7 @@ import { AppPermissionState, IAppModule } from "../types/AppPermission";
 import { Layout } from "../Layout";
 import configureStore from "../redux/store";
 import PageNotFound from "../pages/PageNotFound/PageNotFound";
+import * as getAppModulesPermissions from "../actions/queries";
 
 const history = createBrowserHistory();
 const appPermissions: AppPermissionState = {
@@ -31,6 +32,7 @@ const appModules: IAppModule[] = [
   }
 ];
 jest.mock('@essnextgen/ui-flagr', () => ({  
+  getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 describe("Layout component", () => {
@@ -139,5 +141,42 @@ describe("Layout component", () => {
     await waitFor(() => {
       expect(getByTestId("header-menu-icon-btn")).toBeInTheDocument();
     });
+  });
+
+  it("renders the New Home Page component", async () => {
+    const useSelector = jest.spyOn(redux, "useSelector");
+    useSelector.mockReturnValue(appPermissions);
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(true);  
+    jest.mock('../shared/utils/flagr-utils', () => ({  
+      isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)        
+    
+    })); 
+    
+    const getAppModulePermissionMock: any = jest
+    .spyOn(getAppModulesPermissions, "default")
+    .mockResolvedValueOnce({
+      data: [{ code: "module1" }, { code: "module2" }],
+      status: 200,
+      statusText: "",
+      headers: {},
+      config: {}
+    });
+    history.push("/");   
+     
+      
+   
+      const { getByTestId } = await render(
+        <Provider store={configureStore()}>
+          <Router history={history}>
+            <Layout isStandaloneApp={false} baseRouteName="" />
+          </Router>
+        </Provider>
+      );
+     await waitFor(() => { 
+       // expect(schoolDomainservices.useFetchSchoolNameData).toHaveBeenCalled(); 
+      expect(getByTestId("NewHomePage")).toBeInTheDocument(); 
+     });   
+     expect(getAppModulePermissionMock).toHaveBeenCalled();   
   });
 });
