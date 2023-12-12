@@ -9,12 +9,6 @@ import gtmAnalytics from "../../../../shared/utils/analytics";
 
 const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "button",
-      elementTextOrLabel: "Discover more with SIMS Next Gen",
-      elementLocation: "Find out more about SIMS Next Gen section"
-    });
     window.location.href = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
   };
 

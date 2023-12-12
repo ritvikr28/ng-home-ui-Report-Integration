@@ -119,13 +119,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                       <div
                         className="quick-panel-cont"
                         key={sidelink.id}
-                        onClick={() => {(window.location.href = sidelink.link);
-                          gtmAnalytics.pushEvent({
-                            event: "interact_click",
-                            elementType: "quick link",
-                            elementTextOrLabel: sidelink.name,
-                            elementLocation: "Left side panel quick link section"
-                        });}}
+                        onClick={() => {(window.location.href = sidelink.link);}}
                         style={{ cursor: "pointer" }}
                       >
                         {sidelink.name}
