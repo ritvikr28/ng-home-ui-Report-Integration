@@ -164,11 +164,13 @@ describe("<NewHomepageView />", () => {
     const setIsOpen = jest.fn();
     const setQuickLinkData = jest.fn();
     const setShowQuickLink = jest.fn();
+    const setIsError = jest.fn();
     const useSateMock: any = (useState: any) => [
       useState,
       setIsOpen,
       setShowQuickLink,
-      setQuickLinkData
+      setQuickLinkData,
+      setIsError
     ];  
        
     jest.spyOn(React, "useState").mockImplementation(useSateMock);
@@ -182,7 +184,7 @@ describe("<NewHomepageView />", () => {
    waitFor(()=>{
     expect(setShowQuickLink).toHaveBeenCalled();
     expect(setQuickLinkData).not.toHaveBeenCalled();
-   
+    expect(setIsError).toHaveBeenCalledWith(true);
    })
      
   });
