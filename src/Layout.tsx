@@ -21,9 +21,7 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
-
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
-import { envConfig } from "./shared/utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 
 
@@ -140,9 +138,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           />
         }
       >
-        <Switch>
+        <Switch>          
           
-          { (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="localhost" || envConfig.REACT_ENVIRONMENT==="QA")? false: !hasFlagrPermission && showNewHomePage &&<ProtectedRoute exact path="/new-home" component={NewHomepageView}  />}
           <ProtectedRoute exact path="/" component={
              hasFlagrPermission && showNewHomePage? NewHomepageView          
             :LandingPage} />
