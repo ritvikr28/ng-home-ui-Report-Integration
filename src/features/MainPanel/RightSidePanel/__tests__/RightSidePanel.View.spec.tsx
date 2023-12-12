@@ -25,8 +25,19 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
         legalSurname: "Becker",
         legalName: "Borris Becker",
       },
-      personImage: null,
+      personImage: {
+        organisationId:"a0818c4a-cb7c-442d-9329-346505160794",
+        personExternalId:"7607fe8b-7063-423f-a5c2-26fff7c36c2d",
+        photoDate:"2023-09-04T00:00:00",
+        createdDate:"2023-09-04T00:00:00",
+        createdBy:"Tester",
+        updatedDate:"2023-09-04T00:00:00",
+        updatedBy:"2023-09-04T00:00:00",
+        imagePath:"test",
+        isThumbnailPresent:true
+      },
     },
+    
     {
       membershipId: "7607fe8b-7063-423f-a5c2-26fff7c36c2d",
       pupilExternalId: "a0818c4a-cb7c-442d-9329-346505160794",
@@ -66,7 +77,7 @@ const mockEventTitleClass: IRightSidePanelViewProps = {
     pupilDetailErrorCodeMessage:"testerrorpupil",
     StaffName:"teststaff",
     isPupilSectionEnable:true,
-    EventTypeCode:"testEventTypeCode",
+    EventTypeCode:"AttendanceSession",
     BaseGroupId:"testBaseGroupId",
     ClassPeriodExternalId:"4f83c773-86c2-4b9d-bd71-ce7c8ea11f02",
     EventInstanceExternalId:"bfc561ac-c28f-4aa1-bbbf-164d59cf627b",
