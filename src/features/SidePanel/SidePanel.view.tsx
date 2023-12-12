@@ -15,7 +15,6 @@ import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
-import gtmAnalytics from "../../shared/utils/analytics";
 
 
 

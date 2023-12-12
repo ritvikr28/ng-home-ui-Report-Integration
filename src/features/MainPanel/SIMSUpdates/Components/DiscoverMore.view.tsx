@@ -5,7 +5,6 @@ import {
   ButtonColor,
   ActionCard
 } from "@essnextgen/ui-kit";
-import gtmAnalytics from "../../../../shared/utils/analytics";
 
 const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {

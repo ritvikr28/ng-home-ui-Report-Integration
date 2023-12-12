@@ -9,7 +9,6 @@ import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quickli
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import { getUserOrganisation } from "../../shared/utils";
-import gtmAnalytics from "../../shared/utils/analytics";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 
 const requiredPermissions: Permission[] = [
