@@ -152,9 +152,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     
     gtmAnalytics.pushEvent({
       event: "click",
+      linkText: "[RemovedClassName]",
       linkUrl: url,
-      linkType: "card",
-      linkLocation: "body"
+      clickType: "card",
+      clickLocation: "body"
     });
      /* istanbul ignore next */   
   window.open(url, "_self");
