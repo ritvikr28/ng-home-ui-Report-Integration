@@ -144,7 +144,7 @@ stages:
             displayName: "Publish Test Results"
             inputs:
               testResultsFormat: "JUnit"
-              testResultsFiles: "junit.xml"
+              testResultsFiles: junit.xml
               searchFolder: "app"
               mergeTestResults: true
             condition: succeededOrFailed()
