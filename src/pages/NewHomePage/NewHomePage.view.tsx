@@ -50,7 +50,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   ] = useState<boolean>(false);
    
   const showQuickLinkView: () => void = () => {
-    /* istanbul ignore next */
+   /* istanbul ignore next */
     setShowQuickLink(true);
   };
 
@@ -99,8 +99,7 @@ const requiredPermissionsforquicklink: Permission[] = [
             showQuickLinkView={showQuickLinkView}
             showMainPanelView={showMainPanelView}
             setQuickLinkData={setQuickLinkData}
-             /* istanbul ignore next */
-            quicklinkData={isError ? [] : quickLinkData}
+             quicklinkData={isError ? [] : quickLinkData}
             data-testid="btn-show-quick-link"
           />
         </GridItem>
@@ -111,12 +110,11 @@ const requiredPermissionsforquicklink: Permission[] = [
           sm={isOpen ? 3 : 4}>
             
           {showQuickLink ? (
-             /* istanbul ignore next */
-            isPermissionquicklink &&
+           isPermissionquicklink &&
             <QuickLinkLogic
               setQuickLinkData={setQuickLinkData}
-             
-              apiQuickLinkData={isError ? [] : quickLinkData}
+              
+              apiQuickLinkData={isError ? [] : /* istanbul ignore next */ quickLinkData}
               isOpen ={isOpen}
             />
           ) : (
