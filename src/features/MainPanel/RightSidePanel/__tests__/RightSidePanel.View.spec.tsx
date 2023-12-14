@@ -2,6 +2,8 @@ import { render, fireEvent } from '@testing-library/react';
 import { IGroupMemberDetailsResponse } from '../../../../shared/model/SchoolDomain/responsemodels';
 import { IRightSidePanelViewProps } from '../RightSidePanelViewProps';
 import { RightSidePanelView } from '../RightSidePanel.View';
+import gtmAnalytics from '../../../../shared/utils/analytics';
+import { envConfig } from '../../../../shared/utils';
 
 const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
     {
@@ -170,8 +172,7 @@ describe('RightSidePanelView', () => {
         expect(window.location.href).toBe('http://localhost/');
       });
 
-      test('handles "Take register" button click correctly for a different condition', () => {
-
+      test('handles "Take register" button click correctly for a different condition', () => {       
         const { getByTestId } = render(<RightSidePanelView 
             SchoolEventexternalId={mockEventTitleClass.SchoolEventexternalId}
             EventTitle={mockEventTitleClass.EventTitle}
@@ -194,6 +195,41 @@ describe('RightSidePanelView', () => {
         />);    
         fireEvent.click(getByTestId('take-reg-button'));
     
-        expect(`${window.location.href}/1`).toBe(`${window.location.href}/1`);
+        expect(`${window.location.href}/1`).toBe(`${window.location.href}/1`);       
+      });
+      test('test google analytics', () => {
+        const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
+        jest.spyOn(gtmAnalytics, "pushEvent");
+        const { getByTestId } = render(<RightSidePanelView 
+            SchoolEventexternalId={mockEventTitleClass.SchoolEventexternalId}
+            EventTitle={mockEventTitleClass.EventTitle}
+            EventTime={mockEventTitleClass.EventTime}
+            StaffName={mockEventTitleClass.StaffName}
+            Location={mockEventTitleClass.Location}
+            GroupMembersData={mockEventTitleClass.GroupMembersData}
+            togglePanel={mockEventTitleClass.togglePanel}
+            isOpen={mockEventTitleClass.isOpen}
+            GroupDescription={mockEventTitleClass.GroupDescription}
+            isLoader={mockEventTitleClass.isLoader}
+            errCodeMessage={mockEventTitleClass.errCodeMessage}
+            pupilDetailErrorCodeMessage={mockEventTitleClass.pupilDetailErrorCodeMessage}
+            isPupilSectionEnable={mockEventTitleClass.isPupilSectionEnable}
+            EventTypeCode="AnotherEventType"
+            BaseGroupId={mockEventTitleClass.BaseGroupId}
+            ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
+            EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
+            EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+        />);    
+        
+        fireEvent.click(getByTestId('link-click-0'));
+        expect(gtmAnalyticsPushSpy).toHaveBeenCalled();
+        expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
+        expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
+          event: "click",
+          linkText: "[RemovedPupilName]",
+          linkUrl: `${envConfig.LEARNER_UI_URL}/f77d8422-c3c4-4cfc-b64b-dffd3e38a9c1`,
+          clickType: "link",
+          clickLocation: "right_bar"
+        });
       });
 });

@@ -108,7 +108,7 @@ const EventContainer: React.FC = () => {
     const starttime:string  = dayjs(eventTimeData.eventStart).format("HH:mm");
     const endtime:string  = dayjs(eventTimeData.eventEnd).format("HH:mm");
     const eventPeriodNum:string  =  formateventPeriodNum(eventTimeData);
-    return (eventTimeData.eventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
+    return (eventTimeData.eventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} - ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} - ${endtime}`;
   };
 
   const renderNoEventsCard: () => JSX.Element = () => (

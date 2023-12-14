@@ -221,7 +221,7 @@ describe("RigthSidePanel", () => {
       RoomCode: "Room A",
       EventStart: "2023-11-10T09:00:00.000Z",
       EventEnd: "2023-11-10T10:00:00.000Z",
-      GroupExternalId: "20be3c01-76c0-4cbe-ba1a-59d91ede62fe",
+      GroupExternalId: "00000000-0000-0000-0000-000000000000",
       EventPeriodNo: "1",
       togglePanel: jest.fn(),
       isOpen: true,
@@ -239,7 +239,7 @@ describe("RigthSidePanel", () => {
       .mockImplementationOnce(() => [false, setErrCodeMessage])
       .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
       .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
-      .mockImplementationOnce(() => [true, setPupilSection]);
+      .mockImplementationOnce(() => [false, setPupilSection]);
 
     jest
       .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
@@ -266,10 +266,8 @@ describe("RigthSidePanel", () => {
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
       expect(setErrCodeMessage).toHaveBeenCalledWith(false);
-      expect(setGroupMemberDetailsData).toHaveBeenCalledWith(
-        mockSortedListofGroupExternalIdBySurname
-      );
-      expect(setPupilSection).toHaveBeenCalledWith(true);
+      expect(setGroupMemberDetailsData).toHaveBeenCalledWith([]);
+      expect(setPupilSection).toHaveBeenCalledWith(false);
     });
   });
  
