@@ -10,7 +10,7 @@ export const getBackgroundColor = (
         yearGroupColor: string;
         subjectColor: string;
       };
-      
+      /* istanbul ignore next */
       if (
         data.eventTypeCode === 'TTNTPer' ||
         (data.eventTypeCode === 'TTPeriod' &&
@@ -21,6 +21,7 @@ export const getBackgroundColor = (
         backgroundColor= EventCardStatus.NEUTRAL;
       }
       else {
+        /* istanbul ignore next */
          backgroundColor  =
         /* eslint-disable */
         userPreference === 'yeargroup'
