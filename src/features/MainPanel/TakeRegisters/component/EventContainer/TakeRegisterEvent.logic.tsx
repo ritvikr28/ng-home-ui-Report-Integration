@@ -6,8 +6,7 @@ import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/re
 const TakeRegisterEvent: () => JSX.Element = () => {
   const [registerEventData, setRegisterEventApiData]:[IRegistersDetails[] | null,React.Dispatch<React.SetStateAction<IRegistersDetails[] | null>>]  = useState< IRegistersDetails[] | null>(null);
 
-  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false);
-  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false); 
 
     const  fetchRegisterEventDetails:() => Promise<void>= async ()=>{
     setIsError(true);
@@ -15,8 +14,7 @@ const TakeRegisterEvent: () => JSX.Element = () => {
     try {
       const RegisterEventDetails:IRegistersDetails[]| null  = await FetchRegisterEventData();
       setRegisterEventApiData(RegisterEventDetails);
-      setIsError(false);
-      setLoader(false);
+      setIsError(false);      
     
     } catch (error) {      
       setIsError(true);
@@ -31,8 +29,7 @@ const TakeRegisterEvent: () => JSX.Element = () => {
   return (
     <TakeRegisterEventView
       apiRegsiterEventData={registerEventData}
-      apiError={isError}
-      isLoader ={isLoader}
+      apiError={isError}      
     />
   );
 };
