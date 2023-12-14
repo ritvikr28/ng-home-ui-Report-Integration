@@ -46,8 +46,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           return -1;
           })
           
-        setEffectTriggered(true);
-         /* istanbul ignore else */
+        setEffectTriggered(true);        
         if(Index <0)
         {setDefaultSlide(apiRegsiterEventData.length);
           setCurrentSlide(apiRegsiterEventData.length-1)
@@ -65,28 +64,23 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     
   });
 
-  const nextSlide = () => {
-    /* istanbul ignore next */   
-    if (carouselRef.current) { 
-       /* istanbul ignore next */    
+  const nextSlide = () => {      
+    if (carouselRef.current) {          
       carouselRef.current.next();
       setTimeout(moveRight,1000)     
       
     }
-  };
-   /* istanbul ignore next */   
+  };   
   const moveRight=()=>{
     const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
     setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3))
-  }
-   /* istanbul ignore next */   
+  }    
   const moveLeft=()=>{    
     setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
     );
   }
 
-  const previousSlide = () => {
-     /* istanbul ignore next */
+  const previousSlide = () => {    
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
       setTimeout(moveLeft,1000)
@@ -184,7 +178,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData==null?true:(currentSlide === 0 || apiRegsiterEventData?.length<4)}
+              disabled={apiRegsiterEventData==null?true:(currentSlide === 0 || apiRegsiterEventData.length<4)}
             />
           </div>
           <div>
@@ -198,7 +192,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               size={ButtonSize.Small}
               type="button"
               disabled={apiRegsiterEventData==null?true:
-                (currentSlide === (apiRegsiterEventData?.length ?? 0) - 1) || (currentSlide +3 >= apiRegsiterEventData?.length)
+                (currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide +3 >= apiRegsiterEventData.length)
               }
             />
           </div>
@@ -237,7 +231,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                       OnRegisterClick(item);
                     }}
                     primaryText={`${item.group.shortName!} ${
-                      item.room ? ` | ${item?.room?.roomName!}` : ""
+                      item.room ? ` | ${item.room.roomName!}` : ""
                     }`}
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag
@@ -266,7 +260,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             apiRegsiterEventData.length === 0) && (
             <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister ">
               <ActionCard
-                dataTestId="test-id1"
+                dataTestId="no-test-id"
                 icon={<></>}
                 id="no-register-id"
                 onClickActionCard={() => {}}

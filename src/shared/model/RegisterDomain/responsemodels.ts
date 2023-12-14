@@ -14,7 +14,7 @@ export interface IRegistersDetails {
         externalId:string;
         roomCode:string;
         roomName:string;
-    }
+    }|null
     subject:{
         externalId:string;
         name:string;

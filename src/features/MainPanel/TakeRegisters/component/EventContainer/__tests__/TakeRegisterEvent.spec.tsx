@@ -1,14 +1,16 @@
 import React from "react";
-import { RenderResult, act, render } from "@testing-library/react";
+import { RenderResult, act, fireEvent, render } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { ActionCard } from "@essnextgen/ui-kit";
 import TakeRegisterEvent from "../TakeRegisterEvent.logic";
 import { FetchRegisterEventData } from "../../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
 
+
 const mockTakeRegisterData = [
   {
     externalId: "37fe774b-52cd-4ed8-88ff-7f621f443168",
-    eventStart: "2023-10-31T09:15:00",
+    eventStart: "2023-10-31T09:31:00",
     eventEnd: "2023-10-31T10:15:00",
     eventDescription: "AM",
     eventInstanceExternalId: "102abdde-f55a-4a92-94b7-5eed15fe35c0",
@@ -36,8 +38,8 @@ const mockTakeRegisterData = [
     classPeriodExternalId: "3243ef19-170e-4ac0-8acd-0c70aa850831",
     eventInstanceExternalId: "102abdde-f55a-4a92-94b7-5eed15fe35c0",
 
-    eventStart: "2023-10-31T09:15:00",
-    eventEnd: "2023-10-31T10:15:00",
+    eventStart: "2023-10-31T07:15:00",
+    eventEnd: "2023-10-31T9:10:00",
     isCompleted: false,
 
     group: {
@@ -74,11 +76,7 @@ const mockTakeRegisterData = [
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       name: "Science",
     },
-    room: {
-      externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
-      roomCode: "S7",
-      roomName: "Science Lab 7",
-    },
+    room: null,
   },
   {
     externalId: "4b57b778-8cab-4eea-a098-068ac3608b7a",
@@ -114,7 +112,7 @@ const mockTakeRegisterData = [
 
     eventStart: "2023-10-31T10:15:00",
     eventEnd: "2023-10-31T11:15:00",
-    isCompleted: false,
+    isCompleted: true,
 
     group: {
       externalId: "bba26eef-6670-4a9d-8501-e6ccc5c33790",
@@ -205,13 +203,31 @@ test("renders without errors", () => {
   expect(container).toBeTruthy();
 });
 
-test.skip("render tile on basis of time", () => {
+test("render tile on basis of time", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
   const setCurrentSlide = jest.fn();
-  const useStateMock: any = () => [0, setCurrentSlide];
+  const useStateMock:any = (init:any) => [init, setCurrentSlide];
 
-  jest.spyOn(React, "useState").mockImplementationOnce(useStateMock);
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+
   const { container } = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={mockTakeRegisterData}      
+    />
+  );
+  expect(container).toBeTruthy();
+  expect(setCurrentSlide).toHaveBeenCalled();
+  expect(setCurrentSlide).toHaveBeenCalledWith(5);  
+});
+
+test("render second tile as first", () => {
+   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
+  const setCurrentSlide = jest.fn();
+  const useStateMock:any = (init:any) => [init, setCurrentSlide];
+
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+  const { container }:any = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -222,14 +238,52 @@ test.skip("render tile on basis of time", () => {
 });
 
 test("renders No registers today", () => {
-  const { getByText } = render(
+  const { getByText,getByTestId }:any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />
   );
-  expect(getByText("No registers today")).toBeInTheDocument();
+  fireEvent.click(getByTestId("no-test-id"));
+  expect(getByText("No registers today")).toBeInTheDocument(); 
+
+});
+
+test("click the previous button should render previous tile", () => {
+  jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
+  const setCurrentSlide:any = jest.fn();
+  const useStateMock:any = () => [5, setCurrentSlide];
+
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+  const { getByTestId }:any = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={mockTakeRegisterData}     
+    />
+  );
+  expect(getByTestId("btn-previous")).not.toBeDisabled();
+  userEvent.click(getByTestId("btn-previous"));
+  jest.runAllTimers();
+  expect(setCurrentSlide).toHaveBeenCalledTimes(1);
+});
+
+test("click the next button should render next tile", () => {
+  jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
+  const setCurrentSlide:any = jest.fn();
+  const useStateMock:any = () => [1, setCurrentSlide];
+
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+  const { getByTestId } = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={mockTakeRegisterData}     
+    />
+  );
+  expect(getByTestId("btn-next")).not.toBeDisabled();
+  userEvent.click(getByTestId("btn-next"));
+  jest.runAllTimers();
+  expect(setCurrentSlide).toHaveBeenCalledTimes(1);
 });
 
 test("disables the previous button when api returns null", () => {
-  const { getByTestId } = render(
+  const { getByTestId }:any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />
   );
   const previousButton = getByTestId("btn-previous");
@@ -238,7 +292,7 @@ test("disables the previous button when api returns null", () => {
 });
 
 test("disables the next button when api returns null", () => {
-  const { getByTestId } = render(
+  const { getByTestId }:any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} />
   );
   const nextButton = getByTestId("btn-next");
@@ -254,14 +308,4 @@ test("handles errors during data fetching", async () => {
     render(<TakeRegisterEvent />);
   });
   expect(setIsError).toHaveBeenCalledWith(true);
-});
-
-test("renders loader when isLoader is true", () => {
-  render(
-    <TakeRegisterEventView
-      apiRegsiterEventData={null}
-      apiError={false}
-      isLoader={true}
-    />
-  );
 });
