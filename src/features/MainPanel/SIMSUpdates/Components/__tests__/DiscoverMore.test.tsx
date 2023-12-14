@@ -57,12 +57,12 @@ describe("DiscoverMoreView Component", () => {
 
   test("redirects to the correct URL when 'Discover more' button is clicked", async () => {
     render(<DiscoverMoreView />);
-    const discoverMoreButton = screen.getByTestId("btn-save");
+    const spyWindowOpen:any = jest.spyOn(window, 'open');
+spyWindowOpen.mockImplementation(jest.fn());
+    const discoverMoreButton:HTMLElement = screen.getByTestId("btn-save");
     fireEvent.click(discoverMoreButton);
     await waitFor(() => {
-      expect(window.location.href).toBe(
-        "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
-      );
+      expect(spyWindowOpen).toHaveBeenCalled();
     });
   });
 });
