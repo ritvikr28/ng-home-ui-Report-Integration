@@ -248,4 +248,45 @@ describe("SidePanel Component", () => {
     fireEvent.click(getByText("Link 1"));
     expect(window.location.href).toBe("http://localhost/");
   });
+
+  test('renders sidepanel component with mock data and star icon error for api',async () => {
+    const axiosResponse: AxiosResponse = {
+      data: {error:null,payload:true,status:200},
+      status: 500,
+      statusText: "Internal server error",
+      config: {},
+      headers: {}
+    };
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+ 
+    jest
+    .spyOn(qicklink, "FetchQuickLinkData")
+    .mockResolvedValue(mockres);  
+   
+    const setQuickLinkData = jest.fn();
+    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];
+    
+   jest
+   .spyOn(React, 'useState')
+   .mockImplementationOnce(useStateMock);
+ 
+   const {getByText, queryAllByTestId, getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+  expect(getByText('Link 1')).toBeInTheDocument();  
+    expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
+ 
+    jest
+    .spyOn(qicklink, "FetchQuickLinkpost").mockReturnValueOnce(Promise.reject(axiosResponse));
+ 
+    jest
+    .spyOn(linkDetails, "fetchQuickLinkDetails")
+    .mockResolvedValue(mockres);
+    fireEvent.click(getByTestId("btn-star1"));  
+     waitFor(()=>{
+      expect(qicklink.FetchQuickLinkpost).toHaveBeenCalled();
+      expect(qicklink.FetchQuickLinkpost).toBeTruthy();
+      expect(linkDetails.fetchQuickLinkDetails).toHaveBeenCalled();
+      expect(setQuickLinkData).toHaveBeenCalled()
+      expect(setIsError).toHaveBeenCalledWith(true);
+    }) ;
+  });
 });
