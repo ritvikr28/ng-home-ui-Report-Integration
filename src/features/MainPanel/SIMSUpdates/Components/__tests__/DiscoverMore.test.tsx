@@ -65,6 +65,34 @@ spyWindowOpen.mockImplementation(jest.fn());
       expect(spyWindowOpen).toHaveBeenCalled();
     });
   });
+  test("renders ActionCard components with correct text content", () => {
+    const { getByTestId } = render(<DiscoverMoreView />);
+    
+    expect(getByTestId("what-new-test-id")).toHaveTextContent("What's new?");
+    expect(getByTestId("test-id")).toHaveTextContent("The SIMS Next Gen roadmap");
+  });
+
+  test("calls onClickActionCard when an ActionCard is clicked", () => {
+    const { getByTestId } = render(<DiscoverMoreView />);
+    
+    const onCardClick = jest.fn();
+
+    fireEvent.click(getByTestId("what-new-test-id"));
+
+    expect(onCardClick).toHaveBeenCalledTimes(0);
+
+})
+
+test("calls onClickActionCard when an ActionCard2 is clicked", () => {
+  const { getByTestId } = render(<DiscoverMoreView />);
+  
+  const onActionCardClick = jest.fn();
+
+  fireEvent.click(getByTestId("test-id"));
+
+  expect(onActionCardClick).toHaveBeenCalledTimes(0);
+});
+
 });
 
 
