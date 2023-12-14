@@ -5,9 +5,7 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
-  IconColor,
-  Loader,
-  LoaderType,
+  IconColor, 
   TagColor
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
@@ -20,8 +18,7 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
-  apiError,
-  isLoader
+  apiError 
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false)
@@ -227,14 +224,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
           >
-           {isLoader ? (
-              <Loader
-                data-testid="data-loader"
-                className="loader-wrapper"
-                loaderText="Loading..."
-                loaderType={LoaderType.Circular}
-              />
-            ) : (
+           {
               apiRegsiterEventData &&
               apiRegsiterEventData.map((item, index) => (
                 <div key={index} className="actioncard-div">
@@ -257,8 +247,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   />
                 </div>
               ))
-            )}
-            { !isLoader &&  apiRegsiterEventData.length > 0 &&
+            }
+            {apiRegsiterEventData.length > 0 &&
               <div className="actioncard-div noregister">
                 <ActionCard
                   dataTestId="test-id"

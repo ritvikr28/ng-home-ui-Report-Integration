@@ -40,7 +40,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
           rel="noopener noreferrer"
           key={`module-link-${i}`}
         >
-          {t("homePage.btnText")}
+          {x.code === "NewHomePage"? t("homePage.newHomepagebtnText"): t("homePage.btnText")}          
         </a>
       </div>
     );
