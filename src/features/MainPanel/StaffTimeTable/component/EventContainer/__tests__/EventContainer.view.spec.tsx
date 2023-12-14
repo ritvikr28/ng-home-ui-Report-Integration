@@ -166,8 +166,7 @@ const mockProps = {
     SelectedItem="1"        
   />;
   const { getByTestId } = render(component);
-    const element = getByTestId('eventid2');
-    console.log(element);
+    const element = getByTestId('eventid2');   
     userEvent.click(getByTestId('eventid2'));
   expect(togglePanel1).toHaveBeenCalled();
   expect(togglePanel1).toHaveBeenCalledWith("1");

@@ -1,7 +1,9 @@
-import { render, screen, act, fireEvent} from '@testing-library/react';
+import { render, screen, act, fireEvent, waitFor} from '@testing-library/react';
 import { EventCardStatus } from '@essnextgen/ui-kit';
+import React from 'react';
 import EventContainer from '../EventContainer.logic';
 import {EventContainerView} from '../EventContainer.view';
+import gtmAnalytics from '../../../../../../shared/utils/analytics';
 import * as schoolDomainservices from "../../../../../../shared/services/schoolDomain/schoolServices";
 import { IStaffTimeTableEventsResponse } from '../../../../../../shared/model/SchoolDomain/responsemodels';
 
@@ -518,6 +520,29 @@ test('should render the component with isOpen set to true if the panel is open',
   />
   );
   expect(screen.getByTestId('side-panel-header')).toBeInTheDocument();
+});
+test('should log google analytics', async() => {
+  const mockres:any={
+    status: 200,
+    responseData:mockStaffTimeTableEventsResponseWithSixRecords
+  }
+  const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
+  jest.spyOn(gtmAnalytics, "pushEvent");
+  jest.spyOn(schoolDomainservices,"FetchStaffTimeTableEventsData").mockResolvedValue(mockres); 
+
+   
+    const {getByTestId}=render(<EventContainer />);  
+      
+    await waitFor(()=>{
+      expect(getByTestId('eventid0')).toBeInTheDocument();
+      fireEvent.click(getByTestId('eventid0'));
+      const mockState: any = () =>[{true:"90ec7084-d8fa-4802-9021-1813ce1c48e9"}, setIsOpen]
+      jest
+          .spyOn(React, "useState")
+          .mockImplementationOnce(mockState)
+      expect(gtmAnalyticsPushSpy).toHaveBeenCalled();
+    });
+  
 });
 
 });
