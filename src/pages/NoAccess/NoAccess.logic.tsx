@@ -18,7 +18,7 @@ const NoAccess: React.FC = (): JSX.Element => {
     }
     else{
       const decodedToken:any = decodedAuthzToken(accessToken);
-      const role:string = (decodedToken?.["SIMSCX/Role"] as string)?.split("@")[0]?.toLowerCase() || "";
+      const role = (decodedToken?.["SIMSCX/Role"] as string)?.split("@")[0]?.toLowerCase() || "";
       
       if(role==="")
       {
