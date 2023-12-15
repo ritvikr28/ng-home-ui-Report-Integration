@@ -46,7 +46,7 @@ describe("AppRoutes", () => {
     await waitFor(() => {
       const container: any = getById(
         RenderedDom.container,
-        "no-access-wrapper"
+        "no-access-page"
       );
 
       expect(container).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("AppRoutes", () => {
     await waitFor(() => {
       const container: any = getById(
         RenderedDom.container,
-        "no-access-wrapper"
+        "no-access-page"
       );
       const { getByTestId } = RenderedDom;
 
