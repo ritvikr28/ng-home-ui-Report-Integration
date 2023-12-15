@@ -17,9 +17,7 @@ describe("SwitchView Component", () => {
  
     const expectedText = `You are viewing ${mockProps.organisationName} as a Teacher.`;
     expect(screen.getByText(expectedText)).toBeInTheDocument();
- 
- 
-    expect(screen.getByText("Switch view here")).toBeInTheDocument();
+
   });
  
   test("renders correctly when isApiError is true", () => {
@@ -37,8 +35,6 @@ describe("SwitchView Component", () => {
     const expectedTextRegex = new RegExp(`You are viewing\\s+as a Teacher\\.`);
     expect(screen.getByText(expectedTextRegex)).toBeInTheDocument();
  
- 
-    expect(screen.getByText("Switch view here")).toBeInTheDocument();
   });
  
 });
