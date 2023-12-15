@@ -123,15 +123,15 @@
       "item1": {
         "title": "Invite staff members",
         "content": "You can invite staff members to access Next Gen by clicking on the",
-        "content1":"hamburger menu in the top left corner and selecting the",
+        "content1":" hamburger menu in the top left corner and selecting the",
         "content2": "  Invite staff",
-        "content3": "option from the menu."
+        "content3": " option from the menu."
       },
       "item2": {
         "title": "Contact your SIMS 7 System Manager",
         "content": "In order to access additional Next Gen functionality, you will need",
-        "content1":"to be assigned to the appropriate security groups in SIMS 7.  Your SIMS 7",
-        "content2":"System Manager can assist with this."
+        "content1":" to be assigned to the appropriate security groups in SIMS 7.  Your SIMS 7",
+        "content2":" System Manager can assist with this."
       }
     }
   }

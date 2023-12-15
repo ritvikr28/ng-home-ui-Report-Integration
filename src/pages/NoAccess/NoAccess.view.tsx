@@ -27,7 +27,6 @@ const NoAccessView: (
           dataTestId="no-access-admin"
           id="element-id"
           title={t("noAccessForAuthzAdmin.headingTitle")}
-          className="no-access-admin-page"
         >
           <ErrorActionList description={t("noAccessForAuthzAdmin.moduleBlock.heading")}
           >
@@ -35,17 +34,17 @@ const NoAccessView: (
               iconName="information"
               title={t("noAccessForAuthzAdmin.moduleBlock.item1.title")}
             >
-                  <span className="no-access-admin-item1-content">{t("noAccessForAuthzAdmin.moduleBlock.item1.content")}<br/></span>
-                  <span className="no-access-admin-item1-content1">{t("noAccessForAuthzAdmin.moduleBlock.item1.content1")}</span>
-                  <span><b> {t("noAccessForAuthzAdmin.moduleBlock.item1.content2")}</b><br/></span>
-                   <span>{t("noAccessForAuthzAdmin.moduleBlock.item1.content3")}</span>
+                 {t("noAccessForAuthzAdmin.moduleBlock.item1.content")}
+                 {t("noAccessForAuthzAdmin.moduleBlock.item1.content1")}
+                <b> {t("noAccessForAuthzAdmin.moduleBlock.item1.content2")}</b>
+                 {t("noAccessForAuthzAdmin.moduleBlock.item1.content3")}
             </ErrorActionListItem>
             <ErrorActionListItem
               iconName="information"  
               title={t("noAccessForAuthzAdmin.moduleBlock.item2.title")}
             >
-                   <span className="no-access-admin-item1-content">{t("noAccessForAuthzAdmin.moduleBlock.item2.content")}<br/></span>
-                  {t("noAccessForAuthzAdmin.moduleBlock.item2.content1")}<br/>
+                  {t("noAccessForAuthzAdmin.moduleBlock.item2.content")}
+                  {t("noAccessForAuthzAdmin.moduleBlock.item2.content1")}
                   {t("noAccessForAuthzAdmin.moduleBlock.item2.content2")}
             </ErrorActionListItem>
           </ErrorActionList>
