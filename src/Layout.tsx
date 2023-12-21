@@ -1,4 +1,4 @@
-import { Suspense, lazy, LazyExoticComponent, FC, useEffect } from "react";
+import React,{ Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ProtectedRoute, Auth, authService, Permission, MatchPermissions } from "@essnextgen/auth-ui";
 import {
@@ -23,6 +23,7 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
+import { service } from "./shared/utils";
 
 
 
@@ -65,6 +66,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+    const [isServiceInitiated, setIsServiceInitiated]: [
+      boolean,
+      React.Dispatch<React.SetStateAction<boolean>>
+    ] = useState<boolean>(false);
+
   useEffect(() => {
     const fetchAllData: () => Promise<void> = async () => {
       getAppModulesPermissions()
@@ -108,6 +114,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
+  const EmptyComponent: () => JSX.Element = () => (
+    <div data-testid="empty-component" className=""/>
+  );
+
   const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
   isOrganisationInVariant());
   const requiredPermissions: Permission[] = [
@@ -117,6 +127,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   ];
   const showNewHomePage:boolean =  authService.isAuthorised(requiredPermissions, MatchPermissions.all);
+  const onAuthenticated: any = () => {
+
+    if (authService.isAuthenticated()) {
+      service.init();     
+      setIsServiceInitiated(true);
+    } 
+  };
 
   return (
     /* eslint-disable react/prop-types */
@@ -139,10 +156,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         }
       >
         <Switch>          
-          
-          <ProtectedRoute exact path="/" component={
-             hasFlagrPermission && showNewHomePage? NewHomepageView          
-            :LandingPage} />
+        {/* eslint-disable */}
+          <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
+             (hasFlagrPermission && showNewHomePage? NewHomepageView          
+            :LandingPage ):EmptyComponent} />
+          {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}
