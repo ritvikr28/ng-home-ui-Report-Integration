@@ -48,3 +48,20 @@ export const getUserOrganisation: () => string = () => {
 
   return '';
 };
+ /* istanbul ignore next */
+export const getUser: () => string = () => {
+  const authToken: string | null = authService.getAuthTokens();
+ /* istanbul ignore next */
+  if (authToken) {
+    const decodedToken: any = decodeToken(authToken);
+     /* eslint-disable */
+    return decodedToken["SIMSCX/ExternalID"] === undefined &&
+      decodedToken.userorganisationidentifier === undefined
+      ? ""
+      : decodedToken["SIMSCX/ExternalID"] !== undefined
+      ? decodedToken["SIMSCX/ExternalID"]
+      : decodedToken.userorganisationidentifier.split("|")[0];
+       /* eslint-enable */
+  }
+  return "";
+};
