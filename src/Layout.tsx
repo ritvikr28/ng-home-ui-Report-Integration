@@ -173,7 +173,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             :LandingPage ):EmptyComponent} />
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
-          <Route exact path="/auth" component={Auth} />
+          {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}
         </Switch>
       </Suspense>
