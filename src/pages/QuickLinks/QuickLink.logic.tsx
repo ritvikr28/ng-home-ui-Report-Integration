@@ -47,6 +47,7 @@ const QuickLinkLogic: React.FC<
     favorites: boolean,
     id: number
   ) => (
+    <div className="icon-quicklinkwidth">
     <Icon
       color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
       dataTestId={`btn-star${id}`}
@@ -55,6 +56,7 @@ const QuickLinkLogic: React.FC<
       size={16}
       onClick={() => handleStarClick(id, !favorites)}
     />
+    </div>
     );
 
   return (
