@@ -11,14 +11,15 @@ import {
 import { IRegisterViewProps } from "./props";
 import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
 import "./carousalstyle.scss";
-import { responsive } from "./carousel";
+import { iscloseresponsive,responsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
-  apiError 
+  apiError,
+  isOpen
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false)
@@ -209,7 +210,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             swipeable={false}
             draggable={false}
             showDots={false}
-            responsive={responsive}
+            responsive={isOpen ? responsive : iscloseresponsive}
             infinite={false}
             keyBoardControl
             customTransition="all .5"

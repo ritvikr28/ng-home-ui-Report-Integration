@@ -30,11 +30,11 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
       <BreadcrumbWrapper />
       <Grid className="quicklink">
         <GridItem lg={12} className="quicklink-container nopadding">
-          <div className="quicklinkheading">Quick links</div>
-          <div className="quicklinktext">
+          <GridItem className="quicklinkheading">Quick links</GridItem>
+          <GridItem className="quicklinktext">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
-          </div>
-          <div>
+          </GridItem>
+          <GridItem>
           {!apiError &&  (
               <TableWrapper  className={isOpen ? "quicklinktable" : "quicklinktable-close"} >
                 <Table dataTestId="test-id" id="element-id" >
@@ -64,11 +64,13 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                 </Table>
               </TableWrapper>
             )}
-          </div>
+          </GridItem>
+          <GridItem>
           <div className="quicklink-divider-container" />
           <div className="simspadding">
             <SIMSupdatesView />
           </div>
+          </GridItem>
         </GridItem>
       </Grid>
     </div>

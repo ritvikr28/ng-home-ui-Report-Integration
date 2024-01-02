@@ -3,8 +3,9 @@ import MainPanelView from "./MainPanel.view";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 import { capitalizeFirstLetterOfEachWord } from "./WelcomeUser/utils/newHomePageUtils";
+import { IMainPanelProps } from "./MainPanelProps";
 
-const MainPanel: React.FC = () => {
+const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
 
     const [schoolName, setSchoolName]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
     const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
@@ -37,6 +38,8 @@ const MainPanel: React.FC = () => {
             schoolName={schoolName}
             isError={isError}
             isSchoolPrimary={isSchoolPrimary}
+            isOpen={isOpen}
+            setIsOpen={setIsOpen} 
             />
    </>
   );

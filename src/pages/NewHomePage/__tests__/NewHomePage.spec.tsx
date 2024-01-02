@@ -226,7 +226,7 @@ describe("<NewHomepageView />", () => {
    
     render(
       <MemoryRouter>
-        <QuickLinkLogic isOpen={true} setQuickLinkData={jest.fn()} apiQuickLinkData = {mockApiResponse} />
+        <QuickLinkLogic isOpen setQuickLinkData={jest.fn()} apiQuickLinkData = {mockApiResponse} />
       </MemoryRouter>
     );
     waitFor(()=>{
@@ -268,7 +268,7 @@ describe("<NewHomepageView />", () => {
    
     render(
       <MemoryRouter>
-        <QuickLinkLogic isOpen={true} setQuickLinkData={jest.fn() } apiQuickLinkData = {null}/>
+        <QuickLinkLogic isOpen setQuickLinkData={jest.fn() } apiQuickLinkData = {null}/>
       </MemoryRouter>
     );
    waitFor(()=>{

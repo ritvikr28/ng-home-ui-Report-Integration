@@ -11,12 +11,13 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     parentClassName,
     subparentClassName,
     organisationName,
-    isApiError
+    isApiError,
+    isOpen
   }: IWelcomeUserViewProps = props;
 
   return (
     <Grid className={`welcome-parent ${parentClassName}`}>
-      <GridItem lg ={10} >
+      <GridItem lg ={10}  className={isOpen ? " " : "weclome-res"} >
         {isLongName ? (
           <>
             <div className={`subparent ${subparentClassName}`}>
@@ -33,7 +34,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
         )}
       </GridItem>
       <GridItem lg={10}>
-        <div className="schoolname">
+        <div className={`schoolname ${isOpen ? "" : "schoolname-res"}`}>
           {" "}
           {isApiError === false ? organisationName : ""}
         </div>

@@ -166,7 +166,7 @@ test("fetches data on component mount", async () => {
   (FetchRegisterEventData as jest.Mock).mockReturnValue(mockTakeRegisterData);
   await act(async () => {
     setIsError(false);
-    render(<TakeRegisterEvent />);
+    render(<TakeRegisterEvent isOpen={undefined} />);
   });
   expect(setIsError).toHaveBeenCalledWith(false);
   expect(FetchRegisterEventData).toHaveBeenCalledTimes(1);
@@ -175,7 +175,7 @@ test("fetches data on component mount", async () => {
 test("fetches null data on component mount", async () => {
   (FetchRegisterEventData as jest.Mock).mockReturnValue([]);
   await act(async () => {
-    render(<TakeRegisterEvent />);
+    render(<TakeRegisterEvent isOpen={undefined} />);
   });
 
   expect(FetchRegisterEventData).toHaveBeenCalledTimes(2);
@@ -305,7 +305,7 @@ test("handles errors during data fetching", async () => {
 
   await act(async () => {
     setIsError(true);
-    render(<TakeRegisterEvent />);
+    render(<TakeRegisterEvent isOpen={undefined} />);
   });
   expect(setIsError).toHaveBeenCalledWith(true);
 });

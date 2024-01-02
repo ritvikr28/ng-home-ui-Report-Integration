@@ -1,6 +1,6 @@
 .sims-container {
   display: flex;
-  width: 1116px;
+  // width: 1116px;
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
@@ -8,7 +8,7 @@
 
 .sims-link-container {
   display: flex;
-  width: 1081px;
+  //width: 1081px;
   justify-content: space-between;
   align-items: baseline;
 }
@@ -38,6 +38,37 @@
   /* 150% */
 }
 
+@media only screen and (min-width: 1024px) and (max-width: 1200px) {
+  .essui-grid-col--lg-4 {
+    flex-basis: 33.3333333333%;
+    max-width: 33.333333%;
+    padding-left: 30px;
+  }
+}
+
+@media only screen and (min-width: 1290px) {
+  .btn-res-main {
+    flex-basis: 33.3333333333%;
+    max-width: 0.333333%;
+    padding-left: 132px;
+  }
+}
+@media only screen and (min-width: 1290px) {
+  .btn-res-close {
+    flex-basis: 33.3333333333%;
+    max-width: 0.333333%;
+    padding-left: 259px;
+  }
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1300px) {
+  .discover-btn-res {
+    flex-basis: 33.3333333333%;
+    max-width: 33.333333%;
+    padding-left: 102px;
+  }
+}
+
 .primary-text {
   color: var(--neutral-800, #303030);
 }
@@ -46,13 +77,6 @@
   color: Neutral/800;
   display: flex;
   align-items: flex-start;
-  gap: 35px;
-  
-
-}
-
-.sims-ng .essui-activity-card {
-  width: 526px;
 }
 
 .action-card .essui-activity-card {
@@ -63,8 +87,3 @@
 .what-new .essui-activity-card-center {
   width: fit-content;
 }
-
-
-
-
-

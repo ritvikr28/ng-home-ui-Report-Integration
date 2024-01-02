@@ -1,3 +1,11 @@
 .upcoming-schedule-conatiner {
   margin-top: "28px";
 }
+
+@media only screen and (min-width: 1024px) {
+  .container-width {
+    flex-basis: 100%;
+    max-width: 99% !important;
+    margin-top: "28px";
+  }
+}

@@ -71,7 +71,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     <>
       <div
         className={`side-view ${
-          isOpen ? "open open-panel" : "side-view-closed"
+          isOpen ? "open open-panel side-view-res" : "side-view-closed"
         }`}
       >
         {isOpen ? (

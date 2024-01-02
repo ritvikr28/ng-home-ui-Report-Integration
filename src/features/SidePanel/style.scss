@@ -5,6 +5,13 @@
   background-color: #fff;
 }
 
+@media (maxs-width: 1024px) {
+  .side-view {
+    padding: 8px;
+    height: auto;
+  }
+}
+
 .side-view-closed {
   background-color: #f7f7f7;
 }
@@ -43,7 +50,7 @@
   height: 40px;
   margin: 0;
   padding: 0;
-  width: 40px;
+  // width: 40px;
   margin-left: 20px;
 }
 

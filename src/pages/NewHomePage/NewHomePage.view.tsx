@@ -89,8 +89,8 @@ const requiredPermissionsforquicklink: Permission[] = [
       <Grid className="app" dataTestId="NewHomePage">
         <GridItem
           className={isOpen ? "side-margin" : "side-margin-closed"}
-          lg={isOpen ? 3 : 2}
-          md={isOpen ? 2 : 1}
+          lg={isOpen ? 3 : 0}
+          md={isOpen ? 2 : 0}
           sm={isOpen ? 1 : 0}>
           <SidePanelView
             isOpen={isOpen}
@@ -104,7 +104,7 @@ const requiredPermissionsforquicklink: Permission[] = [
           />
         </GridItem>
         <GridItem
-          className="body-panel"
+         className={isOpen ? " " : "body-panel res-body"}
           lg={isOpen ? 9 : 10}
           md={isOpen ? 6 : 7}
           sm={isOpen ? 3 : 4}>
@@ -119,6 +119,8 @@ const requiredPermissionsforquicklink: Permission[] = [
             />
           ) : (
             <MainPanel 
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen}
             />
           )}
         </GridItem>

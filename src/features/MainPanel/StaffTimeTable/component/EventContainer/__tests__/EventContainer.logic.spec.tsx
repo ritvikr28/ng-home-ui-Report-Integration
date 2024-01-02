@@ -508,7 +508,7 @@ test('should render the component with isOpen set to true if the panel is open',
     GroupExternalId="G1"
     EventPeriodNum=" 1"
     togglePanel={togglePanel1}
-    isOpen={true}
+    isOpen
     GroupDescription="Group 1"
     StaffName="John Doe"
     index={0}

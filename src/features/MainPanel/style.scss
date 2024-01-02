@@ -5,6 +5,11 @@
   margin: 20px 20px 20px 0;
 }
 
+@media (min-width: 1024px) and (max-width: 1280px) {
+  .teacher-panel-container {
+    width: 1000px;
+  }
+}
 
 .divider-container {
   height: 1px;
@@ -13,5 +18,5 @@
   background: var(--neutral-200, #c6c6c6);
   margin-top: 20px;
   margin: 20px 20px 40px 0;
-  width: 1081px;
+  // width: 1081px;
 }

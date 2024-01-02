@@ -119,7 +119,7 @@ const EventContainer: React.FC = () => {
       secondaryText=""
       status={EventCardStatus.DEFAULT}
       title="No events today"
-      inputWidth={166}
+     // inputWidth={166}
       inputHeight={75}
       className="dynamiceventcard event-primary-text no-events"
     />
@@ -181,9 +181,13 @@ if(isLoader)
           secondaryText=""
           status={EventCardStatus.DEFAULT}
           title="No more events"
-          inputWidth={166}
+        //  inputWidth={166}
           inputHeight={75}
-          className="dynamiceventcard event-primary-text no-events"
+          className={
+            isOpen
+              ? `dynamiceventcard event-primary-text no-events`
+              : `dynamiceventcard-res event-primary-text no-events`
+          }
         />
       )}
     </div>

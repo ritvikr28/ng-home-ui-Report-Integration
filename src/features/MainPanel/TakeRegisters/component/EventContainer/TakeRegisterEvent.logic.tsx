@@ -3,7 +3,8 @@ import { FetchRegisterEventData } from "../../../../../shared/services/registers
 import TakeRegisterEventView from "./TakeRegisterEvent.view";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
-const TakeRegisterEvent: () => JSX.Element = () => {
+
+const TakeRegisterEvent: (isOpen: any) => JSX.Element = (isOpen) => {
   const [registerEventData, setRegisterEventApiData]:[IRegistersDetails[] | null,React.Dispatch<React.SetStateAction<IRegistersDetails[] | null>>]  = useState< IRegistersDetails[] | null>(null);
 
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false); 
@@ -29,7 +30,9 @@ const TakeRegisterEvent: () => JSX.Element = () => {
   return (
     <TakeRegisterEventView
       apiRegsiterEventData={registerEventData}
-      apiError={isError}      
+      apiError={isError} 
+      isOpen={isOpen}
+      // setIsOpen ={setIsOpen}     
     />
   );
 };
