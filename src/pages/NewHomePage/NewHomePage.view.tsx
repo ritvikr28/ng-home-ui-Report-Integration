@@ -25,7 +25,19 @@ const requiredPermissionsforquicklink: Permission[] = [
   }
 ];
 
-
+const fetchAndSetQuickLinkData = async (setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>, 
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>) => {
+  try {
+    logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
+    const responseapidata: IFetchQuickLinkDetailsFunctionResponse | null | undefined = await fetchQuickLinkDetails();
+    if (responseapidata != null) {
+      setQuickLinkData(responseapidata.response);
+      setIsError(responseapidata.status);
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
  const NewHomepageView: () => JSX.Element = () => {
   const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
 
@@ -68,64 +80,42 @@ const requiredPermissionsforquicklink: Permission[] = [
 
   useEffect(() => {
     (async () => {
-      try {   
-        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
-        const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
-       /* istanbul ignore next */
-        if( responseapidata !=null )
-       { 
-        setQuickLinkData(responseapidata.response);
-        setIsError(responseapidata.status);        
-       }
-       
-      } catch (error) { 
-        console.log(error);       
-      }      
+      await fetchAndSetQuickLinkData(setQuickLinkData, setIsError);
     })();
   }, []);
+
+  const renderContent = () => {
+    if (showQuickLink && isPermissionquicklink) {
+      return (
+        <QuickLinkLogic
+          setQuickLinkData={setQuickLinkData}
+          apiQuickLinkData={isError ? [] : /* istanbul ignore next */ quickLinkData}
+          isOpen={isOpen}
+        />
+      );
+    }
+    return <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />;
+  };
   
-  return isPermission ? (
-    <>
-      <Grid className="app" dataTestId="NewHomePage">
-        <GridItem
-          className={isOpen ? "side-margin" : "side-margin-closed"}
-          lg={isOpen ? 3 : 0}
-          md={isOpen ? 2 : 0}
-          sm={isOpen ? 1 : 0}>
-          <SidePanelView
-            isOpen={isOpen}
-            togglePanel={togglePanel}
-            closePanel={closePanel}
-            showQuickLinkView={showQuickLinkView}
-            showMainPanelView={showMainPanelView}
-            setQuickLinkData={setQuickLinkData}
-             quicklinkData={isError ? [] : quickLinkData}
-            data-testid="btn-show-quick-link"
-          />
-        </GridItem>
-        <GridItem
-         className={isOpen ? " " : "body-panel res-body"}
-          lg={isOpen ? 9 : 10}
-          md={isOpen ? 6 : 7}
-          sm={isOpen ? 3 : 4}>
-            
-          {showQuickLink ? (
-           isPermissionquicklink &&
-            <QuickLinkLogic
-              setQuickLinkData={setQuickLinkData}
-              
-              apiQuickLinkData={isError ? [] : /* istanbul ignore next */ quickLinkData}
-              isOpen ={isOpen}
-            />
-          ) : (
-            <MainPanel 
-            isOpen={isOpen} 
-            setIsOpen={setIsOpen}
-            />
-          )}
-        </GridItem>
-      </Grid>
-    </>
+
+return isPermission ? (
+    <Grid className="app" dataTestId="NewHomePage">
+      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 2 : 0} sm={isOpen ? 1 : 0}>
+        <SidePanelView
+          isOpen={isOpen}
+          togglePanel={togglePanel}
+          closePanel={closePanel}
+          showQuickLinkView={showQuickLinkView}
+          showMainPanelView={showMainPanelView}
+          setQuickLinkData={setQuickLinkData}
+          quicklinkData={isError ? [] : quickLinkData}
+          data-testid="btn-show-quick-link"
+        />
+      </GridItem>
+      <GridItem className={isOpen ? " " : "body-panel res-body"} lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
+        {renderContent()}
+      </GridItem>
+    </Grid>
   ) : (
     <Redirect to="/noAccess" />
   );
