@@ -1,15 +1,15 @@
+import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
-import React, { useEffect, useState } from "react";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
-import { getUserOrganisation } from "../../shared/utils";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
+import { getUserOrganisation } from "../../shared/utils";
 
 const requiredPermissions: Permission[] = [
   {
@@ -25,8 +25,10 @@ const requiredPermissionsforquicklink: Permission[] = [
   }
 ];
 
-const fetchAndSetQuickLinkData = async (setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>, 
-  setIsError: React.Dispatch<React.SetStateAction<boolean>>) => {
+const fetchAndSetQuickLinkData = async (
+  setQuickLinkData: Dispatch<SetStateAction<IQuickLinkApiResponse[] | null>>,
+  setIsError: Dispatch<SetStateAction<boolean>>
+) => {
   try {
     logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
     const responseapidata: IFetchQuickLinkDetailsFunctionResponse | null | undefined = await fetchQuickLinkDetails();
@@ -38,38 +40,28 @@ const fetchAndSetQuickLinkData = async (setQuickLinkData: React.Dispatch<React.S
     console.error(error);
   }
 };
- const NewHomepageView: () => JSX.Element = () => {
-  const isPermission: boolean  = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
 
-    const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all)
+const NewHomepageView: React.FC = () => {
+  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all);
+  const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all);
 
-  const [isOpen, setIsOpen]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-  const [showQuickLink, setShowQuickLink]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
+  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [showQuickLink, setShowQuickLink]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
   const [quickLinkData, setQuickLinkData]: [
     IQuickLinkApiResponse[] | null,
     React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>
   ] = useState<IQuickLinkApiResponse[] | null>(null);
-  const [isError, setIsError]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-   
+  const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
   const showQuickLinkView: () => void = () => {
-   /* istanbul ignore next */
     setShowQuickLink(true);
   };
 
   const showMainPanelView: () => void = () => {
-     /* istanbul ignore next */
     setShowQuickLink(false);
   };
+
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
   };
@@ -96,9 +88,8 @@ const fetchAndSetQuickLinkData = async (setQuickLinkData: React.Dispatch<React.S
     }
     return <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />;
   };
-  
 
-return isPermission ? (
+  return isPermission ? (
     <Grid className="app" dataTestId="NewHomePage">
       <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 2 : 0} sm={isOpen ? 1 : 0}>
         <SidePanelView
