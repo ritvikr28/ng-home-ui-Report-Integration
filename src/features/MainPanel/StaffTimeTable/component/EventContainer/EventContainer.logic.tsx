@@ -14,7 +14,7 @@ const EventContainer: React.FC = () => {
   const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
   const [isOpen, setIsOpen]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
-  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [isstaffLoader, setstaffLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     gtmAnalytics.pushEvent({
@@ -53,7 +53,7 @@ const EventContainer: React.FC = () => {
           setIsError(false);
 
           setSchoolEventsData(responseData);
-          setLoader(false);
+          setstaffLoader(false);
           
           if (responseData.length > 0) {
             setSelectedItem(responseData[0].externalId);
@@ -62,11 +62,10 @@ const EventContainer: React.FC = () => {
         }
       } catch (error) {
         setIsError(true);
-        setLoader(true);
+        setstaffLoader(true);
       } 
     };
-    setLoader(true);
-     
+   
     fetchStaffTimeTableEvents();
   }, []);
 
@@ -126,7 +125,7 @@ const EventContainer: React.FC = () => {
   );
   
 
-  if (isError || (status !== 200 && status !== 204)) {
+  if (isError || (status !== 200 && status !== 204 && status !== 0)) {
     return null;
   }
 
@@ -134,16 +133,20 @@ const EventContainer: React.FC = () => {
     return renderNoEventsCard();
   }
 
-if(isLoader)
-{
-  return (
+  if(isstaffLoader)
+  {
+    return (
+      <div style={{height:"110px"}}>
   <Loader
-  data-testid="data-loader"
-  className="event-loader"
-  loaderText="Loading..."
-  loaderType={LoaderType.Circular}
-/>)
-}
+            dataTestId="staff-data-loader"
+            className="reg-loader loader-margin loader-size reg-loader-margin"
+            loaderText="Loading..."
+            loaderType={LoaderType.Circular}
+          />
+          </div>
+  
+    )
+  }
   return (
     <div>
       {
@@ -168,12 +171,12 @@ if(isLoader)
               ClassPeriodExternalId={item.classPeriodExternalId}
               EventInstanceExternalId={item.eventInstanceExternalId}
               SelectedItem={selectedItem}
-              isLoader={isLoader}
+              
             />
           </div>
         ))
         }
-      {schoolEventsData.length < 6 && !isLoader && (
+      {schoolEventsData.length < 6  && (
         <EventCard
           dataTestId="no-events-to-display"
           id="no-events-to-display-id"

@@ -173,14 +173,10 @@ describe("SidePanel Component", () => {
     jest
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);  
-    
+    const setupdatequickLoader = jest.fn();
 
     const setQuickLinkData = jest.fn(); 
-    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setupdatequickLoader]);
    const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
     
   expect(getByText('Link 1')).toBeInTheDocument();   
@@ -197,7 +193,8 @@ describe("SidePanel Component", () => {
       expect(qicklink.FetchQuickLinkpost).toHaveBeenCalled();
       expect(qicklink.FetchQuickLinkpost).toBeTruthy();
       expect(linkDetails.fetchQuickLinkDetails).toHaveBeenCalled();
-      expect(setQuickLinkData).toHaveBeenCalled()
+      expect(setQuickLinkData).toHaveBeenCalled();
+      expect(setupdatequickLoader).toHaveBeenCalled();
     }) ;
   
   });
@@ -215,11 +212,8 @@ describe("SidePanel Component", () => {
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);  
     
-    const useStateMock: any  = (initiate:any) => [initiate,setIsError];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
+    const setupdatequickLoader = jest.fn();
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setIsError]).mockReturnValueOnce([false, setupdatequickLoader]);
    const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
   ;
   expect(getByText('Link 1')).toBeInTheDocument();   
@@ -236,7 +230,8 @@ describe("SidePanel Component", () => {
   
     expect(qicklink.FetchQuickLinkpost).toHaveBeenCalled();
      waitFor(()=>{expect(linkDetails.fetchQuickLinkDetails).not.toHaveBeenCalled();
-      expect(setIsError).toHaveBeenCalled()      
+      expect(setIsError).toHaveBeenCalled();
+      expect(setupdatequickLoader).toHaveBeenCalled()         
     }) ;
     
   });
@@ -264,12 +259,8 @@ describe("SidePanel Component", () => {
     .mockResolvedValue(mockres);  
    
     const setQuickLinkData = jest.fn();
-    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];
-    
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
- 
+    const setupdatequickLoader = jest.fn();
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setupdatequickLoader]);
    const {getByText, queryAllByTestId, getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
   expect(getByText('Link 1')).toBeInTheDocument();  
     expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
