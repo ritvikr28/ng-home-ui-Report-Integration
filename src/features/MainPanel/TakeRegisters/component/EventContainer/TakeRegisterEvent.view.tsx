@@ -67,8 +67,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   const nextSlide = () => {      
     if (carouselRef.current) {          
       carouselRef.current.next();
-      setTimeout(moveRight,1000)     
-      
+      moveRight();    
     }
   };   
   const moveRight=()=>{
@@ -83,8 +82,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   const previousSlide = () => {    
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
-      setTimeout(moveLeft,1000)
-     
+      moveLeft();    
     }
   };
  
@@ -215,7 +213,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             infinite={false}
             keyBoardControl
             customTransition="all .5"
-            transitionDuration={500}
+            transitionDuration={50}
             containerClass="carousel-container"
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
