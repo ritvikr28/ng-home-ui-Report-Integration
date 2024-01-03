@@ -238,18 +238,20 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     tagColor={
                       item.isCompleted ? TagColor.Success : TagColor.Outstanding
                     }
+                    isShowArrowIcon= {true}
                   />
                 </div>
               ))
             }
             {apiRegsiterEventData.length > 0 &&
-              <div className="actioncard-div noregister">
+              <div className="actioncard-div noregister eventcardnohighlight">
                 <ActionCard
                   dataTestId="test-id"
-                  icon={<></>}
+                  icon={<FilledGraphDataIcon />}
                   id="no-more-register-id"
                   onClickActionCard={ () => {}}
                   primaryText="No more registers"
+                  isShowArrowIcon= {false}
                 />
               </div>
               }
@@ -258,13 +260,14 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister ">
+            <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight ">
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}
                 id="no-register-id"
-                onClickActionCard={() => {}}
+                onClickActionCard={ () => {}}
                 primaryText="No registers today"
+                isShowArrowIcon= {false}
               />
             </div>
           )

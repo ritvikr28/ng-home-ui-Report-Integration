@@ -58,3 +58,27 @@
 .noregister .main-text {  
   margin-top: -29px;
 }
+
+.eventcardnohighlight .essui-activity-card:active {
+  background-color: #fff;
+}
+
+.eventcardnohighlight .essui-activity-card:active { 
+  border: 0;
+  padding: 16px;
+  
+}
+
+.eventcardnohighlight .essui-activity-card:focus {
+  border: 0;
+  padding: 16px;
+}
+
+.eventcardnohighlight .essui-activity-card.active div {  
+  color: #000;
+}
+
+.eventcardnohighlight .essui-activity-card:active div {
+  color: #000;
+}
+
