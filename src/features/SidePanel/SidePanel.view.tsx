@@ -5,6 +5,8 @@ import {
   ButtonSize,
   Icon,
   IconColor,
+  Loader,
+  LoaderType,
   Tooltip,
   TooltipAlign,
   TooltipPosition
@@ -14,10 +16,7 @@ import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { SidePanelProps } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
-import { IFetchQuickLinkDetailsFunctionResponse} from "../../shared/model/quickLink/responsemodels";
-
-
-
+import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -32,7 +31,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
   closePanel,
   showQuickLinkView,
   quicklinkData,
-  setQuickLinkData
+  setQuickLinkData,
+  isLoader
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -43,11 +43,15 @@ const SidePanel: React.FC<SidePanelProps> = ({
     MatchPermissions.all
   );
   const loginFullname: string | null = authService.getUsername();
- 
+  const [isupdatequickLoader, setupdatequickLoader]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   const handleStarClick: (
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
+    setupdatequickLoader(true);
     try {
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
@@ -60,8 +64,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
+          setupdatequickLoader(false);
         }
-      } 
+      }
     } catch (error) {
       setIsError(true);
     }
@@ -79,7 +84,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             <div className="quick-lint-display">
               {loginFullname && loginFullname.length > 24 ? (
                 <Tooltip
-                dataTestId="test-id"
+                  dataTestId="test-id"
                   align={TooltipAlign.Center}
                   position={TooltipPosition.Bottom}
                   content={<span>{loginFullname}</span>}
@@ -113,13 +118,25 @@ const SidePanel: React.FC<SidePanelProps> = ({
                   {/*
   eslint-disable
 */}
-                  {!isError &&
+                  {isLoader || isupdatequickLoader ? (
+                    <div>
+                      <Loader
+                        dataTestId="sidepanel-quicklinkerror-loader"
+                        className="loader-wrapper loader-sidepanel-quicklink"
+                        loaderText="Loading..."
+                        loaderType={LoaderType.Circular}
+                      />
+                    </div>
+                  ) : (
+                    !isError &&
                     quicklinkData &&
                     quicklinkData.slice(0, 6).map((sidelink) => (
                       <div
                         className="quick-panel-cont"
                         key={sidelink.id}
-                        onClick={() => {(window.location.href = sidelink.link);}}
+                        onClick={() => {
+                          window.location.href = sidelink.link;
+                        }}
                         style={{ cursor: "pointer" }}
                       >
                         {sidelink.name}
@@ -131,7 +148,6 @@ const SidePanel: React.FC<SidePanelProps> = ({
                           }
                           className="icon-margin"
                           dataTestId={`btn-star${sidelink.id}`}
-                        
                           id="variable-2"
                           name={sidelink.favourite ? "star--filled" : "star"}
                           size={16}
@@ -142,7 +158,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
                           /* eslint-enable */
                         />
                       </div>
-                    ))}
+                    ))
+                  )}
 
                   {/*
   eslint-disable jsx-a11y/anchor-is-valid,

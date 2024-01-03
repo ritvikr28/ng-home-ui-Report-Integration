@@ -162,11 +162,8 @@ describe("QuickLink Component", () => {
     
 
     const setQuickLinkData = jest.fn(); 
-    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
+    const setLoader = jest.fn();
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setLoader]);
 
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
@@ -201,12 +198,9 @@ describe("QuickLink Component", () => {
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);  
     
-    const useStateMock: any  = (initiate:any) => [initiate,setIsError];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
-
+    const setLoader = jest.fn();
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setIsError]).mockReturnValueOnce([false, setLoader]);
+   
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(screen.queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
@@ -242,11 +236,8 @@ describe("QuickLink Component", () => {
    
  
     const setQuickLinkData = jest.fn();
-    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
+    const setLoader = jest.fn();
+    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setLoader]);
  
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();  

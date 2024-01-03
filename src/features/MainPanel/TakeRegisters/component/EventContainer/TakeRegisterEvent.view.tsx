@@ -9,7 +9,7 @@ import {
   TagColor
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
-import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
+
 import "./carousalstyle.scss";
 import { responsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
@@ -158,9 +158,11 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
+          marginLeft: "91%",
+          marginTop: "-45px"
         }}
       >
-        <TakeRegistersLinkview />
+        
         <div
           style={{
             display: "flex",

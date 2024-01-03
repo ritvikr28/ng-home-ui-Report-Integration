@@ -1,7 +1,7 @@
 import {  Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
+import { Grid, GridItem, Link, Loader, LoaderType, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
@@ -21,7 +21,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
   displaystarredicon,
-  isOpen
+  isOpen,
+  isLoader
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
@@ -49,7 +50,14 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {apiQuickLinkData &&
+                  { isLoader ? ( <div style={{marginLeft:"440px", height:"98%"}}> 
+                    <Loader
+                    dataTestId="quicklink-error-loader"
+                    className="loader-quicklink"
+                    loaderText="Loading..."
+                    loaderType={LoaderType.Circular}
+                  /> </div> ) : (
+                    apiQuickLinkData &&
                       apiQuickLinkData.map((link) => (
                         <TableRow key={link.id}>
                           <TableCell>                            
@@ -59,7 +67,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                           </TableCell>
                           <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>
                         </TableRow>
-                      ))}
+                      )))}
                   </TableBody>
                 </Table>
               </TableWrapper>

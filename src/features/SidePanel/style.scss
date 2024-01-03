@@ -51,7 +51,7 @@
   display: flex;
   //width: 227px;
   padding: 12px 16px;
-  align-items: flex-start;
+  align-items: center;
   gap: 8px;
   color: var(--neutral-800, #303030);
   font-family: Segoe UI;
@@ -112,6 +112,9 @@
 }
 
 .icon-margin {
-  margin-top: 5px;
+  margin-top: 2px;
 }
 
+.loader-sidepanel-quicklink {
+  margin: 10px !important;
+}

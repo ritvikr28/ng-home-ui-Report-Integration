@@ -48,6 +48,7 @@ const requiredPermissionsforquicklink: Permission[] = [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
    
   const showQuickLinkView: () => void = () => {
    /* istanbul ignore next */
@@ -75,10 +76,12 @@ const requiredPermissionsforquicklink: Permission[] = [
         if( responseapidata !=null )
        { 
         setQuickLinkData(responseapidata.response);
-        setIsError(responseapidata.status);        
+        setIsError(responseapidata.status);
+        setLoader(false);     
        }
        
       } catch (error) { 
+        setLoader(false); 
         console.log(error);       
       }      
     })();
@@ -101,6 +104,7 @@ const requiredPermissionsforquicklink: Permission[] = [
             setQuickLinkData={setQuickLinkData}
              quicklinkData={isError ? [] : quickLinkData}
             data-testid="btn-show-quick-link"
+            isLoader ={isLoader}
           />
         </GridItem>
         <GridItem
