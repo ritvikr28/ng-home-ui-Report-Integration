@@ -21,7 +21,7 @@ import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quick
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
