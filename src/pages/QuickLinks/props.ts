@@ -7,7 +7,7 @@ export interface IQuickLinkViewProps {
     apiError?: boolean;
     displaystarredicon: (favorites: boolean, id: number) => JSX.Element;
     isOpen?:boolean;
-    isLoader?:boolean;
+    
     
   } 
   export interface QuicklinkComponentProps {

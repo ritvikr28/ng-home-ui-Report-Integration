@@ -162,8 +162,11 @@ describe("QuickLink Component", () => {
     
 
     const setQuickLinkData = jest.fn(); 
-    const setLoader = jest.fn();
-    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setLoader]);
+    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
+ 
+   jest
+   .spyOn(React, 'useState')
+   .mockImplementationOnce(useStateMock);
 
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
@@ -184,6 +187,7 @@ describe("QuickLink Component", () => {
     }) ;
   
   });
+
   test('renders QuickLink component with empty data and star icon',async () => {
     const axiosResponse: AxiosResponse = {
       data: undefined,
@@ -198,9 +202,12 @@ describe("QuickLink Component", () => {
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);  
     
-    const setLoader = jest.fn();
-    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setIsError]).mockReturnValueOnce([false, setLoader]);
-   
+    const useStateMock: any  = (initiate:any) => [initiate,setIsError];    
+ 
+   jest
+   .spyOn(React, 'useState')
+   .mockImplementationOnce(useStateMock);
+
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(screen.queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
@@ -220,6 +227,7 @@ describe("QuickLink Component", () => {
     }) ;
     
   });
+
   test('renders QuickLink component with mock data and star icon error for api',async () => {
     const axiosResponse: AxiosResponse = {
       data: {error:null,payload:true,status:200},
@@ -236,8 +244,11 @@ describe("QuickLink Component", () => {
    
  
     const setQuickLinkData = jest.fn();
-    const setLoader = jest.fn();
-    jest.spyOn(React, 'useState').mockReturnValueOnce([false, setQuickLinkData]).mockReturnValueOnce([false, setLoader]);
+    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
+ 
+   jest
+   .spyOn(React, 'useState')
+   .mockImplementationOnce(useStateMock);
  
    const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();  

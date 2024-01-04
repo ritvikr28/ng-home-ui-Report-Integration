@@ -21,8 +21,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
   displaystarredicon,
-  isOpen,
-  isLoader
+  isOpen
+  
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
@@ -50,13 +50,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                  { isLoader ? ( <div style={{marginLeft:"440px", height:"98%"}}> 
-                    <Loader
-                    dataTestId="quicklink-error-loader"
-                    className="loader-quicklink"
-                    loaderText="Loading..."
-                    loaderType={LoaderType.Circular}
-                  /> </div> ) : (
+                  { 
                     apiQuickLinkData &&
                       apiQuickLinkData.map((link) => (
                         <TableRow key={link.id}>
@@ -67,7 +61,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                           </TableCell>
                           <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>
                         </TableRow>
-                      )))}
+                      ))}
                   </TableBody>
                 </Table>
               </TableWrapper>
