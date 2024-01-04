@@ -43,15 +43,12 @@ const SidePanel: React.FC<SidePanelProps> = ({
     MatchPermissions.all
   );
   const loginFullname: string | null = authService.getUsername();
-  const [isupdatequickLoader, setupdatequickLoader]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
+ 
   const handleStarClick: (
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
-    setupdatequickLoader(true);
+   
     try {
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
@@ -64,7 +61,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
-          setupdatequickLoader(false);
+          
         }
       }
     } catch (error) {
@@ -118,7 +115,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                   {/*
   eslint-disable
 */}
-                  {isLoader || isupdatequickLoader ? (
+                  {isLoader  ? (
                     <div>
                       <Loader
                         dataTestId="sidepanel-quicklinkerror-loader"
