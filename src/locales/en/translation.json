@@ -32,54 +32,59 @@
       "link": "",
       "linkText": ""
     },
-    "SchoolManagement":{
+    "SchoolManagement": {
       "title": "Staff timetables",
       "description": "View your own timetable or other staff members’ timetables easily from the Staff Timetable Calendar.",
       "link": "",
       "linkText": ""
     },
-    "AssessmentMarksheets":{
+    "AssessmentMarksheets": {
       "title": "My Markbook",
       "description": "A fast and intuitive new way for teachers to record their own assessments for the classes they teach",
       "link": "",
       "linkText": ""
-      
     },
-    "PupilAttendance":{
+    "PupilAttendance": {
       "title": "Pupil Attendance",
       "description": "Pupil Attendance description",
       "link": "",
       "linkText": ""
     },
-    "CustomGroups":{
+    "CustomGroups": {
       "title": "Custom Groups",
       "description": "Create, manage, and view your own customised pupil groups. All data syncs back to SIMS 7, ensuring effective monitoring and reporting of your groups.",
       "link": "",
       "linkText": ""
     },
-    "ManagePermissions":{
+    "ManagePermissions": {
       "title": "Manage Permissions",
       "description": "View permission groups and their members, and easily edit the group permissions to meet your school's needs.",
       "link": "",
       "linkText": ""
     },
-    "Seatingplans":{
+    "Seatingplans": {
       "title": "Seating Plans",
       "description": "Create room layouts and seating plans for your classes and lessons",
       "link": "",
       "linkText": ""
     },
-    "Conduct":{
+    "Conduct": {
       "title": "Conduct",
       "description": "Create and maintain exclusions and suspensions.",
       "link": "",
       "linkText": ""
     },
-    "NewHomePage":{
+    "NewHomePage": {
       "title": "New Homepage",
       "description": "Easily access information relevant to your role directly from the homepage. Sign up to become an early adopter for our first role-based homepage tailored for teachers.",
       "link": "",
-      "linkText": ""     
+      "linkText": ""
+    },
+    "FMSReporting": {
+      "title": "FMS Reporting",
+      "description": "Intuitively generate financial reports which are drillable, easily exported, saved and shared.",
+      "link": "",
+      "linkText": ""
     }
   },
   "pageNotFound": {
@@ -123,15 +128,15 @@
       "item1": {
         "title": "Invite staff members",
         "content": "You can invite staff members to access SIMS Next Gen by clicking on the",
-        "content1":" hamburger menu in the top left corner and selecting the",
+        "content1": " hamburger menu in the top left corner and selecting the",
         "content2": "  Invite staff",
         "content3": " option from the menu."
       },
       "item2": {
         "title": "Contact your SIMS 7 System Manager",
         "content": "In order to access additional SIMS Next Gen functionality, you will need",
-        "content1":" to be assigned to the appropriate security groups in SIMS 7.  Your SIMS 7",
-        "content2":" System Manager can assist with this."
+        "content1": " to be assigned to the appropriate security groups in SIMS 7.  Your SIMS 7",
+        "content2": " System Manager can assist with this."
       }
     }
   }
