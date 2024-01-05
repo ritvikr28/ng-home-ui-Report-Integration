@@ -3,14 +3,14 @@ import "./DiscoverStyle.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import DiscoverMoreView from "./Components/DiscoverMore.view";
 /* eslint-disable */
-interface SIMSupdatesViewProps {
-  isOpen?: boolean;
-}
+// interface SIMSupdatesViewProps {
+//   isOpen?: boolean;
+// }
 
-export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) => (
+export const SIMSupdatesView: React.FC = () => (
   <Grid>
     <GridItem className="sims-container">
-      <DiscoverMoreView isOpen={isOpen} />
+      <DiscoverMoreView/>
     </GridItem>
   </Grid>
 );

@@ -2,6 +2,20 @@
   margin-left: 0;
 }
 
+@media only screen and (min-width: 1024px) and (max-width: 1280px) {
+  .breadcrumbs {
+    margin-top: -35px;
+    margin-left: 70px;
+  }
+}
+
+// @media (min-width: 1024px) and (max-width: 1280px) 
+// {
+//   .essui-grid-col {
+//     padding: 0;
+//   }
+// }
+
 .quicklink-container {
   margin-bottom: 8px;
 }
@@ -18,9 +32,9 @@
   padding-bottom: 24px;
 }
 
-.nopadding {
-  padding-left: 16px;
-}
+// .nopadding {
+//   // padding-left: 16px;
+// }
 
 .quicklinkheading {
   color: var(--neutral-800, #303030);
@@ -48,7 +62,7 @@
 }
 
 .quicklink-divider-container {
-  width: 1081px;
+  // width: 1081px;
   margin-bottom: 8px;
   margin-top: 32px;
   align-self: stretch;
@@ -63,7 +77,7 @@
  
 .quicklinktable-close {
   background-color: #fff;
-  width: 88%;
+  width: 100%;
 }
 
 .icon-quicklinkwidth .essui-icon-button {

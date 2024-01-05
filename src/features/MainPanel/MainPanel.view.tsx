@@ -51,7 +51,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
       <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="divider-container"/>            
-      <SIMSupdatesView  isOpen={isOpen}/>
+      <SIMSupdatesView/>
       <SwitchViewLogic
             organisationName={schoolName}
             isApiError={isError} 

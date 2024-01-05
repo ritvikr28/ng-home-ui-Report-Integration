@@ -1,19 +1,14 @@
-import React from 'react';
 import {
   Button,
   ButtonSize,
   Link,
   ButtonColor,
   ActionCard,
-  GridItem,
-  Grid
+  Grid,
+  GridItem
 } from "@essnextgen/ui-kit";
 
-/* eslint-disable */
-interface DiscoverMoreViewProps {
-  isOpen?: boolean;
-}
-const DiscoverMoreView: React.FC<DiscoverMoreViewProps> = ({ isOpen = false }) => {
+const DiscoverMoreView: () => JSX.Element = () => {
   const onButtonClick: () => void = () => {
    const url = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
   window.open(url,"_blank");
@@ -27,13 +22,9 @@ const DiscoverMoreView: React.FC<DiscoverMoreViewProps> = ({ isOpen = false }) =
   const onCardClick: () => void = () => {};
   return (
     <>
-      <Grid className="sims-link-container">
-        <GridItem className="sims-updates"lg={8} md={6}>Find out more about SIMS Next Gen </GridItem>
-        <GridItem  className={`sims-link-url  ${
-            isOpen ? "discover-btn-res btn-res-main" : "btn-res-close"
-          } `}
-          lg={4}
-          md={2}>
+      <div className= 'sims-link-container'>
+        <span className="sims-updates">Find out more about SIMS Next Gen </span>
+        <span className="sims-link-url ">
           <Button
             className="base-class"
             color={ButtonColor.Secondary}
@@ -43,10 +34,10 @@ const DiscoverMoreView: React.FC<DiscoverMoreViewProps> = ({ isOpen = false }) =
           >
             Discover more with SIMS Next Gen
           </Button>
-        </GridItem>
-      </Grid>
+        </span>
+      </div>
       <Grid className="action-card-container sims-ng">
-        <GridItem lg ={6} className=" what-new ">
+        <GridItem lg={6} className="what-new">
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
@@ -63,7 +54,7 @@ const DiscoverMoreView: React.FC<DiscoverMoreViewProps> = ({ isOpen = false }) =
             />
           </Link>
         </GridItem>
-        <GridItem lg ={6} className=" what-new action-card">
+        <GridItem lg={6} className="what-new action-card">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
@@ -85,5 +76,4 @@ const DiscoverMoreView: React.FC<DiscoverMoreViewProps> = ({ isOpen = false }) =
     </>
   );
 };
-/* eslint-enable */
 export default DiscoverMoreView;

@@ -1,4 +1,4 @@
-import React, {useRef, useEffect,useState } from "react";
+import React, {useRef, useEffect,useState} from "react";
 import Carousel from "react-multi-carousel";
 import {
   ActionCard,
@@ -11,7 +11,7 @@ import {
 import { IRegisterViewProps } from "./props";
 import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
 import "./carousalstyle.scss";
-import { iscloseresponsive,responsive } from "./carousel";
+import { responsive, iscloseresponsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
@@ -26,12 +26,18 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   const [currentSlide, setCurrentSlide] = useState(
     apiRegsiterEventData ? 0 : 0
   );
-
+  const [carouselData, setCarouselData] = useState(responsive);
   const setDefaultSlide = (index: number) => {    
     /* istanbul ignore next */
     carouselRef.current.goToSlide(index);
   };
-  
+
+  useEffect(() => {
+    /* eslint-disable */ 
+    isOpen ? setCarouselData(responsive) : setCarouselData(iscloseresponsive) 
+  },[isOpen])
+
+  /* eslint-enable */ 
   useEffect(() => {   
    
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
@@ -210,7 +216,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             swipeable={false}
             draggable={false}
             showDots={false}
-            responsive={isOpen ? responsive : iscloseresponsive}
+            responsive={carouselData}
             infinite={false}
             keyBoardControl
             customTransition="all .5"

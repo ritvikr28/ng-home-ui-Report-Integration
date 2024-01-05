@@ -3,8 +3,9 @@ import { FetchRegisterEventData } from "../../../../../shared/services/registers
 import TakeRegisterEventView from "./TakeRegisterEvent.view";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
-
-const TakeRegisterEvent: (isOpen: any) => JSX.Element = (isOpen) => {
+/* eslint-disable */ 
+const TakeRegisterEvent: ({ isOpen, setIsOpen }:any) => JSX.Element = ({ isOpen, setIsOpen }) => {
+  /* eslint-enable */ 
   const [registerEventData, setRegisterEventApiData]:[IRegistersDetails[] | null,React.Dispatch<React.SetStateAction<IRegistersDetails[] | null>>]  = useState< IRegistersDetails[] | null>(null);
 
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false); 

@@ -26,9 +26,10 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
   return isPermission ? (
-    <div className="teacher-panel-container">
-      <BreadcrumbWrapper />
+  
       <Grid className="quicklink">
+      <GridItem className="teacher-panel-container">
+      <GridItem className={isOpen? "" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
         <GridItem lg={12} className="quicklink-container nopadding">
           <GridItem className="quicklinkheading">Quick links</GridItem>
           <GridItem className="quicklinktext">
@@ -72,8 +73,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
           </div>
           </GridItem>
         </GridItem>
+        </GridItem>
       </Grid>
-    </div>
   ) : (
     <Redirect to="/noAccess" />
   );
