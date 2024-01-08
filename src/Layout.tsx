@@ -138,6 +138,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         event: "identify_user",
         userId: getUser()
       })
+      gtmAnalytics.pushEvent({
+        event: "identify_group",
+        userId: getUser()
+      })
       setIsServiceInitiated(true);
     } 
     else{
