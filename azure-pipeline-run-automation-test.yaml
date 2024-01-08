@@ -1,0 +1,67 @@
+parameters:
+  - name: env
+    type: string
+  - name: type
+    type: string
+  - name: test_tags
+    type: string
+  - name: pat_token
+    type: string
+
+steps:
+  - task: TriggerBuild@4
+    displayName: Run ${{ parameters.type }} Tests
+    inputs:
+      definitionIsInCurrentTeamProject: true
+      buildDefinition: 'homepage-automation-tests'
+      queueBuildForUserThatTriggeredBuild: true
+      ignoreSslCertificateErrors: false
+      useSameSourceVersion: false
+      useCustomSourceVersion: false
+      useSameBranch: true
+      waitForQueuedBuildsToFinish: true
+      waitForQueuedBuildsToFinishRefreshTime: '10'
+      failTaskIfBuildsNotSuccessful: true
+      cancelBuildsIfAnyFails: false
+      treatPartiallySucceededBuildAsSuccessful: false
+      downloadBuildArtifacts: false
+      storeInEnvironmentVariable: true
+      demands: 'master'
+      templateParameters: 'ENV_NAME: ${{ parameters.env }}, TEST_TYPE: ${{ parameters.type }}, TEST_TAGS:${{ parameters.test_tags }}'
+      authenticationMethod: 'Personal Access Token'
+      password: ${{ parameters.pat_token }}
+      enableBuildInQueueCondition: false
+      dependentOnSuccessfulBuildCondition: false
+      dependentOnFailedBuildCondition: false
+      checkbuildsoncurrentbranch: false
+      failTaskIfConditionsAreNotFulfilled: false
+  
+  - task: DownloadPipelineArtifact@2
+    displayName: Download Reports Artifact
+    inputs:
+      buildType: 'specific'
+      # project: '34a12076-9708-4df4-a13b-d22ebfd62f26'
+      definition: '20'
+      buildVersionToDownload: 'latestFromBranch'
+      branchName: 'refs/heads/master'
+      allowPartiallySucceededBuilds: true
+      allowFailedBuilds: true
+      artifactName: 'ui-automation-tests'                  
+      targetPath: '$(Pipeline.Workspace)'
+  
+  
+  - task: PublishCucumberReport@1
+    displayName: Publish Cucumber Report
+    inputs:
+      jsonDir: '$(Pipeline.Workspace)/cucumber-json/**'
+      outputPath: '$(Pipeline.Workspace)'
+      theme: 'hierarchy'
+      reportSuiteAsScenarios: true
+      metadata: |
+        {
+          "Project Name": "Platform ${{ parameters.type }} Tests Report",
+          "Description": "${{ parameters.type }} Tests for homapage",
+          "Test Environment": "${{ parameters.env }}"
+        }
+      name: 'Automation ${{ parameters.type }} Tests Results'
+      title: 'Automation ${{ parameters.type }} Tests Results'
