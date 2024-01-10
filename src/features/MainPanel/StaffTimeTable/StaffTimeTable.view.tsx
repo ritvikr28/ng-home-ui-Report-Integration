@@ -8,16 +8,15 @@ export interface StaffTimeTableProps {
   isOpen?: boolean;
 }
 
-export const StaffTimeTableView: (
-  props: StaffTimeTableProps
-) => JSX.Element = ({ isOpen }: StaffTimeTableProps) => (
+export const StaffTimeTableView: React.FC<StaffTimeTableProps> = ({ isOpen}) => { 
+  return (
   <Grid>
   <GridItem  lg ={12}md = {8} sm = {4} className={isOpen ? "container-width" : " upcoming-schedule-conatiner"}>
     <StaffTimeTableLinkview />
-    <EventContainer />
+    <EventContainer isOpen={isOpen} />
   </GridItem>
  </Grid>
-);
+)};
 /* eslint-enable */
 
 export default StaffTimeTableView;

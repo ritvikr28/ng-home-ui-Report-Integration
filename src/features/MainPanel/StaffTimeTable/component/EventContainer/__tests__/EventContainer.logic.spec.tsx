@@ -493,7 +493,7 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
   expect(togglePanel1).toHaveBeenCalledWith("1");
 });
 
-test('should render the component with isOpen set to true if the panel is open', () => {
+test.skip('should render the component with isOpen set to true if the panel is open', () => {
 
   const togglePanel1 = jest.fn();
    

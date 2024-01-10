@@ -69,3 +69,22 @@
     border-bottom-right-radius: 8px;
   }
 }
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1280px) {
+  .essui-side-panel-container-grid-item {
+    height: 100vh !important;
+    margin-top: 0 !important;
+    padding-bottom: 32px !important;
+  }
+}
+
+
+.divider-right-panel .essui-divider {
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) and (max-width: 1280px) {
+  .divider-right-panel .essui-divider {
+    margin-top: 8px;
+  }
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { EventCard, EventCardStatus, Loader, LoaderType } from "@essnextgen/ui-kit";
+import { EventCard, EventCardStatus, Loader, LoaderType, useMediaQuery } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
@@ -8,13 +8,14 @@ import { IStaffTimeTableEventsResponse} from "../../../../../shared/model/School
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 
-const EventContainer: React.FC = () => {
+const EventContainer = ({ isOpen }:any) => {
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [schoolEventsData, setSchoolEventsData]:[IStaffTimeTableEventsResponse[],React.Dispatch<React.SetStateAction<IStaffTimeTableEventsResponse[]>>] = useState<IStaffTimeTableEventsResponse[]>([]);
   const [selectedItem, setSelectedItem]:[string,React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
-  const [isOpen, setIsOpen]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
+  const [isOpenPanel, setIsOpenPanel]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
   const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const isMobileView = useMediaQuery('(min-width:350px) and (max-width: 1280px)');
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     gtmAnalytics.pushEvent({
@@ -23,11 +24,11 @@ const EventContainer: React.FC = () => {
       elementTextOrLabel: "[RemovedEventName]",
       elementLocation: "body"
     });
-    setIsOpen((prevIsOpen) => ({
+    setIsOpenPanel((prevIsOpen) => ({
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId]
     }));
-    setSelectedItem((!isOpen || isOpen[externalId]) ? schoolEventsData[0].externalId : externalId);
+    setSelectedItem((!isOpenPanel || isOpenPanel[externalId]) ? schoolEventsData[0].externalId : externalId);
   };
 
   useEffect(() => {
@@ -145,7 +146,7 @@ if(isLoader)
 />)
 }
   return (
-    <div>
+    <div className="parent-event-container">
       {
         schoolEventsData.map((item, index) => (
           <div key={item.externalId}>
@@ -159,7 +160,8 @@ if(isLoader)
               GroupExternalId={item.group.externalId}
               EventPeriodNum={formateventPeriodNum(item)}               
               togglePanel={() => togglePanel(item.externalId)}
-              isOpen={isOpen[item.externalId]}               
+              isOpen={isOpen}
+              isOpenPanel={isOpenPanel[item.externalId]}               
               GroupDescription={item?.group?.shortName ?? ""}
               StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
               index={index}
@@ -181,12 +183,14 @@ if(isLoader)
           secondaryText=""
           status={EventCardStatus.DEFAULT}
           title="No more events"
-        //  inputWidth={166}
-          inputHeight={75}
+            /* eslint-disable */
+          inputWidth={isMobileView? isOpen? 166 : 145 :166} 
+            /* eslint-enable */         
+          inputHeight={67}
           className={
             isOpen
-              ? `dynamiceventcard event-primary-text no-events`
-              : `dynamiceventcard-res event-primary-text no-events`
+              ? `dynamiceventcard isopen event-primary-text no-events`
+              : `dynamiceventcard isclose event-primary-text no-events`
           }
         />
       )}

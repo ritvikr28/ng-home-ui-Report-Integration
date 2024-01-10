@@ -49,8 +49,17 @@
 
 .quicklinktable {
   background-color: #fff;
-  width: 98%;
+  width: 99%;
 }
+
+@media (min-width: 768px) and (max-width: 1280px) {
+  .quicklinktable {
+    background-color: #fff;
+    width: 102%;
+  }
+}
+
+
 /* stylelint-disable */
 .essui-table__cell {
   border: 0px;
@@ -77,8 +86,15 @@
  
 .quicklinktable-close {
   background-color: #fff;
-  width: 100%;
+  width: 99%;
 }
+
+@media (min-width: 768px) and (max-width: 1280px) {
+  .quicklinktable-close {
+    width: 103%;
+  }
+}
+
 
 .icon-quicklinkwidth .essui-icon-button {
   width: fit-content;

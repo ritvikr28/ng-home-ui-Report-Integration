@@ -198,7 +198,7 @@ test("renders without errors", () => {
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
-      isOpen={true}
+      isOpen
     />
   );
   expect(container).toBeTruthy();
@@ -215,7 +215,7 @@ test("render tile on basis of time", () => {
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}     
-      isOpen={true} 
+      isOpen 
     />
   );
   expect(container).toBeTruthy();
@@ -233,7 +233,7 @@ test("render second tile as first", () => {
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
-      isOpen={true}
+      isOpen
     />
   );
   expect(container).toBeTruthy();
@@ -242,7 +242,7 @@ test("render second tile as first", () => {
 
 test("renders No registers today", () => {
   const { getByText,getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen={true}/>
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
   );
   fireEvent.click(getByTestId("no-test-id"));
   expect(getByText("No registers today")).toBeInTheDocument(); 
@@ -278,7 +278,7 @@ test.skip("click the next button should render next tile", () => {
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}  
-      isOpen={true}   
+      isOpen   
     />
   );
   expect(getByTestId("btn-next")).not.toBeDisabled();
@@ -289,7 +289,7 @@ test.skip("click the next button should render next tile", () => {
 
 test("disables the previous button when api returns null", () => {
   const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen={true}/>
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
   );
   const previousButton = getByTestId("btn-previous");
 
@@ -298,7 +298,7 @@ test("disables the previous button when api returns null", () => {
 
 test("disables the next button when api returns null", () => {
   const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen={true}/>
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
   );
   const nextButton = getByTestId("btn-next");
 

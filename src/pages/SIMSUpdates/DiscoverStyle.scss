@@ -7,14 +7,14 @@
   gap: 24px;
 }
 
-.sims-link-container {
+.sims-link-container-open {
   display: flex;
   width: 99.3%;
   justify-content: space-between;
   align-items: baseline;
 }
 
-.sims-link-container-close {
+.sims-link-container-closeview {
   display: flex;
   width: 99.3%;
   justify-content: space-between;
@@ -23,12 +23,12 @@
 
 
 @media (min-width: 760px) and (max-width: 1280px) {
-  .sims-link-container {
-    max-width: 98%;
+  .sims-link-container-open {
+    width: 102.1%;
   }
 
-  .sims-link-container-close {
-    max-width: 98.4%;
+  .sims-link-container-closeview {
+    width: 98.4%;
   }
 }
 
@@ -62,7 +62,7 @@
   color: var(--neutral-800, #303030);
 }
 
-.action-card-container {
+.action-card-container-open {
   color: Neutral/800;
   display: flex;
   // align-items: flex-start;
@@ -71,7 +71,7 @@
   // gap: 20px;
 }
 
-.action-card-container-close {
+.action-card-container-closeview {
   color: Neutral/800;
   display: flex;
   // align-items: flex-start;
@@ -85,11 +85,11 @@
 // }
 
 @media (min-width: 760px) and (max-width: 1280px) {
-  .action-card-container {
-    width: 102.4% !important;
+  .action-card-container-open {
+    width: 106.6% !important;
   }
 
-  .action-card-container-close {
+  .action-card-container-closeview {
     width: 101.7% !important;
 
   }

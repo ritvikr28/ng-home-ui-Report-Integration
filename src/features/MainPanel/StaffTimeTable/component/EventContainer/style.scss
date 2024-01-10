@@ -1,21 +1,46 @@
 .dynamiceventcard {
   float: left;
-  margin-right: 16px;
   background-color: #fff;
   margin-top: 20px;
-  width: 10.6859rem;
 }
 
-@media (min-width: 1024px) and (max-width: 1280px) {
-  .dynamiceventcard {
-    width: 145px;
+.isopen {
+  margin-right: 15px;
+}
+
+.isclose {
+  margin-right: 18px;
+}
+
+@media (min-width: 768px) and (max-width: 1280px) {
+  .isclose {
+    margin-right: 16px;
   }
 }
-@media (min-width: 1024px) and (max-width: 1280px) {
-  .dynamiceventcard-res {
-    width: 145px;
-  }
+
+
+
+.parent-event-container {
+  margin-left: 6px;
 }
+
+// @media (min-width: 1024px) and (max-width: 1280px) {
+//    .isclose {
+//     width: 145px !important;
+//   }
+// }
+
+// @media (min-width: 1024px) and (max-width: 1280px) {
+// #event-open{
+// width:166px;
+// }
+// }
+
+// @media (min-width: 1024px) and (max-width: 1280px) {
+//   #event-close{
+//     width:145px;
+//   }
+// }
 
 .event-primary-text {
   /* stylelint-disable */

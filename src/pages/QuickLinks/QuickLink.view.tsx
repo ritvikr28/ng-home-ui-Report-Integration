@@ -4,10 +4,12 @@ import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
-import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
+
 import "./style.scss";
 import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
+import SIMSupdatesView from "../SIMSUpdates/SIMSupdates.view";
+
 
 
 const requiredPermissions: Permission[] = [
@@ -69,7 +71,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
           <GridItem>
           <div className="quicklink-divider-container" />
           <div className="simspadding">
-            <SIMSupdatesView />
+            <SIMSupdatesView isOpen={isOpen}/>
           </div>
           </GridItem>
         </GridItem>

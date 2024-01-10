@@ -103,7 +103,7 @@ const NewHomepageView: React.FC = () => {
           data-testid="btn-show-quick-link"
         />
       </GridItem>
-      <GridItem className={isOpen ? " " : "body-panel res-body"} lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
+      <GridItem className={isOpen ? "body-open-panel" : "body-panel res-body"} lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
         {renderContent()}
       </GridItem>
     </Grid>

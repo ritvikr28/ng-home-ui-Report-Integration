@@ -171,7 +171,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
         <div
           style={{
             display: "flex",
-            marginRight: "6px",
+         //   marginRight: "6px",
           }}
           className="register-icon"
         >
@@ -228,7 +228,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
            {
               apiRegsiterEventData &&
               apiRegsiterEventData.map((item, index) => (
-                <div key={index} className="actioncard-div">
+                <div key={index} className={isOpen? "actioncard-div":"actioncard-div-close"}>
                   <ActionCard
                     dataTestId={`test-id${index}`}
                     isTextTruncate
@@ -265,7 +265,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister ">
+            <div className={ isOpen? "carousel-container carousel-item-padding-40-px noregisterblock noregister ":
+            "carousel-container-close carousel-item-padding-40-px noregisterblock noregister "}>
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}

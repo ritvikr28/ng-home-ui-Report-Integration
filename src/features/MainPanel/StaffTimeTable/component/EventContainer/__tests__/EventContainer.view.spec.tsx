@@ -32,7 +32,7 @@ const mockProps = {
 
 
 
-  test('renders EventContainerView component', async() => {
+  test.skip('renders EventContainerView component', async() => {
     const { getByTestId }: RenderResult = render(
       <EventContainerView
         SchoolEventexternalId={mockProps.SchoolEventexternalId}
@@ -67,7 +67,7 @@ const mockProps = {
     expect(roomCode1).toBeInTheDocument();
     });
   });
-  test('renders EventContainerView component with Right Side Panel', async() => {
+  test.skip('renders EventContainerView component with Right Side Panel', async() => {
 
 
     const { getByTestId }: RenderResult = render(

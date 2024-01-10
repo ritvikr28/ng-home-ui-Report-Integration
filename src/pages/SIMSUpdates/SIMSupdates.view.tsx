@@ -1,7 +1,7 @@
 import React from 'react';
 import "./DiscoverStyle.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
-import DiscoverMoreView from "./Components/DiscoverMore.view";
+import DiscoverMoreView from './Components/DiscoverMore.view';
 /* eslint-disable */
 interface SIMSupdatesViewProps {
   isOpen?: boolean;

@@ -120,6 +120,7 @@ export const RightSidePanelView: (
                 id="panel-divider"
                 orientation={Orientation.HORIZONTAL}
                 role="separator"
+                className="divider-right-panel"
               />
             </div>
 
