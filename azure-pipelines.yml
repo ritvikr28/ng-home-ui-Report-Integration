@@ -300,7 +300,7 @@ stages:
                         kubectl rollout restart deployment ng-home-ui -n platform
                       failOnStderr: true
                       
-        - template: azure-pipeline-run-automation-test.yaml
+        - template: ./azure-pipeline-run-automation-test.yaml
           parameters:
             env: "qa"
             type: "ui"
