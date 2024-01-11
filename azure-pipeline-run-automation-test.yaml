@@ -40,7 +40,7 @@ steps:
     displayName: Download Reports Artifact
     inputs:
       buildType: 'specific'
-      # project: '34a12076-9708-4df4-a13b-d22ebfd62f26'
+      project: '540eca0b-636b-42af-a3f3-983bbd072d7a'
       definition: '20'
       buildVersionToDownload: 'latestFromBranch'
       branchName: 'refs/heads/master'
