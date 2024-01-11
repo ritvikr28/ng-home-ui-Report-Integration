@@ -299,13 +299,17 @@ stages:
                         kubectl apply -f deployment.yaml
                         kubectl rollout restart deployment ng-home-ui -n platform
                       failOnStderr: true
-                      
-                  - template: azure-pipeline-run-automation-test.yaml
-                    parameters:
-                      env: "qa"
-                      type: "ui"
-                      test_tags: "@regression"
-                      pat_token: $(PAT)
+
+            - job: QA_Test
+              displayName: Running Automation UI Test cases on QA env
+              dependsOn: deploy_nghomeui_qa_snow
+              steps:
+              - template: azure-pipeline-run-automation-test.yaml
+                parameters:
+                  env: "qa"
+                  type: "ui"
+                  test_tags: "@regression"
+                  pat_token: $(PAT)
 
         # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
         #   parameters:
