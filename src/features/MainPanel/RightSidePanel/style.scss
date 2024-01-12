@@ -134,6 +134,24 @@
   }
 }
 
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .divider-right-panel .essui-divider {
+    margin-top: 8px;
+  }
+
+  .parent-close-button {
+    position: relative;
+    justify-content: center;
+    display: flex;
+  }
+
+  .child-close {
+    flex: 1;
+    margin-top: 32px;
+    margin-bottom: 32px !important;
+  }
+}
+
 .essui-side-panel-heading {
   padding: 16px 32px 0 16px !important;
 }

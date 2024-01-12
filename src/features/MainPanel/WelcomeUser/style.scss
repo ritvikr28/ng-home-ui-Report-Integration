@@ -92,3 +92,24 @@
   }
 }
 
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .parent1-subparent {
+    @include essui-global-typography-small-screen-h1;
+    width: 97%;
+  }
+
+  .schoolname {
+    @include essui-global-typography-default-body-bold;
+  }
+
+  .schoolname-res {
+    margin-left: 0;
+  }
+
+  .parent1 {
+    margin-left: 55px;
+    display: flex;
+    flex-direction: row;
+    margin-top: -40px; 
+  }
+}

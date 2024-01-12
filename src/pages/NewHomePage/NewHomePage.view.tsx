@@ -54,7 +54,7 @@ const NewHomepageView: React.FC = () => {
   ] = useState<IQuickLinkApiResponse[] | null>(null);
   const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
-  const isTabletView = useMediaQuery('(min-width:390px) and (max-width: 1023.9px)');
+  const isTabletView = useMediaQuery('(min-width:320px) and (max-width: 1023.9px)');
   // const isMiniMobileView = useMediaQuery('(min-width:390px) and (max-width: 767.9px)');
 
   const showQuickLinkView: () => void = () => {

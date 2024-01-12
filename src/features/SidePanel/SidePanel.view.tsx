@@ -16,18 +16,15 @@ import {
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { SidePanelProps } from "./SidePanelProps";
+import { SidePanelProps, QuickLinkSidePanel } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
 
-
-
-
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View"
+    Operation: "View",
   }
 ];
 
@@ -37,7 +34,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   closePanel,
   showQuickLinkView,
   quicklinkData,
-  setQuickLinkData
+  setQuickLinkData,
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -48,7 +45,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
     MatchPermissions.all
   );
   const loginFullname: string | null = authService.getUsername();
-  const isMobileView = useMediaQuery('(min-width:350px) and (max-width: 1023.7px)');
+  const isMobileView : boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1023.9px)"
+  );
   const handleStarClick: (
     id: number,
     favorite: boolean
@@ -71,39 +70,39 @@ const SidePanel: React.FC<SidePanelProps> = ({
       setIsError(true);
     }
   };
-
-  const titleContent = (
-    <div className="quick-lint-display">
-      {loginFullname && loginFullname.length > 24 ? (
-        <Tooltip
-          dataTestId="test-id"
-          align={TooltipAlign.Center}
-          position={TooltipPosition.Bottom}
-          content={<span>{loginFullname}</span>}
-        >
-          <span className="quick-link-username">
-            <strong>{loginFullname}</strong>
-          </span>
-        </Tooltip>
-      ) : (
-        <span className="quick-link-username">
-          <strong>{loginFullname}</strong>
-        </span>
-      )}
-    </div>
-  );
-
-  const titleAsString = titleContent.props.children.props.children;
- /*eslint-disable */
+ 
+  /*eslint-disable */
   return (
     <>
       <div
-        className={`side-view ${isOpen ? "open open-panel side-view-res" : "side-view-closed"
-          }`}
+        className={`side-view ${
+          isOpen ? "open open-panel side-view-res" : "side-view-closed"
+        }`}
       >
-
-        {isOpen ? isMobileView ? (
-          <SideNavigationPanel title={titleAsString} isOpen={isOpen} onClose={togglePanel}>
+        {isOpen ? (
+          isMobileView ? (
+            <SideNavigationPanel
+              title={
+                loginFullname && loginFullname.length > 24 ? (
+                  <Tooltip
+                    dataTestId="test-id"
+                    align={TooltipAlign.Center}
+                    position={TooltipPosition.Bottom}
+                    content={loginFullname}
+                  >
+                    <span className="quick-link-username-tooltip">
+                      {loginFullname.substring(0, 24) + "..."}
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <span className="quick-link-username-tooltip">
+                    <strong>{loginFullname}</strong>
+                  </span>
+                )
+              }
+              isOpen={isOpen}
+              onClose={togglePanel}
+            >
               <Divider
                 as="li"
                 dataTestId="panel-divider"
@@ -111,99 +110,36 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 orientation={Orientation.HORIZONTAL}
                 role="separator"
               />
-            <SideNavigationPanelContent>
-              <div>
-                <div className="quick-lint-display">
-                  {/* {loginFullname && loginFullname.length > 24 ? (
-                    <Tooltip
-                      dataTestId="test-id"
-                      align={TooltipAlign.Center}
-                      position={TooltipPosition.Bottom}
-                      content={<span>{loginFullname}</span>}
-                    >
-                      <span className="quick-link-username">
-                        <strong>{loginFullname}</strong>
+              <SideNavigationPanelContent>
+                <div>
+                  <div className="quick-lint-display">
+                    {isMobileView ? (
+                      ""
+                    ) : (
+                      <span className="icon-close">
+                        {" "}
+                        <Icon
+                          color={IconColor.Primary500}
+                          dataTestId="btn-90"
+                          id="variable-2"
+                          name="close"
+                          onClick={closePanel}
+                          size={24}
+                        />
                       </span>
-                    </Tooltip>
-                  ) : (
-                    <span className="quick-link-username">
-                      <strong>{loginFullname}</strong>
-                    </span>
-                  )} */}
-
-                  {isMobileView? '':<span className="icon-close">
-                    {" "}
-                    <Icon
-                      color={IconColor.Primary500}
-                      dataTestId="btn-90"
-                      id="variable-2"
-                      name="close"
-                      onClick={closePanel}
-                      size={24}
-                    />
-                  </span>}
-                </div>
-                {isPermissionquicklink && (
-                  <div>
-                    <div className="quick-link">Quick links</div>
-                    <div className="quick-link-padding">
-                      {/*
-  eslint-disable
-*/}
-                      {!isError &&
-                        quicklinkData &&
-                        quicklinkData.slice(0, 6).map((sidelink) => (
-                          <div
-                            className="quick-panel-cont"
-                            key={sidelink.id}
-                            onClick={() => { (window.location.href = sidelink.link); }}
-                            style={{ cursor: "pointer" }}
-                          >
-                            {sidelink.name}
-                            <Icon
-                              color={
-                                sidelink.favourite
-                                  ? IconColor.Primary500
-                                  : IconColor.Neutral800
-                              }
-                              className="icon-margin"
-                              dataTestId={`btn-star${sidelink.id}`}
-
-                              id="variable-2"
-                              name={sidelink.favourite ? "star--filled" : "star"}
-                              size={16}
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent the div click event from being triggered
-                                handleStarClick(sidelink.id, !sidelink.favourite);
-                              }}
-                            /* eslint-enable */
-                            />
-                          </div>
-                        ))}
-
-                      {/*
-  eslint-disable jsx-a11y/anchor-is-valid,
-  no-script-url
-*/}
-                      <a
-                        href="javascript:void(0)"
-                        className="see-all"
-                        onClick={showQuickLinkView}
-                      >
-                        See all
-                      </a>
-                      {/*
-  eslint-enable jsx-a11y/anchor-is-valid,
-  no-script-url
-*/}
-                    </div>
+                    )}
                   </div>
-                )}
-              </div>
-            </SideNavigationPanelContent>
-          </SideNavigationPanel>
-        ) :
-          (
+                  {quickLink({
+                    isPermissionquicklink,
+                    isError,
+                    quicklinkData,
+                    handleStarClick,
+                    showQuickLinkView
+                  })}
+                </div>
+              </SideNavigationPanelContent>
+            </SideNavigationPanel>
+          ) : (
             <div>
               <div className="quick-lint-display">
                 {loginFullname && loginFullname.length > 24 ? (
@@ -235,64 +171,16 @@ const SidePanel: React.FC<SidePanelProps> = ({
                   />
                 </span>
               </div>
-              {isPermissionquicklink && (
-                <div>
-                  <div className="quick-link">Quick links</div>
-                  <div className="quick-link-padding">
-                    {/*
-  eslint-disable
-*/}
-                    {!isError &&
-                      quicklinkData &&
-                      quicklinkData.slice(0, 6).map((sidelink) => (
-                        <div
-                          className="quick-panel-cont"
-                          key={sidelink.id}
-                          onClick={() => { (window.location.href = sidelink.link); }}
-                          style={{ cursor: "pointer" }}
-                        >
-                          {sidelink.name}
-                          <Icon
-                            color={
-                              sidelink.favourite
-                                ? IconColor.Primary500
-                                : IconColor.Neutral800
-                            }
-                            className="icon-margin"
-                            dataTestId={`btn-star${sidelink.id}`}
-
-                            id="variable-2"
-                            name={sidelink.favourite ? "star--filled" : "star"}
-                            size={16}
-                            onClick={(e) => {
-                              e.stopPropagation(); // Prevent the div click event from being triggered
-                              handleStarClick(sidelink.id, !sidelink.favourite);
-                            }}
-                          /* eslint-enable */
-                          />
-                        </div>
-                      ))}
-
-                    {/*
-  eslint-disable jsx-a11y/anchor-is-valid,
-  no-script-url
-*/}
-                    <a
-                      href="javascript:void(0)"
-                      className="see-all"
-                      onClick={showQuickLinkView}
-                    >
-                      See all
-                    </a>
-                    {/*
-  eslint-enable jsx-a11y/anchor-is-valid,
-  no-script-url
-*/}
-                  </div>
-                </div>
-              )}
+              {quickLink({
+                isPermissionquicklink,
+                isError,
+                quicklinkData,
+                handleStarClick,
+                showQuickLinkView
+              })}
             </div>
-          ) : (
+          )
+        ) : (
           <div
             className="open-panel essui-open-panel-filled"
             data-testId="close-panel"
@@ -312,7 +200,83 @@ const SidePanel: React.FC<SidePanelProps> = ({
       </div>
     </>
   );
-  
 };
- /* eslint-enable */
+
+
+//  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
+const quickLink :({
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView
+}:QuickLinkSidePanel) => JSX.Element=({
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView
+}) =>{
+  return (
+    isPermissionquicklink && (
+      <div>
+        <div className="quick-link">Quick links</div>
+        <div className="quick-link-padding">
+          {/*
+eslint-disable
+*/}
+          {!isError &&
+            quicklinkData &&
+            quicklinkData.slice(0, 6).map((sidelink:any) => (
+              <div
+                className="quick-panel-cont"
+                key={sidelink.id}
+                onClick={() => {
+                  window.location.href = sidelink.link;
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                {sidelink.name}
+                <Icon
+                  color={
+                    sidelink.favourite
+                      ? IconColor.Primary500
+                      : IconColor.Neutral800
+                  }
+                  className="icon-margin"
+                  dataTestId={`btn-star${sidelink.id}`}
+                  id="variable-2"
+                  name={sidelink.favourite ? "star--filled" : "star"}
+                  size={16}
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent the div click event from being triggered
+                    handleStarClick(sidelink.id, !sidelink.favourite);
+                  }}
+                  /* eslint-enable */
+                />
+              </div>
+            ))}
+
+          {/*
+eslint-disable jsx-a11y/anchor-is-valid,
+no-script-url
+*/}
+          <a
+            href="javascript:void(0)"
+            className="see-all"
+            onClick={showQuickLinkView}
+          >
+            See all
+          </a>
+          {/*
+eslint-enable jsx-a11y/anchor-is-valid,
+no-script-url
+*/}
+        </div>
+      </div>
+    )
+  );
+};
+
+/* eslint-enable */
 export default SidePanel;

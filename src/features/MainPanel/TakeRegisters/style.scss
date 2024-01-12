@@ -29,7 +29,7 @@
   line-height: 32px;
 }
 
-@media (min-width: 390px) and (max-width:767.9px) {
+@media (min-width: 390px) and (max-width: 767.9px) {
   .your-registers {
     @include essui-global-typography-small-screen-h3;
   }
@@ -48,21 +48,34 @@
 }
 
 .register-icon .essui-button-icon-only--small {
-  //margin-right: 6px;
+  // margin-right: 6px;
   display: "flex";
 }
 
-@media (min-width: 768px) and (max-width: 1280px) {
+.register-icon {
+  margin-right: 16px;
+  gap: 8px;
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .register-icon {
-    margin-right: 4px;
-  } 
+    margin-right: 20px;
+    gap: 8px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .register-icon {
+    margin-right: 18px;
+    gap: 8px;
+  }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .register-icon {
     margin-right: 14px;
     gap: 8px;
-  } 
+  }
 
   .register-icon .essui-button-icon-only--small {
     margin-right: 0;
@@ -82,7 +95,7 @@
     margin: 0 12px;
     width: 350px;
   }
-  
+
   .actioncard-div-close {
     margin: 0 12px;
     width: 350px;
@@ -94,10 +107,26 @@
     margin: 0 12px;
     width: 358px;
   }
-  
+
   .actioncard-div-close {
     margin: 0 12px;
     width: 358px;
+  }
+
+  .register-container {
+    max-width: 100% !important;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 282px;
+  }
+
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 282px;
   }
 
   .register-container {

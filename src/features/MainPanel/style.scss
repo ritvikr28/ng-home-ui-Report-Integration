@@ -26,6 +26,12 @@
     margin: 20px 20px 20px 6px;
   }
 }
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .teacher-panel-container {
+    // width: 1000px;
+    margin: 20px 20px 20px 3px;
+  }
+}
 
 .divider-container {
   height: 1px;

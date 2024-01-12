@@ -61,7 +61,6 @@
 // }
 
 .event-primary-text {
-
   /* stylelint-disable */
   .essui-event__primaryfont {
     /* stylelint-enable */
@@ -142,3 +141,25 @@
 }
 
 /* stylelint-enable */
+@media (min-width: 1440px) {
+  .event-primary-text {
+    width: 166px !important;
+  }
+}
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .event-primary-text {
+    width: 166px !important;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .event-primary-text {
+    width: 358px !important;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .event-primary-text {
+    width: 280px !important;
+  }
+}

@@ -146,6 +146,29 @@
   }
 }
 
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .action-card-container-open {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 374px !important;
+  }
+
+  .action-card .essui-activity-card {
+    margin-left: -1px !important;
+    // width: fit-content;
+  }
+}
+
 .action-card .essui-activity-card {
   margin-left: -8px;
   // width: fit-content;
@@ -181,6 +204,21 @@
 
   .base-class-more {
     height: 70px;
+    white-space: break-spaces;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .sims-container-quicklinks {
+    width: 287px;
+  }
+
+  .base-class-more {
+    height: 94px;
     white-space: break-spaces;
   }
 }
