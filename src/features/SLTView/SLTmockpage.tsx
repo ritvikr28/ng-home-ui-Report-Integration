@@ -61,7 +61,7 @@ const SLTmockpage: () => JSX.Element = () => {
     fetchSchoolNames();
   }, [setSchoolName, setIsError]);
 
-  const fetchAndSetQuickLinkData = async (
+  const fetchAndSetQuickLinkData : () => Promise<void>= async (
    
   ) => {
     try {
@@ -99,7 +99,7 @@ const SLTmockpage: () => JSX.Element = () => {
     })();
   }, []);
 
-  const svgpath = () => (
+  const svgpath: () => JSX.Element = () => (
       <svg
         width="1137"
         height="2352"
@@ -1490,7 +1490,7 @@ const SLTmockpage: () => JSX.Element = () => {
         </defs>
       </svg>
     );
-  const renderContent = () => {
+  const renderContent: () => JSX.Element = () => {
     if (showQuickLink) {
       return (
         <QuickLinkLogic

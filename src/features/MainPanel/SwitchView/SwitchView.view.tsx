@@ -7,7 +7,7 @@ const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
   props: ISwitchViewProps
 ) => {
   const { organisationName, isApiError,path }: ISwitchViewProps = props;
-  const handleSwitchViewClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+  const handleSwitchViewClick: (event: React.MouseEvent<HTMLAnchorElement>) => void = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();  
     if(path === "/"){
     window.location.href ="/"
