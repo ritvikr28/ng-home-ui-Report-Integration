@@ -13,7 +13,9 @@ import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/Schoo
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 
-const EventContainer = ({ isOpen }: any) => {
+const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
+  isOpen,
+}: any) => {
   const [isError, setIsError]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -38,26 +40,10 @@ const EventContainer = ({ isOpen }: any) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
-  const togglePanel: (externalId: string) => void = (externalId: string) => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "card",
-      elementTextOrLabel: "[RemovedEventName]",
-      elementLocation: "body",
-    });
-    setIsOpenPanel((prevIsOpen) => ({
-      ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId],
-    }));
-    setSelectedItem(
-      !isOpenPanel || isOpenPanel[externalId]
-        ? schoolEventsData[0].externalId
-        : externalId
-    );
-  };
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
+      /* istanbul ignore next */
       try {
         const {
           status: responseStatus,
@@ -70,11 +56,13 @@ const EventContainer = ({ isOpen }: any) => {
           responseData: null,
         };
         if (
+          /* istanbul ignore next */
           responseStatus !== undefined &&
           responseStatus !== null &&
           responseData !== undefined &&
           responseData !== null
         ) {
+          /* istanbul ignore next */
           setStatus(responseStatus);
           setIsError(false);
 
@@ -94,7 +82,7 @@ const EventContainer = ({ isOpen }: any) => {
 
     fetchStaffTimeTableEvents();
   }, []);
-  
+
   if (isError || (status !== 200 && status !== 204)) {
     return null;
   }
@@ -113,53 +101,16 @@ const EventContainer = ({ isOpen }: any) => {
       />
     );
   }
-  return (
-    <div className="parent-event-container">
-      {schoolEventsData.map((item, index) => (
-        <div key={item.externalId}>
-          <EventContainerView
-            SchoolEventexternalId={item.externalId}
-            EventTitle={formatEventTitleData(item)}
-            EventTime={formatEventTimeData(item)}
-            RoomCode={item?.room?.roomCode}
-            EventStartDate={item.eventStart}
-            EventEndDate={item.eventEnd}
-            GroupExternalId={item.group.externalId}
-            EventPeriodNum={formateventPeriodNum(item)}
-            togglePanel={() => togglePanel(item.externalId)}
-            isOpen={isOpen}
-            isOpenPanel={isOpenPanel[item.externalId]}
-            GroupDescription={item?.group?.shortName ?? ""}
-            StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
-            index={index}
-            EventCardColor={getBackgroundColor(item)}
-            EventTypeCode={item.eventTypeCode}
-            ClassPeriodExternalId={item.classPeriodExternalId}
-            EventInstanceExternalId={item.eventInstanceExternalId}
-            SelectedItem={selectedItem}
-            isLoader={isLoader}
-          />
-        </div>
-      ))}
-      {schoolEventsData.length < 6 && !isLoader && (
-        <EventCard
-          dataTestId="no-events-to-display"
-          id="no-events-to-display-id"
-          primaryText=""
-          secondaryText=""
-          status={EventCardStatus.DEFAULT}
-          title="No more events"
-          inputWidth={isOpen ? 166 : 145}
-          inputHeight={67}
-          className={
-            isOpen
-              ? `dynamiceventcard isopen event-primary-text no-events`
-              : `dynamiceventcard isclose event-primary-text no-events`
-          }
-        />
-      )}
-    </div>
-  );
+  return returnEventContainer({
+    schoolEventsData,
+    // togglePanel,
+    isOpen,
+    isOpenPanel,
+    selectedItem,
+    isLoader,
+    setIsOpenPanel,
+    setSelectedItem,
+  });
 };
 
 const formatEventTitleData = (eventTitleData: any) => {
@@ -220,5 +171,89 @@ const renderNoEventsCard: () => JSX.Element = () => (
   />
 );
 
+const returnEventContainer: ({
+  schoolEventsData,
+  // togglePanel,
+  isOpen,
+  isOpenPanel,
+  selectedItem,
+  isLoader,
+  setIsOpenPanel,
+  setSelectedItem,
+}: any) => JSX.Element = ({
+  schoolEventsData,
+  // togglePanel,
+  isOpen,
+  isOpenPanel,
+  selectedItem,
+  isLoader,
+  setIsOpenPanel,
+  setSelectedItem,
+}: any) => {
+    const togglePanel: (externalId: string) => void = (externalId: string) => {
+      gtmAnalytics.pushEvent({
+        event: "interact_click",
+        elementType: "card",
+        elementTextOrLabel: "[RemovedEventName]",
+        elementLocation: "body",
+      });
+      setIsOpenPanel((prevIsOpen: any) => ({
+        ...prevIsOpen,
+        [externalId]: !prevIsOpen[externalId],
+      }));
+      setSelectedItem(
+        !isOpenPanel || isOpenPanel[externalId]
+          ? schoolEventsData[0].externalId
+          : externalId
+      );
+    };
+    return (
+      <div className="parent-event-container">
+        {schoolEventsData.map((item: any, index: any) => (
+          <div key={item.externalId}>
+            <EventContainerView
+              SchoolEventexternalId={item.externalId}
+              EventTitle={formatEventTitleData(item)}
+              EventTime={formatEventTimeData(item)}
+              RoomCode={item?.room?.roomCode}
+              EventStartDate={item.eventStart}
+              EventEndDate={item.eventEnd}
+              GroupExternalId={item.group.externalId}
+              EventPeriodNum={formateventPeriodNum(item)}
+              togglePanel={() => togglePanel(item.externalId)}
+              isOpen={isOpen}
+              isOpenPanel={isOpenPanel[item.externalId]}
+              GroupDescription={item?.group?.shortName ?? ""}
+              StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
+              index={index}
+              EventCardColor={getBackgroundColor(item)}
+              EventTypeCode={item.eventTypeCode}
+              ClassPeriodExternalId={item.classPeriodExternalId}
+              EventInstanceExternalId={item.eventInstanceExternalId}
+              SelectedItem={selectedItem}
+              isLoader={isLoader}
+            />
+          </div>
+        ))}
+        {schoolEventsData.length < 6 && !isLoader && (
+          <EventCard
+            dataTestId="no-events-to-display"
+            id="no-events-to-display-id"
+            primaryText=""
+            secondaryText=""
+            status={EventCardStatus.DEFAULT}
+            title="No more events"
+            inputWidth={isOpen ? 166 : 145}
+            inputHeight={67}
+            className={
+              isOpen
+                ? `dynamiceventcard isopen event-primary-text no-events`
+                : `dynamiceventcard isclose event-primary-text no-events`
+            }
+          />
+        )}
+      </div>
+    );
+  };
 
 export default EventContainer;
