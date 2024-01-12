@@ -43,7 +43,7 @@ steps:
       project: '540eca0b-636b-42af-a3f3-983bbd072d7a'
       definition: '455'
       buildVersionToDownload: 'latestFromBranch'
-      branchName: 'refs/heads/master'
+      branchName: 'refs/heads/main'
       allowPartiallySucceededBuilds: true
       allowFailedBuilds: true
       artifactName: 'ui-automation-tests'                  
