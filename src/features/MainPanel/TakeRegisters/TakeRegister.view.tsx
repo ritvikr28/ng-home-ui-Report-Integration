@@ -12,7 +12,7 @@ export interface TakeRegisterProps {
 export const TakeRegisterView: React.FC<TakeRegisterProps> = ({ isOpen, setIsOpen }) =>{
   return(
   <Grid>
-    <GridItem lg={12} md={2} sm={2} className="register-container">
+    <GridItem lg={12} md={8} sm={4} className="register-container">
       <TakeRegisterEvent isOpen={isOpen} setIsOpen={setIsOpen} />
     </GridItem>
   </Grid>

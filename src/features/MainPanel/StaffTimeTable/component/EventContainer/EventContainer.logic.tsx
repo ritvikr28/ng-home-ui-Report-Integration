@@ -15,8 +15,9 @@ const EventContainer = ({ isOpen }:any) => {
   const [status, setStatus]:[number,React.Dispatch<React.SetStateAction<number>>]= useState<number>(0);  
   const [isOpenPanel, setIsOpenPanel]:[Record<string, boolean>,React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
   const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const isMobileView = useMediaQuery('(min-width:350px) and (max-width: 1280px)');
-
+  const isMiniMobileView = useMediaQuery('(min-width:350px) and (max-width: 767.9px)');
+  const isMobileView = useMediaQuery('(min-width:768px) and (max-width: 1023.9px)');
+  const isTabletView = useMediaQuery('(min-width:1024px) and (max-width: 1439.9px)');
   const togglePanel:(externalId: string) => void = (externalId: string) => {
     gtmAnalytics.pushEvent({
       event: "interact_click",
@@ -184,7 +185,7 @@ if(isLoader)
           status={EventCardStatus.DEFAULT}
           title="No more events"
             /* eslint-disable */
-          inputWidth={isMobileView? isOpen? 166 : 145 :166} 
+          inputWidth={!isMobileView?(isTabletView? (isOpen? 166 : 145) :(isMiniMobileView? 358:166)):166}
             /* eslint-enable */         
           inputHeight={67}
           className={

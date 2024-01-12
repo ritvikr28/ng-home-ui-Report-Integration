@@ -3,8 +3,10 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
+  Divider,
   Icon,
   IconColor,
+  Orientation,
   SideNavigationPanel,
   SideNavigationPanelContent,
   Tooltip,
@@ -46,7 +48,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     MatchPermissions.all
   );
   const loginFullname: string | null = authService.getUsername();
-  const isMobileView = useMediaQuery('(min-width:350px) and (max-width: 768px)');
+  const isMobileView = useMediaQuery('(min-width:350px) and (max-width: 1023.7px)');
   const handleStarClick: (
     id: number,
     favorite: boolean
@@ -102,6 +104,13 @@ const SidePanel: React.FC<SidePanelProps> = ({
 
         {isOpen ? isMobileView ? (
           <SideNavigationPanel title={titleAsString} isOpen={isOpen} onClose={togglePanel}>
+              <Divider
+                as="li"
+                dataTestId="panel-divider"
+                id="panel-divider"
+                orientation={Orientation.HORIZONTAL}
+                role="separator"
+              />
             <SideNavigationPanelContent>
               <div>
                 <div className="quick-lint-display">

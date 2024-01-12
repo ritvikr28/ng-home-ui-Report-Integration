@@ -10,7 +10,7 @@ interface SIMSupdatesViewProps {
 export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) =>{
   return (
   <Grid>
-    <GridItem className="sims-container">
+    <GridItem className="sims-container-quicklinks">
       <DiscoverMoreView isOpen={isOpen}/>
     </GridItem>
   </Grid>

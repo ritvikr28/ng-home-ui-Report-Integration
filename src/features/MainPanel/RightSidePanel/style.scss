@@ -12,7 +12,7 @@
 .margin-bottom-label {
   margin-bottom: 8px !important;
 }
-  
+
 .margin-bottom {
   margin-bottom: 24px !important;
   // border: 1px solid red;
@@ -34,18 +34,17 @@
   justify-content: space-between;
   align-items: center;
   padding: 24px 0;
-
 }
 
 .side-panel {
-  .parent {         
+  .parent {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 4px;
     border-radius: 8px;
     border-radius: 8px;
-    border: 1px solid  $global-color-neutral-100;
+    border: 1px solid $global-color-neutral-100;
   }
 
   .child {
@@ -54,37 +53,87 @@
     padding: 8px 16px;
     align-items: center;
     gap: 16px;
-    border: 1px solid  $global-color-neutral-100;
+    border: 1px solid $global-color-neutral-100;
     background: $global-color-neutral-0;
     margin: -1px;
   }
-  
+
   span:first-of-type {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
   }
-  
+
   span:last-of-type {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
   }
 }
 
-@media only screen and (min-device-width: 768px) and (max-device-width: 1280px) {
+@media only screen and (min-device-width: 768px) and (max-device-width: 1439.9px) {
   .essui-side-panel-container-grid-item {
     height: 100vh !important;
     margin-top: 0 !important;
-    padding-bottom: 32px !important;
+    // padding-bottom: 32px !important;
   }
 }
-
 
 .divider-right-panel .essui-divider {
   margin-top: 8px;
 }
 
-@media (min-width: 768px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .divider-right-panel .essui-divider {
     margin-top: 8px;
   }
+
+  .parent-close-button {
+    position: relative;
+    justify-content: right;
+    display: flex;
+  }
+
+  .child-close {
+    margin-top: 32px;
+    margin-bottom: 32px !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .divider-right-panel .essui-divider {
+    margin-top: 8px;
+  }
+
+  .parent-close-button {
+    position: relative;
+    justify-content: center;
+    display: flex;
+  }
+
+  .child-close {
+    flex: 1;
+    margin-top: 32px;
+    margin-bottom: 32px !important;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .divider-right-panel .essui-divider {
+    margin-top: 8px;
+  }
+
+  .parent-close-button {
+    position: relative;
+    justify-content: center;
+    display: flex;
+  }
+
+  .child-close {
+    flex: 1;
+    margin-top: 32px;
+    margin-bottom: 32px !important;
+  }
+}
+
+.essui-side-panel-heading {
+  padding: 16px 32px 0 16px !important;
 }

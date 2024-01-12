@@ -21,14 +21,13 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
 
   const  rel:RelType={rel:"noopener noreferrer"};
   const onCardClick: () => void = () => {};
-  console.log(isOpen, 'test')
   return (
     <>
       <div className= {isOpen? 'sims-link-container':'sims-link-container-close'}>
         <span className="sims-updates">Find out more about SIMS Next Gen </span>
         <span className="sims-link-url ">
           <Button
-            className="base-class"
+            className="base-class-more"
             color={ButtonColor.Secondary}
             dataTestId="btn-save"
             onClick={onButtonClick}
@@ -56,7 +55,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             />
           </Link>
         </GridItem>
-        <GridItem lg={6} className="what-new action-card">
+        <GridItem lg={6} className="what-new action-card onecard">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"

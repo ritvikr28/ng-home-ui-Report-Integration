@@ -1,3 +1,5 @@
+@import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 .register-container {
   // max-width: 1116px;
   gap: 20px;
@@ -27,6 +29,13 @@
   line-height: 32px;
 }
 
+@media (min-width: 390px) and (max-width:767.9px) {
+  .your-registers {
+    @include essui-global-typography-small-screen-h3;
+  }
+}
+
+
 .register-link-url {
   color: var(--primary-500, #2177c2);
   text-align: center;
@@ -49,6 +58,17 @@
   } 
 }
 
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .register-icon {
+    margin-right: 14px;
+    gap: 8px;
+  } 
+
+  .register-icon .essui-button-icon-only--small {
+    margin-right: 0;
+  }
+}
+
 .actioncard-div {
   margin: 0 12px;
 }
@@ -57,15 +77,31 @@
   margin: 0 12px;
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1023.9px) {
   .actioncard-div {
     margin: 0 12px;
-    width: 349px;
+    width: 350px;
   }
   
   .actioncard-div-close {
     margin: 0 12px;
-    width: 303px;
+    width: 350px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 358px;
+  }
+  
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 358px;
+  }
+
+  .register-container {
+    max-width: 100% !important;
   }
 }
 

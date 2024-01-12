@@ -1,3 +1,5 @@
+@import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 .sims-container {
   display: flex;
   // width: 1116px;
@@ -22,13 +24,28 @@
 }
 
 
-@media (min-width: 760px) and (max-width: 1280px) {
+@media (min-width: 768px) and (max-width: 1439.9px) {
   .sims-link-container {
     max-width: 98%;
   }
 
   .sims-link-container-close {
     max-width: 98.4%;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .sims-link-container {
+    max-width: 98%;
+  }
+
+  .sims-link-container-close {
+    display: flex;
+    /* width: 278px; */
+    gap: 16px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: baseline;
   }
 }
 
@@ -84,7 +101,7 @@
 //   width: 354px;
 // }
 
-@media (min-width: 760px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .action-card-container {
     width: 102.4% !important;
   }
@@ -92,6 +109,51 @@
   .action-card-container-close {
     width: 101.7% !important;
 
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .action-card-container {
+    width: 102.4% !important;
+    gap: 19px;
+    justify-content: normal;
+  }
+
+  .action-card-container-close {
+    width: 102.4% !important;
+    gap: 19px;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 371px !important;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .action-card-container {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .action-card-container-close {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  // .what-new {
+  //   width: 374px !important;
+  // }
+
+  .onecard {
+    width: 376px !important;
+  }
+
+  .action-card .essui-activity-card {
+    margin-left: -1px !important;
+    // width: fit-content;
   }
 }
 
@@ -117,4 +179,20 @@
   padding: 16px;
   vertical-align: middle;
   /* width: 100%; */
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+    white-space: break-spaces;
+  }
+
+  .sims-container {
+    width: 379px;
+  }
+
+  .base-class-more {
+    height: 70px;
+    white-space: break-spaces;
+  }
 }

@@ -22,14 +22,13 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
 
   const  rel:RelType={rel:"noopener noreferrer"};
   const onCardClick: () => void = () => {};
-  console.log(isOpen, 'test')
   return (
     <>
       <div className= {isOpen? 'sims-link-container-open':'sims-link-container-closeview'}>
         <span className="sims-updates">Find out more about SIMS Next Gen </span>
         <span className="sims-link-url ">
           <Button
-            className="base-class"
+            className="base-class-more"
             color={ButtonColor.Secondary}
             dataTestId="btn-save"
             onClick={onButtonClick}

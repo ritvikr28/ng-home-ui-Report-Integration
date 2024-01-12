@@ -2,7 +2,7 @@ import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
 import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
-import { Grid, GridItem } from "@essnextgen/ui-kit";
+import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
@@ -54,6 +54,9 @@ const NewHomepageView: React.FC = () => {
   ] = useState<IQuickLinkApiResponse[] | null>(null);
   const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
+  const isTabletView = useMediaQuery('(min-width:390px) and (max-width: 1023.9px)');
+  // const isMiniMobileView = useMediaQuery('(min-width:390px) and (max-width: 767.9px)');
+
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
   };
@@ -91,7 +94,7 @@ const NewHomepageView: React.FC = () => {
 
   return isPermission ? (
     <Grid className="app" dataTestId="NewHomePage">
-      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 2 : 0} sm={isOpen ? 1 : 0}>
+      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 0 : 0} sm={isOpen ? 1 : 0}>
         <SidePanelView
           isOpen={isOpen}
           togglePanel={togglePanel}
@@ -103,9 +106,13 @@ const NewHomepageView: React.FC = () => {
           data-testid="btn-show-quick-link"
         />
       </GridItem>
-      <GridItem className={isOpen ? "body-open-panel" : "body-panel res-body"} lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
+      {/* eslint-disable */}
+      <GridItem className={!isTabletView ? (isOpen ? "body-open-panel" : "body-panel res-body" ):
+         (isOpen ? "body-panel-mobile-open" : "body-panel-mobile")}
+        lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
         {renderContent()}
       </GridItem>
+      {/* eslint-enable */}
     </Grid>
   ) : (
     <Redirect to="/noAccess" />

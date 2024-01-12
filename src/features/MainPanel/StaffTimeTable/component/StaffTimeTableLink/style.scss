@@ -1,3 +1,5 @@
+@import "../../../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 // .timetable-link-conatiner {
 //   // margin-bottom: 20px;
 // }
@@ -15,4 +17,19 @@
 
 .timetable-link-url {
   margin-left: 8px;
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .timetable-link-lable {
+    @include essui-global-typography-small-screen-h3;
+
+  }
+
+  .link-full-timetable {
+    @include essui-global-typography-default-text-link;
+  }
+
+  .register-link-url {
+    @include essui-global-typography-default-text-link;
+  }
 }

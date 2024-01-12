@@ -1,15 +1,31 @@
+@import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 .quicklink #breadcrumbs-wrapper svg {
   margin-left: 0;
 }
 
-@media only screen and (min-width: 1024px) and (max-width: 1280px) {
+@media only screen and (min-width: 1024px) and (max-width: 1439.9px) {
   .breadcrumbs {
     margin-top: -35px;
     margin-left: 70px;
   }
 }
 
-// @media (min-width: 1024px) and (max-width: 1280px) 
+@media only screen and (min-width: 768px) and (max-width: 1023.9px) {
+  .breadcrumbs {
+    margin-top: -35px;
+    margin-left: 50px;
+  }
+}
+
+@media only screen and (min-width: 390px) and (max-width: 767.9px) {
+  .breadcrumbs {
+    margin-top: -35px;
+    margin-left: 50px;
+  }
+}
+
+// @media (min-width: 1024px) and (max-width: 1439.9px)
 // {
 //   .essui-grid-col {
 //     padding: 0;
@@ -44,7 +60,6 @@
   font-weight: 400;
   line-height: 32px;
   margin-bottom: 10px;
-
 }
 
 .quicklinktable {
@@ -52,18 +67,25 @@
   width: 99%;
 }
 
-@media (min-width: 768px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .quicklinktable {
     background-color: #fff;
     width: 102%;
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .quicklinktable {
+    background-color: #fff;
+    width: 105%;
+  }
+}
 
 /* stylelint-disable */
 .essui-table__cell {
   border: 0px;
 }
+
 /* stylelint-enable */
 
 .theadercell {
@@ -77,25 +99,50 @@
   align-self: stretch;
   border-top: 1px solid var(--neutral-200, #c6c6c6);
   background: var(--neutral-200, #c6c6c6);
-
-} 
+}
 
 .simspadding {
   padding-top: 28px;
 }
- 
+
 .quicklinktable-close {
   background-color: #fff;
   width: 99%;
 }
 
-@media (min-width: 768px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .quicklinktable-close {
-    width: 103%;
+    width: 98%;
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .quicklinktable-close {
+    width: 105%;
+  }
+}
 
 .icon-quicklinkwidth .essui-icon-button {
   width: fit-content;
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .quicklinktable {
+    background-color: #fff;
+    width: 100%;
+    margin-left: -3px;
+  }
+
+  .quicklinkheading {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .quicklinktext {
+    @include essui-global-typography-default-body;
+  }
+
+  .quicklinktable-close {
+    width: 100% !important;
+    margin-left: -3px;
+  }
 }

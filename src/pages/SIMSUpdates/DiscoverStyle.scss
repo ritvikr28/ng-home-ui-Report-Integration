@@ -1,4 +1,6 @@
-.sims-container {
+@import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
+.sims-container-quicklinks {
   display: flex;
   // width: 1116px;
   width: 100%;
@@ -22,13 +24,23 @@
 }
 
 
-@media (min-width: 760px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .sims-link-container-open {
     width: 102.1%;
   }
 
   .sims-link-container-closeview {
     width: 98.4%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .sims-link-container-open {
+    width: 105%;
+  }
+
+  .sims-link-container-closeview {
+    width: 105%;
   }
 }
 
@@ -84,7 +96,7 @@
 //   width: 354px;
 // }
 
-@media (min-width: 760px) and (max-width: 1280px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .action-card-container-open {
     width: 106.6% !important;
   }
@@ -92,6 +104,45 @@
   .action-card-container-closeview {
     width: 101.7% !important;
 
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .action-card-container-open {
+    width: 110% !important;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 110% !important;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 371px !important;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .action-card-container-open {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 374px !important;
+  }
+
+  .action-card .essui-activity-card {
+    margin-left: -1px !important;
+    // width: fit-content;
   }
 }
 
@@ -117,4 +168,19 @@
   padding: 16px;
   vertical-align: middle;
   /* width: 100%; */
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .sims-container-quicklinks {
+    width: 360px;
+  }
+
+  .base-class-more {
+    height: 70px;
+    white-space: break-spaces;
+  }
 }
