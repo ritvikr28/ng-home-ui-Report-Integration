@@ -12,11 +12,13 @@
   gap: 8px;
   display: flex;
   align-items: baseline;
+  margin-bottom: 10px;
 }
 
-@media (max-width: 1024px) {
-  .register-container {
-    // width: 829px;
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .register-link-container {
+    gap: 1px;
+    flex-direction: column;
   }
 }
 
@@ -34,7 +36,6 @@
     @include essui-global-typography-small-screen-h3;
   }
 }
-
 
 .register-link-url {
   color: var(--primary-500, #2177c2);
@@ -57,10 +58,36 @@
   gap: 8px;
 }
 
+.register-link-event-open {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 90.6%;
+  margin-top: -45px;
+}
+
+.register-link-event-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 90.9%;
+  margin-top: -45px;
+}
+
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .register-icon {
     margin-right: 20px;
     gap: 8px;
+  }
+
+  .register-link-event-open {
+    margin-left: 85%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 88.8%;
+    margin-top: -45px;
   }
 }
 
@@ -89,7 +116,17 @@
 .actioncard-div-close {
   margin: 0 12px;
 }
+// @media (min-width: 1440px) {
+// .actioncard-div {
+//   margin: 0 12px;
+//   width: 261px;
+// }
 
+// .actioncard-div-close {
+//   margin: 0 12px;
+//   width: 266px;
+// }
+// }
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .actioncard-div {
     margin: 0 12px;
@@ -99,6 +136,19 @@
   .actioncard-div-close {
     margin: 0 12px;
     width: 350px;
+  }
+
+  .register-link-event-open {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 85.5%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 85.5%;
+    margin-top: -45px;
   }
 }
 
@@ -116,6 +166,16 @@
   .register-container {
     max-width: 100% !important;
   }
+
+  .register-link-event-open {
+    margin-left: 73%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 73%;
+    margin-top: -45px;
+  }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
@@ -131,6 +191,16 @@
 
   .register-container {
     max-width: 100% !important;
+  }
+
+  .register-link-event-open {
+    margin-left: 65%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 65%;
+    margin-top: -45px;
   }
 }
 

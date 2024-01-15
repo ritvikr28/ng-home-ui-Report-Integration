@@ -93,3 +93,57 @@
 
 }
 
+
+.eventcardnohighlight .essui-activity-card:active {
+  background-color: #fff;
+}
+
+.eventcardnohighlight .essui-activity-card:active { 
+  border: 0;
+  padding: 16px;
+  
+}
+
+.eventcardnohighlight .essui-activity-card:focus {
+  border: 0;
+  padding: 16px;
+}
+
+.eventcardnohighlight .essui-activity-card.active div {  
+  color: #000;
+}
+
+.eventcardnohighlight .essui-activity-card:active div {
+  color: #000;
+}
+
+.reg-loader .loader-wrapper {
+  margin: 0 auto !important;
+}
+
+.loader-margin .essui-loader .essui-loader-text {
+  
+  margin: 1rem 0 !important;
+}
+
+.loader-size  .essui-loader .essui-loader-img .essui-loader-svg {
+  height: 60px !important;
+  width: 60px !important;;
+  
+}
+
+.loader-reg-size  .essui-loader .essui-loader-img .essui-loader-svg {
+  height: 60px !important;
+  width: 60px !important;
+  margin-top: 20px;
+}
+
+.reg-loader-margin {
+  margin-top: 0 !important;
+  margin-bottom: -10px !important;
+  margin-left: 50px !important;
+}
+
+.reg-size-margin .essui-loader .essui-loader-img {
+  height: 40px !important;
+}

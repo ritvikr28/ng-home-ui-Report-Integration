@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
@@ -25,21 +25,21 @@ const requiredPermissionsforquicklink: Permission[] = [
   }
 ];
 
-const fetchAndSetQuickLinkData = async (
-  setQuickLinkData: Dispatch<SetStateAction<IQuickLinkApiResponse[] | null>>,
-  setIsError: Dispatch<SetStateAction<boolean>>
-) => {
-  try {
-    logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
-    const responseapidata: IFetchQuickLinkDetailsFunctionResponse | null | undefined = await fetchQuickLinkDetails();
-    if (responseapidata != null) {
-      setQuickLinkData(responseapidata.response);
-      setIsError(responseapidata.status);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-};
+// const fetchAndSetQuickLinkData = async (
+//   setQuickLinkData: Dispatch<SetStateAction<IQuickLinkApiResponse[] | null>>,
+//   setIsError: Dispatch<SetStateAction<boolean>>
+// ) => {
+//   try {
+//     logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
+//     const responseapidata: IFetchQuickLinkDetailsFunctionResponse | null | undefined = await fetchQuickLinkDetails();
+//     if (responseapidata != null) {
+//       setQuickLinkData(responseapidata.response);
+//       setIsError(responseapidata.status);
+//     }
+//   } catch (error) {
+//     console.error(error);
+//   }
+// };
 
 const NewHomepageView: React.FC = () => {
   const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all);
@@ -54,8 +54,9 @@ const NewHomepageView: React.FC = () => {
   ] = useState<IQuickLinkApiResponse[] | null>(null);
   const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
-  const isTabletView = useMediaQuery('(min-width:320px) and (max-width: 1023.9px)');
+  const isTabletView: boolean = useMediaQuery('(min-width:320px) and (max-width: 1023.9px)');
   // const isMiniMobileView = useMediaQuery('(min-width:390px) and (max-width: 767.9px)');
+  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
@@ -75,7 +76,21 @@ const NewHomepageView: React.FC = () => {
 
   useEffect(() => {
     (async () => {
-      await fetchAndSetQuickLinkData(setQuickLinkData, setIsError);
+      try {   
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
+        const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
+       /* istanbul ignore next */
+        if( responseapidata !=null )
+       { 
+        setQuickLinkData(responseapidata.response);
+        setIsError(responseapidata.status);
+        setLoader(false);     
+       }
+       
+      } catch (error) { 
+        setLoader(false); 
+        console.log(error);       
+      }      
     })();
   }, []);
 
@@ -104,6 +119,7 @@ const NewHomepageView: React.FC = () => {
           setQuickLinkData={setQuickLinkData}
           quicklinkData={isError ? [] : quickLinkData}
           data-testid="btn-show-quick-link"
+            isLoader ={isLoader}
         />
       </GridItem>
       {/* eslint-disable */}

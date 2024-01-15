@@ -24,6 +24,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   apiError,
   displaystarredicon,
   isOpen
+  
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
@@ -52,7 +53,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {apiQuickLinkData &&
+                  { 
+                    apiQuickLinkData &&
                       apiQuickLinkData.map((link) => (
                         <TableRow key={link.id}>
                           <TableCell>                            

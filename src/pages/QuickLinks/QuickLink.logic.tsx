@@ -18,11 +18,13 @@ const QuickLinkLogic: React.FC<
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  
+
+ 
   const handleStarClick: (
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
+     
       try {
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
@@ -35,11 +37,13 @@ const QuickLinkLogic: React.FC<
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
+          
         }
       } 
     } catch (error) {
        /* istanbul ignore next */
       setIsError(true);
+      
     }
   };
 
@@ -60,15 +64,15 @@ const QuickLinkLogic: React.FC<
     );
 
   return (
-    <>
-      {" "}
+    
       <QuickLink
         apiQuickLinkData={apiQuickLinkData}
         apiError={isError}
         displaystarredicon={displaystarredicon}
         isOpen ={isOpen}
+        
       />
-    </>
+    
   );
 };
 export default QuickLinkLogic;

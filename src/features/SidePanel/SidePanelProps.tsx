@@ -9,6 +9,7 @@ export interface SidePanelProps {
   showQuickLinkView?: any;
   quicklinkData? : IQuickLinkApiResponse[] | null;
   setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
+  isLoader?:boolean;
 }
 
 export interface QuickLinkSidePanel{
@@ -17,4 +18,5 @@ export interface QuickLinkSidePanel{
   quicklinkData:any;
   handleStarClick: any;
   showQuickLinkView: any;
+  isLoader: any;
 }

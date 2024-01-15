@@ -9,7 +9,7 @@ import {
   TagColor
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
-import TakeRegistersLinkview from "../TakeRegisterLink/TakeRegisterLink.view";
+
 import "./carousalstyle.scss";
 import { responsive, iscloseresponsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
@@ -74,8 +74,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   const nextSlide = () => {      
     if (carouselRef.current) {          
       carouselRef.current.next();
-      setTimeout(moveRight,1000)     
-      
+      moveRight();    
     }
   };   
   const moveRight=()=>{
@@ -90,8 +89,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   const previousSlide = () => {    
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
-      setTimeout(moveLeft,1000)
-     
+      moveLeft();    
     }
   };
  
@@ -160,14 +158,16 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   };
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
+      <div className={isOpen? "register-link-event-open": "register-link-event-close"}
+        // style={{
+        //   display: "flex",
+        //   justifyContent: "space-between",
+        //   alignItems: "center",
+        //   marginLeft: "91%",
+        //   marginTop: "-45px"
+        // }}
       >
-        <TakeRegistersLinkview />
+        
         <div
           style={{
             display: "flex",
@@ -220,7 +220,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             infinite={false}
             keyBoardControl
             customTransition="all .5"
-            transitionDuration={500}
+            transitionDuration={50}
             containerClass="carousel-container"
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
@@ -245,18 +245,20 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     tagColor={
                       item.isCompleted ? TagColor.Success : TagColor.Outstanding
                     }
+                    isShowArrowIcon= {true}
                   />
                 </div>
               ))
             }
             {apiRegsiterEventData.length > 0 &&
-              <div className="actioncard-div noregister">
+              <div className="actioncard-div noregister eventcardnohighlight">
                 <ActionCard
                   dataTestId="test-id"
-                  icon={<></>}
+                  icon={<FilledGraphDataIcon />}
                   id="no-more-register-id"
                   onClickActionCard={ () => {}}
                   primaryText="No more registers"
+                  isShowArrowIcon= {false}
                 />
               </div>
               }
@@ -265,14 +267,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className={ isOpen? "carousel-container carousel-item-padding-40-px noregisterblock noregister ":
-            "carousel-container-close carousel-item-padding-40-px noregisterblock noregister "}>
+            <div className={ isOpen? "carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
+            "carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}
                 id="no-register-id"
-                onClickActionCard={() => {}}
+                onClickActionCard={ () => {}}
                 primaryText="No registers today"
+                isShowArrowIcon= {false}
               />
             </div>
           )

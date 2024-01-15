@@ -187,6 +187,7 @@ describe("QuickLink Component", () => {
     }) ;
   
   });
+
   test('renders QuickLink component with empty data and star icon',async () => {
     const axiosResponse: AxiosResponse = {
       data: undefined,
@@ -226,6 +227,7 @@ describe("QuickLink Component", () => {
     }) ;
     
   });
+
   test('renders QuickLink component with mock data and star icon error for api',async () => {
     const axiosResponse: AxiosResponse = {
       data: {error:null,payload:true,status:200},

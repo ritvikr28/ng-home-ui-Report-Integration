@@ -18,7 +18,7 @@ export interface IEventContainerProps {
   ClassPeriodExternalId: string;
   EventInstanceExternalId: string;
   SelectedItem: string;
-  isLoader?: boolean;
   isOpen?: boolean;
   isOpenPanel?: boolean;
+  isLoader?:boolean;
 }

@@ -9,6 +9,8 @@ import {
   Orientation,
   SideNavigationPanel,
   SideNavigationPanelContent,
+  Loader,
+  LoaderType,
   Tooltip,
   TooltipAlign,
   TooltipPosition,
@@ -35,6 +37,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   showQuickLinkView,
   quicklinkData,
   setQuickLinkData,
+  isLoader,
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -52,6 +55,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
+   
     try {
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
@@ -64,6 +68,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
+          
         }
       }
     } catch (error) {
@@ -134,7 +139,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     isError,
                     quicklinkData,
                     handleStarClick,
-                    showQuickLinkView
+                    showQuickLinkView,
+                    isLoader
                   })}
                 </div>
               </SideNavigationPanelContent>
@@ -176,7 +182,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 isError,
                 quicklinkData,
                 handleStarClick,
-                showQuickLinkView
+                showQuickLinkView,
+                isLoader
               })}
             </div>
           )
@@ -209,13 +216,15 @@ const quickLink :({
   isError,
   quicklinkData,
   handleStarClick,
-  showQuickLinkView
+  showQuickLinkView,
+  isLoader
 }:QuickLinkSidePanel) => JSX.Element=({
   isPermissionquicklink,
   isError,
   quicklinkData,
   handleStarClick,
-  showQuickLinkView
+  showQuickLinkView,
+  isLoader
 }) =>{
   return (
     isPermissionquicklink && (
@@ -225,37 +234,48 @@ const quickLink :({
           {/*
 eslint-disable
 */}
-          {!isError &&
-            quicklinkData &&
-            quicklinkData.slice(0, 6).map((sidelink:any) => (
-              <div
-                className="quick-panel-cont"
-                key={sidelink.id}
-                onClick={() => {
-                  window.location.href = sidelink.link;
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                {sidelink.name}
-                <Icon
-                  color={
-                    sidelink.favourite
-                      ? IconColor.Primary500
-                      : IconColor.Neutral800
-                  }
-                  className="icon-margin"
-                  dataTestId={`btn-star${sidelink.id}`}
-                  id="variable-2"
-                  name={sidelink.favourite ? "star--filled" : "star"}
-                  size={16}
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevent the div click event from being triggered
-                    handleStarClick(sidelink.id, !sidelink.favourite);
-                  }}
-                  /* eslint-enable */
-                />
-              </div>
-            ))}
+                  {isLoader  ? (
+                    <div>
+                      <Loader
+                        dataTestId="sidepanel-quicklinkerror-loader"
+                        className="loader-wrapper loader-sidepanel-quicklink"
+                        loaderText="Loading..."
+                        loaderType={LoaderType.Circular}
+                      />
+                    </div>
+                  ) : (
+                    !isError &&
+                    quicklinkData &&
+                    quicklinkData.slice(0, 6).map((sidelink: any) => (
+                      <div
+                        className="quick-panel-cont"
+                        key={sidelink.id}
+                        onClick={() => {
+                          window.location.href = sidelink.link;
+                        }}
+                        style={{ cursor: "pointer" }}
+                      >
+                        {sidelink.name}
+                        <Icon
+                          color={
+                            sidelink.favourite
+                              ? IconColor.Primary500
+                              : IconColor.Neutral800
+                          }
+                          className="icon-margin"
+                          dataTestId={`btn-star${sidelink.id}`}
+                          id="variable-2"
+                          name={sidelink.favourite ? "star--filled" : "star"}
+                          size={16}
+                          onClick={(e) => {
+                            e.stopPropagation(); // Prevent the div click event from being triggered
+                            handleStarClick(sidelink.id, !sidelink.favourite);
+                          }}
+                          /* eslint-enable */
+                        />
+                      </div>
+                    ))
+                  )}
 
           {/*
 eslint-disable jsx-a11y/anchor-is-valid,
