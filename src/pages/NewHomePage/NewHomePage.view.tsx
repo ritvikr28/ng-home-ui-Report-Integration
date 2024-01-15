@@ -72,6 +72,7 @@ const requiredPermissionsforquicklink: Permission[] = [
     (async () => {
       try {   
         logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)
+        gtmAnalytics.pushPageViewEvent(); 
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        /* istanbul ignore next */
         if( responseapidata !=null )
@@ -90,7 +91,6 @@ const requiredPermissionsforquicklink: Permission[] = [
   
   return isPermission ? (
     <>
-    { gtmAnalytics.pushPageViewEvent() }
       <Grid className="app" dataTestId="NewHomePage">
         <GridItem
           className={isOpen ? "side-margin" : "side-margin-closed"}
