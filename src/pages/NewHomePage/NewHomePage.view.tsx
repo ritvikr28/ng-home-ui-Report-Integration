@@ -79,6 +79,7 @@ const NewHomepageView: React.FC = () => {
     (async () => {
       try {   
         logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)
+        gtmAnalytics.pushPageViewEvent(); 
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        /* istanbul ignore next */
         if( responseapidata !=null )
@@ -110,7 +111,6 @@ const NewHomepageView: React.FC = () => {
 
   return isPermission ? (
     <>
-    { gtmAnalytics.pushPageViewEvent() }
     <Grid className="app" dataTestId="NewHomePage">
       <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 0 : 0} sm={isOpen ? 1 : 0}>
         <SidePanelView
