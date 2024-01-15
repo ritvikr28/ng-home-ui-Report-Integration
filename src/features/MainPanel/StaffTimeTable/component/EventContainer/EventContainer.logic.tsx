@@ -14,7 +14,7 @@ import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
-  isOpen,
+  isOpen
 }: any) => {
   const [isError, setIsError]: [
     boolean,
@@ -47,13 +47,13 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       try {
         const {
           status: responseStatus,
-          responseData,
+          responseData
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
         } = (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null,
+          responseData: null
         };
         if (
           /* istanbul ignore next */
@@ -109,7 +109,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     selectedItem,
     isLoader,
     setIsOpenPanel,
-    setSelectedItem,
+    setSelectedItem
   });
 };
 
@@ -188,18 +188,18 @@ const returnEventContainer: ({
   selectedItem,
   isLoader,
   setIsOpenPanel,
-  setSelectedItem,
+  setSelectedItem
 }: any) => {
     const togglePanel: (externalId: string) => void = (externalId: string) => {
       gtmAnalytics.pushEvent({
         event: "interact_click",
         elementType: "card",
         elementTextOrLabel: "[RemovedEventName]",
-        elementLocation: "body",
+        elementLocation: "body"
       });
       setIsOpenPanel((prevIsOpen: any) => ({
         ...prevIsOpen,
-        [externalId]: !prevIsOpen[externalId],
+        [externalId]: !prevIsOpen[externalId]
       }));
       setSelectedItem(
         !isOpenPanel || isOpenPanel[externalId]

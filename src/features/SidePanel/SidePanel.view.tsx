@@ -26,7 +26,7 @@ import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quick
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
@@ -37,7 +37,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   showQuickLinkView,
   quicklinkData,
   setQuickLinkData,
-  isLoader,
+  isLoader
 }) => {
   const [isError, setIsError]: [
     boolean,

@@ -25,7 +25,7 @@ export const EventContainerView: (
     ClassPeriodExternalId,
     EventInstanceExternalId,
     SelectedItem,
-    isOpenPanel,
+    isOpenPanel
   }: IEventContainerProps = props;
 
   return (
