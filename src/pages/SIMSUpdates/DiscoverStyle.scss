@@ -1,6 +1,6 @@
-@import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+@import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
 
-.sims-container {
+.sims-container-quicklinks {
   display: flex;
   // width: 1116px;
   width: 100%;
@@ -9,14 +9,14 @@
   gap: 24px;
 }
 
-.sims-link-container {
+.sims-link-container-open {
   display: flex;
   width: 99.3%;
   justify-content: space-between;
   align-items: baseline;
 }
 
-.sims-link-container-close {
+.sims-link-container-closeview {
   display: flex;
   width: 99.3%;
   justify-content: space-between;
@@ -24,43 +24,23 @@
 }
 
 
-@media (min-width: 768px) and (max-width: 1439.9px) {
-  .sims-link-container {
-    max-width: 98%;
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .sims-link-container-open {
+    width: 102.1%;
   }
 
-  .sims-link-container-close {
-    max-width: 98.4%;
-  }
-}
-
-@media (min-width: 390px) and (max-width: 767.9px) {
-  .sims-link-container {
-    max-width: 98%;
-  }
-
-  .sims-link-container-close {
-    display: flex;
-    /* width: 278px; */
-    gap: 16px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
+  .sims-link-container-closeview {
+    width: 98.4%;
   }
 }
 
-@media (min-width: 320px) and (max-width: 389.9px) {
-  .sims-link-container {
-    max-width: 98%;
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .sims-link-container-open {
+    width: 105%;
   }
 
-  .sims-link-container-close {
-    display: flex;
-    /* width: 278px; */
-    gap: 16px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: baseline;
+  .sims-link-container-closeview {
+    width: 105%;
   }
 }
 
@@ -94,7 +74,7 @@
   color: var(--neutral-800, #303030);
 }
 
-.action-card-container {
+.action-card-container-open {
   color: Neutral/800;
   display: flex;
   // align-items: flex-start;
@@ -103,7 +83,7 @@
   // gap: 20px;
 }
 
-.action-card-container-close {
+.action-card-container-closeview {
   color: Neutral/800;
   display: flex;
   // align-items: flex-start;
@@ -117,26 +97,24 @@
 // }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
-  .action-card-container {
-    width: 102.4% !important;
+  .action-card-container-open {
+    width: 106.6% !important;
   }
 
-  .action-card-container-close {
+  .action-card-container-closeview {
     width: 101.7% !important;
 
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
-  .action-card-container {
-    width: 102.4% !important;
-    gap: 19px;
+  .action-card-container-open {
+    width: 110% !important;
     justify-content: normal;
   }
 
-  .action-card-container-close {
-    width: 102.4% !important;
-    gap: 19px;
+  .action-card-container-closeview {
+    width: 110% !important;
     justify-content: normal;
   }
 
@@ -146,24 +124,20 @@
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
-  .action-card-container {
+  .action-card-container-open {
     width: 104% !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  .action-card-container-close {
+  .action-card-container-closeview {
     width: 104% !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  // .what-new {
-  //   width: 374px !important;
-  // }
-
-  .onecard {
-    width: 376px !important;
+  .what-new {
+    width: 374px !important;
   }
 
   .action-card .essui-activity-card {
@@ -173,24 +147,20 @@
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
-  .action-card-container {
+  .action-card-container-open {
     width: 104% !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  .action-card-container-close {
+  .action-card-container-closeview {
     width: 104% !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  // .what-new {
-  //   width: 374px !important;
-  // }
-
-  .onecard {
-    width: 376px !important;
+  .what-new {
+    width: 374px !important;
   }
 
   .action-card .essui-activity-card {
@@ -226,11 +196,10 @@
 @media (min-width: 390px) and (max-width: 767.9px) {
   .sims-updates {
     @include essui-global-typography-small-screen-h3;
-    white-space: break-spaces;
   }
 
-  .sims-container {
-    width: 379px;
+  .sims-container-quicklinks {
+    width: 360px;
   }
 
   .base-class-more {
@@ -239,15 +208,13 @@
   }
 }
 
-
 @media (min-width: 320px) and (max-width: 389.9px) {
   .sims-updates {
     @include essui-global-typography-small-screen-h3;
-    white-space: break-spaces;
   }
 
-  .sims-container {
-    width: 305px;
+  .sims-container-quicklinks {
+    width: 287px;
   }
 
   .base-class-more {

@@ -114,7 +114,7 @@ describe("SidePanel Component", () => {
     jest
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);
-    const {getByText} =  render(<SidePanel isOpen={true}
+    const {getByText} =  render(<SidePanel isOpen
     togglePanel={jest.fn()}
     closePanel={jest.fn()}
     
@@ -132,7 +132,7 @@ describe("SidePanel Component", () => {
     jest
     .spyOn(qicklink, "FetchQuickLinkData")
     .mockResolvedValue(mockres);
-    const { container, getByText } = render(<SidePanel  isOpen={true}
+    const { container, getByText } = render(<SidePanel  isOpen
       togglePanel={jest.fn()}
       closePanel={jest.fn()}
       showQuickLinkView= {jest.fn()}
@@ -154,7 +154,7 @@ describe("SidePanel Component", () => {
  
     .mockImplementation(() => "JonathanQuincyAdamsSmithsonianabcd");
     
-    const {getByText } = render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+    const {getByText } = render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
      console.log(getByText);
     expect(getByText("JonathanQuincyAdamsSmithsonianabcd")).toBeInTheDocument();
 
@@ -181,7 +181,7 @@ describe("SidePanel Component", () => {
    jest
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
-   const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+   const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
     
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
@@ -201,7 +201,6 @@ describe("SidePanel Component", () => {
     }) ;
   
   });
-
   test('renders sidepanel component with empty data and star icon',async () => {
     const axiosResponse: AxiosResponse = {
       data: undefined,
@@ -221,7 +220,7 @@ describe("SidePanel Component", () => {
    jest
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
-   const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+   const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
   ;
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
@@ -244,7 +243,7 @@ describe("SidePanel Component", () => {
 
   test("changes window location when a quick link is clicked", () => {
    
-    const {getByText} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+    const {getByText} =  render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
     
     fireEvent.click(getByText("Link 1"));
     expect(window.location.href).toBe("http://localhost/");
@@ -271,7 +270,7 @@ describe("SidePanel Component", () => {
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
  
-   const {getByText, queryAllByTestId, getByTestId} =  render(<SidePanel isOpen={true} togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
+   const {getByText, queryAllByTestId, getByTestId} =  render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
   expect(getByText('Link 1')).toBeInTheDocument();  
     expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
  

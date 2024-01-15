@@ -6,7 +6,9 @@ import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/re
 import "./carousalstyle.scss";
 
 
-const TakeRegisterEvent: () => JSX.Element = () => {
+/* eslint-disable */ 
+const TakeRegisterEvent: ({ isOpen, setIsOpen }:any) => JSX.Element = ({ isOpen, setIsOpen }) => {
+  /* eslint-enable */ 
   const [registerEventData, setRegisterEventApiData]:[IRegistersDetails[] | null,React.Dispatch<React.SetStateAction<IRegistersDetails[] | null>>]  = useState< IRegistersDetails[] | null>(null);
 
   const [isError, setIsError]:[boolean,React.Dispatch<React.SetStateAction<boolean>>]  = useState<boolean>(false); 
@@ -45,7 +47,9 @@ const TakeRegisterEvent: () => JSX.Element = () => {
   return (
     <TakeRegisterEventView
       apiRegsiterEventData={registerEventData}
-      apiError={isError}      
+      apiError={isError} 
+      isOpen={isOpen}
+      // setIsOpen ={setIsOpen}     
     />
   );
 };

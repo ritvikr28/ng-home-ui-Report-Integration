@@ -7,9 +7,10 @@ import {
   Grid,
   GridItem
 } from "@essnextgen/ui-kit";
-  /* eslint-disable */
+
+/* eslint-disable */
 const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
-    /* eslint-disable */
+  /* eslint-enable */
   const onButtonClick: () => void = () => {
    const url = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
   window.open(url,"_blank");
@@ -23,7 +24,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
   const onCardClick: () => void = () => {};
   return (
     <>
-      <div className= {isOpen? 'sims-link-container':'sims-link-container-close'}>
+      <div className= {isOpen? 'sims-link-container-open':'sims-link-container-closeview'}>
         <span className="sims-updates">Find out more about SIMS Next Gen </span>
         <span className="sims-link-url ">
           <Button
@@ -37,7 +38,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
           </Button>
         </span>
       </div>
-      <Grid className={isOpen? "action-card-container sims-ng":"action-card-container-close sims-ng"}>
+      <Grid className={isOpen? "action-card-container-open sims-ng":"action-card-container-closeview sims-ng"}>
         <GridItem lg={6} className="what-new">
           <Link
             dataTestId="link1"
@@ -55,7 +56,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             />
           </Link>
         </GridItem>
-        <GridItem lg={6} className="what-new action-card onecard">
+        <GridItem lg={6} className="what-new action-card">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"

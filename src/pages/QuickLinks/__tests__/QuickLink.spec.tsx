@@ -112,7 +112,7 @@ describe("QuickLink Component", () => {
     setIsError(false);
  
    await act(async () => {
-       render(<QuickLinkLogic isOpen ={true} setQuickLinkData={jest.fn()}/>);
+       render(<QuickLinkLogic isOpen setQuickLinkData={jest.fn()}/>);
       
   });
 
@@ -139,7 +139,7 @@ describe("QuickLink Component", () => {
       jest
       .spyOn(qicklink, "FetchQuickLinkData")
       .mockResolvedValue(mockres);
-      const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} isOpen={true} apiError={false} displaystarredicon={jest.fn()}/>);
+      const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} isOpen apiError={false} displaystarredicon={jest.fn()}/>);
    
     const linkElement = getByText("Link 1");
   
@@ -168,7 +168,7 @@ describe("QuickLink Component", () => {
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
 
-   const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
+   const {getByText} =  render(<QuickLinkLogic isOpen apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(screen.queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
 
@@ -208,7 +208,7 @@ describe("QuickLink Component", () => {
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
 
-   const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
+   const {getByText} =  render(<QuickLinkLogic isOpen apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();   
     expect(screen.queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
     const starClicks = screen.getByTestId("btn-star1");   
@@ -250,7 +250,7 @@ describe("QuickLink Component", () => {
    .spyOn(React, 'useState')
    .mockImplementationOnce(useStateMock);
  
-   const {getByText} =  render(<QuickLinkLogic isOpen ={true} apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
+   const {getByText} =  render(<QuickLinkLogic isOpen apiQuickLinkData={mockApiResponse} setQuickLinkData={jest.fn()}/>);
   expect(getByText('Link 1')).toBeInTheDocument();  
     expect(screen.queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
  

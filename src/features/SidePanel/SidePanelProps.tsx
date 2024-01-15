@@ -11,3 +11,12 @@ export interface SidePanelProps {
   setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
   isLoader?:boolean;
 }
+
+export interface QuickLinkSidePanel{
+  isPermissionquicklink: any;
+  isError:any;
+  quicklinkData:any;
+  handleStarClick: any;
+  showQuickLinkView: any;
+  isLoader: any;
+}

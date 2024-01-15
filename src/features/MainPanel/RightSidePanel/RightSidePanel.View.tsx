@@ -73,6 +73,7 @@ export const RightSidePanelView: (
         isOpen={isOpen}
         onClose={handlePanelClose}
         initialFocusElementId="close-button-id"
+        className={isOpen? '': 'side-panel-close-view'}
       >
         <SidePanelContent>
           <div className="side-panel-main-container">
@@ -120,6 +121,7 @@ export const RightSidePanelView: (
                 id="panel-divider"
                 orientation={Orientation.HORIZONTAL}
                 role="separator"
+                className="divider-right-panel"
               />
             </div>
 
@@ -217,15 +219,17 @@ export const RightSidePanelView: (
         </SidePanelContent>
 
         <SidePanelFooter>
+          <div className="parent-close-button">
           <Button
             size={ButtonSize.Medium}
-            className="btn-full-width cancel-btn"
+            className="btn-full-width cancel-btn child-close"
             onClick={() => handlePanelClose()}
             id="close-button-id"
             dataTestId="close-button"
           >
             Close
           </Button>
+          </div>
         </SidePanelFooter>
       </SidePanel>
     </div>

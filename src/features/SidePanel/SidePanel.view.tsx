@@ -3,17 +3,22 @@ import {
   Button,
   ButtonColor,
   ButtonSize,
+  Divider,
   Icon,
   IconColor,
+  Orientation,
+  SideNavigationPanel,
+  SideNavigationPanelContent,
   Loader,
   LoaderType,
   Tooltip,
   TooltipAlign,
-  TooltipPosition
+  TooltipPosition,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { SidePanelProps } from "./SidePanelProps";
+import { SidePanelProps, QuickLinkSidePanel } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
@@ -43,7 +48,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
     MatchPermissions.all
   );
   const loginFullname: string | null = authService.getUsername();
- 
+  const isMobileView : boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1023.9px)"
+  );
   const handleStarClick: (
     id: number,
     favorite: boolean
@@ -68,52 +75,164 @@ const SidePanel: React.FC<SidePanelProps> = ({
       setIsError(true);
     }
   };
-
+ 
+  /*eslint-disable */
   return (
     <>
       <div
         className={`side-view ${
-          isOpen ? "open open-panel" : "side-view-closed"
+          isOpen ? "open open-panel side-view-res" : "side-view-closed"
         }`}
       >
         {isOpen ? (
-          <div>
-            <div className="quick-lint-display">
-              {loginFullname && loginFullname.length > 24 ? (
-                <Tooltip
-                  dataTestId="test-id"
-                  align={TooltipAlign.Center}
-                  position={TooltipPosition.Bottom}
-                  content={<span>{loginFullname}</span>}
-                >
+          isMobileView ? (
+            <SideNavigationPanel
+              title={
+                loginFullname && loginFullname.length > 24 ? (
+                  <Tooltip
+                    dataTestId="test-id"
+                    align={TooltipAlign.Center}
+                    position={TooltipPosition.Bottom}
+                    content={loginFullname}
+                  >
+                    <span className="quick-link-username-tooltip">
+                      {loginFullname.substring(0, 24) + "..."}
+                    </span>
+                  </Tooltip>
+                ) : (
+                  <span className="quick-link-username-tooltip">
+                    <strong>{loginFullname}</strong>
+                  </span>
+                )
+              }
+              isOpen={isOpen}
+              onClose={togglePanel}
+            >
+              <Divider
+                as="li"
+                dataTestId="panel-divider"
+                id="panel-divider"
+                orientation={Orientation.HORIZONTAL}
+                role="separator"
+              />
+              <SideNavigationPanelContent>
+                <div>
+                  <div className="quick-lint-display">
+                    {isMobileView ? (
+                      ""
+                    ) : (
+                      <span className="icon-close">
+                        {" "}
+                        <Icon
+                          color={IconColor.Primary500}
+                          dataTestId="btn-90"
+                          id="variable-2"
+                          name="close"
+                          onClick={closePanel}
+                          size={24}
+                        />
+                      </span>
+                    )}
+                  </div>
+                  {quickLink({
+                    isPermissionquicklink,
+                    isError,
+                    quicklinkData,
+                    handleStarClick,
+                    showQuickLinkView,
+                    isLoader
+                  })}
+                </div>
+              </SideNavigationPanelContent>
+            </SideNavigationPanel>
+          ) : (
+            <div>
+              <div className="quick-lint-display">
+                {loginFullname && loginFullname.length > 24 ? (
+                  <Tooltip
+                    dataTestId="test-id"
+                    align={TooltipAlign.Center}
+                    position={TooltipPosition.Bottom}
+                    content={<span>{loginFullname}</span>}
+                  >
+                    <span className="quick-link-username">
+                      <strong>{loginFullname}</strong>
+                    </span>
+                  </Tooltip>
+                ) : (
                   <span className="quick-link-username">
                     <strong>{loginFullname}</strong>
                   </span>
-                </Tooltip>
-              ) : (
-                <span className="quick-link-username">
-                  <strong>{loginFullname}</strong>
-                </span>
-              )}
+                )}
 
-              <span className="icon-close">
-                {" "}
-                <Icon
-                  color={IconColor.Primary500}
-                  dataTestId="btn-90"
-                  id="variable-2"
-                  name="close"
-                  onClick={closePanel}
-                  size={24}
-                />
-              </span>
+                <span className="icon-close">
+                  {" "}
+                  <Icon
+                    color={IconColor.Primary500}
+                    dataTestId="btn-90"
+                    id="variable-2"
+                    name="close"
+                    onClick={closePanel}
+                    size={24}
+                  />
+                </span>
+              </div>
+              {quickLink({
+                isPermissionquicklink,
+                isError,
+                quicklinkData,
+                handleStarClick,
+                showQuickLinkView,
+                isLoader
+              })}
             </div>
-            {isPermissionquicklink && (
-              <div>
-                <div className="quick-link">Quick links</div>
-                <div className="quick-link-padding">
-                  {/*
-  eslint-disable
+          )
+        ) : (
+          <div
+            className="open-panel essui-open-panel-filled"
+            data-testId="close-panel"
+          >
+            <Button
+              className="base-class"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={togglePanel}
+              size={ButtonSize.Small}
+            />
+          </div>
+        )}
+        <div />
+      </div>
+    </>
+  );
+};
+
+
+//  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
+const quickLink :({
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView,
+  isLoader
+}:QuickLinkSidePanel) => JSX.Element=({
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView,
+  isLoader
+}) =>{
+  return (
+    isPermissionquicklink && (
+      <div>
+        <div className="quick-link">Quick links</div>
+        <div className="quick-link-padding">
+          {/*
+eslint-disable
 */}
                   {isLoader  ? (
                     <div>
@@ -127,7 +246,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                   ) : (
                     !isError &&
                     quicklinkData &&
-                    quicklinkData.slice(0, 6).map((sidelink) => (
+                    quicklinkData.slice(0, 6).map((sidelink: any) => (
                       <div
                         className="quick-panel-cont"
                         key={sidelink.id}
@@ -158,45 +277,26 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     ))
                   )}
 
-                  {/*
-  eslint-disable jsx-a11y/anchor-is-valid,
-  no-script-url
+          {/*
+eslint-disable jsx-a11y/anchor-is-valid,
+no-script-url
 */}
-                  <a
-                    href="javascript:void(0)"
-                    className="see-all"
-                    onClick={showQuickLinkView}
-                  >
-                    See all
-                  </a>
-                  {/*
-  eslint-enable jsx-a11y/anchor-is-valid,
-  no-script-url
-*/}
-                </div>
-              </div>
-            )}
-          </div>
-        ) : (
-          <div
-            className="open-panel essui-open-panel-filled"
-            data-testId="close-panel"
+          <a
+            href="javascript:void(0)"
+            className="see-all"
+            onClick={showQuickLinkView}
           >
-            <Button
-              className="base-class"
-              color={ButtonColor.Utility}
-              dataTestId="btn-collapse"
-              iconColor={IconColor.Neutral800}
-              iconName="open-panel--left--filled"
-              onClick={togglePanel}
-              size={ButtonSize.Small}
-            />
-          </div>
-        )}
-        <div />
+            See all
+          </a>
+          {/*
+eslint-enable jsx-a11y/anchor-is-valid,
+no-script-url
+*/}
+        </div>
       </div>
-    </>
+    )
   );
 };
 
+/* eslint-enable */
 export default SidePanel;
