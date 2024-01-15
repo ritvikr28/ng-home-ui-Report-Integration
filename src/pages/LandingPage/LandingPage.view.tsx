@@ -6,6 +6,7 @@ import { Grid, GridItem, Loader, LoaderType } from "@essnextgen/ui-kit";
 
 import { IAppModule } from "../../types/AppPermission";
 import "./style.scss";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 interface IProps {
   data: Array<IAppModule>;
@@ -16,7 +17,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
 }: IProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-
+  gtmAnalytics.pushPageViewEvent();
   const renderModule: (x: IAppModule, i: number) => JSX.Element | null = (
     x: IAppModule,
     i: number

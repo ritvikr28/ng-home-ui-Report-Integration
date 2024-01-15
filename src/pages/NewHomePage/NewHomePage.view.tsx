@@ -10,6 +10,7 @@ import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from ".
 import { logger } from "../../shared/components/AppInsights";
 import { getUserOrganisation } from "../../shared/utils";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 const requiredPermissions: Permission[] = [
   {
@@ -70,7 +71,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   useEffect(() => {
     (async () => {
       try {   
-        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        /* istanbul ignore next */
         if( responseapidata !=null )
@@ -89,6 +90,7 @@ const requiredPermissionsforquicklink: Permission[] = [
   
   return isPermission ? (
     <>
+    { gtmAnalytics.pushPageViewEvent() }
       <Grid className="app" dataTestId="NewHomePage">
         <GridItem
           className={isOpen ? "side-margin" : "side-margin-closed"}
