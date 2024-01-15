@@ -26,6 +26,7 @@ import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { getUser, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+import SLTmockpage from "./features/SLTView/SLTmockpage";
 
 
 
@@ -177,6 +178,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             :LandingPage ):EmptyComponent} />
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
+          <ProtectedRoute exact path="/SLTView" component={SLTmockpage} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}
         </Switch>

@@ -7,14 +7,16 @@ const SwitchViewLogic:(props: ISwitchViewProps) => JSX.Element = (
 ) => {
   const {
     isApiError,
-    organisationName
+    organisationName,
+    path
   }: ISwitchViewProps = props;
 
   return (
     <div className="switch-view">
       <SwitchView 
       organisationName={organisationName}
-      isApiError={isApiError} />
+      isApiError={isApiError} 
+      path={path}/>
     </div>
   );
 };
