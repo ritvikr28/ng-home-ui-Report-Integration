@@ -10,6 +10,7 @@ import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from ".
 import { logger } from "../../shared/components/AppInsights";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 import { getUserOrganisation } from "../../shared/utils";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 const requiredPermissions: Permission[] = [
   {
@@ -77,7 +78,7 @@ const NewHomepageView: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {   
-        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)       
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)
         const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
        /* istanbul ignore next */
         if( responseapidata !=null )
@@ -108,6 +109,8 @@ const NewHomepageView: React.FC = () => {
   };
 
   return isPermission ? (
+    <>
+    { gtmAnalytics.pushPageViewEvent() }
     <Grid className="app" dataTestId="NewHomePage">
       <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 0 : 0} sm={isOpen ? 1 : 0}>
         <SidePanelView
@@ -130,6 +133,7 @@ const NewHomepageView: React.FC = () => {
       </GridItem>
       {/* eslint-enable */}
     </Grid>
+    </>
   ) : (
     <Redirect to="/noAccess" />
   );

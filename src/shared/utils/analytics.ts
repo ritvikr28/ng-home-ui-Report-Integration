@@ -8,6 +8,7 @@ declare global {
 
 type gtmAnalyticsType = {
   init: (trackingId: string) => void;
+  pushPageViewEvent: () => void;
   pushEvent: (events: object) => void;
 };
 
@@ -24,8 +25,18 @@ const gtmAnalytics: gtmAnalyticsType = {
     } = {
       gtmId: trackingId
     };
-
+    
     TagManager.initialize(tagManagerArgs);
+  },
+
+  pushPageViewEvent: () => {
+    window.dataLayer.push({
+      event: "page_view",
+      pageLocation: document.URL,
+      pageTitle: document.title,
+      pageReferrer: document.referrer,
+      pageType: "Home"
+    });
   },
 
   pushEvent: (events: object) => {
