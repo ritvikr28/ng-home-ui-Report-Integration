@@ -1,3 +1,5 @@
+@import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 .side-view {
   //width: 265px;
   height: 100%;
@@ -5,15 +7,18 @@
   background-color: #fff;
 }
 
+@media (max-width: 1023.9px) {
+  .side-view {
+    // padding: 8px;
+    height: 0;
+  }
+}
+
 .side-view-closed {
   background-color: #f7f7f7;
 }
 
-.open-panel
-.essui-button
-.essui-button--utility
-.essui-button-icon-only--small
-.base-class {
+.open-panel .essui-button .essui-button--utility .essui-button-icon-only--small .base-class {
   width: 40px;
   height: 40px;
   left: 16px;
@@ -22,11 +27,7 @@
   border: 1px;
 }
 
-.close-panel
-.essui-button
-.essui-button--utility
-.essui-button-icon-only--small
-.base-class {
+.close-panel .essui-button .essui-button--utility .essui-button-icon-only--small .base-class {
   background-color: #fff;
 }
 
@@ -43,7 +44,7 @@
   height: 40px;
   margin: 0;
   padding: 0;
-  width: 40px;
+  // width: 40px;
   margin-left: 20px;
 }
 
@@ -75,7 +76,8 @@
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
-  line-height: 24px; /* 150% */
+  line-height: 24px;
+  /* 150% */
   text-decoration-line: underline;
   justify-content: space-between;
   word-break: break-all;
@@ -104,6 +106,18 @@
   margin-left: 16px;
 }
 
+@media (min-width: 320px) and (max-width: 1023.9px) {
+  .quick-link-username-tooltip {
+    @include essui-global-typography-default-body-bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .quick-link {
+    margin-left: 0;
+  }
+}
 
 .quick-lint-display {
   display: flex;

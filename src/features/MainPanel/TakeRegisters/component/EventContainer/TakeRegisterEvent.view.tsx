@@ -1,4 +1,4 @@
-import React, {useRef, useEffect,useState } from "react";
+import React, {useRef, useEffect,useState} from "react";
 import Carousel from "react-multi-carousel";
 import {
   ActionCard,
@@ -11,26 +11,33 @@ import {
 import { IRegisterViewProps } from "./props";
 
 import "./carousalstyle.scss";
-import { responsive } from "./carousel";
+import { responsive, iscloseresponsive } from "./carousel";
 import { envConfig } from "../../../../../shared/utils";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
-  apiError 
+  apiError,
+  isOpen
 }: IRegisterViewProps): JSX.Element => {
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false)
   const [currentSlide, setCurrentSlide] = useState(
     apiRegsiterEventData ? 0 : 0
   );
-
+  const [carouselData, setCarouselData] = useState(responsive);
   const setDefaultSlide = (index: number) => {    
     /* istanbul ignore next */
     carouselRef.current.goToSlide(index);
   };
-  
+
+  useEffect(() => {
+    /* eslint-disable */ 
+    isOpen ? setCarouselData(responsive) : setCarouselData(iscloseresponsive) 
+  },[isOpen])
+
+  /* eslint-enable */ 
   useEffect(() => {   
    
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
@@ -151,20 +158,20 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   };
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginLeft: "91%",
-          marginTop: "-45px"
-        }}
+      <div className={isOpen? "register-link-event-open": "register-link-event-close"}
+        // style={{
+        //   display: "flex",
+        //   justifyContent: "space-between",
+        //   alignItems: "center",
+        //   marginLeft: "91%",
+        //   marginTop: "-45px"
+        // }}
       >
         
         <div
           style={{
             display: "flex",
-            marginRight: "6px",
+         //   marginRight: "6px",
           }}
           className="register-icon"
         >
@@ -209,7 +216,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             swipeable={false}
             draggable={false}
             showDots={false}
-            responsive={responsive}
+            responsive={carouselData}
             infinite={false}
             keyBoardControl
             customTransition="all .5"
@@ -221,7 +228,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
            {
               apiRegsiterEventData &&
               apiRegsiterEventData.map((item, index) => (
-                <div key={index} className="actioncard-div">
+                <div key={index} className={isOpen? "actioncard-div":"actioncard-div-close"}>
                   <ActionCard
                     dataTestId={`test-id${index}`}
                     isTextTruncate
@@ -260,7 +267,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className="carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight ">
+            <div className={ isOpen? "carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
+            "carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}

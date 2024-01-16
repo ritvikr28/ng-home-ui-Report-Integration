@@ -12,6 +12,12 @@
   margin-left: -9px;
 }
 
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .react-multi-carousel-list {
+    margin-left: -11px;
+  }
+}
+
 .react-multi-carousel-track {
   list-style: none;
   padding: 0;
@@ -55,9 +61,38 @@
   width: 275px;
 }
 
+
 .noregister .main-text {  
   margin-top: -29px;
 }
+
+@media (min-width: 768px) and (max-width: 1439.9px) {
+  .carousel-container {
+    width: 100%;
+  }
+
+  .carousel-container-close {
+    width: 100%;
+  }
+}
+
+
+// @media (min-width: 320px) and (max-width: 767.9px) {
+//   .carousel-container {
+//     width: 100%;
+//   }
+//   .carousel-container-close {
+//     width: 100%;
+//   }
+// }
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  #no-register-id {
+    width: 358px;
+  }
+
+}
+
 
 .eventcardnohighlight .essui-activity-card:active {
   background-color: #fff;

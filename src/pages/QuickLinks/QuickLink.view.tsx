@@ -4,10 +4,12 @@ import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
-import SIMSupdatesView from "../../features/MainPanel/SIMSUpdates/SIMSupdates.view";
+
 import "./style.scss";
 import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
+import SIMSupdatesView from "../SIMSUpdates/SIMSupdates.view";
+
 
 
 const requiredPermissions: Permission[] = [
@@ -27,15 +29,16 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
 
   return isPermission ? (
-    <div className="teacher-panel-container">
-      <BreadcrumbWrapper />
+  
       <Grid className="quicklink">
+      <GridItem className="teacher-panel-container">
+      <GridItem className={isOpen? "" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
         <GridItem lg={12} className="quicklink-container nopadding">
-          <div className="quicklinkheading">Quick links</div>
-          <div className="quicklinktext">
+          <GridItem className="quicklinkheading">Quick links</GridItem>
+          <GridItem className="quicklinktext">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
-          </div>
-          <div>
+          </GridItem>
+          <GridItem>
           {!apiError &&  (
               <TableWrapper  className={isOpen ? "quicklinktable" : "quicklinktable-close"} >
                 <Table dataTestId="test-id" id="element-id" >
@@ -66,14 +69,16 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                 </Table>
               </TableWrapper>
             )}
-          </div>
+          </GridItem>
+          <GridItem>
           <div className="quicklink-divider-container" />
           <div className="simspadding">
-            <SIMSupdatesView />
+            <SIMSupdatesView isOpen={isOpen}/>
           </div>
+          </GridItem>
+        </GridItem>
         </GridItem>
       </Grid>
-    </div>
   ) : (
     <Redirect to="/noAccess" />
   );

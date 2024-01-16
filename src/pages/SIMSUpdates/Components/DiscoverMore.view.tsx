@@ -1,0 +1,81 @@
+import {
+  Button,
+  ButtonSize,
+  Link,
+  ButtonColor,
+  ActionCard,
+  Grid,
+  GridItem
+} from "@essnextgen/ui-kit";
+
+/* eslint-disable */
+const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
+  /* eslint-enable */
+  const onButtonClick: () => void = () => {
+   const url = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
+  window.open(url,"_blank");
+  };
+
+  interface RelType {
+    rel: string;
+  }
+
+  const  rel:RelType={rel:"noopener noreferrer"};
+  const onCardClick: () => void = () => {};
+  return (
+    <>
+      <div className= {isOpen? 'sims-link-container-open':'sims-link-container-closeview'}>
+        <span className="sims-updates">Find out more about SIMS Next Gen </span>
+        <span className="sims-link-url ">
+          <Button
+            className="base-class-more"
+            color={ButtonColor.Secondary}
+            dataTestId="btn-save"
+            onClick={onButtonClick}
+            size={ButtonSize.Small}
+          >
+            Discover more with SIMS Next Gen
+          </Button>
+        </span>
+      </div>
+      <Grid className={isOpen? "action-card-container-open sims-ng":"action-card-container-closeview sims-ng"}>
+        <GridItem lg={6} className="what-new">
+          <Link
+            dataTestId="link1"
+            href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
+            target="_blank"
+            {...rel}
+          >
+            <ActionCard
+              className="primary-text"
+              dataTestId="what-new-test-id"
+              id="action-card"
+              onClickActionCard={() => onCardClick()}
+              primaryText="What's new?"
+              secondaryText="Get the latest on SIMS Next Gen - new releases, sign up for early access, and find out what's new."
+            />
+          </Link>
+        </GridItem>
+        <GridItem lg={6} className="what-new action-card">
+          <Link
+            dataTestId="link2"
+            href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
+            target="_blank" 
+            {...rel}
+    
+          >
+            <ActionCard
+              className="primary-text"
+              dataTestId="test-id"
+              id="action-card"
+              onClickActionCard={() => onCardClick()}
+              primaryText="The SIMS Next Gen roadmap"
+              secondaryText="Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap"
+            />
+          </Link>
+        </GridItem>
+      </Grid>
+    </>
+  );
+};
+export default DiscoverMoreView;

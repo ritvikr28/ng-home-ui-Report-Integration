@@ -1,5 +1,5 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem } from "@essnextgen/ui-kit";
+import {  Grid, GridItem} from "@essnextgen/ui-kit";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -32,7 +32,9 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   const {
     schoolName,
     isError,
-    isSchoolPrimary
+    isSchoolPrimary,
+    isOpen,
+    setIsOpen
   }: IMainPanelProps = props;
 
   return(
@@ -41,14 +43,16 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       <WelcomeUser
       isApiError={isError} 
       organisationName={schoolName}
+      isOpen={isOpen}
       />
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
-    ) &&isSchoolPrimary===false &&<StaffTimeTableView />}
-      <TakeRegisterView />
+    ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
+      <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className="divider-container"/>            
-      <SIMSupdatesView/>
+    
+      <SIMSupdatesView isOpen={isOpen}/>
       <SwitchViewLogic
             organisationName={schoolName}
             isApiError={isError} 

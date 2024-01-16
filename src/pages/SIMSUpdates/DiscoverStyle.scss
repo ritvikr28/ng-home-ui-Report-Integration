@@ -1,0 +1,224 @@
+@import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
+.sims-container-quicklinks {
+  display: flex;
+  // width: 1116px;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.sims-link-container-open {
+  display: flex;
+  width: 99.3%;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.sims-link-container-closeview {
+  display: flex;
+  width: 99.3%;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .sims-link-container-open {
+    width: 102.1%;
+  }
+
+  .sims-link-container-closeview {
+    width: 98.4%;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .sims-link-container-open {
+    width: 105%;
+  }
+
+  .sims-link-container-closeview {
+    width: 105%;
+  }
+}
+
+.sims-updates {
+  color: var(--neutral-800, #303030);
+
+  /* default/H4 */
+  font-family: Segoe UI;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 32px;
+  white-space: pre;
+  /* 133.333% */
+}
+
+.sims-link-url {
+  color: var(--primary-500, #2177c2);
+  text-align: center;
+
+  /* default/ButtonSmall */
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 24px;
+  /* 150% */
+}
+
+.primary-text {
+  color: var(--neutral-800, #303030);
+}
+
+.action-card-container-open {
+  color: Neutral/800;
+  display: flex;
+  // align-items: flex-start;
+  // gap: 35px;
+  flex-direction: row;
+  // gap: 20px;
+}
+
+.action-card-container-closeview {
+  color: Neutral/800;
+  display: flex;
+  // align-items: flex-start;
+  // gap: 35px;
+  flex-direction: row;
+  // gap: 20px;
+}
+
+// .sims-ng .essui-activity-card {
+//   width: 354px;
+// }
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .action-card-container-open {
+    width: 106.6% !important;
+  }
+
+  .action-card-container-closeview {
+    width: 101.7% !important;
+
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .action-card-container-open {
+    width: 110% !important;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 110% !important;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 371px !important;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .action-card-container-open {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 374px !important;
+  }
+
+  .action-card .essui-activity-card {
+    margin-left: -1px !important;
+    // width: fit-content;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .action-card-container-open {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .action-card-container-closeview {
+    width: 104% !important;
+    gap: 16px;
+    justify-content: normal;
+  }
+
+  .what-new {
+    width: 374px !important;
+  }
+
+  .action-card .essui-activity-card {
+    margin-left: -1px !important;
+    // width: fit-content;
+  }
+}
+
+.action-card .essui-activity-card {
+  margin-left: -8px;
+  // width: fit-content;
+}
+
+.what-new .essui-activity-card-center {
+  width: fit-content;
+}
+
+.essui-activity-card {
+  align-items: center;
+  background: #fff;
+  border-radius: 7px;
+  box-shadow: 0 2px 7px 0 rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  display: flex;
+  font-size: 20px;
+  justify-content: start;
+  min-height: 88px;
+  padding: 16px;
+  vertical-align: middle;
+  /* width: 100%; */
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .sims-container-quicklinks {
+    width: 360px;
+  }
+
+  .base-class-more {
+    height: 70px;
+    white-space: break-spaces;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .sims-container-quicklinks {
+    width: 287px;
+  }
+
+  .base-class-more {
+    height: 94px;
+    white-space: break-spaces;
+  }
+}

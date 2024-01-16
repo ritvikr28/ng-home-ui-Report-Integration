@@ -1,5 +1,7 @@
+@import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
 .register-container {
-  max-width: 1116px;
+  // max-width: 1116px;
   gap: 20px;
   margin-top: 28px;
   font-size: 24px;
@@ -13,6 +15,13 @@
   margin-bottom: 10px;
 }
 
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .register-link-container {
+    gap: 1px;
+    flex-direction: column;
+  }
+}
+
 .your-registers {
   color: var(--neutral-800, #303030);
   font-family: Segoe UI;
@@ -20,6 +29,12 @@
   font-style: normal;
   font-weight: 400;
   line-height: 32px;
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .your-registers {
+    @include essui-global-typography-small-screen-h3;
+  }
 }
 
 .register-link-url {
@@ -34,11 +49,159 @@
 }
 
 .register-icon .essui-button-icon-only--small {
-  margin-right: 8px;
+  // margin-right: 6px;
+  display: "flex";
+}
+
+.register-icon {
+  margin-right: 16px;
+  gap: 8px;
+}
+
+.register-link-event-open {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 90.6%;
+  margin-top: -45px;
+}
+
+.register-link-event-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-left: 90.9%;
+  margin-top: -45px;
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .register-icon {
+    margin-right: 20px;
+    gap: 8px;
+  }
+
+  .register-link-event-open {
+    margin-left: 85%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 88.8%;
+    margin-top: -45px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .register-icon {
+    margin-right: 18px;
+    gap: 8px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .register-icon {
+    margin-right: 14px;
+    gap: 8px;
+  }
+
+  .register-icon .essui-button-icon-only--small {
+    margin-right: 0;
+  }
 }
 
 .actioncard-div {
   margin: 0 12px;
+}
+
+.actioncard-div-close {
+  margin: 0 12px;
+}
+// @media (min-width: 1440px) {
+// .actioncard-div {
+//   margin: 0 12px;
+//   width: 261px;
+// }
+
+// .actioncard-div-close {
+//   margin: 0 12px;
+//   width: 266px;
+// }
+// }
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 350px;
+  }
+
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 350px;
+  }
+
+  .register-link-event-open {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 85.5%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 85.5%;
+    margin-top: -45px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 358px;
+  }
+
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 358px;
+  }
+
+  .register-container {
+    max-width: 100% !important;
+  }
+
+  .register-link-event-open {
+    margin-left: 73%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 73%;
+    margin-top: -45px;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 282px;
+  }
+
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 282px;
+  }
+
+  .register-container {
+    max-width: 100% !important;
+  }
+
+  .register-link-event-open {
+    margin-left: 65%;
+    margin-top: -45px;
+  }
+
+  .register-link-event-close {
+    margin-left: 65%;
+    margin-top: -45px;
+  }
 }
 
 .noregisterblock {

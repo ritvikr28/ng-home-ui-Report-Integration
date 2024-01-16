@@ -24,37 +24,43 @@ export const EventContainerView: (
     EventTypeCode,
     ClassPeriodExternalId,
     EventInstanceExternalId,
-    SelectedItem
-    
+    SelectedItem,
+    isOpenPanel
   }: IEventContainerProps = props;
 
   return (
     <>
-          <EventCard
-          key={SchoolEventexternalId}
-          id={`elementid-${index}`}
-          onClick={() => togglePanel(SchoolEventexternalId)}
-          primaryText={EventTime}
-          secondaryText={RoomCode}
-          isTextTruncate
-          status={EventCardColor}
-          title={EventTitle}
-          inputWidth={166}
-          inputHeight={75}
-          dataTestId={`eventid${index}`}
-          /* eslint-disable */
-          className={
-            SelectedItem === SchoolEventexternalId
-              ? index === 0
-                ? `dynamiceventcard event-primary-text event-highlight-0`
-                : `dynamiceventcard event-primary-text event-${EventCardColor}-1`
-              : `dynamiceventcard event-primary-text`
-          }
-          /* eslint-enable  */
-        />
-    
+      <EventCard
+        key={SchoolEventexternalId}
+        id={`elementid-${index}`}
+        onClick={() => togglePanel(SchoolEventexternalId)}
+        primaryText={EventTime}
+        secondaryText={RoomCode}
+        isTextTruncate
+        status={EventCardColor}
+        title={EventTitle}
+        inputWidth={isOpen ? 166 : 145}
+        inputHeight={67}
+        dataTestId={`eventid${index}`}
+         /* eslint-disable  */
+        className={
+          SelectedItem === SchoolEventexternalId
+            ? index === 0
+              ? isOpen
+                ? `dynamiceventcard isopen event-primary-text event-highlight-0`
+                : `dynamiceventcard isclose event-primary-text event-highlight-0`
+              : isOpen
+              ? `dynamiceventcard isopen event-primary-text event-${EventCardColor}-1`
+              : `dynamiceventcard isclose event-primary-text event-${EventCardColor}-1`
+            : isOpen
+            ? `dynamiceventcard isopen event-primary-text`
+            : `dynamiceventcard isclose event-primary-text`
+        }
+        /* eslint-enable  */
+      />
+
       <div>
-        {isOpen && (
+        {isOpenPanel && (
           <RightSidePanel
             SchoolEventexternalId={SchoolEventexternalId}
             EventTitle={EventTitle}
@@ -64,7 +70,7 @@ export const EventContainerView: (
             GroupExternalId={GroupExternalId}
             EventPeriodNo={EventPeriodNum}
             togglePanel={() => togglePanel(SchoolEventexternalId)}
-            isOpen={isOpen}
+            isOpen={isOpenPanel}
             GroupDescription={GroupDescription}
             StaffName={StaffName}
             data-testid={`right-panel-${index}`}

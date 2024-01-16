@@ -3,8 +3,35 @@
   flex-direction: column;
   align-items: flex-start;
   margin: 20px 20px 20px 0;
+  max-width: 100%;
 }
 
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .teacher-panel-container {
+    // width: 1000px;
+    margin: 20px 20px 20px 16px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .teacher-panel-container {
+    // width: 1000px;
+    margin: 20px 20px 20px 5px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .teacher-panel-container {
+    // width: 1000px;
+    margin: 20px 20px 20px 6px;
+  }
+}
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .teacher-panel-container {
+    // width: 1000px;
+    margin: 20px 20px 20px 3px;
+  }
+}
 
 .divider-container {
   height: 1px;
@@ -13,5 +40,24 @@
   background: var(--neutral-200, #c6c6c6);
   margin-top: 20px;
   margin: 20px 20px 40px 0;
-  width: 1081px;
+  // width: 1081px;
 }
+
+//  .essui-divider {
+//   //margin-top: 8px;
+//   margin-top: 40px;
+//   margin-bottom: 40px;
+//  // margin-right: 40px;
+// }
+
+// @media (min-width: 768px) and (max-width: 1439.9px) {
+//  .essui-divider {
+//   //margin-top: 8px;
+//   margin-top: 32px;
+//   margin-bottom: 40px;
+//   margin-right: 34px;
+// }
+// }
+
+
+

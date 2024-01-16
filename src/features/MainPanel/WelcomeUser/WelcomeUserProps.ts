@@ -3,13 +3,13 @@ export interface IWelcomeUserViewProps {
   isLongName: boolean;
   parentClassName: string;
   subparentClassName: string;
-  organisationName: string;
-  isApiError: boolean;    
+  organisationName?: string;
+  isApiError?: boolean;
+  isOpen?: boolean;
 }
 
 export interface IWelcomeUserLogicProps {
-  isApiError: boolean;  
-  organisationName: string;
+  isApiError?: boolean;
+  organisationName?: string;
+  isOpen?: boolean;
 }
-
-
