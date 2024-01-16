@@ -47,7 +47,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
     requiredPermissionsforquicklink,
     MatchPermissions.all
   );
-  const loginFullname: string | null = authService.getUsername();
+  const fullName: string | null = authService.getUsername();
+  const loginFullname:string = (fullName===null)?"":fullName.split(" ")[0];
   const isMobileView : boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
