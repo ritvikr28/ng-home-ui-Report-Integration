@@ -191,12 +191,15 @@ const returnEventContainer: ({
   setSelectedItem
 }: any) => {
     const togglePanel: (externalId: string) => void = (externalId: string) => {
-      gtmAnalytics.pushEvent({
-        event: "interact_click",
-        elementType: "card",
-        elementTextOrLabel: "[RemovedEventName]",
-        elementLocation: "body"
-      });
+      if(isOpenPanel)
+      {
+        gtmAnalytics.pushEvent({
+          event: "interact_click",
+          elementType: "card",
+          elementTextOrLabel: "[RemovedEventName]",
+          elementLocation: "body"
+        });
+      }
       setIsOpenPanel((prevIsOpen: any) => ({
         ...prevIsOpen,
         [externalId]: !prevIsOpen[externalId]
