@@ -24,9 +24,7 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import { getUser, getUserOrganisation, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
-import { getgroups } from "process";
 import { trackEvent } from "./shared/utils/analytics-helper";
 
 
