@@ -24,8 +24,10 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
+import { service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
+import { trackEvent } from "./shared/utils/analytics-helper";
 
 
 
@@ -134,7 +136,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     if (authService.isAuthenticated()) {
       service.init();     
       trackEvent('loggedIn', () =>
-       gtmAnalytics.pushLogInEvent()
+        gtmAnalytics.pushLogInEvent()
       );
       setIsServiceInitiated(true);
     } 
