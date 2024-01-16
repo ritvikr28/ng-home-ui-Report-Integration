@@ -13,7 +13,7 @@ const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
     window.location.href ="/"
     }
     else{
-    window.location.href = "/SLTView"
+    window.location.href = "/slt-view"
     }
   };
  

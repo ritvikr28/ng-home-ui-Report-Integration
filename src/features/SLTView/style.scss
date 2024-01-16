@@ -1,16 +1,12 @@
 @media only screen and (min-width: 1024px) {
-  .essui-grid-col--lg-10 {
-    flex-basis: 83.3333333333%;
-    max-width: 82.555555% !important;
-  }
-}
 
 .slt-mar {
   margin-top: 100px;
 }
 
 .slt-sims {
-  margin-top: 40px;
+  margin-top: 40px; 
+  width: 92%; 
 }
 
 .pupil-svg {
@@ -35,4 +31,5 @@
 
 .finance-svg {
   margin-top: 30px;
+}
 }
