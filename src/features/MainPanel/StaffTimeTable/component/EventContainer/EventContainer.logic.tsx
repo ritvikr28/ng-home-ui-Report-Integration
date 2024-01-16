@@ -191,7 +191,7 @@ const returnEventContainer: ({
   setSelectedItem
 }: any) => {
     const togglePanel: (externalId: string) => void = (externalId: string) => {
-      if(isOpenPanel)
+      if(!isOpenPanel[externalId])
       {
         gtmAnalytics.pushEvent({
           event: "interact_click",
