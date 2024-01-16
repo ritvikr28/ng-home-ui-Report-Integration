@@ -19,7 +19,7 @@ const QuickLinkLogic: React.FC<
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
  
-  const [isStarClickable, setIsStarClickable] = useState(true);
+  const [isStarClickable, setIsStarClickable]:any = useState(true);
  
   const handleStarClick: (
     id: number,
