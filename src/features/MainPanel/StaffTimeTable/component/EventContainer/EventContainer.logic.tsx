@@ -17,12 +17,15 @@ const EventContainer: React.FC = () => {
   const [isstaffLoader, setstaffLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
   const togglePanel:(externalId: string) => void = (externalId: string) => {
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType: "card",
-      elementTextOrLabel: "[RemovedEventName]",
-      elementLocation: "body"
-    });
+    if(isOpen)
+    {
+      gtmAnalytics.pushEvent({
+        event: "interact_click",
+        elementType: "card",
+        elementTextOrLabel: "[RemovedEventName]",
+        elementLocation: "body"
+      });
+    }
     setIsOpen((prevIsOpen) => ({
       ...prevIsOpen,
       [externalId]: !prevIsOpen[externalId]

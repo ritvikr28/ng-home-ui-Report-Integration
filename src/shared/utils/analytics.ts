@@ -1,4 +1,5 @@
 import TagManager from "react-gtm-module";
+import { getUser, getUserOrganisation } from "./auth-helper";
 
 declare global {
   interface Window {
@@ -9,6 +10,7 @@ declare global {
 type gtmAnalyticsType = {
   init: (trackingId: string) => void;
   pushPageViewEvent: () => void;
+  pushLogInEvent: () => void;
   pushEvent: (events: object) => void;
 };
 
@@ -36,6 +38,17 @@ const gtmAnalytics: gtmAnalyticsType = {
       pageTitle: document.title,
       pageReferrer: document.referrer,
       pageType: "Home"
+    });
+  },
+
+  pushLogInEvent: () => {
+    gtmAnalytics.pushEvent({
+      event: "identify_user",
+      userId: getUser()
+    });
+    gtmAnalytics.pushEvent({
+      event: "identify_group",
+      userId: getUserOrganisation()
     });
   },
 

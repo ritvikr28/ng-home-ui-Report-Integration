@@ -24,8 +24,10 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import { getUser, service } from "./shared/utils";
+import { getUser, getUserOrganisation, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+import { getgroups } from "process";
+import { trackEvent } from "./shared/utils/analytics-helper";
 
 
 
@@ -131,17 +133,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const history = useHistory();
   const showNewHomePage:boolean =  authService.isAuthorised(requiredPermissions, MatchPermissions.all);
   const onAuthenticated: any = () => {
-
     if (authService.isAuthenticated()) {
       service.init();     
-      gtmAnalytics.pushEvent({
-        event: "identify_user",
-        userId: getUser()
-      })
-      gtmAnalytics.pushEvent({
-        event: "identify_group",
-        userId: getUser()
-      })
+      trackEvent('loggedIn', () =>
+       gtmAnalytics.pushLogInEvent()
+      );
       setIsServiceInitiated(true);
     } 
     else{
