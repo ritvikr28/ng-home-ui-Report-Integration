@@ -48,7 +48,7 @@ const gtmAnalytics: gtmAnalyticsType = {
     });
     gtmAnalytics.pushEvent({
       event: "identify_group",
-      userId: getUserOrganisation()
+      groupId: getUserOrganisation()
     });
   },
 
