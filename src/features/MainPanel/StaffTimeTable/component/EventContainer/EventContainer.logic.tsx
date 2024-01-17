@@ -203,7 +203,7 @@ const returnEventContainer: ({
     }
     setIsOpenPanel((prevIsOpen: any) => ({
       ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId],
+      [externalId]: !prevIsOpen[externalId]
     }));
     setSelectedItem(
       !isOpenPanel || isOpenPanel[externalId]
