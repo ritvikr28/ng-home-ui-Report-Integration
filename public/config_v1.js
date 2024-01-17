@@ -1,4 +1,4 @@
-window.REACT_API_URL = "http://localhost:5010/api";
+window.REACT_API_URL = "https://api-dev.home.sims.co.uk/api";
 window.REACT_CLIENT_ID = "pm-sso-5f9e0af8-350b-4f53-a722-6585b4806d7f";
 window.REACT_AUTH_ENDPOINT =
   "https://simsid-partner-stsserver.azurewebsites.net/connect";
@@ -10,5 +10,6 @@ window.AUTH_API_URL = "http://localhost:5013/api";
 window.APPLICATION = "Home";
 window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";
 window.SCHOOL_BASE_URL="";
-window.REGISTER_BASE_URL="";
+window.REGISTER_BASE_URL="https://dev.takeregister.sims.co.uk/";
 window.LEARNER_UI_URL="";
+window.WORKSPACE_ID="ef8322c9-2fc1-4082-8722-6e2f07ed4c4c";
