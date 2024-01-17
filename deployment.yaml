@@ -55,7 +55,7 @@ spec:
           volumeMounts:
             #override config.js file
             - name: config
-              mountPath: '/usr/share/nginx/html/config_v1.js'
+              mountPath: '/usr/share/nginx/html/config.js'
               subPath: 'config.js'
       volumes:
         - name: config
