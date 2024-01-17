@@ -35,7 +35,7 @@ const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
       window.location.href = "/slt-view"
     }
   };
-  const userRoleText =
+  const userRoleText: string =
     path === "/slt-view" ? "Head Teacher" : "Teacher";
 
 

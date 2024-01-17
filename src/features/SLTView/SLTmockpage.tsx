@@ -25,8 +25,8 @@ import SwitchView from "../MainPanel/SwitchView/SwitchView.view";
 
 
 const SLTmockpage: () => JSX.Element = () => {
-  const location = useLocation();
-  const currentPath = location.pathname;
+   const location: Location = useLocation(); 
+  const currentPath: string = location.pathname;
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
