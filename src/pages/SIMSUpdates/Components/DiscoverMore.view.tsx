@@ -5,11 +5,15 @@ import {
   ButtonColor,
   ActionCard,
   Grid,
-  GridItem
+  GridItem,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 
 /* eslint-disable */
 const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
+  const isMobileView : boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 767.9px)"
+  );
   /* eslint-enable */
   const onButtonClick: () => void = () => {
    const url = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
@@ -25,7 +29,8 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
   return (
     <>
       <div className= {isOpen? 'sims-link-container-open':'sims-link-container-closeview'}>
-        <span className="sims-updates">Find out more about SIMS Next Gen </span>
+        <span className="sims-updates"> {isMobileView ? 'SIMS Next Gen updates' : 'Find out more about SIMS Next Gen'} </span>
+       
         <span className="sims-link-url ">
           <Button
             className="base-class-more"
@@ -34,7 +39,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             onClick={onButtonClick}
             size={ButtonSize.Small}
           >
-            Discover more with SIMS Next Gen
+            {isMobileView ? 'More updates' : 'Discover more with SIMS Next Gen'}
           </Button>
         </span>
       </div>
