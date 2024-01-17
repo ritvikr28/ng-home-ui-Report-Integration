@@ -5,8 +5,8 @@ import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickL
 import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { QuicklinkComponentProps } from './props';
 import { IFetchQuickLinkDetailsFunctionResponse } from '../../shared/model/quickLink/responsemodels';
-
-
+ 
+ 
 const QuickLinkLogic: React.FC<
   QuicklinkComponentProps & { isOpen: boolean }
 > = ({
@@ -18,14 +18,20 @@ const QuickLinkLogic: React.FC<
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-
+ 
+  const [isStarClickable, setIsStarClickable]:any = useState(true);
  
   const handleStarClick: (
     id: number,
     favorite: boolean
   ) => Promise<void> = async (id: number, favorite: boolean) => {
-     
+ 
       try {
+        if (!isStarClickable) {
+         /* istanbul ignore next */
+          return;
+        }
+        setIsStarClickable(false);
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
         favorite
@@ -37,16 +43,22 @@ const QuickLinkLogic: React.FC<
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
-          
+         
         }
-      } 
+      }
     } catch (error) {
        /* istanbul ignore next */
       setIsError(true);
-      
+     
+    }
+    finally {
+      /* istanbul ignore next */
+      setTimeout(() => {
+        setIsStarClickable(true);
+      }, 1000);
     }
   };
-
+ 
   const displaystarredicon: (favorites: boolean, id: number) => JSX.Element = (
     favorites: boolean,
     id: number
@@ -62,17 +74,17 @@ const QuickLinkLogic: React.FC<
     />
     </div>
     );
-
+ 
   return (
-    
+   
       <QuickLink
         apiQuickLinkData={apiQuickLinkData}
         apiError={isError}
         displaystarredicon={displaystarredicon}
         isOpen ={isOpen}
-        
+       
       />
-    
+   
   );
 };
 export default QuickLinkLogic;

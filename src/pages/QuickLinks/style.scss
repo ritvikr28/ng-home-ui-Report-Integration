@@ -139,6 +139,10 @@
     margin-left: -3px;
   }
 
+  .quick-link-table-res .essui-table {
+    min-width: 340px;
+  }
+
   .quicklinkheading {
     @include essui-global-typography-small-screen-h3;
   }
@@ -173,8 +177,12 @@
     margin-left: -3px;
   }
 
-  .essui-table {
-    min-width: 431px !important;
-    width: 0 !important;
+  .quick-link-table-res .essui-table {
+    min-width: 269px;
   }
+
+  // .essui-table {
+  //   min-width: 431px !important;
+  //   width: 0 !important;
+  // }
 }
