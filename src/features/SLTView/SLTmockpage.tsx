@@ -1,5 +1,6 @@
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import React,{  useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import SIMSupdatesView from "../MainPanel/SIMSUpdates/SIMSupdates.view";
 import WelcomeUser from "../MainPanel/WelcomeUser/WelcomeUser.logic";
 import SidePanelView from "../SidePanel/SidePanel.view";
@@ -14,16 +15,18 @@ import QuickLinkLogic from "../../pages/QuickLinks";
 import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
 import { capitalizeFirstLetterOfEachWord } from "../MainPanel/WelcomeUser/utils/newHomePageUtils";
-import SwitchViewLogic from "../MainPanel/SwitchView/SwitchView.logic";
 import PupilSVG from "./SVGcomponents/PupilSVG";
 import WholeSchoolOverviewSVG from "./SVGcomponents/WholeSchoolOverviewSVG";
-
 import BehaviourOverviewSVG from "./SVGcomponents/BehaviourOverviewSVG";
 import AttendanceOverviewSVG from "./SVGcomponents/AttendanceOverviewSVG";
 import SchoolCalendarSVG from "./SVGcomponents/SchoolCalendarSVG";
 import FinanceReportingSVG from "./SVGcomponents/FinanceReportingSVG";
+import SwitchView from "../MainPanel/SwitchView/SwitchView.view";
+
 
 const SLTmockpage: () => JSX.Element = () => {
+   const location: Location = useLocation(); 
+  const currentPath: string = location.pathname;
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -156,10 +159,11 @@ const SLTmockpage: () => JSX.Element = () => {
           <SIMSupdatesView />
         </div>
         <div className="slt-mar">          
-          <SwitchViewLogic path="/"
-            organisationName={schoolName}
-            isApiError={isError} 
-      />
+        <SwitchView
+          path={currentPath}
+          organisationName={schoolName}
+          isApiError={isError} 
+        />
         </div>
       </>
     );
