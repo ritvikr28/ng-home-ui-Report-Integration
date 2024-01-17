@@ -28,26 +28,27 @@ const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
     if(path === "/"){
     window.location.href ="/"
     }
+    else if(path ==="/slt-view"){
+    window.location.href = "/"
+    }  
     else{
-    window.location.href = "/slt-view"
-    }    
-    
+      window.location.href = "/slt-view"
+    }
   };
+  const userRoleText =
+    path === "/slt-view" ? "Head Teacher" : "Teacher";
 
 
   return (
-    <Grid>
+     <Grid>
       <GridItem lg={10}>
         <div>
-          You are viewing {isApiError === false ? organisationName : ""} as a
-          Teacher. {/* eslint-disable-next-line */}
-          {
-            organisationId.includes(getUserOrganisation()) && (
-                <a className="link-color" href=" " onClick={handleSwitchViewClick}>
-                  Switch view here
-                </a>
-            )
-          }
+          You are viewing {isApiError === false ? organisationName : ""} as a {userRoleText}. {/* eslint-disable-next-line */}
+          {organisationId.includes(getUserOrganisation()) && (
+            <a className="link-color" href=" " onClick={handleSwitchViewClick}>
+              Switch view here
+            </a>
+          )}
           {/* eslint-enable-next-line */}
         </div>
       </GridItem>
