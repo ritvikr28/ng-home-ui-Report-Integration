@@ -15,6 +15,14 @@
   display: flex;
 }
 
+@media (min-width: 320px) and (max-width: 1439.9px) {
+  .app {
+    overflow-x: hidden;
+    width: fit-content;
+    overflow-y: hidden;
+  }
+}
+
 .body-panel {
   flex: 1;
   top: 88px;
@@ -50,31 +58,72 @@
 //   }
 // }
 
-@media (min-width: 768px) and (max-width: 1023.9px) {
+@media (min-width: 844px) and (max-width: 1023.9px) {
   .body-panel-mobile-open {
     max-width: 768px;
     margin-left: 16px;
-    margin-top: -24px;
+    margin-top: 40px;
+    // margin-top: -24px;
   }
 
   .body-panel-mobile {
     max-width: 768px;
-    margin-left: 16px;
-    margin-top: 39px;
+    margin-left: -70px;
+    margin-top: 75px
+    // margin-top: 39px;
   }
 }
 
-@media (min-width: 390px) and (max-width: 767.9px) {
+@media (min-width: 768px) and (max-width: 843.9px) {
   .body-panel-mobile-open {
-    max-width: 390px;
-    margin-left: 0;
-    margin-top: 40px;
+    max-width: 768px;
+    margin-left: 16px;
+    margin-top: 39px;
+    // margin-top: -24px;
   }
 
   .body-panel-mobile {
-    max-width: 390px;
-    margin-left: 0;
-    margin-top: 40px;
+    max-width: 768px;
+    margin-left: 16px;
+    // margin-top: 39px;
+  }
+}
+@media (min-width: 456px) and (max-width: 767.9px) {
+  .body-panel-mobile-open {
+    max-width: 385px;
+    margin-left: 11px;
+    padding-top: 39px;
+    // overflow-x: hidden;
+    // overflow-x: hidden;
+    // overflow-y: hidden;
+  }
+
+  .body-panel-mobile {
+    max-width: 385px;
+    margin-left: -60px;
+    margin-top: 73px; 
+    // padding-top: 40px;
+    // overflow-x: hidden;
+    // overflow-y: auto;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 455.9px) {
+  .body-panel-mobile-open {
+    max-width: 385px;
+    margin-left: 11px;
+    padding-top: 39px;
+    // overflow-x: hidden;
+    // overflow-x: hidden;
+    // overflow-y: hidden;
+  }
+
+  .body-panel-mobile {
+    max-width: 385px;
+    margin-left: 11px;
+    // padding-top: 40px;
+    // overflow-x: hidden;
+    // overflow-y: auto;
   }
 }
 
@@ -82,13 +131,14 @@
   .body-panel-mobile-open {
     max-width: 320px;
     margin-left: 0;
-    margin-top: 33px;
+    margin-top: 45px;
+    // overflow-x: hidden;
+    // overflow-y: hidden;
   }
 
   .body-panel-mobile {
     max-width: 320px;
-    margin-left: 0;
-    margin-top: 33px;
+    margin-left: 11px;
   }
 }
 
@@ -133,8 +183,8 @@
   }
 
   .side-margin-closed {
-    height: 0;
-    width: 0;
+    height: fit-content;
+    width: fit-content;
   }
 }
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -153,8 +203,8 @@
   }
 
   .side-margin-closed {
-    height: 0;
-    width: 0;
+    height: fit-content;
+    width: fit-content;
   }
 }
 @media (min-width: 320px) and (max-width: 389.9px) {
@@ -163,8 +213,8 @@
   }
 
   .side-margin-closed {
-    height: 0;
-    width: 0;
+    height: fit-content;
+    width: fit-content;
   }
 }
 

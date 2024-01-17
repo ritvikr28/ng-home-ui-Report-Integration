@@ -10,7 +10,7 @@
 @media (max-width: 1023.9px) {
   .side-view {
     // padding: 8px;
-    height: 0;
+    height: fit-content;
   }
 }
 
@@ -131,4 +131,19 @@
 
 .loader-sidepanel-quicklink {
   margin: 10px !important;
+}
+
+.essui-side-navigation-panel {
+  height: auto !important;
+}
+
+.essui-side-navigation-panel-container-grid-item {
+  height: 100%;
+}
+
+.essui-button--tertiary:focus-visible {
+  background-color: inherit;
+  box-shadow: none;
+  // color: #005faf;
+  // outline: 0;
 }

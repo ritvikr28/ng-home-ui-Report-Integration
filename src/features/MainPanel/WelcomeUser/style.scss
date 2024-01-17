@@ -34,6 +34,19 @@
   text-align: left;
 }
 
+
+.parent1-open-subparent {
+  width: 103%;
+  //height: 72px;
+  //styleName: default/Display;
+  font-family: Segoe UI;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 72px;
+  letter-spacing: 0;
+  text-align: left;
+}
+
 .parent2-subparent {
   width: 1116px;
   height: 144px;
@@ -50,6 +63,7 @@
     margin-left: 70px;
     margin-top: -44px;
   }
+  
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1439.9px) {
@@ -62,18 +76,39 @@
   .parent1-subparent {
     width: 102%;
   }
+
+  .parent1 {
+    margin-top: -45px; 
+  }
+
+  .parent1-open-subparent {
+    width: 102%;
+  }
+
+  .parent1-open {
+    margin-top: -45px; 
+  }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .parent1-subparent {
     width: 97%;
   }
+
+  .parent1-open-subparent {
+    width: 97%;
+  }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
+  .parent1-open-subparent {
+    @include essui-global-typography-small-screen-h1;
+    width: 100%;
+  }
+
   .parent1-subparent {
     @include essui-global-typography-small-screen-h1;
-    width: 97%;
+    width: 100%;
   }
 
   .schoolname {
@@ -84,18 +119,30 @@
     margin-left: 0;
   }
 
-  .parent1 {
-    margin-left: 55px;
+  .parent1-open {
+    margin-left: 61px;
     display: flex;
     flex-direction: row;
-    margin-top: -40px; 
+    margin-top: -41px; 
+  }
+
+  .parent1 {
+    margin-left: 61px;
+    display: flex;
+    flex-direction: row;
+    margin-top: -75px; 
   }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .parent1-subparent {
     @include essui-global-typography-small-screen-h1;
-    width: 97%;
+    width: 100%;
+  }
+
+  .parent1-open-subparent {
+    @include essui-global-typography-small-screen-h1;
+    width: 100%;
   }
 
   .schoolname {
@@ -106,10 +153,21 @@
     margin-left: 0;
   }
 
+  .parent1-open {
+    margin-left: 55px;
+    display: flex;
+    flex-direction: row;
+    margin-top: -54px; 
+  }
+
   .parent1 {
     margin-left: 55px;
     display: flex;
     flex-direction: row;
-    margin-top: -40px; 
+    margin-top: -75px; 
   }
+}
+
+.mobilefullname {
+  word-break: break-word;
 }

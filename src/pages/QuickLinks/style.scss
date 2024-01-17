@@ -13,21 +13,21 @@
 
 @media only screen and (min-width: 768px) and (max-width: 1023.9px) {
   .breadcrumbs {
-    margin-top: -35px;
+    margin-top: -68px;
     margin-left: 50px;
   }
 }
 
 @media only screen and (min-width: 390px) and (max-width: 767.9px) {
   .breadcrumbs {
-    margin-top: -35px;
+    margin-top: -68px;
     margin-left: 50px;
   }
 }
 
 @media only screen and (min-width: 320px) and (max-width: 389.9px) {
   .breadcrumbs {
-    margin-top: -30px;
+    margin-top: -68px;
     margin-left: 50px;
   }
 }
@@ -137,6 +137,7 @@
     background-color: #fff;
     width: 100%;
     margin-left: -3px;
+    overflow: hidden;
   }
 
   .quick-link-table-res .essui-table {
@@ -154,6 +155,7 @@
   .quicklinktable-close {
     width: 100% !important;
     margin-left: -3px;
+    overflow: hidden;
   }
 }
 
@@ -162,6 +164,7 @@
     background-color: #fff;
     width: 100%;
     margin-left: -3px;
+    overflow: hidden;
   }
 
   .quicklinkheading {
@@ -175,6 +178,7 @@
   .quicklinktable-close {
     width: 100% !important;
     margin-left: -3px;
+    overflow: hidden;
   }
 
   .quick-link-table-res .essui-table {
