@@ -33,7 +33,7 @@ export const responsive = {
       slidesToSlide: 2
     },
     mobile: {
-      breakpoint: { max: 767, min: 390 },
+      breakpoint: { max: 767, min: 0 },
       items: 1,
       slidesToSlide: 1
     }

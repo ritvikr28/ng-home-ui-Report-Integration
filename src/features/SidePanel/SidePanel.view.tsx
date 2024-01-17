@@ -86,7 +86,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
         }`}
       >
         {isOpen ? (
-          isMobileView ? (
+          isMobileView || !isOpen?(
             <SideNavigationPanel
               title={
                 loginFullname && loginFullname.length > 24 ? (
@@ -141,7 +141,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     quicklinkData,
                     handleStarClick,
                     showQuickLinkView,
-                    isLoader
+                    isLoader,
+                    togglePanel,
+                    isMobileView
                   })}
                 </div>
               </SideNavigationPanelContent>
@@ -184,7 +186,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 quicklinkData,
                 handleStarClick,
                 showQuickLinkView,
-                isLoader
+                isLoader,
+                togglePanel,
+                isMobileView
               })}
             </div>
           )
@@ -218,14 +222,18 @@ const quickLink :({
   quicklinkData,
   handleStarClick,
   showQuickLinkView,
-  isLoader
+  isLoader,
+  togglePanel,
+  isMobileView
 }:QuickLinkSidePanel) => JSX.Element=({
   isPermissionquicklink,
   isError,
   quicklinkData,
   handleStarClick,
   showQuickLinkView,
-  isLoader
+  isLoader,
+  togglePanel,
+  isMobileView
 }) =>{
   return (
     isPermissionquicklink && (
@@ -272,7 +280,6 @@ eslint-disable
                             e.stopPropagation(); // Prevent the div click event from being triggered
                             handleStarClick(sidelink.id, !sidelink.favourite);
                           }}
-                          /* eslint-enable */
                         />
                       </div>
                     ))
@@ -285,7 +292,11 @@ no-script-url
           <a
             href="javascript:void(0)"
             className="see-all"
-            onClick={showQuickLinkView}
+            onClick={() => {
+              isMobileView ? togglePanel(): '';
+              showQuickLinkView();
+            }}
+            /* eslint-enable */
           >
             See all
           </a>

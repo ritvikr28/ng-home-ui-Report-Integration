@@ -32,6 +32,10 @@
   .register-link-url {
     @include essui-global-typography-default-text-link;
   }
+
+  .timetable-link-url {
+    margin-left: 6px;
+  }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
@@ -46,5 +50,9 @@
 
   .register-link-url {
     @include essui-global-typography-default-text-link;
+  }
+
+  .timetable-link-url {
+    margin-left: 6px;
   }
 }

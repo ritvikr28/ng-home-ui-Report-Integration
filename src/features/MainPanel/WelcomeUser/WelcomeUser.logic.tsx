@@ -1,9 +1,10 @@
 import { authService } from "@essnextgen/auth-ui";
-import React,{ useEffect, useState } from "react";
+import { useMediaQuery } from "@essnextgen/ui-kit";
+import React, { useEffect, useState } from "react";
 import WelcomeUserView from "./WelcomeUser.view";
 import { IWelcomeUserLogicProps } from "./WelcomeUserProps";
 
-const WelcomeUser:(props: IWelcomeUserLogicProps) => JSX.Element = (
+const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
   props: IWelcomeUserLogicProps
 ) => {
   const {
@@ -11,14 +12,14 @@ const WelcomeUser:(props: IWelcomeUserLogicProps) => JSX.Element = (
     organisationName,
     isOpen
   }: IWelcomeUserLogicProps = props;
-  
-  const [userFullname, setUserFullname]:[string | null,React.Dispatch<React.SetStateAction<string | null>>]  = useState<string | null>(null);
+
+  const [userFullname, setUserFullname]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   useEffect(() => {
     let isMounted = true;
 
-    const fetchData:() => Promise<void> = async () => {
+    const fetchData: () => Promise<void> = async () => {
       try {
-        const username:string = authService.getUsername();
+        const username: string = authService.getUsername();
         if (isMounted) {
           setUserFullname(username);
         }
@@ -33,16 +34,19 @@ const WelcomeUser:(props: IWelcomeUserLogicProps) => JSX.Element = (
       isMounted = false;
     };
   }, []);
+  const isMobileView: boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 767.9px)"
+  );
 
-
-  const userName:string = (userFullname===null)?"":userFullname.split(" ")[0];
-  const isLong:boolean = userName.length > 25;
-  const parentClass:string = isLong ? "parent2" : "parent1";
-  const subparentClass = `${parentClass}-subparent` as string;
+  const userName: string = (userFullname === null) ? "" : userFullname.split(" ")[0];
+  const isLong: boolean = userName.length > 25;
+  const parentClass: string = isLong ? "parent2" : "parent1";
+  const mobileparentClass: string = isOpen ? "parent1-open" : "parent1";
+  const subparentClass = `${isMobileView ? mobileparentClass : parentClass}-subparent` as string;
 
   return (
     <>
-       {" "}
+      {" "}
       {/*
       <SchoolNameComponent
         setSchoolNames={setSchoolNames}
@@ -55,7 +59,7 @@ const WelcomeUser:(props: IWelcomeUserLogicProps) => JSX.Element = (
         subparentClassName={subparentClass}
         organisationName={organisationName}
         isApiError={isApiError}
-        isOpen ={isOpen}
+        isOpen={isOpen}
       />
     </>
   );

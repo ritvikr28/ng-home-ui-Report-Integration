@@ -10,7 +10,7 @@
 @media (max-width: 1023.9px) {
   .side-view {
     // padding: 8px;
-    height: 0;
+    height: fit-content;
   }
 }
 
@@ -112,7 +112,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    font-size: 12px;
+    // font-size: 12px;
   }
 
   .quick-link {
@@ -132,4 +132,19 @@
 
 .loader-sidepanel-quicklink {
   margin: 10px !important;
+}
+
+.essui-side-navigation-panel {
+  height: auto !important;
+}
+
+.essui-side-navigation-panel-container-grid-item {
+  height: 100%;
+}
+
+.essui-button--tertiary:focus-visible {
+  background-color: inherit;
+  box-shadow: none;
+  // color: #005faf;
+  // outline: 0;
 }

@@ -19,4 +19,6 @@ export interface QuickLinkSidePanel{
   handleStarClick: any;
   showQuickLinkView: any;
   isLoader: any;
+  togglePanel: any;
+  isMobileView: any;
 }

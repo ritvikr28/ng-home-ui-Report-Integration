@@ -155,3 +155,13 @@
 .essui-side-panel-heading {
   padding: 16px 32px 0 16px !important;
 }
+
+@media (min-width: 320px) and (max-width: 767.9px) {
+  .essui-side-panel {
+    height: auto !important;
+  }
+
+  .essui-side-panel-container-grid-item {
+    height: 100%;
+  }
+}

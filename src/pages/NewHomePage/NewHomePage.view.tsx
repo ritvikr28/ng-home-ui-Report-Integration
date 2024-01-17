@@ -45,8 +45,10 @@ const requiredPermissionsforquicklink: Permission[] = [
 const NewHomepageView: React.FC = () => {
   const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all);
   const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all);
-
-  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const isMobileView : boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1023.9px)"
+  );
+  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
   const [showQuickLink, setShowQuickLink]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
   const [quickLinkData, setQuickLinkData]: [
