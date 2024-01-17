@@ -40,7 +40,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
           </GridItem>
           <GridItem>
           {!apiError &&  (
-              <TableWrapper  className={isOpen ? "quicklinktable" : "quicklinktable-close"} >
+              <TableWrapper  className={isOpen ? "quicklinktable quick-link-table-res" : "quicklinktable-close quick-link-table-res"} >
                 <Table dataTestId="test-id" id="element-id" >
                   <TableHead>
                     <TableRow>
