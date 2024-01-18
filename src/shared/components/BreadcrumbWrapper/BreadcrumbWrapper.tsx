@@ -7,7 +7,7 @@ const BreadcrumbWrapper: React.FC = () => (
         {
           active: true,
           linkName: "Home",
-          path: "/"
+          path: window.location.pathname
         },
         {
           active: false,
