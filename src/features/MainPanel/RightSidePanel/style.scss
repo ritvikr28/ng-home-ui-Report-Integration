@@ -159,6 +159,7 @@
 @media (min-width: 320px) and (max-width: 767.9px) {
   .essui-side-panel {
     height: auto !important;
+    position: fixed;
   }
 
   .essui-side-panel-container-grid-item {

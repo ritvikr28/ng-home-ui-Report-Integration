@@ -114,7 +114,7 @@ const NewHomepageView: React.FC = () => {
   return isPermission ? (
     <>
     <Grid className="app" dataTestId="NewHomePage">
-      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0} md={isOpen ? 0 : 0} sm={isOpen ? 1 : 0}>
+      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0}>
         <SidePanelView
           isOpen={isOpen}
           togglePanel={togglePanel}
