@@ -65,7 +65,8 @@
     margin-top: 40px;
     // margin-top: -24px;
   }
-
+}
+@media (min-width: 833px) and (max-width: 1023.9px) {
   .body-panel-mobile {
     max-width: 768px;
     margin-left: -70px;
@@ -77,14 +78,15 @@
 @media (min-width: 768px) and (max-width: 843.9px) {
   .body-panel-mobile-open {
     max-width: 768px;
-    margin-left: 16px;
+    margin-left: 3px;
     margin-top: 39px;
     // margin-top: -24px;
   }
-
+}
+@media (min-width: 768px) and (max-width: 832.9px) {
   .body-panel-mobile {
     max-width: 768px;
-    margin-left: 16px;
+    margin-left: 5px;
     // margin-top: 39px;
   }
 }
