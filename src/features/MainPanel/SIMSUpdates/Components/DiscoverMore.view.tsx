@@ -42,7 +42,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
         </span>
       </div>
       <Grid className={isOpen? "action-card-container sims-ng":"action-card-container-close sims-ng"}>
-        <GridItem lg={6} className="what-new">
+        <GridItem className={isOpen?"what-new what-new-open ":"what-new"}>
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
@@ -59,7 +59,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             />
           </Link>
         </GridItem>
-        <GridItem lg={6} className="what-new action-card onecard">
+        <GridItem className={isOpen?"action-card onecard onecard-open":"action-card onecard"}>
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"

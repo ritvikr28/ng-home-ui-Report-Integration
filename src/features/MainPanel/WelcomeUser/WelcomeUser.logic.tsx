@@ -40,8 +40,8 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
 
   const userName: string = (userFullname === null) ? "" : userFullname.split(" ")[0];
   const isLong: boolean = userName.length > 25;
-  const parentClass: string = isLong ? "parent2" : "parent1";
   const mobileparentClass: string = isOpen ? "parent1-open" : "parent1";
+  const parentClass: string = isLong ? "parent2" : mobileparentClass;
   const subparentClass = `${isMobileView ? mobileparentClass : parentClass}-subparent` as string;
 
   return (

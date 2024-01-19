@@ -3,7 +3,7 @@
   flex-direction: column;
   align-items: flex-start;
   margin: 20px 20px 20px 0;
-  max-width: 100%;
+  // max-width: 100%;
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -40,9 +40,26 @@
   background: var(--neutral-200, #c6c6c6);
   margin-top: 20px;
   margin: 20px 20px 40px 0;
-  // width: 1081px;
+  width: 77vw;
 }
 
+.open-divider {
+  width: 75.2vw !important;
+}
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .open-divider {
+    width: 71vw !important;
+  }
+
+  .divider-container {
+    width: 95vw;
+  }
+}
+@media (min-width: 320px) and (max-width: 1023.9px) {
+  .divider-container {
+    width: 91vw;
+  }
+}
 //  .essui-divider {
 //   //margin-top: 8px;
 //   margin-top: 40px;

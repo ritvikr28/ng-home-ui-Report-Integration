@@ -212,7 +212,7 @@ const returnEventContainer: ({
     );
   };
   return (
-    <div className="parent-event-container">
+    <div className={isOpen? "parent-event-container open-con": "parent-event-container"}>
       {schoolEventsData.map((item: any, index: any) => (
         <div key={item.externalId}>
           <EventContainerView

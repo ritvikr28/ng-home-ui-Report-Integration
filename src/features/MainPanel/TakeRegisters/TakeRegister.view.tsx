@@ -14,7 +14,7 @@ export const TakeRegisterView: React.FC<TakeRegisterProps> = ({ isOpen, setIsOpe
   
   return(
   <Grid>
-    <GridItem lg={12} md={8} sm={4} className="register-container">
+    <GridItem sm={4} className="register-container">
 <TakeRegistersLinkview />
       <TakeRegisterEvent isOpen={isOpen} setIsOpen={setIsOpen} />
     </GridItem>

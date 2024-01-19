@@ -129,8 +129,7 @@ const NewHomepageView: React.FC = () => {
       </GridItem>
       {/* eslint-disable */}
       <GridItem className={!isTabletView ? (isOpen ? "body-open-panel" : "body-panel res-body" ):
-         (isOpen ? "body-panel-mobile-open" : "body-panel-mobile")}
-        lg={isOpen ? 9 : 10} md={isOpen ? 6 : 7} sm={isOpen ? 3 : 4}>
+         (isOpen ? "body-panel-mobile-open" : "body-panel-mobile")}>
         {renderContent()}
       </GridItem>
       {/* eslint-enable */}

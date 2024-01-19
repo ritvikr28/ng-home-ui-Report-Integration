@@ -43,7 +43,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
         )}
         {/* eslint-enable */}
       </GridItem>
-      <GridItem lg={10}>
+      <GridItem>
         <div className={`schoolname ${isOpen ? "" : "schoolname-res"}`}>
           {" "}
           {isApiError === false ? organisationName : ""}

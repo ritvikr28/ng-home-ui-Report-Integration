@@ -32,8 +32,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   
       <Grid className="quicklink">
       <GridItem className="teacher-panel-container">
-      <GridItem className={isOpen? "" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
-        <GridItem lg={12} className="quicklink-container nopadding">
+      <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
+        <GridItem className={isOpen? "quicklink-container open-quicklink nopadding":  "quicklink-container nopadding"}>
           <GridItem className="quicklinkheading">Quick links</GridItem>
           <GridItem className="quicklinktext">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
@@ -71,7 +71,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
             )}
           </GridItem>
           <GridItem>
-          <div className="quicklink-divider-container" />
+          <div className={isOpen? "quicklink-divider-container divider-open-quicklink": "quicklink-divider-container"} />
           <div className="simspadding">
             <SIMSupdatesView isOpen={isOpen}/>
           </div>

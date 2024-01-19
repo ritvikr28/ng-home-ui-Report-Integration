@@ -3,7 +3,7 @@
 .sims-container {
   display: flex;
   // width: 1116px;
-  width: 100%;
+  // width: 100%;
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
@@ -18,30 +18,57 @@
 
 .sims-link-container-close {
   display: flex;
-  width: 99.3%;
+  width: 76.6vw;
   justify-content: space-between;
   align-items: baseline;
 }
+@media screen and (min-width: 1440px) {
+  .sims-container {
+    width: 79.6vw;
+  }
 
+  .sims-open {
+    width: 77.3vw !important;
 
-@media (min-width: 768px) and (max-width: 1439.9px) {
+  }
+
+  .action-card-container-close {
+    width: 78.6vw;
+  }
+
+  .action-card-container {
+    width: 77.3vw;
+  }
+}
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .sims-link-container {
-    max-width: 98%;
+    width: 70.3vw;
   }
 
   .sims-link-container-close {
-    max-width: 98.4%;
+    width: 94.7vw;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .sims-link-container {
+    width: 94vw;
+  }
+
+  .sims-link-container-close {
+    width: 94vw;
   }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .sims-link-container {
-    max-width: 98%;
+    width: 93vw;
   }
 
   .sims-link-container-close {
     display: flex;
     /* width: 278px; */
+    width: 93vw;
     gap: 16px;
     flex-direction: row;
     justify-content: space-between;
@@ -51,12 +78,13 @@
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .sims-link-container {
-    max-width: 98%;
+    width: 92vw;
   }
 
   .sims-link-container-close {
     display: flex;
     /* width: 278px; */
+    width: 92vw;
     gap: 16px;
     flex-direction: row;
     justify-content: space-between;
@@ -115,55 +143,102 @@
 // .sims-ng .essui-activity-card {
 //   width: 354px;
 // }
-
-@media (min-width: 1024px) and (max-width: 1439.9px) {
+@media (min-width: 1440px) {
   .action-card-container {
-    width: 102.4% !important;
+    width: 79vw !important;
+    gap: 24px;
   }
 
   .action-card-container-close {
-    width: 101.7% !important;
+    width: 98vw !important;
+    gap: 24px;
+  }
 
+  .what-new {
+    width: 39vw;
+  }
+
+  .onecard {
+    width: 38.2vw;
+  }
+
+  .what-new-open {
+    width: 38vw !important;
+  }
+
+  .onecard-open {
+    width: 38vw !important;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .action-card-container {
+    width: 77vw !important;
+  }
+
+  .action-card-container-close {
+    width: 98vw !important;
+    gap: 24px;
+  }
+
+  .what-new {
+    width: 47vw;
+  }
+
+  .onecard {
+    width: 48.3vw;
+  }
+
+  .what-new-open {
+    width: 37vw !important;
+  }
+
+  .onecard-open {
+    width: 36vw !important;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .action-card-container {
-    width: 102.4% !important;
-    gap: 19px;
+    width: 100vw !important;
+    gap: 24px;
     justify-content: normal;
   }
 
   .action-card-container-close {
-    width: 102.4% !important;
-    gap: 19px;
+    width: 100vw !important;
+    gap: 24px;
     justify-content: normal;
   }
 
   .what-new {
-    width: 371px !important;
+    width: 48vw !important;
+  }
+
+  .onecard {
+    width: 47vw !important;
   }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .action-card-container {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
   .action-card-container-close {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  // .what-new {
-  //   width: 374px !important;
-  // }
+  .what-new {
+    width: 96vw !important;
+  }
 
   .onecard {
-    width: 376px !important;
+    width: 96vw !important;
   }
 
   .action-card .essui-activity-card {
@@ -174,23 +249,23 @@
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .action-card-container {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
   .action-card-container-close {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  // .what-new {
-  //   width: 374px !important;
-  // }
+  .what-new {
+    width: 96vw !important;
+  }
 
   .onecard {
-    width: 376px !important;
+    width: 96vw !important;
   }
 
   .action-card .essui-activity-card {
@@ -204,8 +279,8 @@
   // width: fit-content;
 }
 
-.what-new .essui-activity-card-center {
-  width: fit-content;
+.essui-activity-card-center {
+  width: 100vw;
 }
 
 .essui-activity-card {
@@ -230,7 +305,7 @@
   }
 
   .sims-container {
-    width: 379px;
+    width: 100vw;
   }
 
   .base-class-more {
@@ -246,7 +321,7 @@
   }
 
   .sims-container {
-    width: 305px;
+    width: 100vw;
   }
 
   .base-class-more {
