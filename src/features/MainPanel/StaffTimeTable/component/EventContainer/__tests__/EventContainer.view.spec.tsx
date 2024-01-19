@@ -22,6 +22,7 @@ const mockProps = {
             [externalId]: !prevIsOpen[externalId]
           }));      }),
     isOpen: true,
+    isOpenPanel:true,
     GroupDescription: 'Test Group',
     StaffName: 'John Doe',
     index: 0,
@@ -32,7 +33,7 @@ const mockProps = {
 
 
 
-  test.skip('renders EventContainerView component', async() => {
+  test('renders EventContainerView component', async() => {
     const { getByTestId }: RenderResult = render(
       <EventContainerView
         SchoolEventexternalId={mockProps.SchoolEventexternalId}
@@ -45,6 +46,7 @@ const mockProps = {
         EventPeriodNum={mockProps.EventPeriodNum}
         togglePanel={mockProps.togglePanel}
         isOpen={mockProps.isOpen}
+        isOpenPanel={mockProps.isOpenPanel}
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
         index={mockProps.index}
@@ -67,7 +69,7 @@ const mockProps = {
     expect(roomCode1).toBeInTheDocument();
     });
   });
-  test.skip('renders EventContainerView component with Right Side Panel', async() => {
+  test('renders EventContainerView component with Right Side Panel', async() => {
 
 
     const { getByTestId }: RenderResult = render(
@@ -82,6 +84,7 @@ const mockProps = {
         EventPeriodNum={mockProps.EventPeriodNum}
         togglePanel={togglePanel}
         isOpen
+        isOpenPanel
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
         index={mockProps.index}
