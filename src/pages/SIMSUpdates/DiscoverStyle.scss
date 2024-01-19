@@ -114,6 +114,7 @@
     width: 40.2vw;
   }
 }
+
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .action-card-container-open {
     width: 76vw !important;
@@ -148,7 +149,7 @@
   }
 
   .what-new-sims {
-    width: 45vw !important;
+    width: 44.9vw !important;
   }
 }
 
@@ -244,6 +245,7 @@
     //white-space: break-spaces;
   }
 }
+
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .sims-updates {
     @include essui-global-typography-small-screen-h3;
