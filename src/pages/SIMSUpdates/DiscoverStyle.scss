@@ -133,9 +133,8 @@
     width: 47vw;
   }
 
-  .essui-activity-card-center {
-    width: 100vw;
-    height: 9vh;
+  .secondary-text {
+    height: 7vh !important;
   }
 }
 
@@ -155,6 +154,11 @@
   .what-new-sims {
     width: 44.9vw !important;
   }
+
+  .secondary-text {
+    height: 7vh !important;
+  }
+
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
