@@ -132,8 +132,8 @@
 
   .child-close {
     flex: 1;
-    margin-top: 32px;
-    margin-bottom: 32px !important;
+   // margin-top: 24;
+   // margin-bottom: 32px !important;
   }
 }
 
@@ -162,11 +162,11 @@
 
 @media (min-width: 320px) and (max-width: 767.9px) {
   .essui-side-panel {
-    height: auto !important;
+    height: 100vh !important;
     position: fixed;
   }
 
   .essui-side-panel-container-grid-item {
-    height: 109%;
+    height: 100vh;
   }
 }
