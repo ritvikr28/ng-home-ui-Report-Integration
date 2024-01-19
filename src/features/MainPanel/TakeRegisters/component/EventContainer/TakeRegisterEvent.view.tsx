@@ -221,7 +221,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             keyBoardControl
             customTransition="all .5"
             transitionDuration={50}
-            containerClass="carousel-container"
+            containerClass={isOpen?"carousel-container carousel-open": "carousel-container"}
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
           >
@@ -251,7 +251,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               ))
             }
             {apiRegsiterEventData.length > 0 &&
-              <div className="actioncard-div noregister eventcardnohighlight">
+              <div className={isOpen?"actioncard-div noregister eventcardnohighlight":"actioncard-div-close noregister eventcardnohighlight"}>
                 <ActionCard
                   dataTestId="test-id"
                   icon={<FilledGraphDataIcon />}

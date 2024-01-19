@@ -4,15 +4,21 @@
   margin-left: 0;
 }
 
+.breadcrumbs {
+  margin-top: -67px;
+}
+
 @media only screen and (min-width: 1024px) and (max-width: 1439.9px) {
   .breadcrumbs {
-    margin-top: -35px;
+    width: 75vw;
+    margin-top: -67px;
     margin-left: 70px;
   }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1023.9px) {
   .breadcrumbs {
+    width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
   }
@@ -20,6 +26,7 @@
 
 @media only screen and (min-width: 390px) and (max-width: 767.9px) {
   .breadcrumbs {
+    width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
   }
@@ -27,6 +34,7 @@
 
 @media only screen and (min-width: 320px) and (max-width: 389.9px) {
   .breadcrumbs {
+    width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
   }
@@ -40,7 +48,14 @@
 // }
 
 .quicklink-container {
+  width: 94vw;
   margin-bottom: 8px;
+}
+
+@media screen and (min-width: 1440px) {
+  .quicklink-container {
+    width: 82vw;
+  }
 }
 
 .quicklinktext {
@@ -84,13 +99,15 @@
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .quicklinktable {
     background-color: #fff;
-    width: 105%;
+    width: 89vw;
   }
 }
+
 /* stylelint-disable */
 .essui-table__cell {
   border: 0;
 }
+
 /* stylelint-enable */
 
 
@@ -118,13 +135,29 @@
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .quicklinktable-close {
-    width: 98%;
+    width: 93vw;
+  }
+
+  .quicklink-divider-container {
+    width: 93vw;
+  }
+
+  .divider-open-quicklink {
+    width: 68vw;
+  }
+
+  .open-quicklink {
+    width: 72vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .quicklinktable-close {
-    width: 105%;
+    width: 89vw;
+  }
+
+  .quicklinktext {
+    width: 95vw;
   }
 }
 
@@ -135,13 +168,13 @@
 @media (min-width: 390px) and (max-width: 767.9px) {
   .quicklinktable {
     background-color: #fff;
-    width: 100%;
+    width: 90vw;
     margin-left: -3px;
     overflow: hidden;
   }
 
   .quick-link-table-res .essui-table {
-    min-width: 340px;
+    min-width: 117vw;
   }
 
   .quicklinkheading {
@@ -150,10 +183,11 @@
 
   .quicklinktext {
     @include essui-global-typography-default-body;
+    width: 95vw;
   }
 
   .quicklinktable-close {
-    width: 100% !important;
+    width: 90vw !important;
     margin-left: -3px;
     overflow: hidden;
   }
@@ -162,7 +196,7 @@
 @media (min-width: 320px) and (max-width: 389.9px) {
   .quicklinktable {
     background-color: #fff;
-    width: 100%;
+    width: 90vw;
     margin-left: -3px;
     overflow: hidden;
   }
@@ -173,16 +207,17 @@
 
   .quicklinktext {
     @include essui-global-typography-default-body;
+    width: 95vw;
   }
 
   .quicklinktable-close {
-    width: 100% !important;
+    width: 90vw !important;
     margin-left: -3px;
     overflow: hidden;
   }
 
   .quick-link-table-res .essui-table {
-    min-width: 269px;
+    min-width: 117vw;
   }
 
   // .essui-table {

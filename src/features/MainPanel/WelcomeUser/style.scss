@@ -12,6 +12,12 @@
   margin-bottom: 24px;
 }
 
+.parent1 {
+  width: 85vw;
+  margin-top: -5vw;
+  margin-left: 50px; 
+}
+
 // .parent1 {
 //  // width: 1116px;
 //  // height: 96px;
@@ -58,27 +64,15 @@
   text-align: left;
 }
 
-@media only screen and (min-width: 768px) and (max-width: 1439.9px) {
-  .weclome-res {
-    margin-left: 70px;
-    margin-top: -44px;
-  }
-  
-}
-
-@media only screen and (min-width: 768px) and (max-width: 1439.9px) {
-  .schoolname-res {
-    margin-left: 72px;
-  }
-}
-
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .parent1-subparent {
     width: 102%;
   }
 
   .parent1 {
-    margin-top: -45px; 
+    width: 85vw;
+    margin-top: -87px;
+    margin-left: 50px; 
   }
 
   .parent1-open-subparent {
@@ -86,17 +80,29 @@
   }
 
   .parent1-open {
-    margin-top: -45px; 
+    margin-top: 0;
+    width: 85vw; 
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .parent1-subparent {
-    width: 97%;
+    width: 100vw;
   }
 
   .parent1-open-subparent {
-    width: 97%;
+    width: 100vw;
+  }
+
+  .parent1-open {
+    margin-top: 0;
+    width: 85vw; 
+  }
+
+  .parent1 {
+    width: 85vw;
+    margin-top: -87px;
+    margin-left: 50px; 
   }
 }
 
@@ -120,13 +126,15 @@
   }
 
   .parent1-open {
+    width: 85vw;
     margin-left: 61px;
     display: flex;
     flex-direction: row;
-    margin-top: -41px; 
+    margin-top: 0; 
   }
 
   .parent1 {
+    width: 85vw;
     margin-left: 61px;
     display: flex;
     flex-direction: row;
@@ -154,13 +162,15 @@
   }
 
   .parent1-open {
+    width: 85vw;
     margin-left: 55px;
     display: flex;
     flex-direction: row;
-    margin-top: -54px; 
+    margin-top: 0; 
   }
 
   .parent1 {
+    width: 85vw;
     margin-left: 55px;
     display: flex;
     flex-direction: row;

@@ -22,6 +22,12 @@
   }
 }
 
+@media (min-width: 320px) and (max-width: 1439.9px) {
+  .register-link-container {
+    width: 100vw;
+  }
+}
+
 .your-registers {
   color: var(--neutral-800, #303030);
   font-family: Segoe UI;
@@ -62,46 +68,65 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-left: 90.6%;
-  margin-top: -45px;
+  width: 76vw;
+  justify-content: end;
+  margin-left: 0;
+  margin-top: -34px;
 }
 
 .register-link-event-close {
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
-  margin-left: 90.9%;
-  margin-top: -45px;
+  width: 78vw;
+  justify-content: end;
+  margin-left: -8px;
+  margin-top: -38px;
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .register-icon {
-    margin-right: 20px;
     gap: 8px;
+    margin-top: -4vw;
   }
 
   .register-link-event-open {
-    margin-left: 85%;
-    margin-top: -45px;
+    width: 71.6vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 
   .register-link-event-close {
-    margin-left: 88.8%;
-    margin-top: -45px;
+    width: 96.3vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .register-icon {
-    margin-right: 18px;
     gap: 8px;
+    margin-top: -9vw;
   }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .register-icon {
-    margin-right: 14px;
     gap: 8px;
+    margin-top: -9vw;
+  }
+
+  .register-icon .essui-button-icon-only--small {
+    margin-right: 0;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .register-icon {
+    gap: 8px;
+    margin-top: -20vw;
   }
 
   .register-icon .essui-button-icon-only--small {
@@ -110,97 +135,113 @@
 }
 
 .actioncard-div {
+  width: 17vw;
   margin: 0 12px;
 }
 
 .actioncard-div-close {
+  width: 18.3vw;
   margin: 0 12px;
 }
-// @media (min-width: 1440px) {
-// .actioncard-div {
-//   margin: 0 12px;
-//   width: 261px;
-// }
 
-// .actioncard-div-close {
-//   margin: 0 12px;
-//   width: 266px;
-// }
-// }
-@media (min-width: 768px) and (max-width: 1023.9px) {
+@media (min-width: 1024px) and (max-width: 1439.9px) {
   .actioncard-div {
     margin: 0 12px;
-    width: 350px;
+    width: 34vw;
   }
 
   .actioncard-div-close {
     margin: 0 12px;
-    width: 350px;
+    width: 30.1vw;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .actioncard-div {
+    margin: 0 12px;
+    width: 45vw;
+  }
+
+  .actioncard-div-close {
+    margin: 0 12px;
+    width: 45vw;
   }
 
   .register-link-event-open {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: 85.5%;
-    margin-top: -45px;
+    width: 96vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 
   .register-link-event-close {
-    margin-left: 85.5%;
-    margin-top: -45px;
+    width: 96vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .actioncard-div {
     margin: 0 12px;
-    width: 358px;
+    width: 92vw;
   }
 
   .actioncard-div-close {
     margin: 0 12px;
-    width: 358px;
+    width: 92vw;
   }
 
   .register-container {
-    max-width: 100% !important;
+    width: 100vw !important;
   }
 
   .register-link-event-open {
-    margin-left: 73%;
-    margin-top: -45px;
+    width: 95vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 
   .register-link-event-close {
-    margin-left: 73%;
-    margin-top: -45px;
+    width: 95vw;
+    justify-content: end;
+    margin-left: 1vw;
+    margin-top: 0;
   }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .actioncard-div {
     margin: 0 12px;
-    width: 282px;
+    width: 90vw;
   }
 
   .actioncard-div-close {
     margin: 0 12px;
-    width: 282px;
+    width: 90vw;
   }
 
   .register-container {
-    max-width: 100% !important;
+    width: 100vw !important;
   }
 
   .register-link-event-open {
-    margin-left: 65%;
-    margin-top: -45px;
+    width: 94vw;
+    justify-content: end;
+    margin-left: 0;
+    margin-top: 0;
   }
 
   .register-link-event-close {
-    margin-left: 65%;
-    margin-top: -45px;
+    width: 94vw;
+    justify-content: end;
+    margin-left: 2vw;
+    margin-top: 0;
   }
 }
 

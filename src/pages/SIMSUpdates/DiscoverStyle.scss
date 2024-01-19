@@ -3,7 +3,7 @@
 .sims-container-quicklinks {
   display: flex;
   // width: 1116px;
-  width: 100%;
+  // width: 100%;
   flex-direction: column;
   align-items: flex-start;
   gap: 24px;
@@ -18,7 +18,7 @@
 
 .sims-link-container-closeview {
   display: flex;
-  width: 99.3%;
+  width: 78.2vw;
   justify-content: space-between;
   align-items: baseline;
 }
@@ -26,21 +26,21 @@
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .sims-link-container-open {
-    width: 102.1%;
+    width: 69.1vw;
   }
 
   .sims-link-container-closeview {
-    width: 98.4%;
+    width: 93vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .sims-link-container-open {
-    width: 105%;
+    width: 89vw;
   }
 
   .sims-link-container-closeview {
-    width: 105%;
+    width: 89vw;
   }
 }
 
@@ -81,6 +81,7 @@
   // gap: 35px;
   flex-direction: row;
   // gap: 20px;
+  width: 80.2vw;
 }
 
 .action-card-container-closeview {
@@ -90,54 +91,95 @@
   // gap: 35px;
   flex-direction: row;
   // gap: 20px;
+  width: 80.2vw;
 }
 
 // .sims-ng .essui-activity-card {
 //   width: 354px;
 // }
-
-@media (min-width: 1024px) and (max-width: 1439.9px) {
+@media (min-width: 1440px) {
   .action-card-container-open {
-    width: 106.6% !important;
+    width: 80.2vw !important;
   }
 
   .action-card-container-closeview {
-    width: 101.7% !important;
+    width: 98vw !important;
+  }
 
+  .what-new-sims-isopen {
+    width: 40vw !important;
+  }
+
+  .what-new-sims {
+    width: 40.2vw;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .action-card-container-open {
+    width: 76vw !important;
+  }
+
+  .action-card-container-closeview {
+    width: 98vw !important;
+    gap: 20px;
+  }
+
+  .what-new-sims-isopen {
+    width: 36vw !important;
+  }
+
+  .what-new-sims {
+    width: 47vw;
+  }
+
+  .secondary-text {
+    height: 7vh !important;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .action-card-container-open {
-    width: 112% !important;
+    width: 100vw !important;
     justify-content: normal;
+    gap: 24px;
   }
 
   .action-card-container-closeview {
-    width: 112% !important;
+    width: 100vw !important;
     justify-content: normal;
+    gap: 24px;
   }
 
-  .what-new {
-    width: 371px !important;
+  .what-new-sims {
+    width: 44.9vw !important;
   }
+
+  .secondary-text {
+    height: 7vh !important;
+  }
+
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .action-card-container-open {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
   .action-card-container-closeview {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  .what-new {
-    width: 374px !important;
+  .what-new-sims {
+    width: 92vw !important;
+  }
+
+  .secondary-text {
+    height: 7vh !important;
   }
 
   .action-card .essui-activity-card {
@@ -148,19 +190,23 @@
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .action-card-container-open {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
   .action-card-container-closeview {
-    width: 104% !important;
+    width: 88vw !important;
     gap: 16px;
     justify-content: normal;
   }
 
-  .what-new {
-    width: 374px !important;
+  .secondary-text {
+    height: 9vh !important;
+  }
+
+  .what-new-sims {
+    width: 93vw !important;
   }
 
   .action-card .essui-activity-card {
@@ -174,8 +220,8 @@
   // width: fit-content;
 }
 
-.what-new .essui-activity-card-center {
-  width: fit-content;
+.essui-activity-card-center {
+  width: 100vw;
 }
 
 .essui-activity-card {
@@ -199,12 +245,34 @@
   }
 
   .sims-container-quicklinks {
-    width: 360px;
+    width: 93vw;
+  }
+
+  .sims-link-container-open {
+    width: 87vw;
+  }
+
+  .sims-link-container-closeview {
+    width: 89vw;
   }
 
   .base-class-more {
     height: 40px;
     //white-space: break-spaces;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .sims-updates {
+    @include essui-global-typography-small-screen-h3;
+  }
+
+  .sims-container-quicklinks {
+    width: 93vw;
+  }
+
+  .base-class-more {
+    height: 40px;
   }
 }
 
@@ -214,7 +282,15 @@
   }
 
   .sims-container-quicklinks {
-    width: 287px;
+    width: 93vw;
+  }
+
+  .sims-link-container-open {
+    width: 87vw;
+  }
+
+  .sims-link-container-closeview {
+    width: 89vw;
   }
 
   .base-class-more {

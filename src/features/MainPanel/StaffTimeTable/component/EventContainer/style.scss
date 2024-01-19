@@ -14,27 +14,34 @@
 
 @media (min-width: 1440px) {
   .isopen {
+    width: 11.6vw !important;
     margin-right: 14px;
   }
 
   .isclose {
-    margin-right: 18px;
+    margin-right: 1.9vw;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .isopen {
-    margin-right: 14px;
+    width: 16vw !important;
+    margin-right: 2vw;
   }
 
   .isclose {
-    margin-right: 15px;
+    width: 14.1vw !important;
+    margin-right: 2vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .isclose {
-    margin-right: 17px;
+    margin-right: 3vw;
+  }
+
+  .isopen {
+    margin-right: 3vw;
   }
 }
 
@@ -45,7 +52,29 @@
 @media (min-width: 1440px) {
   .parent-event-container {
     margin-left: 8.3px;
-    width: 100%;
+    width: 100vw;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .parent-event-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100vw;
+  }
+
+  .open-con {
+    display: flex;
+    flex-wrap: wrap;
+    width: 75vw !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .parent-event-container {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100vw;
   }
 }
 
@@ -165,24 +194,24 @@
 /* stylelint-enable */
 @media (min-width: 1440px) {
   .event-primary-text {
-    width: 166px !important;
+    width: 11vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .event-primary-text {
-    width: 166px !important;
+    width: 21vw !important;
   }
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .event-primary-text {
-    width: 358px !important;
+    width: 92vw !important;
   }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
   .event-primary-text {
-    width: 280px !important;
+    width: 90vw !important;
   }
 }

@@ -14,6 +14,7 @@
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .react-multi-carousel-list {
+    width: 100vw;
     margin-left: -11px;
   }
 }
@@ -65,17 +66,50 @@
 .noregister .main-text {  
   margin-top: -29px;
 }
-
-@media (min-width: 768px) and (max-width: 1439.9px) {
+@media (min-width: 1440px) {
   .carousel-container {
-    width: 100%;
+    width: 77vw;
   }
 
-  .carousel-container-close {
-    width: 100%;
+  .carousel-open {
+    width: 77vw !important;
+    
   }
 }
 
+// @media (min-width: 1024px) and (max-width: 1439.9px) {
+//   .carousel-container {
+//     width: 97vw;
+//   }
+
+//   .carousel-container-close {
+//     width: 100vw;
+//   }
+// }
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .carousel-container {
+    width: 97vw;
+  }
+
+  .carousel-container-close {
+    width: 97vw;
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1439.9px) {
+  .carousel-container {
+    width: 96.6vw;
+  }
+
+  .carousel-open {
+    width: 72vw !important;
+
+  }
+
+  .carousel-container-close {
+    width: 96vw;
+  }
+}
 
 // @media (min-width: 320px) and (max-width: 767.9px) {
 //   .carousel-container {

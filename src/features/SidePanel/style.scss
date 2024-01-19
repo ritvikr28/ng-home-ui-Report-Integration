@@ -10,11 +10,12 @@
 @media (max-width: 1023.9px) {
   .side-view {
     // padding: 8px;
-    height: fit-content;
+    height: 100vh;
   }
 }
 
 .side-view-closed {
+  height: fit-content;
   background-color: #f7f7f7;
 }
 

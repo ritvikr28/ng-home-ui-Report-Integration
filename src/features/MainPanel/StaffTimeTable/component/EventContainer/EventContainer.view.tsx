@@ -39,7 +39,7 @@ export const EventContainerView: (
         isTextTruncate
         status={EventCardColor}
         title={EventTitle}
-        inputWidth={isOpen ? 166 : 145}
+        // inputWidth={isOpen ? 166 : 145}
         inputHeight={67}
         dataTestId={`eventid${index}`}
          /* eslint-disable  */
