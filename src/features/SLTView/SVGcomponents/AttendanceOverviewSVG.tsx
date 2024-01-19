@@ -1,8 +1,8 @@
 import attendanceoverview from "../SVGpathfiles/attendance.svg"
 
 const AttendanceOverviewSVG = () => (
-  <div>
-    <img src={attendanceoverview} alt="svgfiles" />
+  <div >
+    <img className="parent-svg" src={attendanceoverview} alt="svgfiles" />
   </div>
 );
 

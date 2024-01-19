@@ -1,8 +1,8 @@
 import pupil from "../SVGpathfiles/pupil.svg";
 
 const PupilSVG = () => (
-  <div>
-    <img src={pupil} alt="svgfiles" />
+  <div >
+    <img className="parent-svg" src={pupil} alt="svgfiles" />
   </div>
 );
 
