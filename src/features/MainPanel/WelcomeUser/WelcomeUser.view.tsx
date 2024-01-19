@@ -15,7 +15,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     isOpen
   }: IWelcomeUserViewProps = props;
   const isMobileView : boolean = useMediaQuery(
-    "(min-width:320px) and (max-width: 767.9px)"
+    "(min-width:320px) and (max-width: 1023.9px)"
   );
   return (
     <Grid className={`welcome-parent ${parentClassName}`}>

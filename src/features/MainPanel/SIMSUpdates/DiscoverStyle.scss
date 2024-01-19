@@ -196,6 +196,11 @@
   .onecard-open {
     width: 36vw !important;
   }
+
+  .essui-activity-card-center {
+    width: 100vw;
+    height: 9vh;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
