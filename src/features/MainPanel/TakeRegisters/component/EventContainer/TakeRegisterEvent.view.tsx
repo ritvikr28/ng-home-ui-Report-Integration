@@ -267,8 +267,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className={ isOpen? "carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
-            "carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
+            <div className={ isOpen? "actioncard-div carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
+            "actioncard-div-close carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}
