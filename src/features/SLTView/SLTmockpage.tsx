@@ -139,6 +139,7 @@ const SLTmockpage: () => JSX.Element = () => {
   const renderContent: () => JSX.Element = () => {
     if (showQuickLink) {
       return (
+        <div className={isOpen? "":"sltquicklink"}>
         <QuickLinkLogic
           setQuickLinkData={setQuickLinkData}
           apiQuickLinkData={
@@ -146,6 +147,7 @@ const SLTmockpage: () => JSX.Element = () => {
           }
           isOpen={isOpen}
         />
+        </div>
       );
     }
     return (
@@ -182,7 +184,7 @@ const SLTmockpage: () => JSX.Element = () => {
           data-testid="btn-show-quick-link"
         />
       </GridItem>
-      <GridItem className="sltview" lg={10}>
+      <GridItem className="sltview">
         {renderContent()}
       </GridItem>
     </Grid>

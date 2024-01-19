@@ -2,7 +2,7 @@ import wholeschool from "../SVGpathfiles/Wholeschool.svg";
 
 const WholeSchoolOverviewSVG = () => (
   <div>
-    <img src={wholeschool} alt="svgfiles" />
+    <img className="parent-svg" src={wholeschool} alt="svgfiles" />
   </div>
 );
 
