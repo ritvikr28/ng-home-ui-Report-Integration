@@ -1,8 +1,8 @@
 import financereporting from "../SVGpathfiles/financereporting.svg";
 
 const FinanceReportingSVG = () => (
-  <div>
-    <img src={financereporting} alt="svgfiles" />
+  <div >
+    <img className="parent-svg" src={financereporting} alt="svgfiles" />
   </div>
 );
 

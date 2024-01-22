@@ -18,12 +18,12 @@ describe("DiscoverMoreView Component", () => {
     });
   });
 
-  test.skip("renders Discover more button with correct properties", () => {
+  test("renders Discover more button with correct properties", () => {
     render(<DiscoverMoreView />);
     const discoverMoreButton = screen.getByTestId("btn-save");
 
     expect(discoverMoreButton).toBeInTheDocument();
-    expect(discoverMoreButton).toHaveClass("base-class");
+    expect(discoverMoreButton).toHaveClass("base-class-more");
   });
 
   test("opens links in new tabs when action cards are clicked", async () => {
