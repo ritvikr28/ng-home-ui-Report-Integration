@@ -21,7 +21,9 @@ const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "430c0edc-6482-476d-ae18-2eac23e57621",
 "cd0e52dd-8331-44dd-bea4-cf1e99d6e1fe",
 "6607c902-d51d-4200-9740-f230bb1bc8c1",
-"58df2bbd-1d47-4ea0-9613-aee79c442991"];
+"58df2bbd-1d47-4ea0-9613-aee79c442991",
+"4b4eb751-c3f1-4a95-aade-d762b6c70693",
+"ba8937a9-e63e-43ff-ada2-05a4eda64a6f"];
  
 const SwitchView: (props: ISwitchViewProps) => JSX.Element = (
   props: ISwitchViewProps
