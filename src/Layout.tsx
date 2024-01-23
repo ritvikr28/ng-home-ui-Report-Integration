@@ -25,9 +25,7 @@ import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { getUserOrganisation, service } from "./shared/utils";
-import gtmAnalytics from "./shared/utils/analytics";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
-import { trackEvent } from "./shared/utils/analytics-helper";
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "29a88689-e51f-4928-aead-1a92402c1a09",
@@ -153,10 +151,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const showNewHomePage:boolean =  authService.isAuthorised(requiredPermissions, MatchPermissions.all);
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
-      service.init();     
-      trackEvent('loggedIn', () =>
-        gtmAnalytics.pushLogInEvent()
-      );
+      service.init();
       setIsServiceInitiated(true);
     } 
     else{
