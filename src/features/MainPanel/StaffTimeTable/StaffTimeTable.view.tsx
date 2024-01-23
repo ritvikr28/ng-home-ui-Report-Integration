@@ -11,7 +11,7 @@ export interface StaffTimeTableProps {
 export const StaffTimeTableView: React.FC<StaffTimeTableProps> = ({ isOpen}) => { 
   return (
   <Grid>
-  <GridItem md = {8} sm = {4} className={isOpen ? "container-width" : " upcoming-schedule-conatiner"}>
+  <GridItem md = {8} sm = {4} >
     <StaffTimeTableLinkview />
     <EventContainer isOpen={isOpen} />
   </GridItem>

@@ -27,8 +27,8 @@ const QuickLinkLogic: React.FC<
   ) => Promise<void> = async (id: number, favorite: boolean) => {
  
       try {
-        if (!isStarClickable) {
-         /* istanbul ignore next */
+        /* istanbul ignore next */
+        if (!isStarClickable) {         
           return;
         }
         setIsStarClickable(false);
