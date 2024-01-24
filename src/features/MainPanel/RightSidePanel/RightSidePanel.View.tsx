@@ -73,7 +73,7 @@ export const RightSidePanelView: (
         isOpen={isOpen}
         onClose={handlePanelClose}
         initialFocusElementId="close-button-id"
-        className={isOpen? '': 'side-panel-close-view'}
+        // className={isOpen? '': 'side-panel-close-view'}
       >
         <SidePanelContent>
           <div className="side-panel-main-container">
