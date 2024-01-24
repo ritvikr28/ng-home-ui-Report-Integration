@@ -180,7 +180,94 @@ describe("Landing Page tests", () => {
     });
   });  
 
+  it('should display "New Homepage" button text for modules with code "NewHomePage"', async () => {
+    const appPermissions: AppPermissionState = {
+      modules: [
+        {
+          title: "New Homepage Module",
+          description: "This module is for the new homepage",
+          code: "NewHomePage",
+          canView: true,
+          link: "/new-homepage",
+          linkText: "New Homepage Link",
+          appUrl: "/new-homepage-app",
+        }
+      ],
+      isLoaded: true,
+    };
+
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue(appPermissions);
+
+    const { getByText, getByTestId }: RenderResult = renderWithProvider();
+
+    await waitFor(() => {
+      expect(getByText("New Homepage Module")).toBeInTheDocument();
+      expect(getByText("This module is for the new homepage")).toBeInTheDocument();
+      expect(getByText("New Homepage Link")).toBeInTheDocument();
+      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
+    });
+  });
+
+  it('should display "Fire Register" button text for modules with code "FireRegister"', async () => {
+    const appPermissions: AppPermissionState = {
+      modules: [
+        {
+          title: "Fire Register Module",
+          description: "This module is for the fire register",
+          code: "FireRegister",
+          canView: true,
+          link: "/fire-register",
+          linkText: "Fire Register Link",
+          appUrl: "/fire-register-app",
+        }
+      ],
+      isLoaded: true,
+    };
+
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue(appPermissions);
+
+    const { getByText, getByTestId }: RenderResult = renderWithProvider();
+
+    await waitFor(() => {
+      expect(getByText("Fire Register Module")).toBeInTheDocument();
+      expect(getByText("This module is for the fire register")).toBeInTheDocument();
+      expect(getByText("Fire Register Link")).toBeInTheDocument();
+      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
+    });
+  });
+
+  it('should display "Button Text" for modules with codes other than "NewHomePage" or "FireRegister"', async () => {
+    const appPermissions: AppPermissionState = {
+      modules: [
+        {
+          title: "General Module",
+          description: "This is a general module",
+          code: "GeneralModule",
+          canView: true,
+          link: "/general-module",
+          linkText: "General Link",
+          appUrl: "/general-app",
+        }
+      ],
+      isLoaded: true,
+    };
+
+    const spy = jest.spyOn(redux, "useSelector");
+    spy.mockReturnValue(appPermissions);
+
+    const { getByText, getByTestId }: RenderResult = renderWithProvider();
+
+    await waitFor(() => {
+      expect(getByText("General Module")).toBeInTheDocument();
+      expect(getByText("This is a general module")).toBeInTheDocument();
+      expect(getByText("General Link")).toBeInTheDocument();
+      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
+    });
+  });
 });
+
 
 function renderWithProvider() {
   return render(

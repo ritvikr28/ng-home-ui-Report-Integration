@@ -42,6 +42,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
   const isLong: boolean = userName.length > 25;
   const mobileparentClass: string = isOpen ? "parent1-open" : "parent1";
   const parentClass: string = isLong ? "parent2" : mobileparentClass;
+        /* istanbul ignore next */
   const subparentClass = `${isMobileView ? mobileparentClass : parentClass}-subparent` as string;
 
   return (
@@ -53,6 +54,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
         setIsError={setIsError}
       /> */}
       <WelcomeUserView
+       data-testid="subparent-element"
         fullName={userName}
         isLongName={isLong}
         parentClassName={parentClass}

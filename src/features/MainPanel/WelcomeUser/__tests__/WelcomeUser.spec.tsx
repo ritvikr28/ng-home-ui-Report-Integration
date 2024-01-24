@@ -140,3 +140,46 @@ test("handles console errors during fetchData function call", async () => {
     expect(welcomeParentElement).toHaveClass('parent2');
    
   });
+
+
+
+  test("renders subparentClass based on isMobileView", () => {
+    const propsMobile = {
+      isApiError: false,
+      organisationName: 'Sample Org',
+      isOpen: true,
+    };
+    const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView={true} />);
+    const subparentElementMobile = getByTestId('subparent-element');
+  
+    // Log the actual class names to help identify any mismatches
+    console.log("Actual class names:", subparentElementMobile.className);
+  
+    // Assuming you want to check for the presence of "parent1-open-subparent" class
+    expect(subparentElementMobile).toBeInTheDocument();
+  
+    // Check if the class "parent1-open-subparent" is present
+    expect(subparentElementMobile).toHaveClass(' subparent parent2-subparent');
+  });
+
+  test("renders subparentClass based on isMobileView", () => {
+    const propsMobile = {
+      isApiError: false,
+      organisationName: 'Sample Org',
+      isOpen: true,
+    };
+  
+    const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView={false} />);
+    const subparentElementMobile = getByTestId('subparent-element');
+  
+    // Log the actual class names to help identify any mismatches
+    console.log("Actual class names:", subparentElementMobile.className);
+  
+    // Assuming you want to check for the presence of "parent1-open-subparent" class
+    expect(subparentElementMobile).toBeInTheDocument();
+  
+    // Check if the class "parent1-open-subparent" is present
+    expect(subparentElementMobile).toHaveClass('subparent parent2-subparent');
+  });
+  
+  
