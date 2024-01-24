@@ -1,13 +1,11 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DiscoverMoreView from "../DiscoverMore.view";
 
+
+const mediaQuery = require('@essnextgen/ui-kit');
+ 
 describe("DiscoverMoreView Component", () => {
-  test("renders without crashing", () => {
-    render(<DiscoverMoreView />);
-    expect(
-      screen.getByText("Find out more about SIMS Next Gen")
-    ).toBeInTheDocument();
-  });
+ 
 
   beforeAll(() => {
     Object.defineProperty(window, "location", {
@@ -18,8 +16,33 @@ describe("DiscoverMoreView Component", () => {
     });
   });
 
+  test("renders without crashing", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(<DiscoverMoreView isOpen ={true}/>);
+    expect(
+      screen.getByText("Find out more about SIMS Next Gen")
+    ).toBeInTheDocument();
+  });
+
+  test("renders without crashing using mediaquery", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    render(<DiscoverMoreView isOpen ={true}/>);
+    expect(
+      screen.getByText("SIMS Next Gen updates")
+    ).toBeInTheDocument();
+  });
+  
+  test("renders without crashing using mediaquery", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    render(<DiscoverMoreView isOpen ={true}/>);
+    expect(
+      screen.getByText("SIMS Next Gen updates")
+    ).toBeInTheDocument();
+  });
+
   test("renders Discover more button with correct properties", () => {
-    render(<DiscoverMoreView />);
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(<DiscoverMoreView isOpen ={true}/>);
     const discoverMoreButton = screen.getByTestId("btn-save");
 
     expect(discoverMoreButton).toBeInTheDocument();
@@ -27,7 +50,8 @@ describe("DiscoverMoreView Component", () => {
   });
 
   test("opens links in new tabs when action cards are clicked", async () => {
-    render(<DiscoverMoreView />);
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(<DiscoverMoreView isOpen ={true}/>);
     const actionCardLinks = screen.getAllByTestId("link1");
 
     actionCardLinks.forEach((link) => {
@@ -37,7 +61,8 @@ describe("DiscoverMoreView Component", () => {
   });
 
   test("renders action cards with correct properties", () => {
-    render(<DiscoverMoreView />);
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(<DiscoverMoreView isOpen ={true}/>);
     const actionCards = screen.getAllByTestId("test-id");
     actionCards.forEach((card) => {
       expect(card).toBeInTheDocument();
@@ -45,8 +70,11 @@ describe("DiscoverMoreView Component", () => {
     });
   });
 
+
+
   test("opens links in a new tab when action cards are clicked", () => {
-    render(<DiscoverMoreView />);
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(<DiscoverMoreView isOpen ={true} />);
     const actionCardLink = screen.getByTestId("link1");
     fireEvent.click(actionCardLink);
     expect(actionCardLink).toHaveAttribute(
