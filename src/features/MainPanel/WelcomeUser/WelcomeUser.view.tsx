@@ -18,12 +18,12 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     "(min-width:320px) and (max-width: 1023.9px)"
   );
   return (
-    <Grid className={`welcome-parent ${parentClassName}`}>
+    <Grid className={`welcome-parent ${parentClassName}`} >
       <GridItem lg ={10}  className={isOpen ? " " : "weclome-res"} >
      {/* eslint-disable */}
         {!isMobileView? (isLongName ? (
           <>
-            <div className={`subparent ${subparentClassName}`}>
+            <div className={`subparent ${subparentClassName}`} data-testid="subparent-element">
               <div>
                 Hi <strong>{fullName}</strong>,
               </div>
@@ -31,12 +31,12 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
             </div>
           </>
         ) : (
-          <div className={`subparent ${subparentClassName}`}>
+          <div className={`subparent ${subparentClassName}`} data-testid="subparent-element">
             Hi <strong>{fullName}</strong>, welcome back!
           </div>
         )): 
         (
-          <div className={`subparent ${subparentClassName}`}>
+          <div className={`subparent ${subparentClassName}`} data-testid="subparent-element">
             Hi <span className="mobilefullname"><strong>{fullName},</strong></span>
             <div>welcome back!</div> 
           </div>
@@ -44,7 +44,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
         {/* eslint-enable */}
       </GridItem>
       <GridItem>
-        <div className={`schoolname ${isOpen ? "" : "schoolname-res"}`}>
+        <div className={`schoolname ${isOpen ? "" : "schoolname-res"}`}> 
           {" "}
           {isApiError === false ? organisationName : ""}
         </div>
