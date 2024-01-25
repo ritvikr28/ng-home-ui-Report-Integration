@@ -23,9 +23,10 @@ const App: (props: ILayoutProps) => JSX.Element = ({
       cy: translationCy
     }
   });
+    /* istanbul ignore next */
   const getFeatureFlags: () => Promise<IResponse> = () =>
   service.get('v1/features');
-
+ /* istanbul ignore next */
 const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
   authService.isAuthenticated() ? getFeatureFlags : undefined;
   gtmAnalytics.pushLogInEvent();

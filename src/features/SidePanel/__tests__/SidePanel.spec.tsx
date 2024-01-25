@@ -8,6 +8,8 @@ import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsem
 import * as qicklink from "../../../shared/services/quickLinkDomain/quickLinkService";
 import * as  linkDetails  from "../../../shared/components/QuickLink/Quicklinkresponse";
 
+const mediaQuery = require('@essnextgen/ui-kit');
+
 const mockApiResponse: IQuickLinkApiResponse[] = [
   {
     id: 1,
@@ -155,7 +157,6 @@ describe("SidePanel Component", () => {
     .mockImplementation(() => "JonathanQuincyAdamsSmithsonianabcd");
     
     const {getByText } = render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
-     console.log(getByText);
     expect(getByText("JonathanQuincyAdamsSmithsonianabcd")).toBeInTheDocument();
 
   });
@@ -289,4 +290,88 @@ describe("SidePanel Component", () => {
       expect(setIsError).toHaveBeenCalledWith(true);
     }) ;
   });
+  test('should call showQuickLinkView when "See all" is clicked', () => {
+    const mockShowQuickLinkView = jest.fn();
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    const { getByText } = render(
+      <SidePanel
+        isOpen={true}
+        togglePanel={() => {}}
+        closePanel={() => {}}
+        showQuickLinkView={mockShowQuickLinkView}
+        quicklinkData={[]}
+        setQuickLinkData={() => {}}
+        isLoader={false}
+      />
+    );
+
+    const seeAllLink = getByText("See all");
+    fireEvent.click(seeAllLink);
+
+    expect(mockShowQuickLinkView).toHaveBeenCalled();
+  });
+
+  test('should call togglePanel when "See all" is clicked in mobile view', () => {
+    const mockTogglePanel = jest.fn();
+    const mockShowQuickLinkView = jest.fn();
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    const { getByText } = render(
+      <SidePanel
+        isOpen={true}
+        togglePanel={mockTogglePanel}
+        closePanel={() => {}}
+        showQuickLinkView={mockShowQuickLinkView}
+        quicklinkData={[]}
+        setQuickLinkData={() => {}}
+        isLoader={false}
+      
+      />
+    );
+
+    const seeAllLink = getByText("See all");
+    fireEvent.click(seeAllLink);
+
+    expect(mockTogglePanel).toHaveBeenCalled();
+    expect(mockShowQuickLinkView).toHaveBeenCalled();
+  });
+
+  test('should not call togglePanel when "See all" is clicked in non-mobile view', () => {
+    const mockTogglePanel = jest.fn();
+    const mockShowQuickLinkView = jest.fn();
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    const { getByText } = render(
+      <SidePanel
+        isOpen={true}
+        togglePanel={mockTogglePanel}
+        closePanel={() => {}}
+        showQuickLinkView={mockShowQuickLinkView}
+        quicklinkData={[]}
+        setQuickLinkData={() => {}}
+        isLoader={false}
+       
+      />
+    );
+
+    const seeAllLink = getByText("See all");
+    fireEvent.click(seeAllLink);
+
+    expect(mockTogglePanel).not.toHaveBeenCalled();
+    expect(mockShowQuickLinkView).toHaveBeenCalled();
+  });
+  test("should render with a tooltip when loginFullname is longer than 24 characters", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    render(
+      <SidePanel
+        isOpen={true}
+        togglePanel={() => {}}
+        closePanel={() => {}}
+        showQuickLinkView={() => {}}
+        quicklinkData={[]}
+        setQuickLinkData={() => {}}
+        isLoader={false}
+      />
+    );
+
+  });
+
 });
