@@ -2,7 +2,8 @@ import React from "react";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { ISwitchViewProps } from "./SwitchView.props";
-import { getUserOrganisation } from "../../../shared/utils";
+import { getUserOrganisation } from "../../../shared/utils/auth-helper";
+
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "29a88689-e51f-4928-aead-1a92402c1a09",

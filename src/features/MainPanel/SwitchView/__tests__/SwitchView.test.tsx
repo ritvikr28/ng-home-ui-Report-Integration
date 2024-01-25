@@ -1,10 +1,10 @@
 import { render, fireEvent, waitFor } from "@testing-library/react";
-import { getUserOrganisation } from "../../../../shared/utils";
 import SwitchView from "../SwitchView.view";
+import { getUserOrganisation } from "../../../../shared/utils/auth-helper";
 
 const mockedGetUserOrganisation = getUserOrganisation as jest.Mock;
 
-jest.mock("../../../../shared/utils", () => ({
+jest.mock("../../../../shared/utils/auth-helper", () => ({
   getUserOrganisation: jest.fn(),
 }));
 
