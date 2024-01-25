@@ -1,9 +1,10 @@
 import { authService } from "@essnextgen/auth-ui";
-import { act, render, waitFor } from "@testing-library/react";
+import { act, render, screen,waitFor } from "@testing-library/react";
 import WelcomeUser from "../WelcomeUser.logic";
 import * as schoolName from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
+import WelcomeUserView from "../WelcomeUser.view";
  
 const mockApiResponse: ISchoolNameDataResponse = {
   externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
@@ -16,7 +17,9 @@ const setIsError = jest.fn();
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(),
 }));
- 
+
+const mediaQuery = require('@essnextgen/ui-kit');
+
 test("renders welcome message if authorized and envConfig is set to True", () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
  
@@ -25,7 +28,7 @@ test("renders welcome message if authorized and envConfig is set to True", () =>
     .spyOn(authService, "getUsername")
  
     .mockImplementation(() => "John");
-
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   const { getByText } = render(<WelcomeUser 
     organisationName={mockApiResponse.schoolName}
     isApiError={false}
@@ -42,6 +45,7 @@ test("renders welcome message when authorized with a long username", () => {
       () =>
         "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
     );
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   const { getByText } = render(<WelcomeUser 
                         organisationName={mockApiResponse.schoolName}
                         isApiError={false}
@@ -65,7 +69,7 @@ test("fetches and displays school name", async () => {
     .spyOn(authService, "getUsername")
  
     .mockImplementation(() => "John");
-
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   const { findByText } = render(<WelcomeUser 
                           organisationName={mockApiResponse.schoolName}
                           isApiError={false}
@@ -92,6 +96,7 @@ test("handles errors during data fetching", async () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
   jest.spyOn(authService, "getUsername").mockImplementation(() => "John");
   jest.spyOn(console, "error").mockImplementation(() => {});
+  jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   (useFetchSchoolNameData as jest.Mock).mockRejectedValueOnce(
     new Error("Mocked error")
   );
@@ -110,6 +115,7 @@ test("handles errors during data fetching", async () => {
 
 test("handles console errors during fetchData function call", async () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+  jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   jest.spyOn(authService, "getUsername").mockImplementation(() => {
     throw new Error("Username fetching error");
   });
@@ -129,6 +135,7 @@ test("handles console errors during fetchData function call", async () => {
   test('should use "parent2" class when user name is long', () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
     jest.spyOn(authService, 'getUsername').mockReturnValue('JohnDoeWithALongSurnameNameSurname');
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     jest
     .spyOn(schoolName, "useFetchSchoolNameData")
     .mockResolvedValue(mockApiResponse);
@@ -150,15 +157,13 @@ test("handles console errors during fetchData function call", async () => {
       isOpen: true,
     };
     const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView={true} />);
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     const subparentElementMobile = getByTestId('subparent-element');
-  
-    // Log the actual class names to help identify any mismatches
+
     console.log("Actual class names:", subparentElementMobile.className);
-  
-    // Assuming you want to check for the presence of "parent1-open-subparent" class
+
     expect(subparentElementMobile).toBeInTheDocument();
-  
-    // Check if the class "parent1-open-subparent" is present
+
     expect(subparentElementMobile).toHaveClass(' subparent parent2-subparent');
   });
 
@@ -172,14 +177,54 @@ test("handles console errors during fetchData function call", async () => {
     const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView={false} />);
     const subparentElementMobile = getByTestId('subparent-element');
   
-    // Log the actual class names to help identify any mismatches
     console.log("Actual class names:", subparentElementMobile.className);
   
-    // Assuming you want to check for the presence of "parent1-open-subparent" class
     expect(subparentElementMobile).toBeInTheDocument();
   
-    // Check if the class "parent1-open-subparent" is present
     expect(subparentElementMobile).toHaveClass('subparent parent2-subparent');
   });
+
+  test("should render correctly for desktop view", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    const props = {
+      fullName: "John Doe",
+      isLongName: false,
+      parentClassName: "custom-parent",
+      subparentClassName: "custom-subparent",
+      organisationName: "Example School",
+      isApiError: false,
+      isOpen: true,
+    };
+
+
   
-  
+    render(<WelcomeUserView {...props} />);
+    const desktopContent = screen.getAllByText((content, node:any) => {
+      const hasText = (str:any) => node.textContent.trim().includes(str);
+      return hasText("Hi") && hasText("John Doe") && hasText("welcome back!");
+    });
+
+    expect(desktopContent).toHaveLength(5);
+  });
+
+
+  test("should render correctly for mobile view", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    const props = {
+      fullName: "John Doe",
+      isLongName: false,
+      parentClassName: "custom-parent",
+      subparentClassName: "custom-subparent",
+      organisationName: "Example School",
+      isApiError: false,
+      isOpen: true,
+    };
+
+  render(<WelcomeUserView {...props} />);
+    const mobileContent = screen.getAllByText((content, node:any) => {
+      const hasText = (str:any) => node.textContent.trim().includes(str);
+      return hasText("Hi") && hasText("John Doe") && hasText("welcome back!");
+    });
+
+    expect(mobileContent).toHaveLength(5);
+  });

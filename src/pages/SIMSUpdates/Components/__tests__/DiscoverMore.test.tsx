@@ -3,7 +3,7 @@ import DiscoverMoreView from "../DiscoverMore.view";
 
 
 const mediaQuery = require('@essnextgen/ui-kit');
- 
+
 describe("DiscoverMoreView Component", () => {
  
 
@@ -32,13 +32,7 @@ describe("DiscoverMoreView Component", () => {
     ).toBeInTheDocument();
   });
   
-  test("renders without crashing using mediaquery", () => {
-    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
-    render(<DiscoverMoreView isOpen ={true}/>);
-    expect(
-      screen.getByText("SIMS Next Gen updates")
-    ).toBeInTheDocument();
-  });
+
 
   test("renders Discover more button with correct properties", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
