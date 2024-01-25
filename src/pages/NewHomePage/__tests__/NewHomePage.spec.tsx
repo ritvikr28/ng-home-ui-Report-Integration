@@ -119,7 +119,7 @@ describe("<NewHomepageView />", () => {
     });
     expect(setIsOpen).toHaveBeenCalled();
   });
-  test.skip("test state change for quick Link when response is not null", () => {
+  test("test state change for quick Link when response is not null", () => {
     const mockres: any = {
       status: 200,
       response: mockApiResponse,
@@ -187,7 +187,7 @@ describe("<NewHomepageView />", () => {
       expect(setQuickLinkData).toBeNull();
     });
   });
-  test.skip("renders with mock data when apiQuickLinkData is available", async () => {
+  test("renders with mock data when apiQuickLinkData is available", async () => {
     const mockres: any = {
       status: false,
       response: mockApiResponse,
@@ -234,7 +234,7 @@ describe("<NewHomepageView />", () => {
       expect(setQuickLinkData).toHaveBeenCalledWith(mockres.response);
     });
   });
-  test.skip("renders with no data when apiQuickLinkData is empty", () => {
+  test("renders with no data when apiQuickLinkData is empty", () => {
     const mockres: any = {
       status: true,
       response: [],

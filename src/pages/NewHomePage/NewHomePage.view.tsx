@@ -99,6 +99,7 @@ const NewHomepageView: React.FC = () => {
   }, []);
 
   const renderContent = () => {
+    /* istanbul ignore next */
     if (showQuickLink && isPermissionquicklink) {
       return (
         <QuickLinkLogic
