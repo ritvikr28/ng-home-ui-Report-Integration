@@ -22,6 +22,7 @@ import { SidePanelProps, QuickLinkSidePanel } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -261,6 +262,13 @@ eslint-disable
                         key={sidelink.id}
                         onClick={() => {
                           window.location.href = sidelink.link;
+                          gtmAnalytics.pushEvent({
+                            event: "click",
+                            linkText: sidelink.name,
+                            linkUrl: sidelink.link,
+                            clickType: "link",
+                            clickLocation:"sidebar"
+                        });
                         }}
                         style={{ cursor: "pointer" }}
                       >

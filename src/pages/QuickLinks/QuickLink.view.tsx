@@ -9,6 +9,7 @@ import "./style.scss";
 import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
 import SIMSupdatesView from "../SIMSUpdates/SIMSupdates.view";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 
 
@@ -59,7 +60,15 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                         <TableRow key={link.id}>
                           <TableCell>                            
                             <Link data-testid="link" href={link.link} target="_self" >
+                              <span onClick={() =>  gtmAnalytics.pushEvent({
+                                        event: "click",
+                                        linkText: link.name,
+                                        linkUrl: link.link,
+                                        clickType: "link",
+                                        clickLocation:"body"
+                                })}>
                                 {link.name}
+                              </span>
                             </Link>
                           </TableCell>
                           <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>
