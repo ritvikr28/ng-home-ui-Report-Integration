@@ -411,3 +411,54 @@ stages:
               - name: 'nghomeui'
                 selfhostedpool: 'paz-vmss-pool'
             env_name: live_snow
+
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    - stage: PerfDeploy
+      displayName: Deployment to Perf
+      dependsOn: Build
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-perf'
+      jobs:
+        - deployment: Deploy_nghomeui_Perf
+          displayName: "Deployment to Perf"
+          environment: perf
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'
+
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true   
+
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-perf-ess-ng-rg --name paz-perf-ess-ng-aks --admin 2> /dev/null
+                        kubectl apply -f deployment.yaml
+                        kubectl rollout restart deployment ng-home-ui -n platform
+                      failOnStderr: true
