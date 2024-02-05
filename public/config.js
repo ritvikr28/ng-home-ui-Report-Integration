@@ -11,4 +11,5 @@ window.APPLICATION = "Home";
 window.IS_NEWHOMEPAGE_ACCESSIBLE = "True";
 window.SCHOOL_BASE_URL="";
 window.REGISTER_BASE_URL="";
-window.LEARNER_UI_URL="";
+window.LEARNER_UI_URL="https://dev.learners.sims.co.uk";
+window.LEARNER_API_URL="https://apisql-dev.learners.sims.co.uk/api/v1";

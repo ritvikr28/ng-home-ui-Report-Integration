@@ -7,6 +7,7 @@ import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
+import Search from "./PupilProfileSearch/Search.logic";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -36,7 +37,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
-
+  
   return(
   <Grid dataTestId="mainPanelView">
     <GridItem className="teacher-panel-container">
@@ -45,6 +46,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       organisationName={schoolName}
       isOpen={isOpen}
       />
+       <Search/>        
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all

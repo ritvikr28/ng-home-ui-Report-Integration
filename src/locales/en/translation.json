@@ -145,5 +145,21 @@
         "content2": " System Manager can assist with this."
       }
     }
+  },
+  
+    "description": {
+      "homePage": {
+        "headerTitle": "Welcome to Pupil Profile",
+        "searchBar": {
+            "placeHolder": "Search for Pupil, eg. Ben Abbott"
+        },
+        "searchHelper": "Press enter to view more results and filter for leaver's pupil profile.",
+        "button": {
+            "register": "Take the Register",
+            "assessment": "Primary Assessment"
+        }
+    }   
+    
   }
+
 }

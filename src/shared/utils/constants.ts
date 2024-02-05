@@ -9,6 +9,7 @@ export const envConfig: any = {
   SCHOOL_BASE_URL: (window as any).SCHOOL_BASE_URL,
   REGISTER_BASE_URL: (window as any).REGISTER_BASE_URL,
   LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
+  LEARNER_API_URL:(window as any).LEARNER_API_URL,
   REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT
 };
 
@@ -20,6 +21,7 @@ export const UpdateEnvConfig:any = ({
   SCHOOL_BASE_URL,
   REGISTER_BASE_URL,
   LEARNER_UI_URL,
+  LEARNER_API_URL,
   REACT_ENVIRONMENT
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
@@ -29,5 +31,6 @@ export const UpdateEnvConfig:any = ({
   envConfig.SCHOOL_BASE_URL=SCHOOL_BASE_URL;
   envConfig.REGISTER_BASE_URL = REGISTER_BASE_URL;
   envConfig.LEARNER_UI_URL = LEARNER_UI_URL;
+  envConfig.LEARNER_API_URL=LEARNER_API_URL;
   envConfig.REACT_ENVIRONMENT=REACT_ENVIRONMENT
 };

@@ -245,7 +245,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     tagColor={
                       item.isCompleted ? TagColor.Success : TagColor.Outstanding
                     }
-                    isShowArrowIcon= {true}
+                    isShowArrowIcon
                   />
                 </div>
               ))
