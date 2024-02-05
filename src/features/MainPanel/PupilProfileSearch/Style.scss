@@ -139,20 +139,33 @@
       margin-bottom: 0;
       text-decoration: 0;
       text-transform: 0;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
   }
   
 .search-comp-boreder {
     display: flex;
-    padding: 16px;
+    padding: 6px;
+    padding-left:16px;
     align-items: flex-end;
     align-self: stretch;
     border: 1px solid var(--Neutral-100, #e0e0e0);
     background: var(--Neutral-0, #fff);
     width: 75.5vw;
-    height: 100px;
+    height: 96px;
+    border-radius: 8px;
+    margin-bottom: 22px;
 }
   
+#search-autocomplete.with-suggestions #suggestions-wrapper {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0,0,0,.2);
+  color: #303030;
+  overflow-y: auto;
+  padding-top: 5px;
+  position: absolute;
+  width: 74.5% !important;
+}
 .pupil-profile-suggestion { 
   color: var(--Neutral-600, #5e5e5e) !important;
   font-family: "Segoe UI" !important;
@@ -166,4 +179,11 @@
     z-index: 1 !important;
   }
 
-  
+  #search-autocomplete {
+    display: block;
+    width: 48.5% !important;
+}
+
+.essui-textinput--large {
+  height: 50px !important;
+}

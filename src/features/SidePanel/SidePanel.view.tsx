@@ -107,7 +107,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                   </span>
                 )
               }
-              isopen={isOpen}
+              isOpen={isOpen}
               onClose={togglePanel}
             >
               <Divider

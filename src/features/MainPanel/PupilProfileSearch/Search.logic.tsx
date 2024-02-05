@@ -28,12 +28,12 @@ interface IPupilSuggestions {
 const Search: React.FC<ISearchProps> = (props: ISearchProps) => {
   logger.info("Search Feature is executing");
 console.log(props)
-  const queryParams: any = useQuery();
-  const searchedName: string = queryParams.get("name");
+  // const queryParams: any = useQuery();
+  // const searchedName: string = queryParams.get("name");
 
   // const { boxStyle }: ISearchProps = props;
-  const history: any = useHistory();
-  const pagePath: string = history.location.pathname;
+ // const history: any = useHistory();
+  const pagePath: string = "";
 
   // const dispatch: Dispatch<AnyAction> = useDispatch();
   // const inputText: string = useAppSelector(
@@ -48,7 +48,7 @@ console.log(props)
   //   (state: RootState) => state.searchInput.error
   // );
   const [value, setValue]: any = useState<string>(
-    searchedName ?? ""
+    ""
   );
   // const onRollState: string = useAppSelector(
   //   (state: RootState) => state.onRoleState.value
@@ -63,11 +63,11 @@ console.log(props)
     const [learnerInput, setLearnerInput]: [ILearnerSearchResult[], React.Dispatch<React.SetStateAction<ILearnerSearchResult[]>>]
     = useState<ILearnerSearchResult[]>([]);
   const [isLoading, setIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  
+
   const onKeyPress: (e: React.SyntheticEvent<EventTarget>) => void = (
     e: any
   ) => {
-    if (e.key === "Enter" || e.type === "click") {      
+    if (e.key === "Enter" || e.type === "click") {
       handleKeyPress({
         e,
         inputText,
@@ -83,11 +83,11 @@ console.log(props)
 
   const learnerProfilePhotoToggleEnabled: boolean = true;
 
-  useEffectForSearchQuery(searchedName,setUserInput);
+  //useEffectForSearchQuery("searchedName",setUserInput);
 
   useEffect(() => {
     logger.info("Re rendering the Search feature");
-    console.log(searchedName);
+   // console.log(searchedName);
     console.log(value)
     console.log(learnerInput);
     // if (inputText !== "" && !errorState) {
@@ -97,12 +97,12 @@ console.log(props)
     //     .then((result: ISearchResultsApiResponse[]) => {
     //       if (result.length === 0) {
     //         setLearnerInput([learnerEmptySearchResult]);
-           
+
     //       } else {
     //         const learnerSearchResultsList: ILearnerSearchResult[] =
     //           ProcessSearchResults(result);
     //           setLearnerInput(learnerSearchResultsList);
-           
+
     //       }
     //     })
     //     .catch((error: Error) => {
@@ -155,7 +155,7 @@ console.log(props)
       setSuggestions([]);
     }
   };
-  
+
 
   return (
     <SearchView
@@ -167,8 +167,8 @@ console.log(props)
       isLoading={isLoading}
       setSuggestions={setSuggestions}
       onChange={onChange}
-      handleOnChange={onKeyPress}      
-      
+      handleOnChange={onKeyPress}
+
     />
   );
 };
@@ -206,7 +206,7 @@ export function getValues(data: ISearchSuggestionsResultsApiResponse[], redirect
       externalId: v.learnerExternalId,
       link: redirectLink.replace("{externalId}", v.learnerExternalId),
       name: `${v.preferredForename} ${v.preferredSurname}  (${v.legalForename} ${v.legalSurname})`
-    },    
+    },
      value: (<Tag text={getClassDetails({ yearGroup: v.yearGroup, classGroup: v.classGroup })} color={TagColor.Warning} size={TagSize.Small} />)
   }));
 }
