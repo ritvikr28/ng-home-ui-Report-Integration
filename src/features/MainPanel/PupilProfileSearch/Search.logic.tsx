@@ -1,5 +1,4 @@
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import { Icon, IconColor, IconSize, Suggestion, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
 
 import { envConfig } from "../../../shared/utils/constants";
@@ -7,8 +6,6 @@ import { handleKeyPress } from "./utils/InputHandlers";
 import SearchView from "./Search.view";
 import fetchSearchSuggestions from "./utils/FetchSearchSuggestions";
 import searchInputValidation from "./utils/SearchInputValidation";
-import useEffectForSearchQuery from "./utils/useQueryToSearch";
-import useQuery from "../../../shared/utils/useQuery";
 import { logger } from "../../../shared/components/AppInsights";
 import { ISearchSuggestionsResultsApiResponse } from "../../../shared/model/SearchSuggestions/SearchResultsApiResponse";
 import { ILearnerSearchResult } from "./models/LearnerSearchResult";
@@ -47,6 +44,7 @@ console.log(props)
   // const errorState: boolean = useAppSelector(
   //   (state: RootState) => state.searchInput.error
   // );
+  console.log(setUserInput)
   const [value, setValue]: any = useState<string>(
     ""
   );
@@ -83,11 +81,10 @@ console.log(props)
 
   const learnerProfilePhotoToggleEnabled: boolean = true;
 
-  //useEffectForSearchQuery("searchedName",setUserInput);
+  // useEffectForSearchQuery("searchedName",setUserInput);
 
   useEffect(() => {
     logger.info("Re rendering the Search feature");
-   // console.log(searchedName);
     console.log(value)
     console.log(learnerInput);
     // if (inputText !== "" && !errorState) {

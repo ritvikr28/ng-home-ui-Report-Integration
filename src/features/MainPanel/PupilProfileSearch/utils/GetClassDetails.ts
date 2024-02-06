@@ -1,8 +1,6 @@
+import { IGetClassDetailsProps } from "./GetClassDetailsProps";
 
-interface IGetClassDetailsProps {
- yearGroup : string,
- classGroup : string
-}
+
 
 const getClassDetails : (props:IGetClassDetailsProps)=> string =
  (props:IGetClassDetailsProps)=>{
