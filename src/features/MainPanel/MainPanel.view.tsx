@@ -1,4 +1,5 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
@@ -7,6 +8,8 @@ import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
 import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
+import Search from "./PupilProfileSearch/Search.logic";
+
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -36,7 +39,8 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
-
+  const hasSltViewPermission:boolean=hasFeaturePermission('SLTView');
+  console.log(hasSltViewPermission);
   return(
   <Grid dataTestId="mainPanelView">
     <GridItem className="teacher-panel-container">
@@ -44,12 +48,15 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       isApiError={isError} 
       organisationName={schoolName}
       isOpen={isOpen}
-      />
+      />      
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
     ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
       <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
+      
+        {hasSltViewPermission &&
+        <><div className={isOpen ? "divider-container open-divider" : "divider-container"} /><Search isOpen={isOpen} /></>}  
       <div className={isOpen?"divider-container open-divider":"divider-container"}/>            
     
       <SIMSupdatesView isOpen={isOpen}/>

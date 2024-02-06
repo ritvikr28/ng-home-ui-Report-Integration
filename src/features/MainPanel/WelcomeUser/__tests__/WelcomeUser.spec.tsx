@@ -156,7 +156,7 @@ test("handles console errors during fetchData function call", async () => {
       organisationName: 'Sample Org',
       isOpen: true,
     };
-    const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView={true} />);
+    const { getByTestId } = render(<WelcomeUser {...propsMobile} isMobileView />);
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     const subparentElementMobile = getByTestId('subparent-element');
 

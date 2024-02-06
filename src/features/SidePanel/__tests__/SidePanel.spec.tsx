@@ -295,7 +295,7 @@ describe("SidePanel Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
     const { getByText } = render(
       <SidePanel
-        isOpen={true}
+        isOpen
         togglePanel={() => {}}
         closePanel={() => {}}
         showQuickLinkView={mockShowQuickLinkView}
@@ -317,7 +317,7 @@ describe("SidePanel Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
     const { getByText } = render(
       <SidePanel
-        isOpen={true}
+        isOpen
         togglePanel={mockTogglePanel}
         closePanel={() => {}}
         showQuickLinkView={mockShowQuickLinkView}
@@ -341,7 +341,7 @@ describe("SidePanel Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     const { getByText } = render(
       <SidePanel
-        isOpen={true}
+        isOpen
         togglePanel={mockTogglePanel}
         closePanel={() => {}}
         showQuickLinkView={mockShowQuickLinkView}
@@ -362,7 +362,7 @@ describe("SidePanel Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     render(
       <SidePanel
-        isOpen={true}
+        isOpen
         togglePanel={() => {}}
         closePanel={() => {}}
         showQuickLinkView={() => {}}

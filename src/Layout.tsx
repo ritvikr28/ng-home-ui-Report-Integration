@@ -141,6 +141,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
   isOrganisationInVariant());
+
   const requiredPermissions: Permission[] = [
     {
       Securable: "NG.Homepage",

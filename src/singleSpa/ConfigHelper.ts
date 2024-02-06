@@ -11,6 +11,7 @@ declare global {
     SCHOOL_BASE_URL:string;
     REGISTER_BASE_URL: string;    
     LEARNER_UI_URL: string;
+    LEARNER_API_URL: string;
     REACT_ENVIRONMENT:string;
   }
 }
@@ -49,6 +50,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.SCHOOL_BASE_URL = configData.SCHOOL_BASE_URL;
     window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;    
     window.LEARNER_UI_URL = configData.LEARNER_UI_URL;
+    window.LEARNER_API_URL=configData.LEARNER_API_URL;
     window.REACT_ENVIRONMENT=configData.ASPNETCORE_ENVIRONMENT;
 
     UpdateEnvConfig({
@@ -59,6 +61,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       SCHOOL_BASE_URL:window.SCHOOL_BASE_URL,
       REGISTER_BASE_URL: window.REGISTER_BASE_URL,      
       LEARNER_UI_URL: window.LEARNER_UI_URL,
+      LEARNER_API_URL:window.LEARNER_API_URL,
       REACT_ENVIRONMENT:window.REACT_ENVIRONMENT
     });
   } catch (ex) {

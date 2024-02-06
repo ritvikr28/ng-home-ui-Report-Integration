@@ -23,14 +23,14 @@ import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quickli
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
 import gtmAnalytics from "../../shared/utils/analytics";
-
+ 
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
     Operation: "View"
   }
 ];
-
+ 
 const SidePanel: React.FC<SidePanelProps> = ({
   isOpen,
   togglePanel,
@@ -70,7 +70,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
-          
+         
         }
       }
     } catch (error) {
@@ -168,7 +168,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     <strong>{loginFullname}</strong>
                   </span>
                 )}
-
+ 
                 <span className="icon-close">
                   {" "}
                   <Icon
@@ -214,8 +214,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
     </>
   );
 };
-
-
+ 
+ 
 //  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
 const quickLink :({
   isPermissionquicklink,
@@ -292,7 +292,7 @@ eslint-disable
                       </div>
                     ))
                   )}
-
+ 
           {/*
 eslint-disable jsx-a11y/anchor-is-valid,
 no-script-url
@@ -317,6 +317,6 @@ no-script-url
     )
   );
 };
-
+ 
 /* eslint-enable */
 export default SidePanel;
