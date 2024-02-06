@@ -14,6 +14,7 @@ import getClassDetails from "./utils/GetClassDetails";
 
 
 interface ISearchProps {
+  isOpen: any;
   // boxStyle?: SearchBoxStyle;
 }
 
@@ -22,9 +23,10 @@ interface IPupilSuggestions {
   suggestions: Array<Suggestion>;
 }
 
-const Search: React.FC<ISearchProps> = (props: ISearchProps) => {
+
+const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   logger.info("Search Feature is executing");
-console.log(props)
+
   // const queryParams: any = useQuery();
   // const searchedName: string = queryParams.get("name");
 
@@ -165,7 +167,7 @@ console.log(props)
       setSuggestions={setSuggestions}
       onChange={onChange}
       handleOnChange={onKeyPress}
-
+      isOpen ={isOpen}
     />
   );
 };

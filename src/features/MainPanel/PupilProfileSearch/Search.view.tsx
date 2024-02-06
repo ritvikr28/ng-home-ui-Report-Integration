@@ -25,7 +25,8 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
     suggestions,
     isLoading,
     setSuggestions,
-    onChange  
+    onChange,
+    isOpen
   }: ISearchViewProps = props;
   const hasItems: boolean = suggestions.some((x: Suggestion) => x.values.length > 0);
   const onItemClick: any = (e: ISearchItemProp | null) => {
@@ -41,7 +42,8 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
       <FormLabel forId="search" className="pupil-profile-font">
         Pupil Profile
       </FormLabel>
-      <div className="search-comp-boreder">
+      {console.log("isOpen for pupil",isOpen)}
+      <div className={isOpen?"search-comp-boreder":"search-comp-boreder-close"}>
       <Search
       dataTestId="new-search-element"
                 id="search"               

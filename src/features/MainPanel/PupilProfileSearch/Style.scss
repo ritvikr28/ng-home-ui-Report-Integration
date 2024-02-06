@@ -151,7 +151,21 @@
   width: 75.5vw;
   height: 96px;
   border-radius: 8px;
-  margin-bottom: 22px;
+  margin-bottom: 40px;
+}
+
+.search-comp-boreder-close {
+  display: flex;
+  padding: 6px;
+  padding-left: 16px;
+  align-items: flex-end;
+  align-self: stretch;
+  border: 1px solid var(--Neutral-100, #e0e0e0);
+  background: var(--Neutral-0, #fff);
+  width: 77vw;
+  height: 96px;
+  border-radius: 8px;
+  margin-bottom: 40px;
 }
 
 #search-autocomplete.with-suggestions #suggestions-wrapper {

@@ -12,5 +12,5 @@ export interface ISearchViewProps {
     setSuggestions: React.Dispatch<React.SetStateAction<Array<Suggestion>>>;
     onChange: (e: string) => void    
     handleOnChange: (e: React.SyntheticEvent<EventTarget>) => void;
-    
+    isOpen?:any;
   }
