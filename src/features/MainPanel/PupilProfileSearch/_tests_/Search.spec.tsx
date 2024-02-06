@@ -12,7 +12,7 @@ describe("Search Input field tests", () => {
     });
 
     test("should render the Search Component", () => {
-      const { getByTestId }: RenderResult = render(<Search />);
+      const { getByTestId }: RenderResult = render(<Search isOpen />);
 
       const searchElement: HTMLElement = getByTestId("new-search-element");
       const searchInputElement: HTMLElement = getByTestId("search-autocomplete-input");
