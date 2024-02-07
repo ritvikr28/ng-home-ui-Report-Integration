@@ -194,13 +194,13 @@ export const RightSidePanelView: (
                           />
                           <Link
                             dataTestId={`link-${index}`}
-                            href={`${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`}
+                            href={`${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`}
                             target="_self"
                           >
                              <span data-testId={`link-click-${index}`} onClick={() =>  gtmAnalytics.pushEvent({
                                   event: "click",
                                   linkText: "[RemovedPupilName]",
-                                  linkUrl: `${envConfig.LEARNER_UI_URL}/${pupil.pupilExternalId}`,
+                                  linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
                                   clickType: "link",
                                   clickLocation: "right_bar"
                                 })}>

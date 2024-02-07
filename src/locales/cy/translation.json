@@ -7,6 +7,10 @@
     "btnText": "Ewch â fi yno",
     "newHomepagebtnText": "Register your interest"
   },
+  "UI_KIT_SearchNoResultsFound": {
+    "FirstPart": "Nid oedd eich chwiliad",
+    "SecondPart": "yn cyfateb i unrhyw ganlyniadau. Gwnewch yn siŵr bod yr holl eiriau wedi’u sillafu’n gywir."
+  },
   "slices": {
     "TakeRegister": {
       "title": "Cofrestri",

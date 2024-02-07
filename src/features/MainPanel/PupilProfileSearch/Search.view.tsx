@@ -74,8 +74,9 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
                 }}
                 size={TextInputSize.Large}     
                 debouncerTreshold={1000}    
-                noDataTemplate={noDataTemplateText}       
+                noDataTemplate={noDataTemplateText}    
                  />
+
       </div>
     </>
   );

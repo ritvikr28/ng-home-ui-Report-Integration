@@ -227,7 +227,7 @@ describe('RightSidePanelView', () => {
         expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
           event: "click",
           linkText: "[RemovedPupilName]",
-          linkUrl: `${envConfig.LEARNER_UI_URL}/f77d8422-c3c4-4cfc-b64b-dffd3e38a9c1`,
+          linkUrl: `${envConfig.LEARNER_UI_URL}/profile/f77d8422-c3c4-4cfc-b64b-dffd3e38a9c1`,
           clickType: "link",
           clickLocation: "right_bar"
         });
