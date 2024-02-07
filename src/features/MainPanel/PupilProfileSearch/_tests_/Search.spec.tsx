@@ -1,6 +1,7 @@
 import { RenderResult, render} from "@testing-library/react";
 import Search from "../Search.logic";
-import searchInputValidation, { SearchInputProps } from "../SearchInputValidation";
+import searchInputValidation, { SearchInputProps } from "../utils/SearchInputValidation";
+
 
 
 describe("Search Input field tests", () => {
@@ -51,7 +52,11 @@ test('Empty input should be invalid with no errors', () => {
     expect(result.invalid).toBe(false);
     expect(result.error).toBe(true);
   });
-
+  test('Input with words less than 2 characters should be invalid with errors', () => {
+    const result: SearchInputProps = searchInputValidation('12b C');
+    expect(result.invalid).toBe(false);
+    expect(result.error).toBe(true);
+  });
 });
 
 
