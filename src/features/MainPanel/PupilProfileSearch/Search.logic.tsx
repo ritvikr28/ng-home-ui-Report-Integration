@@ -8,7 +8,6 @@ import fetchSearchSuggestions from "./utils/FetchSearchSuggestions";
 import searchInputValidation from "./utils/SearchInputValidation";
 import { logger } from "../../../shared/components/AppInsights";
 import { ISearchSuggestionsResultsApiResponse } from "../../../shared/model/SearchSuggestions/SearchResultsApiResponse";
-import { ILearnerSearchResult } from "./models/LearnerSearchResult";
 import getClassDetails from "./utils/GetClassDetails";
 // import gtmAnalytics from "../../../shared/utils/analytics";
 
@@ -61,8 +60,8 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
 
   const [suggestions, setSuggestions]: [Array<Suggestion>, React.Dispatch<React.SetStateAction<Array<Suggestion>>>]
     = useState<Array<Suggestion>>([]);
-    const [learnerInput, setLearnerInput]: [ILearnerSearchResult[], React.Dispatch<React.SetStateAction<ILearnerSearchResult[]>>]
-    = useState<ILearnerSearchResult[]>([]);
+    // const [learnerInput, setLearnerInput]: [ILearnerSearchResult[], React.Dispatch<React.SetStateAction<ILearnerSearchResult[]>>]
+    // = useState<ILearnerSearchResult[]>([]);
   const [isLoading, setIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
   const onKeyPress: (e: React.SyntheticEvent<EventTarget>) => void = (
@@ -74,9 +73,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
         e,
         inputText,
         pagePath
-      }, e.target.value);
-      setLearnerInput([]);
-      // dispatch(learnerSearchResultSlice.actions.setLearnerInput([]));
+      }, e.target.value);         
       const url=`${envConfig.LEARNER_UI_URL}/search?name=${e.target.value}`;
       // gtmAnalytics.pushEvent({
       //   event: "Enter",
@@ -94,9 +91,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   // useEffectForSearchQuery("searchedName",setUserInput);
 
   useEffect(() => {
-    logger.info("Re rendering the Search feature");
-    console.log(value)
-    console.log(learnerInput);
+    logger.info("Re rendering the Search feature");    
     // if (inputText !== "" && !errorState) {
 
     // if (inputText !== "") {
