@@ -20,6 +20,7 @@ data:
     window.SCHOOL_BASE_URL = "#{SCHOOL_BASE_URL}#"
     window.REGISTER_BASE_URL = "#{REGISTER_BASE_URL}#"
     window.LEARNER_UI_URL = "#{LEARNER_UI_URL}#"
+    window.LEARNER_API_URL ="#{LEARNER_API_URL}#"
     window.LOOPEDIN_WORKSPACE_ID = "$(LOOPEDIN_WORKSPACE_ID)"
 ---
 apiVersion: apps/v1
