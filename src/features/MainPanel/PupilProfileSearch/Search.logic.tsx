@@ -10,6 +10,7 @@ import { logger } from "../../../shared/components/AppInsights";
 import { ISearchSuggestionsResultsApiResponse } from "../../../shared/model/SearchSuggestions/SearchResultsApiResponse";
 import { ILearnerSearchResult } from "./models/LearnerSearchResult";
 import getClassDetails from "./utils/GetClassDetails";
+// import gtmAnalytics from "../../../shared/utils/analytics";
 
 
 
@@ -68,6 +69,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
     e: any
   ) => {
     if (e.key === "Enter" || e.type === "click") {
+    
       handleKeyPress({
         e,
         inputText,
@@ -76,7 +78,13 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
       setLearnerInput([]);
       // dispatch(learnerSearchResultSlice.actions.setLearnerInput([]));
       const url=`${envConfig.LEARNER_UI_URL}/search?name=${e.target.value}`;
-      console.log(url);
+      // gtmAnalytics.pushEvent({
+      //   event: "Enter",
+      //   linkText: "Search Pupil By Text",
+      //   linkUrl: url,
+      //   clickType: "search",
+      //   clickLocation: "body"
+      // })
       window.location.href=url;
     }
   };

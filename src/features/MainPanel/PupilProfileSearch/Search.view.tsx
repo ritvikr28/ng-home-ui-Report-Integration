@@ -7,9 +7,18 @@ import { FormLabel, Search, Suggestion, TextInputSize,ISearchItemProp } from "@e
 import { ISearchViewProps } from "./Search.props";
 import { envConfig } from "../../../shared/utils";
 import "./Style.scss";
+// import gtmAnalytics from "../../../shared/utils/analytics";
 
 export const onItemClickFunc: any = (e: ISearchItemProp | null,  setSuggestions: any) => {
+
   const { link }: any = e;
+  // gtmAnalytics.pushEvent({
+  //   event: "click",
+  //   linkText: "Search Pupil By Suggesion",
+  //   linkUrl:`${envConfig.LEARNER_UI_URL}${link}`,
+  //   clickType: "suggesionclick",
+  //   clickLocation: "body"
+  // })
  
   setSuggestions([]);
 window.location.href=`${envConfig.LEARNER_UI_URL}${link}`;
