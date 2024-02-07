@@ -42,11 +42,11 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
 
   const [suggestionsResult, setSuggestionsResult]: [IPupilSuggestions[], React.Dispatch<React.SetStateAction<IPupilSuggestions[]>>] =
     useState<IPupilSuggestions[]>([]);
-
+console.log(setUserInput);
   // const errorState: boolean = useAppSelector(
   //   (state: RootState) => state.searchInput.error
   // );
-  console.log(setUserInput)
+ 
   const [value, setValue]: any = useState<string>(
     ""
   );
@@ -69,7 +69,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   ) => {
     if (e.key === "Enter" || e.type === "click") {
     
-      handleKeyPress({
+      const validInput: boolean =handleKeyPress({
         e,
         inputText,
         pagePath
@@ -82,6 +82,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
       //   clickType: "search",
       //   clickLocation: "body"
       // })
+      if(validInput)
       window.location.href=url;
     }
   };
@@ -126,7 +127,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
     getSuggestions(event.target.value);
   };
 
-  const getSuggestions: any = (suggestionValue: string) => {
+  const getSuggestions: any = (suggestionValue: string) => {    
     if (!searchInputValidation(suggestionValue).invalid) {
       fetchSearchSuggestions(suggestionValue, 8)
         .then((data: ISearchSuggestionsResultsApiResponse[]) => {
@@ -138,7 +139,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
           }];
 
           setIsLoading(false);
-          setSuggestions(dataItems);
+          setSuggestions(dataItems);          
  /* eslint-disable */
           setSuggestionsResult((suggestionsResult: IPupilSuggestions[]) => [...suggestionsResult, {
             pupilSearched: suggestionValue,

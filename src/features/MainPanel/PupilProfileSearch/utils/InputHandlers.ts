@@ -26,11 +26,7 @@ export const handleKeyPress: (props: IHandleKeyPressProps, inputValue: string) =
     }
     if (result.error && !result.invalid)
     console.log("error",true)
-     // dispatch(searchInputSlice.actions.setError({ value: userInput, error: true }));
-    else {
-     // dispatch(searchInputSlice.actions.setUserInput({ value: inputValue.trim() }));
-
-    }
+    
     return true;
   }
   return false;
