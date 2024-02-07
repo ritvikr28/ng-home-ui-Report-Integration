@@ -50,8 +50,7 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
     <>
       <FormLabel forId="search" className="pupil-profile-font">
         Pupil Profile
-      </FormLabel>
-      {console.log("isOpen for pupil",isOpen)}
+      </FormLabel>      
       <div className={isOpen?"search-comp-boreder":"search-comp-boreder-close"}>
       <Search
       dataTestId="new-search-element"
