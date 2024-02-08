@@ -29,6 +29,42 @@ const requiredStaffTimeTablePermissions: Permission[] = [
   }
 ];
 
+const requiredTeacherPermissions: Permission[] = [
+  {
+    Securable: 'NG.Homepage.Teacher',
+
+    Operation: 'View'
+  }
+]
+
+const requiredSLTPermissions: Permission[] = [
+  {
+    Securable: 'NG.Homepage.SLT',
+
+    Operation: 'View'
+  }
+]
+
+
+const requiredPupilProfilePermissions: Permission[] = [
+  {
+    Securable: "Learner.Personal",
+
+    Operation: 'View'
+  },
+  {
+    Securable: "Learner.Registration",
+
+    Operation: 'View'
+  },
+  {
+    Securable: "Learner.Identifier",
+
+    Operation: 'View'
+  }
+]
+
+
 const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
 ) => {
@@ -52,10 +88,22 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
-    ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
-      <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
+    ) &&isSchoolPrimary===false && authService.isAuthorised(
+      requiredTeacherPermissions,
+      MatchPermissions.all
+    ) &&<StaffTimeTableView  isOpen={isOpen} />}
+     {authService.isAuthorised(
+      requiredTeacherPermissions,
+      MatchPermissions.all
+    ) && <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />}
       
-        {hasSltViewPermission &&
+        {hasSltViewPermission &&  authService.isAuthorised(
+      requiredSLTPermissions,
+      MatchPermissions.all
+    ) &&  authService.isAuthorised(
+      requiredPupilProfilePermissions,
+      MatchPermissions.all
+    ) &&
         <><div className={isOpen ? "divider-container open-divider" : "divider-container"} /><Search isOpen={isOpen} /></>}  
       <div className={isOpen?"divider-container open-divider":"divider-container"}/>            
     
