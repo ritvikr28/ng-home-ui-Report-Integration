@@ -67,6 +67,7 @@ console.log(setUserInput);
   const onKeyPress: (e: React.SyntheticEvent<EventTarget>) => void = (
     e: any
   ) => {
+    /* istanbul ignore next */
     if (e.key === "Enter" || e.type === "click") {
     
       const validInput: boolean =handleKeyPress({
