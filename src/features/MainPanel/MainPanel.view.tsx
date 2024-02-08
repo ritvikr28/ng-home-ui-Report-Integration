@@ -61,6 +61,10 @@ const requiredPupilProfilePermissions: Permission[] = [
     Securable: "Learner.Identifier",
 
     Operation: 'View'
+  },
+  {
+    Securable: "NG.Homepage.PupilProfile",
+    Operation: "View"
   }
 ]
 
