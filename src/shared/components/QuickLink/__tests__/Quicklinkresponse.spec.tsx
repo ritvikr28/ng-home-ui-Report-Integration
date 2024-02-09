@@ -58,7 +58,7 @@ describe("fetchQuickLinkDetails", () => {
   ];
 
   test("should fetch quick link details successfully", async () => {
-    const expectedPermission = "Teacher";
+    const expectedPermission = "Teacher,Admin,SLT";
     (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockSecurables);
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({
       status: 200,
@@ -123,7 +123,7 @@ describe("fetchQuickLinkDetails", () => {
       status: false,
     });
     expect(getQuickLinkSecurablesList).toHaveBeenCalled();
-    expect(FetchQuickLinkData).toHaveBeenCalledWith("Teacher");
+    expect(FetchQuickLinkData).toHaveBeenCalledWith("Teacher,Admin,SLT");
   });
 
   test("should extract the permission from a non-empty teachersecurable", () => {

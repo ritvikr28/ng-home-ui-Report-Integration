@@ -10,8 +10,15 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
 } | null | undefined> = async () => {      
       try {
        const responsesecurable : Permission [] = getQuickLinkSecurablesList();
-       const teachersecurable: Permission [] = responsesecurable.filter( x=> x.Securable === "NG.Homepage.QuickLink.Teacher");
-      const permission: string=  teachersecurable.length > 0 ? teachersecurable[0].Securable.split(".")[3] : "" ;
+       console.log(responsesecurable)
+       const teachersecurable: string [] =[]; 
+       if(responsesecurable.length>0){
+        responsesecurable.map((x)=>{
+          const role=x.Securable.split(".")[3];
+          teachersecurable.push(role);
+        })
+       }
+      const permission: string=  teachersecurable.toString();
         const quickLinkDetails:{
           status: number;
           response: IQuickLinkApiResponse[];
