@@ -24,7 +24,7 @@ import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import { getUserOrganisation, service } from "./shared/utils";
+import { envConfig, getUserOrganisation, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
@@ -118,7 +118,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     );
     const modules: IAppModule[] = filteredModules.map(
       (x: IApplicationMenu) => ({
-        appUrl: x.isStandalone === false ? x.relativePath: x.absolutePath,
+        /* eslint-disable */
+        appUrl:  x.isStandalone === false ? x.relativePath: (x.appCode==="StaffProfile" && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="QA" ))? "/staff": x.absolutePath,
+         /* eslint-enable */
         title: t(`slices.${x.appCode}.title`),
         description: t(`slices.${x.appCode}.description`),
         code: x.appCode,
