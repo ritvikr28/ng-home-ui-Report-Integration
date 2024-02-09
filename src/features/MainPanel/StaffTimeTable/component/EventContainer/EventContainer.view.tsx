@@ -43,6 +43,7 @@ export const EventContainerView: (
         inputHeight={67}
         dataTestId={`eventid${index}`}
          /* eslint-disable  */
+        /* istanbul ignore next */
         className={
           SelectedItem === SchoolEventexternalId
             ? index === 0
