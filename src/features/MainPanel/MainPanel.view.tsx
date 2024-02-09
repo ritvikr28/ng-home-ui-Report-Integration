@@ -108,7 +108,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       requiredPupilProfilePermissions,
       MatchPermissions.all
     ) &&
-        <><div className={isOpen ? "divider-container-slt open-divider" : "divider-container-slt"} /><Search isOpen={isOpen} /></>}  
+        <><div className={isOpen ? "divider-container open-divider" : "divider-container"} /><Search isOpen={isOpen} /></>}  
       <div className={isOpen?"divider-container open-divider":"divider-container"}/>            
     
       <SIMSupdatesView isOpen={isOpen}/>
