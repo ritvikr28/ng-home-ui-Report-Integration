@@ -107,5 +107,23 @@ describe('MainPanel', () => {
         expect(divider).toBeTruthy();
         expect(divider).toHaveClass('open-divider');
       });
+        
+      test('renders divider with open class when hasSltViewPermission with isopen is false', () => {
+        const props = {
+          schoolName: 'Test School',
+          isError: false,
+          isSchoolPrimary: false,
+          isOpen: false,
+          setIsOpen: jest.fn(),
+        };
+    /* eslint-disable */
+        jest.spyOn(require('@essnextgen/ui-flagr'), 'hasFeaturePermission').mockReturnValue(true);
+       /* eslint-enable */
+        const { container } = render(<MainPanelView {...props} />);
+      
+        const divider = container.querySelector('.divider-container');
+
+        expect(divider).toHaveClass('divider-container');
+      });
 
 });
