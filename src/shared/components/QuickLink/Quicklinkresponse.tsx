@@ -14,7 +14,7 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
        const teachersecurable: string [] =[]; 
        if(responsesecurable.length>0){
         responsesecurable.map((x)=>{
-          const role=x.Securable.split(".")[3];
+          const role: string = x.Securable.split(".")[3];
           teachersecurable.push(role);
         })
        }

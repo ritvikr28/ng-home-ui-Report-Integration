@@ -4,7 +4,7 @@ import { IGetClassDetailsProps } from "./GetClassDetailsProps";
 
 const getClassDetails : (props:IGetClassDetailsProps)=> string =
  (props:IGetClassDetailsProps)=>{
-   let classDetail: string = "";
+   let classDetail = "";
  
    const {yearGroup, classGroup} : IGetClassDetailsProps = props;
 
