@@ -9,7 +9,7 @@ import searchInputValidation from "./utils/SearchInputValidation";
 import { logger } from "../../../shared/components/AppInsights";
 import { ISearchSuggestionsResultsApiResponse } from "../../../shared/model/SearchSuggestions/SearchResultsApiResponse";
 import getClassDetails from "./utils/GetClassDetails";
-// import gtmAnalytics from "../../../shared/utils/analytics";
+import gtmAnalytics from "../../../shared/utils/analytics";
 
 
 
@@ -76,13 +76,13 @@ console.log(setUserInput);
         pagePath
       }, e.target.value);         
       const url=`${envConfig.LEARNER_UI_URL}/search?name=${e.target.value}`;
-      // gtmAnalytics.pushEvent({
-      //   event: "Enter",
-      //   linkText: "Search Pupil By Text",
-      //   linkUrl: url,
-      //   clickType: "search",
-      //   clickLocation: "body"
-      // })
+      gtmAnalytics.pushEvent({
+        event: "click",
+        linkText: "Show all results",
+        linkUrl: url,
+        clickType: "search_field",
+        clickLocation: "body"
+      })
       if(validInput)
       window.location.href=url;
     }
