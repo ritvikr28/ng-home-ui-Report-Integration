@@ -4,8 +4,8 @@ export type SearchInputProps = {
 }
 
 export const searchInputValidation = (value: string): SearchInputProps => {
-  let invalidity: boolean = false;
-  let errorStatus: boolean = false;
+  let invalidity = false;
+  let errorStatus = false;
 
   if (value === "") {
     invalidity = true;
@@ -14,7 +14,7 @@ export const searchInputValidation = (value: string): SearchInputProps => {
 
   const userInput: string[] = value.split(" ");
   let iterator: number = userInput.length;
-  let minLengthGreaterThanTwo: boolean = false;
+  let minLengthGreaterThanTwo = false;
 
   while (iterator && !invalidity && !errorStatus) {
     iterator -= 1;

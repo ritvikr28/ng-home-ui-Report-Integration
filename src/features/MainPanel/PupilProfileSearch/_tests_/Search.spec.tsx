@@ -62,12 +62,12 @@ test('Empty input should be invalid with no errors', () => {
   });
   
   it('should return false if key is Enter or click but search is not valid for path other than search', async () => {    
-     const searchInputValidationMock = jest.requireMock('../utils/SearchInputValidation').default;
+     const searchInputValidationMock: any = jest.requireMock('../utils/SearchInputValidation').default;
      searchInputValidationMock.mockReturnValue({ invalid: true });
-    const mockKeyPress1=jest.spyOn(fetchSearchSuggestions,"default");
+    const mockKeyPress1: jest.SpyInstance<Promise<ISearchSuggestionsResultsApiResponse[]>, [query: string, n: number]> =jest.spyOn(fetchSearchSuggestions,"default");
    
     
-   const {container,getByTestId}=render(   
+   const {container,getByTestId}: any=render(   
   <Search isOpen={true}/>
   )
 expect(getByTestId("new-search-element")).toBeInTheDocument();
@@ -79,12 +79,12 @@ await waitFor(() => {
 });
   });
   it.skip('should return false if key is Enter or click but search api gives error', async () => {    
-     const searchInputValidationMock = jest.requireMock('../utils/SearchInputValidation').default;
+     const searchInputValidationMock: any = jest.requireMock('../utils/SearchInputValidation').default;
      searchInputValidationMock.mockReturnValue({ invalid: false });
-    const mockKeyPress1=jest.spyOn(fetchSearchSuggestions,"default").mockImplementationOnce(() => Promise.reject(new Error("error message")));
+    const mockKeyPress1: any =jest.spyOn(fetchSearchSuggestions,"default").mockImplementationOnce(() => Promise.reject(new Error("error message")));
    
     
-   const {container,getByTestId}=render(   
+   const {container,getByTestId}: any=render(   
   <Search isOpen={true}/>
   )
 expect(getByTestId("new-search-element")).toBeInTheDocument();
@@ -113,8 +113,8 @@ await waitFor(() => {
       imagePath: "https://stimagecoredevuksouth.blob.core.windows.net/cd0e52dd-8331-44dd-bea4-cf1e99d6e1fe/77a766a4-54ca-487d-86a0-4ea89f8a0af5?sv=2023-08-03&se=2024-02-07T06%3A11%3A33Z&sr=b&sp=r&sig=buaYi1xDKYpt6S6WenVpsotePBKj3sSZ7tBXXXsZOEs%3D",
       dateOfBirth: "2015-07-30T00:00:00"      
   }];
-  const mockKeyPress1=jest.spyOn(fetchSearchSuggestions,"default").mockReturnValueOnce(Promise.resolve(suggestionresponse));    
-   const {container,getByTestId}=render(   
+  const mockKeyPress1: any =jest.spyOn(fetchSearchSuggestions,"default").mockReturnValueOnce(Promise.resolve(suggestionresponse));    
+   const {container,getByTestId}:any=render(   
   <Search isOpen={false}/>
   )
 expect(getByTestId("new-search-element")).toBeInTheDocument();

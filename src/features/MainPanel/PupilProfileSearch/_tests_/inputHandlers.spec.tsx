@@ -7,13 +7,13 @@ import { IHandleKeyPressProps, handleKeyPress } from "../utils/InputHandlers";
 jest.mock('../utils/SearchInputValidation', () => ({
   __esModule: true,
   default: jest.fn(),
-  SearchInputProps: { invalid: false, error: false },
+  SearchInputProps: { invalid: false, error: false }
 }));
 
 
 jest.mock('../utils/SearchInputValidation', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: jest.fn()
 }));
 
 describe('useEffectForSearchQuery', () => {
@@ -34,13 +34,13 @@ describe('useEffectForSearchQuery', () => {
   // });
 
   it('should handle search input with error', () => {
-    const searchInputValidationMock = jest.requireMock('../utils/SearchInputValidation').default;
+    const searchInputValidationMock:any= jest.requireMock('../utils/SearchInputValidation').default;
     searchInputValidationMock.mockReturnValue({ error: true,invalid:false });
     jest.spyOn(console, "log").mockImplementation(() => "error message");
     const props: IHandleKeyPressProps = {
       e: { key: 'Enter' },
       inputText: '',
-      pagePath: '/',
+      pagePath: '/'
     };
     const inputValue = 'Name with Error';
     
@@ -94,7 +94,7 @@ test('getClassDetails - Both yearGroup and classGroup provided', () => {
       classGroup: 'A'
     };
   
-    const result = getClassDetails(props);
+    const result:string = getClassDetails(props);
   
     expect(result).toBe('2024 / A');
   });
@@ -105,7 +105,7 @@ test('getClassDetails - Both yearGroup and classGroup provided', () => {
       classGroup: ''
     };
   
-    const result = getClassDetails(props);
+    const result:string = getClassDetails(props);
   
     expect(result).toBe('2024');
   });
@@ -116,7 +116,7 @@ test('getClassDetails - Both yearGroup and classGroup provided', () => {
       classGroup: 'A'
     };
   
-    const result = getClassDetails(props);
+    const result:string = getClassDetails(props);
   
     expect(result).toBe('A');
   });
@@ -127,7 +127,7 @@ test('getClassDetails - Both yearGroup and classGroup provided', () => {
       classGroup: ''
     };
   
-    const result = getClassDetails(props);
+    const result:string = getClassDetails(props);
   
     expect(result).toBe('');
   });
@@ -135,11 +135,11 @@ test('getClassDetails - Both yearGroup and classGroup provided', () => {
 
 jest.mock('../utils/SearchInputValidation', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: jest.fn()
 }));
 
 describe('handleKeyPress', () => {
-  const mockSearchInputValidation = jest.requireMock('../utils/SearchInputValidation').default;
+  const mockSearchInputValidation: any = jest.requireMock('../utils/SearchInputValidation').default;
 
   beforeEach(() => {
     mockSearchInputValidation.mockReset();
@@ -149,11 +149,11 @@ describe('handleKeyPress', () => {
     const props: IHandleKeyPressProps = {
       e: { key: 'Escape' },
       inputText: '',
-      pagePath: '/search',
+      pagePath: '/search'
     };
     const inputValue = 'Test';
     
-    const result = handleKeyPress(props, inputValue);
+    const result: any = handleKeyPress(props, inputValue);
 
     expect(result).toBe(false);
   });
@@ -162,13 +162,13 @@ describe('handleKeyPress', () => {
     const props: IHandleKeyPressProps = {
       e: { key: 'Enter' },
       inputText: 'Test',
-      pagePath: '/search',
+      pagePath: '/search'
     };
     const inputValue = 'Test';
     
     mockSearchInputValidation.mockReturnValue({ invalid: true });
 
-    const result = handleKeyPress(props, inputValue);
+    const result: boolean = handleKeyPress(props, inputValue);
 
     expect(result).toBe(false);
   });
@@ -176,13 +176,13 @@ describe('handleKeyPress', () => {
     const props: IHandleKeyPressProps = {
       e: { key: 'Enter' },
       inputText: '1Test@',
-      pagePath: '/',
+      pagePath: '/'
     };
     const inputValue = 'Test@';
     
     mockSearchInputValidation.mockReturnValue({ invalid: true });
 
-    const result = handleKeyPress(props, inputValue);
+    const result: any = handleKeyPress(props, inputValue);
 
     expect(result).toBe(false);
   });

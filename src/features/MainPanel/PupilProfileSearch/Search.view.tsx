@@ -43,7 +43,7 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
   };
   const { t }: UseTranslationResponse<"translation", undefined> =
   useTranslation();
-  const noDataTemplateText: string =`${t("UI_KIT_SearchNoResultsFound.FirstPart")} - {value} - ${t(
+  const noDataTemplateText =`${t("UI_KIT_SearchNoResultsFound.FirstPart")} - {value} - ${t(
       "UI_KIT_SearchNoResultsFound.SecondPart"
     )}`;
   return (

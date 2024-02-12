@@ -36,7 +36,7 @@ const searchresponse:ISearchResultsApiResponse={
     contactTelephoneExternalId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     contactTelephoneNumber: "string",
     telephoneLocationType: "",
-    personalPronoun: "He / Him / His",    
+    personalPronoun: "He / Him / His"
 };
 
 const axiosResponse: AxiosResponse = {
@@ -44,7 +44,7 @@ const axiosResponse: AxiosResponse = {
     status: 200,
     statusText: "OK",
     config: {},
-    headers: {},
+    headers: {}
   };
 describe("FeatchSearchResults test", () => {
 
