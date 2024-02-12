@@ -26,7 +26,7 @@ const axiosResponse: AxiosResponse = {
     status: 200,
     statusText: "OK",
     config: {},
-    headers: {},
+    headers: {}
   };
 describe("FeatchSearchSuggestoins test", () => {
 

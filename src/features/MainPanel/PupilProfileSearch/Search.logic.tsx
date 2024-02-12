@@ -31,14 +31,14 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   // const searchedName: string = queryParams.get("name");
 
   // const { boxStyle }: ISearchProps = props;
- // const history: any = useHistory();
-  const pagePath: string = "";
+ // const history: any = useHistory(); 
+  const pagePath = "";
 
   // const dispatch: Dispatch<AnyAction> = useDispatch();
   // const inputText: string = useAppSelector(
   //   (state: RootState) => state.searchInput.value
   // );
-  const [inputText, setUserInput]=useState("");
+  const [inputText, setUserInput]: any = useState("");
 
   const [suggestionsResult, setSuggestionsResult]: [IPupilSuggestions[], React.Dispatch<React.SetStateAction<IPupilSuggestions[]>>] =
     useState<IPupilSuggestions[]>([]);
@@ -88,7 +88,7 @@ console.log(setUserInput);
     }
   };
 
-  const learnerProfilePhotoToggleEnabled: boolean = true;
+  const learnerProfilePhotoToggleEnabled = true;
 
   // useEffectForSearchQuery("searchedName",setUserInput);
 
