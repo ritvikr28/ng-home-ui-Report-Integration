@@ -46,6 +46,8 @@
 .open-divider {
   width: 75.2vw !important;
 }
+
+
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .open-divider {
     width: 71vw !important;
@@ -58,6 +60,12 @@
 @media (min-width: 320px) and (max-width: 1023.9px) {
   .divider-container {
     width: 91vw;
+  }
+}
+
+@media (min-width: 320px) and (max-width: 1023.9px) {
+  .open-divider {
+    width: 91.2vw !important;
   }
 }
 //  .essui-divider {
