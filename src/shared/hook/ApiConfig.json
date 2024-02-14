@@ -2,5 +2,5 @@
   { "env": "dev", "url": "https://api-dev.home.sims.co.uk/api" },
   { "env": "qa", "url": "https://api-qa.home.sims.co.uk/api" },
   { "env": "prod", "url": "https://api.home.sims.co.uk/api" },
-  { "env": "perf", "url": "#" }
+  { "env": "perf", "url": "https://api-pf.home.sims.co.uk/api" }
 ]

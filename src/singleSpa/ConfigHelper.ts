@@ -23,7 +23,7 @@ export const fetchConfigData = async () => {
       { env: "dev", url: "https://dev-mfe.home.sims.co.uk" },
       { env: "qa", url: "https://qa-mfe.home.sims.co.uk" },
       { env: "prod", url: "https://live-mfe.home.sims.co.uk" },
-      { env: "perf", url: "https://perf.home.sims.co.uk" }
+      { env: "perf", url: "https://pf-mfe.home.sims.co.uk" }
     ])
   );
   const configKeyValues = response.data.split("\n");
