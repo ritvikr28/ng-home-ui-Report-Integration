@@ -29,13 +29,13 @@ const requiredStaffTimeTablePermissions: Permission[] = [
   }
 ];
 
-const requiredTeacherPermissions: Permission[] = [
-  {
-    Securable: 'NG.Homepage.Teacher',
+// const requiredTeacherPermissions: Permission[] = [
+//   {
+//     Securable: 'NG.Homepage.Teacher',
 
-    Operation: 'View'
-  }
-]
+//     Operation: 'View'
+//   }
+// ]
 
 const requiredSLTPermissions: Permission[] = [
   {
@@ -92,14 +92,8 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
-    ) &&isSchoolPrimary===false && authService.isAuthorised(
-      requiredTeacherPermissions,
-      MatchPermissions.all
-    ) &&<StaffTimeTableView  isOpen={isOpen} />}
-     {authService.isAuthorised(
-      requiredTeacherPermissions,
-      MatchPermissions.all
-    ) && <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />}
+    ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
+     <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
       
         {hasSltViewPermission &&  authService.isAuthorised(
       requiredSLTPermissions,
