@@ -11,7 +11,7 @@ export const envConfig: any = {
   LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
   LEARNER_API_URL:(window as any).LEARNER_API_URL,
   REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT,
-  APPLICATION:(window as any).APPLICATION,
+  APPLICATION:(window as any).APPLICATION
 };
 
 export const UpdateEnvConfig:any = ({
