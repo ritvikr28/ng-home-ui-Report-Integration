@@ -6,7 +6,7 @@ import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
 import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
-import SwitchViewLogic from "./SwitchView/SwitchView.logic";
+// import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import { envConfig } from "../../shared/utils";
@@ -115,10 +115,10 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       <div className={isOpen?"divider-container open-divider":"divider-container"}/>            
     
       <SIMSupdatesView isOpen={isOpen}/>
-      <SwitchViewLogic
+      {/* <SwitchViewLogic
             organisationName={schoolName}
             isApiError={isError} 
-      />
+      /> */}
     </GridItem>
   </Grid>
   )
