@@ -10,7 +10,8 @@ export const envConfig: any = {
   REGISTER_BASE_URL: (window as any).REGISTER_BASE_URL,
   LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
   LEARNER_API_URL:(window as any).LEARNER_API_URL,
-  REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT
+  REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT,
+  APPLICATION:(window as any).APPLICATION
 };
 
 export const UpdateEnvConfig:any = ({
@@ -22,7 +23,8 @@ export const UpdateEnvConfig:any = ({
   REGISTER_BASE_URL,
   LEARNER_UI_URL,
   LEARNER_API_URL,
-  REACT_ENVIRONMENT
+  REACT_ENVIRONMENT,
+  APPLICATION
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -32,5 +34,6 @@ export const UpdateEnvConfig:any = ({
   envConfig.REGISTER_BASE_URL = REGISTER_BASE_URL;
   envConfig.LEARNER_UI_URL = LEARNER_UI_URL;
   envConfig.LEARNER_API_URL=LEARNER_API_URL;
-  envConfig.REACT_ENVIRONMENT=REACT_ENVIRONMENT
+  envConfig.REACT_ENVIRONMENT=REACT_ENVIRONMENT;
+  envConfig.APPLICATION=APPLICATION;
 };

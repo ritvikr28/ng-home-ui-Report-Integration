@@ -9,6 +9,7 @@ import "./style.scss";
 import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
+import { envConfig } from "../../shared/utils";
 
 
 const requiredStaffTimeTablePermissions: Permission[] = [
@@ -28,7 +29,13 @@ const requiredStaffTimeTablePermissions: Permission[] = [
     Operation: 'View'
   }
 ];
+const requiredRegisterPermissions: Permission[] = [
+  {
+    Securable: 'NG.Homepage.Registers',
 
+    Operation: 'View'
+  }  
+];
 // const requiredTeacherPermissions: Permission[] = [
 //   {
 //     Securable: 'NG.Homepage.Teacher',
@@ -79,7 +86,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
-  const hasSltViewPermission:boolean=hasFeaturePermission('SLTView');
+  const hasSltViewPermission:boolean=hasFeaturePermission(`${envConfig.APPLICATION}`,'SLTView');
   console.log(hasSltViewPermission);
   return(
   <Grid dataTestId="mainPanelView">
@@ -93,7 +100,9 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
     ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
-     <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
+{authService.isAuthorised(requiredRegisterPermissions,
+      MatchPermissions.all) &&  <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />}
+    
       
         {hasSltViewPermission &&  authService.isAuthorised(
       requiredSLTPermissions,

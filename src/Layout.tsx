@@ -141,7 +141,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     <div data-testid="empty-component" className=""/>
   );
 
-  const hasFlagrPermission:boolean=(hasFeaturePermission('NewHomePage') &&
+  const hasFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'NewHomePage') &&
   isOrganisationInVariant());
 
   const requiredPermissions: Permission[] = [
