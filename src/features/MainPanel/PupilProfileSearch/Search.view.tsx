@@ -45,11 +45,11 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
   const noDataTemplateText =`${t("UI_KIT_SearchNoResultsFound.FirstPart")} - {value} - ${t(
       "UI_KIT_SearchNoResultsFound.SecondPart"
     )}`;
-    const [headingText, setHeadingText] = useState("Press enter to view more results and then filter for leaver's profile.");
+    const [headingText, setHeadingText]:any = useState("Press enter to view more results and then filter for leaver's profile.");
 
 
     useEffect(() => {
-      const updateHeadingText = () => {
+      const updateHeadingText: () => void = () => {
         if (window.innerWidth <= 1439) {
           setHeadingText("Press enter to view more results");
         } else {
