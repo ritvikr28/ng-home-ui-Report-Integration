@@ -45,7 +45,7 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   flagName: string,
   variantType: string
 ): any => {
-  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(flagName);
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission("Home",flagName);
 
   if (pilotReadyOrg?.enabled) {
     const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =

@@ -10,7 +10,7 @@ import configureStore from "./redux/store";
 import translationEn from "./locales/en/translation.json";
 import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
-import { service } from "./shared/utils";
+import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 
 const App: (props: ILayoutProps) => JSX.Element = ({
@@ -31,7 +31,7 @@ const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
   authService.isAuthenticated() ? getFeatureFlags : undefined;
   gtmAnalytics.pushLogInEvent();
   return (
-    <FeatureFlagsProvider fetchFeatures={fetchFeatureFlags}>
+    <FeatureFlagsProvider fetchFeatures={fetchFeatureFlags} applicationName={`${envConfig.APPLICATION}`}>
     <Provider store={configureStore()}>
       <ErrorBoundary>
         <Layout
