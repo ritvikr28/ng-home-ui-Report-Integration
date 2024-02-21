@@ -268,3 +268,15 @@
 .essui-textinput--large {
   height: 50px !important;
 }
+
+
+
+.no-icon-search .essui-icon-button {
+  cursor: pointer;
+  display: none !important;
+}
+
+.icon-search .essui-icon-button {
+  cursor: pointer;
+}
+
