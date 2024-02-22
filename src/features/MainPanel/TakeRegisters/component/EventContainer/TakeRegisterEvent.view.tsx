@@ -27,6 +27,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     apiRegsiterEventData ? 0 : 0
   );
   const [carouselData, setCarouselData] = useState(responsive);
+  const slidesToShowMobile = 1;
   const setDefaultSlide = (index: number) => {    
     /* istanbul ignore next */
     carouselRef.current.goToSlide(index);
@@ -77,14 +78,28 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       moveRight();    
     }
   };   
-  const moveRight=()=>{
-    const totallength=apiRegsiterEventData?apiRegsiterEventData.length:0;
-    setCurrentSlide((prevSlide) => (prevSlide + 3)>  totallength? (totallength-1):(prevSlide + 3))
-  }    
-  const moveLeft=()=>{    
-    setCurrentSlide((prevSlide) =>  (prevSlide - 3)<=0 ? 0 : (prevSlide - 3)
-    );
-  }
+
+  const moveRight = () => {
+    const totalLength = apiRegsiterEventData ? apiRegsiterEventData.length : 0;
+    setCurrentSlide((prevSlide) => {
+      if (window.innerWidth <= 768) {
+        return prevSlide + slidesToShowMobile >= totalLength ? totalLength - 1 : prevSlide + slidesToShowMobile;
+      } 
+        return (prevSlide + 3) > totalLength ? (totalLength - 1) : (prevSlide + 3);
+      
+    });
+  };
+  
+  const moveLeft = () => {
+    setCurrentSlide((prevSlide) => {
+      if (window.innerWidth <= 768) {
+        return prevSlide - slidesToShowMobile < 0 ? 0 : prevSlide - slidesToShowMobile;
+      } 
+        return prevSlide - 3 <= 0 ? 0 : prevSlide - 3;
+      
+    });
+  };
+  
 
   const previousSlide = () => {    
     if (carouselRef.current && currentSlide > 0) {
@@ -92,6 +107,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       moveLeft();    
     }
   };
+ 
+
  
   const FilledGraphDataIcon = () => (
     /* istanbul ignore next */
@@ -185,7 +202,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData==null?true:(currentSlide === 0 || apiRegsiterEventData.length<4)}
+              disabled={apiRegsiterEventData == null ? true :
+                (currentSlide === 0 || apiRegsiterEventData.length < (window.innerWidth <= 768 ? 1 : 4))
+              }
+              
             />
           </div>
           <div>
@@ -198,9 +218,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={nextSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData==null?true:
-                (currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide +3 >= apiRegsiterEventData.length)
+              disabled={apiRegsiterEventData == null ? true :
+                (currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide + (window.innerWidth <= 768 ? 1 : 3) >= apiRegsiterEventData.length)
               }
+              
             />
           </div>
         </div>
@@ -211,7 +232,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
         {apiError === false && apiRegsiterEventData &&  apiRegsiterEventData.length > 0?   (
           <Carousel
             ref={carouselRef}
-            slidesToSlide={4}
+            slidesToSlide={window.innerWidth <= 768 ? 1 : 4}
             arrows={false}
             swipeable={false}
             draggable={false}
@@ -224,6 +245,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             containerClass={isOpen?"carousel-container carousel-open": "carousel-container"}
             removeArrowOnDeviceType={["tablet", "mobile"]}
             itemClass="carousel-item-padding-40-px"
+            afterChange={(index: any) => setCurrentSlide(index)} 
           >
            {
               apiRegsiterEventData &&
