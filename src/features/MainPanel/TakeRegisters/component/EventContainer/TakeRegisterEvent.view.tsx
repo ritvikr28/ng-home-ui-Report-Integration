@@ -202,9 +202,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData == null ? true :
-                (currentSlide === 0 || apiRegsiterEventData.length < (window.innerWidth <= 768 ? 1 : 4))
-              }
+              disabled={
+                apiRegsiterEventData == null ? true :
+                (
+                    (window.innerWidth <= 768 && currentSlide === 1) ||
+                    (window.innerWidth > 768 && currentSlide === 0) ||
+                    apiRegsiterEventData.length < (window.innerWidth <= 768 ? 1 : 4)
+                )
+            }
+            
               
             />
           </div>
