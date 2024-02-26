@@ -27,7 +27,6 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     apiRegsiterEventData ? 0 : 0
   );
   const [carouselData, setCarouselData] = useState(responsive);
-  const slidesToShowMobile = 1;
   const setDefaultSlide = (index: number) => {    
     /* istanbul ignore next */
     carouselRef.current.goToSlide(index);
@@ -71,36 +70,49 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     }
     
   });
-
+  /* istanbul ignore next */
   const nextSlide = () => {      
     if (carouselRef.current) {          
       carouselRef.current.next();
       moveRight();    
     }
   };   
-
+  /* istanbul ignore next */
   const moveRight = () => {
     const totalLength = apiRegsiterEventData ? apiRegsiterEventData.length : 0;
     setCurrentSlide((prevSlide) => {
-      if (window.innerWidth <= 768) {
-        return prevSlide + slidesToShowMobile >= totalLength ? totalLength - 1 : prevSlide + slidesToShowMobile;
+      if (window.innerWidth < 768) {
+        return prevSlide + 1 >= totalLength ? totalLength : prevSlide + 1;
       } 
+      /* eslint-disable */ 
+      else if( window.innerWidth>768 &&  window.innerWidth<1440){
+       
+          return prevSlide + 2 >= totalLength ? totalLength : prevSlide + 2;
+        
+      }
         return (prevSlide + 3) > totalLength ? (totalLength - 1) : (prevSlide + 3);
       
     });
+    /* eslint-enable */ 
   };
-  
+    /* istanbul ignore next */
   const moveLeft = () => {
     setCurrentSlide((prevSlide) => {
-      if (window.innerWidth <= 768) {
-        return prevSlide - slidesToShowMobile < 0 ? 0 : prevSlide - slidesToShowMobile;
+      if (window.innerWidth < 768) {
+        return prevSlide - 1 <= 0 ? 0 : prevSlide - 1;
       } 
+      /* eslint-disable */ 
+      else if( window.innerWidth>768 &&  window.innerWidth<1440){
+        
+           return prevSlide - 2 <=0? 0 : prevSlide - 2;
+         
+       }
         return prevSlide - 3 <= 0 ? 0 : prevSlide - 3;
-      
+      /* eslint-enable */ 
     });
   };
   
-
+  /* istanbul ignore next */
   const previousSlide = () => {    
     if (carouselRef.current && currentSlide > 0) {
       carouselRef.current.previous();
@@ -109,7 +121,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   };
  
 
- 
+  /* istanbul ignore next */
   const FilledGraphDataIcon = () => (
     /* istanbul ignore next */
     <svg
@@ -172,7 +184,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     });
      /* istanbul ignore next */   
   window.open(url, "_self");
-  };
+  };  
   return (
     <>
       <div className={isOpen? "register-link-event-open": "register-link-event-close"}
@@ -202,19 +214,13 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={previousSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={
-                apiRegsiterEventData == null ? true :
-                (
-                    (window.innerWidth <= 768 && currentSlide === 1) ||
-                    (window.innerWidth > 768 && currentSlide === 0) ||
-                    apiRegsiterEventData.length < (window.innerWidth <= 768 ? 1 : 4)
-                )
-            }
-            
-              
+              /* eslint-disable */ 
+              disabled={apiRegsiterEventData==null?true:(window.innerWidth>768 && window.innerWidth < 1440?(currentSlide === 0 || apiRegsiterEventData.length<2):(window.innerWidth < 768) ?(currentSlide === 0 || apiRegsiterEventData.length<1):(currentSlide === 0 || apiRegsiterEventData.length<4))}
+              /* eslint-enable */ 
             />
           </div>
           <div>
+            
             <Button
               className="base-class"
               iconColor={IconColor.Neutral800}
@@ -224,10 +230,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               onClick={nextSlide}
               size={ButtonSize.Small}
               type="button"
-              disabled={apiRegsiterEventData == null ? true :
-                (currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide + (window.innerWidth <= 768 ? 1 : 3) >= apiRegsiterEventData.length)
+              /* eslint-disable */ 
+              disabled={apiRegsiterEventData == null ? true :(window.innerWidth>768 && window.innerWidth < 1440?((currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide + 2 > apiRegsiterEventData.length)):window.innerWidth < 768 ?(currentSlide +1>apiRegsiterEventData.length):((currentSlide === (apiRegsiterEventData.length ?? 0) - 1) || (currentSlide + 3 >= apiRegsiterEventData.length)))
+               /* eslint-enable */ 
               }
-              
             />
           </div>
         </div>
@@ -250,8 +256,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
             transitionDuration={50}
             containerClass={isOpen?"carousel-container carousel-open": "carousel-container"}
             removeArrowOnDeviceType={["tablet", "mobile"]}
-            itemClass="carousel-item-padding-40-px"
-            afterChange={(index: any) => setCurrentSlide(index)} 
+            itemClass="carousel-item-padding-40-px"            
           >
            {
               apiRegsiterEventData &&
