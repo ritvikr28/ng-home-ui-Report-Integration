@@ -153,9 +153,17 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       Operation: "View"
     }
   ];
+  const requiredSLTPermissions: Permission[] = [
+    {
+      Securable: 'NG.Homepage.SLT',
+  
+      Operation: 'View'
+    }
+  ]
   const history = useHistory();
 
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all);
+  const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all);
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
       service.init();
@@ -191,7 +199,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         <Switch>          
         {/* eslint-disable */}
           <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
-             ((hasFlagrPermission && hasTeacherPermission)? NewHomepageView : ((hasFlagrPermission && IsSLTFlagONPermission) ?  NewHomepageView:  LandingPage)):EmptyComponent} />
+             ((hasFlagrPermission && hasTeacherPermission)? NewHomepageView : ((hasFlagrPermission && IsSLTFlagONPermission && hasSLTPermission) ?  NewHomepageView:  LandingPage)):EmptyComponent} />
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
