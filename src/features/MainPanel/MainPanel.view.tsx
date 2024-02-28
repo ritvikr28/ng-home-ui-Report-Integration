@@ -105,7 +105,8 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
       {authService.isAuthorised(requiredTeacherPermissions,
       MatchPermissions.all) && authService.isAuthorised(requiredRegisterPermissions,
-      MatchPermissions.all) &&  <TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />}
+      MatchPermissions.all) &&  <><TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
+      <div className={isOpen ? "divider-container open-divider" : "divider-container"} /></>}
     
       
         {hasSltViewPermission &&  authService.isAuthorised(
@@ -115,8 +116,8 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       requiredPupilProfilePermissions,
       MatchPermissions.all
     ) &&
-        <><div className={isOpen ? "divider-container open-divider" : "divider-container"} /><Search isOpen={isOpen} /></>}  
-      <div className={isOpen?"divider-container open-divider":"divider-container"}/>            
+        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container open-divider":"divider-container"}/></>}  
+              
     
       <SIMSupdatesView isOpen={isOpen}/>
       {/* <SwitchViewLogic
