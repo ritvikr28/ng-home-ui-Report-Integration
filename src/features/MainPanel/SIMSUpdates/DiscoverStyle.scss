@@ -243,12 +243,22 @@
 
   .what-new {
     width: 96vw !important;
-    margin-left: 2px;
+    margin-left: -1.5px;
+  }
+
+  .what-new-open {
+    width: 96vw !important;
+    margin-left: -3.5px;
   }
 
   .onecard {
     width: 96vw !important;
-    margin-left: 2px;
+    margin-left: -1.5px;
+  }
+  
+  .onecard-open {
+    width: 96vw !important;
+    margin-left: -3.5px;
   }
 
   .secondary-text {
@@ -299,7 +309,7 @@
   // width: fit-content;
 }
 
-.essui-activity-card-center {
+#action-card .essui-activity-card-center {
   width: 100vw;
 }
 

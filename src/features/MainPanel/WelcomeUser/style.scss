@@ -63,7 +63,7 @@
   text-align: left;
 }
 
-@media (min-width: 768px) and (max-width: 1023.9px) {
+@media (min-width: 768px) and (max-width: 1439.9px) {
   .parent1-subparent {
     width: 102%;
   }
@@ -75,7 +75,7 @@
   }
 
   .parent1-open-subparent {
-    width: 102%;
+    width: 103%;
   }
 
   .parent1-open {
@@ -84,26 +84,75 @@
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1439.9px) {
-  .parent1-subparent {
-    width: 100vw;
-  }
-
-  .parent1-open-subparent {
-    width: 100vw;
-  }
-
-  .parent1-open {
-    margin-top: 0;
-    width: 85vw;
-  }
-
-  .parent1 {
-    width: 85vw;
-    margin-top: -87px;
-    margin-left: 50px;
-  }
+@media (min-width: 768px) and (max-width: 1127.9px) {
+.parent1-open-subparent {
+  width: 102%;
 }
+}
+
+@media (min-width: 1127.9px) and (max-width: 1299.9px) {
+    .parent1-subparent {
+        width: 100vw;
+      }
+    
+      .parent1-open-subparent {
+        width: 60vw;
+      }
+    
+      .parent1-open {
+        margin-top: 0;
+        width: 85vw;
+      }
+    
+      .parent1 {
+        width: 85vw;
+        margin-top: -87px;       
+      }
+  }
+
+  @media (min-width: 1299.9px) {
+    .parent1-open-subparent {
+      width: 103vw;
+    }
+    .parent1-subparent {
+          width: 100vw;
+        }
+      
+        // .parent1-open-subparent {
+        //   width: 100vw;
+        // }
+      
+        .parent1-open {
+          margin-top: 0;
+          width: 85vw;
+        }
+      
+        .parent1 {
+          width: 85vw;
+          margin-top: -87px;
+        }
+    }
+
+// @media (min-width: 1024px) and (max-width: 1439.9px) {
+//   .parent1-subparent {
+//     width: 100vw;
+//   }
+
+//   .parent1-open-subparent {
+//     width: 100vw;
+//   }
+
+//   .parent1-open {
+//     margin-top: 0;
+//     width: 85vw;
+//   }
+
+//   .parent1 {
+//     width: 85vw;
+//     margin-top: -87px;
+//     margin-left: 50px;
+//   }
+// }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .parent1-open-subparent {

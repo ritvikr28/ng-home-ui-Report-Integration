@@ -4,6 +4,12 @@
   margin-left: 0;
 }
 
+@media only screen and (min-width: 1024px){
+#breadcrumbs-wrapper{
+  margin-left: -20px !important;
+}
+}
+
 .breadcrumbs {
   margin-top: -67px;
 }
@@ -57,6 +63,13 @@
     width: 82vw;
   }
 }
+@media screen and (min-width: 1440px) {
+  .quicklink-container-closed {
+    width: 82vw;
+    margin-left: -32px;
+  }
+}
+
 
 .quicklinktext {
   font-family: "Segoe UI";
@@ -86,7 +99,7 @@
 
 .quicklinktable {
   background-color: #fff;
-  width: 99%;
+  width: 97.5%;
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -115,14 +128,28 @@
   width: 60%;
 }
 
+@media (min-width: 1023.9px){
 .quicklink-divider-container {
-  // width: 1081px;
+  width: 1164px;
   margin-bottom: 8px;
   margin-top: 32px;
   align-self: stretch;
   border-top: 1px solid var(--neutral-200, #c6c6c6);
   background: var(--neutral-200, #c6c6c6);
 }
+}
+
+@media (min-width: 320px) and (max-width: 1023.9px){
+  .quicklink-divider-container {
+    width: 910px;
+    margin-bottom: 8px;
+    margin-top: 32px;
+    align-self: stretch;
+    border-top: 1px solid var(--neutral-200, #c6c6c6);
+    background: var(--neutral-200, #c6c6c6);
+  }
+}
+
 
 .simspadding {
   padding-top: 28px;
@@ -225,3 +252,11 @@
   //   width: 0 !important;
   // }
 }
+
+@media only screen and (min-width: 768px){
+.quicklink-padding{
+  padding: 0 !important;
+  margin-left: -22px !important;
+}
+}
+

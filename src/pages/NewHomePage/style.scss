@@ -40,7 +40,7 @@
 
 @media (min-width: 1440px) {
   .body-panel {
-    margin-left: 152px;
+    margin-left: 184px;
   }
 }
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -186,7 +186,7 @@
 // }
 
 .side-margin {
-  max-width: 264px !important;
+  max-width: 288px !important;
 }
 
 
@@ -258,4 +258,15 @@
   }
 }
 
+@media (min-width: 1068.9px){
+.side-margin-quicklink {
+  max-width: 278px !important;
+}
+}
+
+@media (min-width: 1023.9px) and (max-width:1068.9px){
+  .side-margin-quicklink {
+    max-width: 264px !important;
+  }
+  }
 
