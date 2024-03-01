@@ -4,6 +4,7 @@ import {
   IFeatureFlagVariant
 } from '@essnextgen/ui-flagr';
 import { getUserOrganisation } from './auth-helper';
+import { envConfig } from './constants';
 
 
 interface IFeatureFlagVariantAttachment {
@@ -45,7 +46,7 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   flagName: string,
   variantType: string
 ): any => {
-  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission("Home",flagName);
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`,flagName);
 
   if (pilotReadyOrg?.enabled) {
     const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =

@@ -97,7 +97,7 @@ describe('pilotReady', () => {
     jest.mock('../flagr-helper', () => ({
       pilotready: pilotreadyfn      
     }));    
-    const result = isOrganisationInVariant();
+    const result = isOrganisationInVariant('NewHomePage');
  
     expect(result).toBe(true);  
   });
