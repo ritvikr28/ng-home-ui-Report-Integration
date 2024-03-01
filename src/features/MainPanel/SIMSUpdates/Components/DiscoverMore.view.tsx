@@ -73,7 +73,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
               id="action-card"
               onClickActionCard={() => onCardClick()}
               primaryText="The SIMS Next Gen roadmap"
-              secondaryText="Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap"
+              secondaryText="Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap."
             />
           </Link>
         </GridItem>

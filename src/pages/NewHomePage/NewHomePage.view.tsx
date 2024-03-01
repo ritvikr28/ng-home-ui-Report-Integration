@@ -6,7 +6,10 @@ import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
-import { IFetchQuickLinkDetailsFunctionResponse, IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import {
+  IFetchQuickLinkDetailsFunctionResponse,
+  IQuickLinkApiResponse
+} from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 import { getUserOrganisation } from "../../shared/utils";
@@ -114,27 +117,48 @@ const NewHomepageView: React.FC = () => {
 
   return isPermission ? (
     <>
-    <Grid className="app" dataTestId="NewHomePage">
-      <GridItem className={isOpen ? "side-margin" : "side-margin-closed"} lg={isOpen ? 3 : 0}>
-        <SidePanelView
-          isOpen={isOpen}
-          togglePanel={togglePanel}
-          closePanel={closePanel}
-          showQuickLinkView={showQuickLinkView}
-          showMainPanelView={showMainPanelView}
-          setQuickLinkData={setQuickLinkData}
-          quicklinkData={isError ? [] : quickLinkData}
-          data-testid="btn-show-quick-link"
-            isLoader ={isLoader}
-        />
-      </GridItem>
-      {/* eslint-disable */}
-      <GridItem className={!isTabletView ? (isOpen ? "body-open-panel" : "body-panel res-body" ):
-         (isOpen ? "body-panel-mobile-open" : "body-panel-mobile")}>
-        {renderContent()}
-      </GridItem>
-      {/* eslint-enable */}
-    </Grid>
+      <Grid className="app" dataTestId="NewHomePage">
+        
+        <GridItem
+        /* eslint-disable */
+          className={
+            isOpen
+              ? showQuickLink
+                ? "side-margin side-margin-quicklink"
+                : "side-margin"
+              : "side-margin-closed"
+          }
+            /* eslint-enable */
+          lg={isOpen ? 3 : 0}
+        >
+          <SidePanelView
+            isOpen={isOpen}
+            togglePanel={togglePanel}
+            closePanel={closePanel}
+            showQuickLinkView={showQuickLinkView}
+            showMainPanelView={showMainPanelView}
+            setQuickLinkData={setQuickLinkData}
+            quicklinkData={isError ? [] : quickLinkData}
+            data-testid="btn-show-quick-link"
+            isLoader={isLoader}
+          />
+        </GridItem>
+        {/* eslint-disable */}
+        <GridItem
+          className={
+            !isTabletView
+              ? isOpen
+                ? "body-open-panel"
+                : "body-panel res-body"
+              : isOpen
+              ? "body-panel-mobile-open"
+              : "body-panel-mobile"
+          }
+        >
+          {renderContent()}
+        </GridItem>
+        {/* eslint-enable */}
+      </Grid>
     </>
   ) : (
     <Redirect to="/noAccess" />

@@ -4,8 +4,27 @@
   margin-left: 0;
 }
 
+@media only screen and (min-width: 1024px) {
+  #breadcrumbs-wrapper {
+    margin-left: -20px !important;
+  }
+}
+
 .breadcrumbs {
   margin-top: -67px;
+}
+
+@media only screen and (min-width: 1555.9px) {
+  .breadcrumbs {
+    // width: 75vw;
+    margin-top: 6px;
+    margin-left: -82px;
+  }
+
+  .quicklink-container-closed {
+    width: 82vw;
+    margin-left: -118px;
+  }
 }
 
 @media only screen and (min-width: 1024px) and (max-width: 1439.9px) {
@@ -57,6 +76,12 @@
     width: 82vw;
   }
 }
+@media screen and (min-width: 1440px) and (max-width: 1555.9px) {
+  .quicklink-container-closed {
+    width: 82vw;
+    margin-left: -32px;
+  }
+}
 
 .quicklinktext {
   font-family: "Segoe UI";
@@ -86,7 +111,7 @@
 
 .quicklinktable {
   background-color: #fff;
-  width: 99%;
+  width: 97.5%;
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -110,18 +135,41 @@
 
 /* stylelint-enable */
 
-
 .theadercell {
   width: 60%;
 }
 
-.quicklink-divider-container {
-  // width: 1081px;
-  margin-bottom: 8px;
-  margin-top: 32px;
-  align-self: stretch;
-  border-top: 1px solid var(--neutral-200, #c6c6c6);
-  background: var(--neutral-200, #c6c6c6);
+@media (min-width: 1439.9px) {
+  .quicklink-divider-container {
+    width: 78.5vw;
+    margin-bottom: 8px;
+    margin-top: 32px;
+    align-self: stretch;
+    border-top: 1px solid var(--neutral-200, #c6c6c6);
+    background: var(--neutral-200, #c6c6c6);
+  }
+}
+
+@media (min-width: 1023.9px) and (max-width: 1439.9px) {
+  .quicklink-divider-container {
+    width: 1164px;
+    margin-bottom: 8px;
+    margin-top: 32px;
+    align-self: stretch;
+    border-top: 1px solid var(--neutral-200, #c6c6c6);
+    background: var(--neutral-200, #c6c6c6);
+  }
+}
+
+@media (min-width: 320px) and (max-width: 1023.9px) {
+  .quicklink-divider-container {
+    width: 89vw;
+    margin-bottom: 8px;
+    margin-top: 32px;
+    align-self: stretch;
+    border-top: 1px solid var(--neutral-200, #c6c6c6);
+    background: var(--neutral-200, #c6c6c6);
+  }
 }
 
 .simspadding {
@@ -224,4 +272,11 @@
   //   min-width: 431px !important;
   //   width: 0 !important;
   // }
+}
+
+@media only screen and (min-width: 768px) {
+  .quicklink-padding {
+    padding: 0 !important;
+    margin-left: -22px !important;
+  }
 }
