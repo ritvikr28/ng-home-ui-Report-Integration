@@ -1,8 +1,8 @@
 import { pilotReady } from './flagr-helper';
 
-export const isOrganisationInVariant: () => boolean = () => {
+export const isOrganisationInVariant: (flagName:string) => boolean = (flagName:string) => {
   const organisationEnabled: boolean = pilotReady(
-    'NewHomePage',
+    flagName,
     'ActiveOrganisations'
   );
   return organisationEnabled;
