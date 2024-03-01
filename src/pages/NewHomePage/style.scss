@@ -47,7 +47,7 @@
   .body-panel {
     width: 100vw;
   }
-  
+
   .body-open-panel {
     width: 74vw;
   }
@@ -56,7 +56,6 @@
   .body-panel-mobile-open {
     width: 97vw;
     margin-left: -5px;
-    
   }
 
   .body-panel-mobile {
@@ -68,7 +67,6 @@
   .body-panel-mobile-open {
     width: 94vw;
     margin-left: -9px;
-    
   }
 
   .body-panel-mobile {
@@ -80,7 +78,6 @@
   .body-panel-mobile-open {
     width: 95vw;
     margin-left: -4px;
-    
   }
 
   .body-panel-mobile {
@@ -134,7 +131,7 @@
 //   .body-panel-mobile {
 //     max-width: 385px;
 //     margin-left: -60px;
-//     margin-top: 73px; 
+//     margin-top: 73px;
 //     // padding-top: 40px;
 //     // overflow-x: hidden;
 //     // overflow-y: auto;
@@ -188,7 +185,6 @@
 .side-margin {
   max-width: 288px !important;
 }
-
 
 @media only screen and (min-width: 1024px) and (max-width: 1439.9px) {
   .side-margin {
@@ -258,15 +254,15 @@
   }
 }
 
-@media (min-width: 1068.9px){
-.side-margin-quicklink {
-  max-width: 278px !important;
-}
+@media (min-width: 1068.9px) {
+  .side-margin-quicklink {
+    max-width: 278px !important;
+  }
 }
 
-@media (min-width: 1023.9px) and (max-width:1068.9px){
+@media (min-width: 1023.9px) and (max-width: 1068.9px) {
   .side-margin-quicklink {
     max-width: 264px !important;
   }
-  }
+}
 

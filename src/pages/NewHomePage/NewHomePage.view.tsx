@@ -8,7 +8,7 @@ import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import {
   IFetchQuickLinkDetailsFunctionResponse,
-  IQuickLinkApiResponse,
+  IQuickLinkApiResponse
 } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
@@ -118,7 +118,9 @@ const NewHomepageView: React.FC = () => {
   return isPermission ? (
     <>
       <Grid className="app" dataTestId="NewHomePage">
+        
         <GridItem
+        /* eslint-disable */
           className={
             isOpen
               ? showQuickLink
@@ -126,6 +128,7 @@ const NewHomepageView: React.FC = () => {
                 : "side-margin"
               : "side-margin-closed"
           }
+            /* eslint-enable */
           lg={isOpen ? 3 : 0}
         >
           <SidePanelView
