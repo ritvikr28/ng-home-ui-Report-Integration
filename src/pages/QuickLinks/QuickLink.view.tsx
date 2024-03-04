@@ -80,7 +80,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
             )}
           </GridItem>
           <GridItem>
-          <div className={isOpen? "quicklink-divider-container": "quicklink-divider-container"} />
+          <div className={isOpen? "quicklink-divider-container": "quicklink-divider-container quicklink-divider-container-closed"} />
           <div className="simspadding">
             <SIMSupdatesView isOpen={isOpen}/>
           </div>
