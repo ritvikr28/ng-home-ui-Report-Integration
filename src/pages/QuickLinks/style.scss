@@ -159,6 +159,7 @@
     border-top: 1px solid var(--neutral-200, #c6c6c6);
     background: var(--neutral-200, #c6c6c6);
   }
+
 }
 
 @media (min-width: 320px) and (max-width: 1023.9px) {
@@ -170,6 +171,7 @@
     border-top: 1px solid var(--neutral-200, #c6c6c6);
     background: var(--neutral-200, #c6c6c6);
   }
+
 }
 
 .simspadding {
@@ -181,12 +183,16 @@
   width: 99%;
 }
 
-@media (min-width: 1024px) and (max-width: 1439.9px) {
+@media (min-width: 1023.9px) and (max-width: 1439.9px) {
   .quicklinktable-close {
     width: 93vw;
   }
 
   .quicklink-divider-container {
+    width: 71vw;
+  }
+
+  .quicklink-divider-container-closed {
     width: 93vw;
   }
 
