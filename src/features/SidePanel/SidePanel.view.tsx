@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import {
   Button,
   ButtonColor,
-  ButtonSize,
-  Divider,
+  ButtonSize,  
   Icon,
-  IconColor,
-  Orientation,
+  IconColor, 
   SideNavigationPanel,
   SideNavigationPanelContent,
   Loader,
@@ -110,13 +108,13 @@ const SidePanel: React.FC<SidePanelProps> = ({
               isOpen={isOpen}
               onClose={togglePanel}
             >
-              <Divider
+              {/* <Divider
                 as="li"
                 dataTestId="panel-divider"
                 id="panel-divider"
                 orientation={Orientation.HORIZONTAL}
                 role="separator"
-              />
+              /> */}
               <SideNavigationPanelContent>
                 <div>
                   <div className="quick-lint-display">
