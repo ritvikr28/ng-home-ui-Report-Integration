@@ -7,6 +7,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 
 import { IQuickLinkApiResponse } from "../../model/quickLink/responsemodels";
 import { envConfig } from "../../utils";
+import { logger } from "../../components/AppInsights";
 
 export const FetchQuickLinkData:(role: string) => Promise<{
   status: number;
@@ -22,7 +23,11 @@ export const FetchQuickLinkData:(role: string) => Promise<{
         return { status, response };
        
     }
-        catch (error) {
+        catch (err:any) {
+          logger.error({
+            error:"Failed to fetch quick link details",
+            code: err.name
+          });
    
     throw new Error("Failed to fetch quick link details");
   }
@@ -42,7 +47,11 @@ export const FetchQuickLinkpost:(id: number, operation: boolean) => Promise<Axio
           requestData
         ); 
         return response.data;
-  } catch (error) {
+  } catch (err:any) {
+    logger.error({
+      error:"Failed to mark Favourite/Unfavourite",
+      code: err.name
+    });
     throw new Error("Failed to mark Favourite/Unfavourite");
   }
 };

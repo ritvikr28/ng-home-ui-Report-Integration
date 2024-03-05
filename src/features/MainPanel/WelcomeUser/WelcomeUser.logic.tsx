@@ -3,6 +3,7 @@ import { useMediaQuery } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
 import WelcomeUserView from "./WelcomeUser.view";
 import { IWelcomeUserLogicProps } from "./WelcomeUserProps";
+import { logger } from "../../../shared/components/AppInsights";
 
 const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
   props: IWelcomeUserLogicProps
@@ -23,7 +24,11 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
         if (isMounted) {
           setUserFullname(username);
         }
-      } catch (error) {
+      } catch (error:any) {
+        logger.error({
+          error:"Error fetching username",
+          code: error.name
+        });
         console.error('Error fetching username:', error);
       }
     };
