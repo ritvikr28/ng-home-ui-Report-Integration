@@ -22,7 +22,11 @@ export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | null>
     const response:AxiosResponse<ISchoolNameDataResponse> = await service.get(`School/SchoolName`);
     return response.data;
   }
-  catch (error) {
+  catch (err:any) {
+    logger.error({
+      error:"Failed to fetch school name",
+      code: err.name
+    });
     throw new Error('Failed to fetch school name');  }
 };
 
@@ -63,7 +67,11 @@ export const FetchGroupMemberDetailsData:(
       buildApplicationUrl(apiUrls)
     );
     return responseData.data.data;
-  } catch (error) {
+  } catch (err:any) {
+    logger.error({
+      error:"Failed to fetch group member details",
+      code: err.name
+    });
     throw new Error('Failed to fetch group member details');
   }
 };
