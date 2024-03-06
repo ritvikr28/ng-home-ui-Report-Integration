@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import {
   Button,
   ButtonColor,
-  ButtonSize,
-  Divider,
+  ButtonSize,  
   Icon,
-  IconColor,
-  Orientation,
+  IconColor, 
   SideNavigationPanel,
   SideNavigationPanelContent,
   Loader,
@@ -14,7 +12,9 @@ import {
   Tooltip,
   TooltipAlign,
   TooltipPosition,
-  useMediaQuery
+  useMediaQuery,
+  Orientation,
+  Divider
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
@@ -110,6 +110,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
               isOpen={isOpen}
               onClose={togglePanel}
             >
+             <div className="sidepanel-mobile-divider">
               <Divider
                 as="li"
                 dataTestId="panel-divider"
@@ -117,6 +118,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
                 orientation={Orientation.HORIZONTAL}
                 role="separator"
               />
+              </div> 
               <SideNavigationPanelContent>
                 <div>
                   <div className="quick-lint-display">

@@ -2,7 +2,7 @@
 
 .side-view {
   //width: 265px;
-  height: 118%;
+  height: 148vh;
   padding: 16px 0;
   background-color: #fff;
 }
@@ -148,4 +148,12 @@
   box-shadow: none;
   // color: #005faf;
   // outline: 0;
+}
+
+.sidepanel-mobile-divider {
+  //border: solid #c6c6c6;
+  //border-width: 0 0 1px;
+  flex-shrink: 0;
+  list-style: none;
+  margin: auto;
 }
