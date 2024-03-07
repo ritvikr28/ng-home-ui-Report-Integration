@@ -83,17 +83,19 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   const hasSltViewPermission:boolean=hasFeaturePermission(`${envConfig.APPLICATION}`,'SLTView');
   console.log(hasSltViewPermission);
   return(
+    <div  className={isOpen?" ":"welcome-user-fixed"}>
   <Grid dataTestId="mainPanelView">
     <GridItem className="teacher-panel-container">
       <WelcomeUser
       isApiError={isError} 
       organisationName={schoolName}
       isOpen={isOpen}
-      />      
+      />    
       {authService.isAuthorised(
       requiredStaffTimeTablePermissions,
       MatchPermissions.all
-    ) &&isSchoolPrimary===false &&<StaffTimeTableView  isOpen={isOpen} />}
+    ) &&isSchoolPrimary===false &&
+    <StaffTimeTableView  isOpen={isOpen} />}
       {authService.isAuthorised(requiredRegisterPermissions,
       MatchPermissions.all) &&  <><TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
       <div className={isOpen ? "divider-container open-divider" : "divider-container"} /></>}
@@ -106,7 +108,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       requiredPupilProfilePermissions,
       MatchPermissions.all
     ) &&
-        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container open-divider":"divider-container"}/></> }  
+        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container open-divider":"divider-container"}/></>}
                  
     
       <SIMSupdatesView isOpen={isOpen}/>
@@ -116,6 +118,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       /> */}
     </GridItem>
   </Grid>
+  </div>
   )
 };
 

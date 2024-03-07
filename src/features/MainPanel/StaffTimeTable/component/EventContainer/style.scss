@@ -12,7 +12,14 @@
   margin-right: 18px;
 }
 
-@media (min-width: 1440px) {
+@media (min-width: 1900px) {
+  .isopen {
+    width: 11.6vw !important;
+    margin-right: 19.2px;
+  }
+}
+
+@media (min-width: 1440px) and (max-width: 1900px) {
   .isopen {
     width: 11.6vw !important;
     margin-right: 14px;

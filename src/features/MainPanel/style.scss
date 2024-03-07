@@ -84,5 +84,8 @@
 // }
 // }
 
-
-
+@media screen and (min-width: 1920px) {
+  .welcome-user-fixed {
+    position: fixed;
+  }
+}
