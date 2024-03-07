@@ -83,7 +83,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   const hasSltViewPermission:boolean=hasFeaturePermission(`${envConfig.APPLICATION}`,'SLTView');
   console.log(hasSltViewPermission);
   return(
-    <div  className="welcome-user-fixed">
+    <div  className={isOpen?" ":"welcome-user-fixed"}>
   <Grid dataTestId="mainPanelView">
     <GridItem className="teacher-panel-container">
       <WelcomeUser
