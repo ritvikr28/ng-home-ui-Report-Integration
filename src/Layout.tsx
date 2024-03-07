@@ -26,6 +26,7 @@ import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, getUserOrganisation, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
+import PageNotFound from "./pages/PageNotFound/PageNotFound";
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "29a88689-e51f-4928-aead-1a92402c1a09",
@@ -54,9 +55,7 @@ const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
-const PageNotFound: LazyExoticComponent<FC<{}>> = lazy(
-  () => import("./pages/PageNotFound/PageNotFound")
-);
+
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -84,7 +83,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   baseRouteName
 }: ILayoutProps) => {
   const dispatch: any = useDispatch();
-
+  const history = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
     const [isServiceInitiated, setIsServiceInitiated]: [
@@ -105,7 +104,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         .catch(() => menuFilterHandler([]));
     };
     if (isStandaloneApp === false) {
-      fetchAllData();
+      fetchAllData();     
     }    
   }, []);
 
@@ -140,6 +139,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const EmptyComponent: () => JSX.Element = () => (
     <div data-testid="empty-component" className=""/>
   );
+  const PageNotFoundComponent:()=>JSX.Element=() =>{
+    const validurls=["staff"];
+    const path= window.location.pathname.split("/")[1];
+    if(envConfig.REACT_ENVIRONMENT!=="Live" && !validurls.includes(path))
+    {
+      return (<PageNotFound/>);
+    }
+    return (<div data-testid="empty-component" className=""/>)
+  };
 
   const hasFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'NewHomePage') &&
   isOrganisationInVariant('NewHomePage'));
@@ -171,7 +179,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   ]; 
   
-  const history = useHistory();
+
   const hasNewHomePagePermission:boolean =  authService.isAuthorised(requiredNewHomePagePermissions, MatchPermissions.all); 
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
   const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
@@ -216,7 +224,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          {isStandaloneApp && <Route exact path="*" component={PageNotFound} />}
+          <Route exact path="*" component={PageNotFoundComponent} />
         </Switch>
       </Suspense>
     </Router>
