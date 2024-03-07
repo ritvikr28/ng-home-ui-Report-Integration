@@ -413,7 +413,7 @@ stages:
             env_name: live_snow
             
         - job: Live_Test
-          displayName: Running Automation UI Test cases on qa env
+          displayName: Running Automation UI Test cases on live env
           dependsOn: deploy_nghomeui_live
           steps:
           - template: azure-pipeline-run-automation-test.yaml
