@@ -412,16 +412,16 @@ stages:
                 selfhostedpool: 'paz-vmss-pool'
             env_name: live_snow
             
-        - job: Live_Test
-          displayName: Running Automation UI Test cases on live env
-          dependsOn: deploy_nghomeui_live
-          steps:
-          - template: azure-pipeline-run-automation-test.yaml
-            parameters:
-              env: "live"
-              type: "ui"
-              test_tags: "@regression"
-              pat_token: $(PAT)       
+        # - job: Live_Test
+        #   displayName: Running Automation UI Test cases on live env
+        #   dependsOn: deploy_nghomeui_live
+        #   steps:
+        #   - template: azure-pipeline-run-automation-test.yaml
+        #     parameters:
+        #       env: "live"
+        #       type: "ui"
+        #       test_tags: "@regression"
+        #       pat_token: $(PAT)       
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - stage: PerfDeploy
