@@ -140,9 +140,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     <div data-testid="empty-component" className=""/>
   );
   const PageNotFoundComponent:()=>JSX.Element=() =>{
-    const validurls=["Staff","staff"];
+    const validurls:any=[];
     const path= window.location.pathname.split("/")[1];
-    if(envConfig.REACT_ENVIRONMENT!=="Live" && !validurls.includes(path))
+    if(!validurls.includes(path))
     {
       return (<PageNotFound/>);
     }
