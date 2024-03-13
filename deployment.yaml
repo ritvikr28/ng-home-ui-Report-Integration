@@ -108,6 +108,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: ng-home-ui-hpa
+  namespace: platform
 spec:
   behavior:
     scaleDown:
