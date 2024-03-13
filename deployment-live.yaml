@@ -107,6 +107,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: ng-home-ui-hpa
+  namespace: platform
 spec:
   behavior:
     scaleDown:
@@ -116,7 +117,7 @@ spec:
     kind: Deployment
     name: ng-home-ui
   minReplicas: 2
-  maxReplicas: 3
+  maxReplicas: 10
   metrics:
   - type: Resource
     resource:
