@@ -142,16 +142,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const PageNotFoundComponent:()=>JSX.Element=() =>{
     const validurls:any=[];
     const path= window.location.pathname.split("/")[1];
-    if(!validurls.includes(path))
+    if(!validurls.includes(path.toLowerCase()))
     {
       return (<PageNotFound/>);
     }
     return (<div data-testid="empty-component" className=""/>)
   };
-
-  const hasFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'NewHomePage') &&
-  isOrganisationInVariant('NewHomePage'));
-  const IsSLTFlagONPermission:boolean=hasFeaturePermission(`${envConfig.APPLICATION}`,'SLTView');
   const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
   isOrganisationInVariant('AdminView'));
   const requiredNewHomePagePermissions: Permission[] = [
@@ -219,7 +215,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         <Switch>          
         {/* eslint-disable */}
         <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
-             ((hasFlagrPermission && hasNewHomePagePermission && (hasTeacherPermission || (IsSLTFlagONPermission && hasSLTPermission) || (hasAdminFlagrPermission && hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
+             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminFlagrPermission && hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}

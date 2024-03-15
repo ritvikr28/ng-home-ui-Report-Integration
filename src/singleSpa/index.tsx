@@ -40,7 +40,8 @@ const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({
   globalVariableNames: [
     "REACT_API_URL",
     "AppInsightsConnectionString",
-    "REACT_GA_TRACKING_ID"
+    "REACT_GA_TRACKING_ID",
+    "APPLICATION"
   ]
 });
 

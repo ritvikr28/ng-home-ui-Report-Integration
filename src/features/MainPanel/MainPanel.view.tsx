@@ -1,5 +1,4 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
@@ -9,7 +8,6 @@ import "./style.scss";
 // import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
-import { envConfig } from "../../shared/utils";
 
 
 const requiredStaffTimeTablePermissions: Permission[] = [
@@ -80,7 +78,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
-  const hasSltViewPermission:boolean=hasFeaturePermission(`${envConfig.APPLICATION}`,'SLTView');
+
   return(
     <div  className={isOpen?" ":"welcome-user-fixed"}>
   <Grid dataTestId="mainPanelView">
@@ -100,7 +98,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       <div className={isOpen ? "divider-container open-divider" : "divider-container"} /></>}
     
       
-        {hasSltViewPermission &&  authService.isAuthorised(
+        {authService.isAuthorised(
       requiredSLTPermissions,
       MatchPermissions.all
     ) &&  authService.isAuthorised(
