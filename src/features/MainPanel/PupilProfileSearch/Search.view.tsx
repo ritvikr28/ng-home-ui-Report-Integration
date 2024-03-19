@@ -9,6 +9,7 @@ import { envConfig } from "../../../shared/utils";
 import "./Style.scss";
 import gtmAnalytics from "../../../shared/utils/analytics";
 
+localStorage.clear();
 export const onItemClickFunc: any = (e: ISearchItemProp | null,  setSuggestions: any) => {
 
   const { link }: any = e;
