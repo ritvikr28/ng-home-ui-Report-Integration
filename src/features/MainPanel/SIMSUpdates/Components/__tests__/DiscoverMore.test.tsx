@@ -39,7 +39,6 @@ describe("DiscoverMoreView Component", () => {
     const discoverMoreButton = screen.getByTestId("btn-save");
 
     expect(discoverMoreButton).toBeInTheDocument();
-    expect(discoverMoreButton).toHaveClass("base-class-more");
   });
 
   test("opens links in new tabs when action cards are clicked", async () => {

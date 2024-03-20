@@ -1,7 +1,7 @@
 import React from 'react';
-import "./DiscoverStyle.scss";
 import { Grid, GridItem } from "@essnextgen/ui-kit";
 import DiscoverMoreView from "./Components/DiscoverMore.view";
+import styles from "./DiscoverStyle.module.scss";
 /* eslint-disable */
 interface SIMSupdatesViewProps {
   isOpen?: boolean;
@@ -10,7 +10,7 @@ interface SIMSupdatesViewProps {
 export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) =>{
   return (
   <Grid>
-    <GridItem className={isOpen?"sims-container sims-open":"sims-container"}>
+    <GridItem className={isOpen? `${styles["sims-container"]} ${styles["sims-open"]}`:styles["sims-container"]}>
       <DiscoverMoreView isOpen={isOpen}/>
     </GridItem>
   </Grid>

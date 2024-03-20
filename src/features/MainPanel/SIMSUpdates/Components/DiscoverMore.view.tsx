@@ -8,6 +8,7 @@ import {
   GridItem,
   useMediaQuery
 } from "@essnextgen/ui-kit";
+import styles from "../DiscoverStyle.module.scss";
   /* eslint-disable */
 const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
   const isMobileView : boolean = useMediaQuery(
@@ -27,11 +28,11 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
   const onCardClick: () => void = () => {};
   return (
     <>
-      <div className= {isOpen? 'sims-link-container':'sims-link-container-close'}>
-        <span className="sims-updates">{isMobileView ? 'SIMS Next Gen updates' : 'Find out more about SIMS Next Gen'} </span>
-        <span className="sims-link-url ">
+      <div className= {isOpen? styles['sims-link-container']:styles['sims-link-container-close']}>
+        <span className={styles["sims-updates"]}>{isMobileView ? 'SIMS Next Gen updates' : 'Find out more about SIMS Next Gen'} </span>
+        <span className={styles["sims-link-url"]}>
           <Button
-            className="base-class-more"
+            className={styles["base-class-more"]}
             color={ButtonColor.Secondary}
             dataTestId="btn-save"
             onClick={onButtonClick}
@@ -41,8 +42,8 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
           </Button>
         </span>
       </div>
-      <Grid className={isOpen? "action-card-container sims-ng":"action-card-container-close sims-ng"}>
-        <GridItem className={isOpen?"what-new what-new-open ":"what-new"}>
+      <Grid className={isOpen? `${styles["action-card-container"]} sims-ng`:`${styles["action-card-container-close"]} ${styles[" sims-ng"]}`}>
+        <GridItem className={isOpen? `${styles["what-new"]} ${styles["what-new-open"]}`: `${styles["what-new"]}`}>
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
@@ -50,7 +51,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             {...rel}
           >
             <ActionCard
-              className="primary-text"
+              className={styles["primary-text"]}
               dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
@@ -59,7 +60,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
             />
           </Link>
         </GridItem>
-        <GridItem className={isOpen?"action-card onecard onecard-open":"action-card onecard"}>
+        <GridItem className={isOpen?`${styles["action-card-link2"]} ${styles["onecard"]} ${styles["onecard-open"]}`:`${styles["action-card-link2"]} ${styles["onecard"]}`}>
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
@@ -68,7 +69,7 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
     
           >
             <ActionCard
-              className="primary-text"
+              className={styles["primary-text"]}
               dataTestId="test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
