@@ -36,7 +36,7 @@ export const EventContainerView: (
         onClick={() => togglePanel(SchoolEventexternalId)}
         primaryText={EventTime}
         secondaryText={RoomCode}
-        isTextTruncate
+        // isTextTruncate
         status={EventCardColor}
         title={EventTitle}
         // inputWidth={isOpen ? 166 : 145}

@@ -88,7 +88,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   }
 
   if (status === 204 && (!schoolEventsData || schoolEventsData.length === 0)) {
-    return renderNoEventsCard(isOpen);
+    return renderNoEventsCard();
   }
 
   if (isLoader) {
@@ -159,7 +159,7 @@ const formateventPeriodNum = (
 
   return "";
 };
-const renderNoEventsCard: (isOpen : any) => JSX.Element = (isOpen :any) => (
+const renderNoEventsCard: () => JSX.Element = () => (
   <EventCard
     dataTestId="no-events-today"
     id="no-events-today-id"
@@ -167,9 +167,9 @@ const renderNoEventsCard: (isOpen : any) => JSX.Element = (isOpen :any) => (
     secondaryText=""
     status={EventCardStatus.DEFAULT}
     title="No events today"
-    inputWidth={isOpen ? 166 : 145}
-    inputHeight={75}
-    className="dynamiceventcard event-primary-text no-events"
+    // inputWidth={166}
+    inputHeight={67}
+    className="dynamiceventcard event-primary-text no-events no-events-staff"
   />
 );
 
@@ -247,12 +247,12 @@ const returnEventContainer: ({
           secondaryText=""
           status={EventCardStatus.DEFAULT}
           title="No more events"
-          inputWidth={isOpen ? 166 : 145}
+          // inputWidth={166}
           inputHeight={67}
           className={
             isOpen
-              ? `dynamiceventcard isopen event-primary-text no-events`
-              : `dynamiceventcard isclose event-primary-text no-events`
+              ? `dynamiceventcard isopen event-primary-text no-events no-events-staff`
+              : `dynamiceventcard isclose event-primary-text no-events no-events-staff`
           }
         />
       )}
