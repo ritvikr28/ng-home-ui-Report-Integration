@@ -264,7 +264,6 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 <div key={index} className={isOpen? "actioncard-div":"actioncard-div-close"}>
                   <ActionCard
                     dataTestId={`test-id${index}`}
-                    isTextTruncate
                     icon={<FilledGraphDataIcon />}
                     id={`action-card${index}`}
                     onClickActionCard={() => {
@@ -272,7 +271,13 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     }}
                     primaryText={`${item.group.shortName!} ${
                       item.room ? ` | ${item.room.roomName!}` : ""
-                    }`}
+                    }`.length > 19
+                      ? `${(item.group.shortName! +
+                          (item.room ? ` | ${item.room.roomName!}` : ""))
+                          .substring(0, 19)}...`
+                      : `${item.group.shortName!} ${
+                          item.room ? ` | ${item.room.roomName!}` : ""
+                        }`}
                     tagText={item.isCompleted ? "Completed" : "Ready"}
                     isShowTag
                     tagColor={
