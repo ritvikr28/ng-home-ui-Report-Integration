@@ -6,7 +6,8 @@ import {
   ButtonColor,
   ButtonSize,
   IconColor, 
-  TagColor
+  TagColor,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import { IRegisterViewProps } from "./props";
 
@@ -38,6 +39,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   },[isOpen])
 
   /* eslint-enable */ 
+
+  const isMediumscreen : boolean = useMediaQuery(
+    "(min-width:1439.9px)"
+  );
   useEffect(() => {   
    
       if(apiRegsiterEventData !=null && apiRegsiterEventData.length>0)
@@ -271,10 +276,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     }}
                     primaryText={`${item.group.shortName!} ${
                       item.room ? ` | ${item.room.roomName!}` : ""
-                    }`.length > 17
+                    }`.length > 16 && isMediumscreen
                       ? `${(item.group.shortName! +
                           (item.room ? ` | ${item.room.roomName!}` : ""))
-                          .substring(0, 17)}...`
+                          .substring(0, 16)}...`
                       : `${item.group.shortName!} ${
                           item.room ? ` | ${item.room.roomName!}` : ""
                         }`}
