@@ -10,6 +10,7 @@ import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 
 
+
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
     Securable: 'NG.Calendar.Staff.Timetable',
@@ -80,9 +81,9 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   }: IMainPanelProps = props;
 
   return(
-    <div  className={isOpen?" ":"welcome-user-fixed"}>
+    <div  className={isOpen?" ":"welcome-user-fixed-dertfsg11463f"}>
   <Grid dataTestId="mainPanelView">
-    <GridItem className="teacher-panel-container">
+    <GridItem className="teacher-panel-container-dertfsg11463f">
       <WelcomeUser
       isApiError={isError} 
       organisationName={schoolName}
@@ -95,7 +96,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     <StaffTimeTableView  isOpen={isOpen} />}
       {authService.isAuthorised(requiredRegisterPermissions,
       MatchPermissions.all) &&  <><TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className={isOpen ? "divider-container open-divider" : "divider-container"} /></>}
+      <div className={isOpen ? "divider-container-dertfsg11463f open-divider-dertfsg11463f" : "divider-container-dertfsg11463f"} /></>}
     
       
         {authService.isAuthorised(
@@ -105,7 +106,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
       requiredPupilProfilePermissions,
       MatchPermissions.all
     ) &&
-        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container open-divider":"divider-container"}/></>}
+        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container-dertfsg11463f open-divider-dertfsg11463f":"divider-container-dertfsg11463f"}/></>}
                  
     
       <SIMSupdatesView isOpen={isOpen}/>

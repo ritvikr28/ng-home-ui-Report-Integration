@@ -31,17 +31,17 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
 
   return isPermission ? (
   
-      <Grid className="quicklink">
-      <GridItem className="teacher-panel-container">
+      <Grid className="quicklink-dertfsg11463f">
+      <GridItem className="teacher-panel-container-dertfsg11463f">
       <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
-        <GridItem className={isOpen? "quicklink-container open-quicklink nopadding quicklink-padding":  "nopadding quicklink-container-closed "}>
-          <GridItem className="quicklinkheading">Quick links</GridItem>
-          <GridItem className="quicklinktext">
+        <GridItem className={isOpen? "quicklink-container-dertfsg11463f open-quicklink-dertfsg11463f nopadding-dertfsg11463f quicklink-padding-dertfsg11463f":  "nopadding-dertfsg11463f quicklink-container-closed-dertfsg11463f "}>
+          <GridItem className="quicklinkheading-dertfsg11463f">Quick links</GridItem>
+          <GridItem className="quicklinktext-dertfsg11463f">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
           </GridItem>
           <GridItem>
           {!apiError &&  (
-              <TableWrapper  className={isOpen ? "quicklinktable quick-link-table-res" : "quicklinktable-close quick-link-table-res"} >
+              <TableWrapper  className={isOpen ? "quicklinktable-dertfsg11463f quick-link-table-res-dertfsg11463f" : "quicklinktable-close-dertfsg11463f quick-link-table-res-dertfsg11463f"} >
                 <Table dataTestId="test-id" id="element-id" >
                   <TableHead>
                     <TableRow>
@@ -80,8 +80,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
             )}
           </GridItem>
           <GridItem>
-          <div className={isOpen? "quicklink-divider-container": "quicklink-divider-container quicklink-divider-container-closed"} />
-          <div className="simspadding">
+          <div className={isOpen? "quicklink-divider-container-dertfsg11463f": "quicklink-divider-container-dertfsg11463f quicklink-divider-container-closed-dertfsg11463f"} />
+          <div className="simspadding-dertfsg11463f">
             <SIMSupdatesView isOpen={isOpen}/>
           </div>
           </GridItem>

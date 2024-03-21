@@ -1,34 +1,34 @@
 @import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
 
-.quicklink #breadcrumbs-wrapper svg {
+.quicklink-dertfsg11463f #breadcrumbs-wrapper svg {
   margin-left: 0;
 }
 
 @media only screen and (min-width: 1024px) {
-  #breadcrumbs-wrapper {
+  .quicklink-dertfsg11463f #breadcrumbs-wrapper {
     margin-left: -20px !important;
   }
 }
 
-.breadcrumbs {
+.quicklink-dertfsg11463f .breadcrumbs {
   margin-top: -67px;
 }
 
 @media only screen and (min-width: 1555.9px) {
-  .breadcrumbs {
+  .quicklink-dertfsg11463f .breadcrumbs {
     // width: 75vw;
     margin-top: 6px;
     margin-left: -82px;
   }
 
-  .quicklink-container-closed {
+  .quicklink-container-closed-dertfsg11463f {
     width: 82vw;
     margin-left: -118px;
   }
 }
 
 @media only screen and (min-width: 1024px) and (max-width: 1439.9px) {
-  .breadcrumbs {
+  .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -67px;
     margin-left: 70px;
@@ -36,7 +36,7 @@
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1023.9px) {
-  .breadcrumbs {
+  .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
@@ -44,7 +44,7 @@
 }
 
 @media only screen and (min-width: 390px) and (max-width: 767.9px) {
-  .breadcrumbs {
+  .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
@@ -52,7 +52,7 @@
 }
 
 @media only screen and (min-width: 320px) and (max-width: 389.9px) {
-  .breadcrumbs {
+  .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -68px;
     margin-left: 50px;
@@ -66,24 +66,24 @@
 //   }
 // }
 
-.quicklink-container {
+.quicklink-container-dertfsg11463f {
   width: 94vw;
   margin-bottom: 8px;
 }
 
 @media screen and (min-width: 1440px) {
-  .quicklink-container {
+  .quicklink-container-dertfsg11463f {
     width: 82vw;
   }
 }
 @media screen and (min-width: 1440px) and (max-width: 1555.9px) {
-  .quicklink-container-closed {
+  .quicklink-container-closed-dertfsg11463f {
     width: 82vw;
     margin-left: -32px;
   }
 }
 
-.quicklinktext {
+.quicklinktext-dertfsg11463f {
   font-family: "Segoe UI";
   font-size: 20px;
   font-weight: 400;
@@ -99,7 +99,7 @@
 //   // padding-left: 16px;
 // }
 
-.quicklinkheading {
+.quicklinkheading-dertfsg11463f {
   color: var(--neutral-800, #303030);
   font-family: Segoe UI;
   font-size: 24px;
@@ -109,20 +109,20 @@
   margin-bottom: 10px;
 }
 
-.quicklinktable {
+.quicklinktable-dertfsg11463f {
   background-color: #fff;
   width: 97.5%;
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
-  .quicklinktable {
+  .quicklinktable-dertfsg11463f {
     background-color: #fff;
     width: 102%;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
-  .quicklinktable {
+  .quicklinktable-dertfsg11463f {
     background-color: #fff;
     width: 89vw;
   }
@@ -140,7 +140,7 @@
 }
 
 @media (min-width: 1439.9px) {
-  .quicklink-divider-container {
+  .quicklink-divider-container-dertfsg11463f {
     width: 78.5vw;
     margin-bottom: 8px;
     margin-top: 32px;
@@ -151,7 +151,7 @@
 }
 
 @media (min-width: 1023.9px) and (max-width: 1439.9px) {
-  .quicklink-divider-container {
+  .quicklink-divider-container-dertfsg11463f {
     width: 1164px;
     margin-bottom: 8px;
     margin-top: 32px;
@@ -163,7 +163,7 @@
 }
 
 @media (min-width: 320px) and (max-width: 1023.9px) {
-  .quicklink-divider-container {
+  .quicklink-divider-container-dertfsg11463f {
     width: 89vw;
     margin-bottom: 8px;
     margin-top: 32px;
@@ -174,73 +174,73 @@
 
 }
 
-.simspadding {
+.simspadding-dertfsg11463f {
   padding-top: 28px;
 }
 
-.quicklinktable-close {
+.quicklinktable-close-dertfsg11463f {
   background-color: #fff;
   width: 99%;
 }
 
 @media (min-width: 1023.9px) and (max-width: 1439.9px) {
-  .quicklinktable-close {
+  .quicklinktable-close-dertfsg11463f {
     width: 93vw;
   }
 
-  .quicklink-divider-container {
+  .quicklink-divider-container-dertfsg11463f {
     width: 71vw;
   }
 
-  .quicklink-divider-container-closed {
+  .quicklink-divider-container-closed-dertfsg11463f {
     width: 93vw;
   }
 
-  .divider-open-quicklink {
+  .divider-open-quicklink-dertfsg11463f {
     width: 68vw;
   }
 
-  .open-quicklink {
+  .open-quicklink-dertfsg11463f {
     width: 72vw;
   }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
-  .quicklinktable-close {
+  .quicklinktable-close-dertfsg11463f {
     width: 89vw;
   }
 
-  .quicklinktext {
+  .quicklinktext-dertfsg11463f {
     width: 95vw;
   }
 }
 
-.icon-quicklinkwidth .essui-icon-button {
+.icon-quicklinkwidth-dertfsg11463f .essui-icon-button {
   width: fit-content;
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
-  .quicklinktable {
+  .quicklinktable-dertfsg11463f {
     background-color: #fff;
     width: 90vw;
     margin-left: -3px;
     overflow: hidden;
   }
 
-  .quick-link-table-res .essui-table {
+  .quick-link-table-res-dertfsg11463f .essui-table {
     min-width: 117vw;
   }
 
-  .quicklinkheading {
+  .quicklinkheading-dertfsg11463f {
     @include essui-global-typography-small-screen-h3;
   }
 
-  .quicklinktext {
+  .quicklinktext-dertfsg11463f {
     @include essui-global-typography-default-body;
     width: 95vw;
   }
 
-  .quicklinktable-close {
+  .quicklinktable-close-dertfsg11463f {
     width: 90vw !important;
     margin-left: -3px;
     overflow: hidden;
@@ -248,29 +248,29 @@
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
-  .quicklinktable {
+  .quicklinktable-dertfsg11463f {
     background-color: #fff;
     width: 90vw;
     margin-left: -3px;
     overflow: hidden;
   }
 
-  .quicklinkheading {
+  .quicklinkheading-dertfsg11463f {
     @include essui-global-typography-small-screen-h3;
   }
 
-  .quicklinktext {
+  .quicklinktext-dertfsg11463f {
     @include essui-global-typography-default-body;
     width: 95vw;
   }
 
-  .quicklinktable-close {
+  .quicklinktable-close-dertfsg11463f {
     width: 90vw !important;
     margin-left: -3px;
     overflow: hidden;
   }
 
-  .quick-link-table-res .essui-table {
+  .quick-link-table-res-dertfsg11463f .essui-table {
     min-width: 117vw;
   }
 
@@ -281,7 +281,7 @@
 }
 
 @media only screen and (min-width: 768px) {
-  .quicklink-padding {
+  .quicklink-padding-dertfsg11463f {
     padding: 0 !important;
     margin-left: -22px !important;
   }

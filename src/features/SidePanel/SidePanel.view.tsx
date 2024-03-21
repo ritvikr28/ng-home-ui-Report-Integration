@@ -82,8 +82,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
   return (
     <>
       <div
-        className={`side-view ${
-          isOpen ? "open open-panel side-view-res" : "side-view-closed"
+        className={`side-view-dertfsg11463f ${
+          isOpen ? "open-dertfsg11463f open-panel-dertfsg11463f side-view-res-dertfsg11463f" : "side-view-closed-dertfsg11463f"
         }`}
       >
         {isOpen ? (
@@ -97,12 +97,12 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     position={TooltipPosition.Bottom}
                     content={loginFullname}
                   >
-                    <span className="quick-link-username-tooltip">
+                    <span className="quick-link-username-tooltip-dertfsg11463f">
                       {loginFullname.substring(0, 24) + "..."}
                     </span>
                   </Tooltip>
                 ) : (
-                  <span className="quick-link-username-tooltip">
+                  <span className="quick-link-username-tooltip-dertfsg11463f">
                     <strong>{loginFullname}</strong>
                   </span>
                 )
@@ -110,7 +110,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
               isOpen={isOpen}
               onClose={togglePanel}
             >
-             <div className="sidepanel-mobile-divider">
+             <div className="sidepanel-mobile-divider-dertfsg11463f">
               <Divider
                 as="li"
                 dataTestId="panel-divider"
@@ -121,11 +121,11 @@ const SidePanel: React.FC<SidePanelProps> = ({
               </div> 
               <SideNavigationPanelContent>
                 <div>
-                  <div className="quick-lint-display">
+                  <div className="quick-lint-display-dertfsg11463f">
                     {isMobileView ? (
                       ""
                     ) : (
-                      <span className="icon-close">
+                      <span className="icon-close-dertfsg11463f">
                         {" "}
                         <Icon
                           color={IconColor.Primary500}
@@ -153,7 +153,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             </SideNavigationPanel>
           ) : (
             <div>
-              <div className="quick-lint-display">
+              <div className="quick-lint-display-dertfsg11463f">
                 {loginFullname && loginFullname.length > 24 ? (
                   <Tooltip
                     dataTestId="test-id"
@@ -161,17 +161,17 @@ const SidePanel: React.FC<SidePanelProps> = ({
                     position={TooltipPosition.Bottom}
                     content={<span>{loginFullname}</span>}
                   >
-                    <span className="quick-link-username">
+                    <span className="quick-link-username-dertfsg11463f">
                       <strong>{loginFullname}</strong>
                     </span>
                   </Tooltip>
                 ) : (
-                  <span className="quick-link-username">
+                  <span className="quick-link-username-dertfsg11463f">
                     <strong>{loginFullname}</strong>
                   </span>
                 )}
  
-                <span className="icon-close">
+                <span className="icon-close-dertfsg11463f">
                   {" "}
                   <Icon
                     color={IconColor.Primary500}
@@ -197,7 +197,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           )
         ) : (
           <div
-            className="open-panel essui-open-panel-filled"
+            className="open-panel-dertfsg11463f essui-open-panel-filled"
             data-testId="close-panel"
           >
             <Button
@@ -241,16 +241,16 @@ const quickLink :({
   return (
     isPermissionquicklink && (
       <div>
-        <div className="quick-link">Quick links</div>
-        <div className="quick-link-padding">
+        <div className="quick-link-dertfsg11463f">Quick links</div>
+        <div className="quick-link-padding-dertfsg11463f">
           {/*
 eslint-disable
 */}
                   {isLoader  ? (
                     <div>
                       <Loader
-                        dataTestId="sidepanel-quicklinkerror-loader"
-                        className="loader-wrapper loader-sidepanel-quicklink"
+                        dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
+                        className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
                         loaderText="Loading..."
                         loaderType={LoaderType.Circular}
                       />
@@ -260,7 +260,7 @@ eslint-disable
                     quicklinkData &&
                     quicklinkData.slice(0, 6).map((sidelink: any) => (
                       <div
-                        className="quick-panel-cont"
+                        className="quick-panel-cont-dertfsg11463f"
                         key={sidelink.id}
                         onClick={() => {
                           window.location.href = sidelink.link;
@@ -281,7 +281,7 @@ eslint-disable
                               ? IconColor.Primary500
                               : IconColor.Neutral800
                           }
-                          className="icon-margin"
+                          className="icon-margin-dertfsg11463f"
                           dataTestId={`btn-star${sidelink.id}`}
                           id="variable-2"
                           name={sidelink.favourite ? "star--filled" : "star"}
@@ -301,7 +301,7 @@ no-script-url
 */}
           <a
             href="javascript:void(0)"
-            className="see-all"
+            className="see-all-dertfsg11463f"
             onClick={() => {
               isMobileView ? togglePanel(): '';
               showQuickLinkView();
