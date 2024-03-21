@@ -6,7 +6,7 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
  
 const TakeRegistersLinkview: () => JSX.Element = () => (
   <div className="register-link-container">
-    <span className="your-registers">Your registers </span>
+    <span className="your-registers-tr-5567f">Your registers </span>
     <span className="register-link-url">
       <Link
         data-testid="link"

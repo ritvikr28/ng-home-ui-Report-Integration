@@ -30,6 +30,9 @@ export const EventContainerView: (
 
   return (
     <>
+    <div className="staff-homepage-564f">
+
+    
       <EventCard
         key={SchoolEventexternalId}
         id={`elementid-${index}`}
@@ -80,6 +83,7 @@ export const EventContainerView: (
             EventInstanceExternalId={EventInstanceExternalId}
           />
         )}
+      </div>
       </div>
     </>
   );
