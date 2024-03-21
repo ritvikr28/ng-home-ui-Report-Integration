@@ -271,10 +271,10 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                     }}
                     primaryText={`${item.group.shortName!} ${
                       item.room ? ` | ${item.room.roomName!}` : ""
-                    }`.length > 15
+                    }`.length > 17
                       ? `${(item.group.shortName! +
                           (item.room ? ` | ${item.room.roomName!}` : ""))
-                          .substring(0, 15)}...`
+                          .substring(0, 17)}...`
                       : `${item.group.shortName!} ${
                           item.room ? ` | ${item.room.roomName!}` : ""
                         }`}
