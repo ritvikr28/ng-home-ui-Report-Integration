@@ -240,7 +240,7 @@ const quickLink :({
 }) =>{
   return (
     isPermissionquicklink && (
-      <div>
+      <div className ="left-sidepanel-home113">
         <div className="quick-link-dertfsg11463f">Quick links</div>
         <div className="quick-link-padding-dertfsg11463f">
           {/*
