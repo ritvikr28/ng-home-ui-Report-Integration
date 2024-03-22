@@ -193,19 +193,13 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   return (
     <>
       <div className={isOpen? "register-link-event-open": "register-link-event-close"}
-        // style={{
-        //   display: "flex",
-        //   justifyContent: "space-between",
-        //   alignItems: "center",
-        //   marginLeft: "91%",
-        //   marginTop: "-45px"
-        // }}
+       
       >
         
         <div
           style={{
             display: "flex",
-         //   marginRight: "6px",
+         
           }}
           className="register-icon"
         >
@@ -266,7 +260,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
            {
               apiRegsiterEventData &&
               apiRegsiterEventData.map((item, index) => (
-                <div key={index} className={isOpen? "actioncard-div":"actioncard-div-close"}>
+                <div key={index} className={isOpen? "actioncard-div-tr1123":"actioncard-div-close-tr4567"}>
                   <ActionCard
                     dataTestId={`test-id${index}`}
                     icon={<FilledGraphDataIcon />}
@@ -294,7 +288,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
               ))
             }
             {apiRegsiterEventData.length > 0 &&
-              <div className={isOpen?"actioncard-div noregister eventcardnohighlight":"actioncard-div-close noregister eventcardnohighlight"}>
+              <div className={isOpen?"actioncard-div-tr1123 noregister eventcardnohighlight":"actioncard-div-close-tr4567 noregister eventcardnohighlight"}>
                 <ActionCard
                   dataTestId="test-id"
                   icon={<FilledGraphDataIcon />}
@@ -310,8 +304,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className={ isOpen? "actioncard-div carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
-            "actioncard-div-close carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
+            <div className={ isOpen? "actioncard-div-tr1123 carousel-container carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight":
+            "actioncard-div-close-tr4567 carousel-container-close carousel-item-padding-40-px noregisterblock noregister eventcardnohighlight"}>
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}

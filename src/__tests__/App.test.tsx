@@ -38,7 +38,7 @@ describe("Testing App Component", () => {
       await waitFor(() => {
         const container: any = getById(
           RenderedDom.container,
-          "page-not-found-wrapper"
+          "page-not-found-wrapper-1144534sdw"
         );
         expect(container).toBeInTheDocument();
       });

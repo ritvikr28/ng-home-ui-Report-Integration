@@ -117,16 +117,16 @@ const NewHomepageView: React.FC = () => {
 
   return isPermission ? (
     <>
-      <Grid className="app" dataTestId="NewHomePage">
+      <Grid className="app-dertfsg11463f" dataTestId="NewHomePage">
         
         <GridItem
         /* eslint-disable */
           className={
             isOpen
               ? showQuickLink
-                ? "side-margin side-margin-quicklink"
-                : "side-margin"
-              : "side-margin-closed"
+                ? "side-margin-dertfsg11463f side-margin-quicklink-dertfsg11463f"
+                : "side-margin-dertfsg11463f"
+              : "side-margin-closed-dertfsg11463f"
           }
             /* eslint-enable */
           lg={isOpen ? 3 : 0}
@@ -148,11 +148,11 @@ const NewHomepageView: React.FC = () => {
           className={
             !isTabletView
               ? isOpen
-                ? "body-open-panel"
-                : "body-panel res-body"
+                ? "body-open-panel-dertfsg11463f"
+                : "body-panel-dertfsg11463f res-body-dertfsg11463f"
               : isOpen
-              ? "body-panel-mobile-open"
-              : "body-panel-mobile"
+              ? "body-panel-mobile-open-dertfsg11463f"
+              : "body-panel-mobile-dertfsg11463f"
           }
         >
           {renderContent()}

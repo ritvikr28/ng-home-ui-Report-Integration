@@ -140,7 +140,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     <div data-testid="empty-component" className=""/>
   );
   const PageNotFoundComponent:()=>JSX.Element=() =>{
-    const validurls:any=[];
+    const validurls:any=["staff"];
     const path= window.location.pathname.split("/")[1];
     if(!validurls.includes(path.toLowerCase()))
     {
@@ -220,7 +220,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          <Route exact path="*" component={PageNotFoundComponent} />
+          <ProtectedRoute exact path="*" component={PageNotFoundComponent} />
         </Switch>
       </Suspense>
     </Router>
