@@ -8,7 +8,7 @@ describe("Page Not Found page", () => {
     const renderResult = render(<PageNotFound />);
     const container: any = getById(
       renderResult.container,
-      "page-not-found-wrapper"
+      "page-not-found-wrapper-1144534sdw"
     );
 
     expect(container).toBeInTheDocument();

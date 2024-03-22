@@ -10,8 +10,8 @@ export const PageNotFound: ({}) => JSX.Element = ({}: any) => {
     useTranslation();
 
   return (
-    <section id="page-not-found-wrapper">
-      <span className="page-heading">{t("pageNotFound.headingTitle")}</span>
+    <section id="page-not-found-wrapper-1144534sdw">
+      <span className="page-heading-1144534sdw">{t("pageNotFound.headingTitle")}</span>
       <span className="body-text">{t("pageNotFound.bodyText.text")}</span>
       <ul>
         <li>{t("pageNotFound.bodyText.linkText1")}</li>

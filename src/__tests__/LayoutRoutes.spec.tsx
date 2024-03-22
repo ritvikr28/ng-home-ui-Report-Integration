@@ -77,7 +77,7 @@ describe("Layout component", () => {
     // );
     const container: any = getById(
       renderResult.container,
-      "page-not-found-wrapper"
+      "page-not-found-wrapper-1144534sdw"
     );
     await waitFor(() => {
       expect(
