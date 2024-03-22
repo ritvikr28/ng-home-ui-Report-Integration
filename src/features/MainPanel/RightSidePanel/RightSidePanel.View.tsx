@@ -64,7 +64,7 @@ export const RightSidePanelView: (
   return (
     <div
       data-testid="side-panel"
-      className="side-panel"
+      className="side-panel rightsidepanel-grid-item"
       key={SchoolEventexternalId}
     >
       <SidePanel

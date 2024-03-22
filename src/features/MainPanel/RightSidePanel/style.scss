@@ -15,7 +15,6 @@
 
 .margin-bottom {
   margin-bottom: 24px !important;
-  // border: 1px solid red;
   color: $global-color-neutral-800;
 }
 
@@ -70,10 +69,10 @@
 }
 
 @media only screen and (min-device-width: 768px) and (max-device-width: 1439.9px) {
-  .essui-side-panel-container-grid-item {
+  .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
     height: 100vh !important;
     margin-top: 0 !important;
-    // padding-bottom: 32px !important;
+    
   }
 }
 
@@ -94,10 +93,6 @@
     margin-bottom: 32px;
   }
 
-  // .child-close {
-  //   margin-top: 32px;
-  //   margin-bottom: 32px !important;
-  // }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
@@ -133,8 +128,6 @@
 
   .child-close {
     flex: 1;
-    // margin-top: 24;
-    // margin-bottom: 32px !important;
   }
 }
 
@@ -157,17 +150,17 @@
   }
 }
 
-.essui-side-panel-heading {
+.rightsidepanel-grid-item .essui-side-panel-heading {
   padding: 16px 32px 0 16px !important;
 }
 
 @media (min-width: 320px) and (max-width: 767.9px) {
-  .essui-side-panel {
+  .rightsidepanel-grid-item .essui-side-panel {
     height: 100vh !important;
     position: fixed;
   }
 
-  .essui-side-panel-container-grid-item {
+  .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
     max-width: 100vw;
     height: 100vh;
   }
