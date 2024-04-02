@@ -139,15 +139,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const EmptyComponent: () => JSX.Element = () => (
     <div data-testid="empty-component" className=""/>
   );
-  const PageNotFoundComponent:()=>JSX.Element=() =>{
-    const validurls:any=["staff"];
-    const path= window.location.pathname.split("/")[1];
-    if(!validurls.includes(path.toLowerCase()))
-    {
-      return (<PageNotFound/>);
-    }
-    return (<div data-testid="empty-component" className=""/>)
-  };
+ 
   const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
   isOrganisationInVariant('AdminView'));
   const requiredNewHomePagePermissions: Permission[] = [
@@ -220,7 +212,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          <ProtectedRoute exact path="*" component={PageNotFoundComponent} />
+          <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
     </Router>
