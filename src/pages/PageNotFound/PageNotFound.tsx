@@ -36,7 +36,7 @@ const PageNotFound: () => JSX.Element = () => {
               title={t("pageNotFound.moduleBlock.item2.title")}
             >
                   {t("pageNotFound.moduleBlock.item2.content")}
-                <a target="_blank" href="/">{t("pageNotFound.moduleBlock.item2.content1")}</a>
+                <a href="/">{t("pageNotFound.moduleBlock.item2.content1")}</a>
                 {t("pageNotFound.moduleBlock.item2.content2")}
             </ErrorActionListItem>
           </ErrorActionList>
