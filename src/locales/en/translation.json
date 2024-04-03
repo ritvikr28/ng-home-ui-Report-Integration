@@ -99,6 +99,20 @@
       "text": "Reasons:",
       "linkText1": "Wrong link or address.",
       "linkText2": "The page may have been removed."
+    },
+    "moduleBlock": {
+      "heading": "Things to try",
+      "item1": {
+        "title": "Reached this page using a link?",
+        "content": "Please check the spelling is correct and try reloading the page"
+       
+      },
+      "item2": {
+        "title": "Go back to home page",
+        "content": "Click ",
+        "content1": "here",
+        "content2": " to go back to home page"
+      }      
     }
   },
   "noAccess": {

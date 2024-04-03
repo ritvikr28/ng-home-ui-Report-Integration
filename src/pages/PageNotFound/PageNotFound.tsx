@@ -2,23 +2,46 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { ErrorPage, ErrorActionList, ErrorActionListItem ,ErrorReasonList,ErrorReasonListItem} from "@essnextgen/ui-kit";
 
-import "./style.scss";
-
-export const PageNotFound: ({}) => JSX.Element = ({}: any) => {
-  const { t }: UseTranslationResponse<"translation", undefined> =
+const PageNotFound: () => JSX.Element = () => {
+     const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
-  return (
-    <section id="page-not-found-wrapper-1144534sdw">
-      <span className="page-heading-1144534sdw">{t("pageNotFound.headingTitle")}</span>
-      <span className="body-text">{t("pageNotFound.bodyText.text")}</span>
-      <ul>
-        <li>{t("pageNotFound.bodyText.linkText1")}</li>
-        <li>{t("pageNotFound.bodyText.linkText2")}</li>
-      </ul>
-    </section>
-  );
-};
+ return( <div className="error-page-home">
+   <ErrorPage
+          dataTestId="page-not-found-1144534sdw"
+          id="element-id"
+          title={t("pageNotFound.headingTitle")}
+        >
+           <ErrorReasonList description={t(`pageNotFound.bodyText.text`)}>
+           <ErrorReasonListItem key={1}>
+          {t("pageNotFound.bodyText.linkText1")}
+        </ErrorReasonListItem>
+        <ErrorReasonListItem key={1}>
+          {t("pageNotFound.bodyText.linkText2")}
+        </ErrorReasonListItem>
+        </ErrorReasonList>
+          <ErrorActionList description={t("pageNotFound.moduleBlock.heading")}
+          >
+            <ErrorActionListItem
+              iconName="information"
+              title={t("pageNotFound.moduleBlock.item1.title")}
+            >
+                 {t("pageNotFound.moduleBlock.item1.content")}
+                 
+            </ErrorActionListItem>
+            <ErrorActionListItem
+              iconName="information"  
+              title={t("pageNotFound.moduleBlock.item2.title")}
+            >
+                  {t("pageNotFound.moduleBlock.item2.content")}
+                <a href="/">{t("pageNotFound.moduleBlock.item2.content1")}</a>
+                {t("pageNotFound.moduleBlock.item2.content2")}
+            </ErrorActionListItem>
+          </ErrorActionList>
+        </ErrorPage>
+  </div>);
+}
 
 export default PageNotFound;

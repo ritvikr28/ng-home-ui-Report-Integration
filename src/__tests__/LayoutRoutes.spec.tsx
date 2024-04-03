@@ -1,4 +1,4 @@
-import { queryByAttribute, render, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
@@ -36,7 +36,7 @@ jest.mock('@essnextgen/ui-flagr', () => ({
   hasFeaturePermission: jest.fn()
 }));
 describe("Layout component", () => {
-  const getById: any = queryByAttribute.bind(null, "id");
+ 
   beforeEach(() => {
     jest.spyOn(authService, "isAuthenticated").mockImplementation(() => true);
     jest
@@ -64,7 +64,7 @@ describe("Layout component", () => {
   });
   it("renders the NotFound component", async () => {
     const spy = jest.spyOn(redux, "useSelector");
-    const renderResult = render(<PageNotFound />);
+    const {getByTestId} = render(<PageNotFound />);
     spy.mockReturnValue(appPermissions);
 
     history.push("*");
@@ -75,9 +75,8 @@ describe("Layout component", () => {
     //     </Router>
     //   </Provider>
     // );
-    const container: any = getById(
-      renderResult.container,
-      "page-not-found-wrapper-1144534sdw"
+    const container: any = getByTestId(
+      "page-not-found-1144534sdw"
     );
     await waitFor(() => {
       expect(
