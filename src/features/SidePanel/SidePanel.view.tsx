@@ -82,7 +82,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
         event: "interact_click",
         elementType,
         elementTextOrLabel: name,
-        elementLocation: "sidebar",
+        elementLocation: "sidebar"
       });
           } catch (error) {
       setIsError(true);
