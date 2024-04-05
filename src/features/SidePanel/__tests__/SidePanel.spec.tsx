@@ -7,6 +7,7 @@ import SidePanel from "../SidePanel.view";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
 import * as qicklink from "../../../shared/services/quickLinkDomain/quickLinkService";
 import * as  linkDetails  from "../../../shared/components/QuickLink/Quicklinkresponse";
+import gtmAnalytics from "../../../shared/utils/analytics";
 
 const mediaQuery = require('@essnextgen/ui-kit');
 
@@ -161,47 +162,74 @@ describe("SidePanel Component", () => {
 
   });
 
-  test('renders sidepanel component with mock data and star icon',async () => {
-    const axiosResponse: AxiosResponse = {
-      data: {error:null,payload:true,status:200},
-      status: 200,
-      statusText: "OK",
-      config: {},
-      headers: {}
-    };
+  test("renders sidepanel component with mock data and star icon", async () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
-    jest
-    .spyOn(qicklink, "FetchQuickLinkData")
-    .mockResolvedValue(mockres);  
-    
+    jest.spyOn(qicklink, "FetchQuickLinkData").mockResolvedValue(mockres);
 
-    const setQuickLinkData = jest.fn(); 
-    const useStateMock: any  = (initiate:any) => [initiate, setQuickLinkData];    
- 
-   jest
-   .spyOn(React, 'useState')
-   .mockImplementationOnce(useStateMock);
-   const {getByText,queryAllByTestId,getByTestId} =  render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
-    
-  expect(getByText('Link 1')).toBeInTheDocument();   
-    expect(queryAllByTestId("btn-star1", {exact:true}).length).toBe(1);
+    const setQuickLinkData = jest.fn();
+    const useStateMock: any = (initiate: any) => [initiate, setQuickLinkData];
 
-    jest
-    .spyOn(qicklink, "FetchQuickLinkpost").mockReturnValueOnce(Promise.resolve(axiosResponse));
+    jest.spyOn(React, "useState").mockImplementationOnce(useStateMock);
 
-    jest
-    .spyOn(linkDetails, "fetchQuickLinkDetails")
-    .mockResolvedValue(mockres); 
-    fireEvent.click(getByTestId("btn-star1"));  
-     waitFor(()=>{
+    const { getByText, getByTestId } = render(
+      <SidePanel
+        isOpen
+        togglePanel={jest.fn()}
+        closePanel={jest.fn()}
+        showQuickLinkView={jest.fn()}
+        setQuickLinkData={jest.fn()}
+        quicklinkData={mockApiResponse}
+      />
+    );
+
+    expect(getByText("Link 1")).toBeInTheDocument();
+    expect(getByText("Link 2")).toBeInTheDocument();
+    const axiosResponse: AxiosResponse<any, any> = {
+      data: {},
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {},
+    };
+
+    jest.spyOn(qicklink, "FetchQuickLinkpost").mockResolvedValue(axiosResponse);
+
+    jest.spyOn(linkDetails, "fetchQuickLinkDetails").mockResolvedValue(mockres);
+
+    const pushEventMock = jest.spyOn(gtmAnalytics, "pushEvent");
+
+    fireEvent.click(getByTestId("btn-star1"));
+
+    await waitFor(() => {
       expect(qicklink.FetchQuickLinkpost).toHaveBeenCalled();
-      expect(qicklink.FetchQuickLinkpost).toBeTruthy();
       expect(linkDetails.fetchQuickLinkDetails).toHaveBeenCalled();
-      expect(setQuickLinkData).toHaveBeenCalled()
-    }) ;
-  
+      expect(setQuickLinkData).toHaveBeenCalledTimes(0);
+
+      expect(pushEventMock).toHaveBeenCalledWith({
+        event: "interact_click",
+        elementType: "empty_star",
+        elementTextOrLabel: "Link 1",
+        elementLocation: "sidebar",
+      });
+    });
+
+    fireEvent.click(getByTestId("btn-star2"));
+
+    await waitFor(() => {
+      expect(qicklink.FetchQuickLinkpost).toHaveBeenCalledTimes(2);
+      expect(linkDetails.fetchQuickLinkDetails).toHaveBeenCalledTimes(2);
+      expect(setQuickLinkData).toHaveBeenCalledTimes(0);
+
+      expect(pushEventMock).toHaveBeenCalledWith({
+        event: "interact_click",
+        elementType: "filled_star",
+        elementTextOrLabel: "Link 2",
+        elementLocation: "sidebar",
+      });
+    });
   });
+  
   test('renders sidepanel component with empty data and star icon',async () => {
     const axiosResponse: AxiosResponse = {
       data: undefined,

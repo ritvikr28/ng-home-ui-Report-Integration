@@ -69,9 +69,9 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                                 })}>
                                 {link.name}
                               </span>
-                            </Link>
+                            </Link>   
                           </TableCell>
-                          <TableCell>{displaystarredicon(link.favourite, link.id)}</TableCell>
+                          <TableCell>{displaystarredicon(link.favourite, link.id , link.name)}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>

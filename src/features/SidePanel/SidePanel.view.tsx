@@ -55,8 +55,9 @@ const SidePanel: React.FC<SidePanelProps> = ({
   );
   const handleStarClick: (
     id: number,
-    favorite: boolean
-  ) => Promise<void> = async (id: number, favorite: boolean) => {
+    favorite: boolean,
+    name: string
+  ) => Promise<void> = async (id: number, favorite: boolean, name: string) => {
    
     try {
       const { status }: { status: number } = await FetchQuickLinkpost(
@@ -73,7 +74,17 @@ const SidePanel: React.FC<SidePanelProps> = ({
          
         }
       }
-    } catch (error) {
+
+      type ElementType = "filled_star" | "empty_star";
+      const elementType: ElementType = favorite ? "filled_star" : "empty_star";
+
+      gtmAnalytics.pushEvent({
+        event: "interact_click",
+        elementType,
+        elementTextOrLabel: name,
+        elementLocation: "sidebar"
+      });
+          } catch (error) {
       setIsError(true);
     }
   };
@@ -288,7 +299,7 @@ eslint-disable
                           size={16}
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent the div click event from being triggered
-                            handleStarClick(sidelink.id, !sidelink.favourite);
+                            handleStarClick(sidelink.id, !sidelink.favourite, sidelink.name);
                           }}
                         />
                       </div>
