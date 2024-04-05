@@ -47,7 +47,10 @@ const QuickLinkLogic: React.FC<
          
         }
       }
-      const elementType = favorite ? "filled_star" : "empty_star";     
+      
+      type ElementType = "filled_star" | "empty_star";
+      const elementType: ElementType = favorite ? "filled_star" : "empty_star";
+     
       gtmAnalytics.pushEvent({
         event: "interact_click",
         elementType,
