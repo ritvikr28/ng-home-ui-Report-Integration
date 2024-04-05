@@ -5,6 +5,7 @@ import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickL
 import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { QuicklinkComponentProps } from './props';
 import { IFetchQuickLinkDetailsFunctionResponse } from '../../shared/model/quickLink/responsemodels';
+import gtmAnalytics from "../../shared/utils/analytics";
  
  
 const QuickLinkLogic: React.FC<
@@ -18,13 +19,13 @@ const QuickLinkLogic: React.FC<
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
- 
+   
   const [isStarClickable, setIsStarClickable]:any = useState(true);
- 
   const handleStarClick: (
     id: number,
-    favorite: boolean
-  ) => Promise<void> = async (id: number, favorite: boolean) => {
+    favorite: boolean,
+    name: string
+  ) => Promise<void> = async (id: number, favorite: boolean,  name: string) => {
  
       try {
         /* istanbul ignore next */
@@ -46,6 +47,14 @@ const QuickLinkLogic: React.FC<
          
         }
       }
+      const elementType = favorite ? "filled_star" : "empty_star";     
+      gtmAnalytics.pushEvent({
+        event: "interact_click",
+        elementType,
+        elementTextOrLabel: name,
+        elementLocation: "body"
+      });
+      
     } catch (error) {
        /* istanbul ignore next */
       setIsError(true);
@@ -59,18 +68,21 @@ const QuickLinkLogic: React.FC<
     }
   };
  
-  const displaystarredicon: (favorites: boolean, id: number) => JSX.Element = (
+  const displaystarredicon: (favorites: boolean, id: number,name: string) => JSX.Element = (
     favorites: boolean,
-    id: number
+    id: number,
+    name: string
   ) => (
     <div className="icon-quicklinkwidth">
-    <Icon
-      color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
-      dataTestId={`btn-star${id}`}
-      id="variable-2"
-      name={favorites ? "star--filled" : "star"}
-      size={16}
-      onClick={() => handleStarClick(id, !favorites)}
+      <Icon
+        color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
+        dataTestId={`btn-star${id}`}
+        id="variable-2"
+        name={favorites ? "star--filled" : "star"}
+        size={16}
+        onClick={() => {
+          handleStarClick(id, !favorites, name);
+        }}
     />
     </div>
     );
