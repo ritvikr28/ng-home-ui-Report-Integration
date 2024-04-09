@@ -208,7 +208,7 @@ describe("SidePanel Component", () => {
 
       expect(pushEventMock).toHaveBeenCalledWith({
         event: "interact_click",
-        elementType: "empty_star",
+        elementType: "filled_star",
         elementTextOrLabel: "Link 1",
         elementLocation: "sidebar",
       });
@@ -223,7 +223,7 @@ describe("SidePanel Component", () => {
 
       expect(pushEventMock).toHaveBeenCalledWith({
         event: "interact_click",
-        elementType: "filled_star",
+        elementType: "empty_star",
         elementTextOrLabel: "Link 2",
         elementLocation: "sidebar",
       });
