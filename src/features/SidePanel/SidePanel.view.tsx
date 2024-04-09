@@ -75,8 +75,8 @@ const SidePanel: React.FC<SidePanelProps> = ({
         }
       }
 
-      type ElementType = "filled_star" | "empty_star";
-      const elementType: ElementType = favorite ? "filled_star" : "empty_star";
+      type ElementType = "empty_star" | "filled_star";
+      const elementType: ElementType = favorite ? "empty_star" : "filled_star";
 
       gtmAnalytics.pushEvent({
         event: "interact_click",
