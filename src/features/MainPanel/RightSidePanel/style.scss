@@ -72,7 +72,6 @@
   .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
     height: 100vh !important;
     margin-top: 0 !important;
-    
   }
 }
 
@@ -92,7 +91,6 @@
     margin-top: 24px;
     margin-bottom: 32px;
   }
-
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
@@ -160,6 +158,10 @@
     position: fixed;
   }
 
+  .side-panel-main-container {
+    margin-left: -7px;
+  }
+  
   .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
     max-width: 100vw;
     height: 100vh;

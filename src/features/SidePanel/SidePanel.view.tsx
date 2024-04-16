@@ -208,7 +208,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           )
         ) : (
           <div
-            className="open-panel-dertfsg11463f essui-open-panel-filled"
+            className="open-panel-dertfsg11463f essui-open-panel-filled filled-icon-align"
             data-testId="close-panel"
           >
             <Button
