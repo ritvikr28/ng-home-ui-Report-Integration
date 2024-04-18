@@ -9,24 +9,24 @@
 }
 
 .isclose {
-  margin-right: 18px;
+  margin-right: 24px;
 }
 
 @media (min-width: 1900px) {
   .isopen {
     width: 11.6vw !important;
-    margin-right: 19.2px;
+    margin-right: 24px;
   }
 }
 
 @media (min-width: 1440px) and (max-width: 1900px) {
   .isopen {
-    width: 11.6vw !important;
-    margin-right: 14px;
+    width: 11.5vw !important;
+    margin-right: 20px;
   }
 
   .isclose {
-    margin-right: 1.9vw;
+    margin-right: 22px;
   }
 }
 
@@ -184,7 +184,7 @@
 /* stylelint-enable */
 @media (min-width: 1440px) {
   .event-primary-text {
-    width: 11vw;
+    width: 11.47vw;
   }
 }
 

@@ -60,7 +60,7 @@
 }
 
 .register-icon {
-  margin-right: 16px;
+  margin-right: 17px;
   gap: 8px;
 }
 
@@ -68,7 +68,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 76vw;
+  width: 77.3vw;
   justify-content: end;
   margin-left: 0;
   margin-top: -34px;
@@ -78,10 +78,22 @@
   display: flex;
   
   align-items: center;
-  width: 78vw;
+  width: 80.7vw;
   justify-content: end;
-  margin-left: -8px;
+  margin-left: -57px;
   margin-top: -38px;
+}
+
+// @media (min-width: 1900px)  {
+//   .register-link-event-open {
+//     width: 78.4vw;
+//   }
+// }
+
+@media (min-width: 1440px) {
+  .register-link-event-close {
+    width: 79.5vw;
+  }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -115,7 +127,7 @@
 @media (min-width: 390px) and (max-width: 767.9px) {
   .register-icon {
     gap: 8px;
-    margin-top: -9vw;
+    margin-top: -5vw;
     margin-right: 22px;
   }
 
@@ -136,12 +148,12 @@
 }
 
 .actioncard-div-tr1123 {
-  width: 17vw;
-  margin: 0 12px;
+  width: 17.8vw;
+  margin: 0 12px 0 20px;
 }
 
 .actioncard-div-close-tr4567 {
-  width: 18.3vw;
+  width: 17.95vw;
   margin: 0 12px;
 }
 
