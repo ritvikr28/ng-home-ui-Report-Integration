@@ -10,14 +10,14 @@
 
 .sims-link-container {
   display: flex;
-  width: 99.3%;
+  width: 101.3%;
   justify-content: space-between;
   align-items: baseline;
 }
 
 .sims-link-container-close {
   display: flex;
-  width: 76.6vw;
+  width: 76.2vw;
   justify-content: space-between;
   align-items: baseline;
 }
@@ -138,12 +138,11 @@
 @media (min-width: 1440px) {
   .action-card-container {
     width: 79vw !important;
-    gap: 24px;
+    gap: 8px;
   }
 
   .action-card-container-close {
     width: 98vw !important;
-    gap: 24px;
   }
 
   .what-new {
@@ -152,10 +151,11 @@
 
   .onecard {
     width: 38.2vw;
+    padding-right: 0;
   }
 
   .what-new-open {
-    width: 38vw !important;
+    width: 39.4vw !important;
   }
 
   .onecard-open {
@@ -304,7 +304,7 @@
 }
 
 .action-card-link2 {
-  margin-left: -8px;
+  margin-left: 0;
 }
 
 

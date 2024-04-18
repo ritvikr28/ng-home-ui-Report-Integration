@@ -32,7 +32,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   return isPermission ? (
   
       <Grid className="quicklink-dertfsg11463f">
-      <GridItem className="teacher-panel-container-dertfsg11463f">
+      <GridItem className="teacher-panel-container-dertfsg11463f quicklink-nomargin121">
       <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
         <GridItem className={isOpen? "quicklink-container-dertfsg11463f open-quicklink-dertfsg11463f nopadding-dertfsg11463f quicklink-padding-dertfsg11463f":  "nopadding-dertfsg11463f quicklink-container-closed-dertfsg11463f "}>
           <GridItem className="quicklinkheading-dertfsg11463f">Quick links</GridItem>

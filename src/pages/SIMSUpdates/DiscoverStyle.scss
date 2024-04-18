@@ -173,7 +173,7 @@
   }
 
   .what-new-sims {
-    width: 92vw !important;
+    width: 96vw !important;
     margin-left: -5px;
   }
 
@@ -254,7 +254,7 @@
   }
 
   .sims-link-container-closeview {
-    width: 89vw;
+    width: 92vw;
   }
 
   .base-class-more {
@@ -280,6 +280,7 @@
 @media (min-width: 320px) and (max-width: 389.9px) {
   .sims-updates {
     @include essui-global-typography-small-screen-h3;
+    white-space: break-spaces;
   }
 
   .sims-container-quicklinks {
@@ -291,7 +292,7 @@
   }
 
   .sims-link-container-closeview {
-    width: 89vw;
+    width: 87.5vw;
   }
 
   .base-class-more {

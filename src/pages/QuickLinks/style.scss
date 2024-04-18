@@ -47,7 +47,7 @@
   .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -68px;
-    margin-left: 50px;
+    margin-left: 66px;
   }
 }
 
@@ -55,7 +55,7 @@
   .quicklink-dertfsg11463f .breadcrumbs {
     width: 75vw;
     margin-top: -68px;
-    margin-left: 50px;
+    margin-left: 66px;
   }
 }
 
@@ -159,19 +159,22 @@
     border-top: 1px solid var(--neutral-200, #c6c6c6);
     background: var(--neutral-200, #c6c6c6);
   }
-
 }
 
-@media (min-width: 320px) and (max-width: 1023.9px) {
+@media (min-width: 390px) and (max-width: 1023.9px) {
   .quicklink-divider-container-dertfsg11463f {
-    width: 89vw;
+    width: 92vw;
     margin-bottom: 8px;
     margin-top: 32px;
     align-self: stretch;
     border-top: 1px solid var(--neutral-200, #c6c6c6);
     background: var(--neutral-200, #c6c6c6);
   }
-
+}
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .quicklink-divider-container-dertfsg11463f {
+    width: 88vw;
+  }
 }
 
 .simspadding-dertfsg11463f {
@@ -227,6 +230,10 @@
     overflow: hidden;
   }
 
+  .quicklink-nomargin121 {
+    margin-left: 0 !important;
+  }
+
   .quick-link-table-res-dertfsg11463f .essui-table {
     min-width: 117vw;
   }
@@ -241,7 +248,7 @@
   }
 
   .quicklinktable-close-dertfsg11463f {
-    width: 90vw !important;
+    width: 93vw !important;
     margin-left: -3px;
     overflow: hidden;
   }
@@ -255,6 +262,10 @@
     overflow: hidden;
   }
 
+  .quicklink-nomargin121 {
+    margin-left: 0 !important;
+  }
+  
   .quicklinkheading-dertfsg11463f {
     @include essui-global-typography-small-screen-h3;
   }
@@ -265,7 +276,7 @@
   }
 
   .quicklinktable-close-dertfsg11463f {
-    width: 90vw !important;
+    width: 89vw !important;
     margin-left: -3px;
     overflow: hidden;
   }
