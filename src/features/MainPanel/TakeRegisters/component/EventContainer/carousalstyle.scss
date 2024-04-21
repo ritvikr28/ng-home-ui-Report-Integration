@@ -4,12 +4,20 @@
   src: "";
 }
 
+.react-multi-carousel-track {
+  margin-top: -4px;
+}
+
 .react-multi-carousel-list {
   display: flex;
   align-items: center;
   overflow: hidden;
   position: relative;
   margin-left: -9px;
+}
+
+.carousel-container {
+  padding-top: 20px;
 }
 
 @media (min-width: 390px) and (max-width: 767.9px) {
