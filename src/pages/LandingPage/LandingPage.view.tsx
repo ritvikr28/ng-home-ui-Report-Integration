@@ -22,7 +22,7 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
     x: IAppModule,
     i: number
   ) => {
-    if (x.code === "FireRegister") return null;
+    if (x.code === "FireRegister" || x.code === "AdminConsole") return null;
     if (!x.canView) return null;
 
     return (
