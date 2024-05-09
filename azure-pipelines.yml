@@ -162,7 +162,8 @@ stages:
               coverageFailOption: "fixed"
               coverageType: "lines"
               coverageThreshold: "85"
-              explicitFilter: true                       
+              explicitFilter: true
+              treat0of0as100: true
 
           - task: Bash@3
             displayName: 'Build image'
