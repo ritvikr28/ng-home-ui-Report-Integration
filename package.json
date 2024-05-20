@@ -12,7 +12,7 @@
   "private": true,
   "dependencies": {
     "@essnextgen/auth-ui": "^2.1.3",
-    "@essnextgen/ui-application-kit": "^0.4.60",
+    "@essnextgen/ui-application-kit": "^0.4.61",
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-flagr": "^0.0.3",
     "@essnextgen/ui-intl-kit": "^0.0.9",
