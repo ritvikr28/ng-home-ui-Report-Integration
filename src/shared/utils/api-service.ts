@@ -46,10 +46,7 @@ export const service: ServiceType = {
   },
   setInterceptor() {
     this.instance.interceptors.response.use(
-      (response) => {
-        console.log(response)
-        return response
-      },
+      (response) => response,
       (error) => {
         let message: string[] = [];
         if (error.response?.status === 401) {
