@@ -36,7 +36,7 @@ export const service: ServiceType = {
     this.instance = axios.create({
       baseURL: envConfig.BASE_URL,
       headers: { Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "X-Organisation-Id": sessionStorage.getItem("org_id") as string }
+      "X-Organisation-Id": sessionStorage.getItem("OrganizationId") as string }
     });
     this.setInterceptor();
   },
@@ -46,12 +46,15 @@ export const service: ServiceType = {
   },
   setInterceptor() {
     this.instance.interceptors.response.use(
-      (response) => response,
+      (response) => {
+        console.log(response)
+        return response
+      },
       (error) => {
         let message: string[] = [];
         if (error.response?.status === 401) {
           window.sessionStorage.removeItem("auth");
-        } else if (error.response?.data.code === "validation_error") {
+        } else if (error.response?.data?.code === "validation_error") {
           message = getErrorMessage(error);
         }
         const customError: Error = new Error();
@@ -65,9 +68,8 @@ export const service: ServiceType = {
     const url = externalUrl || envConfig.BASE_URL;
     const header = headers || {
       Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "X-Organisation-Id": sessionStorage.getItem("org_id") as string
+      "X-Organisation-Id": sessionStorage.getItem("OrganizationId") as string
     };
-
     service.config(url, header);
     return this.instance.get(path);
   },
