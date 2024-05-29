@@ -36,7 +36,7 @@ export const service: ServiceType = {
     this.instance = axios.create({
       baseURL: envConfig.BASE_URL,
       headers: { Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "X-Organisation-Id": sessionStorage.getItem("OrganizationId") as string }
+      "Organisation-Id": sessionStorage.getItem("OrganizationId") as string }
     });
     this.setInterceptor();
   },
@@ -68,7 +68,7 @@ export const service: ServiceType = {
     const url = externalUrl || envConfig.BASE_URL;
     const header = headers || {
       Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "X-Organisation-Id": sessionStorage.getItem("OrganizationId") as string
+      "Organisation-Id": sessionStorage.getItem("OrganizationId") as string
     };
     service.config(url, header);
     return this.instance.get(path);
