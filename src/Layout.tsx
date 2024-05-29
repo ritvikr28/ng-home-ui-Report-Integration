@@ -11,7 +11,8 @@ import {
   Header,
   IApplicationMenu,
   ApplicationConfig,
-  IModulePermission
+  IModulePermission,
+  SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import { Loader, LoaderType } from "@essnextgen/ui-kit";
 import {
@@ -212,6 +213,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
+          <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/:id" render={() => <SchoolGroupRedirect />} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
