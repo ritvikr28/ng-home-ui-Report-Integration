@@ -1,5 +1,6 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -8,8 +9,8 @@ import "./style.scss";
 // import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
-
-
+import { envConfig } from "../../shared/utils";
+import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -44,6 +45,14 @@ const requiredSLTPermissions: Permission[] = [
     Operation: 'View'
   }
 ]
+
+const requiredAdminPermissions: Permission[] = [
+  {
+    Securable: "NG.Homepage.Admin",
+
+    Operation: "View",
+  }
+];
 
 
 const requiredPupilProfilePermissions: Permission[] = [
@@ -80,44 +89,74 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
-  return(
-    <div  className={isOpen?" ":"welcome-user-fixed-dertfsg11463f"}>
-  <Grid dataTestId="mainPanelView">
-    <GridItem className="teacher-panel-container-dertfsg11463f">
-      <WelcomeUser
-      isApiError={isError} 
-      organisationName={schoolName}
-      isOpen={isOpen}
-      />    
-      {authService.isAuthorised(
-      requiredStaffTimeTablePermissions,
-      MatchPermissions.all
-    ) &&isSchoolPrimary===false &&
-    <StaffTimeTableView  isOpen={isOpen} />}
-      {authService.isAuthorised(requiredRegisterPermissions,
-      MatchPermissions.all) &&  <><TakeRegisterView  isOpen={isOpen} setIsOpen={setIsOpen} />
-      <div className={isOpen ? "divider-container-dertfsg11463f open-divider-dertfsg11463f" : "divider-container-dertfsg11463f"} /></>}
-    
-      
-        {authService.isAuthorised(
-      requiredSLTPermissions,
-      MatchPermissions.all
-    ) &&  authService.isAuthorised(
-      requiredPupilProfilePermissions,
-      MatchPermissions.all
-    ) &&
-        <><Search isOpen={isOpen} /><div className={isOpen?"divider-container-dertfsg11463f open-divider-dertfsg11463f":"divider-container-dertfsg11463f"}/></>}
-                 
-    
-      <SIMSupdatesView isOpen={isOpen}/>
-      {/* <SwitchViewLogic
+  const hasAdminFlagrPermission: boolean =
+    hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminView") &&
+    isOrganisationInVariant("AdminView");
+
+  return (
+    <div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
+      <Grid dataTestId="mainPanelView">
+        <GridItem className="teacher-panel-container-dertfsg11463f">
+          <WelcomeUser
+            isApiError={isError}
+            organisationName={schoolName}
+            isOpen={isOpen}
+          />
+          {authService.isAuthorised(
+            requiredStaffTimeTablePermissions,
+            MatchPermissions.all
+          ) &&
+            isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
+          {authService.isAuthorised(
+            requiredRegisterPermissions,
+            MatchPermissions.all
+          ) && (
+            <>
+              <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+              <div
+                className={
+                  isOpen
+                    ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
+                    : "divider-container-dertfsg11463f"
+                }
+              />
+            </>
+          )}
+
+          {(authService.isAuthorised(
+            requiredSLTPermissions,
+            MatchPermissions.all
+          ) ||
+            (hasAdminFlagrPermission &&
+              authService.isAuthorised(
+                requiredAdminPermissions,
+                MatchPermissions.all
+              ))) &&
+            authService.isAuthorised(
+              requiredPupilProfilePermissions,
+              MatchPermissions.all
+            ) && (
+              <>
+                <Search isOpen={isOpen} />
+                <div
+                  className={
+                    isOpen
+                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
+                      : "divider-container-dertfsg11463f"
+                  }
+                />
+              </>
+            )}
+
+          <SIMSupdatesView isOpen={isOpen} />
+          {/* <SwitchViewLogic
             organisationName={schoolName}
             isApiError={isError} 
       /> */}
-    </GridItem>
-  </Grid>
-  </div>
-  )
+        </GridItem>
+      </Grid>
+    </div>
+  );
 };
 
 
