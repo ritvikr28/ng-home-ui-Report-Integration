@@ -168,9 +168,9 @@
       "homePage": {
         "headerTitle": "Welcome to Pupil Profile",
         "searchBar": {
-            "placeHolder": "Search for pupil (e.g Ben Abbott)"
+            "placeHolder": "For more results press enter"
         },
-        "searchHelper": "Press enter to view more results and then filter for leaver's profile.",
+        "searchHelper": "Search by first or last name",
         "button": {
             "register": "Take the Register",
             "assessment": "Primary Assessment"

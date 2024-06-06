@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   useTranslation,
   UseTranslationResponse
@@ -45,24 +45,6 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
   const noDataTemplateText =`${t("UI_KIT_SearchNoResultsFound.FirstPart")} - {value} - ${t(
       "UI_KIT_SearchNoResultsFound.SecondPart"
     )}`;
-    const [headingText, setHeadingText]:any = useState("Press enter to view more results and then filter for leaver's profile.");
-
-
-    useEffect(() => {
-      const updateHeadingText: () => void = () => {
-        if (window.innerWidth <= 1439) {
-          setHeadingText("Press enter to view more results");
-        } else {
-          setHeadingText("Press enter to view more results and then filter for leaver's profile.");
-        }
-      };
-  
-      updateHeadingText();
-      window.addEventListener('resize', updateHeadingText);
-      return () => {
-        window.removeEventListener('resize', updateHeadingText);
-      };
-    }, []);
     const className = `pupil-profile-suggestion ${value ? "icon-search" : "no-icon-search"}`;
 
   return (
@@ -75,10 +57,10 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
       dataTestId="new-search-element"
                 id="search"               
                 suggestions={hasItems ? suggestions : []}
-                headingText={headingText}
+                headingText={t("description.homePage.searchBar.placeHolder")}
                 onKeyUpLenght={2}
                 className={className}
-                placeholderText={t("description.homePage.searchBar.placeHolder")}
+                placeholderText={t("description.homePage.searchHelper")}
                 onItemClick={onItemClick}
                 keyUpHandler={(e: any) => {
                   onChange(e);
