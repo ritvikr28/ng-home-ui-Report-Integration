@@ -24,13 +24,19 @@ export const getBackgroundColor = (
         /* istanbul ignore next */
          backgroundColor  =
         /* eslint-disable */
-        userPreference === 'yeargroup'
+      !(data.coveringStaffExternalID && (data.isCovered || data.isCovering))
+       ? userPreference === 'yeargroup'
           ? yearGroupColor === null
             ? EventCardStatus.PRIMARY
-            : (yearGroupColor.split("-")[1] ? (yearGroupColor.split("-")[1].toLowerCase() as EventCardStatus) : (yearGroupColor.split("-")[0].toLowerCase() as EventCardStatus))
+            : (yearGroupColor.split("-")[1] 
+            ? (yearGroupColor.split("-")[1].toLowerCase() as EventCardStatus)
+             : (yearGroupColor.split("-")[0].toLowerCase() as EventCardStatus))
           : subjectColor === null
           ? EventCardStatus.PRIMARY
-          : (subjectColor.split("-")[1]? (subjectColor.split("-")[1].toLowerCase() as EventCardStatus): (subjectColor.split("-")[0].toLowerCase() as EventCardStatus));
+          : (subjectColor.split("-")[1]
+          ? (subjectColor.split("-")[1].toLowerCase() as EventCardStatus)
+          : (subjectColor.split("-")[0].toLowerCase() as EventCardStatus))
+        : EventCardStatus.PRIMARY800
           /* eslint-enable  */
       }
       return backgroundColor;

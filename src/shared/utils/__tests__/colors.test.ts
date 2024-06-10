@@ -117,5 +117,15 @@ describe("Colors tests", () => {
      
     });
     
+    test("should return primary 800 color when cover staff external ID is not null and isCovered is true", () => {
+      mockProps.coveringStaffExternalID =
+        "6d6ce6d4-8652-47e5-92d5-7cd0bc877517";
+      mockProps.eventTypeCode = "TTPeriod";
+      mockProps.group.externalId = "6d6ce6d4-8652-47e5-92d5-7cd0bc877517";
+      mockProps.group.shortName = "abcd";
+      mockProps.isCovered = true;
+      const result: string = getBackgroundColor(mockProps);
 
+      expect(result).toBe(`${EventCardStatus.PRIMARY800}`);
+    });
 });
