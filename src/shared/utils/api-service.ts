@@ -33,11 +33,20 @@ const getErrorMessage = (error: any) => {
 export const service: ServiceType = {
   instance: {} as AxiosInstance,
   init() {
+    let headerConfig={};
+    if(sessionStorage.getItem("OrganizationId")!==null && sessionStorage.getItem("OrganizationId") as string!=="" && sessionStorage.getItem("OrganizationId") as string!==undefined)
+      {
+        headerConfig={ 'Authorization': `Bearer ${authService.getAuthTokens()}`,
+        'Organisation-Id': sessionStorage.getItem("OrganizationId") as string }
+      }
+      else{
+        headerConfig={ 'Authorization': `Bearer ${authService.getAuthTokens()}`}
+      }
+    
     this.instance = axios.create({
       baseURL: envConfig.BASE_URL,
-      headers: { Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "Organisation-Id": sessionStorage.getItem("OrganizationId") as string }
-    });
+      headers:headerConfig
+    });    
     this.setInterceptor();
   },
   config(baseURL: string, headers: any) {
@@ -63,10 +72,18 @@ export const service: ServiceType = {
   },
   get(path: string, externalUrl?: string, headers?: any) {
     const url = externalUrl || envConfig.BASE_URL;
-    const header = headers || {
-      Authorization: `Bearer ${authService.getAuthTokens()}`,
-      "Organisation-Id": sessionStorage.getItem("OrganizationId") as string
-    };
+    let headerConfig={};
+    if(sessionStorage.getItem("OrganizationId")!==null && sessionStorage.getItem("OrganizationId") as string!=="" && sessionStorage.getItem("OrganizationId") as string!==undefined)
+      {
+        headerConfig={ 'Authorization': `Bearer ${authService.getAuthTokens()}`,
+        'Organisation-Id': sessionStorage.getItem("OrganizationId") as string 
+      }
+      }
+      else{
+        headerConfig={ 'Authorization': `Bearer ${authService.getAuthTokens()}`        
+      }
+      }
+    const header = headers || headerConfig;
     service.config(url, header);
     return this.instance.get(path);
   },
