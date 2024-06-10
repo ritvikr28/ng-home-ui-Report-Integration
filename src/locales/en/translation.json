@@ -168,9 +168,9 @@
       "homePage": {
         "headerTitle": "Welcome to Pupil Profile",
         "searchBar": {
-            "placeHolder": "For more results press enter"
+            "placeHolder": "Search by first or last name"
         },
-        "searchHelper": "Search by first or last name",
+        "searchHelper": "For more results press enter",
         "button": {
             "register": "Take the Register",
             "assessment": "Primary Assessment"
