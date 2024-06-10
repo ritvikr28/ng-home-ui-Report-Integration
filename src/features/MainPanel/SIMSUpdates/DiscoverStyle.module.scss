@@ -32,6 +32,10 @@
 
   }
 
+  .sys-mgr {
+    margin-top: 24px;
+  }
+
   .action-card-container-close {
     width: 78.6vw;
   }
@@ -48,6 +52,10 @@
   .sims-link-container-close {
     width: 94.7vw;
   }
+
+  .sys-mgr {
+    margin-top: 24px;
+  }
 }
 
 @media (min-width: 768px) and (max-width: 1023.9px) {
@@ -57,6 +65,10 @@
 
   .sims-link-container-close {
     width: 94vw;
+  }
+
+  .sys-mgr {
+    margin-top: 24px;
   }
 }
 
@@ -74,6 +86,10 @@
     justify-content: space-between;
     align-items: baseline;
   }
+
+  .sys-mgr {
+    margin-top: 24px;
+  }
 }
 
 @media (min-width: 320px) and (max-width: 389.9px) {
@@ -89,6 +105,10 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: baseline;
+  }
+
+  .sys-mgr {
+    margin-top: 24px;
   }
 }
 
@@ -337,6 +357,10 @@
   .base-class-more {
     height: 40px;
   }
+
+  .sys-mgr {
+    margin-top: 24px;
+  }
 }
 
 
@@ -352,5 +376,9 @@
 
   .base-class-more {
     height: 40px;
+  }
+
+  .sys-mgr {
+    margin-top: 24px;
   }
 }
