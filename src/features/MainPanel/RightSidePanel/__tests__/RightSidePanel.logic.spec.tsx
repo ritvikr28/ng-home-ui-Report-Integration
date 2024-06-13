@@ -19,6 +19,7 @@ const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
+  CoverStaffName: "Brenda Peters",
   EventTypeCode: "TTPeriod",
   ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
@@ -35,6 +36,7 @@ const mockEventTitleMeeting: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
+  CoverStaffName: "Brenda Peters",
   EventTypeCode: "TTNTPer",
   ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"   
@@ -53,6 +55,7 @@ const mockHealthyEvent: IRightSidePanelProps = {
   isOpen: true,
   GroupDescription: "Sample Group",
   StaffName: "John Doe",
+  CoverStaffName: "Brenda Peters",
   EventTypeCode: "AttendanceSession",
   ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
@@ -199,6 +202,7 @@ describe("RigthSidePanel", () => {
         isOpen={mockHealthyEvent.isOpen}
         GroupDescription={mockHealthyEvent.GroupDescription}
         StaffName={mockHealthyEvent.StaffName}
+        CoverStaffName={mockHealthyEvent.CoverStaffName}
         EventTypeCode=""
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}          
@@ -227,6 +231,7 @@ describe("RigthSidePanel", () => {
       isOpen: true,
       GroupDescription: "",
       StaffName: "John Doe",
+      CoverStaffName: "Brenda Peters",
       EventTypeCode: "AttendanceSession",
       ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
       EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"     
@@ -258,6 +263,7 @@ describe("RigthSidePanel", () => {
         isOpen={mockHealthyEvent1.isOpen}
         GroupDescription={mockHealthyEvent1.GroupDescription}
         StaffName={mockHealthyEvent1.StaffName}
+        CoverStaffName={mockHealthyEvent1.CoverStaffName}
         EventTypeCode="TTPeriod"
         ClassPeriodExternalId={mockHealthyEvent1.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent1.EventInstanceExternalId}          
@@ -298,6 +304,7 @@ describe("RigthSidePanel", () => {
         isOpen={mockHealthyEvent.isOpen}
         GroupDescription={mockHealthyEvent.GroupDescription}
         StaffName={mockHealthyEvent.StaffName}
+        CoverStaffName={mockHealthyEvent.CoverStaffName}
         EventTypeCode={mockHealthyEvent.EventTypeCode} 
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}          
@@ -334,6 +341,7 @@ describe("RigthSidePanel", () => {
         isOpen={mockEventTitleMeeting.isOpen}
         GroupDescription={mockEventTitleMeeting.GroupDescription}
         StaffName={mockEventTitleMeeting.StaffName}
+        CoverStaffName={mockEventTitleMeeting.CoverStaffName}
         EventTypeCode={mockEventTitleMeeting.EventTypeCode}   
         ClassPeriodExternalId={mockEventTitleMeeting.ClassPeriodExternalId}
         EventInstanceExternalId={mockEventTitleMeeting.EventInstanceExternalId}        
@@ -369,6 +377,7 @@ describe("RigthSidePanel", () => {
         isOpen={mockEventTitleMeetingTTPeriod.isOpen}
         GroupDescription={mockEventTitleMeetingTTPeriod.GroupDescription}
         StaffName={mockEventTitleMeetingTTPeriod.StaffName}
+        CoverStaffName={mockEventTitleMeetingTTPeriod.CoverStaffName}
         EventTypeCode={mockEventTitleMeetingTTPeriod.EventTypeCode} 
         ClassPeriodExternalId={mockEventTitleMeetingTTPeriod.ClassPeriodExternalId}
         EventInstanceExternalId={mockEventTitleMeetingTTPeriod.EventInstanceExternalId}        
@@ -390,6 +399,7 @@ describe("RigthSidePanel", () => {
         EventTitle: "Test",
         EventTime:"1 | 09:00 15:30",
         StaffName:"Abc",
+        CoverStaffName: "Brenda Peters",
         Location:"Xyz",
         GroupMembersData:[],
         togglePanel:jest.fn(),

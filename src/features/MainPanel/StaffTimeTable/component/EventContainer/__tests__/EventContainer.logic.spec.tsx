@@ -480,6 +480,7 @@ test('togglePanel prop functions correctly in EventContainerView phase 2', async
     isOpen={false}
     GroupDescription="Group 1"
     StaffName="John Doe"
+    CoverStaffName="Brenda Peters"
     index={0}
     EventCardColor={EventCardStatus.PRIMARY}
     EventTypeCode='TTPeriod' 
@@ -512,6 +513,7 @@ test('should render the component with isOpen set to true if the panel is open',
     isOpenPanel
     GroupDescription="Group 1"
     StaffName="John Doe"
+    CoverStaffName= "Brenda Peters"
     index={0}
     EventCardColor={EventCardStatus.PRIMARY}
     EventTypeCode='TTPeriod' 

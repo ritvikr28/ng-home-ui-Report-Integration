@@ -19,6 +19,7 @@ export const EventContainerView: (
     isOpen,
     GroupDescription,
     StaffName,
+    CoverStaffName,
     index,
     EventCardColor,
     EventTypeCode,
@@ -77,6 +78,7 @@ export const EventContainerView: (
             isOpen={isOpenPanel}
             GroupDescription={GroupDescription}
             StaffName={StaffName}
+            CoverStaffName={CoverStaffName}
             data-testid={`right-panel-${index}`}
             EventTypeCode={EventTypeCode}
             ClassPeriodExternalId={ClassPeriodExternalId}

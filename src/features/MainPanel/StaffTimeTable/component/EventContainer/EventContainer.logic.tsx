@@ -12,6 +12,7 @@ import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
+import fetchStaffDetails from "../../../../../shared/services/staffDomain/staffServices";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   isOpen
@@ -40,6 +41,10 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
+  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [coverStaffNames, setCoverStaffNames] = useState<
+    Record<string, string>
+  >({});
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
@@ -72,6 +77,30 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
           if (responseData.length > 0) {
             setSelectedItem(responseData[0].externalId);
           }
+
+          const staffNamePromises = responseData.map((eventData) =>
+            formatStaffName(eventData)
+          );
+          const coverStaffNamePromises = responseData.map((eventData) =>
+            formatCoverStaffName(eventData)
+          );
+
+          const resolvedStaffNames = await Promise.all(staffNamePromises);
+          const resolvedCoverStaffNames = await Promise.all(
+            coverStaffNamePromises
+          );
+
+          const staffNamesMap: Record<string, string> = {};
+          const coverStaffNamesMap: Record<string, string> = {};
+
+          responseData.forEach((eventData, index) => {
+            staffNamesMap[eventData.externalId] = resolvedStaffNames[index];
+            coverStaffNamesMap[eventData.externalId] =
+              resolvedCoverStaffNames[index];
+          });
+
+          setStaffNames(staffNamesMap);
+          setCoverStaffNames(coverStaffNamesMap);
         }
       } catch (error) {
         setIsError(true);
@@ -111,7 +140,9 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     selectedItem,
     isLoader,
     setIsOpenPanel,
-    setSelectedItem
+    setSelectedItem,
+    staffNames,
+    coverStaffNames
   });
 };
 
@@ -142,6 +173,63 @@ const formatEventTimeData: (
     ? `${eventPeriodNum} | ${starttime} - ${endtime}`
     : `${day} ${eventPeriodNum} | ${starttime} - ${endtime}`;
 };
+
+const formatStaffName = async (
+  eventTimeData: IStaffTimeTableEventsResponse
+): Promise<string> => {
+  const {
+    originalStaffExternalID,
+    coveringStaffExternalID,
+    isCovered,
+    isCovering,
+    supervisors,
+  } = eventTimeData;
+
+  if (originalStaffExternalID && coveringStaffExternalID && !isCovered && isCovering) {
+    const staffDetails = await fetchStaffDetails([originalStaffExternalID]);
+    const originalStaffDetail = staffDetails?.payload?.find(
+      (x) => x.externalId === originalStaffExternalID
+    );
+    return `${originalStaffDetail?.forename} ${originalStaffDetail?.surname}`;
+  }
+
+  return `${supervisors[0].forename} ${supervisors[0].surname}`;
+};
+
+const formatCoverStaffName = async (
+  eventTimeData: IStaffTimeTableEventsResponse
+): Promise<string> => {
+  const {
+    originalStaffExternalID,
+    coveringStaffExternalID,
+    isCovered,
+    isCovering,
+    supervisors,
+  } = eventTimeData;
+
+  if (originalStaffExternalID && coveringStaffExternalID) {
+    if (isCovered && !isCovering) {
+      const coveringStaffIds = coveringStaffExternalID
+        .split(',')
+        .map((id) => id.toUpperCase().trim());
+
+      if (coveringStaffIds.length > 0) {
+        const staffDetails = await fetchStaffDetails(coveringStaffIds);
+        const coverStaffNames = staffDetails?.payload
+          ?.filter((detail) => coveringStaffIds.includes(detail.externalId.toUpperCase()))
+          .map((detail) => `${detail.forename} ${detail.surname}`)
+          .join(', ');
+
+        return coverStaffNames || '';
+      }
+    } else if (!isCovered && isCovering) {
+      return `${supervisors[0].forename} ${supervisors[0].surname}`;
+    }
+  }
+
+  return '';
+};
+
 const formateventPeriodNum = (
   eventTimeData: IStaffTimeTableEventsResponse
 ): string => {
@@ -173,7 +261,7 @@ const renderNoEventsCard: () => JSX.Element = () => (
   />
 );
 
-const returnEventContainer: ({
+const returnEventContainer = ({
   schoolEventsData,
   // togglePanel,
   isOpen,
@@ -181,16 +269,10 @@ const returnEventContainer: ({
   selectedItem,
   isLoader,
   setIsOpenPanel,
-  setSelectedItem
-}: any) => JSX.Element = ({
-  schoolEventsData,
-  // togglePanel,
-  isOpen,
-  isOpenPanel,
-  selectedItem,
-  isLoader,
-  setIsOpenPanel,
-  setSelectedItem
+  setSelectedItem,
+  staffNames,
+  coverStaffNames
+
 }: any) => {
   const togglePanel: (externalId: string) => void = (externalId: string) => {
     if (!isOpenPanel[externalId]) {
@@ -228,7 +310,8 @@ const returnEventContainer: ({
             isOpen={isOpen}
             isOpenPanel={isOpenPanel[item.externalId]}
             GroupDescription={item?.group?.shortName ?? ""}
-            StaffName={`${item.supervisors[0].forename} ${item.supervisors[0].surname}`}
+            StaffName={staffNames[item.externalId] ?? ""}
+            CoverStaffName={coverStaffNames[item.externalId] ?? ""}
             index={index}
             EventCardColor={getBackgroundColor(item)}
             EventTypeCode={item.eventTypeCode}

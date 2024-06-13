@@ -13,6 +13,7 @@ export interface IRightSidePanelViewProps {
     errCodeMessage:boolean;
     pupilDetailErrorCodeMessage:string;
     StaffName:string |null;
+    CoverStaffName: string |null;
     isPupilSectionEnable:boolean;
     EventTypeCode:string;
     BaseGroupId:string;
