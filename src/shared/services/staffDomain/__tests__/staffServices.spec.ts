@@ -1,7 +1,7 @@
 import { waitFor } from "@testing-library/react";
 import { AxiosResponse } from "axios";
 import { service } from "../../../utils";
-import fetchStaffDetails from "../staffServices";
+import { fetchStaffDetails } from "../staffServices";
 import { IStaffBasicDetails } from "../../../model/StaffDomain/responseModels";
 import { logger } from "../../../components/AppInsights";
 

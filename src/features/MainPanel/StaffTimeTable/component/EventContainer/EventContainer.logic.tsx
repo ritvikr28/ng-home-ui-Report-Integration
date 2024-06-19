@@ -12,7 +12,7 @@ import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
-import fetchStaffDetails from "../../../../../shared/services/staffDomain/staffServices";
+import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   isOpen
@@ -188,7 +188,7 @@ const formatStaffName = async (
   if (originalStaffExternalID && coveringStaffExternalID && !isCovered && isCovering) {
     const staffDetails = await fetchStaffDetails([originalStaffExternalID]);
     const originalStaffDetail = staffDetails?.payload?.find(
-      (x) => x.externalId === originalStaffExternalID
+      (x) => x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
     );
     return `${originalStaffDetail?.forename} ${originalStaffDetail?.surname}`;
   }

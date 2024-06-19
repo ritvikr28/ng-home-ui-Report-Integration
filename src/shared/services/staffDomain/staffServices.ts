@@ -3,7 +3,7 @@ import { envConfig, service } from "../../utils";
 import { logger } from "../../components/AppInsights";
 import { IStaffBasicDetails } from "../../model/StaffDomain/responseModels";
 
-const fetchStaffDetails: (staffExternalIds: string[]) => Promise<IStaffDetailsByIdsResponse | null> = async (staffExternalIds: string[]) => {
+export const fetchStaffDetails: (staffExternalIds: string[]) => Promise<IStaffDetailsByIdsResponse | null> = async (staffExternalIds: string[]) => {
     try {
       const requestData:{
         staffIds: string[];
@@ -29,5 +29,4 @@ const fetchStaffDetails: (staffExternalIds: string[]) => Promise<IStaffDetailsBy
     error: string;
     payload: IStaffBasicDetails[] | null;
   }
-
-  export default fetchStaffDetails;
+  
