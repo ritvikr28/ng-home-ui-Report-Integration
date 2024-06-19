@@ -19,11 +19,9 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
-import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, getUserOrganisation, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
@@ -141,8 +139,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     <div data-testid="empty-component" className=""/>
   );
  
-  const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
-  isOrganisationInVariant('AdminView'));
+  // const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
+  // isOrganisationInVariant('AdminView'));
+
   const requiredNewHomePagePermissions: Permission[] = [
     {
       Securable: "NG.Homepage",
@@ -208,7 +207,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         <Switch>          
         {/* eslint-disable */}
         <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
-             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminFlagrPermission && hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
+             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
