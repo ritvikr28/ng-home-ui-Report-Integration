@@ -21,17 +21,17 @@ const requiredAdminPermissions: Permission[] = [
 
 const requiredPupilProfilePermissions: Permission[] = [
   {
-    Securable: "NG.Learner.Personal",
+    Securable: "Learner.Personal",
 
     Operation: "View",
   },
   {
-    Securable: "NG.Learner.Registration",
+    Securable: "Learner.Registration",
 
     Operation: "View",
   },
   {
-    Securable: "NG.Learner.Identifier",
+    Securable: "Learner.Identifier",
 
     Operation: "View",
   },
