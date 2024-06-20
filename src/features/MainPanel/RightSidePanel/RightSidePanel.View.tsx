@@ -25,6 +25,7 @@ export const RightSidePanelView: (
     EventTitle,
     EventTime,
     StaffName,
+    CoverStaffName,
     Location,
     GroupMembersData,
     togglePanel,
@@ -101,6 +102,22 @@ export const RightSidePanelView: (
             >
               {StaffName}
             </div>
+            {CoverStaffName && (
+              <>
+                <div
+                  className="essui-global-typography-default-control-label margin-bottom-label"
+                  data-testid="staff-label"
+                >
+                  Cover Staff:
+                </div>
+                <div
+                  className="essui-global-typography-default-body margin-bottom"
+                  data-testid="staff-value"
+                >
+                  {CoverStaffName}
+                </div>
+              </>
+            )}
             <div
               className="essui-global-typography-default-control-label margin-bottom-label"
               data-testid="location-label"

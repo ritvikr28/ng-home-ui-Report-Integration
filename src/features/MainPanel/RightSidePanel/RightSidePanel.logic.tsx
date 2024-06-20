@@ -20,6 +20,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     isOpen,
     GroupDescription,
     StaffName,
+    CoverStaffName,
     EventTypeCode,
     ClassPeriodExternalId,
     EventInstanceExternalId
@@ -100,6 +101,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         EventTitle={EventTitle}
         EventTime={formatEventTimeData(EventStart, EventEnd, EventPeriodNo)}
         StaffName={StaffName}
+        CoverStaffName={CoverStaffName}
         Location={RoomCode}
         GroupMembersData={groupMemberDetails}
         togglePanel={() => togglePanel(SchoolEventexternalId)}

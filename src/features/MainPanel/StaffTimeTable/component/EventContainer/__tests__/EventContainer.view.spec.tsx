@@ -25,6 +25,7 @@ const mockProps = {
     isOpenPanel:true,
     GroupDescription: 'Test Group',
     StaffName: 'John Doe',
+    CoverStaffName: "Brenda Peters",
     index: 0,
     EventTypeCode:'TTPeriod',
     ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
@@ -49,6 +50,7 @@ const mockProps = {
         isOpenPanel={mockProps.isOpenPanel}
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
+        CoverStaffName={mockProps.CoverStaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
         EventTypeCode={mockProps.EventTypeCode}  
@@ -87,6 +89,7 @@ const mockProps = {
         isOpenPanel
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
+        CoverStaffName={mockProps.CoverStaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
         EventTypeCode={mockProps.EventTypeCode} 
@@ -129,6 +132,7 @@ const mockProps = {
         isOpen
         GroupDescription={mockProps.GroupDescription}
         StaffName={mockProps.StaffName}
+        CoverStaffName={mockProps.CoverStaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
         EventTypeCode={mockProps.EventTypeCode} 
@@ -161,6 +165,7 @@ const mockProps = {
     isOpen={false}
     GroupDescription="Group 1"
     StaffName="John Doe"
+    CoverStaffName= "Brenda Peters"
     index={2}
     EventCardColor={EventCardStatus.IMPROVEMENT}
     EventTypeCode='TTPeriod' 

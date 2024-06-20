@@ -13,6 +13,7 @@ export interface IEventContainerProps {
   togglePanel: (SchoolEventexternalId: string) => void;
   GroupDescription: string | null;
   StaffName: string | null;
+  CoverStaffName: string | null;
   index: number;
   EventCardColor: EventCardStatus;
   ClassPeriodExternalId: string;

@@ -10,6 +10,7 @@ export interface IRightSidePanelProps {
   isOpen:boolean;
   GroupDescription:string |null;
   StaffName:string |null;  
+  CoverStaffName: string | null;  
   EventTypeCode:string;
   ClassPeriodExternalId:string;
   EventInstanceExternalId:string;

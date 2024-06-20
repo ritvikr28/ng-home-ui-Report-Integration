@@ -78,6 +78,7 @@ const mockEventTitleClass: IRightSidePanelViewProps = {
     errCodeMessage:false,
     pupilDetailErrorCodeMessage:"testerrorpupil",
     StaffName:"teststaff",
+    CoverStaffName:"testCoverstaff",
     isPupilSectionEnable:true,
     EventTypeCode:"AttendanceSession",
     BaseGroupId:"testBaseGroupId",
@@ -99,6 +100,7 @@ describe('RightSidePanelView', () => {
             EventTitle={mockEventTitleClass.EventTitle}
             EventTime={mockEventTitleClass.EventTime}
             StaffName={mockEventTitleClass.StaffName}
+            CoverStaffName={mockEventTitleClass.CoverStaffName}
             Location={mockEventTitleClass.Location}
             GroupMembersData={mockEventTitleClass.GroupMembersData}
             togglePanel={mockEventTitleClass.togglePanel}
@@ -126,6 +128,7 @@ describe('RightSidePanelView', () => {
             EventTitle={mockEventTitleClass.EventTitle}
             EventTime={mockEventTitleClass.EventTime}
             StaffName={mockEventTitleClass.StaffName}
+            CoverStaffName={mockEventTitleClass.CoverStaffName}
             Location={mockEventTitleClass.Location}
             GroupMembersData={mockEventTitleClass.GroupMembersData}
             togglePanel={mockEventTitleClass.togglePanel}
@@ -152,6 +155,7 @@ describe('RightSidePanelView', () => {
             EventTitle={mockEventTitleClass.EventTitle}
             EventTime={mockEventTitleClass.EventTime}
             StaffName={mockEventTitleClass.StaffName}
+            CoverStaffName={mockEventTitleClass.CoverStaffName}
             Location={mockEventTitleClass.Location}
             GroupMembersData={mockEventTitleClass.GroupMembersData}
             togglePanel={mockEventTitleClass.togglePanel}
@@ -178,6 +182,7 @@ describe('RightSidePanelView', () => {
             EventTitle={mockEventTitleClass.EventTitle}
             EventTime={mockEventTitleClass.EventTime}
             StaffName={mockEventTitleClass.StaffName}
+            CoverStaffName={mockEventTitleClass.CoverStaffName}
             Location={mockEventTitleClass.Location}
             GroupMembersData={mockEventTitleClass.GroupMembersData}
             togglePanel={mockEventTitleClass.togglePanel}
@@ -205,6 +210,7 @@ describe('RightSidePanelView', () => {
             EventTitle={mockEventTitleClass.EventTitle}
             EventTime={mockEventTitleClass.EventTime}
             StaffName={mockEventTitleClass.StaffName}
+            CoverStaffName={mockEventTitleClass.CoverStaffName}
             Location={mockEventTitleClass.Location}
             GroupMembersData={mockEventTitleClass.GroupMembersData}
             togglePanel={mockEventTitleClass.togglePanel}
