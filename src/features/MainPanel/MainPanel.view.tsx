@@ -26,6 +26,7 @@ const requiredStaffTimeTablePermissions: Permission[] = [
     Operation: 'View'
   }
 ];
+
 const requiredRegisterPermissions: Permission[] = [
   {
     Securable: 'NG.Homepage.Registers',
@@ -34,46 +35,24 @@ const requiredRegisterPermissions: Permission[] = [
   }  
 ];
 
-
-const requiredSLTPermissions: Permission[] = [
-  {
-    Securable: 'NG.Homepage.SLT',
-
-    Operation: 'View'
-  }
-]
-
-const requiredAdminPermissions: Permission[] = [
-  {
-    Securable: "NG.Homepage.Admin",
-
-    Operation: "View",
-  }
-];
-
-
 const requiredPupilProfilePermissions: Permission[] = [
   {
-    Securable: "Learner.Personal",
-
+    Securable: "NG.Learner.Personal",
     Operation: 'View'
   },
   {
-    Securable: "Learner.Registration",
-
+    Securable: "NG.Learner.Registration",
     Operation: 'View'
   },
   {
-    Securable: "Learner.Identifier",
-
+    Securable: "NG.Learner.Identifier",
     Operation: 'View'
   },
   {
     Securable: "NG.Homepage.PupilProfile",
     Operation: "View"
   }
-]
-
+];
 
 const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
@@ -116,15 +95,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
             </>
           )}
 
-          {(authService.isAuthorised(
-            requiredSLTPermissions,
-            MatchPermissions.all
-          ) ||
-            authService.isAuthorised(
-              requiredAdminPermissions,
-              MatchPermissions.all
-            )) &&
-            authService.isAuthorised(
+          {authService.isAuthorised(
               requiredPupilProfilePermissions,
               MatchPermissions.all
             ) && (
