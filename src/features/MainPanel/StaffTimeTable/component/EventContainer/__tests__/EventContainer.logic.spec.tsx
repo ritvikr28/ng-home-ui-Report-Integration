@@ -461,6 +461,100 @@ const mockStaffApiResponseForCoverTeacher = {
   status: 200,
 };
 
+const mockStaffApiResponseForStaffApiResponsePayloadReturnsNull = {
+  payload: null,
+  error: "",
+  status: 200,
+};
+
+const mockStaffApiResponseForStaffApiResponseReturnsNull = null;
+
+const mockStaffApiResponseForOrgininalStaffDetailReturnsNull = [
+  {
+    externalId: "90ec7084-d8fa-4802-9021-1813ce1c48e9",
+    eventStart: "2023-11-02T08:45:00",
+    eventEnd: "2023-11-02T09:15:00",
+    eventDescription: "1Thu:1",
+    levelCode: null,
+    eventTypeCode: "TTPeriod",
+    subjectColor: "primary",
+    yearGroupColor: "SUPPORTING-OUTSTANDING",
+    userPreference: "yeargroup",
+    yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    group: {
+      externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
+      shortName: "10x/Sc2",
+    },
+    room: {
+      externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
+      roomCode: "S3",
+      roomName: "Science Lab 3",
+    },
+    subject: {
+      externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
+      name: "Science",
+    },
+    supervisors: [
+      {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      }
+    ],
+    isCovered: false,
+    isCovering: true,
+    originalStaffExternalID: "339A9B54-769D-466B-BAAD-523B72E2A7A3",
+    coveringStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+    eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
+    classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+  }
+];
+
+const mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue = [
+  {
+    externalId: "90ec7084-d8fa-4802-9021-1813ce1c48e9",
+    eventStart: "2023-11-02T08:45:00",
+    eventEnd: "2023-11-02T09:15:00",
+    eventDescription: "1Thu:1",
+    levelCode: null,
+    eventTypeCode: "TTPeriod",
+    subjectColor: "primary",
+    yearGroupColor: "SUPPORTING-OUTSTANDING",
+    userPreference: "yeargroup",
+    yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    group: {
+      externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
+      shortName: "10x/Sc2",
+    },
+    room: {
+      externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
+      roomCode: "S3",
+      roomName: "Science Lab 3",
+    },
+    subject: {
+      externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
+      name: "Science",
+    },
+    supervisors: [
+      {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      }
+    ],
+    isCovered: true,
+    isCovering: false,
+    originalStaffExternalID: "339A9B54-769D-466B-BAAD-523B72E2A7A3",
+    coveringStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+    eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
+    classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+  }
+];
+
 describe("EventContainer", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -544,6 +638,83 @@ describe("EventContainer", () => {
     expect(await screen.findByText("No more events")).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
+  });
+
+  test("renders events successfully when status is 200 and original staff details response returns null", async () => {
+    const mockRes = {
+      status: 200,
+      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull,
+    };
+
+    jest
+      .spyOn(schoolDomainservices, "FetchStaffTimeTableEventsData")
+      .mockResolvedValue(mockRes);
+    jest
+      .spyOn(staffDomainServices, "fetchStaffDetails")
+      .mockResolvedValue(
+        mockStaffApiResponseForStaffApiResponsePayloadReturnsNull
+      );
+
+    render(<EventContainer isOpen={true} />);
+
+    await waitFor(() =>
+      expect(
+        schoolDomainservices.FetchStaffTimeTableEventsData
+      ).toHaveBeenCalled()
+    );
+    await waitFor(() =>
+      expect(staffDomainServices.fetchStaffDetails).toHaveBeenCalled()
+    );
+  });
+
+  test("renders events successfully when status is 200 and original staff API response returns null", async () => {
+    const mockRes = {
+      status: 200,
+      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull,
+    };
+
+    jest
+      .spyOn(schoolDomainservices, "FetchStaffTimeTableEventsData")
+      .mockResolvedValue(mockRes);
+    jest
+      .spyOn(staffDomainServices, "fetchStaffDetails")
+      .mockResolvedValue(mockStaffApiResponseForStaffApiResponseReturnsNull);
+
+    render(<EventContainer isOpen={true} />);
+
+    await waitFor(() =>
+      expect(
+        schoolDomainservices.FetchStaffTimeTableEventsData
+      ).toHaveBeenCalled()
+    );
+    await waitFor(() =>
+      expect(staffDomainServices.fetchStaffDetails).toHaveBeenCalled()
+    );
+  });
+
+  test("renders events successfully when status is 200 and Orginal StaffDetail IsCovered Is True", async () => {
+    const mockRes = {
+      status: 200,
+      responseData: mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue,
+    };
+
+    jest
+      .spyOn(schoolDomainservices, "FetchStaffTimeTableEventsData")
+      .mockResolvedValue(mockRes);
+    jest
+      .spyOn(staffDomainServices, "fetchStaffDetails")
+      .mockResolvedValue(mockStaffApiResponseForStaffApiResponseReturnsNull);
+
+    render(<EventContainer isOpen={true} />);
+
+    await waitFor(() =>
+      expect(
+        schoolDomainservices.FetchStaffTimeTableEventsData
+      ).toHaveBeenCalled()
+    );
+    await waitFor(() =>
+      expect(staffDomainServices.fetchStaffDetails).toHaveBeenCalled()
+    );
   });
 
   test("No events today when status is 204", async () => {

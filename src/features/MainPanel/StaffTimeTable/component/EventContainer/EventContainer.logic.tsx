@@ -190,7 +190,10 @@ const formatStaffName = async (
     const originalStaffDetail = staffDetails?.payload?.find(
       (x) => x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
     );
-    return `${originalStaffDetail?.forename} ${originalStaffDetail?.surname}`;
+    if(!originalStaffDetail){
+      return '';
+    }
+    return `${originalStaffDetail.forename} ${originalStaffDetail.surname}`;
   }
 
   return `${supervisors[0].forename} ${supervisors[0].surname}`;
