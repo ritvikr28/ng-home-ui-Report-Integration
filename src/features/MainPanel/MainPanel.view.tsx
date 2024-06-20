@@ -1,6 +1,5 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -9,8 +8,6 @@ import "./style.scss";
 // import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
-import { envConfig } from "../../shared/utils";
-import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -57,17 +54,17 @@ const requiredAdminPermissions: Permission[] = [
 
 const requiredPupilProfilePermissions: Permission[] = [
   {
-    Securable: "NG.Learner.Personal",
+    Securable: "Learner.Personal",
 
     Operation: 'View'
   },
   {
-    Securable: "NG.Learner.Registration",
+    Securable: "Learner.Registration",
 
     Operation: 'View'
   },
   {
-    Securable: "NG.Learner.Identifier",
+    Securable: "Learner.Identifier",
 
     Operation: 'View'
   },
@@ -88,10 +85,6 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
-
-  const hasAdminFlagrPermission: boolean =
-    hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminView") &&
-    isOrganisationInVariant("AdminView");
 
   return (
     <div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
@@ -127,11 +120,10 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
             requiredSLTPermissions,
             MatchPermissions.all
           ) ||
-            (hasAdminFlagrPermission &&
-              authService.isAuthorised(
-                requiredAdminPermissions,
-                MatchPermissions.all
-              ))) &&
+            authService.isAuthorised(
+              requiredAdminPermissions,
+              MatchPermissions.all
+            )) &&
             authService.isAuthorised(
               requiredPupilProfilePermissions,
               MatchPermissions.all
