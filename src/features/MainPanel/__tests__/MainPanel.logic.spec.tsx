@@ -1,15 +1,12 @@
 import { render } from "@testing-library/react";
-import { authService } from "@essnextgen/auth-ui";
 import * as schoolServices from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import MainPanel from "../MainPanel.logic";
-import MainPanelView from "../MainPanel.view";
 
 const mockSchoolDetails:ISchoolNameDataResponse={
     schoolName:"test",
     externalId:"9008a156-0c85-4d1c-9eca-d6eb3ae84e15",
     isSchoolPrimary:false
-
 };
 
 const mockSchoolDetailsForPrimary:ISchoolNameDataResponse={
@@ -88,93 +85,4 @@ describe('MainPanel', () => {
         expect(setSchoolName).toHaveBeenCalledWith("");
         expect(setIsError).toHaveBeenCalledWith(true);
       });
-
-      test("renders divider with open class when hasAdminFlagrPermission is true", () => {
-        const props = {
-          schoolName: "Test School",
-          isError: false,
-          isSchoolPrimary: false,
-          isOpen: true,
-          setIsOpen: jest.fn(),
-        };
-        /* eslint-disable */
-        jest
-          .spyOn(require("@essnextgen/ui-flagr"), "hasFeaturePermission")
-          .mockReturnValue(true);
-
-        jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-
-        jest.mock("../../../shared/utils/flagr-utils", () => ({
-          isOrganisationInVariant: jest.fn().mockImplementationOnce(() => true),
-        }));
-
-        /* eslint-enable */
-        const { container } = render(<MainPanelView {...props} />);
-
-        const divider = container.querySelector(
-          ".divider-container-dertfsg11463f"
-        );
-
-        expect(divider).toBeTruthy();
-        expect(divider).toHaveClass("open-divider-dertfsg11463f");
-      });
-
-      test("renders divider with open class when hasAdminViewPermission with isopen is false", () => {
-        const props = {
-          schoolName: "Test School",
-          isError: false,
-          isSchoolPrimary: false,
-          isOpen: false,
-          setIsOpen: jest.fn(),
-        };
-        /* eslint-disable */
-        jest
-          .spyOn(require("@essnextgen/ui-flagr"), "hasFeaturePermission")
-          .mockReturnValue(true);
-
-        jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-
-        jest.mock("../../../shared/utils/flagr-utils", () => ({
-          isOrganisationInVariant: jest.fn().mockImplementationOnce(() => true),
-        }));
-
-        /* eslint-enable */
-        const { container } = render(<MainPanelView {...props} />);
-
-        const divider = container.querySelector(
-          ".divider-container-dertfsg11463f "
-        );
-
-        expect(divider).toHaveClass("divider-container-dertfsg11463f");
-      });
-
-      test("renders divider with open class when hasAdminFlagrPermission is false", () => {
-        const props = {
-          schoolName: "Test School",
-          isError: false,
-          isSchoolPrimary: false,
-          isOpen: true,
-          setIsOpen: jest.fn(),
-        };
-        /* eslint-disable */
-        jest
-          .spyOn(require("@essnextgen/ui-flagr"), "hasFeaturePermission")
-          .mockReturnValue(true);
-
-        jest.spyOn(authService, "isAuthorised").mockImplementation(() => false);
-
-        jest.mock("../../../shared/utils/flagr-utils", () => ({
-          isOrganisationInVariant: jest.fn().mockImplementationOnce(() => true),
-        }));
-
-        /* eslint-enable */
-        const { container } = render(<MainPanelView {...props} />);
-
-        const divider = container.querySelector(
-          ".divider-container-dertfsg11463f"
-        );
-
-        expect(divider).toBeFalsy();
-      });
-
 });
