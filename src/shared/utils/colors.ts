@@ -20,12 +20,15 @@ export const getBackgroundColor = (
       {
         backgroundColor= EventCardStatus.NEUTRAL;
       }
+      else if(data.coveringStaffExternalID && (data.isCovered || data.isCovering))
+      {
+        backgroundColor= EventCardStatus.PRIMARY800;
+      }
       else {
         /* istanbul ignore next */
          backgroundColor  =
         /* eslint-disable */
-      !(data.coveringStaffExternalID && (data.isCovered || data.isCovering))
-       ? userPreference === 'yeargroup'
+        userPreference === 'yeargroup'
           ? yearGroupColor === null
             ? EventCardStatus.PRIMARY
             : (yearGroupColor.split("-")[1] 
@@ -36,7 +39,6 @@ export const getBackgroundColor = (
           : (subjectColor.split("-")[1]
           ? (subjectColor.split("-")[1].toLowerCase() as EventCardStatus)
           : (subjectColor.split("-")[0].toLowerCase() as EventCardStatus))
-        : EventCardStatus.PRIMARY800
           /* eslint-enable  */
       }
       return backgroundColor;
