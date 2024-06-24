@@ -212,7 +212,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/:id" render={() => <SchoolGroupRedirect />} />
+          <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
