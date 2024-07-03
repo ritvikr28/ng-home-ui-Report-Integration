@@ -2,7 +2,7 @@ import React,{ useEffect, useState } from "react";
 import MainPanelView from "./MainPanel.view";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
-import { capitalizeFirstLetterOfEachWord } from "./WelcomeUser/utils/newHomePageUtils";
+
 import { IMainPanelProps } from "./MainPanelProps";
 
 const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
@@ -16,9 +16,9 @@ const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
             try {
               const schoolData:ISchoolNameDataResponse|null = await useFetchSchoolNameData(); 
       
-                const name:string = (schoolData==null)?"":schoolData.schoolName.toLowerCase();
+                const schoolNames:string = (schoolData==null)?"":schoolData.schoolName;
                 const isSchoolsPrimary:boolean = (schoolData==null)?true:schoolData.isSchoolPrimary;
-                const schoolNames:string = capitalizeFirstLetterOfEachWord(name);
+                
                 setSchoolName(schoolNames);
                 setIsError(false);
                 setIsSchoolPrimary(isSchoolsPrimary);

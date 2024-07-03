@@ -15,7 +15,7 @@ import "./style.scss";
 import QuickLinkLogic from "../../pages/QuickLinks";
 import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
-import { capitalizeFirstLetterOfEachWord } from "../MainPanel/WelcomeUser/utils/newHomePageUtils";
+
 import PupilSVG from "./SVGcomponents/PupilSVG";
 import WholeSchoolOverviewSVG from "./SVGcomponents/WholeSchoolOverviewSVG";
 import BehaviourOverviewSVG from "./SVGcomponents/BehaviourOverviewSVG";
@@ -56,10 +56,9 @@ const SLTmockpage: () => JSX.Element = () => {
         const schoolData: ISchoolNameDataResponse | null =
           await useFetchSchoolNameData();
 
-        const name: string =
-          schoolData == null ? "" : schoolData.schoolName.toLowerCase();
+        const schoolNames: string =
+          schoolData == null ? "" : schoolData.schoolName;
 
-        const schoolNames: string = capitalizeFirstLetterOfEachWord(name);
         setSchoolName(schoolNames);
         setIsError(false);
       } catch (error) {
