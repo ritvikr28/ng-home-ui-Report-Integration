@@ -31,7 +31,7 @@ const AdminConsole = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: "/adminconsole",
+              value: `${window.location.origin}/adminconsole`
             }}
           />
         </GridItem>
