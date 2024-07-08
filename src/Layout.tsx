@@ -180,7 +180,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
   const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
   const hasAdminPermission:boolean= authService.isAuthorised(requiredAdminPermissions,MatchPermissions.all);
-  const haAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all); 
+  const hasAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all); 
 
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
@@ -220,7 +220,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
              ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
-          {haAdminConsolePermissions && <ProtectedRoute exact path="/AdminConsole" component={AdminConsole} />}
+          { hasAdminConsolePermissions && <ProtectedRoute exact path="/AdminConsole" component={AdminConsole} />}
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
