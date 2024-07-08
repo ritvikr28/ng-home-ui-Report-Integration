@@ -1,10 +1,14 @@
 import {
   Breadcrumbs,
+  Button,
+  ButtonColor,
+  ButtonSize,
   Grid,
   GridItem,
+  IconColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import About from "./About";
 
@@ -17,26 +21,51 @@ const AdminConsole = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-  
+
   const [isOpen, setIsOpen] = useState<boolean>(!isMobileView);
+
+  const handleButtonClick = () => {
+    setIsOpen(!isOpen);
+  };
+
+  useEffect(() => {
+    setIsOpen(!isMobileView);
+  }, [!isMobileView]);
+
+  console.log("isOpen", isOpen);
 
   return (
     <>
-      <Grid>
-        <GridItem>
+      <Grid className="admin-mobile-1234567">
+        <GridItem lg={2} md={3}>
+          {isMobileView && !isOpen && (
+            <Button
+              className="base-class"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={handleButtonClick}
+              size={ButtonSize.Small}
+            />
+          )}
           <LocalisedMenu
-            // customHeight={80}
+            customHeight={100}
             menuHeading="Admin Console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`
+              value: `${window.location.origin}/adminconsole`,
             }}
           />
         </GridItem>
-        <GridItem style={{ marginTop: "24px" }}>
-          <div>
+        <GridItem style={{ marginTop: "24px" }} lg={10} md={5}>
+          <div
+            className={
+              isOpen ? "adminConsole-sidepanelopen" : "adminconsole-breadcrumb"
+            }
+          >
             <Breadcrumbs
               breadcrumbActions={[
                 {
@@ -55,8 +84,8 @@ const AdminConsole = () => {
               id="element-id"
               onItemClick={() => {}}
             />
-            <About />
           </div>
+          <About />
         </GridItem>
       </Grid>
     </>
