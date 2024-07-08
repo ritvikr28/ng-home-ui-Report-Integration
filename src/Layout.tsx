@@ -5,7 +5,8 @@ import {
   Switch,
   Route,
   BrowserRouter as Router,
-  useHistory
+  useHistory,
+  Redirect
  } from "react-router-dom";
 import {
   Header,
@@ -27,6 +28,7 @@ import { envConfig, getUserOrganisation, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
+import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "29a88689-e51f-4928-aead-1a92402c1a09",
@@ -180,7 +182,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
   const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
   const hasAdminPermission:boolean= authService.isAuthorised(requiredAdminPermissions,MatchPermissions.all);
-  const haAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all); 
+  const hasAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all); 
+ 
 
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
@@ -217,10 +220,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         <Switch>          
         {/* eslint-disable */}
         <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
-             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
+             ((hasNewHomePagePermission && (hasTeacherPermission || (hasAdminConsolePermissions) || (hasSLTPermission) || (hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
-          {haAdminConsolePermissions && <ProtectedRoute exact path="/AdminConsole" component={AdminConsole} />}
+          <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
+          <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />

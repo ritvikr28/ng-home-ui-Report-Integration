@@ -68,12 +68,12 @@
       "link": "",
       "linkText": ""
     },
-    "Conduct": { 
+    "Conduct": {
       "title": "Conduct",
       "description": "Create and maintain exclusions and suspensions.",
       "link": "",
       "linkText": ""
-    },    
+    },
     "FMSReporting": {
       "title": "FMS Reporting",
       "description": "Intuitively generate financial reports which are drillable, easily exported, saved and shared.",
@@ -105,14 +105,39 @@
       "item1": {
         "title": "Reached this page using a link?",
         "content": "Please check the spelling is correct and try reloading the page"
-       
       },
       "item2": {
         "title": "Go back to home page",
         "content": "Click ",
         "content1": "here",
         "content2": " to go back to home page"
-      }      
+      }
+    }
+  },
+  "unAuthorisedAccess": {
+    "headingTitle": "You are not authorised to access this page or resource",
+    "bodyText": {
+      "text": "This may be due to one of the reasons below",
+      "linkText1": "You don't have the correct permissions",
+      "linkText2": "You haven't been onboarded onto this page yet"
+    },
+    "moduleBlock": {
+      "heading": "Things to try",
+      "item1": {
+        "title": "Contact your administrator",
+        "content": "Ask your Administrator to grant you permission or for further assistance"
+      },
+      "item2": {
+        "title": "Contact SIMS support",
+        "content": "If you have been onboarded,have the correct permissions, but are still unable to access then please raise the issue with ",
+        "linktext": "SIMS support"
+      },
+      "item3": {
+        "title": "Go back to home page",
+        "content": "Click ",
+        "content1": "here",
+        "content2": " to go back to home page"
+      }
     }
   },
   "noAccess": {
@@ -163,20 +188,18 @@
   "UI_KIT_SearchNoResultsFound": {
     "FirstPart": "Your search",
     "SecondPart": "did not match any results. Make sure that all words are spelled correctly."
-  },  
-    "description": {
-      "homePage": {
-        "headerTitle": "Welcome to Pupil Profile",
-        "searchBar": {
-            "placeHolder": "For more results press enter"
-        },
-        "searchHelper": "Search by first or last name",
-        "button": {
-            "register": "Take the Register",
-            "assessment": "Primary Assessment"
-        }
-    }   
-    
+  },
+  "description": {
+    "homePage": {
+      "headerTitle": "Welcome to Pupil Profile",
+      "searchBar": {
+        "placeHolder": "For more results press enter"
+      },
+      "searchHelper": "Search by first or last name",
+      "button": {
+        "register": "Take the Register",
+        "assessment": "Primary Assessment"
+      }
+    }
   }
-
 }

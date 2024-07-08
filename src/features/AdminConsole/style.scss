@@ -1,0 +1,23 @@
+.hit-ka-button {
+  margin: 16px;
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .admin-mobile-1234567 {
+    margin: 16px;
+  }
+
+  .admin-heading .subheading-font {
+    font-size: 19px;
+  }
+
+  .adminconsole-breadcrumb {
+    margin-top: -57px;
+    margin-left: 42px;
+  }
+
+  .adminconsole-sidepanelopen {
+    margin-left: 42px;
+    margin-top: -16.3px;
+  }
+}
