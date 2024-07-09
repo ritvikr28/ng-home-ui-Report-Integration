@@ -12,11 +12,6 @@ import { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import About from "./About";
 
-export interface IAdminConsoleProps {
-  baseRouteName: string;
-  togglePanel: any;
-}
-
 const AdminConsole = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
@@ -31,8 +26,6 @@ const AdminConsole = () => {
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
-
-  console.log("isOpen", isOpen);
 
   return (
     <>
