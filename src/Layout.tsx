@@ -29,9 +29,10 @@ import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
+import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
-import AdminConsole from "./features/AdminConsole/AdminConsole.view";
+
 
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
@@ -180,12 +181,22 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       Operation: "View"
     }
   ]; 
+
+  const requiredAdminConsolePermissions: Permission[] = [
+    {
+      Securable: "NG.AdminConsole",
+      Operation: "View"
+    }
+  ];
   
 
   const hasNewHomePagePermission:boolean =  authService.isAuthorised(requiredNewHomePagePermissions, MatchPermissions.all); 
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
   const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
   const hasAdminPermission:boolean= authService.isAuthorised(requiredAdminPermissions,MatchPermissions.all);
+  const hasAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all);
+
+
   const isAuthzAdmin: boolean = isAuthzUserAdmin();
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
@@ -228,7 +239,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
-          {hasAdminConsoleFlagrPermission && <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsoleFlagrPermission ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />}
+          {hasAdminConsoleFlagrPermission && <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />}
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
