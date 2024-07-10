@@ -20,6 +20,7 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
@@ -141,6 +142,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const EmptyComponent: () => JSX.Element = () => (
     <div data-testid="empty-component" className=""/>
   );
+  
+  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "AdminConsoleView"
+  );
  
   // const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
   // isOrganisationInVariant('AdminView'));
@@ -224,7 +230,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
-          <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />
+          {hasAdminConsoleFlagrPermission && <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />}
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
