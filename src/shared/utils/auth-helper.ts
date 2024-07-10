@@ -65,3 +65,24 @@ export const getUser: () => string = () => {
   }
   return "";
 };
+
+export const isAuthzUserAdmin: () => boolean = (): boolean => {
+  const accessToken: string | null = authService.getAuthTokens();
+
+  /* istanbul ignore next */
+  if (!accessToken) {
+    return false;
+  }
+  const decodedToken: any = decodeToken(accessToken);
+  if (decodedToken != null) {
+    const role =
+      (decodedToken["SIMSCX/Role"] as string)?.split("@")[0]?.toLowerCase() ||
+      "";
+    if (role === "") {
+      return false;
+    }
+    return role.includes("admin");
+  }
+  /* istanbul ignore next */
+  return false;
+};

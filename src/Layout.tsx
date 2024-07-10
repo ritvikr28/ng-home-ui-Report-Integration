@@ -5,8 +5,7 @@ import {
   Switch,
   Route,
   BrowserRouter as Router,
-  useHistory,
-  Redirect
+  useHistory
  } from "react-router-dom";
 import {
   Header,
@@ -20,15 +19,17 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import { envConfig, getUserOrganisation, service } from "./shared/utils";
+import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./shared/utils";
 import SLTmockpage from "./features/SLTView/SLTmockpage";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
-import AdminConsole from "./features/AdminConsole/AdminConsole.view";
-import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
+import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
+
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
 "29a88689-e51f-4928-aead-1a92402c1a09",
@@ -144,6 +145,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
  
   // const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
   // isOrganisationInVariant('AdminView'));
+  const hasSIMSAdminFlagrPermission : boolean = (hasFeaturePermission(`${envConfig.APPLICATION}`,'SIMSIDAdminView') && 
+  isOrganisationInVariant('SIMSIDAdminView'));
 
   const requiredNewHomePagePermissions: Permission[] = [
     {
@@ -169,22 +172,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       Operation: "View"
     }
   ]; 
-
-  const requiredAdminConsolePermissions: Permission[] = [
-    {
-      Securable: "NG.AdminConsole",
-      Operation: "View"
-    }
-  ]; 
   
 
   const hasNewHomePagePermission:boolean =  authService.isAuthorised(requiredNewHomePagePermissions, MatchPermissions.all); 
   const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
   const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
   const hasAdminPermission:boolean= authService.isAuthorised(requiredAdminPermissions,MatchPermissions.all);
-  const hasAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all); 
- 
-
+  const isAuthzAdmin: boolean = isAuthzUserAdmin();
   const onAuthenticated: any = () => {
     if (authService.isAuthenticated()) {
       service.init();
@@ -219,12 +213,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       >
         <Switch>          
         {/* eslint-disable */}
-        <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated?
-             ((hasNewHomePagePermission && (hasTeacherPermission || (hasAdminConsolePermissions) || (hasSLTPermission) || (hasAdminPermission)))? NewHomepageView :  LandingPage):EmptyComponent} />  
+        <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated ?
+             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))
+             ? NewHomepageView : (!hasNewHomePagePermission && isAuthzAdmin && hasSIMSAdminFlagrPermission) 
+             ? SIMSIDAdminPageView : LandingPage) : EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
-          <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
-          <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
