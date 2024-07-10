@@ -5,7 +5,8 @@ import {
   Switch,
   Route,
   BrowserRouter as Router,
-  useHistory
+  useHistory,
+  Redirect
  } from "react-router-dom";
 import {
   Header,
@@ -29,6 +30,8 @@ import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./sha
 import SLTmockpage from "./features/SLTView/SLTmockpage";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
+import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
+import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 
 
 const organisationId = [ "4b4eb751-c3f1-4a95-aade-d762b6c70693",
@@ -142,6 +145,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const EmptyComponent: () => JSX.Element = () => (
     <div data-testid="empty-component" className=""/>
   );
+  
+  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "AdminConsoleView"
+  );
  
   // const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
   // isOrganisationInVariant('AdminView'));
@@ -219,6 +227,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
              ? SIMSIDAdminPageView : LandingPage) : EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
+          <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
+          {hasAdminConsoleFlagrPermission && <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsoleFlagrPermission ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />}
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />

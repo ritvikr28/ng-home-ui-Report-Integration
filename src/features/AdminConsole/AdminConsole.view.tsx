@@ -30,7 +30,7 @@ const AdminConsole = () => {
   return (
     <>
       <Grid className="admin-mobile-1234567">
-        <GridItem lg={2} md={3}>
+        <GridItem lg={isOpen?3:0} md={isOpen?2:0} xl ={isOpen?2:0} className="side-width">
           {isMobileView && !isOpen && (
             <Button
               className="base-class"
@@ -42,7 +42,7 @@ const AdminConsole = () => {
               size={ButtonSize.Small}
             />
           )}
-          <LocalisedMenu
+          <LocalisedMenu 
             customHeight={100}
             menuHeading="Admin Console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
@@ -53,7 +53,7 @@ const AdminConsole = () => {
             }}
           />
         </GridItem>
-        <GridItem style={{ marginTop: "24px" }} lg={10} md={5}>
+        <GridItem style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
           <div
             className={
               isOpen ? "adminConsole-sidepanelopen" : "adminconsole-breadcrumb"

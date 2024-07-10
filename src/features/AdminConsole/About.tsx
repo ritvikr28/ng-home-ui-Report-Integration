@@ -2,7 +2,7 @@ import { HeadingSubHeading } from "@essnextgen/ui-kit";
 import "./style.scss";
 
 const About: () => JSX.Element = () => (
-  <div className="admin-heading ">
+  <div className="admin-heading sub-text-131">
     <HeadingSubHeading
       headingText="About the Admin console"
       subHeadingText="Manage all the MIS background processes and modules settings centrally from the Admin console."

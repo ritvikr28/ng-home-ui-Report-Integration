@@ -16,6 +16,10 @@
     margin-left: 42px;
     margin-top: -16.3px;
   }
+
+  .side-width .essui-side-navigation-panel-container-grid-item {
+    width: 264px;
+  }
 }
 
 
@@ -33,4 +37,35 @@
     margin-left: 42px;
     margin-top: -16.3px;
   }
+
+  .side-width .essui-side-navigation-panel-container-grid-item {
+    width: 264px;
+  }
+}
+
+
+@media (min-width: 767.9px) and (max-width: 1023.9px) {
+  .admin-mobile-1234567 {
+    margin: 16px;
+  } 
+
+  .adminconsole-breadcrumb {
+    margin-top: -57px;
+    margin-left: 48px;
+  }
+
+  .adminconsole-sidepanelopen {
+    margin-top: -57px;
+    margin-left: 48px;
+  }
+
+  .side-width .essui-side-navigation-panel-container-grid-item {
+    width: 264px;
+  }
+}
+@media (min-width: 1439.9px) {
+  .side-width .essui-side-navigation-panel-container-grid-item {
+    width: 400px;
+  }
+
 }
