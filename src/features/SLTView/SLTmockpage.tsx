@@ -182,6 +182,7 @@ const SLTmockpage: () => JSX.Element = () => {
           setQuickLinkData={setQuickLinkData}
           quicklinkData={isError ? [] : quickLinkData}
           data-testid="btn-show-quick-link"
+          isSIMSIDAdmin={false}
         />
       </GridItem>
       <GridItem className="sltview">

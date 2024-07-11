@@ -141,6 +141,7 @@ const NewHomepageView: React.FC = () => {
             quicklinkData={isError ? [] : quickLinkData}
             data-testid="btn-show-quick-link"
             isLoader={isLoader}
+            isSIMSIDAdmin={false}
           />
         </GridItem>
         {/* eslint-disable */}

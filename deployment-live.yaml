@@ -21,6 +21,7 @@ data:
     window.REGISTER_BASE_URL = "#{REGISTER_BASE_URL}#"
     window.LEARNER_UI_URL = "#{LEARNER_UI_URL}#"
     window.LEARNER_API_URL = "#{LEARNER_API_URL}#"
+    window.INVITE_STAFF_URL = "#{INVITE_STAFF_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
