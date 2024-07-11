@@ -10,6 +10,7 @@ export interface SidePanelProps {
   quicklinkData? : IQuickLinkApiResponse[] | null;
   setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
   isLoader?:boolean;
+  isSIMSIDAdmin?:boolean;
 }
 
 export interface QuickLinkSidePanel{

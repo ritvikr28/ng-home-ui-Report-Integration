@@ -11,7 +11,8 @@ export const envConfig: any = {
   LEARNER_UI_URL: (window as any).LEARNER_UI_URL,
   LEARNER_API_URL:(window as any).LEARNER_API_URL,
   REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT,
-  APPLICATION:(window as any).APPLICATION
+  APPLICATION:(window as any).APPLICATION,
+  INVITE_STAFF_URL:(window as any).INVITE_STAFF_URL
 };
 
 export const UpdateEnvConfig:any = ({
@@ -24,7 +25,8 @@ export const UpdateEnvConfig:any = ({
   LEARNER_UI_URL,
   LEARNER_API_URL,
   REACT_ENVIRONMENT,
-  APPLICATION
+  APPLICATION,
+  INVITE_STAFF_URL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -36,4 +38,5 @@ export const UpdateEnvConfig:any = ({
   envConfig.LEARNER_API_URL=LEARNER_API_URL;
   envConfig.REACT_ENVIRONMENT=REACT_ENVIRONMENT;
   envConfig.APPLICATION=APPLICATION;
+  envConfig.INVITE_STAFF_URL=INVITE_STAFF_URL;
 };
