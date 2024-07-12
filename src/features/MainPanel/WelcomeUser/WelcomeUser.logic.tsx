@@ -11,7 +11,8 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
   const {
     isApiError,
     organisationName,
-    isOpen
+    isOpen,
+    isSchoolNameToBeDisplayed
   }: IWelcomeUserLogicProps = props;
 
   const [userFullname, setUserFullname]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
@@ -67,6 +68,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = (
         organisationName={organisationName}
         isApiError={isApiError}
         isOpen={isOpen}
+        isSchoolNameToBeDisplayed={isSchoolNameToBeDisplayed}
       />
     </>
   );

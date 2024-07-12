@@ -154,7 +154,7 @@ const SLTmockpage: () => JSX.Element = () => {
       <>
       <div className="welcome-wid">
         <WelcomeUser
-         isApiError={isError} organisationName={schoolName} />
+         isApiError={isError} organisationName={schoolName} isSchoolNameToBeDisplayed={true} />
          </div>
         {svgpath()}
         <div className="slt-sims">
