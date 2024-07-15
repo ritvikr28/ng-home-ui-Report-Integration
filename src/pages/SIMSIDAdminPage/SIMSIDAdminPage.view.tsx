@@ -3,6 +3,7 @@ import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import "../NewHomePage/style.scss";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import SIMSIDAdminMainPanel from "../../features/SIMSAdmin/Components/SIMSIDAdminMainPanelView/SIMSIDAdminMainPanel.logic";
+import "./style.scss";
 
 const SIMSIDAdminPageView: React.FC = () => {
     const isMobileView: boolean = useMediaQuery(
@@ -15,7 +16,12 @@ const SIMSIDAdminPageView: React.FC = () => {
         setIsOpen(false);
     };
 
-    const renderContent: () => JSX.Element = () => <SIMSIDAdminMainPanel/>;
+    const renderContent: () => JSX.Element = () =>   <SIMSIDAdminMainPanel
+            isOpen={isOpen} 
+            setIsOpen={setIsOpen} 
+            setDisableNotification={()=>{}}
+            />
+    
 
     return (
         <Grid className="app-dertfsg11463f" dataTestId="SIMSIDAdminPage">
@@ -48,7 +54,6 @@ const SIMSIDAdminPageView: React.FC = () => {
                 }
             >
                 {/* eslint-enable */}
-                {/* <h2>Coming Soon.....</h2> */}
                 {renderContent()}
             </GridItem>
         </Grid>

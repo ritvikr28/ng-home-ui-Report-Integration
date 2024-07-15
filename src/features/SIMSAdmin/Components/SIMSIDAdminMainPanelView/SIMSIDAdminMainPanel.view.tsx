@@ -5,13 +5,21 @@ import WelcomeUser from "../../../MainPanel/WelcomeUser/WelcomeUser.logic";
 import { ISIMSIDAdminMainPanelProps } from "./SIMSIDAdminMainPanelProps";
 import "../../../MainPanel/style.scss";
 import NotificationView from '../NotificationView/Notfication.view';
+import "./style.scss";
 
-const SIMSIDAdminMainPanelView : React.FC<ISIMSIDAdminMainPanelProps> = ({ isOpen, disableNotification, setDisableNotification }) =>
-<div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
+const SIMSIDAdminMainPanelView : React.FC<ISIMSIDAdminMainPanelProps> = ({ isOpen, disableNotification, setDisableNotification}) =>
+<div className={isOpen ? " " : "welcome-user-simsid-fixed-dertfsg11463f"}>
     <Grid dataTestId="SIMSID-Admin-View">
-      <GridItem className="teacher-panel-container-dertfsg11463f" sm={4} md={8} lg={12}>
-        <WelcomeUser isSchoolNameToBeDisplayed={false} isOpen = {isOpen} />
-        {disableNotification && <NotificationView setDisableNotification={setDisableNotification}/>}
+      <GridItem className="simsid-main-panel-container-dertfsg11463f">
+        <WelcomeUser 
+        isSchoolNameToBeDisplayed={false} 
+        isOpen = {isOpen} 
+        />
+        {disableNotification && 
+        <div className='notification-simsid'>
+        <NotificationView setDisableNotification={setDisableNotification}/>
+        </div>
+        }
         <SIMSupdatesView isOpen = {isOpen}/>       
       </GridItem>
     </Grid>
