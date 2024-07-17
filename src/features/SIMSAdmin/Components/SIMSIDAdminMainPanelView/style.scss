@@ -1,41 +1,82 @@
+.simsid-main-panel-container-dertfsg11463f {
+  //display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 20px 7px 20px 13px;
+  // max-width: 100%;
+}
+
+.simsupdate-simsid-admin {
+  margin-top: 24px;
+}
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
-    .simsid-main-panel-container-dertfsg11463f {
-      // width: 1000px;
-      margin: 20px 20px 20px 16px;
-    }
+  .simsid-main-panel-container-dertfsg11463f {
+    margin: 20px 20px 20px 16px;
   }
-  
-  @media (min-width: 768px) and (max-width: 1023.9px) {
-    .simsid-main-panel-container-dertfsg11463f {
-      // width: 1000px;
-      margin: 20px 20px 20px 5px;
-    }
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .simsid-main-panel-container-dertfsg11463f {
+    margin: 20px 20px 20px 5px;
   }
-  
-  @media (min-width: 390px) and (max-width: 767.9px) {
-    .simsid-main-panel-container-dertfsg11463f {
-      // width: 1000px;
-      margin: 20px 20px 20px 3vw;
-    }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .simsid-main-panel-container-dertfsg11463f {
+    // width: 1000px;
+    margin: 20px 20px 20px 3vw;
   }
-  @media (min-width: 320px) and (max-width: 389.9px) {
-    .simsid-main-panel-container-dertfsg11463f {
-      // width: 1000px;
-      margin: 20px 20px 20px 3px;
-    }
+}
+
+@media (min-width: 320px) and (max-width: 389.9px) {
+  .simsid-main-panel-container-dertfsg11463f {
+    // width: 1000px;
+    margin: 20px 20px 20px 3px;
+  }
+}
+
+@media screen and (min-width: 1920px) {
+  .welcome-user-simsid-fixed-dertfsg11463f {
+    // position: fixed;
+    margin-top: 100px;
+  }
+}
+
+.notification-simsid {
+  margin-bottom: 40px;
+  margin-top: 25px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+
+  @media (min-width: 1024px) and (max-width: 1440px) {
+    margin-right: 10px;
   }
 
-  @media screen and (min-width: 1920px) {
-    .welcome-user-simsid-fixed-dertfsg11463f {
-      // position: fixed;
-       margin-top: 100px;
-    }
+  @media screen and (min-width: 1440px) {
+    width: 77.3vw !important;
+
+  }
+}
+
+.notification-open-panel {
+  margin-bottom: 40px;
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+
+  @media (min-width: 1024px) and (max-width: 1440px) {
+    width: 71.3vw !important;
+    margin-right: 10px;
+
   }
 
-.notification-simsid{
-    margin-bottom: 40px;
-    margin-top: 25px;
-   // margin-right: 8%;
-    
+  @media (min-width: 1440px) {
+    width: 77.3vw !important;   
+  }
 }

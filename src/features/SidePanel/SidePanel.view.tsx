@@ -244,9 +244,9 @@ const simsIdAdminQuickLink: () => JSX.Element = () => {
       <div className="quick-link-dertfsg11463f">
         Quick links
       </div>
-      <div className="quick-link-padding-dertfsg11463f">
+      <div className="quick-link-padding-dertfsg11463f ">
         <div
-          className="quick-panel-cont-dertfsg11463f"
+          className="quick-panel-cont-dertfsg11463f label-css"
           key={1}
           onClick={() => {
             window.location.href = `${envConfig.INVITE_STAFF_URL}`;

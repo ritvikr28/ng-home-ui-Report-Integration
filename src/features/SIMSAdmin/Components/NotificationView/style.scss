@@ -1,0 +1,14 @@
+.notification-id-sims {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+
+  @media screen and (min-width: 1440px) {
+    width: 77.3vw !important;
+  }
+
+  @media screen and (min-width: 1440px) {
+    width: 79.6vw;
+  }
+}

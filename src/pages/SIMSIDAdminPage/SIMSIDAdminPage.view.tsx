@@ -24,11 +24,11 @@ const SIMSIDAdminPageView: React.FC = () => {
     
 
     return (
-        <Grid className="app-dertfsg11463f" dataTestId="SIMSIDAdminPage">
+        <Grid className="app-simsid-admin" dataTestId="SIMSIDAdminPage">
             <GridItem
                 className={
                     isOpen
-                        ? "side-margin-dertfsg11463f side-margin-quicklink-dertfsg11463f"
+                        ? "side-margin-dertfsg11463f side-margin-quicklink-simsid-admin"
                         : "side-margin-closed-dertfsg11463f"
                 }
                 lg={isOpen ? 3 : 0}
@@ -46,8 +46,8 @@ const SIMSIDAdminPageView: React.FC = () => {
                 className={
                     !isMobileView
                         ? isOpen
-                            ? "body-open-panel-dertfsg11463f"
-                            : "body-panel-dertfsg11463f res-body-dertfsg11463f"
+                            ? "body-open-panel-simsid-admin"
+                            : "body-panel-simsid-admin res-body-dertfsg11463f"
                         : isOpen
                             ? "body-panel-mobile-open-dertfsg11463f"
                             : "body-panel-mobile-dertfsg11463f"
