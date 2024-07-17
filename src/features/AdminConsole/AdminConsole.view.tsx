@@ -68,7 +68,7 @@ const AdminConsole = () => {
                 },
                 {
                   active: false,
-                  linkName: "Admin Console",
+                  linkName: "Admin console",
                   path: "#",
                 }
               ]}
