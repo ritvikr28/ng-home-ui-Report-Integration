@@ -44,7 +44,7 @@ const AdminConsole = () => {
           )}
           <LocalisedMenu 
             customHeight={100}
-            menuHeading="Admin Console"
+            menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
