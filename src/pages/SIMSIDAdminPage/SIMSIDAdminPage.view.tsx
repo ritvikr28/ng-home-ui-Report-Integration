@@ -28,8 +28,8 @@ const SIMSIDAdminPageView: React.FC = () => {
             <GridItem
                 className={
                     isOpen
-                        ? "side-margin-dertfsg11463f side-margin-quicklink-simsid-admin"
-                        : "side-margin-closed-dertfsg11463f"
+                        ? "side-margin-simsid-admin side-margin-quicklink-simsid-admin"
+                        : "side-margin-closed-simsid-admin"
                 }
                 lg={isOpen ? 3 : 0}
             >
@@ -49,8 +49,8 @@ const SIMSIDAdminPageView: React.FC = () => {
                             ? "body-open-panel-simsid-admin"
                             : "body-panel-simsid-admin res-body-dertfsg11463f"
                         : isOpen
-                            ? "body-panel-mobile-open-dertfsg11463f"
-                            : "body-panel-mobile-dertfsg11463f"
+                            ? "body-panel-mobile-open-simsid-admin"
+                            : "body-panel-mobile-simsid-admin"
                 }
             >
                 {/* eslint-enable */}
