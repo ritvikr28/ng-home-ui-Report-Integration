@@ -36,6 +36,7 @@ const SIMSIDAdminPageView: React.FC = () => {
                     isOpen={isOpen}
                     togglePanel={togglePanel}
                     closePanel={closePanel}
+                    /* istanbul ignore next */
                     setQuickLinkData={() => { }}
                     isSIMSIDAdmin={true}
                 />

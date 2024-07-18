@@ -1,13 +1,22 @@
 import { render, screen, within } from "@testing-library/react";
 import { authService } from "@essnextgen/auth-ui";
+import { useMediaQuery } from "@essnextgen/ui-kit";
 import SIMSIDAdminPageView from "../SIMSIDAdminPage.view";
+
+jest.mock('@essnextgen/ui-kit', () => ({
+    ...jest.requireActual('@essnextgen/ui-kit'),
+    useMediaQuery: jest.fn(),
+  }));
 
 describe("SIMSIDAdminPage", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("renders welcome message and sims id admin page if authorised, with notification enabled", () => {
+  test("renders welcome message and sims id admin page if authorised, with notification enabled, in desktop view", () => {
+    
+    (useMediaQuery as jest.Mock).mockReturnValue(false);
+
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
     jest
@@ -27,7 +36,23 @@ describe("SIMSIDAdminPage", () => {
     expect(containerWelcomeMessage).toHaveTextContent(welcomeMessage);
   });
 
-  test("renders welcome message and sims id admin page if authorised, with notification disabled", () => {
+  test("renders sims id admin page if authorised, with notification enabled, in mobile view", () => {
+    
+    (useMediaQuery as jest.Mock).mockReturnValue(true);
+
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+
+    jest
+      .spyOn(authService, "getUsername")
+      .mockImplementation(() => "John");
+
+    const { getByTestId } = render(<SIMSIDAdminPageView />);
+    expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
+    expect(getByTestId('notification-test-id')).toBeInTheDocument();
+  });
+
+  test("renders welcome message and sims id admin page if authorised, with notification disabled, in desktop view", () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(false);
     const sessionStorageMock = {
         getItem: jest.fn((key) => {
           if (key === 'IS_NOTIFICATION_ENABLED') {
