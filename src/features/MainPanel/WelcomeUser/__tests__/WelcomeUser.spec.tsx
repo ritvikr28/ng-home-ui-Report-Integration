@@ -219,6 +219,7 @@ test("handles console errors during fetchData function call", async () => {
       organisationName: "Example School",
       isApiError: false,
       isOpen: true,
+      isSchoolNameToBeDisplayed: false
     };
 
   render(<WelcomeUserView {...props} />);

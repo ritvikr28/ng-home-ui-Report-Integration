@@ -8,7 +8,6 @@ export function usePersistantState(key: string, defaultValue: boolean) {
 
   useEffect(() => {
     window.sessionStorage.setItem(key, JSON.stringify(value));
-    console.log("key : Value ", key , value);
   }, [key, value]);
 
   return [value, setValue];

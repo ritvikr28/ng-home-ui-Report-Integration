@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import NotificationView from '../Notfication.view';
+import NotificationView from '../Notification.view';
 
 jest.mock('@essnextgen/ui-kit', () => ({
   Notification: jest.fn(({ onClickClose, ...props }) => (

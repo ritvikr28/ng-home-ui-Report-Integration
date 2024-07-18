@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import "../NewHomePage/style.scss";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
-import SIMSIDAdminMainPanel from "../../features/SIMSAdmin/Components/SIMSIDAdminMainPanelView/SIMSIDAdminMainPanel.logic";
+import SIMSIDAdminMainPanel from "../../features/SIMSIDAdmin/Components/SIMSIDAdminMainPanelView/SIMSIDAdminMainPanel.logic";
 import "./style.scss";
 
 const SIMSIDAdminPageView: React.FC = () => {

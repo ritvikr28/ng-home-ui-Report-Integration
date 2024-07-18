@@ -4,7 +4,7 @@ import SIMSupdatesView from "../../../MainPanel/SIMSUpdates/SIMSupdates.view";
 import WelcomeUser from "../../../MainPanel/WelcomeUser/WelcomeUser.logic";
 import { ISIMSIDAdminMainPanelViewProps } from "./SIMSIDAdminMainPanelProps";
 import "../../../MainPanel/style.scss";
-import NotificationView from '../NotificationView/Notfication.view';
+import NotificationView from '../NotificationView/Notification.view';
 import "./style.scss";
 
 const SIMSIDAdminMainPanelView: React.FC<ISIMSIDAdminMainPanelViewProps> = ({ isOpen, enableNotification, setDisableNotification }) =>
