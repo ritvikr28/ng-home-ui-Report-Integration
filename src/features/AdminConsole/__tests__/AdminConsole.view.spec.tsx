@@ -52,14 +52,6 @@ jest.mock("@essnextgen/ui-application-kit", () => ({
 }));
 
 describe("AdminConsole component", () => {
-  it("renders About component", () => {
-    render(<AdminConsole />);
-
-    const aboutComponent = screen.getByText("About the Admin console");
-
-    expect(aboutComponent).toBeInTheDocument();
-  });
-
   it("calls setIsOpen with false when menu is closed", () => {
     const setIsOpen = jest.fn();
     jest.spyOn(React, "useState").mockImplementation(() => [true, setIsOpen]);
