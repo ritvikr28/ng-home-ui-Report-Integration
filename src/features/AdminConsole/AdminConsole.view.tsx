@@ -29,7 +29,7 @@ const AdminConsole = () => {
 
   return (
     <>
-      <Grid className="admin-mobile-1234567">
+      <Grid className="admin-mobile-rwaf92428">
         <GridItem lg={isOpen?3:0} md={isOpen?2:0} xl ={isOpen?2:0} className="side-width">
           {isMobileView && !isOpen && (
             <Button
@@ -68,7 +68,7 @@ const AdminConsole = () => {
                 },
                 {
                   active: false,
-                  linkName: "Admin Console",
+                  linkName: "Admin console",
                   path: "#",
                 }
               ]}
