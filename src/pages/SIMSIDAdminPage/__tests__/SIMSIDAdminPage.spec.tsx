@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
-import SIMSIDAdminPageView from "../SIMSIDAdminPage.view";
 import { authService } from "@essnextgen/auth-ui";
+import SIMSIDAdminPageView from "../SIMSIDAdminPage.view";
 
 describe("SIMSIDAdminPage", () => {
   beforeEach(() => {
