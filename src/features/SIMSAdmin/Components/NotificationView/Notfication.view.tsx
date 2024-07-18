@@ -5,7 +5,7 @@ import { INotificationProps } from "./NotificationProps";
 const NotificationView: React.FC<INotificationProps> = ({ setDisableNotification }) =>
     <Notification
         className='notification-id-sims'
-        dataTestId="test-id"
+        dataTestId="notification-test-id"
         escapeExits
         id="element-id"
         message={<div>

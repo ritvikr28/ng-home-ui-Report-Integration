@@ -4,6 +4,6 @@ export interface ISIMSIDAdminMainPanelProps {
 }
 
 export interface ISIMSIDAdminMainPanelViewProps extends ISIMSIDAdminMainPanelProps {
-    disableNotification?: boolean;
+    enableNotification?: boolean;
     setDisableNotification: (disableNotification: boolean) => void;
 }

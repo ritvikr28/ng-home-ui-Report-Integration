@@ -5,11 +5,11 @@ import { ISIMSIDAdminMainPanelProps } from "./SIMSIDAdminMainPanelProps";
 
 const SIMSIDAdminMainPanel: React.FC<ISIMSIDAdminMainPanelProps> = ({ isOpen, setIsOpen }) => {
 
-  const [notificationDisable, setNotificationDisable] = usePersistantState("IS_NOTIFICATION_ENABLED", true);
+  const [notificationEnable, setNotificationDisable] = usePersistantState("IS_NOTIFICATION_ENABLED", true);
 
   return <SIMSIDAdminMainPanelView
     setDisableNotification={setNotificationDisable}
-    disableNotification={notificationDisable}
+    enableNotification={notificationEnable}
     isOpen={isOpen}
     setIsOpen={setIsOpen}
   />;
