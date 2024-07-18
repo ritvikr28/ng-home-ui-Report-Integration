@@ -1,4 +1,3 @@
 export interface INotificationProps {
-    setDisableNotification: (disableNotification: boolean) => void;
-  }
-  
+  setDisableNotification: (disableNotification: boolean) => void;
+}

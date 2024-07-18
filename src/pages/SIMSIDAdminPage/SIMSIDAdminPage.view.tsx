@@ -16,12 +16,11 @@ const SIMSIDAdminPageView: React.FC = () => {
         setIsOpen(false);
     };
 
-    const renderContent: () => JSX.Element = () =>   <SIMSIDAdminMainPanel
-            isOpen={isOpen} 
-            setIsOpen={setIsOpen} 
-            setDisableNotification={()=>{}}
-            />
-    
+    const renderContent: () => JSX.Element = () => <SIMSIDAdminMainPanel
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+    />
+
 
     return (
         <Grid className="app-simsid-admin" dataTestId="SIMSIDAdminPage">
