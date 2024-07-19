@@ -73,6 +73,7 @@ test("fetches and displays school name", async () => {
   const { findByText } = render(<WelcomeUser 
                           organisationName={mockApiResponse.schoolName}
                           isApiError={false}
+                          isSchoolNameToBeDisplayed={true}
                         />);
   expect(await findByText(/Waters Edge Primary School/i)).toBeInTheDocument();
 });
@@ -218,6 +219,7 @@ test("handles console errors during fetchData function call", async () => {
       organisationName: "Example School",
       isApiError: false,
       isOpen: true,
+      isSchoolNameToBeDisplayed: false
     };
 
   render(<WelcomeUserView {...props} />);

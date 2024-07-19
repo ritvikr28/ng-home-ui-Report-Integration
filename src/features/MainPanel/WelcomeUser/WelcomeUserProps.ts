@@ -7,6 +7,7 @@ export interface IWelcomeUserViewProps {
   isApiError?: boolean;
   isOpen?: boolean;
   isMobileView?:any;
+  isSchoolNameToBeDisplayed?:boolean;
 }
 
 export interface IWelcomeUserLogicProps {
@@ -14,4 +15,5 @@ export interface IWelcomeUserLogicProps {
   organisationName?: string;
   isOpen?: boolean;
   isMobileView?:any;
+  isSchoolNameToBeDisplayed?:boolean;
 }

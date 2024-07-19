@@ -12,7 +12,8 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     subparentClassName,
     organisationName,
     isApiError,
-    isOpen
+    isOpen,
+    isSchoolNameToBeDisplayed
   }: IWelcomeUserViewProps = props;
   const isMobileView : boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
@@ -43,12 +44,12 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
         )}
         {/* eslint-enable */}
       </GridItem>
-      <GridItem>
+       {isSchoolNameToBeDisplayed && <GridItem>
         <div className={`schoolname ${isOpen ? "" : "schoolname-res"}`}> 
           {" "}
           {isApiError === false ? organisationName : ""}
         </div>
-      </GridItem>
+      </GridItem>}
     </Grid>
   );
 };

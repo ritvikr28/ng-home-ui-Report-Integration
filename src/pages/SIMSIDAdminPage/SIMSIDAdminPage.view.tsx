@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import "../NewHomePage/style.scss";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
+import SIMSIDAdminMainPanel from "../../features/SIMSIDAdmin/Components/SIMSIDAdminMainPanelView/SIMSIDAdminMainPanel.logic";
+import "./style.scss";
 
 const SIMSIDAdminPageView: React.FC = () => {
     const isMobileView: boolean = useMediaQuery(
@@ -14,13 +16,19 @@ const SIMSIDAdminPageView: React.FC = () => {
         setIsOpen(false);
     };
 
+    const renderContent: () => JSX.Element = () => <SIMSIDAdminMainPanel
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+    />
+
+
     return (
-        <Grid className="app-dertfsg11463f" dataTestId="SIMSIDAdminPage">
+        <Grid className="app-simsid-admin" dataTestId="SIMSIDAdminPage">
             <GridItem
                 className={
                     isOpen
-                        ? "side-margin-dertfsg11463f side-margin-quicklink-dertfsg11463f"
-                        : "side-margin-closed-dertfsg11463f"
+                        ? "side-margin-simsid-admin side-margin-quicklink-simsid-admin"
+                        : "side-margin-closed-simsid-admin"
                 }
                 lg={isOpen ? 3 : 0}
             >
@@ -28,7 +36,9 @@ const SIMSIDAdminPageView: React.FC = () => {
                     isOpen={isOpen}
                     togglePanel={togglePanel}
                     closePanel={closePanel}
-                    setQuickLinkData={() => { }}
+                    setQuickLinkData={
+                        /* istanbul ignore next */
+                        () => { }}
                     isSIMSIDAdmin={true}
                 />
             </GridItem>
@@ -37,15 +47,15 @@ const SIMSIDAdminPageView: React.FC = () => {
                 className={
                     !isMobileView
                         ? isOpen
-                            ? "body-open-panel-dertfsg11463f"
-                            : "body-panel-dertfsg11463f res-body-dertfsg11463f"
+                            ? "body-open-panel-simsid-admin"
+                            : "body-panel-simsid-admin res-body-dertfsg11463f"
                         : isOpen
-                            ? "body-panel-mobile-open-dertfsg11463f"
-                            : "body-panel-mobile-dertfsg11463f"
+                            ? "body-panel-mobile-open-simsid-admin"
+                            : "body-panel-mobile-simsid-admin"
                 }
             >
                 {/* eslint-enable */}
-                <h2>Coming Soon.....</h2>
+                {renderContent()}
             </GridItem>
         </Grid>
     );
