@@ -36,10 +36,9 @@
   }
 }
 
-@media screen and (min-width: 1920px) {
-  .welcome-user-simsid-fixed-simsid-admin {
-    // position: fixed;
-    margin-top: 100px;
+@media (min-width: 1920px) {
+  .welcome-user-simsid-large {
+    padding-top: 72px;
   }
 }
 

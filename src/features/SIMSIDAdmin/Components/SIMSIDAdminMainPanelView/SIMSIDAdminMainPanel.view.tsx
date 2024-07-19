@@ -8,15 +8,14 @@ import NotificationView from '../NotificationView/Notification.view';
 import "./style.scss";
 
 const SIMSIDAdminMainPanelView: React.FC<ISIMSIDAdminMainPanelViewProps> = ({ isOpen, enableNotification, setDisableNotification }) =>
-  <div className={isOpen ? " " : "welcome-user-simsid-fixed"}>
+  <div className={isOpen ? " " : "welcome-user-simsid-fixed welcome-user-simsid-large"}>
     <Grid dataTestId="SIMSID-Admin-View">
       <GridItem className="simsid-main-panel-container-simsid-admin">
-        <div className='welcome-user'>
           <WelcomeUser
             isSchoolNameToBeDisplayed={false}
             isOpen={isOpen}
           />
-        </div>
+     
         {enableNotification &&
           <div className={isOpen ? 'notification-open-panel' : 'notification-simsid'}>
             <NotificationView setDisableNotification={setDisableNotification} />
