@@ -36,8 +36,9 @@ const SIMSIDAdminPageView: React.FC = () => {
                     isOpen={isOpen}
                     togglePanel={togglePanel}
                     closePanel={closePanel}
-                    /* istanbul ignore next */
-                    setQuickLinkData={() => { }}
+                    setQuickLinkData={
+                        /* istanbul ignore next */
+                        () => { }}
                     isSIMSIDAdmin={true}
                 />
             </GridItem>

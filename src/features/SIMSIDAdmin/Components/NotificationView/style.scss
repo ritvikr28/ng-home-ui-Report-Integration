@@ -1,14 +1,41 @@
-.notification-id-sims {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
+.secondary-text-simsid-admin-sec-heading {
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  margin-bottom: 8px;
+}
 
-  @media screen and (min-width: 1440px) {
-    width: 77.3vw !important;
-  }
+.secondary-text-simsid-admin {
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+  margin-bottom: 8px;
+  display: inline;
+}
 
-  @media screen and (min-width: 1440px) {
-    width: 79.6vw;
-  }
+.secondary-text-span-simsid-admin {
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  display: inline;
+}
+
+.secondary-text-simsid {
+  margin-top: -15px;
+}
+
+.secondary-text-second-para {
+  margin-top: 10px;
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
+  text-align: left;
+  // display: inline;
 }
