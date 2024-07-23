@@ -21,7 +21,6 @@ import {
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
-import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import getAppModulesPermissions from "./actions/queries";
@@ -151,12 +150,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     `${envConfig.APPLICATION}`,
     "AdminConsoleView"
   );
- 
-  // const hasAdminFlagrPermission:boolean=(hasFeaturePermission(`${envConfig.APPLICATION}`,'AdminView') &&
-  // isOrganisationInVariant('AdminView'));
-  const hasSIMSAdminFlagrPermission : boolean = (hasFeaturePermission(`${envConfig.APPLICATION}`,'SIMSIDAdminView') && 
-  isOrganisationInVariant('SIMSIDAdminView'));
-
+  
   const requiredNewHomePagePermissions: Permission[] = [
     {
       Securable: "NG.Homepage",
@@ -234,7 +228,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         {/* eslint-disable */}
         <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated ?
              ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))
-             ? NewHomepageView : (!hasNewHomePagePermission && isAuthzAdmin && hasSIMSAdminFlagrPermission) 
+             ? NewHomepageView : (!hasNewHomePagePermission && isAuthzAdmin)
              ? SIMSIDAdminPageView : LandingPage) : EmptyComponent} />  
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
