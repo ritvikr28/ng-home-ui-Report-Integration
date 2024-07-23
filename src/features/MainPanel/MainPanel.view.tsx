@@ -73,6 +73,7 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
             isApiError={isError}
             organisationName={schoolName}
             isOpen={isOpen}
+            isSchoolNameToBeDisplayed={true}
           />
           {authService.isAuthorised(
             requiredStaffTimeTablePermissions,
