@@ -16,7 +16,7 @@ const NotificationView: React.FC<INotificationProps> = ({ setDisableNotification
 
         <Grid>
         <GridItem className='secondary-text-span-simsid-admin'>
-            <span>Invite Staff Members - </span>
+            <span>Invite staff members - </span>
             <div className='secondary-text-simsid-admin'>
                 You can invite staff members to access SIMS Next Gen by selecting the Invite Staff option in the left side panel or from the main menu.
             </div>
