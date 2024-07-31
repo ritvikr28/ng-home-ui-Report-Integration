@@ -199,7 +199,7 @@ stages:
               publishLocation: 'Container'
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-    - stage: DevDeploy
+    - stage: dev
       displayName: Deployment to Dev
       dependsOn: Build
       pool:
@@ -209,7 +209,7 @@ stages:
       jobs:
         - deployment: Deploy_nghomeui_Dev
           displayName: "Deployment to Dev"
-          environment: dev             
+          environment: dev_eng             
           strategy:
             runOnce:
               deploy:
@@ -250,17 +250,17 @@ stages:
                       failOnStderr: true
   
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
-    - stage: QADeploy
-      displayName: Deployment to QA
-      dependsOn: DevDeploy
+    - stage: qa
+      displayName: Deployment to Qa
+      dependsOn: dev
       pool:
         name: 'paz-vmss-pool'
       variables:
         - group: 'ng-home-ui-QA'
       jobs:
-        - deployment: deploy_nghomeui_qa_snow
+        - deployment: deploy_nghomeui_qa_eng
           displayName: "Deployment to QA"
-          environment: qa_snow          
+          environment: qa_eng          
           strategy:
             runOnce:
               deploy:
@@ -303,7 +303,7 @@ stages:
 
         - job: QA_Test
           displayName: Running Automation UI Test cases on qa env
-          dependsOn: deploy_nghomeui_qa_snow
+          dependsOn: deploy_nghomeui_qa_eng
           steps:
           - template: azure-pipeline-run-automation-test.yaml
             parameters:
@@ -323,25 +323,25 @@ stages:
         #     env_name: qa_snow  
         #     config:
  
-    - stage: PreLive
-      displayName: "Pre-Live Stage"
-      dependsOn: QADeploy
+    - stage: approval_gate
+      displayName: "Approval_Gate Stage"
+      dependsOn: qa
       jobs:
-        - deployment: PreLiveDeploy
+        - deployment: approval_gateDeploy
           displayName: "Deployment Job"
-          environment: PreLive
+          environment: approval_gate_eng
           strategy:
             runOnce:
               deploy:
                 steps:
                   - script: |
-                      echo "Approval has been given for Live"
-                    displayName: 'Deployment to Pre-Live'
+                      echo "Approval has been given for Prod"
+                    displayName: 'Deployment to Approval_Gate'
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
-    - stage: LiveDeploy
-      displayName: Deployment to Live
-      dependsOn: PreLive
+    - stage: prod
+      displayName: Deployment to Prod
+      dependsOn: approval_gate
       pool:
         name: 'paz-vmss-pool'
       variables:
@@ -352,6 +352,7 @@ stages:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
               requireManualValidation: false
+              deploymentJobName: deploy_nghomeui_live     ###
             # component:
             #   name: 'ng-home-ui'
             #   selfhostedpool: 'paz-vmss-pool' 
@@ -360,17 +361,18 @@ stages:
           parameters:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true          
+              requireManualValidation: true
+              deploymentJobName: deploy_nghomeui_live     ###          
             # component:
             #   name: 'nghomeui'
             #   selfhostedpool: 'paz-vmss-pool'
-            env_name: live_snow  
+            env_name: prod_eng  
             config:
 
         - deployment: deploy_nghomeui_live
-          displayName: "Deployment to Live"
+          displayName: "Deployment to Prod"
           dependsOn: MoveCR
-          environment: live_snow         
+          environment: prod_eng         
           strategy:
             runOnce:
               deploy:
@@ -407,11 +409,12 @@ stages:
           parameters:
             snowConfig:    
               serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false          
+              requireManualValidation: false 
+              deploymentJobName: deploy_nghomeui_live     ###          
             components:
               - name: 'nghomeui'
                 selfhostedpool: 'paz-vmss-pool'
-            env_name: live_snow
+            env_name: prod_eng
             
         # - job: Live_Test
         #   displayName: Running Automation UI Test cases on live env
@@ -425,17 +428,17 @@ stages:
         #       pat_token: $(PAT)       
 
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-    - stage: PerfDeploy
-      displayName: Deployment to Perf
+    - stage: pre_prod
+      displayName: Deployment to Pre_prod
       dependsOn: Build
       pool:
         name: 'paz-vmss-pool'
       variables:
         - group: 'ng-home-ui-perf'
       jobs:
-        - deployment: Deploy_nghomeui_Perf
-          displayName: "Deployment to Perf"
-          environment: perf
+        - deployment: Deploy_nghomeui_pre_prod
+          displayName: "Deployment to Pre_Prod"
+          environment: pre_prod_eng
           strategy:
             runOnce:
               deploy:
