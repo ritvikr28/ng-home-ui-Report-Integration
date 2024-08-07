@@ -114,7 +114,7 @@ test("handles errors during data fetching", async () => {
   expect(setIsError).toHaveBeenCalledWith(true);
 })
 
-test.skip("handles console errors during fetchData function call", async () => {
+test("handles console errors during fetchData function call", async () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
   jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   jest.spyOn(authService, "getUsername").mockImplementation(() => {
