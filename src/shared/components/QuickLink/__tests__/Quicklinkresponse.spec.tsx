@@ -144,4 +144,64 @@ describe("fetchQuickLinkDetails", () => {
 
     expect(FetchQuickLinkData).toHaveBeenCalledWith("");
   });
+
+  test('should return {response, status: false} when FetchQuickLinkData returns a successful response with status 204', async () => {
+   
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 204, response: mockApiResponse });
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
+
+    const result = await fetchQuickLinkDetails();
+
+    expect(result).toEqual({ response: mockApiResponse, status: false });
+  });
+  
+  it('should return null when FetchQuickLinkData does not return a successful status', async () => {
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 500 });
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
+
+    const result = await fetchQuickLinkDetails();
+
+    expect(result).toBeNull();
+  });
+
+  test('should return null when quickLinkDetails status is not 200 or 204', async () => {
+    
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 500 });
+    
+    const result = await fetchQuickLinkDetails();
+    
+    expect(result).toBeNull();
+  });
+
+  test('should return response and status false when quickLinkDetails status is 200', async () => {
+
+    const mockPermissions = [
+      { Securable: 'some.value.teacher.role1' },
+      { Securable: 'some.value.teacher.role2' }
+    ];
+    const mockResponse = { status: 200, response: [{ id: 1, name: 'QuickLink1' }] };
+    
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockPermissions);
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue(mockResponse);
+    
+  
+    const result = await fetchQuickLinkDetails();
+    
+    expect(result).toEqual({ response: mockResponse.response, status: false });
+  });
+
+  test('should return null when quickLinkDetails is null or undefined', async () => {
+   
+    const mockPermissions = [
+      { Securable: 'some.value.teacher.role1' }
+    ];
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockPermissions);
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue(null);
+    
+    const result = await fetchQuickLinkDetails();
+    
+    expect(result).toBeNull();
+  });
+
 });

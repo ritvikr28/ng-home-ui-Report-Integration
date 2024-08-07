@@ -10,7 +10,7 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
 } | null | undefined> = async () => {      
       try {
        const responsesecurable : Permission [] = getQuickLinkSecurablesList();
-       console.log(responsesecurable)
+       
        const teachersecurable: string [] =[]; 
        if(responsesecurable.length>0){
         responsesecurable.map((x)=>{
@@ -19,17 +19,16 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
         })
        }
       const permission: string=  teachersecurable.toString();
-        const quickLinkDetails:{
-          status: number;
-          response: IQuickLinkApiResponse[];
-      } = await FetchQuickLinkData(permission);        
-      
-        if (quickLinkDetails.status === 200 || quickLinkDetails.status === 204) {          
-          const response:IQuickLinkApiResponse[] = quickLinkDetails.response;
-           /* eslint-enable */
-          const status = false ;         
-          return  {response,status};          
-        } 
+      const quickLinkDetails = await FetchQuickLinkData(permission);
+
+      if (quickLinkDetails?.status === 200 || quickLinkDetails?.status === 204) {
+        const response:IQuickLinkApiResponse[] = quickLinkDetails.response;
+        /* eslint-enable */
+       const status = false ;         
+       return  {response,status};          
+      }
+
+      return null;
 
       } catch (error) {
         return null;

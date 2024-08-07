@@ -343,15 +343,13 @@ describe("School Service tests", () => {
          
         });
       });
-      test("should return null school Name", async () => {
-        jest
-          .spyOn(service, "get")
-          .mockImplementation(() => Promise.reject(new Error("Failed to fetch school name")));
      
-        await waitFor(() => {
-          expect(useFetchSchoolNameData()).rejects.toThrow('Failed to fetch school name');
-         
-        });
+      test("should return null when an error occurs", async () => {
+        (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+    
+        const result = await useFetchSchoolNameData();
+    
+        expect(result).toBeNull();
       });
 })
  
@@ -367,14 +365,13 @@ describe("Fetch group member details tests", () => {
         });
     });
  
-  test("should return error while getting group member details", async () => {
-    const expectedError = new Error('Failed to fetch group member details');
-      jest
-        .spyOn(service, "get")
-        .mockRejectedValue(() => Promise.reject(expectedError));
-        await waitFor(() => {
-          expect(FetchGroupMemberDetailsData('groupExternalId', 'startDate', 'endDate')).rejects.toThrow('Failed to fetch group member details');        
-        });
+ 
+    test("should return null when an error occurs", async () => {
+      (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+  
+      const result = await FetchGroupMemberDetailsData('822cd4b0-a50b-4e58-bf67-262835cfb4b5', Date.UTC.toString(), Date.UTC.toString());
+  
+      expect(result).toBeNull();
     });
 })
  
@@ -389,14 +386,14 @@ describe("Fetch staff time table event details tests", () => {
           expect(staffDataResponse.responseData).toBe(mockStaffTimeTableEventsResponseWithSixRecords);      
         });
     });
- 
-  test("should return null while getting staff time table details", async () => {
-    const expectedError = new Error('Failed to fetch staff timetable details');
-      jest
-        .spyOn(service, "get")
-        .mockRejectedValue(() => Promise.reject(expectedError));
-        await waitFor(() => {
-          expect(FetchStaffTimeTableEventsData()).rejects.toThrow("Failed to fetch staff timetable details");        
-        });
+
+    test("should return null when an error occurs", async () => {
+      (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+  
+      const result = await FetchStaffTimeTableEventsData();
+  
+      expect(result).toBeNull();
     });
+ 
+ 
 })

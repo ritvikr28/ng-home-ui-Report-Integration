@@ -217,16 +217,12 @@ describe("RegisterEventDetails test", () => {
       expect(registerData).toBeNull();
     });
   });
+  test("should return null when an error occurs", async () => {
+    (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
 
-  test("handles non-200 status code correctly", async () => {
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() =>
-        Promise.reject(new Error("Failed to fetch registers details"))
-      );
+    const result = await FetchRegisterEventData();
 
-    await expect(FetchRegisterEventData()).rejects.toThrow(
-      new Error("Failed to fetch registers details")
-    );
+    expect(result).toBeNull();
   });
+
 });

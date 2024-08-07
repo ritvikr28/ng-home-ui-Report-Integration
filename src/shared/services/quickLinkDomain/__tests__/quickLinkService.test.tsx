@@ -45,14 +45,6 @@ const mockApiResponse: IQuickLinkApiResponse[] = [
     headers: {}
   };
 
-  const axiosResponsesstatus: AxiosResponse = {
-    data: mockApiResponse,
-    status: 500,
-    statusText: "OK",
-    config: {},
-    headers: {}
-  };
-
 const role = "Teacher";
   describe("QuickLink Service tests", () => {
 
@@ -69,26 +61,12 @@ const role = "Teacher";
       });
 
       test("handles API error", async () => {
-        jest
-          .spyOn(service, "get")
-          .mockImplementation(() => Promise.resolve(axiosResponsesstatus));
+        (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+        const result = await FetchQuickLinkData(role);
+        expect(result).toBeNull();
           
-          try {
-            await FetchQuickLinkData(role);
-          } catch (error: any) {
-            expect(error.message).toBe('Failed to fetch quick link details');
-          }
       });
 
-      test("should promise failed", async () => {
-        jest
-          .spyOn(service, "get")
-          .mockImplementation(() => Promise.reject(new Error("Failed to fetch quick link details")));
-    
-        await expect(FetchQuickLinkData(role)).rejects.toThrow(new Error("Failed to fetch quick link details"));
-        
-      });
-    
       test("should return QuickLink post data", async () => {
         const id= 2;
         const operation = true;
@@ -101,15 +79,13 @@ const role = "Teacher";
           expect(response).toEqual(mockApiResponse);
         });
       });
-      test("should promise failed for fetchQuickLinkpost", async () => {
-        const id= 2;
-        const operation = true;
-        jest
-          .spyOn(service, "post")
-          .mockImplementation(() => Promise.reject(new Error("Failed to mark Favourite/Unfavourite")));
-   
-        await expect(FetchQuickLinkpost(id,operation)).rejects.toThrow(new Error("Failed to mark Favourite/Unfavourite"));
-       
-      });    
+     
+      test("should return null when an error occurs", async () => {
+        (service.post as jest.Mock).mockRejectedValue(new Error("Network Error"));
+    
+        const result = await FetchQuickLinkpost(2,false);
+    
+        expect(result).toBeNull();
+      });
      
 })

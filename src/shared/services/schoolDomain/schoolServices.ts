@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 import { service } from "../../utils/api-service";
 import { IStaffTimeTableEventsResponse,IGroupMemberDetailsResponse,ISchoolNameDataResponse} from "../../model/SchoolDomain/responsemodels"
 import apiUrls from "../../hook/ApiConfig.json";
-import { logger } from "../../components/AppInsights";
+
 
 export interface IStaffTimeTableEventsDataResponse {
   status: number;
@@ -23,11 +23,7 @@ export const useFetchSchoolNameData:() =>Promise<ISchoolNameDataResponse | null>
     return response.data;
   }
   catch (err:any) {
-    logger.error({
-      error:"Failed to fetch school name",
-      code: err.name
-    });
-    throw new Error('Failed to fetch school name');  }
+    return null; }
 };
 
 
@@ -42,11 +38,7 @@ export const FetchStaffTimeTableEventsData:() =>Promise<IStaffTimeTableEventsDat
     const responseData:IStaffTimeTableEventsResponse[] | null = response.data;
     return { status, responseData };
   } catch (err:any) {
-    logger.error({
-      error:"Failed to fetch staff timetable details",
-      code: err.name
-    });
-    throw new Error('Failed to fetch staff timetable details');
+    return null;
   }
 };
 
@@ -68,11 +60,7 @@ export const FetchGroupMemberDetailsData:(
     );
     return responseData.data.data;
   } catch (err:any) {
-    logger.error({
-      error:"Failed to fetch group member details",
-      code: err.name
-    });
-    throw new Error('Failed to fetch group member details');
+    return null;
   }
 };
 
