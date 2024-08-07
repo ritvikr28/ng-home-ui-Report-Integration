@@ -3,7 +3,7 @@ import { AxiosResponse } from "axios";
 import { service } from "../../../utils";
 import { fetchStaffDetails } from "../staffServices";
 import { IStaffBasicDetails } from "../../../model/StaffDomain/responseModels";
-import { logger } from "../../../components/AppInsights";
+
 
 const mockStaffDetailsResponse: IStaffBasicDetails[] = [
   {
@@ -34,7 +34,6 @@ const axiosResponse: AxiosResponse = {
   headers: {},
 };
 
-const mockErrorResponse = new Error("Failed to fetch cover staff details");
 
 describe("fetchStaffDetails tests", () => {
   test("should return staff details successfully", async () => {
@@ -54,23 +53,12 @@ describe("fetchStaffDetails tests", () => {
     });
   });
 
-  test("should log error and return null on failure", async () => {
-    jest
-      .spyOn(service, "post")
-      .mockImplementation(() => Promise.reject(mockErrorResponse));
-    const loggerSpy = jest.spyOn(logger, "error").mockImplementation(() => {});
+  test("should return null when an error occurs", async () => {
+    (service.post as jest.Mock).mockRejectedValue(new Error("Network Error"));
 
-    const staffExternalIds = ["invalidId"];
+    const staffExternalIds = ["1a2b3c", "4d5e6f"];
     const response = await fetchStaffDetails(staffExternalIds);
 
-    await waitFor(() => {
-      expect(response).toBeNull();
-      expect(loggerSpy).toHaveBeenCalledWith({
-        error: "Failed to fetch cover staff details",
-        code: mockErrorResponse.name,
-      });
-    });
-
-    loggerSpy.mockRestore();
+    expect(response).toBeNull();
   });
 });

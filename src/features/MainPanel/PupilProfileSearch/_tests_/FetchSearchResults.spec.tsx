@@ -64,4 +64,13 @@ describe("FeatchSearchResults test", () => {
     
         await expect(fetchSearchResults("ben","Current")).rejects.toThrow(new Error("error message"));        
       });
+
+      test.skip("should return null when an error occurs", async () => {
+        (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+    
+        const result = await fetchSearchResults("ben","Current");
+    
+        expect(result).toBeNull();
+      });
+
 })

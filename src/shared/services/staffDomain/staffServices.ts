@@ -1,6 +1,5 @@
 import { AxiosResponse } from "axios";
 import { envConfig, service } from "../../utils";
-import { logger } from "../../components/AppInsights";
 import { IStaffBasicDetails } from "../../model/StaffDomain/responseModels";
 
 export const fetchStaffDetails: (staffExternalIds: string[]) => Promise<IStaffDetailsByIdsResponse | null> = async (staffExternalIds: string[]) => {
@@ -16,10 +15,7 @@ export const fetchStaffDetails: (staffExternalIds: string[]) => Promise<IStaffDe
       );
       return response.data;
     } catch (err: any) {
-      logger.error({
-        error: "Failed to fetch cover staff details",
-        code: err.name
-      });
+      
       return null;
     }
   };
