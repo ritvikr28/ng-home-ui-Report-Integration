@@ -55,7 +55,8 @@ const webpackBasePlugins = [
     template: path.resolve(__dirname, "../../public/index.html"),
     filename: "index.html",
     inject: "body",
-    minify: true
+    minify: true,
+    hash:true
   }),
   new ProvidePlugin({
     React: "react"
