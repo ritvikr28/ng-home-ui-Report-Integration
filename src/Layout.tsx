@@ -89,7 +89,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   baseRouteName
 }: ILayoutProps) => {
   const dispatch: any = useDispatch();
-  const history = useHistory();
+  const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
     const [isServiceInitiated, setIsServiceInitiated]: [

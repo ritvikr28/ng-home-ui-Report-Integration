@@ -41,10 +41,8 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [coverStaffNames, setCoverStaffNames] = useState<
-    Record<string, string>
-  >({});
+  const [staffNames, setStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
+  const [coverStaffNames, setCoverStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
@@ -78,17 +76,15 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
             setSelectedItem(responseData[0].externalId);
           }
 
-          const staffNamePromises = responseData.map((eventData) =>
+          const staffNamePromises: Promise<string>[] = responseData.map((eventData: IStaffTimeTableEventsResponse) =>
             formatStaffName(eventData)
           );
-          const coverStaffNamePromises = responseData.map((eventData) =>
+          const coverStaffNamePromises: Promise<string>[] = responseData.map((eventData: IStaffTimeTableEventsResponse) =>
             formatCoverStaffName(eventData)
           );
 
-          const resolvedStaffNames = await Promise.all(staffNamePromises);
-          const resolvedCoverStaffNames = await Promise.all(
-            coverStaffNamePromises
-          );
+          const resolvedStaffNames: string[] = await Promise.all(staffNamePromises);
+          const resolvedCoverStaffNames: string[] = await Promise.all(coverStaffNamePromises);
 
           const staffNamesMap: Record<string, string> = {};
           const coverStaffNamesMap: Record<string, string> = {};
@@ -183,12 +179,12 @@ const formatStaffName = async (
     isCovered,
     isCovering,
     supervisors,
-  } = eventTimeData;
+  }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID && !isCovered && isCovering) {
-    const staffDetails = await fetchStaffDetails([originalStaffExternalID]);
-    const originalStaffDetail = staffDetails?.payload?.find(
-      (x) => x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
+    const staffDetails: any = await fetchStaffDetails([originalStaffExternalID]);
+    const originalStaffDetail: any = staffDetails?.payload?.find(
+      (x: any) => x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
     );
     if(!originalStaffDetail){
       return '';
@@ -208,19 +204,19 @@ const formatCoverStaffName = async (
     isCovered,
     isCovering,
     supervisors,
-  } = eventTimeData;
+  }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID) {
     if (isCovered && !isCovering) {
-      const coveringStaffIds = coveringStaffExternalID
+      const coveringStaffIds: string[] = coveringStaffExternalID
         .split(',')
         .map((id) => id.toUpperCase().trim());
 
       if (coveringStaffIds.length > 0) {
-        const staffDetails = await fetchStaffDetails(coveringStaffIds);
-        const coverStaffNames = staffDetails?.payload
-          ?.filter((detail) => coveringStaffIds.includes(detail.externalId.toUpperCase()))
-          .map((detail) => `${detail.forename} ${detail.surname}`)
+        const staffDetails: any = await fetchStaffDetails(coveringStaffIds);
+        const coverStaffNames: string = staffDetails?.payload
+          ?.filter((detail: any) => coveringStaffIds.includes(detail.externalId.toUpperCase()))
+          .map((detail: any) => `${detail.forename} ${detail.surname}`)
           .join(', ');
 
         return coverStaffNames || '';
@@ -274,9 +270,18 @@ const returnEventContainer = ({
   setIsOpenPanel,
   setSelectedItem,
   staffNames,
-  coverStaffNames
-
-}: any) => {
+  coverStaffNames,
+}: {
+  schoolEventsData: IStaffTimeTableEventsResponse[];
+  isOpen: boolean;
+  isOpenPanel: Record<string, boolean>;
+  selectedItem: string;
+  isLoader: boolean;
+  setIsOpenPanel: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setSelectedItem: React.Dispatch<React.SetStateAction<string>>;
+  staffNames: Record<string, string>;
+  coverStaffNames: Record<string, string>;
+}): JSX.Element => {
   const togglePanel: (externalId: string) => void = (externalId: string) => {
     if (!isOpenPanel[externalId]) {
       gtmAnalytics.pushEvent({
