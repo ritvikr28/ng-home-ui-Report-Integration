@@ -270,7 +270,7 @@ const returnEventContainer = ({
   setIsOpenPanel,
   setSelectedItem,
   staffNames,
-  coverStaffNames,
+  coverStaffNames
 }: {
   schoolEventsData: IStaffTimeTableEventsResponse[];
   isOpen: boolean;
