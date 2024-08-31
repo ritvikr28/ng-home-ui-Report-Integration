@@ -1,6 +1,6 @@
 import React,{ Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ProtectedRoute, Auth, authService, Permission, MatchPermissions } from "@essnextgen/auth-ui";
+import { ProtectedRoute, Auth, authService, MatchPermissions } from "@essnextgen/auth-ui";
 import {
   Switch,
   Route,
@@ -251,13 +251,15 @@ const renderHomePage = (
     /* istanbul ignore next */
   if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
     return NewHomepageView;
-  } else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+  } /* eslint-disable */
+   else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
     return SIMSIDAdminPageView;
   }   /* istanbul ignore next */
   else {
     return LandingPage;
   }
 };
+  {/* eslint-enable */}
 /* istanbul ignore next */
 const EmptyComponent: () => JSX.Element = () => (
   <div data-testid="empty-component" className=""/>
