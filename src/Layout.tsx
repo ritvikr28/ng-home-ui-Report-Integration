@@ -113,7 +113,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   };
 
-  const menuFilterHandler = (menus: IApplicationMenu[]): IApplicationMenu[] => { 
+  const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (menus: IApplicationMenu[]) => {
     startRequest();
     const modules: IAppModule[] = filterAndMapModules(menus);
     if (menus.length !== ApplicationConfig.getDefaultMenus().length) {
@@ -122,7 +122,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
-  const filterAndMapModules = (menus: IApplicationMenu[]): IAppModule[] => {
+  const filterAndMapModules: (menus: IApplicationMenu[]) => IAppModule[] = (menus: IApplicationMenu[]) => {
     const filteredModules: IApplicationMenu[] = menus.filter(
       (x) => !x.allowedRoles.includes("admin")
     );
@@ -139,7 +139,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   };
     /* eslint-enable */
 
-    const getAppUrl = (x: IApplicationMenu): string | undefined => {
+   const getAppUrl: (x: IApplicationMenu) => string | undefined = (x: IApplicationMenu) => {
       if (x.isStandalone === false) return x.relativePath;
       /* istanbul ignore next */
       if (x.appCode === "StaffProfile" && ["Development", "QA"].includes(envConfig.REACT_ENVIRONMENT))
@@ -242,12 +242,17 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   );
 };
 
-const renderHomePage = (
+const renderHomePage: (
   hasNewHomePagePermission: boolean,
   hasTeacherPermission: boolean,
   hasSLTPermission: boolean,
   hasAdminPermission: boolean
-): React.ComponentType<any> | undefined => {
+) => React.ComponentType<any> | undefined = (
+  hasNewHomePagePermission: boolean,
+  hasTeacherPermission: boolean,
+  hasSLTPermission: boolean,
+  hasAdminPermission: boolean
+) => {
   /* istanbul ignore next */
   if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
     return NewHomepageView;

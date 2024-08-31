@@ -260,7 +260,17 @@ const renderNoEventsCard: () => JSX.Element = () => (
   />
 );
 
-const returnEventContainer = ({
+const returnEventContainer: React.FC<{
+  schoolEventsData: IStaffTimeTableEventsResponse[];
+  isOpen: boolean;
+  isOpenPanel: Record<string, boolean>;
+  selectedItem: string;
+  isLoader: boolean;
+  setIsOpenPanel: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  setSelectedItem: React.Dispatch<React.SetStateAction<string>>;
+  staffNames: Record<string, string>;
+  coverStaffNames: Record<string, string>;
+}> = ({ 
   schoolEventsData,
   // togglePanel,
   isOpen,
@@ -271,17 +281,7 @@ const returnEventContainer = ({
   setSelectedItem,
   staffNames,
   coverStaffNames
-}: {
-  schoolEventsData: IStaffTimeTableEventsResponse[];
-  isOpen: boolean;
-  isOpenPanel: Record<string, boolean>;
-  selectedItem: string;
-  isLoader: boolean;
-  setIsOpenPanel: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
-  setSelectedItem: React.Dispatch<React.SetStateAction<string>>;
-  staffNames: Record<string, string>;
-  coverStaffNames: Record<string, string>;
-}): React.ReactElement => {
+}) => {
   const togglePanel: (externalId: string) => void = (externalId: string) => {
     if (!isOpenPanel[externalId]) {
       gtmAnalytics.pushEvent({
