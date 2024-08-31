@@ -105,17 +105,17 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   const fetchData: () => Promise<void> = async () => {
     try {
-      const response = await getAppModulesPermissions();
-      const menusWithPermission = getMenus(response.data, allMenus);
+      const response: any = await getAppModulesPermissions(); 
+      const menusWithPermission: IApplicationMenu[] = getMenus(response.data, allMenus);
       menuFilterHandler(menusWithPermission);
     } catch {
       menuFilterHandler([]);
     }
   };
 
-  const menuFilterHandler = (menus: IApplicationMenu[]) => {
+  const menuFilterHandler = (menus: IApplicationMenu[]): IApplicationMenu[] => { 
     startRequest();
-    const modules = filterAndMapModules(menus);
+    const modules: IAppModule[] = filterAndMapModules(menus);
     if (menus.length !== ApplicationConfig.getDefaultMenus().length) {
       dispatch(saveAppPermission(modules));
     }
@@ -123,7 +123,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   };
 
   const filterAndMapModules = (menus: IApplicationMenu[]): IAppModule[] => {
-    const filteredModules = menus.filter(
+    const filteredModules: IApplicationMenu[] = menus.filter(
       (x) => !x.allowedRoles.includes("admin")
     );
      /* eslint-disable */
@@ -134,18 +134,18 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       code: x.appCode,
       canView: true,
       linkText: t(`slices.${x.appCode}.linkText`),
-      link: t(`slices.${x.appCode}.link`),
+      link: t(`slices.${x.appCode}.link`)
     }));
   };
     /* eslint-enable */
 
-  const getAppUrl = (x: IApplicationMenu) => {
-    if (x.isStandalone === false) return x.relativePath;
-    /* istanbul ignore next */
-    if (x.appCode === "StaffProfile" && ["Development", "QA"].includes(envConfig.REACT_ENVIRONMENT))
-      return "/staff";
-    return x.absolutePath;
-  };
+    const getAppUrl = (x: IApplicationMenu): string | undefined => {
+      if (x.isStandalone === false) return x.relativePath;
+      /* istanbul ignore next */
+      if (x.appCode === "StaffProfile" && ["Development", "QA"].includes(envConfig.REACT_ENVIRONMENT))
+        return "/staff";
+      return x.absolutePath;
+    };
 
   const onAuthenticated: any = () => {
     /* istanbul ignore next */
@@ -163,23 +163,23 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const shouldRenderSLTView: boolean = organisationId.includes(getUserOrganisation());
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
-  const hasNewHomePagePermission = authService.isAuthorised(
+  const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
     MatchPermissions.all
   );
-  const hasTeacherPermission = authService.isAuthorised(
+  const hasTeacherPermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage.Teacher", Operation: "View" }],
     MatchPermissions.all
   );
-  const hasSLTPermission = authService.isAuthorised(
+  const hasSLTPermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage.SLT", Operation: "View" }],
     MatchPermissions.all
   );
-  const hasAdminPermission = authService.isAuthorised(
+  const hasAdminPermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage.Admin", Operation: "View" }],
     MatchPermissions.all
   );
-  const hasAdminConsolePermissions = authService.isAuthorised(
+  const hasAdminConsolePermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.AdminConsole", Operation: "View" }],
     MatchPermissions.all
   );
@@ -247,18 +247,19 @@ const renderHomePage = (
   hasTeacherPermission: boolean,
   hasSLTPermission: boolean,
   hasAdminPermission: boolean
-) => {
-    /* istanbul ignore next */
+): React.ComponentType<any> | undefined => {
+  /* istanbul ignore next */
   if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
     return NewHomepageView;
   } /* eslint-disable */
-   else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+  else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
     return SIMSIDAdminPageView;
-  }   /* istanbul ignore next */
+  } /* istanbul ignore next */
   else {
     return LandingPage;
   }
 };
+
   {/* eslint-enable */}
 /* istanbul ignore next */
 const EmptyComponent: () => JSX.Element = () => (

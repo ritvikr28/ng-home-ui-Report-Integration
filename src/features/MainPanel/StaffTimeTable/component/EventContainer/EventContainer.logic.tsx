@@ -281,7 +281,7 @@ const returnEventContainer = ({
   setSelectedItem: React.Dispatch<React.SetStateAction<string>>;
   staffNames: Record<string, string>;
   coverStaffNames: Record<string, string>;
-}): JSX.Element => {
+}): React.ReactElement => {
   const togglePanel: (externalId: string) => void = (externalId: string) => {
     if (!isOpenPanel[externalId]) {
       gtmAnalytics.pushEvent({
