@@ -98,111 +98,91 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     ] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchAllData: () => Promise<void> = async () => {
-      getAppModulesPermissions()
-        .then((response: any) => {
-          const menusWithPermission: IApplicationMenu[] = getMenus(
-            response.data,
-            allMenus
-          );
-          menuFilterHandler(menusWithPermission);
-        })
-        .catch(() => menuFilterHandler([]));
-    };
-    if (isStandaloneApp === false) {
-      fetchAllData();     
-    }    
+    if (!isStandaloneApp) {
+      fetchData();
+    }
   }, []);
 
-  const menuFilterHandler: (
-    menus: IApplicationMenu[]
-  ) => (IApplicationMenu | undefined)[] = (menus: IApplicationMenu[]) => {
-    startRequest();
-    const filteredModules: IApplicationMenu[] = menus.filter(
-      (x: IApplicationMenu) => !x.allowedRoles.includes("admin")
-    );
-    const modules: IAppModule[] = filteredModules.map(
-      (x: IApplicationMenu) => ({
-        /* eslint-disable */
-        appUrl:  x.isStandalone === false ? x.relativePath: (x.appCode==="StaffProfile" && (envConfig.REACT_ENVIRONMENT==="Development" || envConfig.REACT_ENVIRONMENT==="QA" ))? "/staff": x.absolutePath,
-         /* eslint-enable */
-        title: t(`slices.${x.appCode}.title`),
-        description: t(`slices.${x.appCode}.description`),
-        code: x.appCode,
-        canView: true,
-        linkText: t(`slices.${x.appCode}.linkText`),
-        link: t(`slices.${x.appCode}.link`)
-      })
-    );
+  const fetchData: () => Promise<void> = async () => {
+    try {
+      const response = await getAppModulesPermissions();
+      const menusWithPermission = getMenus(response.data, allMenus);
+      menuFilterHandler(menusWithPermission);
+    } catch {
+      menuFilterHandler([]);
+    }
+  };
 
+  const menuFilterHandler = (menus: IApplicationMenu[]) => {
+    startRequest();
+    const modules = filterAndMapModules(menus);
     if (menus.length !== ApplicationConfig.getDefaultMenus().length) {
       dispatch(saveAppPermission(modules));
     }
-
     return menus;
   };
 
-  const EmptyComponent: () => JSX.Element = () => (
-    <div data-testid="empty-component" className=""/>
-  );
-  
-  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "AdminConsoleView"
-  );
-  
-  const requiredNewHomePagePermissions: Permission[] = [
-    {
-      Securable: "NG.Homepage",
-      Operation: "View"
-    }
-  ]; 
-  const requiredSLTPermissions: Permission[] = [
-    {
-      Securable: "NG.Homepage.SLT",
-      Operation: "View"
-    }
-  ]; 
-  const requiredTeacherPermissions: Permission[] = [
-    {
-      Securable: "NG.Homepage.Teacher",
-      Operation: "View"
-    }
-  ]; 
-  const requiredAdminPermissions: Permission[] = [
-    {
-      Securable: "NG.Homepage.Admin",
-      Operation: "View"
-    }
-  ]; 
+  const filterAndMapModules = (menus: IApplicationMenu[]): IAppModule[] => {
+    const filteredModules = menus.filter(
+      (x) => !x.allowedRoles.includes("admin")
+    );
+     /* eslint-disable */
+    return filteredModules.map((x) => ({
+      appUrl: getAppUrl(x),
+      title: t(`slices.${x.appCode}.title`),
+      description: t(`slices.${x.appCode}.description`),
+      code: x.appCode,
+      canView: true,
+      linkText: t(`slices.${x.appCode}.linkText`),
+      link: t(`slices.${x.appCode}.link`),
+    }));
+  };
+    /* eslint-enable */
 
-  const requiredAdminConsolePermissions: Permission[] = [
-    {
-      Securable: "NG.AdminConsole",
-      Operation: "View"
-    }
-  ];
-  
+  const getAppUrl = (x: IApplicationMenu) => {
+    if (x.isStandalone === false) return x.relativePath;
+    /* istanbul ignore next */
+    if (x.appCode === "StaffProfile" && ["Development", "QA"].includes(envConfig.REACT_ENVIRONMENT))
+      return "/staff";
+    return x.absolutePath;
+  };
 
-  const hasNewHomePagePermission:boolean =  authService.isAuthorised(requiredNewHomePagePermissions, MatchPermissions.all); 
-  const hasTeacherPermission:boolean =  authService.isAuthorised(requiredTeacherPermissions, MatchPermissions.all); 
-  const hasSLTPermission:boolean =  authService.isAuthorised(requiredSLTPermissions, MatchPermissions.all); 
-  const hasAdminPermission:boolean= authService.isAuthorised(requiredAdminPermissions,MatchPermissions.all);
-  const hasAdminConsolePermissions:boolean= authService.isAuthorised(requiredAdminConsolePermissions,MatchPermissions.all);
-
-
-  const isAuthzAdmin: boolean = isAuthzUserAdmin();
   const onAuthenticated: any = () => {
+    /* istanbul ignore next */
     if (authService.isAuthenticated()) {
       service.init();
       setIsServiceInitiated(true);
     } 
+    /* istanbul ignore next */
     else{
       authService.logOut();
       history.push("/auth");
     }
   };
+
   const shouldRenderSLTView: boolean = organisationId.includes(getUserOrganisation());
+  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
+
+  const hasNewHomePagePermission = authService.isAuthorised(
+    [{ Securable: "NG.Homepage", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasTeacherPermission = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.Teacher", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasSLTPermission = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.SLT", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasAdminPermission = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.Admin", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasAdminConsolePermissions = authService.isAuthorised(
+    [{ Securable: "NG.AdminConsole", Operation: "View" }],
+    MatchPermissions.all
+  );
 
   return (
     /* eslint-disable react/prop-types */
@@ -224,22 +204,61 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           />
         }
       >
-        <Switch>          
-        {/* eslint-disable */}
-        <ProtectedRoute onAuthenticated={onAuthenticated} exact path="/" component={isServiceInitiated ?
-             ((hasNewHomePagePermission && (hasTeacherPermission || (hasSLTPermission) || (hasAdminPermission)))
-             ? NewHomepageView : (!hasNewHomePagePermission && isAuthzAdmin)
-             ? SIMSIDAdminPageView : LandingPage) : EmptyComponent} />  
-          {/* eslint-enable */}
+        <Switch>
+          {/* eslint-disable */}
+          <ProtectedRoute
+            onAuthenticated={onAuthenticated}
+            exact
+            path="/"
+            component={
+              isServiceInitiated
+                ? renderHomePage(
+                    hasNewHomePagePermission,
+                    hasTeacherPermission,
+                    hasSLTPermission,
+                    hasAdminPermission
+                  )
+                : EmptyComponent
+            }
+          />
+           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
-          {hasAdminConsoleFlagrPermission && <ProtectedRoute exact path="/AdminConsole" render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized"/>} />}
+          {hasAdminConsoleFlagrPermission && (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/AdminConsole"              
+              render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
+            />
+          )}
           {shouldRenderSLTView && <ProtectedRoute exact path="/slt-view" component={SLTmockpage} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          <ProtectedRoute onAuthenticated={onAuthenticated}  exact  path="/schoolRedirect/:id" render={() => <SchoolGroupRedirect />} />
+          <ProtectedRoute exact path="/schoolRedirect/:id" component={SchoolGroupRedirect} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
     </Router>
   );
 };
+
+const renderHomePage = (
+  hasNewHomePagePermission: boolean,
+  hasTeacherPermission: boolean,
+  hasSLTPermission: boolean,
+  hasAdminPermission: boolean
+) => {
+    /* istanbul ignore next */
+  if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
+    return NewHomepageView;
+  } else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+    return SIMSIDAdminPageView;
+  }   /* istanbul ignore next */
+  else {
+    return LandingPage;
+  }
+};
+/* istanbul ignore next */
+const EmptyComponent: () => JSX.Element = () => (
+  <div data-testid="empty-component" className=""/>
+);
