@@ -23,6 +23,7 @@ import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quickli
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
+import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -55,7 +56,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const handleStarClick = async (
+  const handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void> = async (
     id: number,
     favorite: boolean,
     name: string
@@ -94,33 +95,35 @@ const SidePanel: React.FC<SidePanelProps> = ({
 
 // Helper Functions
 
-const getLoginFullName = (fullName: string | null): string =>
+const getLoginFullName: (fullName: string | null) => string = (fullName: string | null): string => 
   fullName === null ? "" : fullName.split(" ")[0];
 
-const getSideViewClass = (isOpen: boolean): string =>
+const getSideViewClass: (isOpen: boolean) => string = (isOpen: boolean): string =>
   isOpen ? "open-dertfsg11463f open-panel-dertfsg11463f side-view-res-dertfsg11463f" : "side-view-closed-dertfsg11463f";
 
-const handleStarClickAsync = async (
+const handleStarClickAsync: (id: number, favorite: boolean, name: string, setQuickLinkData: React.Dispatch<React.SetStateAction<any>>) => Promise<void> = async (
   id: number,
   favorite: boolean,
   name: string,
   setQuickLinkData: React.Dispatch<React.SetStateAction<any>>
-) => {
-  const { status } = await FetchQuickLinkpost(id, favorite);
+): Promise<void> => {
+  const { status }: { status: number } = await FetchQuickLinkpost(id, favorite);
   if (status === 200) {
-    const responseapidata = await fetchQuickLinkDetails();
+    const responseapidata: { response: IQuickLinkApiResponse[]; status: boolean; } | null | undefined = await fetchQuickLinkDetails();
     if (responseapidata != null) {
       setQuickLinkData(responseapidata.response);
     }
   }
-  const elementType = favorite ? "empty_star" : "filled_star";
+   /* eslint-disable */
+  let elementType: "empty_star" | "filled_star" = favorite ? "empty_star" : "filled_star";
   gtmAnalytics.pushEvent({
     event: "interact_click",
     elementType,
     elementTextOrLabel: name,
-    elementLocation: "sidebar",
+    elementLocation: "sidebar"
   });
 };
+ /* eslint-enable */
 
 const renderSideNavigationPanel = (
   isMobileView: boolean,
@@ -192,8 +195,9 @@ const renderSideNavigationPanel = (
   )
 );
 
-const getNavigationPanelTitle = (loginFullname: string): JSX.Element =>
-  loginFullname && loginFullname.length > 24 ? (
+ /* eslint-disable */
+const getNavigationPanelTitle: (loginFullname: string) => JSX.Element = (loginFullname: string) => {
+  return loginFullname && loginFullname.length > 24 ? (
     <Tooltip
       dataTestId="test-id"
       align={TooltipAlign.Center}
@@ -201,16 +205,17 @@ const getNavigationPanelTitle = (loginFullname: string): JSX.Element =>
       content={loginFullname}
     >
       <span className="quick-link-username-dertfsg11463f">
-      {`${loginFullname.substring(0, 24)}...`}
+        {`${loginFullname.substring(0, 24)}...`}
       </span>
     </Tooltip>
   ) : (
     <span className="quick-link-username-dertfsg11463f">
-      <strong>{loginFullname}</strong>
+      {loginFullname ? <strong>{loginFullname}</strong> : <span />}
     </span>
   );
-
-const renderCloseIcon = (closePanel: () => void): JSX.Element => (
+};
+ /* eslint-enable */
+ const renderCloseIcon: (closePanel: () => void) => JSX.Element = (closePanel: () => void): JSX.Element => (
   <span className="icon-close-dertfsg11463f">
     <Icon
       color={IconColor.Primary500}
@@ -223,7 +228,7 @@ const renderCloseIcon = (closePanel: () => void): JSX.Element => (
   </span>
 );
 
-const renderClosedPanel = (togglePanel: () => void): JSX.Element => (
+const renderClosedPanel: (togglePanel: () => void) => JSX.Element = (togglePanel: () => void) => (
   <div
     className="open-panel-dertfsg11463f essui-open-panel-filled filled-icon-align"
     data-testId="close-panel"
@@ -240,23 +245,31 @@ const renderClosedPanel = (togglePanel: () => void): JSX.Element => (
   </div>
 );
 
-const renderQuickLinkContent = (
+const renderQuickLinkContent: (
   loginFullname: string,
   closePanel: () => void,
   isSIMSIDAdmin: boolean,
   isPermissionquicklink: boolean,
   isError: boolean,
   quicklinkData: any,
-  handleStarClick: (
-    id: number,
-    favorite: boolean,
-    name: string
-  ) => Promise<void>,
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>,
   showQuickLinkView: () => void,
   isLoader: boolean,
   togglePanel: () => void,
   isMobileView: boolean
-): JSX.Element => (
+) => JSX.Element = (
+  loginFullname: string,
+  closePanel: () => void,
+  isSIMSIDAdmin: boolean,
+  isPermissionquicklink: boolean,
+  isError: boolean,
+  quicklinkData: any,
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>,
+  showQuickLinkView: () => void,
+  isLoader: boolean,
+  togglePanel: () => void,
+  isMobileView: boolean
+) => (
   <div>
     <div className="quick-lint-display-dertfsg11463f">
       {getNavigationPanelTitle(loginFullname)}
@@ -277,7 +290,7 @@ const renderQuickLinkContent = (
   </div>
 );
 
-const simsIdAdminQuickLink = () => (
+const simsIdAdminQuickLink: () => JSX.Element = () => (
   <div className="left-sidepanel-home113">
     <div className="quick-link-dertfsg11463f">
       Quick links
