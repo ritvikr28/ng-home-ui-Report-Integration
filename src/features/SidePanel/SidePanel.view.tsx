@@ -139,6 +139,7 @@ const handleStarClickAsync: (id: number, favorite: boolean, name: string, setQui
   isLoader: boolean,
   isOpen: boolean
 ) => JSX.Element | null = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isMobileView: boolean,
   loginFullname: string,
   togglePanel: () => void,
@@ -267,6 +268,7 @@ const renderQuickLinkContent: (
   togglePanel: () => void,
   isMobileView: boolean
 ) => JSX.Element = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   loginFullname: string,
   closePanel: () => void,
   isSIMSIDAdmin: boolean,
@@ -319,7 +321,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
   </div>
 );
 //  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
-  const quickLink = ({
+  const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
     isPermissionquicklink,
     isError,
     quicklinkData,
