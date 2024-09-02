@@ -71,7 +71,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   return (
     <div className={`side-view-dertfsg11463f ${getSideViewClass(isOpen)}`}>
       {isOpen ? (
-        renderSideNavigationPanel(
+        renderSideNavigationPanel({
           isMobileView,
           loginFullname,
           togglePanel,
@@ -84,7 +84,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           showQuickLinkView,
           isLoader,
           isOpen
-        )
+        })
       ) : (
         renderClosedPanel(togglePanel)
       )}
@@ -124,8 +124,23 @@ const handleStarClickAsync: (id: number, favorite: boolean, name: string, setQui
   });
 };
 
-const renderSideNavigationPanel = (...args: any) => {
-  const [
+interface RenderSideNavigationPanelProps {
+  isMobileView: boolean;
+  loginFullname: string;
+  togglePanel: () => void;
+  closePanel: () => void;
+  isSIMSIDAdmin: boolean;
+  isPermissionquicklink: boolean;
+  isError: boolean;
+  quicklinkData: any;
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>;
+  showQuickLinkView: () => void;
+  isLoader: boolean;
+  isOpen: boolean;
+}
+
+const renderSideNavigationPanel = (...args: [RenderSideNavigationPanelProps]) => {
+  const {
     isMobileView,
     loginFullname,
     togglePanel,
@@ -138,7 +153,7 @@ const renderSideNavigationPanel = (...args: any) => {
     showQuickLinkView,
     isLoader,
     isOpen
-  ] = args;
+  }: RenderSideNavigationPanelProps = args[0];
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
       title={getNavigationPanelTitle(loginFullname)}
@@ -175,7 +190,7 @@ const renderSideNavigationPanel = (...args: any) => {
       </SideNavigationPanelContent>
     </SideNavigationPanel>
   ) : (
-    renderQuickLinkContent(
+    renderQuickLinkContent({
       loginFullname,
       closePanel,
       isSIMSIDAdmin,
@@ -187,7 +202,7 @@ const renderSideNavigationPanel = (...args: any) => {
       isLoader,
       togglePanel,
       isMobileView
-    )
+})
   );
 };
  /* eslint-disable */
@@ -240,20 +255,35 @@ const renderClosedPanel: (togglePanel: () => void) => JSX.Element = (togglePanel
   </div>
 );
 
-const renderQuickLinkContent = (...args: any) => {
-  const [
-    loginFullname,
-    closePanel,
-    isSIMSIDAdmin,
-    isPermissionquicklink,
-    isError,
-    quicklinkData,
-    handleStarClick,
-    showQuickLinkView,
-    isLoader,
-    togglePanel,
-    isMobileView
-  ] = args;
+interface RenderQuickLinkContentProps {
+  loginFullname: string;
+  closePanel: () => void;
+  isSIMSIDAdmin: boolean;
+  isPermissionquicklink: boolean;
+  isError: boolean;
+  quicklinkData: any;
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>;
+  showQuickLinkView: () => void;
+  isLoader: boolean;
+  togglePanel: () => void;
+  isMobileView: boolean;
+}
+
+const renderQuickLinkContent = (...args: [RenderQuickLinkContentProps]) => {
+  const {
+  loginFullname,
+  closePanel,
+  isSIMSIDAdmin,
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView,
+  isLoader,
+  togglePanel,
+  isMobileView
+}: RenderQuickLinkContentProps = args[0];
+
   return (
     <div>
       <div className="quick-lint-display-dertfsg11463f">
