@@ -124,8 +124,8 @@ const handleStarClickAsync: (id: number, favorite: boolean, name: string, setQui
   });
 };
  /* eslint-enable */
-
-const renderSideNavigationPanel = (
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ const renderSideNavigationPanel: (
   isMobileView: boolean,
   loginFullname: string,
   togglePanel: () => void,
@@ -134,11 +134,20 @@ const renderSideNavigationPanel = (
   isPermissionquicklink: boolean,
   isError: boolean,
   quicklinkData: any,
-  handleStarClick: (
-    id: number,
-    favorite: boolean,
-    name: string
-  ) => Promise<void>,
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>,
+  showQuickLinkView: () => void,
+  isLoader: boolean,
+  isOpen: boolean
+) => JSX.Element | null = (
+  isMobileView: boolean,
+  loginFullname: string,
+  togglePanel: () => void,
+  closePanel: () => void,
+  isSIMSIDAdmin: boolean,
+  isPermissionquicklink: boolean,
+  isError: boolean,
+  quicklinkData: any,
+  handleStarClick: (id: number, favorite: boolean, name: string) => Promise<void>,
   showQuickLinkView: () => void,
   isLoader: boolean,
   isOpen: boolean
@@ -244,7 +253,7 @@ const renderClosedPanel: (togglePanel: () => void) => JSX.Element = (togglePanel
     />
   </div>
 );
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const renderQuickLinkContent: (
   loginFullname: string,
   closePanel: () => void,
@@ -319,7 +328,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
     isLoader,
     togglePanel,
     isMobileView
-  }: QuickLinkSidePanel) => (
+  }: QuickLinkSidePanel): JSX.Element | null => (
     isPermissionquicklink && (
         <div className="left-sidepanel-home113">
           <div className="quick-link-dertfsg11463f">Quick links</div>
