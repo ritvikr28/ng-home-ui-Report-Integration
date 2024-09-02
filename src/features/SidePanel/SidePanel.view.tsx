@@ -139,21 +139,20 @@ interface RenderSideNavigationPanelProps {
   isOpen: boolean;
 }
 
-const renderSideNavigationPanel = (...args: [RenderSideNavigationPanelProps]) => {
-  const {
-    isMobileView,
-    loginFullname,
-    togglePanel,
-    closePanel,
-    isSIMSIDAdmin,
-    isPermissionquicklink,
-    isError,
-    quicklinkData,
-    handleStarClick,
-    showQuickLinkView,
-    isLoader,
-    isOpen
-  }: RenderSideNavigationPanelProps = args[0];
+const renderSideNavigationPanel : React.FC<RenderSideNavigationPanelProps> = ({
+  isMobileView,
+  loginFullname,
+  togglePanel,
+  closePanel,
+  isSIMSIDAdmin,
+  isPermissionquicklink,
+  isError,
+  quicklinkData,
+  handleStarClick,
+  showQuickLinkView,
+  isLoader,
+  isOpen
+}: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
       title={getNavigationPanelTitle(loginFullname)}
@@ -269,8 +268,7 @@ interface RenderQuickLinkContentProps {
   isMobileView: boolean;
 }
 
-const renderQuickLinkContent = (...args: [RenderQuickLinkContentProps]) => {
-  const {
+const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
   loginFullname,
   closePanel,
   isSIMSIDAdmin,
@@ -282,29 +280,25 @@ const renderQuickLinkContent = (...args: [RenderQuickLinkContentProps]) => {
   isLoader,
   togglePanel,
   isMobileView
-}: RenderQuickLinkContentProps = args[0];
-
-  return (
-    <div>
-      <div className="quick-lint-display-dertfsg11463f">
-        {getNavigationPanelTitle(loginFullname)}
-        {renderCloseIcon(closePanel)}
-      </div>
-      {isSIMSIDAdmin
-        ? simsIdAdminQuickLink()
-        : quickLink({
-            isPermissionquicklink,
-            isError,
-            quicklinkData,
-            handleStarClick,
-            showQuickLinkView,
-            isLoader,
-            togglePanel,
-            isMobileView,
-          })}
+}: RenderQuickLinkContentProps) => 
+  <div>
+    <div className="quick-lint-display-dertfsg11463f">
+      {getNavigationPanelTitle(loginFullname)}
+      {renderCloseIcon(closePanel)}
     </div>
-  );
-};
+    {isSIMSIDAdmin
+      ? simsIdAdminQuickLink()
+      : quickLink({
+          isPermissionquicklink,
+          isError,
+          quicklinkData,
+          handleStarClick,
+          showQuickLinkView,
+          isLoader,
+          togglePanel,
+          isMobileView,
+        })}
+  </div>;
 
 const simsIdAdminQuickLink: () => JSX.Element = () => (
   <div className="left-sidepanel-home113">
