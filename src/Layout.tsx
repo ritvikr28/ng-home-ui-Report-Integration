@@ -128,7 +128,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     );
      /* eslint-disable */
     return filteredModules.map((x) => ({
-      appUrl: getAppUrl(x),
+      appUrl: x.isStandalone === false ? x.relativePath : x.absolutePath,
       title: t(`slices.${x.appCode}.title`),
       description: t(`slices.${x.appCode}.description`),
       code: x.appCode,
@@ -138,15 +138,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }));
   };
     /* eslint-enable */
-
-   const getAppUrl: (x: IApplicationMenu) => string | undefined = (x: IApplicationMenu) => {
-      if (x.isStandalone === false) return x.relativePath;
-      /* istanbul ignore next */
-      if (x.appCode === "StaffProfile" && ["Development", "QA"].includes(envConfig.REACT_ENVIRONMENT))
-        return "/staff";
-      return x.absolutePath;
-    };
-
   const onAuthenticated: any = () => {
     /* istanbul ignore next */
     if (authService.isAuthenticated()) {

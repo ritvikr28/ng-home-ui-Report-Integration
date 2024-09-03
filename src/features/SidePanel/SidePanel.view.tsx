@@ -155,7 +155,7 @@ const renderSideNavigationPanel : React.FC<RenderSideNavigationPanelProps> = ({
 }: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
-      title={getNavigationPanelTitle(loginFullname)}
+      title={getNavigationPanelTitle(loginFullname,isMobileView)}
       isOpen={isOpen}
       onClose={togglePanel}
     >
@@ -205,22 +205,34 @@ const renderSideNavigationPanel : React.FC<RenderSideNavigationPanelProps> = ({
   );
 };
  /* eslint-disable */
-const getNavigationPanelTitle: (loginFullname: string) => JSX.Element = (loginFullname: string) => {
+ const getNavigationPanelTitle: (loginFullname: string, isMobileView: boolean) => JSX.Element = (loginFullname: string, isMobileView: boolean) => {
   return loginFullname && loginFullname.length > 24 ? (
-    <Tooltip
-      dataTestId="test-id"
-      align={TooltipAlign.Center}
-      position={TooltipPosition.Bottom}
-      content={loginFullname}
-    >
+    isMobileView ? (
+      <Tooltip
+        dataTestId="test-id"
+        align={TooltipAlign.Center}
+        position={TooltipPosition.Bottom}
+        content={loginFullname}
+      >
+        <span className="quick-link-username-tooltip-dertfsg11463f">
+        {`${loginFullname.substring(0, 24)}...`}
+        </span>
+      </Tooltip>
+    ) : (
       <span className="quick-link-username-dertfsg11463f">
         {`${loginFullname.substring(0, 24)}...`}
       </span>
-    </Tooltip>
+    )
   ) : (
-    <span className="quick-link-username-dertfsg11463f">
-      {loginFullname ? <strong>{loginFullname}</strong> : <span />}
-    </span>
+    isMobileView ? (
+      <span className="quick-link-username-tooltip-dertfsg11463f">
+        <strong>{loginFullname}</strong>
+      </span>
+    ) : (
+      <span className="quick-link-username-dertfsg11463f">
+        <strong>{loginFullname}</strong>
+      </span>
+    )
   );
 };
  /* eslint-enable */
@@ -283,7 +295,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
 }: RenderQuickLinkContentProps) => 
   <div>
     <div className="quick-lint-display-dertfsg11463f">
-      {getNavigationPanelTitle(loginFullname)}
+      {getNavigationPanelTitle(loginFullname,isMobileView)}
       {renderCloseIcon(closePanel)}
     </div>
     {isSIMSIDAdmin
