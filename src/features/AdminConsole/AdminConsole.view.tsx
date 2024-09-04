@@ -8,18 +8,18 @@ import {
   IconColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import About from "./About";
 
-const AdminConsole = () => {
+const AdminConsole: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const [isOpen, setIsOpen] = useState<boolean>(!isMobileView);
+  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
 
-  const handleButtonClick = () => {
+  const handleButtonClick: () => void = () => {
     setIsOpen(!isOpen);
   };
 
