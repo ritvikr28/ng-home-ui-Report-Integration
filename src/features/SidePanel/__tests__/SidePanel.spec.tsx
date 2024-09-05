@@ -158,7 +158,7 @@
       .mockImplementation(() => "JonathanQuincyAdamsSmithsonianabcd");
       
       const {getByText } = render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
-      expect(getByText("JonathanQuincyAdamsSmithsonianabcd")).toBeInTheDocument();
+      expect(getByText("JonathanQuincyAdamsSmith...")).toBeInTheDocument();
 
     });
 

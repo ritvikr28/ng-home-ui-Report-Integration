@@ -19,7 +19,10 @@ import { IQuickLinkApiResponse } from '../../model/quickLink/responsemodels';
         })
        }
       const permission: string=  teachersecurable.toString();
-      const quickLinkDetails = await FetchQuickLinkData(permission);
+      const quickLinkDetails: {
+        status: number;
+        response: IQuickLinkApiResponse[];
+      } | null = await FetchQuickLinkData(permission);
 
       if (quickLinkDetails?.status === 200 || quickLinkDetails?.status === 204) {
         const response:IQuickLinkApiResponse[] = quickLinkDetails.response;
