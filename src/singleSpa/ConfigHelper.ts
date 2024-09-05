@@ -14,7 +14,8 @@ declare global {
     LEARNER_API_URL: string;
     REACT_ENVIRONMENT:string;
     APPLICATION:string;
-    INVITE_STAFF_URL:string
+    INVITE_STAFF_URL:string;
+    HOME_UI_BASEURL:string;
   }
 }
 
@@ -56,6 +57,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.REACT_ENVIRONMENT=configData.ASPNETCORE_ENVIRONMENT;
     window.APPLICATION=configData.APPLICATION;
     window.INVITE_STAFF_URL=configData.INVITE_STAFF_URL;
+    window.HOME_UI_BASEURL=configData.HOME_UI_BASEURL;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
@@ -68,7 +70,8 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       LEARNER_API_URL:window.LEARNER_API_URL,
       REACT_ENVIRONMENT:window.REACT_ENVIRONMENT,
       APPLICATION:window.APPLICATION,
-      INVITE_STAFF_URL:window.INVITE_STAFF_URL
+      INVITE_STAFF_URL:window.INVITE_STAFF_URL,
+      HOME_UI_BASEURL:window.HOME_UI_BASEURL
     });
   } catch (ex) {
     console.log(ex);
