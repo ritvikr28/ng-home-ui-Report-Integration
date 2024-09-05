@@ -51,7 +51,7 @@ const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`,
+              value: `${window.location.origin}/adminconsole`
             }}
           />
         </GridItem>
