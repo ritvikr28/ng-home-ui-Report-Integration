@@ -13,9 +13,10 @@ import { IRegisterViewProps } from "./props";
 
 import "./carousalstyle.scss";
 import { responsive, iscloseresponsive } from "./carousel";
-import { envConfig } from "../../../../../shared/utils";
+import { envConfig, getUser, getUserOrganisation } from "../../../../../shared/utils";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
+import { logger } from "../../../../../shared/components/AppInsights";
 
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
@@ -179,6 +180,8 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     const url = (item.eventTypeCode === "AttendanceSession")
     ? `${envConfig.REGISTER_BASE_URL}/take-register/${item.eventDescription}/${item.group.externalId}/${item.eventInstanceExternalId}`
     : `${envConfig.REGISTER_BASE_URL}/take-register/${item.classPeriodExternalId}/${item.group.externalId}/${item.eventInstanceExternalId}`;
+
+    logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`);
     
     gtmAnalytics.pushEvent({
       event: "click",
