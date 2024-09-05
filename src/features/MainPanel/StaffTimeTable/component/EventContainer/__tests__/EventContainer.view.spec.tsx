@@ -29,7 +29,9 @@ const mockProps = {
     index: 0,
     EventTypeCode:'TTPeriod',
     ClassPeriodExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-    EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"       
+    EventInstanceExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+    EventDescription:"test",
+    ExternalId:'123'
   };
 
 
@@ -53,11 +55,12 @@ const mockProps = {
         CoverStaffName={mockProps.CoverStaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
-        EventTypeCode={mockProps.EventTypeCode}  
+        EventTypeCode={mockProps.EventTypeCode}
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
-        EventInstanceExternalId={mockProps.EventInstanceExternalId}   
-        SelectedItem={mockProps.SchoolEventexternalId}        
-      />
+        EventInstanceExternalId={mockProps.EventInstanceExternalId}
+        SelectedItem={mockProps.SchoolEventexternalId} 
+        EventDescription={mockProps.EventDescription} 
+        ExternalId={mockProps.ExternalId}      />
     );
   
     const rightPanel: HTMLElement = getByTestId("right-panel-sidepanel");
@@ -92,11 +95,12 @@ const mockProps = {
         CoverStaffName={mockProps.CoverStaffName}
         index={mockProps.index}
         EventCardColor={EventCardStatus.PRIMARY}
-        EventTypeCode={mockProps.EventTypeCode} 
+        EventTypeCode={mockProps.EventTypeCode}
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
-        EventInstanceExternalId={mockProps.EventInstanceExternalId} 
-        SelectedItem={mockProps.SchoolEventexternalId}        
-  
+        EventInstanceExternalId={mockProps.EventInstanceExternalId}
+        SelectedItem={mockProps.SchoolEventexternalId} 
+        EventDescription={mockProps.EventDescription} 
+        ExternalId={mockProps.ExternalId}  
       />
     );
     
@@ -139,7 +143,8 @@ const mockProps = {
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
         EventInstanceExternalId={mockProps.EventInstanceExternalId} 
         SelectedItem={mockProps.SchoolEventexternalId}        
-  
+        EventDescription={mockProps.EventDescription} 
+        ExternalId={mockProps.ExternalId}
       />);
 
     const eventCard = getByTestId('eventid0');
@@ -153,26 +158,27 @@ const mockProps = {
     };
  
     const component = <EventContainerView
-    SchoolEventexternalId="1"
-    EventTitle="Title: Some description: 1"
-    EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
-    RoomCode="A101"
-    EventStartDate="2023-11-08T08:00:00"
-    EventEndDate="2023-11-08T09:00:00"
-    GroupExternalId="G1"
-    EventPeriodNum=" 1"
-    togglePanel={togglePanel1}
-    isOpen={false}
-    GroupDescription="Group 1"
-    StaffName="John Doe"
-    CoverStaffName= "Brenda Peters"
-    index={2}
-    EventCardColor={EventCardStatus.IMPROVEMENT}
-    EventTypeCode='TTPeriod' 
-    ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
-    EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
-    SelectedItem="1"        
-  />;
+      SchoolEventexternalId="1"
+      EventTitle="Title: Some description: 1"
+      EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+      RoomCode="A101"
+      EventStartDate="2023-11-08T08:00:00"
+      EventEndDate="2023-11-08T09:00:00"
+      GroupExternalId="G1"
+      EventPeriodNum=" 1"
+      togglePanel={togglePanel1}
+      isOpen={false}
+      GroupDescription="Group 1"
+      StaffName="John Doe"
+      CoverStaffName="Brenda Peters"
+      index={2}
+      EventCardColor={EventCardStatus.IMPROVEMENT}
+      EventTypeCode='TTPeriod'
+      ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
+      EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
+      SelectedItem="1" 
+      EventDescription="test" 
+      ExternalId='123'  />;
   const { getByTestId } = render(component);
     const element = getByTestId('eventid2');   
     userEvent.click(getByTestId('eventid2'));

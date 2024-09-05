@@ -8,6 +8,7 @@ export interface IEventContainerProps {
   EventStartDate: string;
   EventEndDate: string;
   EventTypeCode: string;
+  EventDescription: string;
   GroupExternalId: string;
   EventPeriodNum: string;
   togglePanel: (SchoolEventexternalId: string) => void;
@@ -22,4 +23,5 @@ export interface IEventContainerProps {
   isOpen?: boolean;
   isOpenPanel?: boolean;
   isLoader?:boolean;
+  ExternalId: string;
 }

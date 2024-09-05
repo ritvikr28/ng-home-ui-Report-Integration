@@ -4,6 +4,8 @@ import { IRightSidePanelProps } from "./RightSidePanelProps";
 import { FetchGroupMemberDetailsData } from "../../../shared/services/schoolDomain/schoolServices";
 import { IGroupMemberDetailsResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { RightSidePanelView } from "./RightSidePanel.View";
+import { envConfig } from "../../../shared/utils";
+
 
 export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   props: IRightSidePanelProps
@@ -22,6 +24,8 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     StaffName,
     CoverStaffName,
     EventTypeCode,
+    EventDescription,
+    ExternalId,
     ClassPeriodExternalId,
     EventInstanceExternalId
   }: IRightSidePanelProps = props;
@@ -31,7 +35,8 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
   const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
   const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-
+  const [classViewURL, setClassViewURL] = useState('');
+  
   const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
     EventStartDate: string,
     EventEndDate: string,
@@ -51,6 +56,16 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
       )
     );
     setGroupMemberDetailsData(sortedPupilList);
+  };
+
+
+  const handleClassViewClick = () => {
+    const classPeriodOrSessionId =
+    ClassPeriodExternalId === null
+        ? EventDescription
+        : ClassPeriodExternalId;
+    const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId}/${classPeriodOrSessionId}/${ExternalId}`;
+    setClassViewURL(classViewUrl);
   };
 
   useEffect(() => {
@@ -116,6 +131,8 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
         ClassPeriodExternalId={ClassPeriodExternalId}
         EventInstanceExternalId={EventInstanceExternalId}
         EventPeriodNo={EventPeriodNo}
+        handleClassViewClick={handleClassViewClick}
+        classViewURL={classViewURL}
         data-testid="panel-open"
       />
     </div>
