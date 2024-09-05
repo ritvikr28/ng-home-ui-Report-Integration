@@ -1,5 +1,4 @@
 import {
-  Breadcrumbs,
   Button,
   ButtonColor,
   ButtonSize,
@@ -8,11 +7,14 @@ import {
   IconColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
-import React, { useEffect, useState } from "react";
+import React,{ useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-import About from "./About";
+import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
+import { envConfig } from "../../shared/utils";
 
-const AdminConsole: React.FC = () => {
+
+
+const UAM:()=>JSX.Element = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
@@ -26,7 +28,7 @@ const AdminConsole: React.FC = () => {
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
-
+const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
   return (
     <>
       <Grid className="admin-mobile-rwaf92428">
@@ -49,40 +51,51 @@ const AdminConsole: React.FC = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`,
+              value: `${window.location.origin}/adminconsole`
             }}
           />
         </GridItem>
         <GridItem style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
-          <div
-            className={
-              isOpen ? "adminConsole-sidepanelopen" : "adminconsole-breadcrumb"
-            }
-          >
-            <Breadcrumbs
-              breadcrumbActions={[
-                {
-                  active: true,
-                  linkName: "Home",
-                  path: window.location.origin,
-                },
-                {
-                  active: false,
-                  linkName: "Admin console",
-                  path: "#",
-                }
-              ]}
-              className="essui-Breadcrumbs"
-              dataTestId="breadcrumb-test-id"
-              id="element-id"
-              onItemClick={() => {}}
-            />
-          </div>
-          <About />
+         
+          <UserManagement breadcrumbData={    [
+
+{
+
+  active: false,
+
+  linkName: "Home",
+
+  path: "/"
+
+},
+
+{
+
+  active: false,
+
+  linkName: "Admin Console",
+
+  path: homeurl,
+  isExternalLink:true
+
+},
+
+{
+
+  active: false,
+
+  linkName: "Users",
+
+  path: "/"
+
+
+}
+
+]} headingLayoutText="Users" subHeadingLayoutText="Create, assign and invite users to give access to the MIS"/>
         </GridItem>
       </Grid>
     </>
   );
 };
 
-export default AdminConsole;
+export default UAM;

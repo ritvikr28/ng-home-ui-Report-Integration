@@ -1,10 +1,10 @@
 import { EventCardStatus } from "@essnextgen/ui-kit";
 import { IStaffTimeTableEventsResponse } from "../model/SchoolDomain/responsemodels";
 
-export const getBackgroundColor = (
-    data: IStaffTimeTableEventsResponse
-  ) => {   
-    let backgroundColor; 
+export const getBackgroundColor: (
+  data: IStaffTimeTableEventsResponse) => EventCardStatus = 
+  (data: IStaffTimeTableEventsResponse) => {
+    let backgroundColor: EventCardStatus;
     const { userPreference, yearGroupColor, subjectColor } = data as {
         userPreference: string;
         yearGroupColor: string;

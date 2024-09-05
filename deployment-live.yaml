@@ -22,6 +22,8 @@ data:
     window.LEARNER_UI_URL = "#{LEARNER_UI_URL}#"
     window.LEARNER_API_URL = "#{LEARNER_API_URL}#"
     window.INVITE_STAFF_URL = "#{INVITE_STAFF_URL}#"
+    window.HOME_UI_BASEURL = "#{HOME_UI_BASEURL}#"
+    window.SEATING_PLAN_CLASS_VIEW_URL = "#{SEATING_PLAN_CLASS_VIEW_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment

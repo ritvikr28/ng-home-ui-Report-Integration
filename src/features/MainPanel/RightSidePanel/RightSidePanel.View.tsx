@@ -17,6 +17,8 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { IRightSidePanelViewProps } from "./RightSidePanelViewProps";
 import { envConfig } from "../../../shared/utils/constants";
 import gtmAnalytics from "../../../shared/utils/analytics";
+import { logger } from "../../../shared/components/AppInsights";
+import { getUser, getUserOrganisation } from "../../../shared/utils";
 
 
 export const RightSidePanelView: (
@@ -57,6 +59,8 @@ export const RightSidePanelView: (
     const url:string  = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
+      
+      logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`)
       
       gtmAnalytics.pushEvent({
         event: "click",
