@@ -23,6 +23,7 @@ data:
     window.LEARNER_API_URL = "#{LEARNER_API_URL}#"
     window.LOOPEDIN_WORKSPACE_ID = "$(LOOPEDIN_WORKSPACE_ID)"
     window.INVITE_STAFF_URL = "#{INVITE_STAFF_URL}#"
+    window.HOME_UI_BASEURL = "#{HOME_UI_BASEURL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
