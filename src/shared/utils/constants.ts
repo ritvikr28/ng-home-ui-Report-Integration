@@ -29,7 +29,8 @@ export const UpdateEnvConfig:any = ({
   REACT_ENVIRONMENT,
   APPLICATION,
   INVITE_STAFF_URL,
-  HOME_UI_BASEURL
+  HOME_UI_BASEURL,
+  SEATING_PLAN_CLASS_VIEW_URL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -43,4 +44,5 @@ export const UpdateEnvConfig:any = ({
   envConfig.APPLICATION=APPLICATION;
   envConfig.INVITE_STAFF_URL=INVITE_STAFF_URL;
   envConfig.HOME_UI_BASEURL=HOME_UI_BASEURL;
+  envConfig.SEATING_PLAN_CLASS_VIEW_URL=SEATING_PLAN_CLASS_VIEW_URL;
 };
