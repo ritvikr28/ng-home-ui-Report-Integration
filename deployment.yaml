@@ -24,6 +24,7 @@ data:
     window.LOOPEDIN_WORKSPACE_ID = "$(LOOPEDIN_WORKSPACE_ID)"
     window.INVITE_STAFF_URL = "#{INVITE_STAFF_URL}#"
     window.HOME_UI_BASEURL = "#{HOME_UI_BASEURL}#"
+    window.SEATING_PLAN_CLASS_VIEW_URL = "#{SEATING_PLAN_CLASS_VIEW_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment

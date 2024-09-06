@@ -13,7 +13,8 @@ export const envConfig: any = {
   REACT_ENVIRONMENT: (window as any).REACT_ENVIRONMENT,
   APPLICATION:(window as any).APPLICATION,
   INVITE_STAFF_URL:(window as any).INVITE_STAFF_URL,
-  HOME_UI_BASEURL:(window as any).HOME_UI_BASEURL
+  HOME_UI_BASEURL:(window as any).HOME_UI_BASEURL,
+  SEATING_PLAN_CLASS_VIEW_URL: (window as any).SEATING_PLAN_CLASS_VIEW_URL
 };
 
 export const UpdateEnvConfig:any = ({

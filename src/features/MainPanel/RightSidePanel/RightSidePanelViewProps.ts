@@ -17,8 +17,10 @@ export interface IRightSidePanelViewProps {
     isPupilSectionEnable:boolean;
     EventTypeCode:string;
     BaseGroupId:string;
-    ClassPeriodExternalId:string;
+    ClassPeriodExternalId:string | null;
     EventInstanceExternalId:string;
     EventPeriodNo:string;
+    handleClassViewClick: () => void;
+    classViewURL: string;
   }
 

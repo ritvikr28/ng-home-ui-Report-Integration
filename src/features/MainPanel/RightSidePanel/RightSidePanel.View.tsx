@@ -13,11 +13,13 @@ import {
   SidePanelFooter
 } from "@essnextgen/ui-kit";
 import "./style.scss";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { IRightSidePanelViewProps } from "./RightSidePanelViewProps";
 import { envConfig } from "../../../shared/utils/constants";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { logger } from "../../../shared/components/AppInsights";
 import { getUser, getUserOrganisation } from "../../../shared/utils";
+
 
 export const RightSidePanelView: (
   props: IRightSidePanelViewProps
@@ -41,13 +43,18 @@ export const RightSidePanelView: (
     BaseGroupId,
     ClassPeriodExternalId,
     EventInstanceExternalId,
-    EventPeriodNo
+    EventPeriodNo,
+    handleClassViewClick,
+    classViewURL
   }: IRightSidePanelViewProps = props;
 
   const handlePanelClose:()=>void = () => {
     togglePanel(SchoolEventexternalId);
   };
-
+  const StaffTTClassView: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "StaffTTClassViewBtn"
+  ); 
   const onTRButtonClick:()=>void = () => {
     const url:string  = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
@@ -133,6 +140,22 @@ export const RightSidePanelView: (
               data-testid="location-value"
             >
               {Location}
+            </div>
+           
+            <div>
+              { StaffTTClassView && EventTypeCode !== 'TTNTPer' && (
+                    <div data-testid="class-view">
+                      <Link
+                        dataTestId="class-view-button"
+                        id="class-view-button"
+                        href={classViewURL}
+                        onClick={handleClassViewClick}
+                      >
+                       ClassView
+                      </Link>
+                    </div>
+                  )
+              }
             </div>
 
             <div data-testid="horizontal-panel-divider" className="divider">

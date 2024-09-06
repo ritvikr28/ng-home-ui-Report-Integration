@@ -842,7 +842,9 @@ describe("EventContainer", () => {
         ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
-      />
+        EventDescription= "test"
+        ExternalId= "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"     
+        />
     );
 
     fireEvent.click(screen.getByTestId("eventid0"));
@@ -874,6 +876,8 @@ describe("EventContainer", () => {
         ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
+        EventDescription= "test"
+        ExternalId= "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"  
       />
     );
     expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();

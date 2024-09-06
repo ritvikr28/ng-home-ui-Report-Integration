@@ -66,26 +66,28 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
   ];
   
 const mockEventTitleClass: IRightSidePanelViewProps = {
-    SchoolEventexternalId:"a765f1cc-a404-4425-8ef3-fe7446ef265c",
-    EventTitle:"ClassTest",
-    EventTime:"2023-11-10T09:00:00.000Z",
-    Location:"Room A",
-    GroupMembersData:mockListofGroupExternalId,
-    togglePanel: jest.fn(),
-    isOpen:true,
-    GroupDescription:"AM",
-    isLoader:false,
-    errCodeMessage:false,
-    pupilDetailErrorCodeMessage:"testerrorpupil",
-    StaffName:"teststaff",
-    CoverStaffName:"testCoverstaff",
-    isPupilSectionEnable:true,
-    EventTypeCode:"AttendanceSession",
-    BaseGroupId:"testBaseGroupId",
-    ClassPeriodExternalId:"4f83c773-86c2-4b9d-bd71-ce7c8ea11f02",
-    EventInstanceExternalId:"bfc561ac-c28f-4aa1-bbbf-164d59cf627b",
-    EventPeriodNo:"1"
-  };
+  SchoolEventexternalId: "a765f1cc-a404-4425-8ef3-fe7446ef265c",
+  EventTitle: "ClassTest",
+  EventTime: "2023-11-10T09:00:00.000Z",
+  Location: "Room A",
+  GroupMembersData: mockListofGroupExternalId,
+  togglePanel: jest.fn(),
+  isOpen: true,
+  GroupDescription: "AM",
+  isLoader: false,
+  errCodeMessage: false,
+  pupilDetailErrorCodeMessage: "testerrorpupil",
+  StaffName: "teststaff",
+  CoverStaffName: "testCoverstaff",
+  isPupilSectionEnable: true,
+  EventTypeCode: "AttendanceSession",
+  BaseGroupId: "testBaseGroupId",
+  ClassPeriodExternalId: "4f83c773-86c2-4b9d-bd71-ce7c8ea11f02",
+  EventInstanceExternalId: "bfc561ac-c28f-4aa1-bbbf-164d59cf627b",
+  EventPeriodNo: "1",
+  handleClassViewClick: jest.fn(),
+  classViewURL: 'http://example.com/class-view'
+};
 
 
 describe('RightSidePanelView', () => {
@@ -115,6 +117,8 @@ describe('RightSidePanelView', () => {
             ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
             EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
             EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+            handleClassViewClick={mockEventTitleClass.handleClassViewClick}
+            classViewURL={mockEventTitleClass.classViewURL}
         />);    
         
         expect(getByTestId('side-panel')).toBeInTheDocument();
@@ -143,6 +147,8 @@ describe('RightSidePanelView', () => {
             ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
             EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
             EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+            handleClassViewClick={mockEventTitleClass.handleClassViewClick}
+            classViewURL={mockEventTitleClass.classViewURL}
         />);    
         fireEvent.click(getByTestId('close-button'));
     
@@ -170,12 +176,14 @@ describe('RightSidePanelView', () => {
             ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
             EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
             EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+            handleClassViewClick={mockEventTitleClass.handleClassViewClick}
+            classViewURL={mockEventTitleClass.classViewURL}
         />);    
         fireEvent.click(getByTestId('take-reg-button'));
     
         expect(window.location.href).toBe('http://localhost/');
       });
-
+      
       test('handles "Take register" button click correctly for a different condition', () => {       
         const { getByTestId } = render(<RightSidePanelView 
             SchoolEventexternalId={mockEventTitleClass.SchoolEventexternalId}
@@ -197,6 +205,8 @@ describe('RightSidePanelView', () => {
             ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
             EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
             EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+            handleClassViewClick={mockEventTitleClass.handleClassViewClick}
+            classViewURL={mockEventTitleClass.classViewURL}
         />);    
         fireEvent.click(getByTestId('take-reg-button'));
     
@@ -225,6 +235,8 @@ describe('RightSidePanelView', () => {
             ClassPeriodExternalId={mockEventTitleClass.ClassPeriodExternalId}
             EventInstanceExternalId={mockEventTitleClass.EventInstanceExternalId}
             EventPeriodNo={mockEventTitleClass.EventPeriodNo}
+            handleClassViewClick={mockEventTitleClass.handleClassViewClick}
+            classViewURL={mockEventTitleClass.classViewURL}
         />);    
         
         fireEvent.click(getByTestId('link-click-0'));
@@ -239,3 +251,64 @@ describe('RightSidePanelView', () => {
         });
       });
 });
+// describe('RightSidePanelView Component', () => {
+//   beforeEach(() => {
+//     jest.clearAllMocks();
+//   });
+
+//   test('should render the ClassView link when StaffTTClassView is true and EventTypeCode is not "TTNTPer"', () => {
+//     const mockClassTitleClass: IRightSidePanelViewProps = {
+//       SchoolEventexternalId: "a765f1cc-a404-4425-8ef3-fe7446ef265c",
+//       EventTitle: "ClassTest",
+//       EventTime: "2023-11-10T09:00:00.000Z",
+//       Location: "Room A",
+//       GroupMembersData: mockListofGroupExternalId,
+//       togglePanel: jest.fn(),
+//       isOpen: true,
+//       GroupDescription: "AM",
+//       isLoader: false,
+//       errCodeMessage: false,
+//       pupilDetailErrorCodeMessage: "testerrorpupil",
+//       StaffName: "teststaff",
+//       CoverStaffName: "testCoverstaff",
+//       isPupilSectionEnable: true,
+//       EventTypeCode: "AttendanceSession",
+//       BaseGroupId: "testBaseGroupId",
+//       ClassPeriodExternalId: "4f83c773-86c2-4b9d-bd71-ce7c8ea11f02",
+//       EventInstanceExternalId: "bfc561ac-c28f-4aa1-bbbf-164d59cf627b",
+//       EventPeriodNo: "1",
+//       handleClassViewClick: jest.fn(),
+//       classViewURL: 'http://example.com/class-view'
+//     };
+    
+//     const{getByTestId, getByText}=render(<RightSidePanelView {...mockClassTitleClass} />);
+    
+//     expect(getByTestId('class-view')).toBeInTheDocument();
+//     expect(getByTestId('class-view-button')).toHaveAttribute('href', mockClassTitleClass.classViewURL);
+//     expect(getByText('ClassView')).toBeInTheDocument();
+//   });
+
+//   // it('should not render the ClassView link when StaffTTClassView is false', () => {
+//   //   //(hasFeaturePermission as jest.Mock).mockReturnValue(false);
+    
+//   //   render(<RightSidePanelView {...defaultProps} />);
+    
+//   //   expect(screen.queryByTestId('class-view')).toBeNull();
+//   // });
+
+//   // it('should not render the ClassView link when EventTypeCode is "TTNTPer"', () => {
+//   //   render(<RightSidePanelView {...defaultProps} EventTypeCode="TTNTPer" />);
+    
+//   //   expect(screen.queryByTestId('class-view')).toBeNull();
+//   // });
+
+//   // it('should call handleClassViewClick when ClassView link is clicked', () => {
+//   //   (hasFeaturePermission as jest.Mock).mockReturnValue(true);
+    
+//   //   render(<RightSidePanelView {...defaultProps} />);
+    
+//   //   fireEvent.click(screen.getByTestId('class-view-button'));
+    
+//   //   expect(mockHandleClassViewClick).toHaveBeenCalled();
+//   // });
+// });
