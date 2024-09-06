@@ -35,7 +35,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
   const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
   const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [classViewURL, setClassViewURL] = useState('');
+  const [classViewURL, setClassViewURL] = useState<string>('');
   
   const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
     EventStartDate: string,
@@ -59,8 +59,8 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   };
 
 
-  const handleClassViewClick = () => {
-    const classPeriodOrSessionId =
+  const handleClassViewClick = () => {   
+    const classPeriodOrSessionId: string | null =    
     ClassPeriodExternalId === null
         ? EventDescription
         : ClassPeriodExternalId;
