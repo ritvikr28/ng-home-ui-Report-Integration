@@ -64,7 +64,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     ClassPeriodExternalId === null
         ? EventDescription
         : ClassPeriodExternalId;
-        const classViewUrl: string = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId as string}/${classPeriodOrSessionId as string | null}/${ExternalId as string}`;
+        const classViewUrl: string = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId ?? ''}/${classPeriodOrSessionId ?? ''}/${ExternalId ?? ''}`;
     setClassViewURL(classViewUrl);
   };
 
