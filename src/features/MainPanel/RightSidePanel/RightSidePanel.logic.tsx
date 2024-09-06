@@ -35,7 +35,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
   const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
   const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [classViewURL, setClassViewURL] = useState<string>('');
+  const [classViewURL, setClassViewURL]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>('');
   
   const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
     EventStartDate: string,
@@ -59,12 +59,12 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   };
 
 
-  const handleClassViewClick = () => {   
+  const handleClassViewClick: () => void = () => {   
     const classPeriodOrSessionId: string | null =    
     ClassPeriodExternalId === null
         ? EventDescription
         : ClassPeriodExternalId;
-    const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId}/${classPeriodOrSessionId}/${ExternalId}`;
+    const classViewUrl: string = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId}/${classPeriodOrSessionId}/${ExternalId}`;
     setClassViewURL(classViewUrl);
   };
 
