@@ -11,8 +11,7 @@ import React,{ useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
 import { envConfig } from "../../shared/utils";
-
-
+import "./uamStyle.scss";
 
 const UAM:()=>JSX.Element = () => {
   const isMobileView: boolean = useMediaQuery(
