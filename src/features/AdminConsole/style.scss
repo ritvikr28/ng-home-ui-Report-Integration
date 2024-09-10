@@ -83,3 +83,9 @@
     width: 74vw;
   }
 }
+/* stylelint-disable */
+.uam-table-align .essui-table__cell {
+  border-right: 1px solid #e0e0e0;
+  color: #000;
+  line-height: 24px;
+}

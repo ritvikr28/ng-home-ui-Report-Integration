@@ -55,9 +55,9 @@ const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
             }}
           />
         </GridItem>
-        <GridItem style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
+        <GridItem className="uam-table-align" style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
          
-          <UserManagement breadcrumbData={    [
+          <UserManagement  breadcrumbData={    [
 
 {
 
