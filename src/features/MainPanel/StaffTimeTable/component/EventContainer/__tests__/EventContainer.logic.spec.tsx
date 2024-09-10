@@ -843,7 +843,6 @@ describe("EventContainer", () => {
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
         EventDescription= "test"
-        ExternalId= "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"     
         />
     );
 
@@ -877,7 +876,6 @@ describe("EventContainer", () => {
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
         EventDescription= "test"
-        ExternalId= "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"  
       />
     );
     expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();

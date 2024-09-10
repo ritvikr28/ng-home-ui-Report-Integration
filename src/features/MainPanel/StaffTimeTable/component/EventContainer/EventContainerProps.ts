@@ -23,5 +23,4 @@ export interface IEventContainerProps {
   isOpen?: boolean;
   isOpenPanel?: boolean;
   isLoader?:boolean;
-  ExternalId: string;
 }

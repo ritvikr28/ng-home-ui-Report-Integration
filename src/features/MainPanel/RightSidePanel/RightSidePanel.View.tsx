@@ -151,7 +151,7 @@ export const RightSidePanelView: (
                         href={classViewURL}
                         onClick={handleClassViewClick}
                       >
-                       ClassView
+                       Class View
                       </Link>
                     </div>
                   )

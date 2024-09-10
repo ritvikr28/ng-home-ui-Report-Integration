@@ -60,7 +60,7 @@ const mockProps = {
         EventInstanceExternalId={mockProps.EventInstanceExternalId}
         SelectedItem={mockProps.SchoolEventexternalId} 
         EventDescription={mockProps.EventDescription} 
-        ExternalId={mockProps.ExternalId}      />
+          />
     );
   
     const rightPanel: HTMLElement = getByTestId("right-panel-sidepanel");
@@ -100,7 +100,6 @@ const mockProps = {
         EventInstanceExternalId={mockProps.EventInstanceExternalId}
         SelectedItem={mockProps.SchoolEventexternalId} 
         EventDescription={mockProps.EventDescription} 
-        ExternalId={mockProps.ExternalId}  
       />
     );
     
@@ -143,8 +142,7 @@ const mockProps = {
         ClassPeriodExternalId={mockProps.ClassPeriodExternalId}
         EventInstanceExternalId={mockProps.EventInstanceExternalId} 
         SelectedItem={mockProps.SchoolEventexternalId}        
-        EventDescription={mockProps.EventDescription} 
-        ExternalId={mockProps.ExternalId}
+        EventDescription={mockProps.EventDescription}
       />);
 
     const eventCard = getByTestId('eventid0');
@@ -178,7 +176,7 @@ const mockProps = {
       EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
       SelectedItem="1" 
       EventDescription="test" 
-      ExternalId='123'  />;
+      />;
   const { getByTestId } = render(component);
     const element = getByTestId('eventid2');   
     userEvent.click(getByTestId('eventid2'));
