@@ -15,5 +15,4 @@ export interface IRightSidePanelProps {
   ClassPeriodExternalId:string | null;
   EventInstanceExternalId:string;
   EventDescription: string;
-  ExternalId: string;
 }

@@ -324,7 +324,6 @@ const returnEventContainer: React.FC<{
             EventCardColor={getBackgroundColor(item)}
             EventTypeCode={item.eventTypeCode}
             EventDescription={item.eventDescription}
-            ExternalId = {item.externalId}
             ClassPeriodExternalId={item.classPeriodExternalId}
             EventInstanceExternalId={item.eventInstanceExternalId}
             SelectedItem={selectedItem}

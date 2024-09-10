@@ -25,7 +25,6 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     CoverStaffName,
     EventTypeCode,
     EventDescription,
-    ExternalId,
     ClassPeriodExternalId,
     EventInstanceExternalId
   }: IRightSidePanelProps = props;
@@ -64,7 +63,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     ClassPeriodExternalId === null
         ? EventDescription
         : ClassPeriodExternalId;
-        const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId ?? ''}/${classPeriodOrSessionId ?? ''}/${ExternalId ?? ''}`;
+        const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId ?? ''}/${classPeriodOrSessionId ?? ''}/${EventInstanceExternalId ?? ''}`;
     setClassViewURL(classViewUrl);
   };
 

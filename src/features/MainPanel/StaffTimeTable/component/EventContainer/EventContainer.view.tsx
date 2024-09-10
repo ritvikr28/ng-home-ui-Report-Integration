@@ -24,7 +24,6 @@ export const EventContainerView: (
     EventCardColor,
     EventTypeCode,
     EventDescription,
-    ExternalId,
     ClassPeriodExternalId,
     EventInstanceExternalId,
     SelectedItem,
@@ -78,7 +77,6 @@ export const EventContainerView: (
             EventPeriodNo={EventPeriodNum}
             togglePanel={() => togglePanel(SchoolEventexternalId)}
             isOpen={isOpenPanel}
-            ExternalId={ExternalId}
             GroupDescription={GroupDescription}
             StaffName={StaffName}
             CoverStaffName={CoverStaffName}

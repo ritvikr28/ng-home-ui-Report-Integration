@@ -24,8 +24,7 @@ const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   EventTypeCode: "TTPeriod",
   ClassPeriodExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
-  EventDescription: "test",
-  ExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"
+  EventDescription: "test"
 };
 const mockEventTitleMeeting: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -43,8 +42,7 @@ const mockEventTitleMeeting: IRightSidePanelProps = {
   EventTypeCode: "TTNTPer",
   ClassPeriodExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
-  EventDescription: "test",
-  ExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"
+  EventDescription: "test"
 };
 
 const mockHealthyEvent: IRightSidePanelProps = {
@@ -63,8 +61,7 @@ const mockHealthyEvent: IRightSidePanelProps = {
   EventTypeCode: "AttendanceSession",
   ClassPeriodExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
   EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
-  EventDescription: "test",
-  ExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"
+  EventDescription: "test"
 };
 const mockNullClassViewEvent: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -82,8 +79,7 @@ const mockNullClassViewEvent: IRightSidePanelProps = {
   EventTypeCode: "AttendanceSession",
   ClassPeriodExternalId: null,
   EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
-  EventDescription: "test",
-  ExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"
+  EventDescription: "test"
 };
 const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
   {
@@ -249,7 +245,7 @@ describe("RigthSidePanel", () => {
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId} 
         EventDescription={mockHealthyEvent.EventDescription} 
-        ExternalId={mockHealthyEvent.ExternalId}      />
+         />
     );
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
@@ -278,8 +274,7 @@ describe("RigthSidePanel", () => {
       EventTypeCode: "AttendanceSession",
       ClassPeriodExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
-      EventDescription: "test",
-      ExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea1"
+      EventDescription: "test"
     };
     
     
@@ -312,8 +307,7 @@ describe("RigthSidePanel", () => {
         EventTypeCode="TTPeriod"
         ClassPeriodExternalId={mockHealthyEvent1.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent1.EventInstanceExternalId} 
-        EventDescription={mockHealthyEvent1.EventDescription}
-        ExternalId={mockHealthyEvent1.ExternalId}        
+        EventDescription={mockHealthyEvent1.EventDescription}       
       />
     );
     await waitFor(() => {
@@ -355,8 +349,7 @@ describe("RigthSidePanel", () => {
         EventTypeCode={mockHealthyEvent.EventTypeCode} 
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}
-        EventDescription={mockHealthyEvent.EventDescription}
-        ExternalId={mockHealthyEvent.ExternalId}             
+        EventDescription={mockHealthyEvent.EventDescription}           
       />
     );
     await waitFor(() => {
@@ -394,8 +387,7 @@ describe("RigthSidePanel", () => {
         EventTypeCode={mockEventTitleMeeting.EventTypeCode}
         ClassPeriodExternalId={mockEventTitleMeeting.ClassPeriodExternalId}
         EventInstanceExternalId={mockEventTitleMeeting.EventInstanceExternalId} 
-        EventDescription={mockEventTitleMeeting.EventDescription} 
-        ExternalId={mockEventTitleMeeting.ExternalId}      />
+        EventDescription={mockEventTitleMeeting.EventDescription} />
     );
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
@@ -431,8 +423,7 @@ describe("RigthSidePanel", () => {
         EventTypeCode={mockEventTitleMeetingTTPeriod.EventTypeCode}
         ClassPeriodExternalId={mockEventTitleMeetingTTPeriod.ClassPeriodExternalId}
         EventInstanceExternalId={mockEventTitleMeetingTTPeriod.EventInstanceExternalId} 
-        EventDescription={mockEventTitleMeetingTTPeriod.EventDescription} 
-        ExternalId={mockEventTitleMeetingTTPeriod.ExternalId}            
+        EventDescription={mockEventTitleMeetingTTPeriod.EventDescription}          
       />
     );
     await waitFor(() => {
@@ -469,8 +460,7 @@ describe("RigthSidePanel", () => {
         EventTypeCode={mockNullClassViewEvent.EventTypeCode}
         ClassPeriodExternalId={mockNullClassViewEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockNullClassViewEvent.EventInstanceExternalId} 
-        EventDescription={mockNullClassViewEvent.EventDescription} 
-        ExternalId={mockNullClassViewEvent.ExternalId}            
+        EventDescription={mockNullClassViewEvent.EventDescription}             
       />
     );
     await waitFor(() => {
