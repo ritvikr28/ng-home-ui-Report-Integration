@@ -91,7 +91,7 @@ const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
 
 }
 
-]} headingLayoutText="Users" subHeadingLayoutText="Create, assign and invite users to give access to the MIS"/>
+]} heading="Users" subHeading="Create, assign and invite users to give access to the MIS"/>
         </GridItem>
       </Grid>
     </>
