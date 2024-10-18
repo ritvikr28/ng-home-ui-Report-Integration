@@ -211,7 +211,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           )}
           {hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
-          <ProtectedRoute exact path="/schoolRedirect/:id" component={SchoolGroupRedirect} />
+          <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
