@@ -16,7 +16,7 @@
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-flagr": "^0.0.3",
     "@essnextgen/ui-intl-kit": "^0.0.9",
-    "@essnextgen/ui-kit": "^0.20.15-alpha.6",
+    "@essnextgen/ui-kit": "^0.20.16-alpha.3",
     "@essnextgen/ui-user-access-management-kit": "^1.0.3-alpha.1",
     "@microsoft/applicationinsights-react-js": "^3.4.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
