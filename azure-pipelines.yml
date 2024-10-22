@@ -25,11 +25,11 @@ variables:
   - name: location
     value: 'South UK'
   - name: acrName
-    value: 'acrtrcommonuksouth'
+    value: 'pazshdpfmconrg'
   - name: imageName
     value: 'ng-home-ui'
   - name: acr_url
-    value: 'acrtrcommonuksouth.azurecr.io'
+    value: 'pazshdpfmconrg.azurecr.io'
 
 pool:
   name: paz-vmss-pool
@@ -208,7 +208,7 @@ stages:
               targetType: 'inline'
               script: |
                 az login --identity
-                az acr login --name acrtrcommonuksouth
+                az acr login --name $(acr_url)
                 docker push $(acr_url)/$(imageName):$(Build.BuildId)
 
           - task: CopyFiles@2
@@ -248,6 +248,16 @@ stages:
                       buildType: 'current'
                       artifactName: 'drop'
                       targetPath: '$(Pipeline.Workspace)/drop'
+                  
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin
 
                   - task: replacetokens@5
                     displayName: 'Replace Token in Deployment.YAML'
@@ -273,7 +283,8 @@ stages:
                         cd $(Pipeline.Workspace)/drop
                         az login --identity
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                        az aks get-credentials --resource-group paz-dev-ess-ng-rg --name paz-dev-ess-ng-aks --admin 2> /dev/null
+                        az aks get-credentials --resource-group paz-dev-pfm-rg --name paz-dev-pfm-aks --overwrite-existing 2> /dev/null
+                        kubelogin convert-kubeconfig -l azurecli
                         kubectl apply -f deployment.yaml
                         kubectl rollout restart deployment ng-home-ui -n platform
                       failOnStderr: true
