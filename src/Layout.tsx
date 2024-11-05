@@ -32,6 +32,7 @@ import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 
 
 
@@ -139,6 +140,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     `${envConfig.APPLICATION}`,
     "UAMView"
   );
+  
+  const hasUAMOrgPermission: boolean = isOrganisationInVariant("ActiveOrganisations");
+  
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
@@ -209,7 +213,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
             />
           )}
-          {hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
+          {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
