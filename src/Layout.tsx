@@ -29,6 +29,7 @@ import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
 
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
+import DBManagement from "./features/DBManagement/DBManagement.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
@@ -212,6 +213,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
+          <ProtectedRoute exact path="/dbmanagement" component={DBManagement} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
