@@ -157,8 +157,11 @@ describe("getMenus", () => {
 
   // Define a mock version of the response data array
   const mockData: IModulePermission[] = [
-    { code: "Home" },
-    { code: "PupilProfile" }
+    {
+      code: "Home",
+      key: "Home"
+    },
+    { code: "PupilProfile", key: "PupilProfile" }
   ];
 
   it("should filter menus based on permission", () => {
