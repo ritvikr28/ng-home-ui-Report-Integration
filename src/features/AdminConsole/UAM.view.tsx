@@ -7,19 +7,23 @@ import {
   IconColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
 import { envConfig } from "../../shared/utils";
 import "./uamStyle.scss";
 
-const UAM:()=>JSX.Element = () => {
+const UAM: () => JSX.Element = () => {
+  const userManagementRef = useRef<HTMLDivElement | null>(null); 
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
-
+  const [isOpen, setIsOpen]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(!isMobileView);
+  const [hasData, setHasData] = useState(false);
   const handleButtonClick: () => void = () => {
     setIsOpen(!isOpen);
   };
@@ -27,11 +31,46 @@ const UAM:()=>JSX.Element = () => {
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
-const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      if (userManagementRef.current) {
+       
+        const textContent = userManagementRef.current.innerText || "";
+        setHasData(!textContent.includes("No data to display"));
+      }
+    });
+
+   
+    if (userManagementRef.current) {
+      observer.observe(userManagementRef.current, {
+        childList: true,
+        subtree: true,
+        characterData: true,
+      });
+    }
+
+    return () => {
+      observer.disconnect(); 
+    };
+  }, []);
+  useEffect(() => {
+    document.body.style.overflowY = hasData ? "auto" : "hidden";
+    return () => {
+      document.body.style.overflowY = "auto"; 
+    };
+  }, [hasData]);
+
+  const homeurl = `${envConfig.HOME_UI_BASEURL}/AdminConsole`;
   return (
     <>
       <Grid className="admin-mobile-rwaf92428">
-        <GridItem lg={isOpen?3:0} md={isOpen?2:0} xl ={isOpen?2:0} className="side-width">
+        <GridItem
+          lg={isOpen ? 3 : 0}
+          md={isOpen ? 2 : 0}
+          xl={isOpen ? 2 : 0}
+          className="side-width"
+        >
           {isMobileView && !isOpen && (
             <Button
               className="base-class"
@@ -43,54 +82,56 @@ const homeurl=`${envConfig.HOME_UI_BASEURL}/AdminConsole`
               size={ButtonSize.Small}
             />
           )}
-          <LocalisedMenu 
-            customHeight={100}
+          <LocalisedMenu
+            customHeight={200}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`
+              value: `${window.location.origin}/adminconsole`,
             }}
           />
         </GridItem>
-        <GridItem className="uam-table-align" style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
-         
-          <UserManagement  breadcrumbData={    [
+        <GridItem
+          className="uam-table-align"
+          style={{ marginTop: "24px" }}
+          lg={isOpen ? 9 : 12}
+          md={isOpen ? 8 : 8}
+          xl={isOpen ? 10 : 12}
+        >
+          <div ref={userManagementRef}>
+            <UserManagement
+              breadcrumbData={[
+                {
+                  active: false,
 
-{
+                  linkName: "Home",
 
-  active: false,
+                  path: "/",
+                },
 
-  linkName: "Home",
+                {
+                  active: false,
 
-  path: "/"
+                  linkName: "Admin Console",
 
-},
+                  path: homeurl,
+                  isExternalLink: true,
+                },
 
-{
+                {
+                  active: false,
 
-  active: false,
+                  linkName: "Users",
 
-  linkName: "Admin Console",
-
-  path: homeurl,
-  isExternalLink:true
-
-},
-
-{
-
-  active: false,
-
-  linkName: "Users",
-
-  path: "/"
-
-
-}
-
-]} heading="Users" subHeading="Create, assign and invite users to give access to the MIS"/>
+                  path: "/",
+                }
+              ]}
+              heading="Users"
+              subHeading="Create, assign and invite users to give access to the MIS"
+            />
+          </div>
         </GridItem>
       </Grid>
     </>
