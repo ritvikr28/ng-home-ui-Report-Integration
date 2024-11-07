@@ -2,8 +2,8 @@ import { render } from "@testing-library/react";
 import RefreshDatabaseView from "../RefreshDatabase.view"; // Adjust the import path accordingly
 // import {handleComplete} from "../RefreshDatabase.view"
 
-//This test case is failing now because all components are not added, 
-//will uncomment this code once we are ready to commit other components.
+// This test case is failing now because all components are not added,
+// will uncomment this code once we are ready to commit other components.
 describe("RefreshDatabaseView Component", () => {
   it("should handle on complete on component rendering", () => {
     // const setFlagValuesMock = jest.fn();
