@@ -1,8 +1,8 @@
 import { HeadingSubHeading } from "@essnextgen/ui-kit";
-import "../style.scss"
+import "../style.scss";
 
 const RefreshDatabase: () => JSX.Element = () => (
-    <>
+  <>
     <div className="admin-heading heading-text-up admin-heading-psas1334f">
       <HeadingSubHeading
         headingText="Reset the SIMS7 and Next Gen databases"
@@ -11,8 +11,7 @@ const RefreshDatabase: () => JSX.Element = () => (
         isShowSubHeading={true}
       />
     </div>
-    </>
-  );
-  
-  export default RefreshDatabase;
-   
+  </>
+);
+
+export default RefreshDatabase;
