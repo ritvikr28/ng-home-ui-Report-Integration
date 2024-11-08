@@ -21,9 +21,7 @@ const UAM: () => JSX.Element = () => {
   const isAdminconsoleView :boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1024px)"
   );
-  const isAdminLaptopView : boolean =  useMediaQuery(
-    "(min-width:1440px)"
-  );
+ 
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -91,7 +89,7 @@ const UAM: () => JSX.Element = () => {
             />
           )}
           <LocalisedMenu
-            customHeight={(isAdminconsoleView || isAdminLaptopView)? 300 : 200}
+            customHeight={(isAdminconsoleView)? 300 : 200}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
