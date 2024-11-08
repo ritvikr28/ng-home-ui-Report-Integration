@@ -54,7 +54,7 @@ const UAM: () => JSX.Element = () => {
       observer.observe(userManagementRef.current, {
         childList: true,
         subtree: true,
-        characterData: true,
+        characterData: true
       });
     }
 
