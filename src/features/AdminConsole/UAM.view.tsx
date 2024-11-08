@@ -14,16 +14,24 @@ import { envConfig } from "../../shared/utils";
 import "./uamStyle.scss";
 
 const UAM: () => JSX.Element = () => {
-  const userManagementRef = useRef<HTMLDivElement | null>(null); 
+  const userManagementRef :React.RefObject<HTMLDivElement> = useRef<HTMLDivElement | null>(null);
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-
+  const isAdminconsoleView :boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1024px)"
+  );
+  const isAdminLaptopView : boolean =  useMediaQuery(
+    "(min-width:1440px)"
+  );
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(!isMobileView);
-  const [hasData, setHasData] = useState(false);
+  const [hasData, setHasData]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState(false);
   const handleButtonClick: () => void = () => {
     setIsOpen(!isOpen);
   };
@@ -83,7 +91,7 @@ const UAM: () => JSX.Element = () => {
             />
           )}
           <LocalisedMenu
-            customHeight={200}
+            customHeight={(isAdminconsoleView || isAdminLaptopView)? 300 : 200}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
@@ -108,7 +116,7 @@ const UAM: () => JSX.Element = () => {
 
                   linkName: "Home",
 
-                  path: "/",
+                  path: "/"
                 },
 
                 {
@@ -117,7 +125,7 @@ const UAM: () => JSX.Element = () => {
                   linkName: "Admin Console",
 
                   path: homeurl,
-                  isExternalLink: true,
+                  isExternalLink: true
                 },
 
                 {
@@ -125,7 +133,7 @@ const UAM: () => JSX.Element = () => {
 
                   linkName: "Users",
 
-                  path: "/",
+                  path: "/"
                 }
               ]}
               heading="Users"
