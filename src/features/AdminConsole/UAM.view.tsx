@@ -97,7 +97,7 @@ const UAM: () => JSX.Element = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`,
+              value: `${window.location.origin}/adminconsole`
             }}
           />
         </GridItem>
