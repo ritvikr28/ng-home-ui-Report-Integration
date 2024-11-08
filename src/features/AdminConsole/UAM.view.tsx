@@ -89,7 +89,7 @@ const UAM: () => JSX.Element = () => {
             />
           )}
           <LocalisedMenu
-            customHeight={(isAdminconsoleView)? 300 : 200}
+            customHeight={(isAdminconsoleView)? 369.5 : 169.5}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
