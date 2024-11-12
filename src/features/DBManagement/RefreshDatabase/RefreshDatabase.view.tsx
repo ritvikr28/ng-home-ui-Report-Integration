@@ -21,14 +21,22 @@ const items: Item[] = [
   // { title: "Sync SIMS7 data with Next Gen database", component: SyncDataView }
 ];
 
-// Function to handle completion of each step
-export const handleComplete = (
-  index: number,
-  value: string,
-  flagValues: string[],
-  setFlagValues: React.Dispatch<React.SetStateAction<string[]>>,
-  setActiveIndex: React.Dispatch<React.SetStateAction<number>>
-) => {
+interface IHandleCompleteProps {
+  index: number;
+  value: string;
+  flagValues: string[];
+  setFlagValues: React.Dispatch<React.SetStateAction<string[]>>;
+  setActiveIndex: React.Dispatch<React.SetStateAction<number>>;
+}
+
+// The function now uses the HandleCompleteParams interface for its parameters
+export const handleComplete = ({
+  index,
+  value,
+  flagValues,
+  setFlagValues,
+  setActiveIndex
+}: IHandleCompleteProps): string => {
   // Update the flag for the completed step
   const updatedFlags: string[] = [...flagValues];
   updatedFlags[index] = value; // Set the flag value for the completed step
@@ -41,7 +49,7 @@ export const handleComplete = (
   return updatedFlags[index];
 };
 
-const RefreshDatabaseView = () => {
+const RefreshDatabaseView: () => JSX.Element = () => {
   const [activeIndex, setActiveIndex]: [
     number,
     React.Dispatch<React.SetStateAction<number>>
@@ -91,13 +99,13 @@ const RefreshDatabaseView = () => {
                       {isActive && (
                         <CurrentComponent
                           status={(value: string) =>
-                            handleComplete(
+                            handleComplete({
                               index,
                               value,
                               flagValues,
                               setFlagValues,
                               setActiveIndex
-                            )
+                            })
                           }
                         />
                       )}
