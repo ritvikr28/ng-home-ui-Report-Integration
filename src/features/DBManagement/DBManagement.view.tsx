@@ -52,7 +52,7 @@ const DBManagement: React.FC = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "Refresh Database",
-              value: `${window.location.origin}/dbmanagement`,
+              value: `${window.location.origin}/dbmanagement`
             }}
           />
         </GridItem>
@@ -67,17 +67,17 @@ const DBManagement: React.FC = () => {
                 {
                   active: true,
                   linkName: "Home",
-                  path: window.location.origin,
+                  path: window.location.origin
                 },
                 {
                   active: false,
                   linkName: "Admin console",
-                  path: `${window.location.origin}/AdminConsole`,
+                  path: `${window.location.origin}/AdminConsole`
                 },
                 {
                   active: false,
                   linkName: "Refresh Database",
-                  path: "#",
+                  path: "#"
                 }
               ]}
               className="essui-Breadcrumbs"
