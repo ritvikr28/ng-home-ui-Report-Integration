@@ -30,13 +30,15 @@ interface IHandleCompleteProps {
 }
 
 // The function now uses the HandleCompleteParams interface for its parameters
-export const handleComplete = ({
-  index,
-  value,
-  flagValues,
-  setFlagValues,
-  setActiveIndex
-}: IHandleCompleteProps): string => {
+export function handleComplete(props: IHandleCompleteProps) {
+  const {
+    index,
+    value,
+    flagValues,
+    setFlagValues,
+    setActiveIndex
+  }: IHandleCompleteProps = props;
+
   // Update the flag for the completed step
   const updatedFlags: string[] = [...flagValues];
   updatedFlags[index] = value; // Set the flag value for the completed step
