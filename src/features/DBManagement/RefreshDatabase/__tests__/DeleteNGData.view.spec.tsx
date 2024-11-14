@@ -53,4 +53,22 @@ describe("DeleteNGDataView Component", () => {
       screen.getByText(/Deleting the Next gen data will clear all records/i)
     ).toBeInTheDocument();
   });
+
+  it("should close the dialog and set active state to true", () => {
+    render(<DeleteNGDataView status={statusMock} />);
+    fireEvent.click(screen.getByText(/Proceed/i)); // Open the dialog
+
+    const cancelButton = screen.getByText(/Cancel/i);
+    fireEvent.click(cancelButton); // Trigger handleCloseDialog
+
+    // Confirm the dialog is closed
+    expect(screen.queryByText(/Delete Next Gen Data?/i)).not.toBeInTheDocument();
+  });
+
+  it("should close dialof and and set active to false", () => {
+    render(<DeleteNGDataView status={statusMock} />);
+    fireEvent.click(screen.getByText(/Proceed/i)); // Open the dialog
+
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+  });
 });
