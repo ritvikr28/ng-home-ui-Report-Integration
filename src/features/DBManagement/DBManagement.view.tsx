@@ -10,10 +10,7 @@ import {
 } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-// import RefreshDatabase from "./RefreshDatabase/RefreshDatabase";
-// import RefreshDatabaseView from "./RefreshDatabase/RefreshDatabase.view";
-// import { envConfig } from "../../shared/utils";
-
+import RefreshDatabaseView from "./RefreshDatabase/RefreshDatabase.view";
 
 const DBManagement: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
@@ -86,8 +83,7 @@ const DBManagement: React.FC = () => {
               onItemClick={() => {}}
             />
           </div>
-          {/* <RefreshDatabase />
-          <RefreshDatabaseView /> */}
+          <RefreshDatabaseView />
         </GridItem>
       </Grid>
     </>

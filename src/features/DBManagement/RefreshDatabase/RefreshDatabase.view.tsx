@@ -3,9 +3,9 @@ import "../style.scss";
 import React, { useState, ComponentType } from "react";
 import DetachDatabaseView from "./DetachDatabase.view";
 import RefreshDatabase from "./RefreshDatabase";
-// import DeleteNGDataView  from "./DeleteNGData.view";
-// import AttachDatabaseView from "./AttachDatabase.view";
-// import SyncDataView from "./SyncData.view";
+import DeleteNGDataView  from "./DeleteNGData.view";
+import AttachDatabaseView from "./AttachDatabase.view";
+import SyncDataView from "./SyncData.view";
 
 // Define the interface for each item in the items array
 interface Item {
@@ -15,10 +15,10 @@ interface Item {
 
 // Define items with the components to be rendered
 const items: Item[] = [
-  { title: "Detach SIMS7 database", component: DetachDatabaseView }
-  // { title: "Delete Next Gen data", component: DeleteNGDataView },
-  // { title: "Attach SIMS7 database", component: AttachDatabaseView },
-  // { title: "Sync SIMS7 data with Next Gen database", component: SyncDataView }
+  { title: "Detach SIMS7 database", component: DetachDatabaseView },
+  { title: "Delete Next Gen data", component: DeleteNGDataView },
+  { title: "Attach SIMS7 database", component: AttachDatabaseView },
+  { title: "Sync SIMS7 data with Next Gen database", component: SyncDataView }
 ];
 
 interface IHandleCompleteProps {
