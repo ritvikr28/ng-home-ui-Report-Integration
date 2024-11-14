@@ -1,22 +1,21 @@
+import React from "react";
 import {
   ButtonSize,
   GridItem,
-  HeadingSubHeading,
-  ReactionButtonGroup,
-  ReactionButton,
   Button,
-  FormLabel,
   ButtonColor
 } from "@essnextgen/ui-kit";
 import "../style.scss";
-import ConfirmDialog from "./ConfirmationDialog.logic";
 import { useEffect, useState } from "react";
+import ConfirmDialog from "./ConfirmationDialog.logic";
 
 interface AttachDatabaseViewProps {
-  status: (value: string) => string; // Add status prop
+  status: (value: string) => void; // Corrected to void
 }
+
 const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   const handleButtonClick = () => {
     setShowDeleteDialog(true); // Show the component
   };
@@ -28,13 +27,13 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
 
   const handleDelete = () => {
     // Perform delete action here
-    // After deletion, call status
     handleCloseDialog();
   };
 
   useEffect(() => {
     if (showDeleteDialog) {
-      //status(); // Call status when showDeleteDialog is set to true
+      // Call status when showDeleteDialog is set to true
+      status("syncing");
     }
   }, [showDeleteDialog, status]);
 
@@ -42,11 +41,10 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
     <>
       <GridItem sm={12}>
         <p className="label-height">
-          Data sync will be completed by {1} time tomorrow
+          Data sync will be completed by 1 time tomorrow
         </p>
         <Button
           id="btn-sync"
-          //dataTestId="add-id"
           className="btn-full-width"
           size={ButtonSize.Small}
           color={ButtonColor.Utility}
@@ -57,12 +55,10 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
         {showDeleteDialog && (
           <ConfirmDialog
             confirmActionButtonText="Close"
-            title={"Data Sync in progress"}
+            title="Data Sync in progress"
             onCloseHandle={handleCloseDialog}
             onSubmitHandle={handleDelete}
-            description={
-              "SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
-            }
+            description="SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
           />
         )}
       </GridItem>
