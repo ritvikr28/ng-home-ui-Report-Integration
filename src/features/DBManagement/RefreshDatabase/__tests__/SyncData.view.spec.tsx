@@ -14,14 +14,12 @@ describe("SyncDataView Component", () => {
     expect(
       screen.getByText(/Data sync will be completed by/i)
     ).toBeInTheDocument();
-    //expect(screen.getByText(/Sync/i)).toBeInTheDocument();
   });
 
   it("should show confirmation dialog when sync button is clicked", () => {
     render(<SyncDataView status={statusMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-
   });
 
   it('should call status with "true" when dialog is closed', async () => {

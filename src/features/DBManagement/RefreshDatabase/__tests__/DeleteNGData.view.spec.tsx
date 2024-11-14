@@ -19,16 +19,23 @@ interface ConfirmDialogProps {
 }
 
 // Mock the ConfirmDialog component with typed props
-jest.mock("../ConfirmationDialog.logic", () => {
-  return ({ onCloseHandle, onSubmitHandle, ...props }: ConfirmDialogProps) => (
-    <div>
-      <button onClick={onSubmitHandle}>Delete</button>
-      <button onClick={onCloseHandle}>Cancel</button>
-      <h1>{props.title}</h1>
-      <p>{props.description}</p>
-    </div>
-  );
-});
+jest.mock(
+  "../ConfirmationDialog.logic",
+  () =>
+    ({ onCloseHandle, onSubmitHandle, ...props }: ConfirmDialogProps) =>
+      (
+        <div>
+          <button type="button" onClick={onSubmitHandle}>
+            Delete
+          </button>
+          <button type="button" onClick={onCloseHandle}>
+            Cancel
+          </button>
+          <h1>{props.title}</h1>
+          <p>{props.description}</p>
+        </div>
+      )
+);
 
 describe("DeleteNGDataView Component", () => {
   const statusMock = jest.fn();
@@ -62,7 +69,9 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(cancelButton); // Trigger handleCloseDialog
 
     // Confirm the dialog is closed
-    expect(screen.queryByText(/Delete Next Gen Data?/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Delete Next Gen Data?/i)
+    ).not.toBeInTheDocument();
   });
 
   it("should close dialof and and set active to false", () => {

@@ -1,20 +1,22 @@
-import {
-  ButtonSize,
-  GridItem,
-  Button,
-  ButtonColor
-} from "@essnextgen/ui-kit";
+import React, { useState } from "react";
+import { ButtonSize, GridItem, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
-import { useEffect, useState } from "react";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 
-interface DeleteNGDataViewProps {
+export interface DeleteNGDataViewProps {
   status: (value: string) => string; // Add status prop
 }
 
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [isActive, setActive] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+
+  const [isActive, setActive]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   const handleButtonClick: () => void = () => {
     setShowDeleteDialog(true);
@@ -34,11 +36,6 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
     handleCloseDialog();
   };
 
-  useEffect(() => {
-    if (showDeleteDialog) {
-    }
-  }, [showDeleteDialog, status]);
-
   return (
     <>
       <GridItem sm={12}>
@@ -47,7 +44,6 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
         >
           <Button
             id="btn-sync"
-            //dataTestId="add-id"
             className="btn-full-width"
             size={ButtonSize.Small}
             color={ButtonColor.Utility}
@@ -60,12 +56,10 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
               confirmActionButtonText="Delete"
               cancelActionButtonText="Cancel"
               optionalButton={true}
-              title={"Delete Next Gen Data?"}
+              title="Delete Next Gen Data?"
               onCloseHandle={handleCloseDialog}
               onSubmitHandle={handleDelete}
-              description={
-                "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
-              }
+              description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
             />
           )}
         </div>

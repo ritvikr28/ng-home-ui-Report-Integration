@@ -17,7 +17,10 @@ const DBManagement: React.FC = () => {
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
+  const [isOpen, setIsOpen]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(!isMobileView);
 
   const handleButtonClick: () => void = () => {
     setIsOpen(!isOpen);
@@ -30,7 +33,12 @@ const DBManagement: React.FC = () => {
   return (
     <>
       <Grid className="admin-mobile-rwaf92428">
-        <GridItem lg={isOpen?3:0} md={isOpen?2:0} xl ={isOpen?2:0} className="side-width">
+        <GridItem
+          lg={isOpen ? 3 : 0}
+          md={isOpen ? 2 : 0}
+          xl={isOpen ? 2 : 0}
+          className="side-width"
+        >
           {isMobileView && !isOpen && (
             <Button
               className="base-class"
@@ -42,7 +50,7 @@ const DBManagement: React.FC = () => {
               size={ButtonSize.Small}
             />
           )}
-          <LocalisedMenu 
+          <LocalisedMenu
             customHeight={100}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
@@ -53,7 +61,12 @@ const DBManagement: React.FC = () => {
             }}
           />
         </GridItem>
-        <GridItem style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
+        <GridItem
+          style={{ marginTop: "24px" }}
+          lg={isOpen ? 9 : 12}
+          md={isOpen ? 8 : 8}
+          xl={isOpen ? 10 : 12}
+        >
           <div
             className={
               isOpen ? "adminConsole-sidepanelopen" : "adminconsole-breadcrumb"

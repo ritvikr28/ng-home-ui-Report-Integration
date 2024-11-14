@@ -1,28 +1,23 @@
-import {
-  ButtonSize,
-  GridItem,
-  Button,
-  ButtonColor
-} from "@essnextgen/ui-kit";
+import React, { useState } from "react";
+import { ButtonSize, GridItem, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import ConfirmDialog from "./ConfirmationDialog.logic";
-import { useState } from "react";
 
-interface AttachDatabaseViewProps {
+export interface AttachDatabaseViewProps {
   status: (value: string) => string; // Add status prop
 }
 const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
-  const [showDeleteDialog, setShowDeleteDialog]: [
+  const [showSyncDialog, setShowSyncDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
 
   const handleButtonClick: () => void = () => {
-    setShowDeleteDialog(true); // Show the component
-  }
+    setShowSyncDialog(true); // Show the component
+  };
 
   const handleCloseDialog: () => void = () => {
-    setShowDeleteDialog(false);
+    setShowSyncDialog(false);
     status("true");
   };
 
@@ -45,10 +40,10 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
         >
           Sync
         </Button>
-        {showDeleteDialog && (
+        {showSyncDialog && (
           <ConfirmDialog
             confirmActionButtonText="Close"
-            title={"Data Sync in progress"}
+            title="Data Sync in progress"
             onCloseHandle={handleCloseDialog}
             onSubmitHandle={handleDelete}
             description={
@@ -60,5 +55,4 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
     </>
   );
 };
-
 export default SyncDataView;
