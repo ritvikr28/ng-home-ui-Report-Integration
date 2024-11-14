@@ -14,7 +14,8 @@ describe("SyncDataView Component", () => {
     expect(
       screen.getByText(/Data sync will be completed by/i)
     ).toBeInTheDocument();
-    //expect(screen.getByText(/Sync/i)).toBeInTheDocument();
+    // Expect Sync button to be in the document (uncomment if needed)
+    // expect(screen.getByText(/Sync/i)).toBeInTheDocument();
   });
 
   it("should show confirmation dialog when sync button is clicked", () => {

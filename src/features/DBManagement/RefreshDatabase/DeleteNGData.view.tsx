@@ -1,9 +1,7 @@
+import React from "react";
 import {
   ButtonSize,
   GridItem,
-  HeadingSubHeading,
-  ReactionButtonGroup,
-  ReactionButton,
   Button,
   ButtonColor
 } from "@essnextgen/ui-kit";
@@ -12,19 +10,11 @@ import { useEffect, useState } from "react";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { service } from "../../../shared/utils";
 
-export const FetchIsDeleted: () => Promise<string> = async () => {
-  try {
-    const response: any = await service.get(
-      "http://localhost:5010/api/v1/quicklink/IsDeleted?isDeleted=false"
-    );
-    return response.data;
-  } catch (err: any) {
-    return "";
-  }
-};
+export const FetchIsDeleted: () => Promise<string> = async () =>
+  (await service.get("http://localhost:5010/api/v1/quicklink/IsDeleted?isDeleted=false")).data;
 
 interface DeleteNGDataViewProps {
-  status: (value: string) => string; // Add status prop
+  status: (value: string) => string; // Status prop with return type string
 }
 
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
@@ -33,7 +23,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
 
   const handleButtonClick = () => {
     setShowDeleteDialog(true);
-    setActive(true); // Show the component
+    setActive(true);
   };
 
   const handleCloseDialog = () => {
@@ -45,14 +35,12 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
   };
 
   const handleDelete = async () => {
-    // Perform delete action here
-    // After deletion, call status
     setActive(false);
     handleCloseDialog();
     try {
       const response = await FetchIsDeleted();
-      if (response != null) {
-        status(response); // Notify parent that the operation is complete
+      if (response) {
+        status(response);
       } else {
         console.error("Failed to fetch data");
       }
@@ -63,19 +51,17 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
 
   useEffect(() => {
     if (showDeleteDialog) {
-      //status(); // Call status when showDeleteDialog is set to true
+      status("syncing");
     }
   }, [showDeleteDialog, status]);
 
   return (
     <>
       <GridItem sm={12}>
-        <div
-          style={{ display: "flex", alignItems: "center", marginTop: "8px" }}
-        >
+        <div style={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
           <Button
             id="btn-sync"
-            //dataTestId="add-id"
+            // type="button" // Added type attribute
             className="btn-full-width"
             size={ButtonSize.Small}
             color={ButtonColor.Utility}
@@ -88,12 +74,10 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
               confirmActionButtonText="Delete"
               cancelActionButtonText="Cancel"
               optionalButton={true}
-              title={"Delete Next Gen Data?"}
+              title="Delete Next Gen Data?"
               onCloseHandle={handleCloseDialog}
               onSubmitHandle={handleDelete}
-              description={
-                "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
-              }
+              description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
             />
           )}
         </div>
