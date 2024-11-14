@@ -15,7 +15,6 @@ interface IProps {
   cancelActionButtonText?: string;
   isOpen?: boolean;
   optionalButton?: boolean;
-  optionalButtonText?: string;
   onOptionalHandle?: () => void;
   onSubmitHandle: () => void;
   onCloseHandle: () => void;
@@ -31,19 +30,18 @@ export const handleDocumentBodyOverflow = () => {
   document.body.classList.remove(bodyNoScrollClass);
 };
 
-export const ConfirmDialog: ({}: IProps) => JSX.Element = ({
+export const ConfirmDialog: React.FC<IProps> = ({
   title,
   description,
   confirmActionButtonText = "Ok",
   cancelActionButtonText = "Cancel",
   dataTestId = "default-dialog",
-  isOpen,
-  optionalButton,
-  onOptionalHandle,
+  isOpen = false,
+  optionalButton = false,
   onCloseHandle,
-  onSubmitHandle
-}: IProps): JSX.Element => {
-  const { t } = useTranslation();
+  onSubmitHandle,
+}) => {
+  useTranslation();
 
   const handleOnSubmit = () => {
     handleDocumentBodyOverflow();
@@ -94,4 +92,13 @@ export const ConfirmDialog: ({}: IProps) => JSX.Element = ({
     </Dialog>
   );
 };
+
+ConfirmDialog.defaultProps = {
+  confirmActionButtonText: "Ok",
+  cancelActionButtonText: "Cancel",
+  dataTestId: "default-dialog",
+  isOpen: false,
+  optionalButton: false,
+};
+
 export default ConfirmDialog;

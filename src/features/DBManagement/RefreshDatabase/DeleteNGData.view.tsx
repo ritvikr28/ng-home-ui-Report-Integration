@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   ButtonSize,
   GridItem,
@@ -6,7 +6,7 @@ import {
   ButtonColor
 } from "@essnextgen/ui-kit";
 import "../style.scss";
-import { useEffect, useState } from "react";
+
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { service } from "../../../shared/utils";
 
