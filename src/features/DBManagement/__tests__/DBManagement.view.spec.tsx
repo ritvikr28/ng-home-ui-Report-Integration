@@ -11,12 +11,12 @@ interface LocalisedMenuProps {
 jest.mock("@essnextgen/ui-application-kit", () => ({
   LocalisedMenu: ({
     onCloseSideNavigationPanel,
-    isOpenSideNavigation,
+    isOpenSideNavigation
   }: LocalisedMenuProps) => (
     <button type="button" onClick={onCloseSideNavigationPanel}>
       {isOpenSideNavigation ? "Close Menu" : "Open Menu"}
     </button>
-  ),
+  )
 }));
 
 describe("DBManagement component", () => {
@@ -26,7 +26,9 @@ describe("DBManagement component", () => {
 
     // Mocking the items array to avoid flagValues issue
     const mockItems = ["item1", "item2", "item3"]; // Add appropriate mock data
-    jest.spyOn(React, "useState").mockImplementationOnce(() => [mockItems, jest.fn()]);
+    jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [mockItems, jest.fn()]);
 
     render(<DBManagement />);
 

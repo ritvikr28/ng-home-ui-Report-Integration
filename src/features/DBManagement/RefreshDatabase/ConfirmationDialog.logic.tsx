@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Dialog,
   DialogContent,
@@ -15,7 +16,6 @@ interface IProps {
   cancelActionButtonText?: string;
   isOpen?: boolean;
   optionalButton?: boolean;
-  onOptionalHandle?: () => void;
   onSubmitHandle: () => void;
   onCloseHandle: () => void;
 }
@@ -39,7 +39,7 @@ export const ConfirmDialog: React.FC<IProps> = ({
   isOpen = false,
   optionalButton = false,
   onCloseHandle,
-  onSubmitHandle,
+  onSubmitHandle
 }) => {
   useTranslation();
 
@@ -98,7 +98,7 @@ ConfirmDialog.defaultProps = {
   cancelActionButtonText: "Cancel",
   dataTestId: "default-dialog",
   isOpen: false,
-  optionalButton: false,
+  optionalButton: false
 };
 
 export default ConfirmDialog;
