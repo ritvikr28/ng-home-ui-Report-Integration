@@ -135,7 +135,7 @@ const UAM: () => JSX.Element = () => {
                 }
               ]}
               heading="Users"
-              subHeading="Create, assign and invite users to give access to the MIS"
+              subHeading="Create and manage users within your Trust"
             />
           </div>
         </GridItem>
