@@ -142,6 +142,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     "UAMView"
   );
   
+  const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("ActiveOrganisations");
   const hasUAMOrgPermission: boolean = isOrganisationInVariant("ActiveOrganisations");
   
 
@@ -217,7 +218,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
-          <ProtectedRoute exact path="/dbmanagement" component={DBManagement} />
+          {hasRefreshDBOrgPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
