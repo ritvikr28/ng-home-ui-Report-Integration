@@ -141,8 +141,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     `${envConfig.APPLICATION}`,
     "UAMView"
   );
+  const hasRefreshDBPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "RefreshDBORG"
+  );
   
-  const hasUAMOrgPermission: boolean = isOrganisationInVariant("ActiveOrganisations");
+  const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
+  const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
   
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
@@ -217,7 +222,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
-          <ProtectedRoute exact path="/dbmanagement" component={DBManagement} />
+          {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
