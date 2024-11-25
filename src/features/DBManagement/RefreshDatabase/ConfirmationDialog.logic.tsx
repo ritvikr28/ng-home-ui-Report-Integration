@@ -20,7 +20,7 @@ interface IProps {
   onCloseHandle: () => void;
 }
 
-export const handleDocumentBodyOverflow = () => {
+export const handleDocumentBodyOverflow: () => void = () => {
   const bodyNoScrollClass = "essui-body--no-scroll";
 
   if (!document.body.classList.contains(bodyNoScrollClass)) {
@@ -43,12 +43,12 @@ export const ConfirmDialog: React.FC<IProps> = ({
 }) => {
   useTranslation();
 
-  const handleOnSubmit = () => {
+  const handleOnSubmit: () => void = () => {
     handleDocumentBodyOverflow();
     onSubmitHandle();
   };
 
-  const handleOnClose = () => {
+  const handleOnClose: () => void = () => {
     handleDocumentBodyOverflow();
     onCloseHandle();
   };
