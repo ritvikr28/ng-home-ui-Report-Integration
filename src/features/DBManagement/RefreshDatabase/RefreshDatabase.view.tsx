@@ -30,7 +30,9 @@ interface IHandleCompleteProps {
 }
 
 // The function now uses the HandleCompleteParams interface for its parameters
-export const handleComplete = (props: IHandleCompleteProps): string => {
+export const handleComplete: (props: IHandleCompleteProps) => string = (
+  props : IHandleCompleteProps
+) => {
   const {
     index,
     value,
