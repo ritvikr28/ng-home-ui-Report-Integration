@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SyncDataView from "../SyncData.view"; // Adjust the import path accordingly
+import SyncDataView from "../SyncData.view";
 
 describe("SyncDataView Component", () => {
   const statusMock = jest.fn();
@@ -24,10 +24,6 @@ describe("SyncDataView Component", () => {
 
   it('should call status with "true" when dialog is closed', async () => {
     render(<SyncDataView status={statusMock} />);
-
-    // fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-    // fireEvent.click(screen.getByText("Close"));
-
     await waitFor(() => {
       expect(statusMock).not.toBeCalledWith("true");
     });

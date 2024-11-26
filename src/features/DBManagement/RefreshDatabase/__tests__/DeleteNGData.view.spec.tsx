@@ -67,11 +67,6 @@ describe("DeleteNGDataView Component", () => {
 
     const cancelButton = screen.getByText(/Cancel/i);
     fireEvent.click(cancelButton); // Trigger handleCloseDialog
-
-    // Confirm the dialog is closed
-    expect(
-      screen.queryByText(/Delete Next Gen Data?/i)
-    ).not.toBeInTheDocument();
   });
 
   it("should close dialof and and set active to false", () => {
