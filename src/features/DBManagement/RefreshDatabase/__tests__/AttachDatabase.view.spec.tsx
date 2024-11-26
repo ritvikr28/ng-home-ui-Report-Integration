@@ -7,13 +7,19 @@ jest.mock("axios");
 
 describe("AttachDatabaseView Component", () => {
   const statusMock = jest.fn();
+  const HandleExceptionMock = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks(); // Clear previous mocks before each test
   });
 
   it("should render the component", () => {
-    render(<AttachDatabaseView status={statusMock} />);
+    render(
+      <AttachDatabaseView
+        status={statusMock}
+        handleException={HandleExceptionMock}
+      />
+    );
     expect(
       screen.getByText("Is the SIMS7 database attached?")
     ).toBeInTheDocument();
@@ -24,13 +30,55 @@ describe("AttachDatabaseView Component", () => {
     expect(screen.getByLabelText("No")).toBeInTheDocument();
   });
 
+
+  it("should handle API success", async () => {
+    const mockApiResponse = {
+      data: { statusCode: 200, uiStatus: "Detached" }
+    };
+    (axios.post as jest.Mock).mockResolvedValueOnce(mockApiResponse);
+    render(
+      <AttachDatabaseView
+        status={statusMock}
+        handleException={HandleExceptionMock}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("Yes"));
+
+    await waitFor(() => {
+      expect(statusMock).not.toHaveBeenCalledWith("In progress");
+    });
+  });
+
+  it("should handle API failure", async () => {
+    const mockApiResponse = {
+      data: { statusCode: 500, uiStatus: "Failed to fetch data" }
+    };
+    (axios.post as jest.Mock).mockResolvedValueOnce(mockApiResponse);
+    render(
+      <AttachDatabaseView
+        status={statusMock}
+        handleException={HandleExceptionMock}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("Yes"));
+
+    await waitFor(() => {
+      expect(statusMock).not.toHaveBeenCalledWith("Detached");
+    });
+  });
+
   it("should handle API errors gracefully", async () => {
     (axios.get as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
     const consoleErrorMock = jest
       .spyOn(console, "error")
       .mockImplementation(() => {});
 
-    render(<AttachDatabaseView status={statusMock} />);
+      render(
+        <AttachDatabaseView
+          status={statusMock}
+          handleException={HandleExceptionMock}
+        />
+      );
     fireEvent.click(screen.getByLabelText("Yes"));
 
     // Wait for the effect of the click to propagate
@@ -41,4 +89,19 @@ describe("AttachDatabaseView Component", () => {
 
     consoleErrorMock.mockRestore(); // Restore original console.error
   });
+
+  it("should not call API if 'No' is selected", async () => {
+    render(
+      <AttachDatabaseView
+        status={statusMock}
+        handleException={HandleExceptionMock}
+      />
+    );
+    fireEvent.click(screen.getByLabelText("No"));
+
+    await waitFor(() => {
+      expect(statusMock).not.toHaveBeenCalled();
+    });
+  });
+
 });

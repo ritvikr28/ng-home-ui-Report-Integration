@@ -26,12 +26,12 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
   const handleCloseDialog: () => void = () => {
     setShowDeleteDialog(false);
     setActive(true);
-    if (!isActive) {
-      status("In Progress");
-    }
   };
 
   const handleDelete: () => void = () => {
+    if(isActive) {
+      status("In progress")
+    }
     setActive(false);
     handleCloseDialog();
   };
@@ -51,17 +51,16 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
           >
             Proceed
           </Button>
-          {showDeleteDialog && (
-            <ConfirmDialog
-              confirmActionButtonText="Delete"
-              cancelActionButtonText="Cancel"
-              optionalButton={true}
-              title="Delete Next Gen Data?"
-              onCloseHandle={handleCloseDialog}
-              onSubmitHandle={handleDelete}
-              description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
-            />
-          )}
+          <ConfirmDialog
+            isOpen={showDeleteDialog}
+            confirmActionButtonText="Delete"
+            cancelActionButtonText="Cancel"
+            optionalButton={true}
+            title="Delete Next Gen Data?"
+            onCloseHandle={handleCloseDialog}
+            onSubmitHandle={handleDelete}
+            description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+          />
         </div>
       </GridItem>
     </>

@@ -4,61 +4,91 @@ import {
   ReactionButtonGroup,
   ReactionButton
 } from "@essnextgen/ui-kit";
-import { service } from "../../../shared/utils";
+import { AxiosResponse } from "axios";
+import { authService } from "@essnextgen/auth-ui";
+import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
 import "../style.scss";
+import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
+import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
-export const FetchIsDetached: (
-  selectedValue: boolean
-) => Promise<string> = async (selectedValue: boolean) => {
-  try {
-    const requestData: {
-      selectedValue: boolean;
-    } = {
-      selectedValue
-    };
-    const response: any = await service.get(
-      "http://localhost:5010/api/v1/quicklink/IsDetached?isDetached=false"
-    );
-    console.log(requestData);
-    return response.data;
-  } catch (err: any) {
-    return null;
-  }
-};
+export const FetchIsDetached = async (
+  handleException: () => void
+): Promise<ISchoolDetailsDRApiResponse | null> => {
+    try {
+      const schoolData: ISchoolNameDataResponse | null =
+        await useFetchSchoolNameData();
+      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+
+      const requestData: {
+        operationIndicator: string;
+        orgId: string;
+        orgName: string;
+        tableFlagValue: string;
+        actorName: string;
+      } = {
+        operationIndicator: "D",
+        orgId: getUserOrganisation(),
+        orgName,
+        tableFlagValue: "Y",
+        actorName: authService.getUsername()
+      };
+      const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
+        await service.post(
+          `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
+          requestData
+        );
+      return response.data;
+    } catch (err: any) {
+      handleException();
+      console.error("Failed to fetch data");
+      return null;
+    }
+  };
 
 export interface DetachDatabaseViewProps {
   status: (value: string) => string;
+  handleException: () => void; 
 }
 
-const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({ status }) => {
-  const [selectedOption, setSelectedValue] = useState<string>("No");
-  const [detachedFlag, setIsDetached] = useState<string>("");
+const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
+  status,
+  handleException
+}) => {
+  const [selectedOption, setSelectedValue]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("No");
 
-  const handleSetIsDetached = async (value: boolean) => {
-    const responseData = await FetchIsDetached(value);
+  const handleSetIsDetached = async () => {
+    // Get detached status
+    const response: ISchoolDetailsDRApiResponse | null =
+      await FetchIsDetached(handleException);
 
-    if (responseData != null) {
-      setIsDetached(responseData as string);
-      status(responseData as string);
-    } else {
-      console.error("Failed to fetch data");
-    }
+      if (response != null) {
+        if (response.statusCode === 200) {
+          status(response.uiStatus as string);
+        } else {
+          handleException(); // Trigger exception handling in parent
+        }
+      } else {
+        handleException(); // Trigger exception handling in parent
+      }
   };
 
   const handleSelectionChange = async (value: string) => {
     setSelectedValue(value as string);
     const isDetached = value === "Yes";
-    console.log(detachedFlag);
-    await handleSetIsDetached(isDetached);
+    if (isDetached) {
+      await handleSetIsDetached();
+    }
   };
 
   return (
     <>
-      {/* <div style={{ display: "flex", alignItems: "center", marginTop: "4px" }}> */}
       <h4 style={{ marginTop: "10px", marginBottom: "5px" }}>
         Is the SIMS7 database detached?
       </h4>
-      {/* </div> */}
       Please click on Yes to detach
       <ReactionButtonGroup
         id="add-side-panel-types"
