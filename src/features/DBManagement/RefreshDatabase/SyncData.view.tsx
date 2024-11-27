@@ -40,17 +40,14 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
         >
           Sync
         </Button>
-        {showSyncDialog && (
-          <ConfirmDialog
-            confirmActionButtonText="Close"
-            title="Data Sync in progress"
-            onCloseHandle={handleCloseDialog}
-            onSubmitHandle={handleDelete}
-            description={
-              "SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
-            }
-          />
-        )}
+        <ConfirmDialog
+          isOpen={showSyncDialog}
+          confirmActionButtonText="Close"
+          title="Data Sync in progress"
+          onCloseHandle={handleCloseDialog}
+          onSubmitHandle={handleDelete}
+          description="SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
+        />
       </GridItem>
     </>
   );
