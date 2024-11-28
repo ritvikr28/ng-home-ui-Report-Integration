@@ -29,7 +29,7 @@ const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
     <>
       <GridItem sm={12}>
         <p className="label-height">
-          Data sync will be completed by {1} time tomorrow
+          The data synchronization is expected to be completed within 24 hours.
         </p>
         <Button
           id="btn-sync"
