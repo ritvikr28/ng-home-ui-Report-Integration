@@ -12,7 +12,7 @@ describe("SyncDataView Component", () => {
     render(<SyncDataView status={statusMock} />);
 
     expect(
-      screen.getByText(/Data sync will be completed by/i)
+      screen.getByText(/The data synchronization is expected to be completed within 24 hours./i)
     ).toBeInTheDocument();
   });
 
