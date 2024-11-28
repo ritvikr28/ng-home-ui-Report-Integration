@@ -116,25 +116,24 @@ const RefreshDatabaseView: () => JSX.Element = () => {
 
         if (precheckStatus && precheckStatus.statusCode === 200) {
           const statuses = [
-            precheckStatus.dbDetachedStatus,
-            precheckStatus.deleteNGDataStatus,
-            precheckStatus.dbReAttachedStatus,
-            precheckStatus.syncDataStatus
+            precheckStatus.dbDetachedStatus || "",
+            precheckStatus.deleteNGDataStatus || "",
+            precheckStatus.dbReAttachedStatus || "",
+            precheckStatus.syncDataStatus || ""
           ];
 
         // Map statuses to corresponding step labels
-        const initialFlags = statuses.map((status) => {
-          if (status === "Detached") return "Detached";
-          if (status === "Deleted") return "Deleted";
-          if (status === "Attached") return "Attached";
-          if (status === "Completed") return "Completed";
-          return ""; // Default to empty if unrecognized
-        });
+          const initialFlags = statuses.map((status) => {
+            if (status === "Detached") return "Detached";
+            if (status === "Deleted") return "Deleted";
+            if (status === "Attached") return "Attached";
+            if (status === "Completed") return "Completed";
+            return ""; // Default to empty if unrecognized
+          });
           setFlagValues(initialFlags);
 
-        // Find the first incomplete step
-        const firstIncompleteIndex = statuses.findIndex((status) => status === "");
-        setActiveIndex(firstIncompleteIndex === -1 ? items.length - 1 : firstIncompleteIndex);
+          const firstIncompleteIndex = initialFlags.findIndex((flag) => flag === "");
+          setActiveIndex(firstIncompleteIndex === -1 ? items.length - 1 : firstIncompleteIndex);
         }
       } catch (error) {
         console.error("Error fetching precheck status:", error);
