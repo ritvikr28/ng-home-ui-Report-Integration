@@ -18,21 +18,22 @@ interface Item {
   component: ComponentType<any>;
 }
 
-export const FetchPreCheckStatus: () => Promise<IPrecheckStatusApiResponse | null> =
-  async () => {
-    try {
-      const schoolData: ISchoolNameDataResponse | null =
-        await useFetchSchoolNameData();
+export const FetchPreCheckStatus= async (
+  handleException: () => void
+): Promise<IPrecheckStatusApiResponse | null> => {
+      const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
       const orgName: string = schoolData == null ? "" : schoolData.schoolName;
       const orgId = getUserOrganisation();
-      
+
+    try { 
       const response: AxiosResponse<IPrecheckStatusApiResponse> =
-        await service.get(
+      await service.get(
           `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}/${orgName}`
-        );
+      );
       return response.data;
     } catch (err: any) {
-      console.log("Failed to fetch the staus")
+      handleException();
+      console.log("Failed to fetch the status");
       return null;
     }
   };
@@ -101,7 +102,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
   const [enableNotification, setEnableNotification]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
+  ] = useState<boolean>(false);
 
   // Function to handle setting the notification state when an exception occurs
   const handleException = () => {
@@ -112,7 +113,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     const initializeSteps = async () => {
       try {
         const precheckStatus: IPrecheckStatusApiResponse | null =
-          await FetchPreCheckStatus();
+          await FetchPreCheckStatus(handleException);
 
         if (precheckStatus && precheckStatus.statusCode === 200) {
           const statuses = [

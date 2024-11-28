@@ -93,8 +93,9 @@ describe("RefreshDatabaseView Component", () => {
   });
 
   it("FetchPreCheckStatus returns null on error", async () => {
+    const handleExceptionMock = jest.fn();
     jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Fetch failed"));
-    const result = await FetchPreCheckStatus();
+    const result = await FetchPreCheckStatus(handleExceptionMock);
     expect(result).toBeNull();
   });
 });
