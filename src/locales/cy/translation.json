@@ -90,6 +90,12 @@
       "description": "Manage Evacuation Registers and ensure all pupils are accounted for and safely out of the school. Sign up to become an early adopter for Fire Registers.",
       "link": "",
       "linkText": ""
+    },
+    "RefreshDB": {
+      "title": "Adnewyddu DB",
+      "description": "Demo school onboarding.",
+      "link": "",
+      "linkText": ""
     }
   },
   "pageNotFound": {
@@ -137,6 +143,25 @@
         "title": "Wedi cael eich llwytho a’ch gwahodd, ond yn dal i fod yn methu â chael mynediad?",
         "content": "Codwch y mater gyda ",
         "content1": "ESS Support"
+      }
+    }
+  },
+  "RefreshDB_T": {
+    "headingTitle": "Welsh Reset the SIMS7 and Next Gen databases",
+    "description": "Welsh Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases.",
+    "moduleBlock": {
+      "heading": "What to do next",
+      "attachDB": {
+        "title": "Test data",
+        "content": "Test data"
+      },
+      "detachDB": {
+        "title": "Test data",
+        "content": "Test data"
+      },
+      "DeleteNGData": {
+        "title": "Delete Next Gen Data?",
+        "content": "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
       }
     }
   }
