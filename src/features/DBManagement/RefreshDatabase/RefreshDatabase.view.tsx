@@ -1,4 +1,4 @@
-import { Tag, TagSize, TagColor, Card, CardType } from "@essnextgen/ui-kit";
+import { Tag, TagSize, TagColor, Card, CardType, FormLabel } from "@essnextgen/ui-kit";
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
@@ -155,7 +155,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     <>
       <RefreshDatabase />
       {enableNotification && (
-        <div className="notification-open-panel">
+        <div id="notification-open-panel">
           <NotifyExceptionView setDisableNotification={setEnableNotification} />
         </div>
       )}
@@ -169,9 +169,9 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                 <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
                   <div className="list-item" style={{ marginBottom: "20px",  marginTop: "20px", marginLeft:'0px'}}>
                       <div style={{ display: "flex" }}>
-                        <p id='default-list-item' >
+                        <FormLabel id='default-list-item' >
                           {`${index + 1}. ${item.title}`}
-                        </p>
+                        </FormLabel>
                         {flagValues[index].trim() !== "" && (
                           <span style={{ marginLeft: "10px" }} >
                             <Tag

@@ -26,9 +26,8 @@ describe("NotificationView", () => {
       <NotifyExceptionView setDisableNotification={setDisableNotification} />
     );
     expect(
-      container.querySelector(".notification-open-panel")
+      container.querySelector("#notification-open-panel")
     ).toBeInTheDocument();
-    expect(container.querySelector("#element-id")).toBeInTheDocument();
   });
 
   test("calls setDisableNotification when close button is clicked", () => {

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
+import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import ConfirmDialog from "./ConfirmationDialog.logic";
@@ -129,9 +129,9 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   return (
     <>
         <div style={{marginTop:'16px'}}>
-          <p id='sync-body-text'>
+          <FormLabel id='sync-body-text'>
           The data synchronization is expected to be completed within 24 hours.
-          </p>
+          </FormLabel>
         </div>
         <Button
           id="btn-sync"
