@@ -1,55 +1,174 @@
 import React, { useState } from "react";
-import { ButtonSize, GridItem, Button, ButtonColor } from "@essnextgen/ui-kit";
+import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
 import "../style.scss";
+import { AxiosResponse } from "axios";
 import ConfirmDialog from "./ConfirmationDialog.logic";
+import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
+import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 
-export interface AttachDatabaseViewProps {
-  status: (value: string) => string; // Add status prop
+// Fetch sync status
+export const FetchSyncStatus = async (handleException: () => void): Promise<ISchoolDetailsDRApiResponse | null> => {
+  try {
+    const schoolData: ISchoolNameDataResponse | null =
+        await useFetchSchoolNameData();
+    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+    const orgId = getUserOrganisation();
+
+    const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
+      `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}/${orgName}`
+    );
+    return response.data;
+  } catch (err: any) {
+    handleException();
+    console.log("Failed to fetch the Sync status");
+    return null;
+  }
+};
+
+interface SyncDataViewProps {
+  status: (value: string) => void; // Function to update the status
+  inProgressStatus: (value: string) => void; // Function to update the status
+  handleException: () => void; // Function to handle exception cases
 }
-const SyncDataView: React.FC<AttachDatabaseViewProps> = ({ status }) => {
+
+const SyncDataView: React.FC<SyncDataViewProps> = ({
+  status,
+  inProgressStatus,
+  handleException,
+}) => {
+  const [syncStatus, setSyncStatus]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("Not Started");
   const [showSyncDialog, setShowSyncDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [showSyncCompleteDialog, setShowSyncCompleteDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [showSyncFailedDialog, setShowSyncFailedDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [clicked, setClicked]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  
+  // Handle button click
+  const handleButtonClick = async () => {
+    // If clicked second time
+    if(clicked){
+      setShowSyncDialog(true)
+      if(showSyncDialog) {
+        inProgressStatus("In Progress");
+        await CheckSyncStatus();
+      }
+    }
 
-  const handleButtonClick: () => void = () => {
-    setShowSyncDialog(true); // Show the component
+    if (syncStatus === "In Progress" || syncStatus === "Not Started" ) {
+      inProgressStatus("In Progress");
+      setClicked(true);
+      return;
+    }
+
+    setClicked(true);
+    inProgressStatus("In Progress")
+
   };
 
-  const handleCloseDialog: () => void = () => {
+  // Function to check sync status
+  const CheckSyncStatus = async (): Promise<string> => {
+    try {
+      const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
+      if (!response) {
+        handleException();
+        setSyncStatus(""); // Reset the sync status in case of failure
+        return "Error";
+      }
+
+      if (response.statusCode === 200) {
+        switch (response.uiStatus) {
+          case "Completed":
+            setShowSyncCompleteDialog(true);
+            setSyncStatus("Completed");
+            status("completed")
+            break;
+          case "Error":
+            setShowSyncFailedDialog(true);
+            setSyncStatus("Failed");
+            break;
+          default:
+            setSyncStatus(""); // Reset the status for unexpected cases
+            setClicked(false); // Reset 'clicked' state
+        }
+        return syncStatus
+      }
+    } catch (error) {
+      handleException();
+      setSyncStatus("Error"); 
+      return "Error"
+      // Reset in case of error
+    } 
+    return "Error"
+  };
+
+  // Handle closing the dialogs
+  const handleCloseDialog = () => {
     setShowSyncDialog(false);
-    status("true");
+    setShowSyncCompleteDialog(false);
+    setShowSyncFailedDialog(false);
+    setSyncStatus(""); // Reset sync status
   };
 
-  const handleDelete: () => void = () => {
-    handleCloseDialog();
-  };
-
+  
   return (
     <>
-      <GridItem sm={12}>
-        <p className="label-height">
+        <div style={{marginTop:'16px'}}>
+          <FormLabel id='sync-body-text'>
           The data synchronization is expected to be completed within 24 hours.
-        </p>
+          </FormLabel>
+        </div>
         <Button
           id="btn-sync"
           className="btn-full-width"
           size={ButtonSize.Small}
           color={ButtonColor.Utility}
           onClick={handleButtonClick}
+          disabled={syncStatus === "Completed"}
         >
           Sync
         </Button>
         <ConfirmDialog
           isOpen={showSyncDialog}
-          confirmActionButtonText="Close"
+          confirmActionButtonText="Cancel"
           title="Data Sync in progress"
           onCloseHandle={handleCloseDialog}
-          onSubmitHandle={handleDelete}
+          onSubmitHandle={handleButtonClick}
           description="SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
         />
-      </GridItem>
+        <ConfirmDialog
+          isOpen={showSyncCompleteDialog}
+          confirmActionButtonText="Close"
+          title="Data Sync successfully"
+          onCloseHandle={handleCloseDialog}
+          onSubmitHandle={handleCloseDialog}
+          description="SIMS7 data synced successfully with Next Gen database."
+        />
+        <ConfirmDialog
+          isOpen={showSyncFailedDialog}
+          confirmActionButtonText="Close"
+          title="Data Sync failed"
+          onCloseHandle={handleCloseDialog}
+          onSubmitHandle={handleCloseDialog}
+          description="SIMS7 data sync with Next Gen database failed. We apologize for any inconvenience. Please try again."
+        />
     </>
   );
 };
+
 export default SyncDataView;

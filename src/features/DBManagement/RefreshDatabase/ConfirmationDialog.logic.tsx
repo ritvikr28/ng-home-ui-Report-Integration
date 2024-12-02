@@ -7,6 +7,7 @@ import {
   ButtonColor
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
+import "../style.scss";
 
 interface IProps {
   dataTestId?: string;
@@ -55,19 +56,16 @@ export const ConfirmDialog: React.FC<IProps> = ({
 
   return (
     <Dialog
+     id='cnd-dialog'
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
       onClose={handleOnClose}
       title={title}
     >
-      <DialogContent>{description}</DialogContent>
-      <DialogFooter>
-        <div
-          style={{ display: "flex", justifyContent: "flex-end", gap: "20px" }}
-        >
+      <DialogContent className='dialog-content'>{description}</DialogContent>
+      <DialogFooter className='sync-complete-dialog-footer'>
           {optionalButton && (
-            <span style={{ marginLeft: "10px" }}>
               <Button
                 dataTestId={`${dataTestId}-close-btn`}
                 onClick={handleOnClose}
@@ -75,7 +73,6 @@ export const ConfirmDialog: React.FC<IProps> = ({
               >
                 {cancelActionButtonText}
               </Button>
-            </span>
           )}
           <Button
             dataTestId={`${dataTestId}-ok-btn`}
@@ -87,7 +84,6 @@ export const ConfirmDialog: React.FC<IProps> = ({
           >
             {confirmActionButtonText}
           </Button>
-        </div>
       </DialogFooter>
     </Dialog>
   );

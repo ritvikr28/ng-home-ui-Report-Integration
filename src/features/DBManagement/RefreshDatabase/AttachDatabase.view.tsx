@@ -2,7 +2,8 @@ import React, { SyntheticEvent, useState } from "react";
 import {
   ButtonSize,
   ReactionButtonGroup,
-  ReactionButton
+  ReactionButton,
+  FormLabel
 } from "@essnextgen/ui-kit";
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
@@ -87,10 +88,14 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
 
   return (
     <>
-      <h4 style={{ marginTop: "10px", marginBottom: "5px" }}>
+    <div id='detach-container'>
+      <FormLabel id="default-control-label">
         Is the SIMS7 database attached?
-      </h4>
-      Please click on Yes to attach
+      </FormLabel>
+      <FormLabel id="default-label">
+        Please click on Yes to attach
+      </FormLabel>
+      
       <ReactionButtonGroup
         id="add-side-panel-types"
         dataTestId="type-test-id"
@@ -103,9 +108,10 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
           handleSelectionChange(selectedValue as string);
         }}
       >
-        <ReactionButton label="Yes" value="Yes" className="reaction-Button" />
-        <ReactionButton label="No" value="No" className="reaction-Button" />
+        <ReactionButton id="reaction-button" label="Yes" value="Yes" />
+        <ReactionButton id="reaction-button" label="No" value="No" />
       </ReactionButtonGroup>
+      </div>
     </>
   );
 };
