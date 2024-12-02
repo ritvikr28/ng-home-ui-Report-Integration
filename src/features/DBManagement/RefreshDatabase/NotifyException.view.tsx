@@ -11,7 +11,7 @@ const NotifyExceptionView: React.FC<INotificationProps> = ({
 }) => (
     <div className="admin-heading heading-text-up admin-heading-psas1334f">
     <Notification
-        className="notification-id-sims"
+        className="notification-open-panel"
         dataTestId="notification-test-id"
         escapeExits
         id="element-id"

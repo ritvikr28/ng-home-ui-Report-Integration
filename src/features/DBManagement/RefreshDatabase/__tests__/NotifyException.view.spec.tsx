@@ -26,7 +26,7 @@ describe("NotificationView", () => {
       <NotifyExceptionView setDisableNotification={setDisableNotification} />
     );
     expect(
-      container.querySelector(".notification-id-sims")
+      container.querySelector(".notification-open-panel")
     ).toBeInTheDocument();
     expect(container.querySelector("#element-id")).toBeInTheDocument();
   });

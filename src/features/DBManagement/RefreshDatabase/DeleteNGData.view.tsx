@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { ButtonSize, GridItem, Button, ButtonColor } from "@essnextgen/ui-kit";
+import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 
@@ -38,12 +38,11 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
 
   return (
     <>
-      <GridItem sm={12}>
         <div
           style={{ display: "flex", alignItems: "center", marginTop: "8px" }}
         >
           <Button
-            id="btn-sync"
+            id="btn-proceed"
             className="btn-full-width"
             size={ButtonSize.Small}
             color={ButtonColor.Utility}
@@ -62,7 +61,6 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
             description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
           />
         </div>
-      </GridItem>
     </>
   );
 };

@@ -87,10 +87,14 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
 
   return (
     <>
-      <h4 style={{ marginTop: "10px", marginBottom: "5px" }}>
+    <div id='detach-container'>
+      <p id="default-control-label">
         Is the SIMS7 database attached?
-      </h4>
-      Please click on Yes to attach
+      </p>
+      <p id="default-label">
+        Please click on Yes to attach
+      </p>
+      
       <ReactionButtonGroup
         id="add-side-panel-types"
         dataTestId="type-test-id"
@@ -103,9 +107,10 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
           handleSelectionChange(selectedValue as string);
         }}
       >
-        <ReactionButton label="Yes" value="Yes" className="reaction-Button" />
-        <ReactionButton label="No" value="No" className="reaction-Button" />
+        <ReactionButton id="reaction-button" label="Yes" value="Yes" />
+        <ReactionButton id="reaction-button" label="No" value="No" />
       </ReactionButtonGroup>
+      </div>
     </>
   );
 };

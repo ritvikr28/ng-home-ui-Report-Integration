@@ -128,6 +128,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             if (status === "Detached") return "Detached";
             if (status === "Deleted") return "Deleted";
             if (status === "Attached") return "Attached";
+            if (status === "In Progress") return "In Progress";
             if (status === "Completed") return "Completed";
             return ""; // Default to empty if unrecognized
           });
@@ -158,33 +159,21 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           <NotifyExceptionView setDisableNotification={setEnableNotification} />
         </div>
       )}
-      <div className="list-item" style={{ width: "700px" }}>
-        <Card id="test-card" type={CardType.Default}>
-          <div className="module-block">
+      <div id="list-item" style={{ width: "560px", height: "328px" }}>
+        <Card id='refreshDB-card' type={CardType.Default}>
             {items.map((item, index) => {
               const CurrentComponent: ComponentType<any> = item.component;
               const isActive = index === activeIndex;
 
               return (
-                <div
-                  key={index}
-                  style={{
-                    opacity: isActive ? 1 : 0.5,
-                    pointerEvents: isActive ? "auto" : "none"
-                  }}
-                >
-                  <div className="list-item" style={{ marginBottom: "20px" }}>
-                    <div className="item-content">
-                      <div style={{ display: "flex", alignItems: "center" }}>
-                        <h2
-                          style={{ marginBottom: "0px", fontWeight: "normal" }}
-                        >
+                <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
+                  <div className="list-item" style={{ marginBottom: "20px",  marginTop: "20px", marginLeft:'0px'}}>
+                      <div style={{ display: "flex" }}>
+                        <p id='default-list-item' >
                           {`${index + 1}. ${item.title}`}
-                        </h2>
+                        </p>
                         {flagValues[index].trim() !== "" && (
-                          <span
-                            style={{ marginLeft: "10px", marginTop: "20px" }}
-                          >
+                          <span style={{ marginLeft: "10px" }} >
                             <Tag
                               size={TagSize.Small}
                               color={TagColor.Success}
@@ -214,13 +203,11 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                           handleException={handleException}
                         />
                       )}
-                    </div>
                   </div>
                   <div className="item-separator" />
                 </div>
               );
             })}
-          </div>
         </Card>
       </div>
     </>
