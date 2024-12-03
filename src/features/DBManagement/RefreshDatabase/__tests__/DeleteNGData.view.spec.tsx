@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import DeleteNGDataView from "../DeleteNGData.view";
 import axios from "axios";
+import DeleteNGDataView from "../DeleteNGData.view";
 
 // Mock external dependencies
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
