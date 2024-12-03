@@ -30,14 +30,14 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
   };
 
   // Handling the delete request and updating status accordingly
-  const handleDelete = async () => {
+  async function handleDelete() {
     try {
       // Fetch school name
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
        
     
       // Prepare request data
-      const requestData = {
+      let requestData = {
         orgId : getUserOrganisation(),
         orgName: schoolData == null ? "" : schoolData.schoolName,
         dataDeletedStatus: "N",
