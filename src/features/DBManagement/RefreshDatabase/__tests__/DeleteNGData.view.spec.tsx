@@ -1,78 +1,80 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import DeleteNGDataView from "../DeleteNGData.view"; // Adjust the import path accordingly
+import React from "react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import DeleteNGDataView from "../DeleteNGData.view";
+import { service } from "../../../../shared/utils";
+import axios from "axios";
 
-// Mock the service module
-jest.mock("../../../../shared/utils", () => ({
-  service: {
-    get: jest.fn()
-  }
+jest.mock("../../../shared/services/schoolDomain/schoolServices", () => ({
+  useFetchSchoolNameData: jest.fn().mockResolvedValue({ schoolName: "Test School" }),
+}));
+jest.mock("../../../shared/utils", () => ({
+  envConfig: { BASE_URL: "https://test-api.com" },
+  getUserOrganisation: jest.fn().mockReturnValue("123"),
+  service: { post: jest.fn(), get: jest.fn() },
+}));
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: { getUsername: jest.fn().mockReturnValue("TestUser") },
 }));
 
-interface ConfirmDialogProps {
-  confirmActionButtonText: string;
-  cancelActionButtonText: string;
-  optionalButton: boolean;
-  title: string;
-  onCloseHandle: () => void;
-  onSubmitHandle: () => void;
-  description: string;
-}
-
-// Mock the ConfirmDialog component with typed props
-jest.mock(
-  "../ConfirmationDialog.logic",
-  () =>
-    ({ onCloseHandle, onSubmitHandle, ...props }: ConfirmDialogProps) =>
-      (
-        <div>
-          <button type="button" onClick={onSubmitHandle}>
-            Delete
-          </button>
-          <button type="button" onClick={onCloseHandle}>
-            Cancel
-          </button>
-          <h1>{props.title}</h1>
-          <p>{props.description}</p>
-        </div>
-      )
-);
-
 describe("DeleteNGDataView Component", () => {
-  const statusMock = jest.fn();
+  const mockStatus = jest.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks();
+    mockStatus.mockClear();
   });
 
-  it("should render the component and button", () => {
-    render(<DeleteNGDataView status={statusMock} />);
-
-    expect(screen.getByText(/Proceed/i)).toBeInTheDocument();
+  it("should open the confirmation dialog on 'Proceed' button click", () => {
+    render(<DeleteNGDataView status={mockStatus} />);
+    const proceedButton = screen.getByText("Proceed");
+    fireEvent.click(proceedButton);
+    expect(screen.getByText("Delete Next Gen Data?")).toBeInTheDocument();
   });
 
-  it("should show confirmation dialog when button is clicked", () => {
-    render(<DeleteNGDataView status={statusMock} />);
-
-    fireEvent.click(screen.getByText(/Proceed/i));
-
-    expect(screen.getByText(/Delete Next Gen Data?/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Deleting the Next gen data will clear all records/i)
-    ).toBeInTheDocument();
+  it("should close the dialog on cancel", () => {
+    render(<DeleteNGDataView status={mockStatus} />);
+    fireEvent.click(screen.getByText("Proceed"));
+    fireEvent.click(screen.getByText("Cancel"));
+    expect(screen.queryByText("Delete Next Gen Data?")).not.toBeInTheDocument();
   });
 
-  it("should close the dialog and set active state to true", () => {
-    render(<DeleteNGDataView status={statusMock} />);
-    fireEvent.click(screen.getByText(/Proceed/i)); // Open the dialog
-
-    const cancelButton = screen.getByText(/Cancel/i);
-    fireEvent.click(cancelButton); // Trigger handleCloseDialog
+  it("should call API and update status to 'In Progress' on success", async () => {
+    (axios.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
+    render(<DeleteNGDataView status={mockStatus} />);
+    fireEvent.click(screen.getByText("Proceed"));
+    fireEvent.click(screen.getByText("Delete"));
+    await waitFor(() => expect(mockStatus).toHaveBeenCalledWith("In Progress"));
   });
 
-  it("should close dialof and and set active to false", () => {
-    render(<DeleteNGDataView status={statusMock} />);
-    fireEvent.click(screen.getByText(/Proceed/i)); // Open the dialog
+  it("should update status to 'Failed' on non-200 API response", async () => {
+    (axios.post as jest.Mock).mockResolvedValueOnce({ status: 500 });
+    render(<DeleteNGDataView status={mockStatus} />);
+    fireEvent.click(screen.getByText("Proceed"));
+    fireEvent.click(screen.getByText("Delete"));
+    await waitFor(() => expect(mockStatus).toHaveBeenCalledWith("Failed"));
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+  it("should handle API errors gracefully", async () => {
+    (axios.post as jest.Mock).mockRejectedValueOnce(new Error("API error"));
+    render(<DeleteNGDataView status={mockStatus} />);
+    fireEvent.click(screen.getByText("Proceed"));
+    fireEvent.click(screen.getByText("Delete"));
+    await waitFor(() => expect(mockStatus).not.toHaveBeenCalledWith("In Progress"));
+  });
+
+  it("should construct requestData correctly", async () => {
+    render(<DeleteNGDataView status={mockStatus} />);
+    fireEvent.click(screen.getByText("Proceed"));
+    fireEvent.click(screen.getByText("Delete"));
+    await waitFor(() =>
+      expect(service.post).toHaveBeenCalledWith(
+        "https://test-api.com/TrainingDB/ProcessNGDeletion",
+        expect.objectContaining({
+          orgId: "123",
+          orgName: "Test School",
+          dataDeletedStatus: "N",
+          ngDomainDataDeletedBy: "TestUser",
+        })
+      )
+    );
   });
 });
