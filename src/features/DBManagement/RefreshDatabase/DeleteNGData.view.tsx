@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
+import { authService } from "@essnextgen/auth-ui";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-import { authService } from "@essnextgen/auth-ui";
 import { IProcessNGDeletionApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
 export interface DeleteNGDataViewProps {
@@ -15,7 +15,7 @@ export interface DeleteNGDataViewProps {
   handleException: () => void;  // Handle exception passed from parent
 }
 
-const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, inProgressStatus, handleException }) => {
+const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleException }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
 
   // Triggering the display of the confirmation dialog
