@@ -25,7 +25,6 @@ jest.mock("axios");
 
 describe("DeleteNGDataView Component", () => {
   const statusMock = jest.fn();
-  const inProgressStatusMock = jest.fn();
   const HandleExceptionMock = jest.fn();
 
 
@@ -35,14 +34,12 @@ describe("DeleteNGDataView Component", () => {
 
   it("should render the component and button", () => {
     render(<DeleteNGDataView status={statusMock} 
-      inProgressStatus={inProgressStatusMock}
       handleException={HandleExceptionMock}  />);
     expect(screen.getByText(/Proceed/i)).toBeInTheDocument();
   });
 
   it("should show confirmation dialog when Proceed button is clicked", () => {
-    render(<DeleteNGDataView status={statusMock} 
-      inProgressStatus={inProgressStatusMock} 
+    render(<DeleteNGDataView status={statusMock}  
       handleException={HandleExceptionMock} />);
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
     expect(screen.getByText(/Delete Next Gen Data?/i)).toBeInTheDocument();
@@ -53,7 +50,7 @@ describe("DeleteNGDataView Component", () => {
     const mockPostResponse = { statusCode: 200, uiStatus: "Success"  };
     (axios.get as jest.Mock).mockResolvedValueOnce(mockPostResponse);
 
-    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock}/>);
+    render(<DeleteNGDataView status={statusMock}  handleException={HandleExceptionMock}/>);
 
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
     fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
@@ -69,7 +66,7 @@ describe("DeleteNGDataView Component", () => {
     const mockPostResponse = { statusCode: 404, uiStatus: "Error" };
     (axios.get as jest.Mock).mockResolvedValueOnce(mockPostResponse);
 
-    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock}/>);
+    render(<DeleteNGDataView status={statusMock}  handleException={HandleExceptionMock}/>);
 
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
     fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
@@ -84,7 +81,6 @@ describe("DeleteNGDataView Component", () => {
     render(
       <DeleteNGDataView
         status={statusMock}
-        inProgressStatus={inProgressStatusMock}
         handleException={HandleExceptionMock}
         
       />
@@ -98,7 +94,7 @@ describe("DeleteNGDataView Component", () => {
     const mockPostResponse = { statusCode: 500, uiStatus: "Error"  };
     (axios.get as jest.Mock).mockRejectedValueOnce(mockPostResponse);
 
-    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock} />);
+    render(<DeleteNGDataView status={statusMock}  handleException={HandleExceptionMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
     fireEvent.click(screen.getByRole("button", { name: /Delete/i }));

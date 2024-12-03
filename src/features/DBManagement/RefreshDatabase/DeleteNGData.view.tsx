@@ -11,7 +11,6 @@ import { IProcessNGDeletionApiResponse } from "../../../shared/model/RefreshData
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => string;
-  inProgressStatus: (value: string) => string;
   handleException: () => void;  // Handle exception passed from parent
 }
 
