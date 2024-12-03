@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
+import { AxiosResponse } from "axios";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-import { IPrecheckStatusApiResponse, IProcessNGDeletionApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 
 export interface DeleteNGDataViewProps {
