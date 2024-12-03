@@ -36,19 +36,22 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
        
       // Prepare request data
-      function getRequestData() {
-        return {
-          orgId: getUserOrganisation(),
+      const requestData: {
+        orgId: string,
+        orgName: string,
+        dataDeletedStatus:string,
+        ngDomainDataDeletedBy: string,
+        appCode:string,
+        statusMessage: string
+      } = {
+        orgId: getUserOrganisation(),
           orgName: schoolData == null ? "" : schoolData.schoolName,
           dataDeletedStatus: "N",
           ngDomainDataDeletedBy: authService.getUsername(),
           appCode: "",
           statusMessage: ""
-        };
-      }
+      };
       
-      const requestData = getRequestData();
-
       // Make API call to delete data
       const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
         `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
