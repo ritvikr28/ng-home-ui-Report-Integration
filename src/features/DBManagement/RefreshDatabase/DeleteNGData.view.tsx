@@ -7,6 +7,7 @@ import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/resp
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { authService } from "@essnextgen/auth-ui";
+import { IProcessNGDeletionApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => string;
