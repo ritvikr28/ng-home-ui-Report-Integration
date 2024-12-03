@@ -15,15 +15,17 @@ export interface DeleteNGDataViewProps {
 }
 
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleException }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-
+  const [showDeleteDialog, setShowDeleteDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   // Triggering the display of the confirmation dialog
-  const handleButtonClick = () => {
+  const handleButtonClick :() => void = () => {
     setShowDeleteDialog(true);
   };
 
   // Closing the confirmation dialog
-  const handleCloseDialog = () => {
+  const handleCloseDialog :() => void = () => {
     setShowDeleteDialog(false);
   };
 
@@ -32,19 +34,16 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
     try {
       // Fetch school name
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
-      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-
-      // Fetch organization ID
-      const orgId = getUserOrganisation();
-
+       
+    
       // Prepare request data
       const requestData = {
-        orgId,
-        orgName,
+        orgId : getUserOrganisation(),
+        orgName: schoolData == null ? "" : schoolData.schoolName,
         dataDeletedStatus: "N",
         ngDomainDataDeletedBy: authService.getUsername(),
         appCode: "",
-        statusMessage: "",
+        statusMessage: ""
       };
 
       // Make API call to delete data
@@ -70,28 +69,29 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
 
   return (
     <>
-      <div style={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
-        <Button
-          id="btn-proceed"
-          className="btn-full-width"
-          size={ButtonSize.Small}
-          color={ButtonColor.Utility}
-          onClick={handleButtonClick} // Show confirmation dialog on button click
+        <div
+          style={{ display: "flex", alignItems: "center", marginTop: "8px" }}
         >
-          Proceed
-        </Button>
-
-        <ConfirmDialog
-          isOpen={showDeleteDialog}
-          confirmActionButtonText="Delete"
-          cancelActionButtonText="Cancel"
-          optionalButton={true}
-          title="Delete Next Gen Data?"
-          onCloseHandle={handleCloseDialog} // Close dialog when cancel button is clicked
-          onSubmitHandle={handleDelete} // Trigger deletion when "Delete" is clicked
-          description="Deleting the Next gen data will clear all records, and all related data will be gone forever once deleted."
-        />
-      </div>
+          <Button
+            id="btn-proceed"
+            className="btn-full-width"
+            size={ButtonSize.Small}
+            color={ButtonColor.Utility}
+            onClick={handleButtonClick}
+          >
+            Proceed
+          </Button>
+          <ConfirmDialog
+            isOpen={showDeleteDialog}
+            confirmActionButtonText="Delete"
+            cancelActionButtonText="Cancel"
+            optionalButton={true}
+            title="Delete Next Gen Data?"
+            onCloseHandle={handleCloseDialog}
+            onSubmitHandle={handleDelete}
+            description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+          />
+        </div>
     </>
   );
 };
