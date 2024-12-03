@@ -10,36 +10,33 @@ import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 
 export interface DeleteNGDataViewProps {
-  status: (value: string) => string; // Add status prop
+  status: (value: string) => string;
+  inProgressStatus: (value: string) => string;
+  handleException: () => void;  // Handle exception passed from parent
 }
 
-const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
+const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, inProgressStatus, handleException }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState<boolean>(false);
-  const [isActive, setActive] = useState<boolean>(false);
 
+  // Triggering the display of the confirmation dialog
   const handleButtonClick = () => {
     setShowDeleteDialog(true);
-    setActive(true);
   };
 
+  // Closing the confirmation dialog
   const handleCloseDialog = () => {
     setShowDeleteDialog(false);
-    setActive(false); // Reset active state
   };
 
+  // Handling the delete request and updating status accordingly
   const handleDelete = async () => {
     try {
       // Fetch school name
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
       const orgName: string = schoolData == null ? "" : schoolData.schoolName;
 
-      // Fetch precheck status
+      // Fetch organization ID
       const orgId = getUserOrganisation();
-      // const precheckResponse: AxiosResponse<IPrecheckStatusApiResponse> = await service.get(
-      //   `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}/${orgName}`
-      // );
-
-      // const precheckData = precheckResponse.data;
 
       // Prepare request data
       const requestData = {
@@ -51,23 +48,23 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
         statusMessage: "",
       };
 
-      // Submit deletion request
+      // Make API call to delete data
       const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
         `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
         requestData
       );
 
-      if (response.status === 200) {
-        status("In Progress"); // Update status only on successful response
-        setActive(false);
+      // Check if the deletion was successful
+      if (response.data.statusCode === 200) {
+        status("In Progress"); // Update status to 'In Progress'
       } else {
-        status("Failed");
-        setActive(true);
+        handleException(); // Call handleException in case of failure
       }
     } catch (error) {
-     
+      console.error("Error during deletion", error);
+      handleException(); // Trigger exception handling in parent
     } finally {
-      
+      // Close the dialog after the action
       handleCloseDialog();
     }
   };
@@ -80,19 +77,20 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
           className="btn-full-width"
           size={ButtonSize.Small}
           color={ButtonColor.Utility}
-          onClick={handleButtonClick}
+          onClick={handleButtonClick} // Show confirmation dialog on button click
         >
           Proceed
         </Button>
+
         <ConfirmDialog
           isOpen={showDeleteDialog}
           confirmActionButtonText="Delete"
           cancelActionButtonText="Cancel"
           optionalButton={true}
           title="Delete Next Gen Data?"
-          onCloseHandle={handleCloseDialog}
-          onSubmitHandle={handleDelete}
-          description="Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+          onCloseHandle={handleCloseDialog} // Close dialog when cancel button is clicked
+          onSubmitHandle={handleDelete} // Trigger deletion when "Delete" is clicked
+          description="Deleting the Next gen data will clear all records, and all related data will be gone forever once deleted."
         />
       </div>
     </>

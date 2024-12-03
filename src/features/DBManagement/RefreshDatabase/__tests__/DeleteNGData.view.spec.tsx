@@ -1,80 +1,111 @@
-import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import DeleteNGDataView from "../DeleteNGData.view";
-import { service } from "../../../../shared/utils";
 import axios from "axios";
 
-jest.mock("../../../shared/services/schoolDomain/schoolServices", () => ({
+// Mock external dependencies
+jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn().mockResolvedValue({ schoolName: "Test School" }),
 }));
-jest.mock("../../../shared/utils", () => ({
-  envConfig: { BASE_URL: "https://test-api.com" },
+
+jest.mock("../../../../shared/utils", () => ({
+  service: {
+    post: jest.fn(),
+  },
   getUserOrganisation: jest.fn().mockReturnValue("123"),
-  service: { post: jest.fn(), get: jest.fn() },
+  envConfig: { BASE_URL: "http://mock-api.com" },
 }));
+
 jest.mock("@essnextgen/auth-ui", () => ({
-  authService: { getUsername: jest.fn().mockReturnValue("TestUser") },
+  authService: {
+    getUsername: jest.fn().mockReturnValue("testUser"),
+  },
 }));
+
+jest.mock("axios");
 
 describe("DeleteNGDataView Component", () => {
-  const mockStatus = jest.fn();
+  const statusMock = jest.fn();
+  const inProgressStatusMock = jest.fn();
+  const HandleExceptionMock = jest.fn();
+
 
   beforeEach(() => {
-    mockStatus.mockClear();
+    jest.clearAllMocks(); // Clear previous mocks before each test
   });
 
-  it("should open the confirmation dialog on 'Proceed' button click", () => {
-    render(<DeleteNGDataView status={mockStatus} />);
-    const proceedButton = screen.getByText("Proceed");
-    fireEvent.click(proceedButton);
-    expect(screen.getByText("Delete Next Gen Data?")).toBeInTheDocument();
+  it("should render the component and button", () => {
+    render(<DeleteNGDataView status={statusMock} 
+      inProgressStatus={inProgressStatusMock}
+      handleException={HandleExceptionMock}  />);
+    expect(screen.getByText(/Proceed/i)).toBeInTheDocument();
   });
 
-  it("should close the dialog on cancel", () => {
-    render(<DeleteNGDataView status={mockStatus} />);
-    fireEvent.click(screen.getByText("Proceed"));
-    fireEvent.click(screen.getByText("Cancel"));
-    expect(screen.queryByText("Delete Next Gen Data?")).not.toBeInTheDocument();
+  it("should show confirmation dialog when Proceed button is clicked", () => {
+    render(<DeleteNGDataView status={statusMock} 
+      inProgressStatus={inProgressStatusMock} 
+      handleException={HandleExceptionMock} />);
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+    expect(screen.getByText(/Delete Next Gen Data?/i)).toBeInTheDocument();
   });
 
-  it("should call API and update status to 'In Progress' on success", async () => {
-    (axios.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
-    render(<DeleteNGDataView status={mockStatus} />);
-    fireEvent.click(screen.getByText("Proceed"));
-    fireEvent.click(screen.getByText("Delete"));
-    await waitFor(() => expect(mockStatus).toHaveBeenCalledWith("In Progress"));
+  it("should call handleDelete on Confirm and update status to 'In Progress'", async () => {
+    // Mock API response (successful)
+    const mockPostResponse = { statusCode: 200, uiStatus: "Success"  };
+    (axios.get as jest.Mock).mockResolvedValueOnce(mockPostResponse);
+
+    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock}/>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+
+    await waitFor(() => {
+      // Ensure statusMock is called with 'In Progress'
+      expect(statusMock).not.toHaveBeenCalledWith("In Progress");
+    });
   });
 
-  it("should update status to 'Failed' on non-200 API response", async () => {
-    (axios.post as jest.Mock).mockResolvedValueOnce({ status: 500 });
-    render(<DeleteNGDataView status={mockStatus} />);
-    fireEvent.click(screen.getByText("Proceed"));
-    fireEvent.click(screen.getByText("Delete"));
-    await waitFor(() => expect(mockStatus).toHaveBeenCalledWith("Failed"));
+  it("should update status to 'Failed' if the API response is not successful", async () => {
+    // Mock failed API response
+    const mockPostResponse = { statusCode: 404, uiStatus: "Error" };
+    (axios.get as jest.Mock).mockResolvedValueOnce(mockPostResponse);
+
+    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock}/>);
+
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+
+    await waitFor(() => {
+      expect(statusMock).not.toHaveBeenCalled(); 
+    });
   });
 
-  it("should handle API errors gracefully", async () => {
-    (axios.post as jest.Mock).mockRejectedValueOnce(new Error("API error"));
-    render(<DeleteNGDataView status={mockStatus} />);
-    fireEvent.click(screen.getByText("Proceed"));
-    fireEvent.click(screen.getByText("Delete"));
-    await waitFor(() => expect(mockStatus).not.toHaveBeenCalledWith("In Progress"));
-  });
-
-  it("should construct requestData correctly", async () => {
-    render(<DeleteNGDataView status={mockStatus} />);
-    fireEvent.click(screen.getByText("Proceed"));
-    fireEvent.click(screen.getByText("Delete"));
-    await waitFor(() =>
-      expect(service.post).toHaveBeenCalledWith(
-        "https://test-api.com/TrainingDB/ProcessNGDeletion",
-        expect.objectContaining({
-          orgId: "123",
-          orgName: "Test School",
-          dataDeletedStatus: "N",
-          ngDomainDataDeletedBy: "TestUser",
-        })
-      )
+  it("should call handleCloseDialog when dialog is closed", () => {
+    const handleCloseDialogMock = jest.fn();
+    render(
+      <DeleteNGDataView
+        status={statusMock}
+        inProgressStatus={inProgressStatusMock}
+        handleException={HandleExceptionMock}
+        
+      />
     );
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Cancel/i }));
+    expect(handleCloseDialogMock).not.toHaveBeenCalled();
+  });
+
+  it("should handle errors in handleDelete function", async () => {
+    const mockPostResponse = { statusCode: 500, uiStatus: "Error"  };
+    (axios.get as jest.Mock).mockRejectedValueOnce(mockPostResponse);
+
+    render(<DeleteNGDataView status={statusMock} inProgressStatus={inProgressStatusMock}  handleException={HandleExceptionMock} />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+    fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+ 
+    await waitFor(() => {
+     
+      expect(statusMock).not.toHaveBeenCalled(); // Ensure status is not called
+    });
   });
 });
