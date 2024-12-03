@@ -1,39 +1,76 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
+import { AxiosResponse } from "axios";
+import { authService } from "@essnextgen/auth-ui";
 import ConfirmDialog from "./ConfirmationDialog.logic";
+import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
+import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
+import { IProcessNGDeletionApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
 export interface DeleteNGDataViewProps {
-  status: (value: string) => string; // Add status prop
+  status: (value: string) => string;
+  handleException: () => void;  // Handle exception passed from parent
 }
 
-const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status }) => {
+const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleException }) => {
   const [showDeleteDialog, setShowDeleteDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-
-  const [isActive, setActive]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-
-  const handleButtonClick: () => void = () => {
+  // Triggering the display of the confirmation dialog
+  const handleButtonClick :() => void = () => {
     setShowDeleteDialog(true);
-    setActive(true); // Show the component
   };
 
-  const handleCloseDialog: () => void = () => {
+  // Closing the confirmation dialog
+  const handleCloseDialog :() => void = () => {
     setShowDeleteDialog(false);
-    setActive(true);
   };
 
-  const handleDelete: () => void = () => {
-    if(isActive) {
-      status("In progress")
+  // Handling the delete request and updating status accordingly
+   const handleDelete:() => Promise<void> = async ()  => {
+    try {
+      // Fetch school name
+      const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
+       
+      // Prepare request data
+      const requestData: {
+        orgId: string,
+        orgName: string,
+        dataDeletedStatus:string,
+        ngDomainDataDeletedBy: string,
+        appCode:string,
+        statusMessage: string
+      } = {
+        orgId: getUserOrganisation(),
+          orgName: schoolData == null ? "" : schoolData.schoolName,
+          dataDeletedStatus: "N",
+          ngDomainDataDeletedBy: authService.getUsername(),
+          appCode: "",
+          statusMessage: ""
+      };
+      
+      // Make API call to delete data
+      const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
+        `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
+        requestData
+      );
+
+      // Check if the deletion was successful
+      if (response.data.statusCode === 200) {
+        status("In Progress"); // Update status to 'In Progress'
+      } else {
+        handleException(); // Call handleException in case of failure
+      }
+    } catch (error) {
+      console.error("Error during deletion", error);
+      handleException(); // Trigger exception handling in parent
+    } finally {
+      // Close the dialog after the action
+      handleCloseDialog();
     }
-    setActive(false);
-    handleCloseDialog();
   };
 
   return (
