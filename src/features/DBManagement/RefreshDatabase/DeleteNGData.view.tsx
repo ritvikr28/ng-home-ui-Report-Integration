@@ -35,9 +35,8 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
       // Fetch school name
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
        
-    
       // Prepare request data
-      const requestData = (() => {
+      function getRequestData() {
         return {
           orgId: getUserOrganisation(),
           orgName: schoolData == null ? "" : schoolData.schoolName,
@@ -46,7 +45,9 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({ status, handleExcep
           appCode: "",
           statusMessage: ""
         };
-      })();
+      }
+      
+      const requestData = getRequestData();
 
       // Make API call to delete data
       const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
