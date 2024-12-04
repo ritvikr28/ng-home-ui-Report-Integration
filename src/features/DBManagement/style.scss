@@ -45,6 +45,31 @@
     min-width: 350px;
   }
 
+  #detach-container {
+    max-width: 528px;
+    min-width: 310px;
+  }
+
+  #delete-container {
+    max-width: 528px;
+    min-width: 310px;
+  }
+  
+  #sync-container {
+    max-width: 528px;
+    min-width: 310px;
+  }
+  
+  #default-control-label {
+    max-width: 528px;
+    min-width: 310px;
+  }
+  
+  #default-label {
+    max-width: 528px;
+    min-width: 310px;
+  }
+
   #notification-open-panel {
     max-width: 560px;
     min-width: 350px;
@@ -65,6 +90,7 @@
   #notification-open-panel {
     width: 72vw;
   }
+
   #list-item {
     width: 560px;
   }
@@ -72,7 +98,7 @@
 
 @media (min-width: 1440px) {
   #notification-open-panel {
-    width: 80vw;
+    width: auto;
   }
 
   #list-item {
@@ -167,7 +193,7 @@
 }
 
 #detach-container {
-  width: 392px;
+  width: 528px;
   height: auto;
   min-height: 88px;
   display: flex;
@@ -177,7 +203,7 @@
 }
 
 #delete-container {
-  width: 392px;
+  width: 528px;
   height: auto;
   min-height: 88px;
   display: flex;
@@ -187,7 +213,7 @@
 }
 
 #sync-container {
-  width: 392px;
+  width: 528px;
   height: auto;
   min-height: 88px;
   display: flex;
@@ -206,11 +232,11 @@
   align-items: center;
   justify-content: space-between;
   background-color: #fff;
-  margin-right: 16px;
+  margin-left: 8px;
 }
 
 #default-control-label {
-  width: 392px;
+  width: 528px;
   height: 16px;
   font-family: "Segoe UI", sans-serif;
   font-weight: 600;
@@ -219,7 +245,7 @@
 }
 
 #default-label {
-  width: 392px;
+  width: 528px;
   height: 16px;
   font-family: "Segoe UI", sans-serif;
   font-weight: 400;
