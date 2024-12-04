@@ -1,16 +1,20 @@
 import React from "react";
 import {
   Notification,
-  NotificationStatus
+  NotificationStatus,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import { INotificationProps } from "../../SIMSIDAdmin/Components/NotificationView/NotificationProps";
 import "../style.scss";
 
-const NotifyExceptionView: React.FC<INotificationProps> = ({
-  setDisableNotification
-}) => (
+const NotifyExceptionView: React.FC<INotificationProps> = ({ setDisableNotification }) => {
+  const isMobileView: boolean = useMediaQuery(
+    "(min-width:319.9px)"
+  );
+  return (
+    <>
     <div className="admin-heading heading-text-up admin-heading-psas1334f">
-    <Notification
+    {isMobileView && <Notification
         id="notification-open-panel"
         dataTestId="notification-test-id"
         escapeExits
@@ -25,8 +29,9 @@ const NotifyExceptionView: React.FC<INotificationProps> = ({
         onClickClose={() => setDisableNotification(false)}
         status={NotificationStatus.WARNING}
         title="Unable to process the request."
-    />
+    />}
   </div>
-);
+  </>
+)};
 
 export default NotifyExceptionView;

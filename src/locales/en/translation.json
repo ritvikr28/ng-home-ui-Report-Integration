@@ -91,6 +91,12 @@
       "description": "Manage all staff absences from a single place.",
       "link": "",
       "linkText": ""
+    },
+    "RefreshDB": {
+      "title": "Refresh Database",
+      "description": "Demo school onboarding.",
+      "link": "",
+      "linkText": ""
     }
   },
   "pageNotFound": {
@@ -199,6 +205,25 @@
       "button": {
         "register": "Take the Register",
         "assessment": "Primary Assessment"
+      }
+    }
+  },
+  "RefreshDB_T": {
+    "headingTitle": "Reset the SIMS7 and Next Gen databases",
+    "description": "Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases.",
+    "moduleBlock": {
+      "heading": "What to do next",
+      "attachDB": {
+        "title": "Is the SIMS7 database attached?",
+        "content": "Please click on Yes to attach"
+      },
+      "detachDB": {
+        "title": "Is the SIMS7 database detached?",
+        "content": "Please click on Yes to detach"
+      },
+      "DeleteNGData": {
+        "title": "Delete Next Gen Data?",
+        "content": "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
       }
     }
   }

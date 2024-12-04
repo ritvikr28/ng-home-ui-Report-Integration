@@ -1,17 +1,21 @@
 import { HeadingSubHeading } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 
-const RefreshDatabase: () => JSX.Element = () => (
+const RefreshDatabase: () => JSX.Element = () => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+  return (
   <>
     <div className="admin-heading heading-text-up admin-heading-psas1334f">
       <HeadingSubHeading
-        headingText="Reset the SIMS7 and Next Gen databases"
-        subHeadingText="Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases."
+        headingText={t("RefreshDB_T.headingTitle")}
+        subHeadingText={t("RefreshDB_T.description")}
         isShowHeading={true}
         isShowSubHeading={true}
       />
     </div>
   </>
-);
+)};
 
 export default RefreshDatabase;

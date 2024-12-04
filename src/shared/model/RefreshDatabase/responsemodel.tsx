@@ -12,3 +12,9 @@ export interface IPrecheckStatusApiResponse {
   responseMessage: string,
   statusCode: number
 }
+
+export interface IProcessNGDeletionApiResponse {
+  statusCode: number,
+  uiStatus: string,
+  responseMessage: string
+}
