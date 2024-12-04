@@ -1,4 +1,4 @@
-import { Tag, TagSize, TagColor, Card, CardType, FormLabel, useMediaQuery } from "@essnextgen/ui-kit";
+import { Tag, TagSize, TagColor, Card, CardType, FormLabel } from "@essnextgen/ui-kit";
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
@@ -89,10 +89,6 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     React.Dispatch<React.SetStateAction<number>>
   ] = useState<number>(0);
 
-  const isMobileView: boolean = useMediaQuery(
-    "(min-width:320px) and (max-width: 560.9px)"
-  );
-
   const [flagValues, setFlagValues]: [
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
@@ -157,7 +153,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
 
   return (
     <>
-    {isMobileView && <RefreshDatabase />}
+    <RefreshDatabase />
       {enableNotification && (
         <div id="notification-open-panel">
           <NotifyExceptionView setDisableNotification={setEnableNotification} />
