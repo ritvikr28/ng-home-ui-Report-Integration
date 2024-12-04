@@ -8,6 +8,12 @@ import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/resp
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 
+export interface SyncDataViewProps {
+  status: (value: string) => void; // Function to update the status
+  inProgressStatus: (value: string) => void; // Function to update the status
+  handleException: () => void; // Function to handle exception cases
+}
+
 // Fetch sync status
 export const FetchSyncStatus = async (handleException: () => void): Promise<ISchoolDetailsDRApiResponse | null> => {
   try {
@@ -27,11 +33,36 @@ export const FetchSyncStatus = async (handleException: () => void): Promise<ISch
   }
 };
 
-interface SyncDataViewProps {
-  status: (value: string) => void; // Function to update the status
-  inProgressStatus: (value: string) => void; // Function to update the status
-  handleException: () => void; // Function to handle exception cases
-}
+  // Function to check sync status
+export const CheckSyncStatus = async (
+  handleException: () => void, 
+  setSyncStatus: React.Dispatch<React.SetStateAction<string>>, 
+  setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>, 
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>, 
+  setClicked: React.Dispatch<React.SetStateAction<boolean>>, 
+  syncStatus: string, 
+  status: (value: string) => void 
+): Promise<string> => {
+     const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
+      if (response !== null && response.statusCode === 200) {
+        switch (response.uiStatus) {
+          case "Completed":
+            setShowSyncCompleteDialog(true);
+            setSyncStatus("Completed");
+            status("completed")
+            break;
+          case "Error":
+            setShowSyncFailedDialog(true);
+            setSyncStatus("Failed");
+            break;
+          default:
+            setSyncStatus(""); 
+            setClicked(false); // Reset 'clicked' state
+        }
+        return syncStatus
+      }
+    return "Error"
+};
 
 const SyncDataView: React.FC<SyncDataViewProps> = ({
   status,
@@ -66,55 +97,18 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
       setShowSyncDialog(true)
       if(showSyncDialog) {
         inProgressStatus("In Progress");
-        await CheckSyncStatus();
+        await CheckSyncStatus(
+          handleException,setSyncStatus, setShowSyncCompleteDialog,
+           setShowSyncFailedDialog, setClicked, syncStatus, status);
       }
     }
-
     if (syncStatus === "In Progress" || syncStatus === "Not Started" ) {
       inProgressStatus("In Progress");
       setClicked(true);
       return;
     }
-
     setClicked(true);
     inProgressStatus("In Progress")
-
-  };
-
-  // Function to check sync status
-  const CheckSyncStatus = async (): Promise<string> => {
-    try {
-      const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
-      if (!response) {
-        handleException();
-        setSyncStatus(""); // Reset the sync status in case of failure
-        return "Error";
-      }
-
-      if (response.statusCode === 200) {
-        switch (response.uiStatus) {
-          case "Completed":
-            setShowSyncCompleteDialog(true);
-            setSyncStatus("Completed");
-            status("completed")
-            break;
-          case "Error":
-            setShowSyncFailedDialog(true);
-            setSyncStatus("Failed");
-            break;
-          default:
-            setSyncStatus(""); // Reset the status for unexpected cases
-            setClicked(false); // Reset 'clicked' state
-        }
-        return syncStatus
-      }
-    } catch (error) {
-      handleException();
-      setSyncStatus("Error"); 
-      return "Error"
-      // Reset in case of error
-    } 
-    return "Error"
   };
 
   // Handle closing the dialogs
@@ -125,7 +119,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     setSyncStatus(""); // Reset sync status
   };
 
-  
+
   return (
     <>
         <div style={{marginTop:'16px'}}>
