@@ -23,7 +23,7 @@ export const FetchSyncStatus = async (handleException: () => void): Promise<ISch
     const orgId = getUserOrganisation();
 
     const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
-      `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}/${orgName}`
+        `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
     );
     return response.data;
   } catch (err: any) {

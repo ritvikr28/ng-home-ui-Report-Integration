@@ -28,7 +28,7 @@ export const FetchPreCheckStatus= async (
     try { 
       const response: AxiosResponse<IPrecheckStatusApiResponse> =
       await service.get(
-          `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}/${orgName}`
+          `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
       );
       return response.data;
     } catch (err: any) {
