@@ -17,6 +17,8 @@ interface IProps {
   cancelActionButtonText?: string;
   isOpen?: boolean;
   optionalButton?: boolean;
+  optionalButtonText?: string;
+  onOptionalHandle?: () => void;
   onSubmitHandle: () => void;
   onCloseHandle: () => void;
 }
@@ -39,6 +41,7 @@ export const ConfirmDialog: React.FC<IProps> = ({
   dataTestId = "default-dialog",
   isOpen = false,
   optionalButton = false,
+  onOptionalHandle,
   onCloseHandle,
   onSubmitHandle
 }) => {
@@ -64,27 +67,33 @@ export const ConfirmDialog: React.FC<IProps> = ({
       title={title}
     >
       <DialogContent className='dialog-content'>{description}</DialogContent>
-      <DialogFooter className='sync-complete-dialog-footer'>
-          {optionalButton && (
-              <Button
-                dataTestId={`${dataTestId}-close-btn`}
-                onClick={handleOnClose}
-                color={ButtonColor.Secondary}
+     
+        <DialogFooter>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
+          
+            {optionalButton && (
+              <span style={{ marginLeft: '10px' }}>
+                <Button
+                  dataTestId={`${dataTestId}-close-btn`}
+                  onClick={handleOnClose}
+                  color={ButtonColor.Secondary}
               >
                 {cancelActionButtonText}
               </Button>
-          )}
-          <Button
-            dataTestId={`${dataTestId}-ok-btn`}
-            onClick={() => {
-              handleOnSubmit();
-              handleOnClose();
-            }}
-            color={ButtonColor.Primary}
-          >
-            {confirmActionButtonText}
-          </Button>
-      </DialogFooter>
+              </span>
+            )}
+            <Button
+                  dataTestId={`${dataTestId}-ok-btn`}
+                  onClick={() => {
+                    handleOnSubmit();
+                    handleOnClose();
+                  }}
+                  color={ButtonColor.Primary}
+                  >
+                  {confirmActionButtonText}
+              </Button>
+            </div>
+        </DialogFooter>
     </Dialog>
   );
 };
