@@ -36,16 +36,16 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);// New state for button disabling
 
-  const FetchPreCheckStatus :() => Promise<IPrecheckStatusApiResponse | null> = async () => {
+  const FetchPreCheckStatus : () => Promise<string|null> = async () => {
     try {
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
       const orgName: string = schoolData?.schoolName ?? "";
-      const orgId = getUserOrganisation();
+      const orgId: string = getUserOrganisation();
 
       const response: AxiosResponse<IPrecheckStatusApiResponse> = await service.get(
         `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
       );
-      return response.data;
+      return response?.data?.deleteNGDataStatus?? "";
     } catch (error) {
       console.error("Failed to fetch the status:", error);
       handleException();
@@ -53,20 +53,9 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     }
   };
 
-  const CheckPrecheckStatus:() => Promise<string> = async () => {
-    try {
-      const precheckStatus = await FetchPreCheckStatus();
-      return precheckStatus?.deleteNGDataStatus ?? "";
-    } catch (error) {
-      console.error("Error fetching precheck status:", error);
-      handleException();
-      return "Error";
-    }
-  };
-
   const handleButtonClick :() => Promise<void> = async () => {
     try {
-      const precheckStatus = await CheckPrecheckStatus();
+      const precheckStatus = await FetchPreCheckStatus();
 
       if (precheckStatus === "In Progress") {
         inProgressStatus("In Progress");

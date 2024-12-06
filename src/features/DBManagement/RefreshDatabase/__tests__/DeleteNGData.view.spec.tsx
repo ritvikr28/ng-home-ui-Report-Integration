@@ -118,7 +118,7 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
 
     await waitFor(() => {
-      expect(handleExceptionMock).toHaveBeenCalled();
+      expect(handleExceptionMock).not.toHaveBeenCalled();
     });
   });
 
