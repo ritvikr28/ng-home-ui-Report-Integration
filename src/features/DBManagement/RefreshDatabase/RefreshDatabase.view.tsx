@@ -129,12 +129,23 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             if (status === "Deleted") return "Deleted";
             if (status === "Attached") return "Attached";
             if (status === "Completed") return "Completed";
+            if (status === "In Progress") return "In Progress"; 
             return ""; // Default to empty if unrecognized
           });
           setFlagValues(initialFlags);
 
-          const firstIncompleteIndex = initialFlags.findIndex((flag) => flag === "");
-          setActiveIndex(firstIncompleteIndex === -1 ? items.length - 1 : firstIncompleteIndex);
+          const firstIncompleteIndex = initialFlags.findIndex(
+            (flag) => flag === "" || flag === "In Progress"
+          );
+
+          // If any step is "In Progress," keep it as the active step
+          setActiveIndex(
+            initialFlags.includes("In Progress")
+              ? initialFlags.findIndex((flag) => flag === "In Progress")
+              : firstIncompleteIndex === -1
+              ? items.length - 1
+              : firstIncompleteIndex
+          );
         }
       } catch (error) {
         console.error("Error fetching precheck status:", error);
