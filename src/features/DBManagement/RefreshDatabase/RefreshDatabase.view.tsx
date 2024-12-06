@@ -128,7 +128,6 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             if (status === "Detached") return "Detached";
             if (status === "Deleted") return "Deleted";
             if (status === "Attached") return "Attached";
-            if (status === "In Progress") return "In Progress";
             if (status === "Completed") return "Completed";
             return ""; // Default to empty if unrecognized
           });
