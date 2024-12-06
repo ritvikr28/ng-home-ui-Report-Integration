@@ -139,7 +139,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         </Button>
         <ConfirmDialog
           isOpen={showSyncDialog}
-          confirmActionButtonText="Cancel"
+          confirmActionButtonText="Close"
           title="Data Sync in progress"
           onCloseHandle={handleCloseDialog}
           onSubmitHandle={handleButtonClick}
