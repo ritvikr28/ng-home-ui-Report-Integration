@@ -9,7 +9,7 @@ import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/sc
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import {
   IPrecheckStatusApiResponse,
-  IProcessNGDeletionApiResponse,
+  IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
 
 export interface DeleteNGDataViewProps {

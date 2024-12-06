@@ -17,8 +17,6 @@ interface IProps {
   cancelActionButtonText?: string;
   isOpen?: boolean;
   optionalButton?: boolean;
-  optionalButtonText?: string;
-  onOptionalHandle?: () => void;
   onSubmitHandle: () => void;
   onCloseHandle: () => void;
 }
@@ -41,7 +39,6 @@ export const ConfirmDialog: React.FC<IProps> = ({
   dataTestId = "default-dialog",
   isOpen = false,
   optionalButton = false,
-  onOptionalHandle,
   onCloseHandle,
   onSubmitHandle
 }) => {
