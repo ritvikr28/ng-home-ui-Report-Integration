@@ -21,7 +21,7 @@ export interface DeleteNGDataViewProps {
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   status,
   inProgressStatus,
-  handleException,
+  handleException
 }) => {
   const [showDeleteDialog, setShowDeleteDialog]: [
     boolean,
