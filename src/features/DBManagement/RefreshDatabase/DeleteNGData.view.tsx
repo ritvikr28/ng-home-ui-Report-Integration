@@ -23,11 +23,20 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   inProgressStatus,
   handleException,
 }) => {
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [showInProgressDialog, setShowInProgressDialog] = useState(false);
-  const [isProceedDisabled, setIsProceedDisabled] = useState(false); // New state for button disabling
+  const [showDeleteDialog, setShowDeleteDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [showInProgressDialog, setShowInProgressDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [isProceedDisabled, setIsProceedDisabled]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);// New state for button disabling
 
-  const FetchPreCheckStatus = async (): Promise<IPrecheckStatusApiResponse | null> => {
+  const FetchPreCheckStatus :() => Promise<IPrecheckStatusApiResponse | null> = async () => {
     try {
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
       const orgName: string = schoolData?.schoolName ?? "";
@@ -44,7 +53,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     }
   };
 
-  const CheckPrecheckStatus = async (): Promise<string> => {
+  const CheckPrecheckStatus:() => Promise<string> = async () => {
     try {
       const precheckStatus = await FetchPreCheckStatus();
       return precheckStatus?.deleteNGDataStatus ?? "";
@@ -55,7 +64,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     }
   };
 
-  const handleButtonClick = async () => {
+  const handleButtonClick :() => Promise<void> = async () => {
     try {
       const precheckStatus = await CheckPrecheckStatus();
 
@@ -80,22 +89,30 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     }
   };
 
-  const handleCloseDialog = () => {
+  const handleCloseDialog :() => void = () => {
     setShowDeleteDialog(false);
     setShowInProgressDialog(false);
   };
 
-  const handleDelete = async () => {
+  const handleDelete :() => Promise<void> = async ()  => {
     try {
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
-      const requestData = {
-        orgId: getUserOrganisation(),
-        orgName: schoolData?.schoolName ?? "",
+     // Prepare request data
+     const requestData: {
+      orgId: string,
+      orgName: string,
+      dataDeletedStatus:string,
+      ngDomainDataDeletedBy: string,
+      appCode:string,
+      statusMessage: string
+    } = {
+      orgId: getUserOrganisation(),
+        orgName: schoolData == null ? "" : schoolData.schoolName,
         dataDeletedStatus: "N",
         ngDomainDataDeletedBy: authService.getUsername(),
         appCode: "",
-        statusMessage: "",
-      };
+        statusMessage: ""
+    };
 
       const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
         `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
