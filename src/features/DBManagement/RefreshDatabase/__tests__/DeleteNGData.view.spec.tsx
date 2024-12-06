@@ -48,7 +48,7 @@ describe("DeleteNGDataView Component", () => {
   });
 
   it("should disable the Proceed button when precheckStatus is 'Deleted'", async () => {
-    debugger;
+   
     (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Deleted" } });
 
     render(
