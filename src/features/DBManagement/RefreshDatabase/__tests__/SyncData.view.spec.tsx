@@ -20,12 +20,9 @@ jest.mock("../../../../shared/utils", () => ({
 }));
 
 describe("SyncDataView Component", () => {
-  const statusMock = jest.fn();
   const handleExceptionMock = jest.fn();
   const inProgressStatusMock = jest.fn();
-  const HandleExceptionMock = jest.fn();
   const inProgressStatus = jest.fn();
-  const FetchSyncStatusMock = jest.fn();
   const mockHandleException = jest.fn();
   const mockSetSyncStatus = jest.fn();
   const mockSetShowSyncCompleteDialog = jest.fn();
@@ -40,7 +37,6 @@ describe("SyncDataView Component", () => {
   it("should render the component and sync button", () => {
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />
@@ -77,7 +73,6 @@ describe("SyncDataView Component", () => {
 
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />
@@ -96,7 +91,6 @@ describe("SyncDataView Component", () => {
 
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />
@@ -160,7 +154,6 @@ describe("SyncDataView Component", () => {
 
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />
@@ -198,7 +191,6 @@ describe("SyncDataView Component", () => {
 
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />
@@ -217,7 +209,6 @@ describe("SyncDataView Component", () => {
   it("should allow multiple sync button clicks", async () => {
     render(
       <SyncDataView
-        status={statusMock}
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
       />

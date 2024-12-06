@@ -9,7 +9,6 @@ import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/sc
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 
 export interface SyncDataViewProps {
-  status: (value: string) => void; // Function to update the status
   inProgressStatus: (value: string) => void; // Function to update the status
   handleException: () => void; // Function to handle exception cases
 }
