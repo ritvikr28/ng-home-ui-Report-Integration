@@ -1,278 +1,216 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { AxiosResponse } from "axios";
-import SyncDataView, { FetchSyncStatus, CheckSyncStatus } from "../SyncData.view";
-import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
+import SyncDataView, { FetchSyncStatus, handleButtonClick } from "../SyncData.view";
 import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
+import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
 
+// Mocking modules
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
-  useFetchSchoolNameData: jest.fn().mockResolvedValue({ schoolName: "Test School" }),
+  useFetchSchoolNameData: jest.fn(),
 }));
+
 jest.mock("../../../../shared/utils", () => ({
   service: {
     get: jest.fn(),
   },
+  getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
+  envConfig: {
+    BASE_URL: "https://example.com",
+  },
 }));
-
-jest.mock("../../../../shared/model/RefreshDatabase/responsemodel", () => ({
-  FetchSyncStatus: jest.fn(),
-}));
-
-    jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
-      useFetchSchoolNameData: jest.fn(),
-   }));
-   jest.mock("../../../../shared/utils", () => ({
-     service: {
-       get: jest.fn(),
-     },
-     getUserOrganisation: jest.fn(),
-     envConfig: {
-       BASE_URL: "https://example.com",
-     },
-   }));
-   
-
 
 describe("SyncDataView Component", () => {
-  const statusMock = jest.fn();
-  const HandleExceptionMock = jest.fn();
+  const handleExceptionMock = jest.fn();
+  const inProgressStatusMock = jest.fn();
   const inProgressStatus = jest.fn();
-  const FetchSyncStatusMock = jest.fn();
   const mockHandleException = jest.fn();
   const mockSetSyncStatus = jest.fn();
   const mockSetShowSyncCompleteDialog = jest.fn();
   const mockSetShowSyncFailedDialog = jest.fn();
   const mockSetClicked = jest.fn();
+  const mockSetShowSyncDialog = jest.fn();
 
   beforeEach(() => {
-    jest.clearAllMocks(); // Clear previous mocks before each test
+    jest.clearAllMocks();
   });
 
-
-  it("should render the component and button", () => {
+  it("should render the component and sync button", () => {
     render(
       <SyncDataView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-        inProgressStatus={inProgressStatus}
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
       />
     );
+
     expect(
       screen.getByText(/The data synchronization is expected to be completed within 24 hours./i)
     ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Sync/i })).toBeInTheDocument();
   });
 
-  it("should show confirmation dialog when sync button is clicked", () => {
-    render(
-      <SyncDataView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-        inProgressStatus={inProgressStatus}
-      />
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-  });
-
-  it("should call inProgressStatus on button click", () => {
-    const { getByRole } = render(
-      <SyncDataView
-        status={statusMock}
-        handleException={mockHandleException}
-        inProgressStatus={inProgressStatus}
-      />
-    );
-    fireEvent.click(getByRole("button", { name: /Sync/i }));
-    expect(inProgressStatus).toHaveBeenCalledWith("In Progress");
-  });
-
-  test("should handle fetch errors in FetchSyncStatus", async () => {
-    jest.spyOn(service, "get").mockImplementation(() => {
-      throw new Error("Network Error");
-    });
-    const response: any = await FetchSyncStatus(HandleExceptionMock); 
-    await waitFor(() => {
-      expect(response).toBeNull()
-    });
-  });
-
-  test("shoud fetch search results data successfully", async () => {
-    const mockResponseData = {
-      statusCode: 200,
-      uiStatus: "Not Started",
-    };
-    const axiosResponse: AxiosResponse = {
-      config: {},
-      data: mockResponseData,
-      status: 200,
-      statusText: "OK",
-      headers: {},
-    };
-    const mockSchoolData = { schoolName: "Test School" };
-
-    (useFetchSchoolNameData as jest.Mock).mockResolvedValue(mockSchoolData);
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() => Promise.resolve(axiosResponse));
-    const response: any = await FetchSyncStatus(HandleExceptionMock); 
-    await waitFor(() => {
-
-      expect(response).toEqual(axiosResponse.data)
-      expect(HandleExceptionMock).not.toHaveBeenCalled();
-    });
-  });
-
-  it("should handle fetch results successfully when calling FetchSyncStatus", async () => {
-    const mockResponseData = {
-      statusCode: 200,
-      uiStatus: "Completed",
-    };
-    (FetchSyncStatusMock as jest.Mock).mockReturnValue(mockResponseData);
-
-    render(
-      <SyncDataView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-        inProgressStatus={inProgressStatus}
-      />
-    );
-    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-
-    await waitFor(() => {
-      expect(FetchSyncStatusMock).toHaveBeenCalledTimes(0);
-    });
-  });
-
-  it("should handle default status case", async () => {
+  it("should handle sync button click and show the appropriate dialog", async () => {
     const mockResponse: ISchoolDetailsDRApiResponse = {
       statusCode: 200,
-      uiStatus: "Unknown",
-    };
-    (FetchSyncStatusMock as jest.Mock).mockResolvedValue(mockResponse);
-    const result = await CheckSyncStatus(
-      mockHandleException,
-      mockSetSyncStatus,
-      mockSetShowSyncCompleteDialog,
-      mockSetShowSyncFailedDialog,
-      mockSetClicked,
-      "Error",
-      statusMock
-    );
-    expect(FetchSyncStatusMock).toHaveBeenCalledTimes(0);
-    expect(result).toBe("Error");
-  });
-
-  it("should handle exception on FetchSyncStatus and display sync failed dialog", async () => {
-    const mockResponseData = {
-      statusCode: 200,
-      uiStatus: "Error",
-    };
-    const axiosResponse: AxiosResponse = {
-      config: {},
-      data: mockResponseData,
-      status: 200,
-      statusText: "OK",
-      headers: {},
-    };
-    const mockSchoolData = { schoolName: "Test School" };
-
-    (useFetchSchoolNameData as jest.Mock).mockResolvedValue(mockSchoolData);
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() => Promise.resolve(axiosResponse));
-    const response: any = await FetchSyncStatus(HandleExceptionMock); 
-   
-    const result = await CheckSyncStatus(
-      mockHandleException,
-      mockSetSyncStatus,
-      mockSetShowSyncCompleteDialog,
-      mockSetShowSyncFailedDialog,
-      mockSetClicked,
-      response.uiStatus,
-      statusMock
-    );
-    await waitFor(() => {  
-      expect(mockSetSyncStatus).toHaveBeenCalledWith("Failed");
-      expect(result).toBe("Error");
-    });
-  });
-
-  it("should display sync completed dialog on success", async () => {
-    const mockResponseData = {
-      statusCode: 200,
       uiStatus: "Completed",
     };
-    const axiosResponse: AxiosResponse = {
-      config: {},
-      data: mockResponseData,
-      status: 200,
-      statusText: "OK",
-      headers: {},
-    };
-    const mockSchoolData = { schoolName: "Test School" };
 
-    (useFetchSchoolNameData as jest.Mock).mockResolvedValue(mockSchoolData);
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() => Promise.resolve(axiosResponse));
-    const response: any = await FetchSyncStatus(HandleExceptionMock); 
-   
-    const result = await CheckSyncStatus(
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.get as jest.Mock).mockResolvedValue({
+      data: mockResponse,
+    });
+    handleButtonClick(
       mockHandleException,
       mockSetSyncStatus,
       mockSetShowSyncCompleteDialog,
-      mockSetShowSyncFailedDialog,
+      mockSetShowSyncDialog,
+      true,
+      false,
       mockSetClicked,
-      response.uiStatus,
-      statusMock
-    );
-    await waitFor(() => {  
-      expect(mockSetSyncStatus).toHaveBeenCalledWith("Completed");
-      expect(mockSetShowSyncCompleteDialog).toHaveBeenCalledWith(true);
-      expect(result).toBe("Completed");
-    });
-  });
+      inProgressStatus,
+      mockSetShowSyncFailedDialog);
 
-  it("should return 'Error' if the response is null or statusCode is not 200", async () => {
-    const mockResponseData = {
-      statusCode: 500,
-      uiStatus: "Not Started",
-    };
-    const axiosResponse: AxiosResponse = {
-      config: {},
-      data: mockResponseData,
-      status: 500,
-      statusText: "OK",
-      headers: {},
-    };
-    const mockSchoolData = { schoolName: "Test School" };
-
-    (useFetchSchoolNameData as jest.Mock).mockResolvedValue(mockSchoolData);
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() => Promise.resolve(axiosResponse));
-    const response: any = await FetchSyncStatus(HandleExceptionMock); 
-   
-    const result = await CheckSyncStatus(
-      mockHandleException,
-      mockSetSyncStatus,
-      mockSetShowSyncCompleteDialog,
-      mockSetShowSyncFailedDialog,
-      mockSetClicked,
-      response.uiStatus,
-      statusMock
-    );
-    await waitFor(() => {
-      expect(result).toBe("Error");
-    });
-    
-  });
-
-  it("should allow sync button can be clicked multiple times", async () => {
     render(
       <SyncDataView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-        inProgressStatus={inProgressStatus}
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
+
+    await waitFor(() => {
+      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
+      expect(mockSetShowSyncCompleteDialog).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("should call handleException on API failure", async () => {
+    (useFetchSchoolNameData as jest.Mock).mockRejectedValue(new Error("API Error"));
+
+    render(
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
+
+    await waitFor(() => {
+      expect(handleExceptionMock).toHaveBeenCalled();
+    });
+  });
+
+  it("should handle FetchSyncStatus successfully", async () => {
+    const mockResponse: ISchoolDetailsDRApiResponse = {
+      statusCode: 200,
+      uiStatus: "In Progress",
+    };
+
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.get as jest.Mock).mockResolvedValue({
+      data: mockResponse,
+    });
+
+    const response = await FetchSyncStatus(handleExceptionMock);
+    expect(response).toEqual(mockResponse);
+    expect(handleExceptionMock).not.toHaveBeenCalled();
+  });
+
+  it("should return null if FetchSyncStatus fails", async () => {
+    (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+
+    const response = await FetchSyncStatus(handleExceptionMock);
+    expect(response).toBeNull();
+    expect(handleExceptionMock).toHaveBeenCalled();
+  });
+
+  it("should display 'Data Sync Failed' dialog when API response indicates failure", async () => {
+    const mockResponse: ISchoolDetailsDRApiResponse = {
+      statusCode: 500,
+      uiStatus: "Error",
+    };
+
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.get as jest.Mock).mockResolvedValue({
+      data: mockResponse,
+    });
+    handleButtonClick(
+      mockHandleException,
+      mockSetSyncStatus,
+      mockSetShowSyncCompleteDialog,
+      mockSetShowSyncDialog,
+      true,
+      false,
+      mockSetClicked,
+      inProgressStatus,
+      mockSetShowSyncFailedDialog);
+
+    render(
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
+
+    await waitFor(() => {
+      expect(mockSetShowSyncFailedDialog).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("should open Data Sync in progress dialog when API response indicates in progress status", async () => {
+    const mockResponse: ISchoolDetailsDRApiResponse = {
+      statusCode: 200,
+      uiStatus: "In Progress",
+    };
+
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.get as jest.Mock).mockResolvedValue({
+      data: mockResponse,
+    });
+    handleButtonClick(
+      mockHandleException,
+      mockSetSyncStatus,
+      mockSetShowSyncCompleteDialog,
+      mockSetShowSyncDialog,
+      true,
+      true,
+      mockSetClicked,
+      inProgressStatus,
+      mockSetShowSyncFailedDialog);
+
+    render(
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
+
+    await waitFor(() => {
+      expect(mockSetShowSyncDialog).toHaveBeenCalledWith(true);
+      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress")
+      expect(mockSetSyncStatus).toHaveBeenCalledWith("In Progress")
+    });
+  });
+
+
+  it("should allow multiple sync button clicks", async () => {
+    render(
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
       />
     );
 

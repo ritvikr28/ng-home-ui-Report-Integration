@@ -129,12 +129,21 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             if (status === "Deleted") return "Deleted";
             if (status === "Attached") return "Attached";
             if (status === "Completed") return "Completed";
+            if (status === "In Progress") return "In Progress"; 
             return ""; // Default to empty if unrecognized
           });
           setFlagValues(initialFlags);
+          
+          // Determine the active step
+          let activeStep = initialFlags.findIndex((flag) => flag === "In Progress");
+          if (activeStep === -1) {
+            activeStep = initialFlags.findIndex((flag) => flag === "");
+          }
+          if (activeStep === -1) {
+            activeStep = items.length - 1; // Default to the last step if all are complete
+          }
 
-          const firstIncompleteIndex = initialFlags.findIndex((flag) => flag === "");
-          setActiveIndex(firstIncompleteIndex === -1 ? items.length - 1 : firstIncompleteIndex);
+          setActiveIndex(activeStep);
         }
       } catch (error) {
         console.error("Error fetching precheck status:", error);
