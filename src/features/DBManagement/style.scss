@@ -181,9 +181,9 @@
 }
 
 #refreshDb-card {
-  width: 560px;
+  width: 560.02px;
   height: auto;
-  min-height: 328px;
+  min-height: 328.02px;
   border-radius: 16px;
   padding: 16px;
   display: flex;
@@ -198,13 +198,13 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding-top: 16px;
+  padding-top: 16.02px;
+  margin-bottom: 16.02px;
 }
 
 #delete-container {
   width: 528px;
   height: 40.02px;
-  min-height: 88px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -217,13 +217,11 @@
   min-height: 88px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding-top: 16px;
 }
 
 #reaction-button {
   width: 188.02px;
-  height: 40.02px;
+  height: 40.05px;
   border-radius: 8px;
   border: 1px solid #8f8f8f;
   padding: 8px 16px;
@@ -261,15 +259,12 @@
 }
 
 #btn-proceed {
-  width: auto;
-  height: auto;
-  min-width: 91px;
-  min-height: 40.02px;
+  width: 91px;
+  height: 40.02px;
   border-radius: 8px;
-  margin-top: 16px;
-  margin-bottom: 16px;
+  margin-top: 8.02px;
   border: 1px solid #8f8f8f;
-  padding: 8px 16px;
+  padding-left: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -288,17 +283,16 @@
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  margin-bottom: 8px; 
 }
 
 #btn-sync {
   width: 66px;
   height: 40.02px;
   border-radius: 8px;
-  margin-top: 16px;
+  margin-top: 8px;
   margin-bottom: 8px;
   border: 1px solid #8f8f8f;
-  padding: 8px 16px;
+  padding: 8px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
