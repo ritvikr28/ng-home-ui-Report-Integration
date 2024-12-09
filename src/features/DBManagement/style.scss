@@ -194,8 +194,7 @@
 
 #detach-container {
   width: 528px;
-  height: auto;
-  min-height: 88px;
+  height: 88.02px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -204,7 +203,7 @@
 
 #delete-container {
   width: 528px;
-  height: auto;
+  height: 40.02px;
   min-height: 88px;
   display: flex;
   flex-direction: column;
@@ -214,7 +213,7 @@
 
 #sync-container {
   width: 528px;
-  height: auto;
+  height: 40.02px;
   min-height: 88px;
   display: flex;
   flex-direction: column;
@@ -223,8 +222,8 @@
 }
 
 #reaction-button {
-  width: 188px;
-  height: 40px;
+  width: 188.02px;
+  height: 40.02px;
   border-radius: 8px;
   border: 1px solid #8f8f8f;
   padding: 8px 16px;
@@ -232,7 +231,7 @@
   align-items: center;
   justify-content: space-between;
   background-color: #fff;
-  margin-left: 8px;
+  margin-right: 8px;
 }
 
 #default-control-label {
@@ -265,7 +264,7 @@
   width: auto;
   height: auto;
   min-width: 91px;
-  min-height: 40px;
+  min-height: 40.02px;
   border-radius: 8px;
   margin-top: 16px;
   margin-bottom: 16px;
@@ -293,13 +292,11 @@
 }
 
 #btn-sync {
-  width: auto;
-  height: auto;
-  min-width: 66px;
-  min-height: 40px;
+  width: 66px;
+  height: 40.02px;
   border-radius: 8px;
   margin-top: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   border: 1px solid #8f8f8f;
   padding: 8px 16px;
   display: flex;
