@@ -139,7 +139,7 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog,
+      mockSetShowSyncFailedDialog
       );
 
     render(
@@ -177,7 +177,7 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog,
+      mockSetShowSyncFailedDialog
       );
     render(
       <SyncDataView
@@ -214,7 +214,7 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog,
+      mockSetShowSyncFailedDialog
       );
     render(
       <SyncDataView

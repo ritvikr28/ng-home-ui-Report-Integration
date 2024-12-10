@@ -75,7 +75,7 @@ export const handleButtonClick = async (
   clicked: boolean,
   setClicked: React.Dispatch<React.SetStateAction<boolean>>, 
   inProgressStatus: (value: string) => void,
-  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if(!clicked) {
     const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException);
@@ -156,7 +156,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             clicked,
             setClicked,
             inProgressStatus,
-            setShowSyncFailedDialog,
+            setShowSyncFailedDialog
             )}
           disabled={syncStatus === "Active"}
         >
