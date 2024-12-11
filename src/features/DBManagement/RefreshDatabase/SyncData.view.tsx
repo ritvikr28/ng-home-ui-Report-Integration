@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
+import { authService } from "@essnextgen/auth-ui";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import ConfirmDialog from "./ConfirmationDialog.logic";
@@ -9,8 +10,9 @@ import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/sc
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 
 export interface SyncDataViewProps {
-  inProgressStatus: (value: string) => void; // Function to update the status
-  handleException: () => void; // Function to handle exception cases
+  inProgressStatus: (value: string) => void;
+  handleException: () => void; 
+  status: (value: string) => void;
 }
 
 // Fetch sync status
@@ -32,6 +34,38 @@ export const FetchSyncStatus = async (handleException: () => void): Promise<ISch
   }
 };
 
+export const TriggerSync = async(handleException : () => void): Promise<ISchoolDetailsDRApiResponse | null> => {
+  try {
+    const schoolData: ISchoolNameDataResponse | null =
+      await useFetchSchoolNameData();
+    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+
+    const requestData: {
+      operationIndicator: string;
+      orgId: string;
+      orgName: string;
+      tableFlagValue: string;
+      actorName: string;
+    } = {
+      operationIndicator: "S",
+      orgId: getUserOrganisation(),
+      orgName,
+      tableFlagValue: "Y",
+      actorName: authService.getUsername()
+    };
+    const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
+      await service.post(
+        `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
+        requestData
+      );
+    return response.data;
+  } catch (err: any) {
+    handleException();
+    console.error("Failed to fetch data");
+    return null;
+  }
+}
+
 // Handle button click
 export const handleButtonClick = async (
   handleException: () => void, 
@@ -39,43 +73,46 @@ export const handleButtonClick = async (
   setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>, 
   setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>, 
   clicked: boolean,
-  showSyncDialog: boolean,
   setClicked: React.Dispatch<React.SetStateAction<boolean>>, 
   inProgressStatus: (value: string) => void,
-  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>> 
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
-    if (response !== null && response.statusCode === 200) {
-        
-      if(clicked && (response.uiStatus === "Completed")) {
-        setShowSyncCompleteDialog(true);
-        inProgressStatus("In Progress")
-      }
-     
-      if(clicked && (response.uiStatus === "Error")) {
-        setShowSyncFailedDialog(true);
-      }
-
-      // If clicked second time
-      if(clicked) {
-        setShowSyncDialog(true)
-        if(showSyncDialog) {
-          inProgressStatus("In Progress");
-          setSyncStatus("In Progress");
-        }
-      }
+  if(!clicked) {
+    const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException);
+    if (response?.statusCode === 200) {
       setClicked(true);
       inProgressStatus("In Progress")
+    } else {
+      handleException();
+      setShowSyncFailedDialog(true);
+      return;
+    }
+  }
 
+  if(clicked) {
+    const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
+    if(response?.statusCode === 200) {
+      if (response.uiStatus === "Completed") {
+        setShowSyncCompleteDialog(true);
+        setSyncStatus("Completed");
+        setClicked(false);
+      } else if (response.uiStatus === "Error") {
+        setShowSyncFailedDialog(true);
+      } else {
+        setShowSyncDialog(true);
+        inProgressStatus("In Progress")
+      }
     } else {
       handleException();
       setShowSyncFailedDialog(true);
     }
+  }
 };
 
 const SyncDataView: React.FC<SyncDataViewProps> = ({
   inProgressStatus,
   handleException,
+  status
 }) => {
   const [syncStatus, setSyncStatus]: [
     string,
@@ -97,7 +134,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  
+ 
 
   return (
     <>
@@ -117,11 +154,11 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             setShowSyncCompleteDialog,
             setShowSyncDialog,
             clicked,
-            showSyncDialog,
             setClicked,
             inProgressStatus,
-            setShowSyncFailedDialog)}
-          disabled={syncStatus === "Completed"}
+            setShowSyncFailedDialog
+            )}
+          disabled={syncStatus === "Active"}
         >
           Sync
         </Button>
@@ -136,9 +173,15 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         <ConfirmDialog
           isOpen={showSyncCompleteDialog}
           confirmActionButtonText="Close"
-          title="Data Sync successfully"
-          onCloseHandle={() => setShowSyncCompleteDialog(false)}
-          onSubmitHandle={() => setShowSyncCompleteDialog(false)}
+          title="Data Synced successfully"
+          onCloseHandle={() => {
+            setShowSyncCompleteDialog(false);
+            status("Completed"); // Update completion status
+          }}
+          onSubmitHandle={() => {
+            setShowSyncCompleteDialog(false);
+            status("Completed"); // Update completion status
+          }}
           description="SIMS7 data synced successfully with Next Gen database."
         />
         <ConfirmDialog
