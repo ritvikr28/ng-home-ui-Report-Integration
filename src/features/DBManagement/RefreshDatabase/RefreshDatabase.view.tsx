@@ -124,11 +124,15 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           ];
 
         // Map statuses to corresponding step labels
-          const initialFlags = statuses.map((status) => {
+          const initialFlags = statuses.map((status, index) => {
+            if (index === 3) { // Assuming syncDataStatus is at index 3
+              if(status === "Active") return "";
+              if (status === "Not Started" || status === "In Progress") return "In Progress";
+              return ""; // Default to empty if unrecognized
+            }
             if (status === "Detached") return "Detached";
             if (status === "Deleted") return "Deleted";
             if (status === "Attached") return "Attached";
-            if (status === "Completed") return "Completed";
             if (status === "In Progress") return "In Progress"; 
             return ""; // Default to empty if unrecognized
           });
