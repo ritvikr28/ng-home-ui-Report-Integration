@@ -92,7 +92,7 @@ export const handleButtonClick = async (
   if(clicked) {
     const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
     if(response?.statusCode === 200) {
-      if (response.uiStatus === "Completed") {
+      if (response.uiStatus === "Completed" || response.uiStatus === "Active") {
         setShowSyncCompleteDialog(true);
         setSyncStatus("Completed");
         setClicked(false);
