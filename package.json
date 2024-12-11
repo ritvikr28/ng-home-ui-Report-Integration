@@ -12,11 +12,11 @@
   "private": true,
   "dependencies": {
     "@essnextgen/auth-ui": "^2.1.11",
-    "@essnextgen/ui-application-kit": "^1.0.2-alpha.280",
+    "@essnextgen/ui-application-kit": "^0.4.102",
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-flagr": "^0.0.3",
     "@essnextgen/ui-intl-kit": "^0.0.9",
-    "@essnextgen/ui-kit": "^0.20.19-alpha.5",
+    "@essnextgen/ui-kit": "^0.20.23",
     "@essnextgen/ui-user-access-management-kit": "^1.0.5-alpha.0",
     "@microsoft/applicationinsights-react-js": "^3.4.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
