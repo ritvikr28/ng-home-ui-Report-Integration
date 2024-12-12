@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
@@ -11,7 +12,6 @@ import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => void;

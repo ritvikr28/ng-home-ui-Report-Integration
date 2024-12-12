@@ -1,6 +1,4 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import React from "react";
-import DBManagement from "../DBManagement.view";
 import BreadcrumbWrapper from "../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
 interface LocalisedMenuProps {

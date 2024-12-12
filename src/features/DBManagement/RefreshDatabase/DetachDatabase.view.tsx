@@ -5,6 +5,7 @@ import {
   ReactionButton,
   FormLabel
 } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
@@ -12,7 +13,6 @@ import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 export const FetchIsDetached = async (
   handleException: () => void

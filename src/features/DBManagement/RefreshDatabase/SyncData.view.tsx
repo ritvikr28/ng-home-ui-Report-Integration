@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { authService } from "@essnextgen/auth-ui";
 import "../style.scss";
 import { AxiosResponse } from "axios";
@@ -8,7 +9,6 @@ import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDataba
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 export interface SyncDataViewProps {
   inProgressStatus: (value: string) => void;

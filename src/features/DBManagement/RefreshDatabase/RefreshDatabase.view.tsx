@@ -1,4 +1,5 @@
 import { Tag, TagSize, TagColor, Card, CardType, FormLabel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
@@ -12,7 +13,6 @@ import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 interface Item {
   title: string;

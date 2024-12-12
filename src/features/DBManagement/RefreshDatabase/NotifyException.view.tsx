@@ -4,9 +4,9 @@ import {
   NotificationStatus,
   useMediaQuery
 } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { INotificationProps } from "../../SIMSIDAdmin/Components/NotificationView/NotificationProps";
 import "../style.scss";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 const NotifyExceptionView: React.FC<INotificationProps> = ({ setDisableNotification }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
