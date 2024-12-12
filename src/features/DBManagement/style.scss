@@ -158,6 +158,10 @@
   margin-left: 4.5px;
 }
 
+.essui-card__header-indicator {
+  display: none;
+}
+
 @media (min-width: 1024px) {
   .admin-heading .subheading-font {
     width: 74vw;
@@ -186,7 +190,7 @@
   height: auto;
   min-height: 328.02px;
   border-radius: 16px;
-  padding: 16px;
+  padding-left: 16px;
   display: flex;
   flex-direction: column;
   gap: 32px;
