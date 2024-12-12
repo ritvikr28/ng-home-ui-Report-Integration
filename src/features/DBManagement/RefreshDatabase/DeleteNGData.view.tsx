@@ -128,6 +128,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   return (
     <div style={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
       <Button
+        dataTestId="Proceed"
         id="btn-proceed"
         className="btn-full-width"
         size={ButtonSize.Small}

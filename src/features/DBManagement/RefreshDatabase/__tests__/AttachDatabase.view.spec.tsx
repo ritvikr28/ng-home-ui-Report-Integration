@@ -21,13 +21,13 @@ describe("AttachDatabaseView Component", () => {
       />
     );
     expect(
-      screen.getByText("Is the SIMS7 database attached?")
+      screen.getByTestId("attachDbTitle")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Please click on Yes to attach")
+      screen.getByTestId("attachDbButton")
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Yes")).toBeInTheDocument();
-    expect(screen.getByLabelText("No")).toBeInTheDocument();
+    expect(screen.getByTestId("Yes")).toBeInTheDocument();
+    expect(screen.getByTestId("No")).toBeInTheDocument();
   });
 
 
@@ -42,7 +42,7 @@ describe("AttachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalledWith("In progress");
@@ -60,7 +60,7 @@ describe("AttachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalledWith("Detached");
@@ -79,7 +79,7 @@ describe("AttachDatabaseView Component", () => {
           handleException={HandleExceptionMock}
         />
       );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     // Wait for the effect of the click to propagate
     await waitFor(() => {
@@ -97,7 +97,7 @@ describe("AttachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("No"));
+    fireEvent.click(screen.getByTestId("No"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalled();
