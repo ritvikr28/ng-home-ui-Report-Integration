@@ -92,10 +92,10 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   return (
     <>
     <div id='detach-container'>
-      <FormLabel id="default-control-label">
+      <FormLabel dataTestId="attachDBtitle" id="default-control-label">
         {t("RefreshDB_T.moduleBlock.attachDB.title")}
       </FormLabel>
-      <FormLabel id="default-label">
+      <FormLabel dataTestId="attachDBbutton" id="default-label">
         {t("RefreshDB_T.moduleBlock.attachDB.button")}
       </FormLabel>
       
@@ -111,8 +111,8 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
           handleSelectionChange(selectedValue as string);
         }}
       >
-        <ReactionButton id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button2")} value="Yes" />
-        <ReactionButton id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button3")} value="No" />
+        <ReactionButton dataTestId="Yes" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button2")} value="Yes" />
+        <ReactionButton dataTestId="No" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button3")} value="No" />
       </ReactionButtonGroup>
       </div>
     </>

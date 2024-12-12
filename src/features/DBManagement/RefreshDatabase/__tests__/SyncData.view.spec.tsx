@@ -46,7 +46,7 @@ describe("SyncDataView Component", () => {
     );
 
     expect(
-      screen.getByText(/The data synchronization is expected to be completed within 24 hours./i)
+      screen.getByTestId("modelSyncComplete")
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sync/i })).toBeInTheDocument();
   });

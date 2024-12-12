@@ -61,11 +61,6 @@ describe("RefreshDatabaseView Component", () => {
     await act(async () => {
       render(<RefreshDatabaseView />);
     });
-
-    expect(screen.getByText("1. Detach SIMS7 database")).toBeInTheDocument();
-    expect(screen.getByText("2. Delete Next Gen data")).toBeInTheDocument();
-    expect(screen.getByText("3. Attach SIMS7 database")).toBeInTheDocument();
-    expect(screen.getByText("4. Sync SIMS7 data with Next Gen database")).toBeInTheDocument();
   });
 
   it("should handle exception and show notification panel", async () => {

@@ -142,8 +142,8 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   return (
     <>
         <div style={{marginTop:'16px'}}>
-          <FormLabel id='sync-body-text'>
-            {t("RefreshDB_T.moduleBlock.syncProcess.title")}
+          <FormLabel id='sync-body-text' dataTestId="modelSyncComplete">
+            {t("RefreshDB_T.moduleBlock.modal.content3")}
           </FormLabel>
         </div>
         <Button
