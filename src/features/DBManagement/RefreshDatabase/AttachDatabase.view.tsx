@@ -12,6 +12,7 @@ import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 export const FetchIsAttached = async (
   handleException: () => void
@@ -61,6 +62,8 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>("No");
 
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
 
   const handleSetIsAttached = async () => {
     // Get Re-attached status
@@ -90,10 +93,10 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
     <>
     <div id='detach-container'>
       <FormLabel id="default-control-label">
-        Is the SIMS7 database attached?
+        {t("RefreshDB_T.moduleBlock.attachDB.title")}
       </FormLabel>
       <FormLabel id="default-label">
-        Please click on Yes to attach
+        {t("RefreshDB_T.moduleBlock.attachDB.button")}
       </FormLabel>
       
       <ReactionButtonGroup
@@ -108,8 +111,8 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
           handleSelectionChange(selectedValue as string);
         }}
       >
-        <ReactionButton id="reaction-button" label="Yes" value="Yes" />
-        <ReactionButton id="reaction-button" label="No" value="No" />
+        <ReactionButton id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button2")} value="Yes" />
+        <ReactionButton id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button3")} value="No" />
       </ReactionButtonGroup>
       </div>
     </>

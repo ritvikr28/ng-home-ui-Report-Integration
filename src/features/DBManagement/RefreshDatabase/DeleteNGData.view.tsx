@@ -11,6 +11,7 @@ import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => void;
@@ -27,6 +28,8 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
   const [showInProgressDialog, setShowInProgressDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -136,17 +139,17 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
       </Button>
       <ConfirmDialog
         isOpen={showDeleteDialog}
-        confirmActionButtonText="Delete"
-        cancelActionButtonText="Close"
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.DeleteNGData.button2")}
+        cancelActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
         optionalButton={true}
-        title="Delete Next Gen Data?"
+        title={t("RefreshDB_T.moduleBlock.DeleteNGData.title")}
         onCloseHandle={handleCloseDialog}
         onSubmitHandle={handleDelete}
-        description="Deleting the Next Gen data will clear all records and all related data will be gone forever once deleted."
+        description={t("RefreshDB_T.moduleBlock.DeleteNGData.description")}
       />
       <ConfirmDialog
         isOpen={showInProgressDialog}
-        confirmActionButtonText="Close"
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
         title="Deletion of NG Data in Progress"
         onCloseHandle={handleCloseDialog}
         onSubmitHandle={handleCloseDialog}

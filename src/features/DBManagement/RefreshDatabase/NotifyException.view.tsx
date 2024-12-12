@@ -6,8 +6,12 @@ import {
 } from "@essnextgen/ui-kit";
 import { INotificationProps } from "../../SIMSIDAdmin/Components/NotificationView/NotificationProps";
 import "../style.scss";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 const NotifyExceptionView: React.FC<INotificationProps> = ({ setDisableNotification }) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+
   const isMobileView: boolean = useMediaQuery(
     "(min-width:319.9px)"
   );
@@ -22,13 +26,13 @@ const NotifyExceptionView: React.FC<INotificationProps> = ({ setDisableNotificat
         <div className="secondary-text-simsid">
             <br />
             <div className="secondary-text-simsid-admin-sec-heading">
-            A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.
+              {t("RefreshDB_T.moduleBlock.notifyException.title")}
             </div>
         </div>
         }
         onClickClose={() => setDisableNotification(false)}
         status={NotificationStatus.WARNING}
-        title="Unable to process the request."
+        title={t("RefreshDB_T.moduleBlock.notifyException.content")}
     />}
   </div>
   </>

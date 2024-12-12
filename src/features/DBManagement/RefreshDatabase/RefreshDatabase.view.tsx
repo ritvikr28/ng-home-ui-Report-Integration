@@ -12,11 +12,14 @@ import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 
 interface Item {
   title: string;
   component: ComponentType<any>;
 }
+
+let items: Item[];
 
 export const FetchPreCheckStatus= async (
   handleException: () => void
@@ -37,14 +40,6 @@ export const FetchPreCheckStatus= async (
       return null;
     }
   };
-
-// Define items with the components to be rendered
-const items: Item[] = [
-  { title: "Detach SIMS7 database", component: DetachDatabaseView },
-  { title: "Delete Next Gen data", component: DeleteNGDataView },
-  { title: "Attach SIMS7 database", component: AttachDatabaseView },
-  { title: "Sync SIMS7 data with Next Gen database", component: SyncDataView }
-];
 
 export interface IHandleCompleteProps {
   index: number;
@@ -89,6 +84,17 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     React.Dispatch<React.SetStateAction<number>>
   ] = useState<number>(0);
 
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+
+  // Define items with the components to be rendered
+  items= [
+    { title: t("RefreshDB_T.moduleBlock.detachDB.content2"), component: DetachDatabaseView },
+    { title: t("RefreshDB_T.moduleBlock.DeleteNGData.title"), component: DeleteNGDataView },
+    { title: t("RefreshDB_T.moduleBlock.attachDB.content"), component: AttachDatabaseView },
+    { title: t("RefreshDB_T.moduleBlock.syncProcess.title"), component: SyncDataView }
+  ];
+
   const [flagValues, setFlagValues]: [
     string[],
     React.Dispatch<React.SetStateAction<string[]>>
@@ -124,12 +130,16 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           ];
 
         // Map statuses to corresponding step labels
-          const initialFlags = statuses.map((status) => {
-            if (status === "Detached") return "Detached";
-            if (status === "Deleted") return "Deleted";
-            if (status === "Attached") return "Attached";
-            if (status === "Completed") return "Completed";
-            if (status === "In Progress") return "In Progress"; 
+          const initialFlags = statuses.map((status, index) => {
+            if (index === 3) { // Assuming syncDataStatus is at index 3
+              if(status === "Active") return "";
+              if (status === "Not Started" || status === "In Progress") return "In Progress";
+              return ""; // Default to empty if unrecognized
+            }
+            if (status === "Detached") return t("RefreshDB_T.moduleBlock.status.content3");
+            if (status === "Deleted") return t("RefreshDB_T.moduleBlock.status.content");
+            if (status === "Attached") return t("RefreshDB_T.moduleBlock.status.content1");
+            if (status === "In Progress") return t("RefreshDB_T.moduleBlock.status.content2");
             return ""; // Default to empty if unrecognized
           });
           setFlagValues(initialFlags);

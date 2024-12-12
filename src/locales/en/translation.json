@@ -212,18 +212,47 @@
     "headingTitle": "Reset the SIMS7 and Next Gen databases",
     "description": "Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases.",
     "moduleBlock": {
-      "heading": "What to do next",
-      "attachDB": {
-        "title": "Is the SIMS7 database attached?",
-        "content": "Please click on Yes to attach"
-      },
       "detachDB": {
-        "title": "Is the SIMS7 database detached?",
-        "content": "Please click on Yes to detach"
+        "content": "Is the SIMS7 database detached?",
+        "content1": "Please click on Yes to detach",
+        "content2": "Detach SIMS7 database"
       },
-      "DeleteNGData": {
-        "title": "Delete Next Gen Data?",
-        "content": "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+      "DeleteNGData":{
+        "title": "Delete Next Gen data",
+        "button1": "Proceed",
+        "button2": "Delete",
+        "description": "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+      },
+      "attachDB":{
+        "title": "Is the SIMS7 database attached?",
+        "button": "Please click on Yes to attach",
+        "content": "Attach SIMS7 database"
+      },
+      "syncProcess":{
+        "title": "Sync SIMS7 data with Next Gen database"
+      },
+      "notifyException":{
+        "title": "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.",
+        "content": "Unable to process the request."
+      },
+      "status":{
+        "content": "Deleted",
+        "content1": "Attached",
+        "content2": "In Progress",
+        "content3": "Detached"
+      },
+      "modal":{
+        "content": "Data Sync successfully",
+        "content1": "Data Sync failed",
+        "content2": "Data Sync in progress",
+        "content3": "The data synchronization is expected to be completed within 24 hours.",
+        "content4": "SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started.",
+        "content5": "SIMS7 data synced successfully with Next Gen database.",
+        "content6": "SIMS7 data sync with Next Gen database failed. We apologize for any inconvenience. Please try again.",
+        "button1": "Close",
+        "button2": "Yes",
+        "button3": "No",
+        "button4": "Cancel"
       }
     }
   }

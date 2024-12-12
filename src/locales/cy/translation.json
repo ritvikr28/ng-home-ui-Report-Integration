@@ -147,22 +147,52 @@
     }
   },
   "RefreshDB_T": {
-    "headingTitle": "Welsh Reset the SIMS7 and Next Gen databases",
-    "description": "Welsh Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases.",
+    "headingTitle": "Ailosodwch y cronfeydd data Next Gen a SIMS7 ",
+    "description": "Rheoli'r cronfeydd data i ddarparu llechen lân ar gyfer arddangosiadau. Cwblhewch y 4 cam er mwyn ailosod y cronfeydd data.",
     "moduleBlock": {
-      "heading": "What to do next",
-      "attachDB": {
-        "title": "Test data",
-        "content": "Test data"
-      },
       "detachDB": {
-        "title": "Test data",
-        "content": "Test data"
+        "content": "A yw'r gronfa ddata SIMS7 wedi’i hatodi?",
+        "content1": "Cliciwch ar Ydw i atodi",
+        "content2": "Datgysylltu cronfa ddata SIMS7"
       },
-      "DeleteNGData": {
-        "title": "Delete Next Gen Data?",
-        "content": "Deleting the Next gen data will clear all records and all related data will be gone forever once deleted."
+      "DeleteNGData":{
+        "title": "Dileu data Next Gen",
+        "button1": "Parhau",
+        "button2": "Dileu",
+        "description": "Bydd dileu'r data Next Gen yn clirio'r holl gofnodion a bydd yr holl ddata cysylltiedig yn mynd am byth ar ôl ei ddileu."
+      },
+      "attachDB":{
+        "title": "A yw'r gronfa ddata SIMS7 wedi'i datgysylltu?",
+        "button": "Cliciwch ar Ydw i ddatgysylltu",
+        "content": "Cysylltu cronfa ddata SIMS7"
+      },
+      "syncProcess":{
+        "title": "Cysoni data SIMS7 gyda chronfa ddata Next Gen"
+        
+      },
+      "notifyException":{
+        "title": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cwblhau eich cais. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+        "content": "Methu â phrosesu'r cais."
+      },
+      "status":{
+        "content": "Wedi'i dileu",
+        "content1": "Wedi'i chysylltu",
+        "content2": "Ar y Gweill",
+        "content3": "Wedi'i datgysylltu"
+      },
+      "modal":{
+        "content": "Cysoni Data yn llwyddiannus",
+        "content1": "Cysoni Data wedi methu",
+        "content2": "Cysoni Data ar y gweill",
+        "content3": "Disgwylir i'r cysoni data gael ei gwblhau o fewn 24 awr.",
+        "content4": "Ar hyn o bryd mae data SIMS7 yn cydgysylltu â chronfa ddata Next Gen. Ni ellir rhoi'r gorau i'r broses hon ar ôl dechrau.",
+        "content5": "Data SIMS7 wedi'i gysoni'n llwyddiannus gyda chronfa ddata Next Gen.",
+        "content6": "Methodd cysoni data SIMS7 â chronfa ddata Next Gen. Ymddiheurwn am unrhyw anghyfleustra. Rhowch gynnig arall arni.",
+        "button1": "Cau",
+        "button2": "Ydy",
+        "button3": "Nac ydy",
+        "button4": "Canslo"
       }
-    }
+  	}
   }
 }
