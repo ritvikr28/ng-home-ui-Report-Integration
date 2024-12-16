@@ -179,7 +179,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
 
               return (
                 <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
-                  <div className="list-item" style={{ paddingBottom: "16px",  paddingTop: "16px" }}>
+                  <div className="list-item" style={{ padding: "16px"}}>
                       <div style={{ display: "flex" }}>
                         <FormLabel id='default-list-item' >
                           {`${index + 1}. ${item.title}`}
