@@ -21,13 +21,13 @@ describe("DetachDatabaseView Component", () => {
       />
     );
     expect(
-      screen.getByText("Is the SIMS7 database detached?")
+      screen.getByTestId("attachDBtitle")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("Please click on Yes to detach")
+      screen.getByTestId("attachDBbutton")
     ).toBeInTheDocument();
-    expect(screen.getByLabelText("Yes")).toBeInTheDocument();
-    expect(screen.getByLabelText("No")).toBeInTheDocument();
+    expect(screen.getByTestId("Yes")).toBeInTheDocument();
+    expect(screen.getByTestId("No")).toBeInTheDocument();
   });
 
   it("should handle API success", async () => {
@@ -41,7 +41,7 @@ describe("DetachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalledWith("In progress");
@@ -59,7 +59,7 @@ describe("DetachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalledWith("Detached");
@@ -78,7 +78,7 @@ describe("DetachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
+    fireEvent.click(screen.getByTestId("Yes"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalled();
@@ -92,7 +92,7 @@ describe("DetachDatabaseView Component", () => {
   
     render(<DetachDatabaseView status={statusMock} handleException={HandleExceptionMock} />);
   
-    fireEvent.click(screen.getByLabelText("Yes"));  
+    fireEvent.click(screen.getByTestId("Yes"));  
     await waitFor(() => {
       expect(HandleExceptionMock).not.toHaveBeenCalled(); // Ensure no exception is triggered
     });
@@ -104,7 +104,7 @@ describe("DetachDatabaseView Component", () => {
   
     render(<DetachDatabaseView status={statusMock} handleException={HandleExceptionMock} />);
   
-    fireEvent.click(screen.getByLabelText("Yes"));  
+    fireEvent.click(screen.getByTestId("Yes"));  
     await waitFor(() => {
       expect(HandleExceptionMock).toHaveBeenCalled(); // Ensure exception handler is called
       expect(statusMock).not.toHaveBeenCalled(); // Ensure status is not called
@@ -119,7 +119,7 @@ describe("DetachDatabaseView Component", () => {
         handleException={HandleExceptionMock}
       />
     );
-    fireEvent.click(screen.getByLabelText("No"));
+    fireEvent.click(screen.getByTestId("No"));
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalled();

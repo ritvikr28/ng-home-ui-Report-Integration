@@ -5,6 +5,7 @@ import {
   ReactionButton,
   FormLabel
 } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
@@ -61,6 +62,9 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>("No");
 
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+
   const handleSetIsDetached = async () => {
     // Get detached status
     const response: ISchoolDetailsDRApiResponse | null =
@@ -88,11 +92,11 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   return (
     <>
     <div id='detach-container'>
-      <FormLabel id="default-control-label">
-        Is the SIMS7 database detached?
+      <FormLabel dataTestId="attachDBtitle" id="default-control-label">
+        {t("RefreshDB_T.moduleBlock.attachDB.title")}
       </FormLabel>
-      <FormLabel id="default-label">
-        Please click on Yes to detach
+      <FormLabel dataTestId="attachDBbutton" id="default-label">
+        {t("RefreshDB_T.moduleBlock.attachDB.button")}
       </FormLabel>
       
       <ReactionButtonGroup
@@ -107,8 +111,8 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
           handleSelectionChange(selectedValue as string);
         }}
       >
-        <ReactionButton id="reaction-button" label="Yes" value="Yes" />
-        <ReactionButton id="reaction-button" label="No" value="No" />
+        <ReactionButton dataTestId="Yes" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button2")} value="Yes" />
+        <ReactionButton dataTestId="No" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button3")} value="No" />
       </ReactionButtonGroup>
       </div>
     </>

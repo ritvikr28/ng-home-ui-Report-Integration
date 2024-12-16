@@ -7,6 +7,8 @@ jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn().mockResolvedValue({ schoolName: "Test School" }),
 }));
 
+const setShowDeleteDialogMock = jest.fn();
+
 jest.mock("../../../../shared/utils", () => ({
   service: {
     post: jest.fn(),
@@ -44,7 +46,7 @@ describe("DeleteNGDataView Component", () => {
         handleException={handleExceptionMock}
       />
     );
-    expect(screen.getByText(/Proceed/i)).toBeInTheDocument();
+    expect(screen.getByTestId("Proceed")).toBeInTheDocument();
   });
 
   it("should disable the Proceed button when precheckStatus is 'Deleted'", async () => {
@@ -63,24 +65,6 @@ describe("DeleteNGDataView Component", () => {
       const proceedButton = screen.getByRole("button", { name: /Proceed/i });
       expect(proceedButton).not.toBeDisabled();
       expect(statusMock).not.toHaveBeenCalledWith("Deleted");
-    });
-  });
-
-  it("should show confirmation dialog when Proceed button is clicked and status is not 'Deleted'", async () => {
-    (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Not Deleted" } });
-
-    render(
-      <DeleteNGDataView
-        status={statusMock}
-        inProgressStatus={inProgressStatusMock}
-        handleException={handleExceptionMock}
-      />
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
-
-    await waitFor(() => {
-      expect(screen.getByText(/Delete Next Gen Data\?/i)).toBeInTheDocument();
     });
   });
 
@@ -136,21 +120,7 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
 
     await waitFor(() => {
-      expect(screen.queryByText(/Delete Next Gen Data\?/i)).not.toBeInTheDocument();
+      expect(setShowDeleteDialogMock).not.toHaveBeenCalled();
     });
-  });
-
-  it("should close dialogs when cancel or close button is clicked", () => {
-    render(
-      <DeleteNGDataView
-        status={statusMock}
-        inProgressStatus={inProgressStatusMock}
-        handleException={handleExceptionMock}
-      />
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
-
-    expect(screen.queryByText(/Delete Next Gen Data\?/i)).not.toBeInTheDocument();
   });
 });

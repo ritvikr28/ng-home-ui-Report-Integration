@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { authService } from "@essnextgen/auth-ui";
 import "../style.scss";
 import { AxiosResponse } from "axios";
@@ -134,13 +135,15 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
- 
+
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
 
   return (
     <>
         <div style={{marginTop:'16px'}}>
-          <FormLabel id='sync-body-text'>
-          The data synchronization is expected to be completed within 24 hours.
+          <FormLabel id='sync-body-text' dataTestId="modelSyncComplete">
+            {t("RefreshDB_T.moduleBlock.modal.content3")}
           </FormLabel>
         </div>
         <Button
@@ -164,16 +167,16 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         </Button>
         <ConfirmDialog
           isOpen={showSyncDialog}
-          confirmActionButtonText="Close"
-          title="Data Sync in progress"
+          confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+          title={t("RefreshDB_T.moduleBlock.modal.content2")}
           onCloseHandle={() => setShowSyncDialog(false)}
           onSubmitHandle={() => setShowSyncDialog(false)}
-          description="SIMS7 data is currently syncing with Next Gen database. This process can't be stopped once started."
+          description={t("RefreshDB_T.moduleBlock.modal.content4")}
         />
         <ConfirmDialog
           isOpen={showSyncCompleteDialog}
-          confirmActionButtonText="Close"
-          title="Data Synced successfully"
+          confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+          title={t("RefreshDB_T.moduleBlock.modal.content")}
           onCloseHandle={() => {
             setShowSyncCompleteDialog(false);
             status("Completed"); // Update completion status
@@ -182,15 +185,15 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             setShowSyncCompleteDialog(false);
             status("Completed"); // Update completion status
           }}
-          description="SIMS7 data synced successfully with Next Gen database."
+          description={t("RefreshDB_T.moduleBlock.modal.content5")}
         />
         <ConfirmDialog
           isOpen={showSyncFailedDialog}
-          confirmActionButtonText="Close"
-          title="Data Sync failed"
+          confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+          title={t("RefreshDB_T.moduleBlock.modal.content1")}
           onCloseHandle={() => setShowSyncFailedDialog(false)}
           onSubmitHandle={() => setShowSyncFailedDialog(false)}
-          description="SIMS7 data sync with Next Gen database failed. We apologize for any inconvenience. Please try again."
+          description={t("RefreshDB_T.moduleBlock.modal.content6")}
         />
     </>
   );
