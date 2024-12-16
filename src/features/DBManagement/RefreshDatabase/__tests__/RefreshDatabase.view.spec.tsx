@@ -92,12 +92,9 @@ describe("RefreshDatabaseView Component", () => {
     render(<RefreshDatabaseView />);
   
     // Wait for React updates
-    await act(async () => {});
-  
-    // Assert that NotifyExceptionView is rendered
-    //expect(screen.getByTestId("notify-exception")).toBeInTheDocument();
+    await act(async () => {});  
+    
     expect(screen.getByText("NotifyExceptionView")).toBeInTheDocument();
-
   });
 
   it("calls FetchPreCheckStatus and handles error response", async () => {
