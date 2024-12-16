@@ -39,6 +39,10 @@ describe("RefreshDatabaseView Component", () => {
     jest.clearAllMocks();
   });
 
+  const mockHistory = {
+    push: jest.fn(),
+  };
+
   it("should display loading state initially", async () => {
     render(<RefreshDatabaseView />);
     expect(screen.getByText("Loading...")).toBeInTheDocument();
@@ -63,11 +67,43 @@ describe("RefreshDatabaseView Component", () => {
     });
   });
 
+  it("calls FetchPreCheckStatus and handles success response", async () => {
+    const mockResponse = {
+      data: {
+        statusCode: 200,
+        dbDetachedStatus: "Detached",
+        deleteNGDataStatus: "Deleted",
+        dbReAttachedStatus: "Attached",
+        syncDataStatus: "Completed",
+      },
+    };
+
+    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const handleException = jest.fn();
+    const result = await FetchPreCheckStatus(handleException, mockHistory);
+
+    expect(result).toEqual(mockResponse.data);
+  });
+
   it("should handle exception and show notification panel", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce(new Error("Fetch failed"));
+    (service.get as jest.Mock).mockRejectedValueOnce({ response: { status: 400 } });
+  
     render(<RefreshDatabaseView />);
-    await act(async () => {});
+  
+    // Wait for React updates
+    await act(async () => {});  
+    
     expect(screen.getByText("NotifyExceptionView")).toBeInTheDocument();
+  });
+
+  it("calls FetchPreCheckStatus and handles error response", async () => {
+    (service.get as jest.Mock).mockRejectedValueOnce({ response: { status: 401 } });
+
+    const handleException = jest.fn();
+    await FetchPreCheckStatus(handleException, mockHistory);
+
+    expect(mockHistory.push).toHaveBeenCalledWith("/unauthorized");
   });
 
   it("should correctly execute handleComplete function", () => {
@@ -126,7 +162,7 @@ describe("RefreshDatabaseView Component", () => {
   it("FetchPreCheckStatus returns null on error", async () => {
     const handleExceptionMock = jest.fn();
     jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Fetch failed"));
-    const result = await FetchPreCheckStatus(handleExceptionMock);
+    const result = await FetchPreCheckStatus(handleExceptionMock, mockHistory);
     expect(result).toBeNull();
   });
 
@@ -142,7 +178,7 @@ describe("RefreshDatabaseView Component", () => {
     };
   
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-    const result = await FetchPreCheckStatus(jest.fn());
+    const result = await FetchPreCheckStatus(jest.fn(), mockHistory);
     expect(result).toEqual(mockResponse.data);
   });
 

@@ -3,6 +3,7 @@ import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit"
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
+import { useHistory } from "react-router-dom";
 import RefreshDatabase from "./RefreshDatabase";
 import DetachDatabaseView from "./DetachDatabase.view";
 import DeleteNGDataView from "./DeleteNGData.view";
@@ -22,7 +23,8 @@ interface Item {
 let items: Item[];
 
 export const FetchPreCheckStatus= async (
-  handleException: () => void
+  handleException: () => void,
+  history: ReturnType<typeof useHistory>
 ): Promise<IPrecheckStatusApiResponse | null> => {
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
       const orgName: string = schoolData == null ? "" : schoolData.schoolName;
@@ -35,8 +37,18 @@ export const FetchPreCheckStatus= async (
       );
       return response.data;
     } catch (err: any) {
-      handleException();
-      console.log("Failed to fetch the status");
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          history.push("/unauthorized"); // Use the passed history object
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("API call failed without a response from the server.");
+      }
+    console.log("Failed to fetch the status");
       return null;
     }
   };
@@ -79,6 +91,9 @@ export const handleComplete: (props: IHandleCompleteProps) => string = (
 }
 
 const RefreshDatabaseView: () => JSX.Element = () => {
+
+  const history = useHistory();
+
   const [activeIndex, setActiveIndex]: [
     number,
     React.Dispatch<React.SetStateAction<number>>
@@ -119,7 +134,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     const initializeSteps = async () => {
       try {
         const precheckStatus: IPrecheckStatusApiResponse | null =
-          await FetchPreCheckStatus(handleException);
+          await FetchPreCheckStatus(handleException, history);
 
         if (precheckStatus && precheckStatus.statusCode === 200) {
           const statuses = [
@@ -163,7 +178,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     };
 
     initializeSteps();
-  }, []);
+  }, [history]); // Add history as a dependency
 
   if (loading) {
     return <div>Loading...</div>;
