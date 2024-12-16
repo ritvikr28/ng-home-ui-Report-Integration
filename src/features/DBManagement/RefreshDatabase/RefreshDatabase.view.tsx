@@ -3,6 +3,7 @@ import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit"
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
+import { useHistory } from "react-router-dom";
 import RefreshDatabase from "./RefreshDatabase";
 import DetachDatabaseView from "./DetachDatabase.view";
 import DeleteNGDataView from "./DeleteNGData.view";
@@ -13,7 +14,6 @@ import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
-import { useHistory } from "react-router-dom";
 
 interface Item {
   title: string;
