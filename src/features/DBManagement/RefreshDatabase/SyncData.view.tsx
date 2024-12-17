@@ -16,7 +16,7 @@ export interface SyncDataViewProps {
   status: (value: string) => void;
 }
 export const BUTTON_TEXTS = {
-  loading: "Loading...",
+  loading: "Loading..",
   default: "Proceed",
 };
 // Fetch sync status
