@@ -7,9 +7,9 @@ import {
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
-import { handle401Error } from "../../../shared/utils/errorHandler";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
+import { handle401Error } from "../../../shared/utils/errorHandler";
 import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
