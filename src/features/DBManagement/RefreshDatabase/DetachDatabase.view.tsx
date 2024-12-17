@@ -7,6 +7,7 @@ import {
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
+import { handle401Error } from "../../../shared/utils/errorHandler";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
 import "../style.scss";
@@ -42,9 +43,19 @@ export const FetchIsDetached = async (
         );
       return response.data;
     } catch (err: any) {
-      handleException();
-      console.error("Failed to fetch data");
-      return null;
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
+        return null;
     }
   };
 

@@ -12,6 +12,7 @@ import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { handle401Error } from "../../../shared/utils/errorHandler";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => void;
@@ -49,11 +50,21 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
       );
       return response.data;
-    } catch (error) {
-      console.error("Failed to fetch the status:", error);
-      handleException();
-      return null;
-    }
+    } catch (err: any) {
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
+        return null;
+    }      
   };
 
   const handleButtonClick :() => Promise<void> = async () => {
@@ -113,7 +124,11 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
 
       if (response.data.statusCode === 200) {
         inProgressStatus("In Progress");
-      } else {
+      }
+      else if(response.data.statusCode === 401) {
+        handle401Error(response.data.statusCode);
+      } 
+      else {
         console.error("Unexpected response during deletion:", response.data);
         handleException();
       }

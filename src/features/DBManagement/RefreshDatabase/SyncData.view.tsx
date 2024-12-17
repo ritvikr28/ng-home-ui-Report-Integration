@@ -9,6 +9,7 @@ import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDataba
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
+import { handle401Error } from "../../../shared/utils/errorHandler";
 
 export interface SyncDataViewProps {
   inProgressStatus: (value: string) => void;
@@ -29,9 +30,19 @@ export const FetchSyncStatus = async (handleException: () => void): Promise<ISch
     );
     return response.data;
   } catch (err: any) {
-    handleException();
-    console.log("Failed to fetch the Sync status");
-    return null;
+    if (err.response) {
+      const statusCode = err.response.status;
+      console.log(`API call failed with status code: ${statusCode}`);
+      if (statusCode === 401) {
+        handle401Error(statusCode);
+      } else {
+        handleException();
+      }
+    } else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
+      handleException();
+    }
+      return null;
   }
 };
 
@@ -61,9 +72,19 @@ export const TriggerSync = async(handleException : () => void): Promise<ISchoolD
       );
     return response.data;
   } catch (err: any) {
-    handleException();
-    console.error("Failed to fetch data");
-    return null;
+    if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
+        return null;
   }
 }
 

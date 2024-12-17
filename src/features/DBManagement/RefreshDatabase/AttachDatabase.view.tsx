@@ -13,6 +13,7 @@ import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { handle401Error } from "../../../shared/utils/errorHandler";
 
 export const FetchIsAttached = async (
   handleException: () => void
@@ -42,9 +43,19 @@ export const FetchIsAttached = async (
         );
       return response.data;
     } catch (err: any) {
-      handleException();
-      console.error("Failed to fetch data");
-      return null;
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
+        return null;
     }
   };
 
