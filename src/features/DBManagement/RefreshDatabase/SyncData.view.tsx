@@ -15,9 +15,9 @@ export interface SyncDataViewProps {
   handleException: () => void; 
   status: (value: string) => void;
 }
-const BUTTON_TEXTS = {
-  default: "Sync",
-  loading: "Loading.."
+export const BUTTON_TEXTS = {
+  loading: "Loading...",
+  default: "Proceed",
 };
 // Fetch sync status
 export const FetchSyncStatus = async (handleException: () => void): Promise<ISchoolDetailsDRApiResponse | null> => {

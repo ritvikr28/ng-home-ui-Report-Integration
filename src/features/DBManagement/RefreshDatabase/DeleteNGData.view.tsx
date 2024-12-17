@@ -18,9 +18,9 @@ export interface DeleteNGDataViewProps {
   handleException: () => void;
 }
 
-const BUTTON_TEXTS = {
+export const BUTTON_TEXTS = {
+  loading: "Loading..",
   default: "Proceed",
-  loading: "Loading.."
 };
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   status,
