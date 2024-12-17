@@ -9,6 +9,7 @@ import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit"
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
@@ -42,9 +43,19 @@ export const FetchIsDetached = async (
         );
       return response.data;
     } catch (err: any) {
-      handleException();
-      console.error("Failed to fetch data");
-      return null;
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          errorHandler.handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
+        return null;
     }
   };
 

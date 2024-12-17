@@ -7,6 +7,7 @@ import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
@@ -51,9 +52,19 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
       );
       return response.data;
-    } catch (error) {
-      console.error("Failed to fetch the status:");
-      handleException();
+    } catch (err: any) {
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          errorHandler.handle401Error(statusCode);
+        } else {
+          handleException();
+        }
+      } else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
+      }
       return null;
     }
   };
@@ -127,7 +138,11 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
 
       if (response.data.statusCode === 200) {
         inProgressStatus("In Progress");
-      } else {
+      }
+      else if(response.data.statusCode === 401) {
+        errorHandler.handle401Error(response.data.statusCode);
+      }
+      else {
         console.error("Unexpected response during deletion:", response.data);
         handleException();
       }
@@ -154,7 +169,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
       <ConfirmDialog
         isOpen={showDeleteDialog}
         confirmActionButtonText="Delete"
-        cancelActionButtonText="Close"
+        cancelActionButtonText="Cancel"
         optionalButton={true}
         title="Delete Next Gen Data?"
         onCloseHandle={handleCloseDialog}

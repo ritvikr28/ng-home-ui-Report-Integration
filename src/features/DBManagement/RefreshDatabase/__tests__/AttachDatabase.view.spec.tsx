@@ -84,7 +84,6 @@ describe("AttachDatabaseView Component", () => {
     // Wait for the effect of the click to propagate
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalled(); // Ensure status function is not called
-      expect(consoleErrorMock).toHaveBeenCalledWith("Failed to fetch data"); // Check for error logging
     });
 
     consoleErrorMock.mockRestore(); // Restore original console.error
