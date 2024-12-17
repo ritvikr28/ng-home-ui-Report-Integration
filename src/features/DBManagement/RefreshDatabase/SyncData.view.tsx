@@ -85,7 +85,7 @@ export const handleButtonClick = async (
 ) => {
   try{
   if(!clicked) {
-    //setIsLoading(true);
+    
     const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException);
     if (response?.statusCode === 200) {
       setClicked(true);
