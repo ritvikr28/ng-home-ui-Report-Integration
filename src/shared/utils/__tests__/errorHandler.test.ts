@@ -1,42 +1,53 @@
-import { handle401Error } from "../errorHandler"; // Adjust path as necessary
+import { errorHandler } from "../errorHandler";
 
-describe("handle401Error", () => {
-  let originalLocation: Location;
+describe("ErrorHandler", () => {
+  const originalConsoleError = console.error;
+  const originalWindowLocation = window.location;
 
   beforeAll(() => {
-    // Save the original window.location object
-    originalLocation = window.location;
-    delete (window as any).location; // Delete location to allow mocking
+    // Mock console.error
+    global.console.error = jest.fn();
+
+    // Mock window.location.href
+    delete (window as any).location;
     window.location = { href: "" } as Location;
   });
 
-  afterAll(() => {
-    // Restore the original window.location object
-    window.location = originalLocation;
+  beforeEach(() => {
+    // Clear all mocks before each test
+    jest.clearAllMocks();
+    window.location.href = ""; // Reset window location
   });
 
-  it("should redirect to /unauthorized when status code is 401", () => {
-    const mockConsoleError = jest.spyOn(console, "error").mockImplementation();
+  afterAll(() => {
+    // Restore the original implementations
+    console.error = originalConsoleError;
+    window.location = originalWindowLocation;
+  });
 
-    handle401Error(401);
+  it("should log an error and redirect to /unauthorized when status code is 401", () => {
+    // Arrange
+    const statusCode = 401;
 
-    expect(window.location.href).toBe("/unauthorized");
-    expect(mockConsoleError).toHaveBeenCalledWith(
+    // Act
+    errorHandler.handle401Error(statusCode);
+
+    // Assert
+    expect(console.error).toHaveBeenCalledWith(
       "Unauthorized access detected. Redirecting to /unauthorized..."
     );
-
-    mockConsoleError.mockRestore();
+    expect(window.location.href).toBe("/unauthorized");
   });
 
-  it("should not redirect or log anything for non-401 status codes", () => {
-    const mockConsoleError = jest.spyOn(console, "error").mockImplementation();
-    const initialHref = window.location.href;
+  it("should not redirect or log an error for other status codes", () => {
+    // Arrange
+    const statusCode = 403; // Any status other than 401
 
-    handle401Error(500); // Non-401 status code
+    // Act
+    errorHandler.handle401Error(statusCode);
 
-    expect(window.location.href).toBe(initialHref); // No change to href
-    expect(mockConsoleError).not.toHaveBeenCalled();
-
-    mockConsoleError.mockRestore();
+    // Assert
+    expect(console.error).not.toHaveBeenCalled(); // Verify console.error is not called
+    expect(window.location.href).toBe(""); // Verify no redirection occurs
   });
 });
