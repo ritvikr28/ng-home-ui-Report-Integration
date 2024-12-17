@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
@@ -19,6 +18,10 @@ export interface DeleteNGDataViewProps {
   handleException: () => void;
 }
 
+const BUTTON_TEXTS = {
+  default: "Proceed",
+  loading: "Loading.."
+};
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   status,
   inProgressStatus,
@@ -28,8 +31,6 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
   const [showInProgressDialog, setShowInProgressDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -37,8 +38,13 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   const [isProceedDisabled, setIsProceedDisabled]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);// New state for button disabling
-
+  ] = useState<boolean>(false);
+  // New state for button disabling
+  const [isLoading, setIsLoading]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+ 
   const FetchPreCheckStatus : () => Promise<IPrecheckStatusApiResponse|null> = async () => {
     try {
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
@@ -50,7 +56,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
       );
       return response.data;
     } catch (error) {
-      console.error("Failed to fetch the status:", error);
+      console.error("Failed to fetch the status:");
       handleException();
       return null;
     }
@@ -58,17 +64,23 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
 
   const handleButtonClick :() => Promise<void> = async () => {
     try {
+      setIsLoading(true);
+     
       const precheckStatus :IPrecheckStatusApiResponse|null = await FetchPreCheckStatus();
 
       if (precheckStatus?.deleteNGDataStatus === "In Progress") {
         inProgressStatus("In Progress");
         setShowInProgressDialog(true);
-      } else if (precheckStatus?.deleteNGDataStatus !== "Deleted") {
+       
+      }
+      else if (precheckStatus?.deleteNGDataStatus !== "Deleted") {
         setShowDeleteDialog(true);
         setShowInProgressDialog(false);
+       
       } else if (precheckStatus?.deleteNGDataStatus === "Deleted") {
         setShowDeleteDialog(false);
         setShowInProgressDialog(false);
+        
         setIsProceedDisabled(true); // Disable the button
         status("Deleted");
 
@@ -76,18 +88,24 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         console.warn("Unexpected precheck status:", precheckStatus);
       }
     } catch (error) {
-      console.error("Error while checking status:", error);
+      console.error("Error while checking status");
       handleException();
     }
+    finally {
+      setIsLoading(false);
+    }
+    
   };
 
   const handleCloseDialog :() => void = () => {
     setShowDeleteDialog(false);
     setShowInProgressDialog(false);
+    
   };
 
   const handleDelete :() => Promise<void> = async ()  => {
     try {
+      inProgressStatus("In Progress");
       const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
      // Prepare request data
      const requestData: {
@@ -118,7 +136,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         handleException();
       }
     } catch (error) {
-      console.error("Error during deletion:", error);
+      console.error("Error during deletion");
       handleException();
     } finally {
       handleCloseDialog();
@@ -128,29 +146,28 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   return (
     <div style={{ display: "flex", alignItems: "center", marginTop: "8px" }}>
       <Button
-        dataTestId="Proceed"
         id="btn-proceed"
         className="btn-full-width"
         size={ButtonSize.Small}
         color={ButtonColor.Utility}
         onClick={handleButtonClick}
-        disabled={isProceedDisabled} // Button disabled condition
+        disabled={isProceedDisabled || isLoading} // Button disabled condition
       >
-        Proceed
+       {isLoading ? BUTTON_TEXTS.loading : BUTTON_TEXTS.default}
       </Button>
       <ConfirmDialog
         isOpen={showDeleteDialog}
-        confirmActionButtonText={t("RefreshDB_T.moduleBlock.DeleteNGData.button2")}
-        cancelActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        confirmActionButtonText="Delete"
+        cancelActionButtonText="Close"
         optionalButton={true}
-        title={t("RefreshDB_T.moduleBlock.DeleteNGData.title")}
+        title="Delete Next Gen Data?"
         onCloseHandle={handleCloseDialog}
         onSubmitHandle={handleDelete}
-        description={t("RefreshDB_T.moduleBlock.DeleteNGData.description")}
+        description="Deleting the Next Gen data will clear all records and all related data will be gone forever once deleted."
       />
       <ConfirmDialog
         isOpen={showInProgressDialog}
-        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        confirmActionButtonText="Close"
         title="Deletion of NG Data in Progress"
         onCloseHandle={handleCloseDialog}
         onSubmitHandle={handleCloseDialog}

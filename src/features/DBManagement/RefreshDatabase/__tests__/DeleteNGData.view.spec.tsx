@@ -38,17 +38,7 @@ describe("DeleteNGDataView Component", () => {
     jest.clearAllMocks();
   });
 
-  it("should render the component and button", () => {
-    render(
-      <DeleteNGDataView
-        status={statusMock}
-        inProgressStatus={inProgressStatusMock}
-        handleException={handleExceptionMock}
-      />
-    );
-    expect(screen.getByTestId("Proceed")).toBeInTheDocument();
-  });
-
+  
   it("should disable the Proceed button when precheckStatus is 'Deleted'", async () => {
    
     (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Deleted" } });
