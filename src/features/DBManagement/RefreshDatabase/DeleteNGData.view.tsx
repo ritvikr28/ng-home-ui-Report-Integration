@@ -20,7 +20,7 @@ export interface DeleteNGDataViewProps {
 
 export const BUTTON_TEXTS = {
   loading: "Loading..",
-  default: "Proceed",
+  default: "Proceed"
 };
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   status,
