@@ -10,5 +10,5 @@ export const errorHandler: ErrorHandlerType = {
       );
       window.location.href = "/unauthorized";
     }
-  },
+  }
 };

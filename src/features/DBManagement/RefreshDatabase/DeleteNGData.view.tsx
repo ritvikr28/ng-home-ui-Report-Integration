@@ -169,7 +169,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
       <ConfirmDialog
         isOpen={showDeleteDialog}
         confirmActionButtonText="Delete"
-        cancelActionButtonText="Close"
+        cancelActionButtonText="Cancel"
         optionalButton={true}
         title="Delete Next Gen Data?"
         onCloseHandle={handleCloseDialog}
