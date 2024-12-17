@@ -15,10 +15,7 @@ export interface SyncDataViewProps {
   handleException: () => void; 
   status: (value: string) => void;
 }
-export const BUTTON_TEXTS = {
-  loading: "Loading..",
-  default: "Sync"
-};
+
 // Fetch sync status
 export const FetchSyncStatus = async (handleException: () => void): Promise<ISchoolDetailsDRApiResponse | null> => {
   try {
@@ -185,7 +182,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             )}
           disabled={syncStatus === "Active" || syncStatus === "In Progress"|| isLoading }
         >
-       {isLoading ? BUTTON_TEXTS.loading : BUTTON_TEXTS.default}
+       {isLoading ? "Loading.." : "Sync"}
         </Button>
         <ConfirmDialog
           isOpen={showSyncDialog}

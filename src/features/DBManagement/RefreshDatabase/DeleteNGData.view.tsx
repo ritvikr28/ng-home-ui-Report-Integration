@@ -18,10 +18,6 @@ export interface DeleteNGDataViewProps {
   handleException: () => void;
 }
 
-export const BUTTON_TEXTS = {
-  loading: "Loading..",
-  default: "Proceed"
-};
 const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   status,
   inProgressStatus,
@@ -153,7 +149,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         onClick={handleButtonClick}
         disabled={isProceedDisabled || isLoading} // Button disabled condition
       >
-       {isLoading ? BUTTON_TEXTS.loading : BUTTON_TEXTS.default}
+       {isLoading ? "Loading.." : "Proceed"}
       </Button>
       <ConfirmDialog
         isOpen={showDeleteDialog}
