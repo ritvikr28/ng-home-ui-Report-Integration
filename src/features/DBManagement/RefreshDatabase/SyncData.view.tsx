@@ -76,12 +76,17 @@ export const handleButtonClick = async (
   clicked: boolean,
   setClicked: React.Dispatch<React.SetStateAction<boolean>>, 
   inProgressStatus: (value: string) => void,
-  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+
 ) => {
+  try{
   if(!clicked) {
+    
     const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException);
     if (response?.statusCode === 200) {
       setClicked(true);
+      
       inProgressStatus("In Progress")
     } else {
       handleException();
@@ -91,6 +96,7 @@ export const handleButtonClick = async (
   }
 
   if(clicked) {
+    setIsLoading(true);
     const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException);
     if(response?.statusCode === 200) {
       if (response.uiStatus === "Completed" || response.uiStatus === "Active") {
@@ -108,6 +114,13 @@ export const handleButtonClick = async (
       setShowSyncFailedDialog(true);
     }
   }
+} catch (error) {
+  console.error("Error while checking status:", error);
+  handleException();
+}
+finally {
+  setIsLoading(false);
+}
 };
 
 const SyncDataView: React.FC<SyncDataViewProps> = ({
@@ -135,9 +148,14 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-
+  const [isLoading, setIsLoading]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+ 
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+
 
   return (
     <>
@@ -159,11 +177,12 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             clicked,
             setClicked,
             inProgressStatus,
-            setShowSyncFailedDialog
+            setShowSyncFailedDialog,
+            setIsLoading
             )}
-          disabled={syncStatus === "Active"}
+          disabled={syncStatus === "Active" || syncStatus === "In Progress"|| isLoading }
         >
-          Sync
+       {isLoading ? "Loading.." : "Sync"}
         </Button>
         <ConfirmDialog
           isOpen={showSyncDialog}
@@ -200,3 +219,4 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 };
 
 export default SyncDataView;
+

@@ -31,6 +31,7 @@ describe("SyncDataView Component", () => {
   const mockSetShowSyncFailedDialog = jest.fn();
   const mockSetClicked = jest.fn();
   const mockSetShowSyncDialog = jest.fn();
+  const setIsLoading = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -139,7 +140,8 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog
+      mockSetShowSyncFailedDialog,
+      setIsLoading
       );
 
     render(
@@ -177,7 +179,8 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog
+      mockSetShowSyncFailedDialog,
+      setIsLoading
       );
     render(
       <SyncDataView
@@ -214,7 +217,8 @@ describe("SyncDataView Component", () => {
       true,
       mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog
+      mockSetShowSyncFailedDialog,
+      setIsLoading
       );
     render(
       <SyncDataView
