@@ -12,7 +12,7 @@ import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { handle401Error } from "../../../shared/utils/errorHandler";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => void;
@@ -55,7 +55,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode);
         } else {
           handleException();
         }
@@ -126,7 +126,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         inProgressStatus("In Progress");
       }
       else if(response.data.statusCode === 401) {
-        handle401Error(response.data.statusCode);
+        errorHandler.handle401Error(response.data.statusCode);
       } 
       else {
         console.error("Unexpected response during deletion:", response.data);

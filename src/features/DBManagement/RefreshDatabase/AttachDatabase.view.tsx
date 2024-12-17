@@ -13,7 +13,7 @@ import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { handle401Error } from "../../../shared/utils/errorHandler";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 
 export const FetchIsAttached = async (
   handleException: () => void
@@ -47,7 +47,7 @@ export const FetchIsAttached = async (
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode);
         } else {
           handleException();
         }

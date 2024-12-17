@@ -9,7 +9,7 @@ import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit"
 import { AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
-import { handle401Error } from "../../../shared/utils/errorHandler";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 import "../style.scss";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
@@ -47,7 +47,7 @@ export const FetchIsDetached = async (
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode);
         } else {
           handleException();
         }
