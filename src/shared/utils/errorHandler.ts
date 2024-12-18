@@ -14,5 +14,5 @@ export const errorHandler: ErrorHandlerType = {
       // Redirect using history
       history.replace("/unauthorized");
     }
-  },
+  }
 };
