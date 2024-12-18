@@ -285,9 +285,14 @@ stages:
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
                         az aks get-credentials --resource-group paz-dev-pfm-rg --name paz-dev-pfm-aks --overwrite-existing 2> /dev/null
                         kubelogin convert-kubeconfig -l azurecli
-                        kubectl apply -f deployment.yaml
-                        kubectl rollout restart deployment ng-home-ui -n platform
+                        kubectl apply -f deployment.yaml                        
                       failOnStderr: true
+                  
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-dev-pfm-rg"
+                      clusterName: "paz-dev-pfm-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
   
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
     - stage: qa
@@ -309,7 +314,17 @@ stages:
                     inputs:
                       buildType: 'current'
                       artifactName: 'drop'
-                      targetPath: '$(Pipeline.Workspace)/drop'          
+                      targetPath: '$(Pipeline.Workspace)/drop'     
+
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin     
 
                   - task: replacetokens@5
                     displayName: 'Replace Token in Deployment.YAML'
@@ -326,8 +341,7 @@ stages:
                         enableRecursion: false
                         useLegacyPattern: false
                         enableTelemetry: true
-                
-                    
+                                    
                   - task: Bash@3
                     displayName: 'Kubectl apply'
                     inputs:
@@ -336,10 +350,16 @@ stages:
                         cd $(Pipeline.Workspace)/drop
                         az login --identity
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                        az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks  --admin 2> /dev/null  
-                        kubectl apply -f deployment.yaml
-                        kubectl rollout restart deployment ng-home-ui -n platform
+                        az aks get-credentials --resource-group paz-qa-pfm-rg --name paz-qa-pfm-aks  --admin 2> /dev/null  
+                        kubelogin convert-kubeconfig -l azurecli
+                        kubectl apply -f deployment.yaml                        
                       failOnStderr: true
+                  
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-qa-pfm-rg"
+                      clusterName: "paz-qa-pfm-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
 
         - job: QA_Test
           displayName: Running Automation UI Test cases on qa env
@@ -442,8 +462,13 @@ stages:
                         az login --identity
                         az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
                         az aks get-credentials --resource-group paz-prd-ess-ng-rg --name paz-prd-ess-ng-aks  --admin 2> /dev/null 
-                        kubectl apply -f deployment-live.yaml 
-                        kubectl rollout restart deployment ng-home-ui -n platform
+                        kubectl apply -f deployment-live.yaml                         
+                  
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-prd-ess-ng-rg"
+                      clusterName: "paz-prd-ess-ng-aks"
+                      subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
 
         - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
           parameters:
@@ -514,6 +539,11 @@ stages:
                         az login --identity
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
                         az aks get-credentials --resource-group paz-perf-ess-ng-rg --name paz-perf-ess-ng-aks --admin 2> /dev/null
-                        kubectl apply -f deployment.yaml
-                        kubectl rollout restart deployment ng-home-ui -n platform
+                        kubectl apply -f deployment.yaml                        
                       failOnStderr: true
+                  
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-perf-ess-ng-rg"
+                      clusterName: "paz-perf-ess-ng-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797" 

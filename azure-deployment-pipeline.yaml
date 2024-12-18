@@ -1,0 +1,47 @@
+parameters:
+  - name: rgName
+    type: string
+  - name: clusterName
+    type: string
+  - name: subscription_id
+    type: string
+
+steps:
+  - task: Bash@3
+    displayName: 'Checking Pod Status'
+    inputs:
+      targetType: 'inline'
+      script: |
+        ###############Checking Pod-Status############
+        sleep 120                
+        az login --identity  
+        az account set --subscription ${{ parameters.subscription_id }}                        
+        echo "Deploying on New Environment"
+        az aks get-credentials --resource-group ${{ parameters.rgName }} --name ${{ parameters.clusterName }} 2> /dev/null
+        kubelogin convert-kubeconfig -l azurecli                                                    
+        deployment_name=ng-home-ui
+        ns=platform
+        rs_name=$(kubectl describe deployment $deployment_name -n $ns |grep NewReplicaSet: | awk '{print $2}')
+        desired_count=$(kubectl describe deployment $deployment_name -n $ns |grep desired | awk '{print $2}')
+        echo -e "Desired Pods Count :" $desired_count
+        
+        for i in $(seq $desired_count); do
+            ready_count=$(kubectl get replicaset $rs_name -n $ns  -o=jsonpath='{.status.replicas}')
+        
+            echo -e "Ready Pods Count :" $ready_count
+        
+            if [  "$desired_count" -ne "$ready_count" ]; then
+                echo -e "Waiting for pod's running state"
+                isFailing=true
+                sleep 50
+        
+            else
+                echo -e "Pods are up and running"
+                isFailing=false
+                break
+            fi
+        done
+            if [ $isFailing == "true" ]; then
+              echo -e "Error - either deployment failed or pods taking longer time to get running state." >&2
+            fi
+      failOnStderr: true
