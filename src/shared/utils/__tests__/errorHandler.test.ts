@@ -1,5 +1,5 @@
-import { errorHandler } from "../errorHandler";
 import { createMemoryHistory, History } from "history";
+import { errorHandler } from "../errorHandler";
 
 describe("ErrorHandler", () => {
   let history: History;
