@@ -45,7 +45,12 @@ export const FetchPreCheckStatus= async (
         } else {
           handleException();
         }
-      } else {
+      } 
+      else if (err.message && err.message.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized");
+      } 
+      else {
         console.log("API call failed without a response from the server.");
       }
     console.log("Failed to fetch the status");
@@ -171,7 +176,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           setActiveIndex(activeStep);
         }
       } catch (error) {
-        console.error("Error fetching precheck status:", error);
+        console.log("Error fetching precheck status:");
       } finally {
         setLoading(false);
       }

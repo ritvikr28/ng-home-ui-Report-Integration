@@ -1,4 +1,5 @@
 import React, { SyntheticEvent, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   ButtonSize,
   ReactionButtonGroup,
@@ -16,7 +17,8 @@ import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/sc
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
 export const FetchIsDetached = async (
-  handleException: () => void
+  handleException: () => void,
+  history: ReturnType<typeof useHistory> // Accept history to handle redirects
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
     try {
       const schoolData: ISchoolNameDataResponse | null =
@@ -47,11 +49,16 @@ export const FetchIsDetached = async (
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          errorHandler.handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode, history);
         } else {
           handleException();
         }
-      } else {
+      } 
+      else if (err.message && err.message.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized");
+      }
+      else {
         console.log("Failed to fetch data, API call failed without a response from the server.");
         handleException();
       }
@@ -76,10 +83,12 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
+  const history = useHistory(); // Initialize useHistory
+    
   const handleSetIsDetached = async () => {
     // Get detached status
     const response: ISchoolDetailsDRApiResponse | null =
-      await FetchIsDetached(handleException);
+      await FetchIsDetached(handleException, history);
 
       if (response != null) {
         if (response.statusCode === 200) {
