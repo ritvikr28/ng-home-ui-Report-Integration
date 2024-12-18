@@ -1,10 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import SyncDataView, { FetchSyncStatus, TriggerSync, handleButtonClick } from "../SyncData.view";
 import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
-import { createMemoryHistory } from "history";
-import { Router } from "react-router-dom";
+
 
 // Mocking modules
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
@@ -44,7 +44,7 @@ describe("SyncDataView Component", () => {
 
   it("should call FetchSyncStatus with history and handle success response", async () => {
     const mockResponse = { statusCode: 200, uiStatus: "Completed" };
-    require("../../../../shared/utils").service.get.mockResolvedValueOnce({
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: mockResponse,
     });
 
@@ -55,7 +55,7 @@ describe("SyncDataView Component", () => {
   });
 
   it("should redirect to unauthorized page when FetchSyncStatus gets 401", async () => {
-    require("../../../../shared/utils").service.get.mockRejectedValueOnce({
+    (service.get as jest.Mock).mockRejectedValueOnce({
       response: { status: 401 },
     });
 
@@ -66,7 +66,7 @@ describe("SyncDataView Component", () => {
 
   it("should call TriggerSync and handle success response", async () => {
     const mockResponse = { statusCode: 200 };
-    require("../../../../shared/utils").service.post.mockResolvedValueOnce({
+    (service.post as jest.Mock).mockResolvedValueOnce({
       data: mockResponse,
     });
 
@@ -77,7 +77,7 @@ describe("SyncDataView Component", () => {
   });
 
   it("should redirect to unauthorized page when TriggerSync gets 401", async () => {
-    require("../../../../shared/utils").service.post.mockRejectedValueOnce({
+    (service.post as jest.Mock).mockRejectedValueOnce({
       response: { status: 401 },
     });
 

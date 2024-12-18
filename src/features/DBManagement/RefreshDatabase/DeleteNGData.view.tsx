@@ -3,7 +3,6 @@ import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
-import { errorHandler } from "../../../shared/utils/errorHandler";
 import { authService } from "@essnextgen/auth-ui";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
@@ -13,6 +12,7 @@ import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
 } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 
 export interface DeleteNGDataViewProps {
   status: (value: string) => void;

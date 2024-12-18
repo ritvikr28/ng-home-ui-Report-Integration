@@ -4,13 +4,13 @@
   import { authService } from "@essnextgen/auth-ui";
   import "../style.scss";
   import { AxiosResponse } from "axios";
+  import { useHistory } from "react-router-dom";
   import ConfirmDialog from "./ConfirmationDialog.logic";
   import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
   import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
   import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
   import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
   import { errorHandler } from "../../../shared/utils/errorHandler";
-  import { useHistory } from "react-router-dom";
 
   export interface SyncDataViewProps {
     inProgressStatus: (value: string) => void;
