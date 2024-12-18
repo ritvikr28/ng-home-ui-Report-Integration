@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
+import { useHistory } from "react-router-dom";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 import { authService } from "@essnextgen/auth-ui";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-import { errorHandler } from "../../../shared/utils/errorHandler";
 import {
   IPrecheckStatusApiResponse,
   IProcessNGDeletionApiResponse
@@ -24,6 +25,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   inProgressStatus,
   handleException
 }) => {
+  const history = useHistory(); // Initialize history
   const [showDeleteDialog, setShowDeleteDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -57,11 +59,14 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          errorHandler.handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode, history); // Pass history here
         } else {
           handleException();
         }
-      } else {
+      } else if (err.message?.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized"); // Handle invalid token
+      }  else {
         console.log("Failed to fetch data, API call failed without a response from the server.");
         handleException();
       }
@@ -95,7 +100,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         console.warn("Unexpected precheck status:", precheckStatus);
       }
     } catch (error) {
-      console.error("Error while checking status");
+      console.log("Error while checking status");
       handleException();
     }
     finally {
@@ -138,16 +143,16 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
 
       if (response.data.statusCode === 200) {
         inProgressStatus("In Progress");
-      }
-      else if(response.data.statusCode === 401) {
-        errorHandler.handle401Error(response.data.statusCode);
+      } else if (response.data.statusCode === 401) {
+        errorHandler.handle401Error(response.data.statusCode, history); // Pass history
       }
       else {
-        console.error("Unexpected response during deletion:", response.data);
+        console.log("Unexpected response during deletion:", response.data);
+        history.replace("/unauthorized"); // Handle invalid token
         handleException();
       }
     } catch (error) {
-      console.error("Error during deletion");
+      console.log("Error during deletion");
       handleException();
     } finally {
       handleCloseDialog();

@@ -1,8 +1,10 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SyncDataView, { FetchSyncStatus, handleButtonClick } from "../SyncData.view";
+import SyncDataView, { FetchSyncStatus, TriggerSync, handleButtonClick } from "../SyncData.view";
 import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
+import { createMemoryHistory } from "history";
+import { Router } from "react-router-dom";
 
 // Mocking modules
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
@@ -21,6 +23,7 @@ jest.mock("../../../../shared/utils", () => ({
 }));
 
 describe("SyncDataView Component", () => {
+  let history: ReturnType<typeof createMemoryHistory>;
   const handleExceptionMock = jest.fn();
   const inProgressStatusMock = jest.fn();
   const statusMock = jest.fn();
@@ -34,8 +37,55 @@ describe("SyncDataView Component", () => {
   const setIsLoading = jest.fn();
 
   beforeEach(() => {
+    history = createMemoryHistory();
+    history.replace = jest.fn();
     jest.clearAllMocks();
   });
+
+  it("should call FetchSyncStatus with history and handle success response", async () => {
+    const mockResponse = { statusCode: 200, uiStatus: "Completed" };
+    require("../../../../shared/utils").service.get.mockResolvedValueOnce({
+      data: mockResponse,
+    });
+
+    const result = await FetchSyncStatus(mockHandleException, history);
+
+    expect(result).toEqual(mockResponse);
+    expect(history.replace).not.toHaveBeenCalled();
+  });
+
+  it("should redirect to unauthorized page when FetchSyncStatus gets 401", async () => {
+    require("../../../../shared/utils").service.get.mockRejectedValueOnce({
+      response: { status: 401 },
+    });
+
+    await FetchSyncStatus(mockHandleException, history);
+
+    expect(history.replace).toHaveBeenCalledWith("/unauthorized");
+  });
+
+  it("should call TriggerSync and handle success response", async () => {
+    const mockResponse = { statusCode: 200 };
+    require("../../../../shared/utils").service.post.mockResolvedValueOnce({
+      data: mockResponse,
+    });
+
+    const result = await TriggerSync(mockHandleException, history);
+
+    expect(result).toEqual(mockResponse);
+    expect(history.replace).not.toHaveBeenCalled();
+  });
+
+  it("should redirect to unauthorized page when TriggerSync gets 401", async () => {
+    require("../../../../shared/utils").service.post.mockRejectedValueOnce({
+      response: { status: 401 },
+    });
+
+    await TriggerSync(mockHandleException, history);
+
+    expect(history.replace).toHaveBeenCalledWith("/unauthorized");
+  });
+
 
   it("should render the component and sync button", () => {
     render(
@@ -107,7 +157,7 @@ describe("SyncDataView Component", () => {
       data: mockResponse,
     });
 
-    const response = await FetchSyncStatus(handleExceptionMock);
+    const response = await FetchSyncStatus(handleExceptionMock, history);
     expect(response).toEqual(mockResponse);
     expect(handleExceptionMock).not.toHaveBeenCalled();
   });
@@ -115,7 +165,7 @@ describe("SyncDataView Component", () => {
   it("should return null if FetchSyncStatus fails", async () => {
     (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
 
-    const response = await FetchSyncStatus(handleExceptionMock);
+    const response = await FetchSyncStatus(handleExceptionMock, history);
     expect(response).toBeNull();
     expect(handleExceptionMock).toHaveBeenCalled();
   });
@@ -141,7 +191,8 @@ describe("SyncDataView Component", () => {
       mockSetClicked,
       inProgressStatus,
       mockSetShowSyncFailedDialog,
-      setIsLoading
+      setIsLoading,
+      history
       );
 
     render(
@@ -180,7 +231,8 @@ describe("SyncDataView Component", () => {
       mockSetClicked,
       inProgressStatus,
       mockSetShowSyncFailedDialog,
-      setIsLoading
+      setIsLoading,
+      history
       );
     render(
       <SyncDataView
@@ -218,7 +270,8 @@ describe("SyncDataView Component", () => {
       mockSetClicked,
       inProgressStatus,
       mockSetShowSyncFailedDialog,
-      setIsLoading
+      setIsLoading,
+      history
       );
     render(
       <SyncDataView

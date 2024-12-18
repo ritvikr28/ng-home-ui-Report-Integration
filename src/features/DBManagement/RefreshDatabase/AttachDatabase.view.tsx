@@ -7,6 +7,7 @@ import {
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
+import { useHistory } from "react-router-dom"; 
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
 import "../style.scss";
@@ -16,7 +17,8 @@ import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDataba
 import { errorHandler } from "../../../shared/utils/errorHandler";
 
 export const FetchIsAttached = async (
-  handleException: () => void
+  handleException: () => void,
+  history: ReturnType<typeof useHistory> // Accept history to handle redirects
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
     try {
       const schoolData: ISchoolNameDataResponse | null =
@@ -47,11 +49,16 @@ export const FetchIsAttached = async (
         const statusCode = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
-          errorHandler.handle401Error(statusCode);
+          errorHandler.handle401Error(statusCode, history);
         } else {
           handleException();
         }
-      } else {
+      } 
+      else if (err.message && err.message.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized");
+      }
+      else {
         console.log("Failed to fetch data, API call failed without a response from the server.");
         handleException();
       }
@@ -75,11 +82,14 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
 
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+  
+    const history = useHistory(); // Initialize useHistory
+
 
   const handleSetIsAttached = async () => {
     // Get Re-attached status
     const response: ISchoolDetailsDRApiResponse | null =
-      await FetchIsAttached(handleException);
+      await FetchIsAttached(handleException, history);
 
       if (response != null) {
         if (response.statusCode === 200) {

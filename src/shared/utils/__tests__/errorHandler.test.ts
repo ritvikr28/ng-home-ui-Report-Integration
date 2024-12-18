@@ -1,53 +1,55 @@
 import { errorHandler } from "../errorHandler";
+import { createMemoryHistory, History } from "history";
 
 describe("ErrorHandler", () => {
-  const originalConsoleError = console.error;
-  const originalWindowLocation = window.location;
-
-  beforeAll(() => {
-    // Mock console.error
-    global.console.error = jest.fn();
-
-    // Mock window.location.href
-    delete (window as any).location;
-    window.location = { href: "" } as Location;
-  });
+  let history: History;
 
   beforeEach(() => {
-    // Clear all mocks before each test
+    // Create a mock history object
+    history = createMemoryHistory();
+    jest.spyOn(history, "replace"); // Spy on history.replace
+    jest.spyOn(console, "log").mockImplementation(() => {}); // Mock console.log
+  });
+
+  afterEach(() => {
     jest.clearAllMocks();
-    window.location.href = ""; // Reset window location
   });
 
-  afterAll(() => {
-    // Restore the original implementations
-    console.error = originalConsoleError;
-    window.location = originalWindowLocation;
-  });
-
-  it("should log an error and redirect to /unauthorized when status code is 401", () => {
+  it("should redirect to '/unauthorized' when status code is 401", () => {
     // Arrange
     const statusCode = 401;
 
     // Act
-    errorHandler.handle401Error(statusCode);
+    errorHandler.handle401Error(statusCode, history);
 
     // Assert
-    expect(console.error).toHaveBeenCalledWith(
+    expect(console.log).toHaveBeenCalledWith(
       "Unauthorized access detected. Redirecting to /unauthorized..."
     );
-    expect(window.location.href).toBe("/unauthorized");
+    expect(history.replace).toHaveBeenCalledWith("/unauthorized");
   });
 
-  it("should not redirect or log an error for other status codes", () => {
+  it("should not redirect when status code is not 401", () => {
     // Arrange
-    const statusCode = 403; // Any status other than 401
+    const statusCode = 403;
 
     // Act
-    errorHandler.handle401Error(statusCode);
+    errorHandler.handle401Error(statusCode, history);
 
     // Assert
-    expect(console.error).not.toHaveBeenCalled(); // Verify console.error is not called
-    expect(window.location.href).toBe(""); // Verify no redirection occurs
+    expect(console.log).not.toHaveBeenCalled();
+    expect(history.replace).not.toHaveBeenCalled();
+  });
+
+  it("should handle history.replace being called only once for status code 401", () => {
+    // Arrange
+    const statusCode = 401;
+
+    // Act
+    errorHandler.handle401Error(statusCode, history);
+
+    // Assert
+    expect(history.replace).toHaveBeenCalledTimes(1);
+    expect(history.replace).toHaveBeenCalledWith("/unauthorized");
   });
 });
