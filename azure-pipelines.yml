@@ -350,15 +350,15 @@ stages:
                         cd $(Pipeline.Workspace)/drop
                         az login --identity
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                        az aks get-credentials --resource-group paz-qa-pfm-rg --name paz-qa-pfm-aks  --admin 2> /dev/null  
+                        az aks get-credentials --resource-group paz-qa-ess-ng-rg --name paz-qa-ess-ng-aks  --admin 2> /dev/null                          
                         kubelogin convert-kubeconfig -l azurecli
                         kubectl apply -f deployment.yaml                        
                       failOnStderr: true
                   
                   - template: azure-deployment-pipeline.yaml
                     parameters:
-                      rgName: "paz-qa-pfm-rg"
-                      clusterName: "paz-qa-pfm-aks"
+                      rgName: "paz-qa-ess-ng-rg"
+                      clusterName: "paz-qa-ess-ng-aks"
                       subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
 
         - job: QA_Test
