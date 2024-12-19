@@ -17,6 +17,7 @@ declare global {
     INVITE_STAFF_URL:string;
     HOME_UI_BASEURL:string;
     SEATING_PLAN_CLASS_VIEW_URL: string;
+    REFRESH_INTERVAL:number;
   }
 }
 
@@ -60,6 +61,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.INVITE_STAFF_URL=configData.INVITE_STAFF_URL;
     window.HOME_UI_BASEURL=configData.HOME_UI_BASEURL;
     window.SEATING_PLAN_CLASS_VIEW_URL=configData.SEATING_PLAN_CLASS_VIEW_URL;
+    window.REFRESH_INTERVAL=configData.REFRESH_INTERVAL;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
@@ -74,7 +76,8 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       APPLICATION:window.APPLICATION,
       INVITE_STAFF_URL:window.INVITE_STAFF_URL,
       HOME_UI_BASEURL:window.HOME_UI_BASEURL,
-      SEATING_PLAN_CLASS_VIEW_URL:window.SEATING_PLAN_CLASS_VIEW_URL
+      SEATING_PLAN_CLASS_VIEW_URL:window.SEATING_PLAN_CLASS_VIEW_URL,
+      REFRESH_INTERVAL:window.REFRESH_INTERVAL
     });
   } catch (ex) {
     console.log(ex);

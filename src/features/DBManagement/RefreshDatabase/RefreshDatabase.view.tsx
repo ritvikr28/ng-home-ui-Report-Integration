@@ -181,9 +181,16 @@ const RefreshDatabaseView: () => JSX.Element = () => {
         setLoading(false);
       }
     };
-
-    initializeSteps();
+     // Initial fetch
+     initializeSteps();
+    // Set up interval for auto-refresh
+    const intervalId = setInterval(() => {
+      initializeSteps();
+    }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
+  
+    return () => clearInterval(intervalId);
   }, [history]); // Add history as a dependency
+  
 
   if (loading) {
     return <div>Loading...</div>;

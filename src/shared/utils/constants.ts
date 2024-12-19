@@ -14,7 +14,8 @@ export const envConfig: any = {
   APPLICATION:(window as any).APPLICATION,
   INVITE_STAFF_URL:(window as any).INVITE_STAFF_URL,
   HOME_UI_BASEURL:(window as any).HOME_UI_BASEURL,
-  SEATING_PLAN_CLASS_VIEW_URL: (window as any).SEATING_PLAN_CLASS_VIEW_URL
+  SEATING_PLAN_CLASS_VIEW_URL: (window as any).SEATING_PLAN_CLASS_VIEW_URL,
+  REFRESH_INTERVAL: (window as any).REFRESH_INTERVAL
 };
 
 export const UpdateEnvConfig:any = ({
@@ -30,7 +31,8 @@ export const UpdateEnvConfig:any = ({
   APPLICATION,
   INVITE_STAFF_URL,
   HOME_UI_BASEURL,
-  SEATING_PLAN_CLASS_VIEW_URL
+  SEATING_PLAN_CLASS_VIEW_URL,
+  REFRESH_INTERVAL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -45,4 +47,5 @@ export const UpdateEnvConfig:any = ({
   envConfig.INVITE_STAFF_URL=INVITE_STAFF_URL;
   envConfig.HOME_UI_BASEURL=HOME_UI_BASEURL;
   envConfig.SEATING_PLAN_CLASS_VIEW_URL=SEATING_PLAN_CLASS_VIEW_URL;
+  envConfig.REFRESH_INTERVAL = REFRESH_INTERVAL;
 };
