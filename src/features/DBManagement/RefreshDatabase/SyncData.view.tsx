@@ -229,6 +229,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 
       return () => clearInterval(intervalId);
     }
+    return undefined;
   }, [syncStatus, history, handleException]);
   return (
     <>
