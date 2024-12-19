@@ -225,7 +225,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     if (syncStatus === "In Progress") {
       const intervalId = setInterval(() => {
         initializeSteps();
-      }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
+      }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
 
       return () => clearInterval(intervalId);
     }

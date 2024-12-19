@@ -186,7 +186,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     // Set up interval for auto-refresh
     const intervalId = setInterval(() => {
       initializeSteps();
-    }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
+    }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
   
     return () => clearInterval(intervalId);
   }, [history]); // Add history as a dependency
