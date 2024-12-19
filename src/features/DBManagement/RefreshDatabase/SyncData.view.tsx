@@ -199,17 +199,26 @@
     const { t }: UseTranslationResponse<"translation", undefined> =
       useTranslation();
       
-      const initializeSteps = async () => {
-        const response = await FetchSyncStatus(handleException,history);
-        if (response?.uiStatus === "Completed") {
-          setSyncStatus("Completed");
-          setShowSyncCompleteDialog(true);
-        } else if (response?.uiStatus === "Error") {
-          setSyncStatus("Error");
-          setShowSyncFailedDialog(true);
-        } else {
-          setSyncStatus("In Progress");
+      const initializeSteps = async (): Promise<void> => {
+        try {
+          const response = await FetchSyncStatus(handleException, history);
+
+          if (response?.uiStatus === "Completed") {
+            setSyncStatus("Completed");
+            setShowSyncCompleteDialog(true);
+          } else if (response?.uiStatus === "Error") {
+            setSyncStatus("Error");
+            setShowSyncFailedDialog(true);
+          } else if (response?.uiStatus === "In Progress") {
+            setSyncStatus("In Progress");
+          } else {
+            console.log("Unexpected status or null response");
+          }
+        } catch (error) {
+          console.log("Error initializing steps:");
+          handleException();
         }
+        return;
       };
     
       // Auto-refresh logic
