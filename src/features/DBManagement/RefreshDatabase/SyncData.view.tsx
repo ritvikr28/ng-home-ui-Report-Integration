@@ -221,6 +221,7 @@
     
           return () => clearInterval(intervalId);
         }
+        return undefined;
       }, [syncStatus,history,handleException]);
     return (
       <>
