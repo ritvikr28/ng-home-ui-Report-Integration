@@ -1,4 +1,4 @@
-  import React, { useState } from "react";
+  import React, { useEffect, useState } from "react";
   import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
   import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
   import { authService } from "@essnextgen/auth-ui";
@@ -121,6 +121,7 @@
 
   ) => {
     try{
+      setSyncStatus("In Progress");
     if(!clicked) {
       
       const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
@@ -136,6 +137,7 @@
     }
 
     if(clicked) {
+      setSyncStatus("In Progress");
       setIsLoading(true);
       const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if(response?.statusCode === 200) {
@@ -197,7 +199,29 @@
     const { t }: UseTranslationResponse<"translation", undefined> =
       useTranslation();
       
-
+      const initializeSteps = async () => {
+        const response = await FetchSyncStatus(handleException,history);
+        if (response?.uiStatus === "Completed") {
+          setSyncStatus("Completed");
+          setShowSyncCompleteDialog(true);
+        } else if (response?.uiStatus === "Error") {
+          setSyncStatus("Error");
+          setShowSyncFailedDialog(true);
+        } else {
+          setSyncStatus("In Progress");
+        }
+      };
+    
+      // Auto-refresh logic
+      useEffect(() => {
+        if (syncStatus === "In Progress") {
+          const intervalId = setInterval(() => {
+            initializeSteps();
+          }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
+    
+          return () => clearInterval(intervalId);
+        }
+      }, [syncStatus]);
     return (
       <>
           <div style={{marginTop:'16px'}}>

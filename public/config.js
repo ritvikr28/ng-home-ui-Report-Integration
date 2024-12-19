@@ -15,3 +15,4 @@ window.LEARNER_UI_URL="https://dev.learners.sims.co.uk";
 window.LEARNER_API_URL="https://apisql-dev.learners.sims.co.uk/api/v1";
 window.INVITE_STAFF_URL = "https://dev.home.sims.co.uk/registers/admin";
 window.HOME_UI_BASEURL = "https://dev.home.sims.co.uk/home";
+window.REFRESH_INTERVAL = 10000; 
