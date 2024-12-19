@@ -221,7 +221,7 @@
     
           return () => clearInterval(intervalId);
         }
-      }, [syncStatus]);
+      }, [syncStatus,history,handleException]);
     return (
       <>
           <div style={{marginTop:'16px'}}>
