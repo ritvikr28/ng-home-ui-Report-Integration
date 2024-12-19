@@ -1,133 +1,133 @@
-  import React, { useEffect, useState } from "react";
-  import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
-  import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
-  import { authService } from "@essnextgen/auth-ui";
-  import "../style.scss";
-  import { AxiosResponse } from "axios";
-  import { useHistory } from "react-router-dom";
-  import ConfirmDialog from "./ConfirmationDialog.logic";
-  import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
-  import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
-  import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
-  import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-  import { errorHandler } from "../../../shared/utils/errorHandler";
+import React, { useEffect, useState } from "react";
+import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+import { authService } from "@essnextgen/auth-ui";
+import "../style.scss";
+import { AxiosResponse } from "axios";
+import { useHistory } from "react-router-dom";
+import ConfirmDialog from "./ConfirmationDialog.logic";
+import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
+import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
+import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
+import { errorHandler } from "../../../shared/utils/errorHandler";
 
-  export interface SyncDataViewProps {
-    inProgressStatus: (value: string) => void;
-    handleException: () => void; 
-    status: (value: string) => void;
-  }
+export interface SyncDataViewProps {
+  inProgressStatus: (value: string) => void;
+  handleException: () => void;
+  status: (value: string) => void;
+}
 
-  // Fetch sync status
-  export const FetchSyncStatus = async (
-    handleException: () => void,
-    history: ReturnType<typeof useHistory>
-  ): Promise<ISchoolDetailsDRApiResponse | null> => {
-    try {
-      const schoolData: ISchoolNameDataResponse | null =
-          await useFetchSchoolNameData();
-      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-      const orgId = getUserOrganisation();
+// Fetch sync status
+export const FetchSyncStatus = async (
+  handleException: () => void,
+  history: ReturnType<typeof useHistory>
+): Promise<ISchoolDetailsDRApiResponse | null> => {
+  try {
+    const schoolData: ISchoolNameDataResponse | null =
+      await useFetchSchoolNameData();
+    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+    const orgId = getUserOrganisation();
 
-      const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
-          `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
-      );
-      return response.data;
-    } catch (err: any) {
-      if (err.response) {
-        const statusCode = err.response.status;
-        console.log(`API call failed with status code: ${statusCode}`);
-        if (statusCode === 401) {
-          errorHandler.handle401Error(statusCode, history);
-        } else {
-          handleException();
-        }
-      } 
-      else if (err.message && err.message.includes("Invalid token")) {
-        console.log("Invalid token detected. Redirecting...");
-        history.replace("/unauthorized");
-      }
-      else {
-        console.log("Failed to fetch data, API call failed without a response from the server.");
+    const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
+      `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
+    );
+    return response.data;
+  } catch (err: any) {
+    if (err.response) {
+      const statusCode = err.response.status;
+      console.log(`API call failed with status code: ${statusCode}`);
+      if (statusCode === 401) {
+        errorHandler.handle401Error(statusCode, history);
+      } else {
         handleException();
       }
-        return null;
     }
-  };
-
-  export const TriggerSync = async (
-    handleException: () => void,
-    history: ReturnType<typeof useHistory>
-  ): Promise<ISchoolDetailsDRApiResponse | null> => {
-    try {
-      const schoolData: ISchoolNameDataResponse | null =
-        await useFetchSchoolNameData();
-      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-
-      const requestData: {
-        operationIndicator: string;
-        orgId: string;
-        orgName: string;
-        tableFlagValue: string;
-        actorName: string;
-      } = {
-        operationIndicator: "S",
-        orgId: getUserOrganisation(),
-        orgName,
-        tableFlagValue: "Y",
-        actorName: authService.getUsername()
-      };
-      const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
-        await service.post(
-          `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
-          requestData
-        );
-      return response.data;
-    } catch (err: any) {
-      if (err.response) {
-          const statusCode = err.response.status;
-          console.log(`API call failed with status code: ${statusCode}`);
-          if (statusCode === 401) {
-            errorHandler.handle401Error(statusCode, history);
-          } else {
-            handleException();
-          }
-        }
-        else if (err.message && err.message.includes("Invalid token")) {
-          console.log("Invalid token detected. Redirecting...");
-          history.replace("/unauthorized");
-        }
-        else {
-          console.log("Failed to fetch data, API call failed without a response from the server.");
-          handleException();
-        }
-          return null;
+    else if (err.message && err.message.includes("Invalid token")) {
+      console.log("Invalid token detected. Redirecting...");
+      history.replace("/unauthorized");
     }
+    else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
+      handleException();
+    }
+    return null;
   }
+};
 
-  // Handle button click
-  export const handleButtonClick = async (
-    handleException: () => void, 
-    setSyncStatus: React.Dispatch<React.SetStateAction<string>>, 
-    setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>, 
-    setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>, 
-    clicked: boolean,
-    setClicked: React.Dispatch<React.SetStateAction<boolean>>, 
-    inProgressStatus: (value: string) => void,
-    setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
-    setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-    history: ReturnType<typeof useHistory> // Pass the history object
+export const TriggerSync = async (
+  handleException: () => void,
+  history: ReturnType<typeof useHistory>
+): Promise<ISchoolDetailsDRApiResponse | null> => {
+  try {
+    const schoolData: ISchoolNameDataResponse | null =
+      await useFetchSchoolNameData();
+    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+
+    const requestData: {
+      operationIndicator: string;
+      orgId: string;
+      orgName: string;
+      tableFlagValue: string;
+      actorName: string;
+    } = {
+      operationIndicator: "S",
+      orgId: getUserOrganisation(),
+      orgName,
+      tableFlagValue: "Y",
+      actorName: authService.getUsername()
+    };
+    const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
+      await service.post(
+        `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
+        requestData
+      );
+    return response.data;
+  } catch (err: any) {
+    if (err.response) {
+      const statusCode = err.response.status;
+      console.log(`API call failed with status code: ${statusCode}`);
+      if (statusCode === 401) {
+        errorHandler.handle401Error(statusCode, history);
+      } else {
+        handleException();
+      }
+    }
+    else if (err.message && err.message.includes("Invalid token")) {
+      console.log("Invalid token detected. Redirecting...");
+      history.replace("/unauthorized");
+    }
+    else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
+      handleException();
+    }
+    return null;
+  }
+}
+
+// Handle button click
+export const handleButtonClick = async (
+  handleException: () => void,
+  setSyncStatus: React.Dispatch<React.SetStateAction<string>>,
+  setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  clicked: boolean,
+  setClicked: React.Dispatch<React.SetStateAction<boolean>>,
+  inProgressStatus: (value: string) => void,
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  history: ReturnType<typeof useHistory> // Pass the history object
 
 
-  ) => {
-    try{
-      setSyncStatus("In Progress");
-    if(!clicked) {
-      
+) => {
+  try {
+    setSyncStatus("In Progress");
+    if (!clicked) {
+
       const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
       if (response?.statusCode === 200) {
         setClicked(true);
-        
+
         inProgressStatus("In Progress")
       } else {
         handleException();
@@ -136,11 +136,11 @@
       }
     }
 
-    if(clicked) {
+    if (clicked) {
       setSyncStatus("In Progress");
       setIsLoading(true);
       const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
-      if(response?.statusCode === 200) {
+      if (response?.statusCode === 200) {
         if (response.uiStatus === "Completed" || response.uiStatus === "Active") {
           setShowSyncCompleteDialog(true);
           setSyncStatus("Completed");
@@ -163,134 +163,133 @@
   finally {
     setIsLoading(false);
   }
+};
+
+const SyncDataView: React.FC<SyncDataViewProps> = ({
+  inProgressStatus,
+  handleException,
+  status
+}) => {
+  const history = useHistory(); // Initialize history
+  const [syncStatus, setSyncStatus]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("Not Started");
+  const [showSyncDialog, setShowSyncDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [showSyncCompleteDialog, setShowSyncCompleteDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [showSyncFailedDialog, setShowSyncFailedDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [clicked, setClicked]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [isLoading, setIsLoading]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+
+  const initializeSteps = async (): Promise<void> => {
+    try {
+      const response = await FetchSyncStatus(handleException, history);
+
+      if (response?.uiStatus === "Completed") {
+        setSyncStatus("Completed");
+        setShowSyncCompleteDialog(true);
+      } else if (response?.uiStatus === "Error") {
+        setSyncStatus("Error");
+        setShowSyncFailedDialog(true);
+      } else if (response?.uiStatus === "In Progress") {
+        setSyncStatus("In Progress");
+      } else {
+        console.log("Unexpected status or null response");
+      }
+    } catch (error) {
+      console.log("Error initializing steps:");
+      handleException();
+    }
   };
 
-  const SyncDataView: React.FC<SyncDataViewProps> = ({
-    inProgressStatus,
-    handleException,
-    status
-  }) => {
-    const history = useHistory(); // Initialize history
-    const [syncStatus, setSyncStatus]: [
-      string,
-      React.Dispatch<React.SetStateAction<string>>
-    ] = useState<string>("Not Started");
-    const [showSyncDialog, setShowSyncDialog]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
-    const [showSyncCompleteDialog, setShowSyncCompleteDialog]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
-    const [showSyncFailedDialog, setShowSyncFailedDialog]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
-    const [clicked, setClicked]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
-    const [isLoading, setIsLoading]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
-  
-    const { t }: UseTranslationResponse<"translation", undefined> =
-      useTranslation();
-      
-      const initializeSteps = async (): Promise<void> => {
-        try {
-          const response = await FetchSyncStatus(handleException, history);
+  // Auto-refresh logic
+  useEffect(() => {
+    if (syncStatus === "In Progress") {
+      const intervalId = setInterval(() => {
+        initializeSteps();
+      }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
 
-          if (response?.uiStatus === "Completed") {
-            setSyncStatus("Completed");
-            setShowSyncCompleteDialog(true);
-          } else if (response?.uiStatus === "Error") {
-            setSyncStatus("Error");
-            setShowSyncFailedDialog(true);
-          } else if (response?.uiStatus === "In Progress") {
-            setSyncStatus("In Progress");
-          } else {
-            console.log("Unexpected status or null response");
-          }
-        } catch (error) {
-          console.log("Error initializing steps:");
-          handleException();
-        }
-        return;
-      };
-    
-      // Auto-refresh logic
-      useEffect(() => {
-        if (syncStatus === "In Progress") {
-          const intervalId = setInterval(() => {
-            initializeSteps();
-          }, window.REFRESH_INTERVAL); // Refresh every 10 seconds
-    
-          return () => clearInterval(intervalId);
-        }
-      }, [syncStatus,history,handleException]);
-    return (
-      <>
-          <div style={{marginTop:'16px'}}>
-            <FormLabel id='sync-body-text' dataTestId="modelSyncComplete">
-              {t("RefreshDB_T.moduleBlock.modal.content3")}
-            </FormLabel>
-          </div>
-          <Button
-            id="btn-sync"
-            className="btn-full-width"
-            size={ButtonSize.Small}
-            color={ButtonColor.Utility}
-            onClick={() => handleButtonClick(
-              handleException,
-              setSyncStatus,
-              setShowSyncCompleteDialog,
-              setShowSyncDialog,
-              clicked,
-              setClicked,
-              inProgressStatus,
-              setShowSyncFailedDialog,
-              setIsLoading, history
-              )}
-            disabled={syncStatus === "Active" || syncStatus === "In Progress"|| isLoading }
-          >
+      return () => clearInterval(intervalId);
+    }
+  }, [syncStatus, history, handleException]);
+  return (
+    <>
+      <div style={{ marginTop: '16px' }}>
+        <FormLabel id='sync-body-text' dataTestId="modelSyncComplete">
+          {t("RefreshDB_T.moduleBlock.modal.content3")}
+        </FormLabel>
+      </div>
+      <Button
+        id="btn-sync"
+        className="btn-full-width"
+        size={ButtonSize.Small}
+        color={ButtonColor.Utility}
+        onClick={() => handleButtonClick(
+          handleException,
+          setSyncStatus,
+          setShowSyncCompleteDialog,
+          setShowSyncDialog,
+          clicked,
+          setClicked,
+          inProgressStatus,
+          setShowSyncFailedDialog,
+          setIsLoading, history
+        )}
+        disabled={syncStatus === "Active" || syncStatus === "In Progress" || isLoading}
+      >
         {isLoading ? "Loading.." : "Sync"}
-          </Button>
-          <ConfirmDialog
-            isOpen={showSyncDialog}
-            confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
-            title={t("RefreshDB_T.moduleBlock.modal.content2")}
-            onCloseHandle={() => setShowSyncDialog(false)}
-            onSubmitHandle={() => setShowSyncDialog(false)}
-            description={t("RefreshDB_T.moduleBlock.modal.content4")}
-          />
-          <ConfirmDialog
-            isOpen={showSyncCompleteDialog}
-            confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
-            title={t("RefreshDB_T.moduleBlock.modal.content")}
-            onCloseHandle={() => {
-              setShowSyncCompleteDialog(false);
-              status("Completed"); // Update completion status
-            }}
-            onSubmitHandle={() => {
-              setShowSyncCompleteDialog(false);
-              status("Completed"); // Update completion status
-            }}
-            description={t("RefreshDB_T.moduleBlock.modal.content5")}
-          />
-          <ConfirmDialog
-            isOpen={showSyncFailedDialog}
-            confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
-            title={t("RefreshDB_T.moduleBlock.modal.content1")}
-            onCloseHandle={() => setShowSyncFailedDialog(false)}
-            onSubmitHandle={() => setShowSyncFailedDialog(false)}
-            description={t("RefreshDB_T.moduleBlock.modal.content6")}
-          />
-      </>
-    );
-  };
+      </Button>
+      <ConfirmDialog
+        isOpen={showSyncDialog}
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        title={t("RefreshDB_T.moduleBlock.modal.content2")}
+        onCloseHandle={() => setShowSyncDialog(false)}
+        onSubmitHandle={() => setShowSyncDialog(false)}
+        description={t("RefreshDB_T.moduleBlock.modal.content4")}
+      />
+      <ConfirmDialog
+        isOpen={showSyncCompleteDialog}
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        title={t("RefreshDB_T.moduleBlock.modal.content")}
+        onCloseHandle={() => {
+          setShowSyncCompleteDialog(false);
+          status("Completed"); // Update completion status
+        }}
+        onSubmitHandle={() => {
+          setShowSyncCompleteDialog(false);
+          status("Completed"); // Update completion status
+        }}
+        description={t("RefreshDB_T.moduleBlock.modal.content5")}
+      />
+      <ConfirmDialog
+        isOpen={showSyncFailedDialog}
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        title={t("RefreshDB_T.moduleBlock.modal.content1")}
+        onCloseHandle={() => setShowSyncFailedDialog(false)}
+        onSubmitHandle={() => setShowSyncFailedDialog(false)}
+        description={t("RefreshDB_T.moduleBlock.modal.content6")}
+      />
+    </>
+  );
+};
 
-  export default SyncDataView;
+export default SyncDataView;
 
