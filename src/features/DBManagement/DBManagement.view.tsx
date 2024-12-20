@@ -82,7 +82,8 @@ const DBManagement: React.FC = () => {
                 {
                   active: false,
                   linkName: "Admin console",
-                  path: `${window.location.origin}/AdminConsole`
+                  path: `${window.location.origin}/AdminConsole`,
+                  isExternalLink: true
                 },
                 {
                   active: false,
