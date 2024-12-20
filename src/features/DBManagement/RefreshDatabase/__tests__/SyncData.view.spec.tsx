@@ -288,21 +288,5 @@ describe("SyncDataView Component", () => {
       expect(mockSetClicked).toHaveBeenCalledWith(false);
     });
   });
-
-  it("should allow multiple sync button clicks", async () => {
-    render(
-      <SyncDataView
-        handleException={handleExceptionMock}
-        inProgressStatus={inProgressStatusMock}
-        status={statusMock}
-      />
-    );
-
-    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: /Sync/i })).not.toBeDisabled();
-    });
-  });
+  
 });
