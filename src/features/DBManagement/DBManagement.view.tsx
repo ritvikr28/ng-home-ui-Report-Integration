@@ -11,6 +11,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import RefreshDatabaseView from "./RefreshDatabase/RefreshDatabase.view";
+import { envConfig } from "../../shared/utils";
 
 const DBManagement: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
@@ -82,7 +83,7 @@ const DBManagement: React.FC = () => {
                 {
                   active: false,
                   linkName: "Admin console",
-                  path: `${window.location.origin}/AdminConsole`,
+                  path: `${envConfig.HOME_UI_BASEURL}/AdminConsole`,
                   isExternalLink: true
                 },
                 {
