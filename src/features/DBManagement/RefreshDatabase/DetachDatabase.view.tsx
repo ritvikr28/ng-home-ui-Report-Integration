@@ -112,11 +112,11 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   return (
     <>
     <div id='detach-container'>
-      <FormLabel dataTestId="attachDBtitle" id="default-control-label">
-        {t("RefreshDB_T.moduleBlock.attachDB.title")}
+      <FormLabel dataTestId="detachDBtitle" id="default-control-label">
+        {t("RefreshDB_T.moduleBlock.detachDB.content")}
       </FormLabel>
       <FormLabel dataTestId="attachDBbutton" id="default-label">
-        {t("RefreshDB_T.moduleBlock.attachDB.button")}
+        {t("RefreshDB_T.moduleBlock.detachDB.content1")}
       </FormLabel>
       
       <ReactionButtonGroup
