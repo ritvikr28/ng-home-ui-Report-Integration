@@ -21,10 +21,10 @@ describe("DetachDatabaseView Component", () => {
       />
     );
     expect(
-      screen.getByTestId("attachDBtitle")
+      screen.getByTestId("detachDBtitle")
     ).toBeInTheDocument();
     expect(
-      screen.getByTestId("attachDBbutton")
+      screen.getByTestId("detachDBbutton")
     ).toBeInTheDocument();
     expect(screen.getByTestId("Yes")).toBeInTheDocument();
     expect(screen.getByTestId("No")).toBeInTheDocument();
