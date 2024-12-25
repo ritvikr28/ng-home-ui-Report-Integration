@@ -9,11 +9,18 @@ export interface IPrecheckStatusApiResponse {
   deleteNGDataStatus: string,
   dbReAttachedStatus: string,
   syncDataStatus: string,
+  syncCompletedSeenStatus: string,
   responseMessage: string,
   statusCode: number
 }
 
 export interface IProcessNGDeletionApiResponse {
+  statusCode: number,
+  uiStatus: string,
+  responseMessage: string
+}
+
+export interface ISyncCompletedSeenStatusResponse {
   statusCode: number,
   uiStatus: string,
   responseMessage: string
