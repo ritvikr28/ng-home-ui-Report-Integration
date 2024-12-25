@@ -125,11 +125,6 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
 
-  const [isSeen, setIsSeen]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-
   const [enableNotification, setEnableNotification]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -161,7 +156,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
               if (status === "Completed" ) {
                 clearInterval(intervalId); // Stop auto-refresh
                 return "";}
-              //if (status === "Active") return "";
+             
               if (status === "Not Started" || status === "In Progress") return "In Progress";
               return ""; // Default to empty if unrecognized
             }

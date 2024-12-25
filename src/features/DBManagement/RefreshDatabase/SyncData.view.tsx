@@ -243,8 +243,8 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 
       const precheckResponse = await FetchPreCheckStatus(handleException, history);
       const response = await FetchSyncStatus(handleException, history);
-      if (response?.uiStatus === "Completed" && precheckResponse?.syncCompletedSeenStatus == "Not Seen") {
-        //setSyncStatus("Completed");
+      if (response?.uiStatus === "Completed" && precheckResponse?.syncCompletedSeenStatus === "Not Seen") {
+        setSyncStatus("Completed");
         if (!showSyncCompleteDialog) {
           setShowSyncCompleteDialog(true); // Show the dialog only if not already displayed
         }
@@ -268,7 +268,6 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   
       return () => clearInterval(intervalId);
    
-    return undefined;
   }, [syncStatus, showSyncCompleteDialog, history, handleException]);
   
   return (
@@ -294,7 +293,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
           setShowSyncFailedDialog,
           setIsLoading, history
         )}
-        //disabled={syncStatus === "Active" || isLoading}
+       
         disabled={syncStatus === "Active" || isLoading || showSyncCompleteDialog}
       >
         {isLoading ? "Loading.." : "Sync"}
@@ -331,29 +330,34 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
             `${envConfig.BASE_URL}/TrainingDB/SyncCompletedSeenStatusUpdate`,
             requestData
           );
-    
-          if (response.data.statusCode === 200) {
-            
-          } else if (response.data.statusCode === 401) {
-            errorHandler.handle401Error(response.data.statusCode, history); // Pass history
+          return response.data;
+      
+        } catch (err: any) {
+          if (err.response) {
+            const statusCode = err.response.status;
+            console.log(`API call failed with status code: ${statusCode}`);
+            if (statusCode === 401) {
+              errorHandler.handle401Error(statusCode, history);
+            } else {
+              handleException();
+            }
+          }
+          else if (err.message && err.message.includes("Invalid token")) {
+            console.log("Invalid token detected. Redirecting...");
+            history.replace("/unauthorized");
           }
           else {
-            console.log("Unexpected response during deletion:", response.data);
-            history.replace("/unauthorized"); // Handle invalid token
+            console.log("Failed to fetch data, API call failed without a response from the server.");
             handleException();
           }
-        } catch (error) {
-          console.log("Error during deletion");
-          handleException();
+          return null;
         }
     // need to call getsync status
-    setShowSyncCompleteDialog(false);
-    status("Completed"); // Update completion status
-
+   
   }}
   onSubmitHandle={() => {
     setShowSyncCompleteDialog(false);
-    //setActiveIndex(0); // Optional: Reset to step 1
+    
     status("Completed"); // Update completion status
   }}
   description={t("RefreshDB_T.moduleBlock.modal.content5")}
