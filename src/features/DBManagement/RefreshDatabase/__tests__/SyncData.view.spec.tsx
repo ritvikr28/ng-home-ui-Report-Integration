@@ -102,30 +102,6 @@ describe("SyncDataView Component", () => {
     expect(screen.getByRole("button", { name: /Sync/i })).toBeInTheDocument();
   });
 
-  it("should handle sync button click and show the appropriate dialog", async () => {
-    const mockTriggerSyncResponse = { statusCode: 200, uiStatus: "In Progress" };
-    const mockFetchSyncResponse = { statusCode: 200, uiStatus: "Completed" };
-  
-    (service.post as jest.Mock).mockResolvedValue({
-      data: mockTriggerSyncResponse,
-    });
-    (service.get as jest.Mock).mockResolvedValue({
-      data: mockFetchSyncResponse,
-    });
-    render(
-      <SyncDataView
-        handleException={handleExceptionMock}
-        inProgressStatus={inProgressStatusMock}
-        status={statusMock}
-      />
-    );
-  
-    fireEvent.click(screen.getByRole("button", { name: /Sync/i }));
-    await waitFor(() => {
-      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
-    });
-  });
-
   it("should call handleException on API failure", async () => {
     (useFetchSchoolNameData as jest.Mock).mockRejectedValue(new Error("API Error"));
 

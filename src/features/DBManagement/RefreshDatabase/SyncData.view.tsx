@@ -154,13 +154,12 @@ export const handleButtonClick = async (
   inProgressStatus: (value: string) => void,
   setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  history: ReturnType<typeof useHistory> // Pass the history object
-
-
+  history: ReturnType<typeof useHistory>, // Pass the history object
 ) => {
   try {
     setIsLoading(true);
-    if (!clicked) {
+    const response = await FetchPreCheckStatus(handleException, history);
+    if(response?.syncCompletedSeenStatus === "Not Seen" && !(response?.syncDataStatus === "Completed")) {
       const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
       if (response?.statusCode === 200) {
         setClicked(true);
@@ -171,9 +170,7 @@ export const handleButtonClick = async (
         setShowSyncFailedDialog(true);
         return;
       }
-    }
-
-    if (clicked) {
+    } else {
       const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if (response?.statusCode === 200) {
         if (response.uiStatus === "Completed" ) {
