@@ -155,7 +155,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
               if(status === "Active") return "";
               if (status === "Completed" ) {
                 clearInterval(intervalId); // Stop auto-refresh
-                return "";}
+                return "Completed";}
              
               if (status === "Not Started" || status === "In Progress") return "In Progress";
               return ""; // Default to empty if unrecognized
