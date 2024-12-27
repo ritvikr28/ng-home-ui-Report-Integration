@@ -159,7 +159,7 @@ export const handleButtonClick = async (
   try {
     setIsLoading(true);
     const response = await FetchPreCheckStatus(handleException, history);
-    if(response?.syncCompletedSeenStatus === "Not Seen" && !(response?.syncDataStatus === "Completed")) {
+    if(response?.syncCompletedSeenStatus === "Not Seen") {
       const schoolDetailsResponse: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
       if (schoolDetailsResponse?.statusCode === 200) {
         setClicked(true);
