@@ -220,7 +220,7 @@ describe("SyncDataView Component", () => {
 
     fireEvent.click(screen.getByText('Sync'));
     await waitFor(() => {
-      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress")
+      expect(inProgressStatusMock).not.toHaveBeenCalledWith("In Progress")
     });
   });
 

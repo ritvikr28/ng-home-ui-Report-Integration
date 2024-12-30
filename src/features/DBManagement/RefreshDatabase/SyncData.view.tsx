@@ -155,14 +155,15 @@ export const handleButtonClick = async (
   setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   history: ReturnType<typeof useHistory> // Pass the history object
+
+
 ) => {
   try {
     setIsLoading(true);
-    const response = await FetchPreCheckStatus(handleException, history);
-    if(response?.syncCompletedSeenStatus === "Not Seen") {
-      const schoolDetailsResponse: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
-      if (schoolDetailsResponse?.statusCode === 200) {
-        setClicked(true);
+    if (!clicked) {
+      const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
+      if (response?.statusCode === 200) {
+        // setClicked(true);
 
         inProgressStatus("In Progress")
       } else {
@@ -170,14 +171,16 @@ export const handleButtonClick = async (
         setShowSyncFailedDialog(true);
         return;
       }
-    } else {
-      const schoolDetailsResponse: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
-      if (schoolDetailsResponse?.statusCode === 200) {
-        if (schoolDetailsResponse.uiStatus === "Completed" ) {
+    }
+
+    if (clicked) {
+      const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
+      if (response?.statusCode === 200) {
+        if (response.uiStatus === "Completed" ) {
           setShowSyncCompleteDialog(true);
            setSyncStatus("Completed");
           setClicked(false);
-        } else if (schoolDetailsResponse.uiStatus === "Error") {
+        } else if (response.uiStatus === "Error") {
           setShowSyncFailedDialog(true);
         } 
         else {
