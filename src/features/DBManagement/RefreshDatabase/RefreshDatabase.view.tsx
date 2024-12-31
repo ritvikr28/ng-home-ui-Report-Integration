@@ -155,7 +155,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
               if(status === "Active") return "";
               if (status === "Completed" ) {
                 clearInterval(intervalId); // Stop auto-refresh
-                return "";}
+                return "Completed";}
              
               if (status === "Not Started" || status === "In Progress") return "In Progress";
               return ""; // Default to empty if unrecognized
@@ -216,7 +216,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           {items.map((item, index) => {
             const CurrentComponent: ComponentType<any> = item.component;
             const isActive = index === activeIndex;
-
+            const syncDataStatus = flagValues[3];
             return (
               <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
                 <div className="list-item" style={{ padding: "16px" }}>
@@ -253,7 +253,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                       }}
                       // Pass handleException to trigger notification in case of exception
                       handleException={handleException}
-                      
+                     syncDataStatus={syncDataStatus}
                     />
                   )}
                 </div>
