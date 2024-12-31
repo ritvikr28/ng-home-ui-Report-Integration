@@ -251,7 +251,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
 
-  const isSyncDisabled = syncDataStatus === "Completed";
+  
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
