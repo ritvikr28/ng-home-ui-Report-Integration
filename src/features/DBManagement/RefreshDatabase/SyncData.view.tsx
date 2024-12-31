@@ -17,6 +17,7 @@ export interface SyncDataViewProps {
   inProgressStatus: (value: string) => void;
   handleException: () => void;
   status: (value: string) => void;
+  syncDataStatus: string; // Receive the status as a prop
 }
 
 export const FetchSyncStatus = async (
@@ -67,10 +68,10 @@ export const FetchPrecheckStatus = async (
     const orgId = getUserOrganisation();
 
     const response: AxiosResponse<IPrecheckStatusApiResponse> =
-    await service.get(
-      `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
-    );
-  return response.data;
+      await service.get(
+        `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
+      );
+    return response.data;
   } catch (err: any) {
     if (err.response) {
       const statusCode = err.response.status;
@@ -154,35 +155,49 @@ export const handleButtonClick = async (
   inProgressStatus: (value: string) => void,
   setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  history: ReturnType<typeof useHistory> // Pass the history object
-
+  history: ReturnType<typeof useHistory>,// Pass the history object
+  syncDataStatus: string
 
 ) => {
   try {
     setIsLoading(true);
+    if (syncDataStatus === "Completed") {
+      setShowSyncCompleteDialog(true);
+      return;
+    }
+    if (syncDataStatus === "In Progress") {
+      setShowSyncDialog(true);
+      inProgressStatus("In Progress")
+      return;
+    }
     if (!clicked) {
       const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
       if (response?.statusCode === 200) {
-        // setClicked(true);
-
+        setClicked(true);
         inProgressStatus("In Progress")
       } else {
         handleException();
         setShowSyncFailedDialog(true);
         return;
       }
+    } else {
+      // Second click: show "Sync in Progress" dialog
+      setShowSyncDialog(true);
     }
 
+    setSyncStatus("In Progress");
+
     if (clicked) {
+
       const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if (response?.statusCode === 200) {
-        if (response.uiStatus === "Completed" ) {
+        if (response.uiStatus === "Completed") {
           setShowSyncCompleteDialog(true);
-           setSyncStatus("Completed");
+          setSyncStatus("Completed");
           setClicked(false);
         } else if (response.uiStatus === "Error") {
           setShowSyncFailedDialog(true);
-        } 
+        }
         else {
           setShowSyncDialog(true);
           inProgressStatus("In Progress")
@@ -206,8 +221,9 @@ export const handleButtonClick = async (
 const SyncDataView: React.FC<SyncDataViewProps> = ({
   inProgressStatus,
   handleException,
-  status
-  
+  status,
+  syncDataStatus
+
 }) => {
   const history = useHistory(); // Initialize history
   const [syncStatus, setSyncStatus]: [
@@ -235,6 +251,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
 
+  
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
@@ -245,6 +262,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
       const response = await FetchSyncStatus(handleException, history);
       if (response?.uiStatus === "Completed" && precheckResponse?.syncCompletedSeenStatus === "Not Seen") {
         setSyncStatus("Completed");
+
         if (!showSyncCompleteDialog) {
           setShowSyncCompleteDialog(true); // Show the dialog only if not already displayed
         }
@@ -262,14 +280,14 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 
   useEffect(() => {
 
-      const intervalId = setInterval(() => {
-        initializeSteps();
-      }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
-  
-      return () => clearInterval(intervalId);
-   
+    const intervalId = setInterval(() => {
+      initializeSteps();
+    }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
+
+    return () => clearInterval(intervalId);
+
   }, [syncStatus, showSyncCompleteDialog, history, handleException]);
-  
+
   return (
     <>
       <div style={{ marginTop: '16px' }}>
@@ -291,10 +309,10 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
           setClicked,
           inProgressStatus,
           setShowSyncFailedDialog,
-          setIsLoading, history
+          setIsLoading, history, syncDataStatus
         )}
-       
-        disabled={syncStatus === "Active" || isLoading || showSyncCompleteDialog}
+
+        disabled={isLoading || showSyncCompleteDialog}
       >
         {isLoading ? "Loading.." : "Sync"}
       </Button>
@@ -307,61 +325,61 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         description={t("RefreshDB_T.moduleBlock.modal.content4")}
       />
 
-<ConfirmDialog
-  isOpen={showSyncCompleteDialog}
-  confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
-  title={t("RefreshDB_T.moduleBlock.modal.content")}
-  onCloseHandle={async () => {
+      <ConfirmDialog
+        isOpen={showSyncCompleteDialog}
+        confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
+        title={t("RefreshDB_T.moduleBlock.modal.content")}
+        onCloseHandle={async () => {
 
-     try {
-          
-         // Prepare request data
-         const requestData: {
-          orgId: string,
-          tableFlagValue:string,
-          status:string
-        } = {
-          orgId: getUserOrganisation(),
-          tableFlagValue: "S",
-          status:"Seen"
-        };
-    
-          const response: AxiosResponse<ISyncCompletedSeenStatusResponse> = await service.post(
-            `${envConfig.BASE_URL}/TrainingDB/SyncCompletedSeenStatusUpdate`,
-            requestData
-          );
-          return response.data;
-      
-        } catch (err: any) {
-          if (err.response) {
-            const statusCode = err.response.status;
-            console.log(`API call failed with status code: ${statusCode}`);
-            if (statusCode === 401) {
-              errorHandler.handle401Error(statusCode, history);
-            } else {
+          try {
+
+            // Prepare request data
+            const requestData: {
+              orgId: string,
+              tableFlagValue: string,
+              status: string
+            } = {
+              orgId: getUserOrganisation(),
+              tableFlagValue: "S",
+              status: "Seen"
+            };
+
+            const response: AxiosResponse<ISyncCompletedSeenStatusResponse> = await service.post(
+              `${envConfig.BASE_URL}/TrainingDB/SyncCompletedSeenStatusUpdate`,
+              requestData
+            );
+            return response.data;
+
+          } catch (err: any) {
+            if (err.response) {
+              const statusCode = err.response.status;
+              console.log(`API call failed with status code: ${statusCode}`);
+              if (statusCode === 401) {
+                errorHandler.handle401Error(statusCode, history);
+              } else {
+                handleException();
+              }
+            }
+            else if (err.message && err.message.includes("Invalid token")) {
+              console.log("Invalid token detected. Redirecting...");
+              history.replace("/unauthorized");
+            }
+            else {
+              console.log("Failed to fetch data, API call failed without a response from the server.");
               handleException();
             }
+            return null;
           }
-          else if (err.message && err.message.includes("Invalid token")) {
-            console.log("Invalid token detected. Redirecting...");
-            history.replace("/unauthorized");
-          }
-          else {
-            console.log("Failed to fetch data, API call failed without a response from the server.");
-            handleException();
-          }
-          return null;
-        }
-    // need to call getsync status
-   
-  }}
-  onSubmitHandle={() => {
-    setShowSyncCompleteDialog(false);
-    
-    status("Completed"); // Update completion status
-  }}
-  description={t("RefreshDB_T.moduleBlock.modal.content5")}
-/>
+          // need to call getsync status
+
+        }}
+        onSubmitHandle={() => {
+          setShowSyncCompleteDialog(false);
+
+          status("Completed"); // Update completion status
+        }}
+        description={t("RefreshDB_T.moduleBlock.modal.content5")}
+      />
 
       <ConfirmDialog
         isOpen={showSyncFailedDialog}
