@@ -13,13 +13,22 @@ import { FetchSchoolInsights } from "../../../../../../shared/services/schoolIns
 import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";
 
 const PupilDemographicsView: () => JSX.Element = () => {
-  const [data, setData] = useState<ISchoolInsightsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData]: [
+    ISchoolInsightsResponse | null,
+    React.Dispatch<React.SetStateAction<ISchoolInsightsResponse | null>>
+  ] = useState<ISchoolInsightsResponse | null>(null);
+  const [loading, setLoading]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
+  const [error, setError]: [
+    string | null,
+    React.Dispatch<React.SetStateAction<string | null>>
+  ] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await FetchSchoolInsights(true); // Fetch with IsCompulsoryAgeView set to true
+    const fetchData = async (): Promise<void> => {
+      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true); // Fetch with IsCompulsoryAgeView set to true
       if (result) {
         setData(result);
       } else {

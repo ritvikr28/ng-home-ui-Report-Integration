@@ -4,9 +4,9 @@ import { service } from "../../utils/api-service";
 import apiUrls from "../../hook/ApiConfig.json";
 import { ISchoolInsightsResponse } from "../../model/SchoolInsightsDomain/responseModels";
 
-export const FetchSchoolInsights = async (
+export const FetchSchoolInsights: (
   isCompulsoryAgeView: boolean
-): Promise<ISchoolInsightsResponse | null> => {
+) => Promise<ISchoolInsightsResponse | null> = async (isCompulsoryAgeView) => {
   try {
     const responseData: AxiosResponse<ISchoolInsightsResponse> =
       await service.get(

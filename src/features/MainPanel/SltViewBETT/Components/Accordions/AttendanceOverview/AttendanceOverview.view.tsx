@@ -17,13 +17,22 @@ import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolIn
 import { FetchSchoolInsights } from "../../../../../../shared/services/schoolInsightsDomain/schoolInsightsService";
 
 const AttendanceOverview: () => JSX.Element = () => {
-  const [data, setData] = useState<ISchoolInsightsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData]: [
+    ISchoolInsightsResponse | null,
+    React.Dispatch<React.SetStateAction<ISchoolInsightsResponse | null>>
+  ] = useState<ISchoolInsightsResponse | null>(null);
+  const [loading, setLoading]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
+  const [error, setError]: [
+    string | null,
+    React.Dispatch<React.SetStateAction<string | null>>
+  ] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const result = await FetchSchoolInsights(true);
+    const fetchData = async (): Promise<void> => {
+      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true);
       if (result) {
         setData(result);
       } else {
