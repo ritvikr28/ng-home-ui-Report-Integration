@@ -1,5 +1,6 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -8,6 +9,9 @@ import "./style.scss";
 // import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
+import SltViewBett from "./SltViewBETT/SltViewBett.view";
+import { envConfig } from "../../shared/utils";
+import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -54,6 +58,14 @@ const requiredPupilProfilePermissions: Permission[] = [
   }
 ];
 
+const requiredSLTviewPermissions: Permission[] = [
+  {
+    Securable: "NG.Homepage.SLT",
+
+    Operation: "View"
+  }
+];
+
 const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
 ) => {
@@ -65,6 +77,14 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
+  const SLTviewBETT: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SLTviewBETT"
+  );
+
+  const hasSLTviewOrgPermission: boolean =
+    isOrganisationInVariant("SLTviewBETTORG");
+  
   return (
     <div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
       <Grid dataTestId="mainPanelView">
@@ -97,11 +117,28 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
           )}
 
           {authService.isAuthorised(
-              requiredPupilProfilePermissions,
+            requiredPupilProfilePermissions,
+            MatchPermissions.all
+          ) && (
+            <>
+              <Search isOpen={isOpen} />
+              <div
+                className={
+                  isOpen
+                    ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
+                    : "divider-container-dertfsg11463f"
+                }
+              />
+            </>
+          )}
+          {SLTviewBETT &&
+            hasSLTviewOrgPermission &&
+            authService.isAuthorised(
+              requiredSLTviewPermissions,
               MatchPermissions.all
             ) && (
               <>
-                <Search isOpen={isOpen} />
+                <SltViewBett />
                 <div
                   className={
                     isOpen
