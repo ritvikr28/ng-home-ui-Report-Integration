@@ -31,7 +31,7 @@ const AttendanceOverview: () => JSX.Element = () => {
   ] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
+    const fetchData: () => Promise<void> = async () => {
       const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true);
       if (result) {
         setData(result);
