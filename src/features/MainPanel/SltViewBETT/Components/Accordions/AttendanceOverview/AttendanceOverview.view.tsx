@@ -10,7 +10,7 @@ import {
   CheckboxLabelPosition,
   CheckBoxSelectedState,
   Grid,
-  GridItem,
+  GridItem
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";

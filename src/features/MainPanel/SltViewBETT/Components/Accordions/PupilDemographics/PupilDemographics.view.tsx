@@ -7,7 +7,7 @@ import {
   CheckboxLabelPosition,
   CheckBoxSelectedState,
   Grid,
-  GridItem,
+  GridItem
 } from "@essnextgen/ui-kit";
 import { FetchSchoolInsights } from "../../../../../../shared/services/schoolInsightsDomain/schoolInsightsService";
 import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";
