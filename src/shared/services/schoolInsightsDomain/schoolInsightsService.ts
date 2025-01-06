@@ -1,8 +1,7 @@
-import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../utils/api-service";
-import apiUrls from "../../hook/ApiConfig.json";
 import { ISchoolInsightsResponse } from "../../model/SchoolInsightsDomain/responseModels";
+import { envConfig } from "../../utils";
 
 export const FetchSchoolInsights: (
   isCompulsoryAgeView: boolean
@@ -10,8 +9,8 @@ export const FetchSchoolInsights: (
   try {
     const responseData: AxiosResponse<ISchoolInsightsResponse> =
       await service.get(
-        `v1/schoolinsights?IsCompulsoryAgeView=${isCompulsoryAgeView}`,
-        buildApplicationUrl(apiUrls)
+        `${envConfig.BASE_URL}/v1/schoolinsights?IsCompulsoryAgeView=${isCompulsoryAgeView}`
+        
       );
 
     return responseData.data;
