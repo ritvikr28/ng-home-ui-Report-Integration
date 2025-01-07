@@ -23,12 +23,12 @@
 
   .side-width .essui-side-navigation-panel-container-grid-item {
     width: 264px;
-  }
+  }    
 
-  #notification-open-panel {
-    max-width: 760px;
-    min-width: 350px;
-  }
+    #notification-open-panel {
+        max-width: 760px;
+        min-width: 350px;
+    }
 
   #add-side-panel-types {
     width: 10rem;
@@ -310,3 +310,12 @@
   line-height: 16px;
   cursor: pointer;
 }
+
+/* stylelint-disable */
+@media only screen and (min-width: 1280px) {
+    .essui-grid-col--xl-2 {
+        /* stylelint-enable */
+        flex-basis: 0%;
+        max-width: 16.6666666667%;
+    }
+} 
