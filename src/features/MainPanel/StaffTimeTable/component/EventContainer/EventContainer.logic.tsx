@@ -160,14 +160,26 @@ const formatEventTitleData = (eventTitleData: any) => {
 
 const formatEventTimeData: (
   eventTimeData: IStaffTimeTableEventsResponse
-) => string = (eventTimeData: IStaffTimeTableEventsResponse) => {
-  const day: string = dayjs(eventTimeData.eventStart).format("ddd");
+) => { truncated: string; full: string } = (eventTimeData: IStaffTimeTableEventsResponse) => {
+  // const day: string = dayjs(eventTimeData.eventStart).format("ddd");
   const starttime: string = dayjs(eventTimeData.eventStart).format("HH:mm");
   const endtime: string = dayjs(eventTimeData.eventEnd).format("HH:mm");
   const eventPeriodNum: string = formateventPeriodNum(eventTimeData);
-  return eventTimeData.eventTypeCode === "AttendanceSession"
-    ? `${eventPeriodNum} | ${starttime} - ${endtime}`
-    : `${day} ${eventPeriodNum} | ${starttime} - ${endtime}`;
+
+  const eventDescription: string =
+    eventTimeData.eventTypeCode === "AttendanceSession"
+      ? `${eventPeriodNum}`
+      : `${eventPeriodNum}`;
+
+  const truncatedDescription: string =
+    eventDescription.length > 7
+      ? `${eventDescription.substring(0, 7)}...`
+      : eventDescription;
+
+  return {
+    truncated: `${truncatedDescription} | ${starttime} - ${endtime}`,
+    full: `${eventDescription} | ${starttime} - ${endtime}`,
+  };
 };
 
 const formatStaffName = async (
@@ -178,7 +190,7 @@ const formatStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors,
+    supervisors
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID && !isCovered && isCovering) {
@@ -203,7 +215,7 @@ const formatCoverStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors,
+    supervisors
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID) {
@@ -233,10 +245,8 @@ const formateventPeriodNum = (
   eventTimeData: IStaffTimeTableEventsResponse
 ): string => {
   /* istanbul ignore next */
-  const descriptionParts = eventTimeData.eventDescription?.split(":") || [];
-
-  if (descriptionParts.length > 1 && descriptionParts[1]) {
-    return descriptionParts[1];
+  if (eventTimeData.eventDescription) {
+    return eventTimeData.eventDescription;
   }
 
   if (eventTimeData.eventTypeCode === "AttendanceSession") {

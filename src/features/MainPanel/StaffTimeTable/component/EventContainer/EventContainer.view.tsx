@@ -1,5 +1,5 @@
 import "./style.scss";
-import { EventCard } from "@essnextgen/ui-kit";
+import { EventCard, Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
 import { IEventContainerProps } from "./EventContainerProps";
 import { RightSidePanel } from "../../../RightSidePanel/RightSidePanel.logic";
 
@@ -30,16 +30,29 @@ export const EventContainerView: (
     isOpenPanel
   }: IEventContainerProps = props;
 
+  const { truncated, full }: { truncated: string; full: string } = EventTime;
+
   return (
     <>
     <div className="staff-homepage-564f">
-
-    
       <EventCard
         key={SchoolEventexternalId}
         id={`elementid-${index}`}
         onClick={() => togglePanel(SchoolEventexternalId)}
-        primaryText={EventTime}
+        primaryText={
+          EventTime.truncated.length < EventTime.full.length ? (
+            <Tooltip
+              dataTestId={`tooltip-eventtime-${index}`}
+              content={full} 
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <span>{truncated}</span>
+            </Tooltip>
+          ) : (
+            <span>{truncated}</span>
+          )
+        }
         secondaryText={RoomCode}
         // isTextTruncate
         status={EventCardColor}

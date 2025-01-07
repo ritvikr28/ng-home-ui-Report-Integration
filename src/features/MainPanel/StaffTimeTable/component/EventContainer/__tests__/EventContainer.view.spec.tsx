@@ -10,7 +10,10 @@ const togglePanel=jest.fn();
 const mockProps = {
     SchoolEventexternalId: '123',
     EventTitle: 'Test Event',
-    EventTime: '12:00 PM',
+    EventTime: {
+      truncated: '12:00 PM',
+      full: '12:00 PM - 1:00 PM'
+    },
     RoomCode: 'Room 101',
     EventStartDate: '2023-11-09',
     EventEndDate: '2023-11-10',
@@ -158,7 +161,10 @@ const mockProps = {
     const component = <EventContainerView
       SchoolEventexternalId="1"
       EventTitle="Title: Some description: 1"
-      EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+      EventTime={{
+        truncated: "08:00 AM - 09:00 AM", 
+        full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+    }}
       RoomCode="A101"
       EventStartDate="2023-11-08T08:00:00"
       EventEndDate="2023-11-08T09:00:00"
