@@ -178,7 +178,7 @@ const formatEventTimeData: (
 
   return {
     truncated: `${truncatedDescription} | ${starttime} - ${endtime}`,
-    full: `${eventDescription} | ${starttime} - ${endtime}`,
+    full: `${eventDescription} | ${starttime} - ${endtime}`
   };
 };
 
