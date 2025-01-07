@@ -825,7 +825,10 @@ describe("EventContainer", () => {
       <EventContainerView
         SchoolEventexternalId="1"
         EventTitle="Title: Some description: 1"
-        EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+        EventTime={{
+          truncated: "08:00 AM - 09:00 AM", 
+          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00" 
+      }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"
         EventEndDate="2023-11-08T09:00:00"
@@ -857,7 +860,10 @@ describe("EventContainer", () => {
       <EventContainerView
         SchoolEventexternalId="1"
         EventTitle="Title: Some description: 1"
-        EventTime="Time: 2023-11-08T08:00:00 - 2023-11-08T09:00:00"
+        EventTime={{
+          truncated: "08:00 AM - 09:00 AM", 
+          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00" 
+      }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"
         EventEndDate="2023-11-08T09:00:00"

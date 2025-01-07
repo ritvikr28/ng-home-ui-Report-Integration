@@ -41,11 +41,13 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     EventEndDate: string,
     EventPeriodNum: string
   ) => {
-    const day:string= dayjs(EventStartDate).format("dddd");
-    const starttime:string = dayjs(EventStartDate).format("HH:mm");
-    const endtime:string = dayjs(EventEndDate).format("HH:mm");
-    const eventPeriodNum:string = EventPeriodNum;
-    return (EventTypeCode==="AttendanceSession") ?`${eventPeriodNum} | ${starttime} ${endtime}`: `${day} ${eventPeriodNum} | ${starttime} ${endtime}`;
+    // const day:string= dayjs(EventStartDate).format("ddd");
+    const starttime: string = dayjs(EventStartDate).format("HH:mm");
+    const endtime: string = dayjs(EventEndDate).format("HH:mm");
+    const eventPeriodNum: string = EventPeriodNum;
+    return EventTypeCode === "AttendanceSession"
+      ? `${eventPeriodNum} | ${starttime} - ${endtime}`
+      : `${eventPeriodNum} | ${starttime} - ${endtime}`;
   };
 
   const pupilSortLogic:(pupilList: IGroupMemberDetailsResponse[]) => void = (pupilList: IGroupMemberDetailsResponse[]) => {
