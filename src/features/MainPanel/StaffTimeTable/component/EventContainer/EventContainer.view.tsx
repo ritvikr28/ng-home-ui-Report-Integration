@@ -40,7 +40,7 @@ export const EventContainerView: (
         id={`elementid-${index}`}
         onClick={() => togglePanel(SchoolEventexternalId)}
         primaryText={
-          EventTime.truncated.length < EventTime.full.length ? (
+          EventTime.truncated.length > EventTime.full.length ? (
             <Tooltip
               dataTestId={`tooltip-eventtime-${index}`}
               content={full} 
@@ -50,7 +50,7 @@ export const EventContainerView: (
               <span>{truncated}</span>
             </Tooltip>
           ) : (
-            <span>{truncated}</span>
+            <span>{full}</span>
           )
         }
         secondaryText={RoomCode}
