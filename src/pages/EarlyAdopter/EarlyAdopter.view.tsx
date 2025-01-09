@@ -1,7 +1,7 @@
 import "./style.scss";
 import { Breadcrumbs } from "@essnextgen/ui-kit";
 
-const EarlytAdopterPage: any = ({}): JSX.Element => (
+const EarlytAdopterPage: any = (): JSX.Element => (
   <>
     <div
       className="container earlyadopter-container"
@@ -22,7 +22,7 @@ const EarlytAdopterPage: any = ({}): JSX.Element => (
           className="essui-Breadcrumbs"
           dataTestId="breadcrumb-test-id"
           id="element-id"
-          onItemClick={() => {}}
+          onItemClick={()=>{console.log("")}}
         />
         <section
           data-testid="earlyadopter-page-id"
