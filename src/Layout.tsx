@@ -34,6 +34,7 @@ import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+import EarlytAdopterPage from "./pages/EarlyAdopter/EarlyAdopter.view";
 
 
 
@@ -221,6 +222,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           )}
           {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
+          <ProtectedRoute
+              exact
+              path="/adminConsole/userManagement"              
+              render={() => <EarlytAdopterPage /> }
+            />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
           <ProtectedRoute exact path="*" component={PageNotFound} />
