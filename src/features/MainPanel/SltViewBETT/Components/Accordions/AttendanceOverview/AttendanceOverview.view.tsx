@@ -1,52 +1,95 @@
 /* istanbul ignore file */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionHeader,
   AccordionPanel,
+  Bargraphs,
   Button,
   ButtonColor,
   ButtonSize,
-  CheckBox,
-  CheckboxLabelPosition,
-  CheckBoxSelectedState,
   Grid,
   GridItem
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
-import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";
-import { FetchSchoolInsights } from "../../../../../../shared/services/schoolInsightsDomain/schoolInsightsService";
+import AttendanceOverview from "./AttendanceOverview.logic";
 
-const AttendanceOverview: () => JSX.Element = () => {
-  const [data, setData]: [
-    ISchoolInsightsResponse | null,
-    React.Dispatch<React.SetStateAction<ISchoolInsightsResponse | null>>
-  ] = useState<ISchoolInsightsResponse | null>(null);
-  const [loading, setLoading]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-  const [error, setError]: [
-    string | null,
-    React.Dispatch<React.SetStateAction<string | null>>
-  ] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData: () => Promise<void> = async () => {
-      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true);
-      if (result) {
-        setData(result);
-      } else {
-        setError("Failed to fetch data");
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+const AttendanceOverviewView: React.FC = () => {
+  const { data, loading, error } = AttendanceOverview();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
+
+  const overallAbsenceData = [
+    {
+      Name: "Overall Absence",
+      currentYearAvg:
+        data?.payload.attendanceInsights.attendanceCurrentYear || 0,
+      previousYearAvg:
+        data?.payload.attendanceInsights.attendancePreviousYear || 0,
+      nationalAvg:
+        data?.payload.attendanceInsights.attendanceNationalAverage || 0,
+    }
+  ];
+
+  const persistentAbsenteesData = [
+    {
+      Name: "Persistent Absentees",
+      currentYearAvg:
+        data?.payload.attendanceInsights.persistentAbsenteeCurrentYear || 0,
+      previousYearAvg:
+        data?.payload.attendanceInsights.persistentAbsenteePreviousYear || 0,
+      nationalAvg:
+        data?.payload.attendanceInsights.persistentAbsenteesNationalAverage ||
+        0,
+    }
+  ];
+
+  const authorisedAbsenceData = [
+    {
+      Name: "Authorised Absence",
+      currentYearAvg:
+        data?.payload.attendanceInsights.authorisedAbsentCurrentYear || 0,
+      previousYearAvg:
+        data?.payload.attendanceInsights.authorisedAbsentPreviousYear || 0,
+      nationalAvg:
+        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0,
+    }
+  ];
+
+  const unauthorisedAbsenceData = [
+    {
+      Name: "Unauthorised Absence",
+      currentYearAvg:
+        data?.payload.attendanceInsights.unauthorisedAbsentCurrentYear || 0,
+      previousYearAvg:
+        data?.payload.attendanceInsights.unauthorisedAbsentPreviousYear || 0,
+      nationalAvg:
+        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0,
+    }
+  ];
+
+  const barGraphConfig = [
+    {
+      label: "Current Year Average",
+      dataKey: "currentYearAvg",
+      color: "#006970",
+    },
+    {
+      label: "Previous Year Average",
+      dataKey: "previousYearAvg",
+      color: "#78D5DB",
+    },
+    {
+      label: "National Average",
+      dataKey: "nationalAvg",
+      color: "#00A0AA",
+    }
+  ];
+
+  const handleButtonClick = () => {
+    window.location.href = `${window.location.origin}/reporting`;
+  };
 
   return (
     <Grid>
@@ -62,88 +105,85 @@ const AttendanceOverview: () => JSX.Element = () => {
               id="analytics-accordion-content"
               dataTestId="analytics-insights-accordion-panel-test-id"
             >
-              <CheckBox
-                label="Compulsory age group"
-                labelPosition={CheckboxLabelPosition.Right}
-                isSelected={
-                  data?.payload.attendanceInsights.attendanceNationalAverage
-                    ? CheckBoxSelectedState.Selected
-                    : CheckBoxSelectedState.DeSelected
-                }
-              />
               <Button
                 className="insights-redirect-button"
                 dataTestId="insights-button"
                 size={ButtonSize.Small}
                 color={ButtonColor.Secondary}
-                // onClick={handleButtonClick} // Uncomment and implement the button click handler as needed
+                onClick={handleButtonClick}
               >
                 More attendance insights
               </Button>
-              <div>
-                <h3>Overall Absence</h3>
-                <p>
-                  Current Year Attendance:{" "}
-                  {data?.payload.attendanceInsights.attendanceCurrentYear ??
-                    "N/A"}
-                </p>
-                <p>
-                  Previous Year Attendance:{" "}
-                  {data?.payload.attendanceInsights.attendancePreviousYear ??
-                    "N/A"}
-                </p>
-                <p>
-                  National Average Attendance:{" "}
-                  {data?.payload.attendanceInsights.attendanceNationalAverage}
-                </p>
-                <h3>Persistent Absentees</h3>
-                <p>
-                  Current Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .persistentAbsenteeCurrentYear ?? "N/A"}
-                </p>
-                <p>
-                  Previous Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .persistentAbsenteePreviousYear ?? "N/A"}
-                </p>
-                <p>
-                  National Average Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .persistentAbsenteesNationalAverage ?? "N/A"}
-                </p>
-                <h3>Authorised Absence</h3>
-                <p>
-                  Current Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .authorisedAbsentCurrentYear ?? "N/A"}
-                </p>
-                <p>
-                  Previous Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .authorisedAbsentPreviousYear ?? "N/A"}
-                </p>
-                <p>
-                  National Average Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .authorisedAbsentNationalAverage ?? "N/A"}
-                </p>
-                <h3>Unauthorised Absence</h3>
-                <p>
-                  Current Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .unauthorisedAbsentCurrentYear ?? "N/A"}
-                </p>
-                <p>
-                  Previous Year Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .unauthorisedAbsentPreviousYear ?? "N/A"}
-                </p>
-                <p>
-                  National Average Attendance:{" "}
-                  {data?.payload.attendanceInsights
-                    .unauthorisedAbsentNationalAverage ?? "N/A"}
-                </p>
+
+              <div className="bargraphs-container">
+                <Bargraphs
+                  data={overallAbsenceData}
+                  configInfo={barGraphConfig}
+                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                  title="Overall absence"
+                  Name=""
+                  CurrentYearAvg={null}
+                  PreviousYearAvg={null}
+                  NationalAvg={null}
+                  isFetchSucessfully
+                  unsuccessfullMsg=""
+                  firstLabel="Current Year"
+                  secondLabel="Previous Year"
+                  thirdLabel="National Average"
+                  labels={undefined}
+                  heading="Overall Absence Overview"
+                />
+                <Bargraphs
+                  data={persistentAbsenteesData}
+                  configInfo={barGraphConfig}
+                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                  title="Persistent absentees"
+                  Name=""
+                  CurrentYearAvg={null}
+                  PreviousYearAvg={null}
+                  NationalAvg={null}
+                  isFetchSucessfully
+                  unsuccessfullMsg=""
+                  firstLabel="Current Year"
+                  secondLabel="Previous Year"
+                  thirdLabel="National Average"
+                  labels={undefined}
+                  heading="Overall Absence Overview"
+                />
+                <Bargraphs
+                  data={authorisedAbsenceData}
+                  configInfo={barGraphConfig}
+                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                  title="Authorised absence"
+                  Name=""
+                  CurrentYearAvg={null}
+                  PreviousYearAvg={null}
+                  NationalAvg={null}
+                  isFetchSucessfully
+                  unsuccessfullMsg=""
+                  firstLabel="Current Year"
+                  secondLabel="Previous Year"
+                  thirdLabel="National Average"
+                  labels={undefined}
+                  heading="Overall Absence Overview"
+                />
+                <Bargraphs
+                  data={unauthorisedAbsenceData}
+                  configInfo={barGraphConfig}
+                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                  title="Unauthorised Absence"
+                  Name=""
+                  CurrentYearAvg={null}
+                  PreviousYearAvg={null}
+                  NationalAvg={null}
+                  isFetchSucessfully
+                  unsuccessfullMsg=""
+                  firstLabel="Current Year"
+                  secondLabel="Previous Year"
+                  thirdLabel="National Average"
+                  labels={undefined}
+                  heading="Overall Absence Overview"
+                />
               </div>
             </AccordionPanel>
           </Accordion>
@@ -153,4 +193,4 @@ const AttendanceOverview: () => JSX.Element = () => {
   );
 };
 
-export default AttendanceOverview;
+export default AttendanceOverviewView;

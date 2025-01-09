@@ -2,10 +2,45 @@
   margin-top: 40px;
 }
 
-.attendance-overview-divider {
-  margin: 40px;
-}
+// .attendance-overview-divider {
+//   margin: 40px;
+// }
 
 .insights-redirect-button {
   margin-left: auto;
+}
+
+
+.tile-card-container {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.tile-card-view {
+  width: 369px;
+  height: 116px;
+  padding: 16px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fff;
+}
+
+.bargraphs-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+
+  .ess-bargraph {
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+
+    .bargraph-title {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+  }
 }
