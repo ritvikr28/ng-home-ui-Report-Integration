@@ -34,7 +34,7 @@ import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
-import EarlytAdopterPage from "./pages/EarlyAdopter/EarlyAdopter.view";
+import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 
 
 
@@ -90,7 +90,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   const fetchData: () => Promise<void> = async () => {
     try {
-      const response: any = await getAppModulesPermissions(); 
+      const response: any = await getAppModulesPermissions();
       const menusWithPermission: IApplicationMenu[] = getMenus(response.data, allMenus);
       menuFilterHandler(menusWithPermission);
     } catch {
@@ -128,7 +128,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     if (authService.isAuthenticated()) {
       service.init();
       setIsServiceInitiated(true);
-    } 
+    }
     /* istanbul ignore next */
     else{
       authService.logOut();
@@ -136,7 +136,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   };
 
- 
+
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
   const hasUAMPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
@@ -146,10 +146,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     `${envConfig.APPLICATION}`,
     "RefreshDBORG"
   );
-  
+
   const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
   const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
-  
+
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
@@ -216,7 +216,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/AdminConsole"              
+              path="/AdminConsole"
               render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
             />
           )}
@@ -224,8 +224,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
               exact
-              path="/adminConsole/userManagement"              
-              render={() => <EarlytAdopterPage /> }
+              path="/adminConsole/userManagement"
+              render={() => <EarlyAdpterPage /> }
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
