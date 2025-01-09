@@ -16,7 +16,7 @@ const PupilDemographicsView: React.FC = () => {
   const {
     data,
     loading,
-    error,
+    error
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
 
