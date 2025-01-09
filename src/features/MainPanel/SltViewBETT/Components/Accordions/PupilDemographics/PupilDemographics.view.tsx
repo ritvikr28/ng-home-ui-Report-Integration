@@ -1,45 +1,24 @@
 /* istanbul ignore file */
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Accordion,
   AccordionHeader,
   AccordionPanel,
-  CheckBox,
-  CheckboxLabelPosition,
-  CheckBoxSelectedState,
   Grid,
-  GridItem
+  GridItem,
+  TileCard,
+  TileCardColor
 } from "@essnextgen/ui-kit";
-import { FetchSchoolInsights } from "../../../../../../shared/services/schoolInsightsDomain/schoolInsightsService";
-import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";
+import "../../../style.scss";
+import PupilDemographics from "./PupilDemographics.logic";
 
-const PupilDemographicsView: () => JSX.Element = () => {
-  const [data, setData]: [
-    ISchoolInsightsResponse | null,
-    React.Dispatch<React.SetStateAction<ISchoolInsightsResponse | null>>
-  ] = useState<ISchoolInsightsResponse | null>(null);
-  const [loading, setLoading]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-  const [error, setError]: [
-    string | null,
-    React.Dispatch<React.SetStateAction<string | null>>
-  ] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData: () => Promise<void> = async () => {
-      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true); // Fetch with IsCompulsoryAgeView set to true
-      if (result) {
-        setData(result);
-      } else {
-        setError("Failed to fetch data");
-      }
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
+const PupilDemographicsView: React.FC = () => {
+  const {
+    data,
+    loading,
+    error
+  }: { data: any; loading: boolean; error: string | null } =
+    PupilDemographics();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -47,7 +26,7 @@ const PupilDemographicsView: () => JSX.Element = () => {
   return (
     <Grid>
       <GridItem sm={12} md={11} lg={11}>
-        <div className="">
+        <div>
           <Accordion defaultExpanded>
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
@@ -58,31 +37,30 @@ const PupilDemographicsView: () => JSX.Element = () => {
               id="analytics-accordion-content"
               dataTestId="analytics-insights-accordion-panel-test-id"
             >
-              <CheckBox
-                label="Compulsory age group"
-                labelPosition={CheckboxLabelPosition.Right}
-                isSelected={
-                  data?.payload.pupilOnRoll
-                    ? CheckBoxSelectedState.Selected
-                    : CheckBoxSelectedState.DeSelected
-                }
-              />
-              <div>
-                <h3>Pupil Demographics</h3>
-                <p>Pupils on Roll: {data?.payload.pupilOnRoll ?? "N/A"}</p>
-                <p>
-                  Pupil premium (PP):{" "}
-                  {data?.payload.pupilPremiumPercentage ?? "N/A"}
-                </p>
-                <p>
-                  Total Pupil Premium:{" "}
-                  {data?.payload.totalPupilPremium ?? "N/A"}
-                </p>
-                <p>
-                  Free school meals (FSM) :{" "}
-                  {data?.payload.fsmePercentage ?? "N/A"}
-                </p>
-                <p>Total Pupil FSME: {data?.payload.totalPupilFsme ?? "N/A"}</p>
+              <div className="tile-card-container">
+                {data?.payload.pupilOnRoll !== null && (
+                  <TileCard
+                    heading="Pupils on Roll"
+                    primaryText={data?.payload.pupilOnRoll.toString()}
+                    status={TileCardColor.HIGHLIGHT}
+                  />
+                )}
+                {data?.payload.pupilPremiumPercentage !== null && (
+                  <TileCard
+                    heading="Pupil Premium (PP)"
+                    primaryText={`${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`}
+                    secondaryText="National average: 23.6%"
+                    status={TileCardColor.HIGHLIGHT}
+                  />
+                )}
+                {data?.payload.fsmePercentage !== null && (
+                  <TileCard
+                    heading="Free School Meals (FSM)"
+                    primaryText={`${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`}
+                    secondaryText="National average: 23.6%"
+                    status={TileCardColor.HIGHLIGHT}
+                  />
+                )}
               </div>
             </AccordionPanel>
           </Accordion>
