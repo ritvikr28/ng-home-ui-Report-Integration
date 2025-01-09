@@ -45,6 +45,7 @@ module.exports = {
     "no-empty-pattern": "off",
     "react/jsx-props-no-spreading": "off",
     "comma-dangle": "off",
+    "react/no-unescaped-entities": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",
       {
