@@ -13,7 +13,12 @@ import "../../../style.scss";
 import PupilDemographics from "./PupilDemographics.logic";
 
 const PupilDemographicsView: React.FC = () => {
-  const { data, loading, error } = PupilDemographics();
+  const {
+    data,
+    loading,
+    error,
+  }: { data: any; loading: boolean; error: string | null } =
+    PupilDemographics();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

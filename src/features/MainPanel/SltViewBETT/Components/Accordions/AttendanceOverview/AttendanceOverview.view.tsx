@@ -15,12 +15,12 @@ import "../../../style.scss";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
 const AttendanceOverviewView: React.FC = () => {
-  const { data, loading, error } = AttendanceOverview();
+  const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
-  const overallAbsenceData = [
+  const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
       Name: "Overall Absence",
       currentYearAvg:
@@ -28,11 +28,11 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.attendancePreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.attendanceNationalAverage || 0,
+        data?.payload.attendanceInsights.attendanceNationalAverage || 0
     }
   ];
 
-  const persistentAbsenteesData = [
+  const persistentAbsenteesData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
       Name: "Persistent Absentees",
       currentYearAvg:
@@ -41,11 +41,11 @@ const AttendanceOverviewView: React.FC = () => {
         data?.payload.attendanceInsights.persistentAbsenteePreviousYear || 0,
       nationalAvg:
         data?.payload.attendanceInsights.persistentAbsenteesNationalAverage ||
-        0,
+        0
     }
   ];
 
-  const authorisedAbsenceData = [
+  const authorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
       Name: "Authorised Absence",
       currentYearAvg:
@@ -53,11 +53,11 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.authorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0,
+        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0
     }
   ];
 
-  const unauthorisedAbsenceData = [
+  const unauthorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
       Name: "Unauthorised Absence",
       currentYearAvg:
@@ -65,29 +65,29 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.unauthorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0,
+        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0
     }
   ];
 
-  const barGraphConfig = [
+  const barGraphConfig: { label: string; dataKey: string; color: string }[] = [
     {
       label: "Current Year Average",
       dataKey: "currentYearAvg",
-      color: "#006970",
+      color: "#006970"
     },
     {
       label: "Previous Year Average",
       dataKey: "previousYearAvg",
-      color: "#78D5DB",
+      color: "#78D5DB"
     },
     {
       label: "National Average",
       dataKey: "nationalAvg",
-      color: "#00A0AA",
+      color: "#00A0AA"
     }
   ];
 
-  const handleButtonClick = () => {
+  const handleButtonClick: () => void = () => {
     window.location.href = `${window.location.origin}/reporting`;
   };
 
