@@ -51,7 +51,7 @@ const EarlyAdpterPage: React.FC = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "User management",
-              value: `${window.location.origin}/adminconsole/usermanagement`,
+              value: `${window.location.origin}/adminconsole/usermanagement`
             }}
           />
         </GridItem>
@@ -66,7 +66,7 @@ const EarlyAdpterPage: React.FC = () => {
                 {
                   active: true,
                   linkName: "Home",
-                  path: window.location.origin,
+                  path: window.location.origin
                 },
                 {
                   active: false,
@@ -77,7 +77,7 @@ const EarlyAdpterPage: React.FC = () => {
                 {
                   active: false,
                   linkName: "User management",
-                  path: "#",
+                  path: "#"
                 }
               ]}
               className="essui-Breadcrumbs"
