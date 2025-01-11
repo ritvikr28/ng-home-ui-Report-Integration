@@ -9,16 +9,17 @@ import {
   ButtonColor,
   ButtonSize,
   Grid,
-  GridItem
+  GridItem,
+  Loader,
+  LoaderType,
+  Notification,
+  NotificationStatus
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
 const AttendanceOverviewView: React.FC = () => {
   const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
@@ -71,17 +72,17 @@ const AttendanceOverviewView: React.FC = () => {
 
   const barGraphConfig: { label: string; dataKey: string; color: string }[] = [
     {
-      label: "Current Year Average",
+      label: "Current year average",
       dataKey: "currentYearAvg",
       color: "#006970"
     },
     {
-      label: "Previous Year Average",
+      label: "Previous year average",
       dataKey: "previousYearAvg",
       color: "#78D5DB"
     },
     {
-      label: "National Average",
+      label: "National average",
       dataKey: "nationalAvg",
       color: "#00A0AA"
     }
@@ -95,98 +96,115 @@ const AttendanceOverviewView: React.FC = () => {
     <Grid>
       <GridItem sm={12} md={11} lg={11}>
         <div className="attendance-overview">
-          <Accordion defaultExpanded>
-            <AccordionHeader dataTestId="pupils-accordion-header-test-id">
-              <span className="essui-global-typography-default-subtitle">
-                Attendance Overview
-              </span>
-            </AccordionHeader>
-            <AccordionPanel
-              id="analytics-accordion-content"
-              dataTestId="analytics-insights-accordion-panel-test-id"
-            >
-              <Button
-                className="insights-redirect-button"
-                dataTestId="insights-button"
-                size={ButtonSize.Small}
-                color={ButtonColor.Secondary}
-                onClick={handleButtonClick}
+          {error ? (
+            <Notification
+              className="attendance-error-banner"
+              status={NotificationStatus.WARNING}
+              title="Data Fetch Error"
+              message="There was an error fetching the attendance data. Please try again later."
+            />
+          ) : (
+            <Accordion defaultExpanded>
+              <AccordionHeader dataTestId="pupils-accordion-header-test-id">
+                <span className="essui-global-typography-default-subtitle">
+                  Attendance overview
+                </span>
+              </AccordionHeader>
+              <AccordionPanel
+                id="analytics-accordion-content"
+                dataTestId="analytics-insights-accordion-panel-test-id"
               >
-                More attendance insights
-              </Button>
-
-              <div className="bargraphs-container">
-                <Bargraphs
-                  data={overallAbsenceData}
-                  configInfo={barGraphConfig}
-                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                  title="Overall absence"
-                  Name=""
-                  CurrentYearAvg={null}
-                  PreviousYearAvg={null}
-                  NationalAvg={null}
-                  isFetchSucessfully
-                  unsuccessfullMsg=""
-                  firstLabel="Current Year"
-                  secondLabel="Previous Year"
-                  thirdLabel="National Average"
-                  labels={undefined}
-                  heading="Overall Absence Overview"
-                />
-                <Bargraphs
-                  data={persistentAbsenteesData}
-                  configInfo={barGraphConfig}
-                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                  title="Persistent absentees"
-                  Name=""
-                  CurrentYearAvg={null}
-                  PreviousYearAvg={null}
-                  NationalAvg={null}
-                  isFetchSucessfully
-                  unsuccessfullMsg=""
-                  firstLabel="Current Year"
-                  secondLabel="Previous Year"
-                  thirdLabel="National Average"
-                  labels={undefined}
-                  heading="Overall Absence Overview"
-                />
-                <Bargraphs
-                  data={authorisedAbsenceData}
-                  configInfo={barGraphConfig}
-                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                  title="Authorised absence"
-                  Name=""
-                  CurrentYearAvg={null}
-                  PreviousYearAvg={null}
-                  NationalAvg={null}
-                  isFetchSucessfully
-                  unsuccessfullMsg=""
-                  firstLabel="Current Year"
-                  secondLabel="Previous Year"
-                  thirdLabel="National Average"
-                  labels={undefined}
-                  heading="Overall Absence Overview"
-                />
-                <Bargraphs
-                  data={unauthorisedAbsenceData}
-                  configInfo={barGraphConfig}
-                  cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                  title="Unauthorised Absence"
-                  Name=""
-                  CurrentYearAvg={null}
-                  PreviousYearAvg={null}
-                  NationalAvg={null}
-                  isFetchSucessfully
-                  unsuccessfullMsg=""
-                  firstLabel="Current Year"
-                  secondLabel="Previous Year"
-                  thirdLabel="National Average"
-                  labels={undefined}
-                  heading="Overall Absence Overview"
-                />
-              </div>
-            </AccordionPanel>
-          </Accordion>
+                <Button
+                  className="insights-redirect-button"
+                  dataTestId="insights-button"
+                  size={ButtonSize.Small}
+                  color={ButtonColor.Secondary}
+                  onClick={handleButtonClick}
+                >
+                  More attendance insights
+                </Button>
+                <div className="bargraphs-container">
+                  {loading ? (
+                    <Loader
+                      loaderText="Please wait..."
+                      loaderType={LoaderType.Circular}
+                    />
+                  ) : (
+                    <>
+                      <Bargraphs
+                        data={overallAbsenceData}
+                        configInfo={barGraphConfig}
+                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                        title="Overall absence"
+                        Name=""
+                        CurrentYearAvg={null}
+                        PreviousYearAvg={null}
+                        NationalAvg={null}
+                        isFetchSucessfully
+                        unsuccessfullMsg=""
+                        firstLabel="Current year"
+                        secondLabel="Previous year"
+                        thirdLabel="National average"
+                        labels={undefined}
+                        heading=""
+                      />
+                      <Bargraphs
+                        data={persistentAbsenteesData}
+                        configInfo={barGraphConfig}
+                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                        title="Persistent absentees"
+                        Name=""
+                        CurrentYearAvg={null}
+                        PreviousYearAvg={null}
+                        NationalAvg={null}
+                        isFetchSucessfully
+                        unsuccessfullMsg=""
+                        firstLabel="Current year"
+                        secondLabel="Previous year"
+                        thirdLabel="National average"
+                        labels={undefined}
+                        heading=""
+                      />
+                      <Bargraphs
+                        data={authorisedAbsenceData}
+                        configInfo={barGraphConfig}
+                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                        title="Authorised absence"
+                        Name=""
+                        CurrentYearAvg={null}
+                        PreviousYearAvg={null}
+                        NationalAvg={null}
+                        isFetchSucessfully
+                        unsuccessfullMsg=""
+                        firstLabel="Current year"
+                        secondLabel="Previous year"
+                        thirdLabel="National average"
+                        labels={undefined}
+                        heading=""
+                      />
+                      <Bargraphs
+                        data={unauthorisedAbsenceData}
+                        configInfo={barGraphConfig}
+                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                        title="Unauthorised absence"
+                        Name=""
+                        CurrentYearAvg={null}
+                        PreviousYearAvg={null}
+                        NationalAvg={null}
+                        isFetchSucessfully
+                        unsuccessfullMsg=""
+                        firstLabel="Current year"
+                        secondLabel="Previous year"
+                        thirdLabel="National average"
+                        labels={undefined}
+                        heading=""
+                      />
+                    </>
+                  )}
+                </div>
+              </AccordionPanel>
+            </Accordion>
+          )}
         </div>
       </GridItem>
     </Grid>

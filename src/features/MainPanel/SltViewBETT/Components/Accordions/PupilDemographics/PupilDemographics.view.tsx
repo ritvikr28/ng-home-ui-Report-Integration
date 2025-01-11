@@ -6,8 +6,12 @@ import {
   AccordionPanel,
   Grid,
   GridItem,
+  Loader,
+  LoaderType,
   TileCard,
-  TileCardColor
+  TileCardColor,
+  ValidationText,
+  ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import PupilDemographics from "./PupilDemographics.logic";
@@ -19,9 +23,6 @@ const PupilDemographicsView: React.FC = () => {
     error
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
     <Grid>
@@ -38,29 +39,79 @@ const PupilDemographicsView: React.FC = () => {
               dataTestId="analytics-insights-accordion-panel-test-id"
             >
               <div className="tile-card-container">
-                {data?.payload.pupilOnRoll !== null && (
+                {loading && (
+                  <Loader
+                    loaderText="Please wait..."
+                    loaderType={LoaderType.Circular}
+                  />
+                )}
+
+                {!loading && error && (
                   <TileCard
-                    heading="Pupils on Roll"
+                    primaryText={
+                      <ValidationText
+                        text="Pupils on roll insights unavailable"
+                        textLevel={ValidationTextLevel.Warning}
+                        dataTestId="pupils-on-roll-error"
+                      />
+                    }
+                    status={TileCardColor.HIGHLIGHT}
+                  />
+                )}
+
+                {!loading && !error && data?.payload.pupilOnRoll !== null && (
+                  <TileCard
+                    heading="Pupils on roll"
                     primaryText={data?.payload.pupilOnRoll.toString()}
                     status={TileCardColor.HIGHLIGHT}
                   />
                 )}
-                {data?.payload.pupilPremiumPercentage !== null && (
+
+                {!loading && error && (
                   <TileCard
-                    heading="Pupil Premium (PP)"
-                    primaryText={`${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`}
-                    secondaryText="National average: 23.6%"
+                    primaryText={
+                      <ValidationText
+                        text="Pupil premium insight unavailable"
+                        textLevel={ValidationTextLevel.Warning}
+                        dataTestId="pupil-premium-error"
+                      />
+                    }
                     status={TileCardColor.HIGHLIGHT}
                   />
                 )}
-                {data?.payload.fsmePercentage !== null && (
+
+                {!loading &&
+                  !error &&
+                  data?.payload.pupilPremiumPercentage !== null && (
+                    <TileCard
+                      heading="Pupil premium (PP)"
+                      primaryText={`${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`}
+                      status={TileCardColor.HIGHLIGHT}
+                    />
+                  )}
+
+                {!loading && error && (
                   <TileCard
-                    heading="Free School Meals (FSM)"
-                    primaryText={`${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`}
-                    secondaryText="National average: 23.6%"
+                    primaryText={
+                      <ValidationText
+                        text="FSM insight unavailable"
+                        textLevel={ValidationTextLevel.Warning}
+                        dataTestId="fsm-error"
+                      />
+                    }
                     status={TileCardColor.HIGHLIGHT}
                   />
                 )}
+
+                {!loading &&
+                  !error &&
+                  data?.payload.fsmePercentage !== null && (
+                    <TileCard
+                      heading="Free school meals (FSM)"
+                      primaryText={`${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`}
+                      status={TileCardColor.HIGHLIGHT}
+                    />
+                  )}
               </div>
             </AccordionPanel>
           </Accordion>
