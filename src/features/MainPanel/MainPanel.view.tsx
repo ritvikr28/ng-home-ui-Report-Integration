@@ -1,6 +1,7 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {  Grid, GridItem} from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { useEffect } from "react";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -66,7 +67,7 @@ const requiredSLTviewPermissions: Permission[] = [
   }
 ];
 
-const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
+const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
 ) => {
   const {
@@ -81,10 +82,41 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
     `${envConfig.APPLICATION}`,
     "SLTviewBETT"
   );
-
+  //  ------------------Needed if sidepanel needs to be closed-----------------
+  // const isClosedSidePanel: boolean = useMediaQuery(
+  //   "(max-width: 1023.9px)"
+  // );
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
-  
+
+  const isSLTView = SLTviewBETT &&
+    hasSLTviewOrgPermission &&
+    authService.isAuthorised(
+      requiredSLTviewPermissions,
+      MatchPermissions.all
+    )
+
+  //  -----------------To close sidepanel------------------------
+  // useEffect(() => {
+  //   SLTviewBETT &&
+  //   hasSLTviewOrgPermission &&
+  //   authService.isAuthorised(
+  //     requiredSLTviewPermissions,
+  //     MatchPermissions.all
+  //   ) && isClosedSidePanel && setIsOpen ? setIsOpen(false) : setIsOpen && setIsOpen(true)
+
+  // }, [isClosedSidePanel])
+
+  useEffect(() => {
+
+    const element = document.querySelector('.side-view-dertfsg11463f') as HTMLElement;
+    if (element && (isSLTView === true)) {
+      // Set the height dynamically based on the height state
+      element.style.height = `205vh`;
+    }
+  }, [isSLTView]);
+
+
   return (
     <div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
       <Grid dataTestId="mainPanelView">
@@ -104,39 +136,41 @@ const MainPanelView:(props: IMainPanelProps) => JSX.Element = (
             requiredRegisterPermissions,
             MatchPermissions.all
           ) && (
-            <>
-              <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-              <div
-                className={
-                  isOpen
-                    ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
-                    : "divider-container-dertfsg11463f"
-                }
-              />
-            </>
-          )}
+              <>
+                <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+                <div
+                  className={
+                    isOpen
+                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
+                      : "divider-container-dertfsg11463f"
+                  }
+                />
+              </>
+            )}
 
           {authService.isAuthorised(
             requiredPupilProfilePermissions,
             MatchPermissions.all
           ) && (
-            <>
-              <Search isOpen={isOpen} />
-              <div
-                className={
-                  isOpen
-                    ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
-                    : "divider-container-dertfsg11463f"
-                }
-              />
-            </>
-          )}
-          {SLTviewBETT &&
+              <>
+                <Search isOpen={isOpen} />
+                <div
+                  className={
+                    isOpen
+                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
+                      : "divider-container-dertfsg11463f"
+                  }
+                />
+              </>
+            )}
+          {
+            SLTviewBETT &&
             hasSLTviewOrgPermission &&
             authService.isAuthorised(
               requiredSLTviewPermissions,
               MatchPermissions.all
-            ) && (
+            ) &&
+            (
               <>
                 <SltViewBett />
                 <div
