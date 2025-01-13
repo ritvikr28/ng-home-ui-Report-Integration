@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import React from "react";
 import {
   Accordion,
@@ -24,6 +23,85 @@ const PupilDemographicsView: React.FC = () => {
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
 
+    const renderLoaderTileCard: () => JSX.Element = () => (
+      <TileCard
+        primaryText={
+          <Loader
+            loaderText="Please wait..."
+            loaderType={LoaderType.Circular}
+            className="tilecard-loader"
+          />
+        }
+        status={TileCardColor.HIGHLIGHT}
+      />
+    );
+
+  const renderErrorTileCard: (text: string, testId: string) => JSX.Element = (text, testId) => (
+    <TileCard
+      primaryText={
+        <ValidationText
+          text={text}
+          textLevel={ValidationTextLevel.Warning}
+          dataTestId={testId}
+        />
+      }
+      status={TileCardColor.HIGHLIGHT}
+    />
+  );
+
+  const renderDataTileCard: (heading: string, primaryText: string) => JSX.Element = (heading, primaryText) => (
+    <TileCard
+      heading={heading}
+      primaryText={primaryText}
+      status={TileCardColor.HIGHLIGHT}
+    />
+  );
+
+  const renderPupilOnRoll = () => {
+    if (loading) return renderLoaderTileCard();
+    if (error)
+      return renderErrorTileCard(
+        "Pupils on roll insights unavailable",
+        "pupils-on-roll-error"
+      );
+    if (data?.payload.pupilOnRoll !== null) {
+      return renderDataTileCard(
+        "Pupils on roll",
+        data?.payload.pupilOnRoll.toString()
+      );
+    }
+    return null;
+  };
+
+  const renderPupilPremium = () => {
+    if (loading) return renderLoaderTileCard();
+    if (error)
+      return renderErrorTileCard(
+        "Pupil premium insight unavailable",
+        "pupil-premium-error"
+      );
+    if (data?.payload.pupilPremiumPercentage !== null) {
+      return renderDataTileCard(
+        "Pupil premium (PP)",
+        `${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`
+      );
+    }
+    return null;
+  };
+
+  const renderFSM = () => {
+    if (loading) return renderLoaderTileCard();
+    if (error)
+      return renderErrorTileCard("FSM insight unavailable", "fsm-error");
+    if (data?.payload.fsmePercentage !== null) {
+      return renderDataTileCard(
+        "Free school meals (FSM)",
+        `${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`
+      );
+    }
+    return null;
+  };
+
   return (
     <Grid>
       <GridItem sm={12} md={11} lg={11}>
@@ -31,7 +109,7 @@ const PupilDemographicsView: React.FC = () => {
           <Accordion defaultExpanded>
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
-                Pupil Demographics
+                Pupil demographics
               </span>
             </AccordionHeader>
             <AccordionPanel
@@ -39,79 +117,9 @@ const PupilDemographicsView: React.FC = () => {
               dataTestId="analytics-insights-accordion-panel-test-id"
             >
               <div className="tile-card-container">
-                {loading && (
-                  <Loader
-                    loaderText="Please wait..."
-                    loaderType={LoaderType.Circular}
-                  />
-                )}
-
-                {!loading && error && (
-                  <TileCard
-                    primaryText={
-                      <ValidationText
-                        text="Pupils on roll insights unavailable"
-                        textLevel={ValidationTextLevel.Warning}
-                        dataTestId="pupils-on-roll-error"
-                      />
-                    }
-                    status={TileCardColor.HIGHLIGHT}
-                  />
-                )}
-
-                {!loading && !error && data?.payload.pupilOnRoll !== null && (
-                  <TileCard
-                    heading="Pupils on roll"
-                    primaryText={data?.payload.pupilOnRoll.toString()}
-                    status={TileCardColor.HIGHLIGHT}
-                  />
-                )}
-
-                {!loading && error && (
-                  <TileCard
-                    primaryText={
-                      <ValidationText
-                        text="Pupil premium insight unavailable"
-                        textLevel={ValidationTextLevel.Warning}
-                        dataTestId="pupil-premium-error"
-                      />
-                    }
-                    status={TileCardColor.HIGHLIGHT}
-                  />
-                )}
-
-                {!loading &&
-                  !error &&
-                  data?.payload.pupilPremiumPercentage !== null && (
-                    <TileCard
-                      heading="Pupil premium (PP)"
-                      primaryText={`${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`}
-                      status={TileCardColor.HIGHLIGHT}
-                    />
-                  )}
-
-                {!loading && error && (
-                  <TileCard
-                    primaryText={
-                      <ValidationText
-                        text="FSM insight unavailable"
-                        textLevel={ValidationTextLevel.Warning}
-                        dataTestId="fsm-error"
-                      />
-                    }
-                    status={TileCardColor.HIGHLIGHT}
-                  />
-                )}
-
-                {!loading &&
-                  !error &&
-                  data?.payload.fsmePercentage !== null && (
-                    <TileCard
-                      heading="Free school meals (FSM)"
-                      primaryText={`${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`}
-                      status={TileCardColor.HIGHLIGHT}
-                    />
-                  )}
+                {renderPupilOnRoll()}
+                {renderPupilPremium()}
+                {renderFSM()}
               </div>
             </AccordionPanel>
           </Accordion>
