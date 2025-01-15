@@ -82,19 +82,12 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     `${envConfig.APPLICATION}`,
     "SLTviewBETT"
   );
-  //  ------------------Needed if sidepanel needs to be closed-----------------
-  const isClosedSidePanel: boolean = useMediaQuery(
-    "(max-width: 1023.9px)"
-  );
+  // //  ------------------Needed if sidepanel needs to be closed-----------------
+  // const isClosedSidePanel: boolean = useMediaQuery(
+  //   "(max-width: 1023.9px)"
+  // );
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
-
-  const isSLTView = SLTviewBETT &&
-    hasSLTviewOrgPermission &&
-    authService.isAuthorised(
-      requiredSLTviewPermissions,
-      MatchPermissions.all
-    )
 
   //  -----------------To close sidepanel------------------------
   // useEffect(() => {
@@ -107,14 +100,6 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   // }, [isClosedSidePanel])
 
-  useEffect(() => {
-
-    const element = document.querySelector('.side-view-dertfsg11463f') as HTMLElement;
-    if (element && (isSLTView === true)) {
-      // Set the height dynamically based on the height state
-      element.style.height = isClosedSidePanel === true ? `` : `240vh`;
-    }
-  }, [isSLTView, isClosedSidePanel]);
 
 
   return (

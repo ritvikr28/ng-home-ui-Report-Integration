@@ -32,7 +32,7 @@ const PupilDemographicsView: React.FC = () => {
             className="tilecard-loader"
           />
         }
-        status={TileCardColor.HIGHLIGHT}
+        status={TileCardColor?.HIGHLIGHT}
       />
     );
 
@@ -45,7 +45,7 @@ const PupilDemographicsView: React.FC = () => {
           dataTestId={testId}
         />
       }
-      status={TileCardColor.HIGHLIGHT}
+      status={TileCardColor?.HIGHLIGHT}
     />
   );
 
@@ -53,7 +53,7 @@ const PupilDemographicsView: React.FC = () => {
     <TileCard
       heading={heading}
       primaryText={primaryText}
-      status={TileCardColor.HIGHLIGHT}
+      status={TileCardColor?.HIGHLIGHT}
     />
   );
 
