@@ -1,5 +1,5 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import {  Grid, GridItem} from "@essnextgen/ui-kit";
+import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { useEffect } from "react";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
@@ -83,9 +83,9 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     "SLTviewBETT"
   );
   //  ------------------Needed if sidepanel needs to be closed-----------------
-  // const isClosedSidePanel: boolean = useMediaQuery(
-  //   "(max-width: 1023.9px)"
-  // );
+  const isClosedSidePanel: boolean = useMediaQuery(
+    "(max-width: 1023.9px)"
+  );
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
 
@@ -112,9 +112,9 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     const element = document.querySelector('.side-view-dertfsg11463f') as HTMLElement;
     if (element && (isSLTView === true)) {
       // Set the height dynamically based on the height state
-      element.style.height = `205vh`;
+      element.style.height = isClosedSidePanel === true ? `` : `240vh`;
     }
-  }, [isSLTView]);
+  }, [isSLTView, isClosedSidePanel]);
 
 
   return (

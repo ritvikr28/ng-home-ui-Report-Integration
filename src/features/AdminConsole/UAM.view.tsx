@@ -136,6 +136,7 @@ const UAM: () => JSX.Element = () => {
               ]}
               heading="Users"
               subHeading="Create and manage users within your Trust"
+              enableSearch={true}
             />
           </div>
         </GridItem>
