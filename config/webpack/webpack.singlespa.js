@@ -29,7 +29,7 @@ module.exports = (webpackConfigEnv, argv) => {
             path: path.resolve(__dirname, "../../dist/singlespa"),
         },
         entry: "./src/singleSpa/index.tsx",
-        externals:["react", "react-dom", "single-spa"],
+        externals:["@essnextgen/ui-kit","react", "react-dom", "single-spa"],
         mode: "production",
         plugins:[
             new ProvidePlugin({
