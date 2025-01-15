@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { useMediaQuery } from "@essnextgen/ui-kit";
 import MainPanelView from "./MainPanel.view";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 
 import { IMainPanelProps } from "./MainPanelProps";
-import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
-import { useMediaQuery } from "@essnextgen/ui-kit";
 import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
@@ -62,25 +62,26 @@ const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
     )
   const setHeight = () => {
     const element = document.querySelector('.side-view-dertfsg11463f') as HTMLElement;
-    return isSLTView === true ?
-      element.style.height = isClosedSidePanel === true || isOpen === false ? `` : `205vh` : ""
+    if (isSLTView === true) {
+      element.style.height = isClosedSidePanel === true || isOpen === false ? `` : `205vh`
+    }
   }
 
   useEffect(() => {
     setHeight()
-  }, [isSLTView, isClosedSidePanel,isOpen]);
+  }, [isSLTView, isClosedSidePanel, isOpen]);
 
   return (
     <>
-            <MainPanelView
-            schoolName={schoolName}
-            isError={isError}
-            isSchoolPrimary={isSchoolPrimary}
-            isOpen={isOpen}
-            setIsOpen={setIsOpen} 
-            />
-   </>
+      <MainPanelView
+        schoolName={schoolName}
+        isError={isError}
+        isSchoolPrimary={isSchoolPrimary}
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+      />
+    </>
   );
-  };
-  
-  export default MainPanel;
+};
+
+export default MainPanel;
