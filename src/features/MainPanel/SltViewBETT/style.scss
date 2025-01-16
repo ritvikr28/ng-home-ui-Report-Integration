@@ -6,6 +6,21 @@
   }
 }
 
+// ---------------3840 X 2160--------------
+@media (min-width: 3840px) {
+  .tile-card-view {
+    width: 32%;
+  }
+}
+
+// ------------------------------------
+
+@media only screen and (min-width: 1440px) and (max-width:3839.9px) {
+  .tile-card-view {
+    width: 344px;
+  }
+}
+
 .insights-redirect-button {
   margin-left: auto;
 }
@@ -18,7 +33,7 @@
 }
 
 .tile-card-view {
-  width: 369px;
+  // width: 369px;
   height: 116px;
   padding: 16px;
   border: 1px solid #e0e0e0;
@@ -30,6 +45,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  margin-top: 24px; //space between header and panel
 
   .ess-bargraph {
     border: 1px solid #dcdcdc;
@@ -55,8 +71,12 @@
 @media (max-width: 768px) {
   .bargraphs-container {
     display: inline-block;
-    width: 100%;
+    width: 75%;
 
+  }
+
+  .tile-card-view {
+    width: 100%;
   }
 }
 
@@ -88,9 +108,6 @@
     display: grid;
   }
 
-  // .bar{
-  //   width:95%;
-  // }//To adjust bar with label
 
   .bargraphs-container {
     display: inline-block;
@@ -105,10 +122,10 @@
     width: 100vh;
   }
 
-  .essui-grid-nested-container,
-  .essui-grid-row,
-  .app-dertfsg11463f {
-    overflow-x: auto;
-  }
+}
+
+.tilecard-loader {
+  transform: scale(0.6);
+  color: #000;
 }
 

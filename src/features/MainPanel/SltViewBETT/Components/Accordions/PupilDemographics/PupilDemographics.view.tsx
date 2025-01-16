@@ -105,7 +105,7 @@ const PupilDemographicsView: React.FC = () => {
   return (
     <Grid>
       <GridItem sm={12} md={11} lg={11}>
-        <div>
+        <div className="pupil-demographics">
           <Accordion defaultExpanded>
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
