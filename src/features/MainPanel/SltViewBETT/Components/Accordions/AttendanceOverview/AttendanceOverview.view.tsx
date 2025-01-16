@@ -149,23 +149,6 @@ const AttendanceOverviewView: React.FC = () => {
                         heading=""
                       />
                       <Bargraphs
-                        data={persistentAbsenteesData}
-                        configInfo={barGraphConfig}
-                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Persistent absentees"
-                        Name=""
-                        CurrentYearAvg={null}
-                        PreviousYearAvg={null}
-                        NationalAvg={null}
-                        isFetchSucessfully
-                        unsuccessfullMsg=""
-                        firstLabel="Current year"
-                        secondLabel="Previous year"
-                        thirdLabel="National average"
-                        labels={undefined}
-                        heading=""
-                      />
-                      <Bargraphs
                         data={authorisedAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
@@ -187,6 +170,23 @@ const AttendanceOverviewView: React.FC = () => {
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
                         title="Unauthorised absence"
+                        Name=""
+                        CurrentYearAvg={null}
+                        PreviousYearAvg={null}
+                        NationalAvg={null}
+                        isFetchSucessfully
+                        unsuccessfullMsg=""
+                        firstLabel="Current year"
+                        secondLabel="Previous year"
+                        thirdLabel="National average"
+                        labels={undefined}
+                        heading=""
+                      />
+                      <Bargraphs
+                        data={persistentAbsenteesData}
+                        configInfo={barGraphConfig}
+                        cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
+                        title="Persistent absence"
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}
