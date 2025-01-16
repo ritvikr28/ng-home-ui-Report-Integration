@@ -45,7 +45,70 @@
   }
 }
 
-.tilecard-loader {
-  transform: scale(0.6);
-  color: #000;
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .bargraphs-container {
+    display: inline-block;
+    width: 100%;
+  }
 }
+
+@media (max-width: 768px) {
+  .bargraphs-container {
+    display: inline-block;
+    width: 100%;
+
+  }
+}
+
+// @media only screen and (min-width: 768px) {
+//   .essui-grid-col{
+//       padding: 0 12px;
+//       width: 100%;
+//   }
+// }// working
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .essui-grid-col {
+    padding: 0 12px;
+    width: 100%;
+  }
+}
+
+@media (max-width: 390px) {
+  .bargraphs-container {
+    display: inline-block;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .essui-grid-col {
+    padding: 16px;
+    width: 100%;
+
+    display: grid;
+  }
+
+  // .bar{
+  //   width:95%;
+  // }//To adjust bar with label
+
+  .bargraphs-container {
+    display: inline-block;
+    width: 100%;
+  }
+
+  .attendance-overview {
+    width: 100vh;
+  }
+
+  .essui-accordion-wrapper.essui-accordion--expanded {
+    width: 100vh;
+  }
+
+  .essui-grid-nested-container,
+  .essui-grid-row,
+  .app-dertfsg11463f {
+    overflow-x: auto;
+  }
+}
+
