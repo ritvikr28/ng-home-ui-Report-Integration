@@ -60,7 +60,7 @@ const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
       requiredSLTviewPermissions,
       MatchPermissions.all
     )
-  const setHeight = () => {
+  const setHeight: () => void = () => {
     const element = document.querySelector('.side-view-dertfsg11463f') as HTMLElement;
     if (isSLTView === true) {
       element.style.height = isClosedSidePanel === true || isOpen === false ? `` : `205vh`
