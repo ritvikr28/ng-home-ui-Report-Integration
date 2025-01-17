@@ -361,16 +361,16 @@ stages:
                       clusterName: "paz-qa-pfm-aks"
                       subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
 
-        #- job: QA_Test
-        #  displayName: Running Automation UI Test cases on qa env
-        #  dependsOn: deploy_nghomeui_qa_eng
-        #  steps:
-        #  - template: azure-pipeline-run-automation-test.yaml
-        #    parameters:
-        #      env: "qa"
-        #      type: "ui"
-        #      test_tags: "@regression"
-        #      pat_token: $(PAT)   
+        - job: QA_Test
+          displayName: Running Automation UI Test cases on qa env
+          dependsOn: deploy_nghomeui_qa_eng
+          steps:
+          - template: azure-pipeline-run-automation-test.yaml
+            parameters:
+              env: "qa"
+              type: "ui"
+              test_tags: "@regression"
+              pat_token: $(PAT)   
                               
         # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
         #   parameters:
