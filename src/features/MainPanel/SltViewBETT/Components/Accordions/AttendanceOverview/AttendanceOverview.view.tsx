@@ -134,7 +134,7 @@ const AttendanceOverviewView: React.FC = () => {
                         data={overallAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Overall absence"
+                        title="Overall attendance"
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}
