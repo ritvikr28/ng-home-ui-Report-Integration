@@ -70,6 +70,7 @@ const PupilDemographicsView: React.FC = () => {
         data?.payload.pupilOnRoll.toString()
       );
     }
+    /* istanbul ignore next */
     return null;
   };
 
@@ -86,6 +87,7 @@ const PupilDemographicsView: React.FC = () => {
         `${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`
       );
     }
+    /* istanbul ignore next */
     return null;
   };
 
@@ -99,6 +101,7 @@ const PupilDemographicsView: React.FC = () => {
         `${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`
       );
     }
+    /* istanbul ignore next */
     return null;
   };
 

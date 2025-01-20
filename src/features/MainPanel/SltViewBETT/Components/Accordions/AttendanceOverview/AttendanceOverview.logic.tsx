@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import React, { useEffect, useState } from "react";
 import { ISchoolInsightsResponse } from "../../../../../../shared/model/SchoolInsightsDomain/responseModels";
 import { FetchSchoolInsights } from "../../../../../../shared/services/schoolInsightsDomain/schoolInsightsService";
