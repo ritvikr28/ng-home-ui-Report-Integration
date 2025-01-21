@@ -109,9 +109,9 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
 
    let className = "";
    if (isOpen && isDesktopView) {
-     className = "welcome-parent parent1-open";
+     className = "welcome-parent parent1-open pupil-demo";
    } else if (isDesktopView) {
-     className = "welcome-parent parent1";
+     className = "welcome-parent parent1 pupil-demo";
    }
 
   return (
