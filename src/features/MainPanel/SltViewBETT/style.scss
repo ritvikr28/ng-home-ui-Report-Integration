@@ -1,3 +1,11 @@
+.sltview-bett-class {
+  width: 107%;
+}
+
+.sltview-bett-class-close {
+  width: 100%;
+}
+
 .attendance-overview {
   margin-top: 40px;
 
@@ -12,13 +20,17 @@
   .tile-card-view {
     width: 32.8%;
   }
+
+  .sltview-bett-class {
+    width: 94%;
+  }
 }
 
 // ------------------------------------
 
 @media only screen and (min-width: 1440px) and (max-width:3839.9px) {
   .tile-card-view {
-    width: 32%;
+    width: 32% !important;
   }
 }
 
@@ -76,9 +88,6 @@
 
   }
 
-  .tile-card-view {
-    width: 100%;
-  }
 }
 
 // @media only screen and (min-width: 768px) {
@@ -95,11 +104,19 @@
   }
 }
 
-@media (max-width: 390px) {
+@media only screen and (min-width: 390px) and (max-width: 767.9px) {
   .bargraphs-container {
     display: inline-block;
   }
+
+  .essui-accordion-wrapper.essui-accordion--expanded {
+    width: 39% !important;
+  }
 }
+
+// .essui-accordion-wrapper{
+//   width: 74% !important;
+// }
 
 @media only screen and (max-width: 767px) {
   .essui-grid-col {

@@ -156,7 +156,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             ) &&
             (
               <>
-                <SltViewBett />
+                <SltViewBett isOpen={isOpen} />
                 <div
                   className={
                     isOpen
