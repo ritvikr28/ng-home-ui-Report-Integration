@@ -107,15 +107,16 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
      "(min-width:1024px) and (max-width: 3900px)"
    );
 
+   let className = "";
+   if (isOpen && isDesktopView) {
+     className = "welcome-parent parent1-open";
+   } else if (isDesktopView) {
+     className = "welcome-parent parent1";
+   }
+
   return (
     <Grid
-      className={
-        isOpen && isDesktopView
-          ? "welcome-parent parent1-open"
-          : isDesktopView
-          ? "welcome-parent parent1"
-          : ""
-      }
+      className={className}
     >
       <GridItem sm={12} md={11} lg={11}>
         <div className="pupil-demographics">
