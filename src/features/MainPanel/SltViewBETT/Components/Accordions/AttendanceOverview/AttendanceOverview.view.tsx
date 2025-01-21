@@ -12,12 +12,13 @@ import {
   Loader,
   LoaderType,
   Notification,
-  NotificationStatus
+  NotificationStatus,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
-const AttendanceOverviewView: React.FC = () => {
+const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
   const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
   const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
@@ -91,8 +92,19 @@ const AttendanceOverviewView: React.FC = () => {
     window.location.href = `${window.location.origin}/reporting`;
   };
 
+   const isDesktopView: boolean = useMediaQuery(
+     "(min-width:1024px) and (max-width: 3900px)"
+   );
   return (
-    <Grid>
+    <Grid
+      className={
+        isOpen && isDesktopView
+          ? "welcome-parent parent1-open"
+          : isDesktopView
+          ? "welcome-parent parent1"
+          : ""
+      }
+    >
       <GridItem sm={12} md={11} lg={11}>
         <div className="attendance-overview">
           {error ? (

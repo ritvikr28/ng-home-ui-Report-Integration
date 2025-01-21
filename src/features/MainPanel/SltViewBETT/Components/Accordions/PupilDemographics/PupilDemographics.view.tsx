@@ -9,13 +9,14 @@ import {
   LoaderType,
   TileCard,
   TileCardColor,
+  useMediaQuery,
   ValidationText,
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import PupilDemographics from "./PupilDemographics.logic";
 
-const PupilDemographicsView: React.FC = () => {
+const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
   const {
     data,
     loading,
@@ -102,8 +103,20 @@ const PupilDemographicsView: React.FC = () => {
     return null;
   };
 
+   const isDesktopView: boolean = useMediaQuery(
+     "(min-width:1024px) and (max-width: 3900px)"
+   );
+
   return (
-    <Grid>
+    <Grid
+      className={
+        isOpen && isDesktopView
+          ? "welcome-parent parent1-open"
+          : isDesktopView
+          ? "welcome-parent parent1"
+          : ""
+      }
+    >
       <GridItem sm={12} md={11} lg={11}>
         <div className="pupil-demographics">
           <Accordion defaultExpanded>
