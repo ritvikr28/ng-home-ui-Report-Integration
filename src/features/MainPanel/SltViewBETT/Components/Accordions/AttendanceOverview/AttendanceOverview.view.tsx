@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 import React from "react";
 import {
   Accordion,
@@ -13,12 +12,13 @@ import {
   Loader,
   LoaderType,
   Notification,
-  NotificationStatus
+  NotificationStatus,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
-const AttendanceOverviewView: React.FC = () => {
+const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
   const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
   const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
@@ -92,8 +92,20 @@ const AttendanceOverviewView: React.FC = () => {
     window.location.href = `${window.location.origin}/reporting`;
   };
 
+   const isDesktopView: boolean = useMediaQuery(
+     "(min-width:1024px) and (max-width: 3900px)"
+   );
+
+   let className = "";
+   if (isOpen && isDesktopView) {
+     className = "welcome-parent parent1-open pupil-demo";
+   } else if (isDesktopView) {
+     className = "welcome-parent parent1 pupil-demo";
+   }
+   
   return (
-    <Grid>
+    <Grid
+      className={className}>
       <GridItem sm={12} md={11} lg={11}>
         <div className="attendance-overview">
           {error ? (
@@ -135,7 +147,7 @@ const AttendanceOverviewView: React.FC = () => {
                         data={overallAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Overall absence"
+                        title="Overall attendance"
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}
