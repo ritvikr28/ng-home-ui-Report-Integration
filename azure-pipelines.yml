@@ -514,6 +514,16 @@ stages:
                       artifactName: 'drop'
                       targetPath: '$(Pipeline.Workspace)/drop'
 
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin
+
                   - task: replacetokens@5
                     displayName: 'Replace Token in Deployment.YAML'
                     inputs:
