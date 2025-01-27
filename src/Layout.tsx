@@ -35,6 +35,7 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
+import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 
 
 
@@ -218,6 +219,14 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               /* istanbul ignore next */
               path="/AdminConsole"
               render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
+            />
+          )}
+          {hasAdminConsoleFlagrPermission && (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/documents"
+              render={() => hasAdminConsolePermissions ? <DocumentManagementServer /> : <Redirect to="/unauthorized" />}
             />
           )}
           {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
