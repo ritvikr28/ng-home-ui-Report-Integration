@@ -311,11 +311,3 @@
   cursor: pointer;
 }
 
-/* stylelint-disable */
-@media only screen and (min-width: 1280px) {
-  .essui-grid-col--xl-2 {      
-    /* stylelint-enable */
-    flex-basis: 0%;
-    max-width: 16.6666666667%;
-  }
-}
