@@ -293,11 +293,25 @@ stages:
                       rgName: "paz-dev-pfm-rg"
                       clusterName: "paz-dev-pfm-aks"
                       subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
+
+        - job: WaitForValidation_Dev
+          displayName: "Validate Deployment"
+          dependsOn: Deploy_nghomeui_Dev
+          pool: server 
+          steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              instructions: 'Please review the code for Dev Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
+              onTimeout: 'reject'
+              displayName: "Manual Validation"
+            continueOnError: true
   
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
     - stage: qa
       displayName: Deployment to Qa
       dependsOn: dev
+      condition: succeeded('dev.WaitForValidation_Dev')
       pool:
         name: 'paz-vmss-pool'
       variables:
@@ -370,7 +384,20 @@ stages:
               env: "qa"
               type: "ui"
               test_tags: "@regression"
-              pat_token: $(PAT)   
+              pat_token: $(PAT)
+
+        - job: WaitForValidation_QA
+          displayName: "Validate Deployment"
+          dependsOn: QA_Test
+          pool: server 
+          steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              instructions: 'Please review the code for QA Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
+              onTimeout: 'reject'
+              displayName: "Manual Validation"
+            continueOnError: true   
                               
         # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
         #   parameters:
@@ -495,7 +522,8 @@ stages:
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - stage: pre_prod
       displayName: Deployment to Pre_prod
-      dependsOn: Build
+      dependsOn: qa
+      condition: succeeded('qa.WaitForValidation_QA')
       pool:
         name: 'paz-vmss-pool'
       variables:
