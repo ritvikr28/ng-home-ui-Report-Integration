@@ -45,7 +45,7 @@ export const getTableHeadersData: {
             )
         },
         {
-            text: "Relatedto",
+            text: "Related to",
             isShow: true,
             showValAs: ShowValAs.CustomeComponent,
             isTextTruncate: true,
@@ -75,7 +75,7 @@ export const getTableHeadersData: {
             columnWidth: "144px"
         },
         {
-            text: "Addedby",
+            text: "Added by",
             isShow: true,
             showValAs: ShowValAs.Text,
             headerTxtTrunctLength: 50,

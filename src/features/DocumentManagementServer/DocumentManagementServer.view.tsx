@@ -21,7 +21,7 @@ const DocumentManagementServerView = () => {
 
     return (<>
         <>
-            <Grid className="admin-mobile-rwaf92428" style={{ display: 'flex' }}>
+            <Grid className="dms-layout" style={{ display: 'flex' }}>
                 <GridItem className={isOpen ? "side-width" : "no-side-width"}>
                     {!isOpen && (
                         <Button

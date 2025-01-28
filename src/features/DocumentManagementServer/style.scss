@@ -1,3 +1,4 @@
+/* stylelint-disable */
 #breadcrumbs-wrapper {
   margin-top: 16px;
 }
@@ -63,6 +64,10 @@
   width: 119px;
   height: 40px;
 
+}
+
+.dynamic-table .dms-layout .essui-table__cell {
+  border-right: 1px solid #e0e0e0;
 }
 
 // -------------------------768px to 1024px-------------------------------
