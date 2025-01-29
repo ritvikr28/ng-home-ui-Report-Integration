@@ -305,13 +305,11 @@ stages:
               instructions: 'Please review the code for Dev Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
               onTimeout: 'reject'
               displayName: "Manual Validation"
-            continueOnError: true
   
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
     - stage: qa
       displayName: Deployment to Qa
       dependsOn: dev
-      condition: succeeded('dev.WaitForValidation_Dev')
       pool:
         name: 'paz-vmss-pool'
       variables:
@@ -397,7 +395,6 @@ stages:
               instructions: 'Please review the code for QA Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
               onTimeout: 'reject'
               displayName: "Manual Validation"
-            continueOnError: true   
                               
         # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
         #   parameters:
@@ -523,7 +520,6 @@ stages:
     - stage: pre_prod
       displayName: Deployment to Pre_prod
       dependsOn: qa
-      condition: succeeded('qa.WaitForValidation_QA')
       pool:
         name: 'paz-vmss-pool'
       variables:
