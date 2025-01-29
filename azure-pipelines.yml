@@ -523,7 +523,7 @@ stages:
       pool:
         name: 'paz-vmss-pool'
       variables:
-        - group: 'ng-home-ui-perf'
+        - group: 'ng-home-ui-pre'
       jobs:
         - deployment: Deploy_nghomeui_pre_prod
           displayName: "Deployment to Pre_Prod"
