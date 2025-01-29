@@ -572,12 +572,12 @@ stages:
                         cd $(Pipeline.Workspace)/drop
                         az login --identity
                         az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-                        az aks get-credentials --resource-group paz-perf-ess-ng-rg --name paz-perf-ess-ng-aks --admin 2> /dev/null
+                        az aks get-credentials --resource-group paz-pre-pfm-rg --name paz-pre-pfm-aks --admin 2> /dev/null
                         kubectl apply -f deployment.yaml                        
                       failOnStderr: true
                   
                   - template: azure-deployment-pipeline.yaml
                     parameters:
-                      rgName: "paz-perf-ess-ng-rg"
-                      clusterName: "paz-perf-ess-ng-aks"
+                      rgName: "paz-pre-pfm-rg"
+                      clusterName: "paz-pre-pfm-aks"
                       subscription_id: "74a57460-013e-4db0-850b-86c4d083c797" 
