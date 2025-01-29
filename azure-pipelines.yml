@@ -519,7 +519,7 @@ stages:
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - stage: pre_prod
       displayName: Deployment to Pre_prod
-      dependsOn: qa
+      dependsOn: Build
       pool:
         name: 'paz-vmss-pool'
       variables:
