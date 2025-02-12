@@ -33,6 +33,9 @@ const DBManagement: React.FC = () => {
 
   return (
     <>
+      <a href="#main-content" className="skip-link">
+          Skip to main content
+      </a>
       <Grid className="admin-mobile-rwaf92428">
         <GridItem
           lg={isOpen ? 3 : 0}
