@@ -77,6 +77,7 @@ const QuickLinkLogic: React.FC<
     name: string
   ) => (
     <div className="icon-quicklinkwidth">
+      
       <Icon
         color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
         dataTestId={`btn-star${id}`}

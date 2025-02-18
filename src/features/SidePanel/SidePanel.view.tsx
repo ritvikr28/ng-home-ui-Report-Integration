@@ -384,7 +384,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
 
                   {quicklinkData
                     .filter((sidelink: any) => sidelink.name !== "Class view")
-                    .slice(0, 5)
+                    .slice(0, 6)
                     .map((sidelink: any) => (
                     <div
                       className="quick-panel-cont-dertfsg11463f"
