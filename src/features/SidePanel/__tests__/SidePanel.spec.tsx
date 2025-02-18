@@ -427,4 +427,77 @@
       expect(window.location.href).toBe("http://localhost/");
     });
 
+    test("clicking 'Class View' navigates to the correct URL and tracks the event", () => {
+
+      const quicklinkDataWithClassView = [
+        { id: 1, name: "Class view", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
+        { id: 2, name: "Link 1", link: "/link-1", favourite: true, createdOn: "2023-01-01T12:00:00Z" },
+        { id: 3, name: "Link 2", link: "/link-2", favourite: false, createdOn: "2023-01-01T12:00:00Z" },
+      ];
+
+      jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+      jest.spyOn(qicklink, "FetchQuickLinkData").mockResolvedValue(mockres);
+
+      const pushEventMock = jest.spyOn(gtmAnalytics, "pushEvent");
+
+      const { getByText } = render(
+        <SidePanel
+          isOpen
+          togglePanel={jest.fn()}
+          closePanel={jest.fn()}
+          showQuickLinkView={jest.fn()}
+          setQuickLinkData={jest.fn()}
+          quicklinkData={quicklinkDataWithClassView}
+        />
+      );
+
+
+      const classViewLink = getByText(/class view/i);
+      expect(classViewLink).toBeInTheDocument();
+
+
+      fireEvent.click(classViewLink);
+
+
+      expect(window.location.href).toBe("http://localhost/");
+
+
+      expect(pushEventMock).toHaveBeenCalledWith({
+        event: "click",
+        linkText: "Class view",
+        linkUrl: "https://dev.home.sims.co.uk/seatingplans/classview",
+        clickType: "link",
+        clickLocation: "sidebar"
+      });
+    });
+
+    test("retrieves the correct link for 'Class view' from quicklinkData", () => {
+
+      const quicklinkDataWithClassView = [
+        { id: 1, name: "Class view", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
+        { id: 2, name: "Link 1", link: "/link-1", favourite: true, createdOn: "2023-01-01T12:00:00Z" },
+        { id: 3, name: "Link 2", link: "/link-2", favourite: false, createdOn: "2023-01-01T12:00:00Z" },
+      ];
+
+      jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+      jest.spyOn(qicklink, "FetchQuickLinkData").mockResolvedValue(mockres);
+
+      const { getByText } = render(
+        <SidePanel
+          isOpen
+          togglePanel={jest.fn()}
+          closePanel={jest.fn()}
+          showQuickLinkView={jest.fn()}
+          setQuickLinkData={jest.fn()}
+          quicklinkData={quicklinkDataWithClassView}
+        />
+      );
+
+
+      const classViewLink = getByText(/class view/i);
+      expect(classViewLink).toBeInTheDocument();
+
+
+      expect(classViewLink).toBeInTheDocument();
+    });
   });

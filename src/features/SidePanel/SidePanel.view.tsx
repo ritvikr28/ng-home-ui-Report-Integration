@@ -343,84 +343,110 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
     isMobileView
   }: QuickLinkSidePanel): JSX.Element | null => (
     isPermissionquicklink && (
-        <div className="left-sidepanel-home113">
-          <div className="quick-link-dertfsg11463f">Quick links</div>
-          <div className="quick-link-padding-dertfsg11463f">
-            {/*
-eslint-disable
-*/}
-            {isLoader ? (
-              <div>
-                <Loader
-                  dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
-                  className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
-                  loaderText="Loading..."
-                  loaderType={LoaderType.Circular}
-                />
-              </div>
-            ) : (
+      <div className="left-sidepanel-home113">
+        <div className="quick-link-dertfsg11463f">Quick links</div>
+        <div className="quick-link-padding-dertfsg11463f">
+          {/*
+          eslint-disable
+          */}
+          {isLoader ? (
+            <div>
+              <Loader
+                dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
+                className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
+                loaderText="Loading..."
+                loaderType={LoaderType.Circular}
+              />
+            </div>
+          ) : (
               !isError &&
-              quicklinkData &&
-              quicklinkData.slice(0, 6).map((sidelink: any) => (
-                <div
-                  className="quick-panel-cont-dertfsg11463f"
-                  key={sidelink.id}
-                  onClick={() => {
-                    window.location.href = sidelink.link;
-                    gtmAnalytics.pushEvent({
-                      event: "click",
-                      linkText: sidelink.name,
-                      linkUrl: sidelink.link,
-                      clickType: "link",
-                      clickLocation: "sidebar"
-                    });
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {sidelink.name}
-                  <Icon
-                    color={
-                      sidelink.favourite
-                        ? IconColor.Primary500
-                        : IconColor.Neutral800
-                    }
-                    className="icon-margin-dertfsg11463f"
-                    dataTestId={`btn-star${sidelink.id}`}
-                    id="variable-2"
-                    name={sidelink.favourite ? "star--filled" : "star"}
-                    size={16}
-                    onClick={(e) => {
-                      e.stopPropagation(); // Prevent the div click event from being triggered
-                      handleStarClick(sidelink.id, !sidelink.favourite, sidelink.name);
+              quicklinkData && (
+                <>
+                  <div
+                    className="quick-panel-cont-dertfsg11463f"
+                    onClick={() => {
+                      const classViewLink = quicklinkData.find((link: any) => link.name === "Class view")?.link;
+                      if (classViewLink) {
+                        window.location.href = classViewLink;
+                        gtmAnalytics.pushEvent({
+                          event: "click",
+                          linkText: "Class view",
+                          linkUrl: classViewLink,
+                          clickType: "link",
+                          clickLocation: "sidebar"
+                        });
+                      }
                     }}
-                  />
-                </div>
-              ))
-            )}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Class View
+                  </div>
 
-            {/*
-eslint-disable jsx-a11y/anchor-is-valid,
-no-script-url
-*/}
-            <a
-              href="javascript:void(0)"
-              className="see-all-dertfsg11463f"
-              onClick={() => {
-                isMobileView ? togglePanel() : '';
-                showQuickLinkView();
-              }}
-            /* eslint-enable */
-            >
-              See all
-            </a>
-            {/*
-eslint-enable jsx-a11y/anchor-is-valid,
-no-script-url
-*/}
-          </div>
+                  {quicklinkData
+                    .filter((sidelink: any) => sidelink.name !== "Class view")
+                    .slice(0, 5)
+                    .map((sidelink: any) => (
+                    <div
+                      className="quick-panel-cont-dertfsg11463f"
+                      key={sidelink.id}
+                      onClick={() => {
+                        window.location.href = sidelink.link;
+                        gtmAnalytics.pushEvent({
+                          event: "click",
+                          linkText: sidelink.name,
+                          linkUrl: sidelink.link,
+                          clickType: "link",
+                          clickLocation: "sidebar"
+                        });
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {sidelink.name}
+                      <Icon
+                        color={
+                          sidelink.favourite
+                            ? IconColor.Primary500
+                            : IconColor.Neutral800
+                        }
+                        className="icon-margin-dertfsg11463f"
+                        dataTestId={`btn-star${sidelink.id}`}
+                        id="variable-2"
+                        name={sidelink.favourite ? "star--filled" : "star"}
+                        size={16}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent the div click event from being triggered
+                          handleStarClick(sidelink.id, !sidelink.favourite, sidelink.name);
+                        }}
+                      />
+                    </div>
+                  ))}
+              </>
+            )
+          )}
+  
+          {/*
+          eslint-disable jsx-a11y/anchor-is-valid,
+          no-script-url
+          */}
+          <a
+            href="javascript:void(0)"
+            className="see-all-dertfsg11463f"
+            onClick={() => {
+              isMobileView ? togglePanel() : '';
+              showQuickLinkView();
+            }}
+          /* eslint-enable */
+          >
+            See all
+          </a>
+          {/*
+          eslint-enable jsx-a11y/anchor-is-valid,
+          no-script-url
+          */}
         </div>
-      )
-    );
+      </div>
+    )
+  );
 
 /* eslint-enable */
 export default SidePanel;
