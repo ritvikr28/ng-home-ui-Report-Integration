@@ -41,7 +41,16 @@ const mockProps:IStaffTimeTableEventsResponse=
       isCovered: null,
       isCovering: null,
       originalStaffExternalID: null,
-      coveringStaffExternalID: null,  
+      coveringStaffExternalID: null,
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null  
     };
 describe("Colors tests", () => {
     test("should return color when event type code is TTPeriod and user preference is yeargroup", () => {       
