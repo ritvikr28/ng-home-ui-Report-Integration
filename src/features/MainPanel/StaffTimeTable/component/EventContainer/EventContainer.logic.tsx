@@ -7,12 +7,14 @@ import {
   LoaderType
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
+import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   isOpen
@@ -182,6 +184,15 @@ const formatEventTimeData: (
   };
 };
 
+const hasStaffTimeTableV2: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "IsStaffV2");
+
+const formatRoomCode: (
+  staffTimeTableEventData: IStaffTimeTableEventsResponse
+) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
+  const roomCode = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
+  return roomCode;
+};
+
 const formatStaffName = async (
   eventTimeData: IStaffTimeTableEventsResponse
 ): Promise<string> => {
@@ -319,7 +330,7 @@ const returnEventContainer: React.FC<{
             SchoolEventexternalId={item.externalId}
             EventTitle={formatEventTitleData(item)}
             EventTime={formatEventTimeData(item)}
-            RoomCode={item?.room?.roomCode}
+            RoomCode={formatRoomCode(item)}
             EventStartDate={item.eventStart}
             EventEndDate={item.eventEnd}
             GroupExternalId={item.group.externalId}
