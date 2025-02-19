@@ -7,14 +7,13 @@ import {
   LoaderType
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
-
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
