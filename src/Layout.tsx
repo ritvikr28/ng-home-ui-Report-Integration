@@ -239,7 +239,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {<ProtectedRoute exact path="/InviteUsers" component={InviteUsersLogic} />}
+          <ProtectedRoute exact path="/InviteUsers" component={InviteUsersLogic} />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>

@@ -1,10 +1,5 @@
-import InviteUsers from "./InviteUsers.view";
+import InviteUserView from "./InviteUsers.view";
 
-export const InviteUsersLogic = () => {
-    
-  
-    return (
-      <InviteUsers/>
-    );
-  };
-  export default InviteUsersLogic;
+export const InviteUsersLogic = () => <InviteUserView />;
+
+export default InviteUsersLogic;

@@ -1,10 +1,116 @@
-import React from "react";
-import { ShowValAs, TagColor } from "@essnextgen/ui-kit";
+import { IBreadcrumbLink, OptionsEntity, ShowValAs } from "@essnextgen/ui-kit";
+import { envConfig } from "../../shared/utils";
 
-export interface InviteUsersProps extends IusermanagementProps,
-IAddUserProps{
-    
-  }
+export interface InviteUserProps 
+{
+  dataTestId?: string;
+}
+
+export const homeurl = `${envConfig.HOME_UI_BASEURL}/AdminConsole`;
+
+export  const tableDataObj: any[] = [
+    {
+      id: "01",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    },
+    {
+      id: "01",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    },
+    {
+      id: "01",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    },
+    {
+      id: "01",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    },{
+      id: "02",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    },{
+      id: "03",
+      name: "Text",
+      email: "xyz.com",
+      userType: "Staff",
+      invitationStatus: "Not-Invited",
+      actions: {
+        options: [
+          {
+            disabled: false,
+            isSelected: false,
+            text: "Send Invite",
+            value: "SendInvite"
+          }
+        ]
+      }
+    }
+  
+ ]
 
   export const getTableHeadersData: any[] = [
     {
@@ -12,95 +118,88 @@ IAddUserProps{
       isShow: false,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
-      columnWidth: "56px"
+      columnWidth: "10px"
     },
     {
       text: "Name",
       isShow: true,
       showValAs: ShowValAs.Text,
-      isTextTruncate: true,
-      isHeaderTextTruncate: true,
-      columnWidth: "194.75px",
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      columnWidth: "285px",
       headerTxtTrunctLength: 50,
       isSimpleText:true,
       isColumnSorting: false
   
     },
     {
-      text: "Email address",
+      text: "Email",
       isShow: true,
       showValAs: ShowValAs.Text,
-      isTextTruncate: true,
-      isHeaderTextTruncate: true,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
       headerTxtTrunctLength: 17,
       isSimpleText:true,
       isColumnSorting: false,
-      columnWidth: "194.75px"
+      columnWidth: "325px"
     },
     {
-      text: "Permission roles",
-      isShow: true,
-      showValAs: ShowValAs.TextWithTag,
-      isTextTruncate: true,
-      alignSpecific:true,
-      isHeaderTextTruncate: true,
-      headerTxtTrunctLength: 50,
-      isColumnSorting: false,
-      columnWidth: "194.75px"
-    },
-    {
-      text: "Associated schools",
-      isShow: true,
-      showValAs: ShowValAs.TextWithTag,
-      isTextTruncate: true,
-      isHeaderTextTruncate: true,
-      headerTxtTrunctLength: 50,
-      alignSpecific:true,
-      isColumnSorting: false,
-      columnWidth: "194.75px"
-    },
-    {
-      text: "Status",
-      isShow: true,
-      columnWidth: "98px",
-      showValAs: ShowValAs.Tag,
-      statusColors: { Active: TagColor.Success, Inactive: TagColor.Neutral },
-      isTextTruncate: false,
-      isColumnSorting: false
-    },
-    {
-      text: "Invitation",
+      text: "User type",
       isShow: true,
       showValAs: ShowValAs.Text,
-      txtTrunctLength: 12,
-      isColumnSorting: false,
       isTextTruncate: false,
-      isHeaderTextTruncate: true,
+      isHeaderTextTruncate: false,
       headerTxtTrunctLength: 50,
-      columnWidth: "105px"
+      isColumnSorting: false,
+      columnWidth: "165px"
+    },
+    {
+      text: "Invitation status",
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      headerTxtTrunctLength: 50,
+      isColumnSorting: false,
+      columnWidth: "206px"
     }
+   
   ];
-  export interface IusermanagementProps {
-    heading?: string;
-    subHeading?: string;
-
-    enableSearch?:boolean
-  }
-
-  export interface IAddUserProps {
-    sidePanelTle?: string;
-    hdleOpenSidePanel?: (e: React.SyntheticEvent) => void;
-    hdleCloseSidePanel?: (e: React.SyntheticEvent) => void;
-    
-  }
-
+ 
   export const getDefaultControlledListProps: () => any = () => ({
-    id: "usermanagment-list",
-    dataTestId: "usermanagment-list-test-id",
+    id: "invite-list",
+    dataTestId: "invite-list-test-id",
     resultNotFoundMessage: "No data to display",
     tableFirstColumnWidth: "56px",
     tableLastColumnWidth: "72px",
-    isBreadCrumbEnable: true,
-    addEventBtnTitle: "Add new user",
-    secondaryButtonTitle: "Cancel"
+    isBreadCrumbEnable: false
+    
   });
+
+  export const breadcrumbActions :IBreadcrumbLink[] = [
+    {
+      active: true,
+      linkName: "Home",
+      path: "/"
+    },
+    {
+      active: false,
+      linkName: "Admin Console",
+      path: homeurl,
+    },
+    {
+      active: false,
+      linkName: "Invite Users",
+      path: "/",
+    }
+  ];
+  
+  export const  editSelectedOptions : OptionsEntity[] = [
+    {
+      disabled: false,
+      text: 'Send invite',
+      value: 'SendInvite',
+      isShowDivider: false,
+      isSelected:false
+    }
+  ]
