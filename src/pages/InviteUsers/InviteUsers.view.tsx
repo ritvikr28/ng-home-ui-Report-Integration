@@ -129,7 +129,8 @@ const InviteUserView : React.FC<InviteUserProps> = ({
                 isShow: true,
                 message: 'To manage user email name and role, please access SIMS7.',
                 title: 'User details are managed in SIMS7',
-                variant: 'highlight'
+                variant: 'highlight',
+                hideCloseButton: true
               }
             ]}
           />
