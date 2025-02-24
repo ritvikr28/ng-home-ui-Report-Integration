@@ -138,8 +138,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   };
 
+const hasInviteUserView : boolean =  hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "InviteUserView"
+);
 
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
+
   const hasUAMPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "UAMView"
@@ -239,7 +244,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          <ProtectedRoute exact path="/InviteUsers" component={InviteUsersLogic} />
+          
+          {hasInviteUserView && (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/InviteUsers"
+              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+            />
+          )}
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
