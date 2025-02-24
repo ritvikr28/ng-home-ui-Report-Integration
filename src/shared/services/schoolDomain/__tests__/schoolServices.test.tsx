@@ -117,7 +117,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null  
     },
     {
       externalId: "c011c7c7-619e-4372-a384-d7a3e69b1651",
@@ -157,7 +166,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"    
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null    
     },
     {
       externalId: "d048c644-e390-4070-b695-24300adcb8c3",
@@ -197,7 +215,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null  
     },
     {
       externalId: "b31fb65e-2a69-4c22-b71f-736ae14f9dac",
@@ -237,7 +264,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"    
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null    
     },
     {
       externalId: "384d3e59-9e79-4604-a24d-ee3c14ecb41b",
@@ -277,7 +313,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"    
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null    
     },
     {
       externalId: "9631c9c7-6c64-495c-ae25-eca00d351f8c",
@@ -317,7 +362,16 @@ const axiosResponse: AxiosResponse = {
       originalStaffExternalID: null,
       coveringStaffExternalID: null,
       eventInstanceExternalId:"62e2f4e9-453a-4a53-a940-139a492f5f96",
-      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"  
+      classPeriodExternalId:"9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null  
     }
 ];
  

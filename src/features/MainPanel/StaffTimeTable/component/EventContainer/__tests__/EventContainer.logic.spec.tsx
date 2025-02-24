@@ -55,6 +55,15 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     },
     {
       externalId: "c011c7c7-619e-4372-a384-d7a3e69b1651",
@@ -95,6 +104,15 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     },
     {
       externalId: "d048c644-e390-4070-b695-24300adcb8c3",
@@ -135,6 +153,19 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: {
+        externalId: "e2823d8b-fbad-4820-a56c-868fac364117",
+        roomCode: "A3",
+        roomName: "Art Room 3"
+      }
     },
     {
       externalId: "b31fb65e-2a69-4c22-b71f-736ae14f9dac",
@@ -175,6 +206,19 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      roomCover: {
+        externalId: "e2823d8b-fbad-4820-a56c-868fac364117",
+        roomCode: "A3",
+        roomName: "Art Room 3"
+      },
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      }
     },
     {
       externalId: "384d3e59-9e79-4604-a24d-ee3c14ecb41b",
@@ -215,6 +259,15 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     },
     {
       externalId: "9631c9c7-6c64-495c-ae25-eca00d351f8c",
@@ -255,6 +308,15 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     }
   ];
 
@@ -299,6 +361,15 @@ const mockStaffTimeTableEventsResponseWithOneRecords: IStaffTimeTableEventsRespo
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     }
   ];
 
@@ -343,6 +414,15 @@ const mockStaffTimeTableEventsResponseWithOneRecordsNullcheck: IStaffTimeTableEv
       coveringStaffExternalID: null,
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     }
   ];
 
@@ -386,10 +466,18 @@ const mockStaffTimeTableEventsResponseWithCoverStaffRecord: IStaffTimeTableEvent
       isCovered: true,
       isCovering: false,
       originalStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
-      coveringStaffExternalID:
-        "339A9B54-769D-466B-BAAD-523B72E2A7A3, 7B12311A-FFB2-47B6-88B1-537624D3D073",
+      coveringStaffExternalID: "339A9B54-769D-466B-BAAD-523B72E2A7A3, 7B12311A-FFB2-47B6-88B1-537624D3D073",
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+      yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+      staff: {
+        externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+        forename: "Lynn",
+        surname: "Chase",
+        preferredForename: null,
+        preferredSurname: null,
+      },
+      roomCover: null
     }
   ];
 
@@ -433,6 +521,15 @@ const mockStaffTimeTableEventsResponseWithCoveringStaffRecord = [
     coveringStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
     eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
     classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+    yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    staff: {
+      externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+      forename: "Lynn",
+      surname: "Chase",
+      preferredForename: null,
+      preferredSurname: null,
+    },
+    roomCover: null
   }
 ];
 
@@ -509,6 +606,15 @@ const mockStaffApiResponseForOrgininalStaffDetailReturnsNull = [
     coveringStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
     eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
     classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+    yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    staff: {
+      externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+      forename: "Lynn",
+      surname: "Chase",
+      preferredForename: null,
+      preferredSurname: null,
+    },
+    roomCover: null
   }
 ];
 
@@ -552,6 +658,15 @@ const mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue = [
     coveringStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
     eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
     classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
+    yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
+    staff: {
+      externalId: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
+      forename: "Lynn",
+      surname: "Chase",
+      preferredForename: null,
+      preferredSurname: null,
+    },
+    roomCover: null
   }
 ];
 

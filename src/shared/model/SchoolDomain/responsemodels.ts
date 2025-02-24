@@ -18,7 +18,10 @@ export interface IStaffTimeTableEventsResponse {
     isCovered:boolean |null;
     isCovering:boolean |null;
     originalStaffExternalID?: string | null;
-    coveringStaffExternalID: string | null;  
+    coveringStaffExternalID: string | null;
+    yearGroupExternalId: string | null;
+    staff: IEventSupervisorsData;
+    roomCover: IEventRoomData | null;   
   }
   export interface IEventGroupData {
      externalId:string;
