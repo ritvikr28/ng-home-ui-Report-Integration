@@ -250,7 +250,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
               exact
               /* istanbul ignore next */
               path="/InviteUsers"
-              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />} 
             />
           )}
           <ProtectedRoute exact path="*" component={PageNotFound} />
