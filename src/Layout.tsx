@@ -36,6 +36,7 @@ import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
+import InviteUsersLogic from "./pages/InviteUsers";
 
 
 
@@ -137,8 +138,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   };
 
+const hasInviteUserView : boolean =  hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "InviteUserView"
+);
 
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
+
   const hasUAMPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "UAMView"
@@ -238,6 +244,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
+          
+          {hasInviteUserView && (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/InviteUsers"
+              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />} 
+            />
+          )}
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
