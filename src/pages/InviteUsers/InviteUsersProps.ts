@@ -184,12 +184,13 @@ export  const tableDataObj: any[] = [
     },
     {
       active: false,
-      linkName: "Admin Console",
+      linkName: "Admin console",
       path: homeurl,
+      isExternalLink: true
     },
     {
       active: false,
-      linkName: "Invite Users",
+      linkName: "Invite users",
       path: "/",
     }
   ];

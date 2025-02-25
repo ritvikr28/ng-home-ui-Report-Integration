@@ -59,8 +59,8 @@ const InviteUserView : React.FC<InviteUserProps> = ({
           onCloseSideNavigationPanel={() => setIsOpen(false)}
           isOpenSideNavigation={isOpen}
           defaultSelectedMenu={{
-            text: "Invite Users",
-            value: `${window.location.origin}/InviteUsers`,
+            text: "Invite users",
+            value: `${window.location.origin}/inviteusers`,
           }}
         />
       </GridItem>
@@ -81,7 +81,7 @@ const InviteUserView : React.FC<InviteUserProps> = ({
               { id: "1", text: "All", value: "All" }
             ]}
             editSelectedBtnTitle="Edit selected"
-            headingText="Invite Users"
+            headingText="Invite users"
             subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
             id="Inviteusers-list"
             filterDDLuseAutoWidth={true}
