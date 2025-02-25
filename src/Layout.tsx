@@ -249,7 +249,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/InviteUsers"
+              path="/inviteusers"
               render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />} 
             />
           )}
