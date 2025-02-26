@@ -7,12 +7,10 @@ jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn().mockResolvedValue({ schoolName: "Test School" }),
 }));
 
-const setShowDeleteDialogMock = jest.fn();
-
 jest.mock("../../../../shared/utils", () => ({
   service: {
     post: jest.fn(),
-    get: jest.fn(),
+    get: jest.fn()
   },
   getUserOrganisation: jest.fn().mockReturnValue("123"),
   envConfig: { BASE_URL: "http://mock-api.com" },
@@ -21,13 +19,14 @@ jest.mock("../../../../shared/utils", () => ({
 jest.mock("@essnextgen/auth-ui", () => ({
   authService: {
     getUsername: jest.fn().mockReturnValue("testUser"),
-  },
+  }
 }));
 
 jest.mock("axios", () => ({
   get: jest.fn(),
-  post: jest.fn(),
+  post: jest.fn()
 }));
+
 
 describe("DeleteNGDataView Component", () => {
   const statusMock = jest.fn();
@@ -38,10 +37,8 @@ describe("DeleteNGDataView Component", () => {
     jest.clearAllMocks();
   });
 
-  
-  it("should disable the Proceed button when precheckStatus is 'Deleted'", async () => {
-   
-    (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Deleted" } });
+  it("should show deletion dialog when precheckStatus is 'Not Deleted'", async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Not Deleted" } });
 
     render(
       <DeleteNGDataView
@@ -51,14 +48,50 @@ describe("DeleteNGDataView Component", () => {
       />
     );
 
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+
     await waitFor(() => {
-      const proceedButton = screen.getByRole("button", { name: /Proceed/i });
-      expect(proceedButton).not.toBeDisabled();
-      expect(statusMock).not.toHaveBeenCalledWith("Deleted");
+      expect(screen.getByText(/Delete Next Gen Data?/i)).toBeTruthy();
     });
   });
 
-  it("should call handleDelete and update status to 'In Progress' on successful deletion", async () => {
+  it("should show in-progress dialog when precheckStatus is 'In Progress'", async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "In Progress" } });
+
+    render(
+      <DeleteNGDataView
+        status={statusMock}
+        inProgressStatus={inProgressStatusMock}
+        handleException={handleExceptionMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+
+    await waitFor(() => {
+      expect(screen.findByText(/Deletion of NG Data in Progress/i)).toBeTruthy();
+    });
+  });
+
+  it("should handle API error during precheckStatus fetch", async () => {
+    (axios.get as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
+
+    render(
+      <DeleteNGDataView
+        status={statusMock}
+        inProgressStatus={inProgressStatusMock}
+        handleException={handleExceptionMock}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
+
+    await waitFor(() => {
+      expect(handleExceptionMock).toHaveBeenCalled();
+    });
+  });
+
+  it("should handle deletion process and update status to 'In Progress'", async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({ data: { deleteNGDataStatus: "Not Deleted" } });
     (axios.post as jest.Mock).mockResolvedValueOnce({ data: { statusCode: 200 } });
 
@@ -73,7 +106,11 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
 
     await waitFor(() => {
-      expect(inProgressStatusMock).not.toHaveBeenCalledWith("In Progress");
+      fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+    });
+
+    await waitFor(() => {
+      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
     });
   });
 
@@ -92,7 +129,11 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
 
     await waitFor(() => {
-      expect(handleExceptionMock).not.toHaveBeenCalled();
+      fireEvent.click(screen.getByRole("button", { name: /Delete/i }));
+    });
+
+    await waitFor(() => {
+      expect(handleExceptionMock).toHaveBeenCalled();
     });
   });
 
@@ -110,7 +151,8 @@ describe("DeleteNGDataView Component", () => {
     fireEvent.click(screen.getByRole("button", { name: /Proceed/i }));
 
     await waitFor(() => {
-      expect(setShowDeleteDialogMock).not.toHaveBeenCalled();
+      expect(screen.queryByText(/Delete Next Gen Data?/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Deletion of NG Data in Progress/i)).not.toBeInTheDocument();
     });
   });
 });
