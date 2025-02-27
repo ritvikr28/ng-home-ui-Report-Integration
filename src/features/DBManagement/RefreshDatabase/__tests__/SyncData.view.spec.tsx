@@ -5,7 +5,6 @@ import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
 
-
 // Mocking modules
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(),
@@ -14,7 +13,7 @@ jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
 jest.mock("../../../../shared/utils", () => ({
   service: {
     get: jest.fn(),
-    post : jest.fn()
+    post: jest.fn()
   },
   getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
   envConfig: {
@@ -35,7 +34,6 @@ describe("SyncDataView Component", () => {
   const mockSetClicked = jest.fn();
   const mockSetShowSyncDialog = jest.fn();
   const setIsLoading = jest.fn();
-  
 
   beforeEach(() => {
     history = createMemoryHistory();
@@ -87,14 +85,13 @@ describe("SyncDataView Component", () => {
     expect(history.replace).toHaveBeenCalledWith("/unauthorized");
   });
 
-
   it("should render the component and sync button", () => {
     render(
       <SyncDataView
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
         status={statusMock}
-        syncDataStatus = "In Progress"
+        syncDataStatus="In Progress"
       />
     );
 
@@ -112,7 +109,7 @@ describe("SyncDataView Component", () => {
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
         status={statusMock}
-        syncDataStatus = ""
+        syncDataStatus=""
       />
     );
 
@@ -173,14 +170,14 @@ describe("SyncDataView Component", () => {
       setIsLoading,
       history,
       ""
-      );
+    );
 
     render(
       <SyncDataView
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
         status={statusMock}
-        syncDataStatus = ""
+        syncDataStatus=""
       />
     );
 
@@ -215,13 +212,13 @@ describe("SyncDataView Component", () => {
       setIsLoading,
       history,
       "In Progress"
-      );
+    );
     render(
       <SyncDataView
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
         status={statusMock}
-        syncDataStatus = "Completed"
+        syncDataStatus="Completed"
       />
     );
 
@@ -231,7 +228,6 @@ describe("SyncDataView Component", () => {
     });
   });
 
- 
   it('should open Data Sync successful dialog when API response indicates completed status', async () => {
     const mockResponse = {
       statusCode: 200,
@@ -256,22 +252,36 @@ describe("SyncDataView Component", () => {
       setIsLoading,
       history,
       "Completed"
-      );
+    );
     render(
       <SyncDataView
         handleException={handleExceptionMock}
         inProgressStatus={inProgressStatusMock}
         status={statusMock}
-        syncDataStatus = "Completed"
+        syncDataStatus="Completed"
       />
     );
     fireEvent.click(screen.getByText('Sync'));
 
     await waitFor(() => {
-      // expect(mockSetSyncStatus).toHaveBeenCalledWith('Completed');
       expect(mockSetShowSyncCompleteDialog).toHaveBeenCalledWith(true);
-      // expect(mockSetClicked).toHaveBeenCalledWith(false);
     });
   });
-  
+
+  it("should handle fetch sync status failure on mount", async () => {
+    (service.get as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+
+    render(
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+        status={statusMock}
+        syncDataStatus="Not Started"
+      />
+    );
+
+    await waitFor(() => {
+      expect(handleExceptionMock).toHaveBeenCalledTimes(0);
+    });
+  });
 });
