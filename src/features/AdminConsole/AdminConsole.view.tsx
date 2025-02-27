@@ -44,7 +44,7 @@ const AdminConsole: React.FC = () => {
           )}
           <LocalisedMenu 
             customHeight={100}
-            menuHeading="Admin console"
+            menuHeading="Admin Console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
