@@ -1,6 +1,7 @@
 import "./style.scss";
 import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import { IWelcomeUserViewProps } from "./WelcomeUserProps";
+import WhatsNewBanner from "../../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps
@@ -19,6 +20,10 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     "(min-width:320px) and (max-width: 1023.9px)"
   );
   return (
+    <>
+    <div className="banner">
+      <WhatsNewBanner />
+    </div>
     <Grid className={`welcome-parent ${parentClassName}`} >
       <GridItem lg ={10}  className={isOpen ? " " : "weclome-res"} >
      {/* eslint-disable */}
@@ -51,6 +56,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
         </div>
       </GridItem>}
     </Grid>
+    </>
   );
 };
 
