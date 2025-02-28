@@ -43,7 +43,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
               </>
             }
             status={NotificationStatus.HIGHLIGHT}
-            onClickClose={() => handleExit(0)}
+            onClickClose={() => handleExit()}
           />
         </div>
       )}
