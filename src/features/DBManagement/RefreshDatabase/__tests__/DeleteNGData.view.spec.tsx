@@ -1,10 +1,8 @@
 import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
-import axios from "axios";
-import DeleteNGDataView from "../DeleteNGData.view";
 import { createMemoryHistory } from "history";
+import DeleteNGDataView from "../DeleteNGData.view";
 import { service } from "../../../../shared/utils";
 
-// Mock axios
 jest.mock("axios");
 
 // Mock service

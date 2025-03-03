@@ -1,14 +1,12 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
+import { Router } from "react-router-dom";
 import SyncDataView, { FetchSyncStatus, TriggerSync, handleButtonClick } from "../SyncData.view";
 import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
-import userEvent from "@testing-library/user-event";
 import ConfirmDialog from "../ConfirmationDialog.logic";
-import { Router } from "react-router-dom";
 
-// Mocking modules
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(),
 }));

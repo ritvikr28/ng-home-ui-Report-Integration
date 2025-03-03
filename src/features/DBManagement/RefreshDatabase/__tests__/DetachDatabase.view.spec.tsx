@@ -2,10 +2,10 @@ import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { createMemoryHistory, History } from "history";
 import { Router } from "react-router-dom";
-import DetachDatabaseView, { FetchIsDetached } from "../DetachDatabase.view";
+import DetachDatabaseView from "../DetachDatabase.view";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
-import { service, getUserOrganisation, envConfig } from "../../../../shared/utils";
+import { service } from "../../../../shared/utils";
 import { errorHandler } from "../../../../shared/utils/errorHandler";
 
 jest.mock("../../../../shared/utils", () => ({
