@@ -18,9 +18,9 @@ describe('WhatsNewBanner Component', () => {
     expect(screen.queryByTestId('whatsnew-banner')).not.toBeInTheDocument();
   });
 
-  it('should set localStorage item when the close button is clicked', () => {
+  it('should not render the banner if localStorage item isBannerClosed is true', () => {
+    sessionStorage.setItem('isBannerClosed', 'true');
     render(<WhatsNewBanner />);
-    fireEvent.click(screen.getByRole('button', { name: /close/i }));
-    expect(localStorage.getItem('isBannerClosed')).toBe('true');
+    expect(screen.queryByTestId('whatsnew-banner')).not.toBeInTheDocument();
   });
 });

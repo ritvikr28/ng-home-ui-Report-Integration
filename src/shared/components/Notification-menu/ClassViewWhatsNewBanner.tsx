@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Notification as NotificationBanner,
   NotificationStatus
@@ -9,15 +9,22 @@ import { envConfig } from '../../utils';
 export const WhatsNewBanner: () => JSX.Element = () => {
   const [isBannerVisible, setIsBannerVisible] = useState(true);
 
+  useEffect(() => {
+    const isBannerClosed = sessionStorage.getItem('isBannerClosed');
+    if (isBannerClosed === 'true') {
+      setIsBannerVisible(false);
+    }
+  }, []);
+
   const handleExit: () => void = () => {
-    localStorage.setItem('isBannerClosed', 'true');
+    sessionStorage.setItem('isBannerClosed', 'true');
     setIsBannerVisible(false);
   };
 
   return (
     <>
       {isBannerVisible && (
-        <div >
+        <div>
           <NotificationBanner
             id='notification-banner-class-view'
             className="notification-banner-class-view"
@@ -43,7 +50,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
               </>
             }
             status={NotificationStatus.HIGHLIGHT}
-            onClickClose={() => handleExit()}
+            onClickClose={handleExit}
           />
         </div>
       )}
