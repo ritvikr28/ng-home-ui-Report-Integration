@@ -28,7 +28,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   
 }: IQuickLinkViewProps): JSX.Element => {  
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
-  const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== "Class view") || [];
+  const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== "Class View") || [];
 
   return isPermission ? (
   
