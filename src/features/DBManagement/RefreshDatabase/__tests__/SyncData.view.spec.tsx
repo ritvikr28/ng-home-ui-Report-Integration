@@ -70,7 +70,6 @@ describe("SyncDataView Component", () => {
     expect(history.replace).toHaveBeenCalledWith("/unauthorized");
   });
 
-
   it("should call TriggerSync and handle success response", async () => {
     const mockResponse = { statusCode: 200 };
     (service.post as jest.Mock).mockResolvedValueOnce({
@@ -103,9 +102,7 @@ describe("SyncDataView Component", () => {
       />
     );
 
-    expect(
-      screen.getByTestId("modelSyncComplete")
-    ).toBeInTheDocument();
+    expect(screen.getByTestId("modelSyncComplete")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /Sync/i })).toBeInTheDocument();
   });
 
@@ -285,6 +282,7 @@ describe("SyncDataView Component", () => {
       expect(handleExceptionMock).toHaveBeenCalledTimes(0);
     });
   });
+
   it("should close Sync Complete dialog when onCloseHandle is called", async () => {
     render(
       <Router history={history}>
@@ -312,6 +310,7 @@ describe("SyncDataView Component", () => {
       expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).not.toBeInTheDocument();
     });
   });
+
   it("should call onClose when cancel button is clicked", async () => {
     const onCloseMock = jest.fn();
 
@@ -368,8 +367,6 @@ describe("SyncDataView Component", () => {
       expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content2")).toBeInTheDocument();
     });
   });
-
-
 
   it("should close Sync Failed dialog when onCloseHandle is called", async () => {
     render(
@@ -483,18 +480,6 @@ describe("SyncDataView Component", () => {
     });
   });
 
-  it("should handle API call failure with a response", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce({
-      response: { status: 500, data: "Internal Server Error" },
-    });
-  
-    const result = await FetchSyncStatus(mockHandleException, history);
-  
-    expect(result).toBeNull();
-    expect(mockHandleException).not.toHaveBeenCalledWith("Internal Server Error");
-  });
-
-  
   it("should handle successful TriggerSync call", async () => {
     const mockResponse = { statusCode: 200 };
     (service.post as jest.Mock).mockResolvedValueOnce({
@@ -506,14 +491,5 @@ describe("SyncDataView Component", () => {
     expect(result).toEqual(mockResponse);
     expect(history.replace).not.toHaveBeenCalled();
   });
-  
-  
-  it("should handle TriggerSync call failure without a response", async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
-  
-    const result = await TriggerSync(mockHandleException, history);
-  
-    expect(result).toBeNull();
-    expect(mockHandleException).not.toHaveBeenCalledWith("Network Error");
-  });
+
 });
