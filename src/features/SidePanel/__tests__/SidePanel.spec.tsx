@@ -430,7 +430,7 @@
     test("clicking 'Class View' navigates to the correct URL and tracks the event", () => {
 
       const quicklinkDataWithClassView = [
-        { id: 1, name: "Class view", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
+        { id: 1, name: "Class View", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
         { id: 2, name: "Link 1", link: "/link-1", favourite: true, createdOn: "2023-01-01T12:00:00Z" },
         { id: 3, name: "Link 2", link: "/link-2", favourite: false, createdOn: "2023-01-01T12:00:00Z" }
       ];
@@ -464,7 +464,7 @@
 
       expect(pushEventMock).toHaveBeenCalledWith({
         event: "click",
-        linkText: "Class view",
+        linkText: "Class View",
         linkUrl: "https://dev.home.sims.co.uk/seatingplans/classview",
         clickType: "link",
         clickLocation: "sidebar"
@@ -474,7 +474,7 @@
     test("retrieves the correct link for 'Class view' from quicklinkData", () => {
 
       const quicklinkDataWithClassView = [
-        { id: 1, name: "Class view", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
+        { id: 1, name: "Class View", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
         { id: 2, name: "Link 1", link: "/link-1", favourite: true, createdOn: "2023-01-01T12:00:00Z" },
         { id: 3, name: "Link 2", link: "/link-2", favourite: false, createdOn: "2023-01-01T12:00:00Z" }
       ];

@@ -365,12 +365,12 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
                   <div
                     className="quick-panel-cont-dertfsg11463f"
                     onClick={() => {
-                      const classViewLink = quicklinkData.find((link: any) => link.name === "Class view")?.link;
+                      const classViewLink = quicklinkData.find((link: any) => link.name === "Class View")?.link;
                       if (classViewLink) {
                         window.location.href = classViewLink;
                         gtmAnalytics.pushEvent({
                           event: "click",
-                          linkText: "Class view",
+                          linkText: "Class View",
                           linkUrl: classViewLink,
                           clickType: "link",
                           clickLocation: "sidebar"
@@ -383,7 +383,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
                   </div>
 
                   {quicklinkData
-                    .filter((sidelink: any) => sidelink.name !== "Class view")
+                    .filter((sidelink: any) => sidelink.name !== "Class View")
                     .slice(0, 6)
                     .map((sidelink: any) => (
                     <div
