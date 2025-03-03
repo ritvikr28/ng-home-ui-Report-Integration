@@ -24,6 +24,7 @@ data:
     window.INVITE_STAFF_URL = "#{INVITE_STAFF_URL}#"
     window.HOME_UI_BASEURL = "#{HOME_UI_BASEURL}#"
     window.SEATING_PLAN_CLASS_VIEW_URL = "#{SEATING_PLAN_CLASS_VIEW_URL}#"
+    window.CLASSVIEW_BASE_URL = "#{CLASSVIEW_BASE_URL}#"
 ---
 apiVersion: apps/v1
 kind: Deployment
