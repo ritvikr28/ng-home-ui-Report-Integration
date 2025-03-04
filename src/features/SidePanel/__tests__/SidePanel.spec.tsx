@@ -144,7 +144,7 @@
       
       
       expect(container).toBeInTheDocument();
-      expect(getByText("Quick links")).toBeInTheDocument();
+      expect(getByText("Quick Links")).toBeInTheDocument();
     });
 
   

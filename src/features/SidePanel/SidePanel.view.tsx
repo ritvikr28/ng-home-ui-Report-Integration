@@ -315,7 +315,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
 const simsIdAdminQuickLink: () => JSX.Element = () => (
   <div className="left-sidepanel-home113">
     <div className="quick-link-dertfsg11463f">
-      Quick links
+      Quick Links
     </div>
     <div className="quick-link-padding-dertfsg11463f ">
       <div
@@ -344,7 +344,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
   }: QuickLinkSidePanel): JSX.Element | null => (
     isPermissionquicklink && (
       <div className="left-sidepanel-home113">
-        <div className="quick-link-dertfsg11463f">Quick links</div>
+        <div className="quick-link-dertfsg11463f">Quick Links</div>
         <div className="quick-link-padding-dertfsg11463f">
           {/*
           eslint-disable

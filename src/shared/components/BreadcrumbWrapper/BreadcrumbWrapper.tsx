@@ -11,7 +11,7 @@ const BreadcrumbWrapper: React.FC = () => (
         },
         {
           active: false,
-          linkName: "Quick links",
+          linkName: "Quick Links",
           path: "#"
         }
       ]}
