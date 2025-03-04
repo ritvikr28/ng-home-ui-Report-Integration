@@ -2,6 +2,8 @@ import "./style.scss";
 import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import { IWelcomeUserViewProps } from "./WelcomeUserProps";
 import WhatsNewBanner from "../../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { envConfig } from "../../../shared/utils";
 
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps
@@ -19,11 +21,21 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   const isMobileView : boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
+
+  const ClassViewNotificationBanner: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "ClassViewNotificationBanner"
+  ); 
+
+  console.log("ClassViewNotificationBanner", ClassViewNotificationBanner);
+
   return (
     <>
-    <div className="banner">
-      <WhatsNewBanner />
-    </div>
+    {ClassViewNotificationBanner && (
+      <div className="banner">
+        <WhatsNewBanner />
+      </div>
+    )}
     <Grid className={`welcome-parent ${parentClassName}`} >
       <GridItem lg ={10}  className={isOpen ? " " : "weclome-res"} >
      {/* eslint-disable */}

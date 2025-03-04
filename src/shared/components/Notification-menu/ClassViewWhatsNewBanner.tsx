@@ -33,11 +33,11 @@ export const WhatsNewBanner: () => JSX.Element = () => {
             message={
               <>
                 <p>
-                  Class view makes it easier to intervene early and improve student outcomes.
+                  Class View makes it easier to intervene early and improve student outcomes.
                 </p>
                 <div>
                   <a className='link-data' href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">
-                    Open class view
+                    Open Class View
                   </a>
                   <span>
                     <a className='link-data' 
