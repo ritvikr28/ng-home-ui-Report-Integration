@@ -31,11 +31,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
 
   return (
     <>
-    {ClassViewNotificationBanner && (
-      <div className="banner">
-        <WhatsNewBanner />
-      </div>
-    )}
+    {ClassViewNotificationBanner && (<WhatsNewBanner />)}
     <Grid className={`welcome-parent ${parentClassName}`} >
       <GridItem lg ={10}  className={isOpen ? " " : "weclome-res"} >
      {/* eslint-disable */}
