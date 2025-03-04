@@ -36,7 +36,7 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
       <GridItem className="teacher-panel-container-dertfsg11463f quicklink-nomargin121">
       <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
         <GridItem className={isOpen? "quicklink-container-dertfsg11463f open-quicklink-dertfsg11463f nopadding-dertfsg11463f quicklink-padding-dertfsg11463f":  "nopadding-dertfsg11463f quicklink-container-closed-dertfsg11463f "}>
-          <GridItem className="quicklinkheading-dertfsg11463f">Quick links</GridItem>
+          <GridItem className="quicklinkheading-dertfsg11463f">Quick Links</GridItem>
           <GridItem className="quicklinktext-dertfsg11463f">
             Easy one-click access. Favouriting items will ensure your top selections are always visible.
           </GridItem>

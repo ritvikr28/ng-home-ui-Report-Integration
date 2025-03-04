@@ -16,8 +16,8 @@ describe("BreadcrumbWrapper Component", () => {
   
   test("renders breadcrumbs with correct Quick links  names", () => {
     const {getByText}  =  render(<BreadcrumbWrapper    />);
-    expect(getByText("Quick links")).toBeInTheDocument();
-    expect(getByText("Quick links")).not.toHaveClass("active");
+    expect(getByText("Quick Links")).toBeInTheDocument();
+    expect(getByText("Quick Links")).not.toHaveClass("active");
     });
 
     
