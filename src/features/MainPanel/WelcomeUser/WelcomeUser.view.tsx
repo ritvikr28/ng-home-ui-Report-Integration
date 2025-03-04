@@ -1,8 +1,8 @@
 import "./style.scss";
 import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { IWelcomeUserViewProps } from "./WelcomeUserProps";
 import WhatsNewBanner from "../../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { envConfig } from "../../../shared/utils";
 
 const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
