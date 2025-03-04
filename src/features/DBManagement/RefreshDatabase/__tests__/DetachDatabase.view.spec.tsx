@@ -1,128 +1,184 @@
+import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import axios from "axios";
-import DetachDatabaseView from "../DetachDatabase.view"; // Adjust the import path accordingly
+import { createMemoryHistory, History } from "history";
+import { Router } from "react-router-dom";
+import DetachDatabaseView from "../DetachDatabase.view";
+import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
+import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
+import { service } from "../../../../shared/utils";
+import { errorHandler } from "../../../../shared/utils/errorHandler";
 
-// Mock axios
-jest.mock("axios");
+jest.mock("../../../../shared/utils", () => ({
+  service: {
+    post: jest.fn(),
+  },
+  getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
+  envConfig: {
+    BASE_URL: "https://example.com",
+  },
+}));
+
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    getUsername: jest.fn().mockReturnValue("test-user"),
+  },
+}));
+
+jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
+  useFetchSchoolNameData: jest.fn(),
+}));
+
+jest.mock("../../../../shared/utils/errorHandler", () => ({
+  errorHandler: {
+    handle401Error: jest.fn(),
+  },
+}));
 
 describe("DetachDatabaseView Component", () => {
+  const handleExceptionMock = jest.fn();
   const statusMock = jest.fn();
-  const HandleExceptionMock = jest.fn();
+  let history: History;
 
   beforeEach(() => {
-    jest.clearAllMocks(); // Clear previous mocks before each test
+    history = createMemoryHistory();
+    jest.clearAllMocks();
   });
 
   it("should render the component", () => {
     render(
-      <DetachDatabaseView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-      />
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
     );
-    expect(
-      screen.getByTestId("detachDBtitle")
-    ).toBeInTheDocument();
-    expect(
-      screen.getByTestId("detachDBbutton")
-    ).toBeInTheDocument();
+
+    expect(screen.getByTestId("detachDBtitle")).toBeInTheDocument();
+    expect(screen.getByTestId("detachDBbutton")).toBeInTheDocument();
     expect(screen.getByTestId("Yes")).toBeInTheDocument();
     expect(screen.getByTestId("No")).toBeInTheDocument();
   });
 
-  it("should handle API success", async () => {
-    const mockApiResponse = {
-      data: { statusCode: 200, uiStatus: "Detached" }
+  it("should call FetchIsDetached and handle success response", async () => {
+    const mockResponse: ISchoolDetailsDRApiResponse = {
+      statusCode: 200,
+      uiStatus: "Completed",
     };
-    (axios.post as jest.Mock).mockResolvedValueOnce(mockApiResponse);
+
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.post as jest.Mock).mockResolvedValue({
+      data: mockResponse,
+    });
+
     render(
-      <DetachDatabaseView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-      />
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
     );
-    fireEvent.click(screen.getByTestId("Yes"));
+
+    const yesButton = screen.getByTestId("Yes");
+    fireEvent.click(yesButton);
 
     await waitFor(() => {
-      expect(statusMock).not.toHaveBeenCalledWith("In progress");
+      expect(statusMock).toHaveBeenCalledWith("Completed");
     });
   });
 
-  it("should handle API failure", async () => {
-    const mockApiResponse = {
-      data: { statusCode: 500, uiStatus: "Failed to fetch data" }
-    };
-    (axios.post as jest.Mock).mockResolvedValueOnce(mockApiResponse);
+  it("should call handleException on API failure with response", async () => {
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.post as jest.Mock).mockRejectedValue({
+      response: { status: 500, data: "Internal Server Error" },
+    });
+
     render(
-      <DetachDatabaseView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-      />
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
     );
-    fireEvent.click(screen.getByTestId("Yes"));
+
+    const yesButton = screen.getByTestId("Yes");
+    fireEvent.click(yesButton);
 
     await waitFor(() => {
-      expect(statusMock).not.toHaveBeenCalledWith("Detached");
+      expect(handleExceptionMock).toHaveBeenCalled();
     });
   });
 
-  it("should handle API errors gracefully", async () => {
-    (axios.get as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
-    const consoleErrorMock = jest
-      .spyOn(console, "error")
-      .mockImplementation(() => {});
+  it("should call handle401Error on API failure with 401 status", async () => {
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.post as jest.Mock).mockRejectedValue({
+      response: { status: 401 },
+    });
 
     render(
-      <DetachDatabaseView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-      />
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
     );
-    fireEvent.click(screen.getByTestId("Yes"));
+
+    const yesButton = screen.getByTestId("Yes");
+    fireEvent.click(yesButton);
+
+    await waitFor(() => {
+      expect(errorHandler.handle401Error).toHaveBeenCalledWith(401, history);
+    });
+  });
+
+  it("should call handleException on API failure without response", async () => {
+    (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
+      schoolName: "Test School",
+    });
+    (service.post as jest.Mock).mockRejectedValue(new Error("Network Error"));
+
+    render(
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
+    );
+
+    const yesButton = screen.getByTestId("Yes");
+    fireEvent.click(yesButton);
+
+    await waitFor(() => {
+      expect(handleExceptionMock).toHaveBeenCalled();
+    });
+  });
+
+  it("should not call handleSetIsDetached when 'No' is selected", async () => {
+    render(
+      <Router history={history}>
+        <DetachDatabaseView
+          handleException={handleExceptionMock}
+          status={statusMock}
+        />
+      </Router>
+    );
+
+    const noButton = screen.getByTestId("No");
+    fireEvent.click(noButton);
 
     await waitFor(() => {
       expect(statusMock).not.toHaveBeenCalled();
-    });
-    consoleErrorMock.mockRestore();
-  });
-
-  it("should call status with uiStatus if response.statusCode === 200", async () => {
-    const mockResponse = { statusCode: 200, uiStatus: "Success" };
-    (axios.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-  
-    render(<DetachDatabaseView status={statusMock} handleException={HandleExceptionMock} />);
-  
-    fireEvent.click(screen.getByTestId("Yes"));  
-    await waitFor(() => {
-      expect(HandleExceptionMock).not.toHaveBeenCalled(); // Ensure no exception is triggered
-    });
-  });
-  
-  it("should call handleException if response.statusCode !== 200", async () => {
-    const mockResponse = { statusCode: 500, uiStatus: "Error" };
-    (axios.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-  
-    render(<DetachDatabaseView status={statusMock} handleException={HandleExceptionMock} />);
-  
-    fireEvent.click(screen.getByTestId("Yes"));  
-    await waitFor(() => {
-      expect(HandleExceptionMock).toHaveBeenCalled(); // Ensure exception handler is called
-      expect(statusMock).not.toHaveBeenCalled(); // Ensure status is not called
-    });
-  });
-
-
-  it("should not call API if 'No' is selected", async () => {
-    render(
-      <DetachDatabaseView
-        status={statusMock}
-        handleException={HandleExceptionMock}
-      />
-    );
-    fireEvent.click(screen.getByTestId("No"));
-
-    await waitFor(() => {
-      expect(statusMock).not.toHaveBeenCalled();
+      expect(handleExceptionMock).not.toHaveBeenCalled();
     });
   });
 });

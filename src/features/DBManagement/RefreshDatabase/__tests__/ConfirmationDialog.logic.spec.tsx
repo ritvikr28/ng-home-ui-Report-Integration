@@ -94,5 +94,28 @@ describe("ConfirmDialog Component", () => {
 
     expect(screen.getByRole("button", { name: /Ok/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /Cancel/i })).not.toBeInTheDocument();
-});
+  });
+
+  it("should not render the dialog when isOpen is false", () => {
+    render(<ConfirmDialog {...defaultProps} isOpen={false} />);
+
+    const dialogElement = screen.queryByText(defaultProps.title);
+    expect(dialogElement).not.toBeInTheDocument();
+  });
+
+  it("should render the dialog with default confirm and cancel button text", () => {
+    render(
+      <ConfirmDialog
+        title="Default Button Text Test"
+        description="Testing default button text"
+        onSubmitHandle={mockOnSubmitHandle}
+        onCloseHandle={mockOnCloseHandle}
+        isOpen={true}
+        optionalButton={true} // Ensure optionalButton is true to render the cancel button
+      />
+    );
+
+    expect(screen.getByRole("button", { name: /Ok/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Cancel/i })).toBeInTheDocument();
+  });
 });
