@@ -490,4 +490,73 @@ describe("SyncDataView Component", () => {
     expect(history.replace).not.toHaveBeenCalled();
   });
 
+  it("should handle TriggerSync call failure without a response", async () => {
+    (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+  
+    const result = await TriggerSync(mockHandleException, history);
+  
+    expect(result).toBeNull();
+    expect(mockHandleException).not.toHaveBeenCalledWith("Network Error");
+  });
+
+it("should handle TriggerSync API call failure with invalid token", async () => {
+  (service.post as jest.Mock).mockRejectedValueOnce({
+    message: "Invalid token",
+  });
+
+  await TriggerSync(mockHandleException, history);
+
+  expect(history.replace).toHaveBeenCalledWith("/unauthorized");
+});
+
+it("should handle TriggerSync API call failure without response", async () => {
+  (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+
+  const result = await TriggerSync(mockHandleException, history);
+
+  expect(result).toBeNull();
+  expect(mockHandleException).toHaveBeenCalled();
+});
+
+it("should handle button click when syncDataStatus is 'In Progress'", async () => {
+  render(
+    <Router history={history}>
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+        status={statusMock}
+        syncDataStatus="In Progress"
+      />
+    </Router>
+  );
+
+  const syncButton = screen.getByRole("button", { name: /Sync/i });
+  fireEvent.click(syncButton);
+
+  await waitFor(() => {
+    expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
+  });
+});
+
+it("should handle button click when clicked before", async () => {
+  render(
+    <Router history={history}>
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+        status={statusMock}
+        syncDataStatus="In Progress"
+      />
+    </Router>
+  );
+
+  const syncButton = screen.getByRole("button", { name: /Sync/i });
+  fireEvent.click(syncButton);
+  fireEvent.click(syncButton);
+
+  await waitFor(() => {
+    expect(mockSetShowSyncDialog).not.toHaveBeenCalledWith(true);
+  });
+});
+
 });
