@@ -6,38 +6,18 @@
   
 @media (min-width: 1024px) {
   .notification-banner-class-view {
-    max-width: 76.5vw !important;
-    width: auto;
+    width: 91vw !important;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .notification-banner-class-view {
-    max-width: 76.5vw !important;
-    width: auto;
+    width: 91vw !important;
   }
 }
 
-@media (min-width: 767.9px) and (max-width: 1023.9px) {
+@media (min-width: 320px) and (max-width: 1023.9px) {
   .notification-banner-class-view {
-    margin-bottom: 60px;
-    max-width: 723px !important;
-    width: auto;
-  }
-}
-
-@media (min-width: 390px) and (max-width: 767px) {
-  .notification-banner-class-view {
-    margin-bottom: 60px;
-    max-width: 723px !important;
-    width: auto;
-  }
-}
-
-@media (min-width: 319.9px) and (max-width: 389.9px) {
-  .notification-banner-class-view {
-    max-width: 358px;
-    margin-bottom: 60px;
-    width: auto;
+    width: 91vw !important;
   }
 }
