@@ -26,9 +26,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
     `${envConfig.APPLICATION}`,
     "ClassViewNotificationBanner"
   ); 
-
-  console.log("ClassViewNotificationBanner", ClassViewNotificationBanner);
-
+  
   return (
     <>
     <Grid className={`welcome-parent ${parentClassName}`} >
