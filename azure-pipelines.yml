@@ -381,7 +381,6 @@ stages:
 
         - job: WaitForValidation_QA
           displayName: "Validate Deployment"
-          dependsOn: QA_Test
           pool: server 
           steps:
           - task: ManualValidation@0
