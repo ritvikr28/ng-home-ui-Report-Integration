@@ -29,11 +29,11 @@ export const WhatsNewBanner: () => JSX.Element = () => {
             id='notification-banner-class-view'
             className="notification-banner-class-view"
             dataTestId="whatsnew-banner"
-            title="Spot issues early. Support students better."
+            title="Want more time to teach?"
             message={
               <>
                 <p>
-                  Class View makes it easier to intervene early and improve student outcomes.
+                Key pupil information and essential classroom tasks are now all in one place.
                 </p>
                 <div>
                   <a className='link-data' href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">

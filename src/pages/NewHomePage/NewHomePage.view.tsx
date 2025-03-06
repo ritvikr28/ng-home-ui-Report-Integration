@@ -12,8 +12,10 @@ import {
 } from "../../shared/model/quickLink/responsemodels";
 import { logger } from "../../shared/components/AppInsights";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
-import { getUserOrganisation } from "../../shared/utils";
+import { envConfig, getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 
 const requiredPermissions: Permission[] = [
   {
@@ -64,6 +66,11 @@ const NewHomepageView: React.FC = () => {
   // const isMiniMobileView = useMediaQuery('(min-width:390px) and (max-width: 767.9px)');
   const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
 
+  const ClassViewNotificationBanner: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "ClassViewNotificationBanner"
+  ); 
+  
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
   };
@@ -117,6 +124,12 @@ const NewHomepageView: React.FC = () => {
 
   return isPermission ? (
     <>
+      <Grid>
+        <GridItem lg ={10}>
+          {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
+        </GridItem>
+      </Grid>  
+
       <Grid className="app-dertfsg11463f" dataTestId="NewHomePage">
         
         <GridItem

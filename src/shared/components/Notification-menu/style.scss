@@ -3,16 +3,22 @@
   display: inline-block;
   margin-right: 50px;
 }
-  
+ 
+
+.notification-banner-class-view .essui-global-typography-default-subtitle {
+  font-weight: 600 !important;
+} 
+
+
 @media (min-width: 1024px) {
   .notification-banner-class-view {
-    width: 91vw !important;
+    width: 76.5vw !important;
   }
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .notification-banner-class-view {
-    width: 91vw !important;
+    width: 71vw !important;
   }
 }
 
