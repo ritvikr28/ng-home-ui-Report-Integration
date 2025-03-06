@@ -214,12 +214,7 @@ stages:
           - task: CopyFiles@2
             inputs:
               Contents: "deployment.yaml"
-              TargetFolder: "$(Build.ArtifactStagingDirectory)"
-            
-          - task: CopyFiles@2
-            inputs:
-              Contents: "deployment-live.yaml"
-              TargetFolder: "$(Build.ArtifactStagingDirectory)"
+              TargetFolder: "$(Build.ArtifactStagingDirectory)"                   
               
           - task: PublishBuildArtifacts@1
             inputs:
@@ -396,130 +391,10 @@ stages:
               onTimeout: 'reject'
               displayName: "Manual Validation"
                               
-        # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-        #   parameters:
-        #     snowConfig:    
-        #       serviceConnection: 'ServiceNow-Connection'
-        #       requireManualValidation: true          
-        #     component:
-        #       name: 'nghomeui'
-        #       selfhostedpool: 'paz-vmss-pool'
-        #     env_name: qa_snow  
-        #     config:
- 
-    - stage: approval_gate
-      displayName: "Approval_Gate Stage"
-      dependsOn: qa
-      jobs:
-        - deployment: approval_gateDeploy
-          displayName: "Deployment Job"
-          environment: approval_gate_eng
-          strategy:
-            runOnce:
-              deploy:
-                steps:
-                  - script: |
-                      echo "Approval has been given for Prod"
-                    displayName: 'Deployment to Approval_Gate'
-
-  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
-    - stage: prod
-      displayName: Deployment to Prod
-      dependsOn: approval_gate
-      pool:
-        name: 'paz-vmss-pool'
-      variables:
-        - group: 'ng-home-ui-Live'
-      jobs:
-        - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false
-              deploymentJobName: deploy_nghomeui_live     ###
-            # component:
-            #   name: 'ng-home-ui'
-            #   selfhostedpool: 'paz-vmss-pool' 
-
-        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true
-              deploymentJobName: deploy_nghomeui_live     ###          
-            # component:
-            #   name: 'nghomeui'
-            #   selfhostedpool: 'paz-vmss-pool'
-            env_name: prod_eng  
-            config:
-
-        - deployment: deploy_nghomeui_live
-          displayName: "Deployment to Prod"
-          dependsOn: MoveCR
-          environment: prod_eng         
-          strategy:
-            runOnce:
-              deploy:
-                steps:
-                  - task: replacetokens@5
-                    displayName: 'Replace Token in Deployment.YAML'
-                    inputs:
-                        rootDirectory: '$(Pipeline.Workspace)/drop'
-                        targetFiles: 'deployment-live.yaml'
-                        encoding: 'auto'
-                        tokenPattern: 'default'
-                        writeBOM: true
-                        actionOnMissing: 'warn'
-                        keepToken: false
-                        actionOnNoFiles: 'continue'
-                        enableTransforms: false
-                        enableRecursion: false
-                        useLegacyPattern: false
-                        enableTelemetry: true
-
-                  - task: bash@3
-                    displayName: 'Kubectl apply'
-                    inputs:
-                      targetType: 'inline'
-                      script: |
-                        cd $(Pipeline.Workspace)/drop
-                        az login --identity
-                        az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
-                        az aks get-credentials --resource-group paz-prd-ess-ng-rg --name paz-prd-ess-ng-aks  --admin 2> /dev/null 
-                        kubectl apply -f deployment-live.yaml                         
-                  
-                  - template: azure-deployment-pipeline.yaml
-                    parameters:
-                      rgName: "paz-prd-ess-ng-rg"
-                      clusterName: "paz-prd-ess-ng-aks"
-                      subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
-
-        - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false 
-              deploymentJobName: deploy_nghomeui_live     ###          
-            components:
-              - name: 'nghomeui'
-                selfhostedpool: 'paz-vmss-pool'
-            env_name: prod_eng
-            
-        # - job: Live_Test
-        #   displayName: Running Automation UI Test cases on live env
-        #   dependsOn: deploy_nghomeui_live
-        #   steps:
-        #   - template: azure-pipeline-run-automation-test.yaml
-        #     parameters:
-        #       env: "live"
-        #       type: "ui"
-        #       test_tags: "@regression"
-        #       pat_token: $(PAT)       
-
   - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
     - stage: pre_prod
       displayName: Deployment to Pre_prod
-      dependsOn: Build
+      dependsOn: qa
       pool:
         name: 'paz-vmss-pool'
       variables:
@@ -580,4 +455,113 @@ stages:
                     parameters:
                       rgName: "paz-pre-pfm-rg"
                       clusterName: "paz-pre-pfm-aks"
-                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797" 
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"      
+ 
+    - stage: approval_gate
+      displayName: "Approval_Gate Stage"
+      dependsOn: pre_prod
+      jobs:
+        - deployment: approval_gateDeploy
+          displayName: "Deployment Job"
+          environment: approval_gate_eng
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - script: |
+                      echo "Approval has been given for Prod"
+                    displayName: 'Deployment to Approval_Gate'
+
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
+    - stage: prod
+      displayName: Deployment to Prod
+      dependsOn: approval_gate
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-Live'
+      jobs:
+        - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: false
+              deploymentJobName: deploy_nghomeui_live     ###
+            # component:
+            #   name: 'ng-home-ui'
+            #   selfhostedpool: 'paz-vmss-pool' 
+
+        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: true
+              deploymentJobName: deploy_nghomeui_live     ###          
+            # component:
+            #   name: 'nghomeui'
+            #   selfhostedpool: 'paz-vmss-pool'
+            env_name: prod_eng  
+            config:
+
+        - deployment: deploy_nghomeui_live
+          displayName: "Deployment to Prod"
+          dependsOn: MoveCR
+          environment: prod_eng         
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true
+
+                  - task: bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
+                        az aks get-credentials --resource-group paz-prd-pfm-rg --name paz-prd-pfm-aks  --admin 2> /dev/null 
+                        kubectl apply -f deployment.yaml                         
+                  
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-prd-pfm-rg"
+                      clusterName: "paz-prd-pfm-aks"
+                      subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
+
+        - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
+          parameters:
+            snowConfig:    
+              serviceConnection: 'ServiceNow-Connection'
+              requireManualValidation: false 
+              deploymentJobName: deploy_nghomeui_live     ###          
+            components:
+              - name: 'nghomeui'
+                selfhostedpool: 'paz-vmss-pool'
+            env_name: prod_eng
+            
+        # - job: Live_Test
+        #   displayName: Running Automation UI Test cases on live env
+        #   dependsOn: deploy_nghomeui_live
+        #   steps:
+        #   - template: azure-pipeline-run-automation-test.yaml
+        #     parameters:
+        #       env: "live"
+        #       type: "ui"
+        #       test_tags: "@regression"
+        #       pat_token: $(PAT)       
