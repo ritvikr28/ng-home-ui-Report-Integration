@@ -12,13 +12,18 @@ import { envConfig } from "../../../../../../shared/utils";
   }));
 
 describe("staffTimeTableLink component", () => {
+
+  test("renders correctly", () => {
+   const {getByText} =  render(<StaffTimeTableLinkview />);
+
+    expect(getByText("staffTimetable.stafftimetablelink")).toBeInTheDocument();
+    expect(getByText("staffTimetable.stafftimetablelinktext")).toBeInTheDocument();
+  });
+
     test("should render the component with the correct link", () => {
         const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
       jest.spyOn(gtmAnalytics, "pushEvent");
-      const { getByText,getByTestId } = render(<StaffTimeTableLinkview />);
-  
-      
-      expect(getByText("Your upcoming schedule")).toBeInTheDocument();
+      const { getByTestId } = render(<StaffTimeTableLinkview />);
   
       const link = getByTestId("link-staffid"); 
     

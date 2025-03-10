@@ -57,10 +57,10 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
       dataTestId="new-search-element"
                 id="search"               
                 suggestions={hasItems ? suggestions : []}
-                headingText={t("description.homePage.searchHelper")}
+                headingText={t("searchpage.searchHelper")}
                 onKeyUpLenght={2}
                 className={className}
-                placeholderText={t("description.homePage.searchBar.placeHolder")}
+                placeholderText={t("searchpage.searchBar")}
                 onItemClick={onItemClick}
                 keyUpHandler={(e: any) => {
                   onChange(e);

@@ -2,7 +2,10 @@ import {  Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
-
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
 import "./style.scss";
@@ -10,8 +13,6 @@ import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
 import SIMSupdatesView from "../SIMSUpdates/SIMSupdates.view";
 import gtmAnalytics from "../../shared/utils/analytics";
-
-
 
 const requiredPermissions: Permission[] = [
   {
@@ -27,6 +28,8 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
   isOpen
   
 }: IQuickLinkViewProps): JSX.Element => {  
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
   const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== "Class View") || [];
 
@@ -36,9 +39,9 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
       <GridItem className="teacher-panel-container-dertfsg11463f quicklink-nomargin121">
       <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
         <GridItem className={isOpen? "quicklink-container-dertfsg11463f open-quicklink-dertfsg11463f nopadding-dertfsg11463f quicklink-padding-dertfsg11463f":  "nopadding-dertfsg11463f quicklink-container-closed-dertfsg11463f "}>
-          <GridItem className="quicklinkheading-dertfsg11463f">Quick Links</GridItem>
+          <GridItem className="quicklinkheading-dertfsg11463f">{t("quickLink.headingTitle")}</GridItem>
           <GridItem className="quicklinktext-dertfsg11463f">
-            Easy one-click access. Favouriting items will ensure your top selections are always visible.
+          {t("quickLink.quicklinkText")}
           </GridItem>
           <GridItem>
           {!apiError &&  (
@@ -47,10 +50,10 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                   <TableHead>
                     <TableRow>
                       <TableCell header className="theader">
-                        Name
+                      {t("quickLink.quicklinkTableColumnName")}
                       </TableCell>
                       <TableCell header className="theadercell">
-                        Starred
+                      {t("quickLink.quicklinkTableColumStarred")}
                       </TableCell>
                     </TableRow>
                   </TableHead>

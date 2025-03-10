@@ -11,13 +11,20 @@ import { envConfig } from "../../../../../../shared/utils";
   }));
 
 describe("TakeRegistersLinkview component", () => {
+  test("renders the component correctly", () => {
+    const {getByText }= render(<TakeRegistersLinkview />);
+
+    expect(getByText("takeRegister.takeregisterlink")).toBeInTheDocument();
+    expect(getByText("takeRegister.takeregistertext")).toBeInTheDocument();
+  });
+
     test("should render the component with the correct link", () => {
         const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
       jest.spyOn(gtmAnalytics, "pushEvent");
       const { getByText,getByTestId } = render(<TakeRegistersLinkview />);
   
       
-      expect(getByText("Your registers")).toBeInTheDocument();
+      expect(getByText("takeRegister.takeregistertext")).toBeInTheDocument();
   
       const link = getByTestId("link-id"); 
     

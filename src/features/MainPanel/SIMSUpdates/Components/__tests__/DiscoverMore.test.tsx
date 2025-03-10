@@ -20,7 +20,7 @@ describe("DiscoverMoreView Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     render(<DiscoverMoreView isOpen/>);
     expect(
-      screen.getByText("Find out more about SIMS Next Gen")
+      screen.getByText("discoverMore.simsupdatemoretext")
     ).toBeInTheDocument();
   });
 
@@ -28,7 +28,7 @@ describe("DiscoverMoreView Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
     render(<DiscoverMoreView isOpen/>);
     expect(
-      screen.getByText("SIMS Next Gen updates")
+      screen.getByText("discoverMore.simsupdatetext")
     ).toBeInTheDocument();
   });
   
@@ -88,8 +88,8 @@ spyWindowOpen.mockImplementation(jest.fn());
   test("renders ActionCard components with correct text content", () => {
     const { getByTestId } = render(<DiscoverMoreView />);
     
-    expect(getByTestId("what-new-test-id")).toHaveTextContent("What's new?");
-    expect(getByTestId("test-id")).toHaveTextContent("The SIMS Next Gen roadmap");
+    expect(getByTestId("what-new-test-id")).toHaveTextContent("discoverMore.primarytext");
+    expect(getByTestId("test-id")).toHaveTextContent("discoverMore.primarytextsimsnextgen");
   });
 
   test("calls onClickActionCard when an ActionCard is clicked", () => {

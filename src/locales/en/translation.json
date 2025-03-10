@@ -255,5 +255,73 @@
         "button4": "Cancel"
       }
     }
+  },
+  "quickLink": {
+    "headingTitle": "Quick Links",
+    "quicklinkText": "Easy one-click access. Favouriting items will ensure your top selections are always visible.",
+    "quicklinkTableColumnName":"Name",
+    "quicklinkTableColumStarred": "Starred",
+    "quicklinkseeall": "See all"
+  },
+  "welcomePage": {
+    "himsg": "Hi",
+    "welcomemsg": "welcome back!"
+  },
+  "staffTimetable": 
+  {
+    "stafftimetablelink": "Your upcoming schedule",
+    "stafftimetablelinktext":"View full timetable"
+  },
+  "errorfallback":
+  {
+    "error-loading":"Loading failed",
+    "error-loading-text": "Something went wrong."
+  },
+  "takeRegister" :
+  {
+    "takeregisterlink":"Your registers",
+    "takeregistertext":"View all registers"
+  },
+  "discoverMore":
+  {
+    "simsupdatetext":"SIMS Next Gen updates",
+    "simsupdatemoretext":"Find out more about SIMS Next Gen",
+    "mobilesimsupdatetext": "More updates",
+    "mobilesimsupdatemoretext": "Discover more with SIMS Next Gen",
+    "primarytext":"What's new?",
+    "secondarytext":"Get the latest on SIMS Next Gen - new releases, sign up for early access, and find out what's new.",
+    "primarytextsimsnextgen": "The SIMS Next Gen roadmap",
+    "secondarytextsimsnextgen": "Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap."
+  },
+  "homeStaffTimeTableEventTiles" :
+  {
+    "time": "Time",
+    "staff":"Staff",
+    "coverstaff": "Cover Staff",
+    "location" :"Location",
+    "classview":"Class View",
+    "register": "register",
+    "takeregister":"Take register",
+    "close":"Close"
+  },
+  "searchpage" :
+  {
+   "searchHelper": "Search by first or last name",
+   "searchBar":"For more results press enter"
+  },
+  "breadcrumbshome":"Home",
+  "breadcrumbsadminconsole":"Admin console",
+  "attendanceoverview" : {
+    "authorisedabsence" : "Authorised absence",
+    "unauthorisedabsence": "Unauthorised absence",
+    "persistentabsence": "Persistent absence",
+    "currentyearaverage": "Current year average",
+    "previousyearaverage": "Previous year average",
+    "nationalaverage":"National average"
+  },
+  "pupildemographics":{
+    "pupilsonroll":"Pupils on roll",
+    "pupilpremium":"Pupil premium (PP)",
+    "freeschoolmeals":"Free school meals (FSM)"
   }
 }

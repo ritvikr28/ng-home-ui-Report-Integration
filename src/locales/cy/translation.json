@@ -194,5 +194,73 @@
         "button4": "Canslo"
       }
   	}
+  },
+  "quickLink": {
+    "headingTitle": "Dolenni cyflym",
+    "quicklinkText": "Mynediad un-clic hawdd. Bydd hoff eitemau yn sicrhau bod eich dewisiadau gorau bob amser yn weladwy.",
+    "quicklinkTableColumnName":"Enw",
+    "quicklinkTableColumStarred": "Gyda seren",
+    "quicklinkseeall": "Gweld popeth"
+  },
+  "welcomePage": {
+    "himsg": "Helo",
+    "welcomemsg": "croeso nôl!"
+  },
+  "staffTimetable": 
+  {
+    "stafftimetablelink": "Eich amserlen o’r hyn sydd i ddod",
+    "stafftimetablelinktext":"Gweld amserlen lawn"
+  },
+  "errorfallback":
+  {
+    "error-loading":"Llwytho wedi methu",
+    "error-loading-text": "Rhywbeth wedi mynd o'i le"
+  },
+  "takeRegister":
+  {
+    "takeregisterlink":"Eich cofrestri",
+    "takeregistertext":"Gweld pob cofrestr"
+  },
+  "discoverMore":
+  {
+    "simsupdatetext":"Diweddariadau SIMS Next Gen",
+    "simsupdatemoretext":"Gwybod mwy am SIMS Next Gen",
+    "mobilesimsupdatetext": "More updates",
+    "mobilesimsupdatemoretext": "Gwybod mwy gyda SIMS Next Gen",
+    "primarytext":"Beth sy'n newydd?",
+    "secondarytext":"Y diweddaraf ar SIMS Next Gen - cyhoeddiadau newydd, cofrestrwch ar gyfer mynediad cynnar, a darganfod beth sy'n newydd.",
+    "primarytextsimsnextgen": "Mapio SIMS Next Gen",
+    "secondarytextsimsnextgen": "Dod i wybod beth sydd ar y gorwel a sut rydyn ni'n gwella SIMS ar fapio Next Gen."
+  },
+  "homeStaffTimeTableEventTiles" :
+  {
+    "time": "Amser",
+    "staff":"Staff",
+    "coverstaff": "Staff Cyflenwi",
+    "location" :"Lleoliad",
+    "classview":"Golwg Dosbarth",
+    "register": "cofrestr",
+    "takeregister":"Cymryd cofrestr",
+    "close":"Cau"
+  },
+  "searchpage" :
+  {
+   "searchHelper": "Chwilio yn ôl enw cyntaf neu olaf",
+   "searchBar":"Am fwy o ganlyniadau cliciwch 'enter'"
+  },
+   "breadcrumbshome":"Cartref",
+  "breadcrumbsadminconsole":"Consol gweinyddol",
+  "attendanceoverview" : {
+    "authorisedname" : "Absenoldeb wedi’i awdurdodi",
+    "unauthorised": "Absenoldeb heb ei awdurdodi",
+    "persistent": "Absenoldeb mynych",
+    "currentyearaverage": "Cyfartaledd y flwyddyn bresennol",
+    "previousyearaverage": "Cyfartaledd y flwyddyn flaenorol",
+    "nationalaverage":"Cyfartaledd cenedlaethol"
+  },
+  "pupildemographics":{
+    "pupilsonroll":"Myfyrwyr wedi’u cofrestru",
+    "pupilpremium":"Premiwm disgybl",
+    "freeschoolmeals":"Prydau Ysgol am Ddim"
   }
 }

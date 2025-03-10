@@ -8,9 +8,15 @@ import {
   GridItem,
   useMediaQuery
 } from "@essnextgen/ui-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import styles from "../DiscoverStyle.module.scss";
 /* eslint-disable */
 const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 767.9px)"
   );
@@ -38,8 +44,8 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
       >
         <span className={styles["sims-updates"]}>
           {isMobileView
-            ? "SIMS Next Gen updates"
-            : "Find out more about SIMS Next Gen"}{" "}
+            ? t("discoverMore.simsupdatetext")
+            :  t("discoverMore.simsupdatemoretext")}{" "}
         </span>
         <span className={styles["sims-link-url"]}>
           <Button
@@ -49,7 +55,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             onClick={onButtonClick}
             size={ButtonSize.Small}
           >
-            {isMobileView ? "More updates" : "Discover more with SIMS Next Gen"}
+            {isMobileView ? t("discoverMore.mobilesimsupdatetext") : t("discoverMore.mobilesimsupdatemoretext")}
           </Button>
         </span>
       </div>
@@ -78,8 +84,8 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
-              primaryText="What's new?"
-              secondaryText="Get the latest on SIMS Next Gen - new releases, sign up for early access, and find out what's new."
+              primaryText= {t("discoverMore.primarytext")}
+              secondaryText= {t("discoverMore.secondarytext")}
             />
           </Link>
         </GridItem>
@@ -101,8 +107,8 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               dataTestId="test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
-              primaryText="The SIMS Next Gen roadmap"
-              secondaryText="Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap."
+              primaryText= {t("discoverMore.primarytextsimsnextgen")}
+              secondaryText={t("discoverMore.secondarytextsimsnextgen")}
             />
           </Link>
         </GridItem>

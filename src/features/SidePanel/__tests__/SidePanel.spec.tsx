@@ -144,7 +144,7 @@
       
       
       expect(container).toBeInTheDocument();
-      expect(getByText("Quick Links")).toBeInTheDocument();
+      expect(getByText("quickLink.headingTitle")).toBeInTheDocument();
     });
 
   
@@ -333,7 +333,7 @@
         />
       );
 
-      const seeAllLink = getByText("See all");
+      const seeAllLink = getByText("quickLink.quicklinkseeall");
       fireEvent.click(seeAllLink);
 
       expect(mockShowQuickLinkView).toHaveBeenCalled();
@@ -356,7 +356,7 @@
         />
       );
 
-      const seeAllLink = getByText("See all");
+      const seeAllLink = getByText("quickLink.quicklinkseeall");
       fireEvent.click(seeAllLink);
 
       expect(mockTogglePanel).toHaveBeenCalled();
@@ -380,7 +380,7 @@
         />
       );
 
-      const seeAllLink = getByText("See all");
+      const seeAllLink = getByText("quickLink.quicklinkseeall");
       fireEvent.click(seeAllLink);
 
       expect(mockTogglePanel).not.toHaveBeenCalled();

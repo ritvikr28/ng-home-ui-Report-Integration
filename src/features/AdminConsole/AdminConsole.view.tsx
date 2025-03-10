@@ -10,12 +10,19 @@ import {
 } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import About from "./About";
+
 
 const AdminConsole: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
 
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
 
@@ -63,12 +70,12 @@ const AdminConsole: React.FC = () => {
               breadcrumbActions={[
                 {
                   active: true,
-                  linkName: "Home",
+                  linkName: t("breadcrumbshome"),
                   path: window.location.origin,
                 },
                 {
                   active: false,
-                  linkName: "Admin console",
+                  linkName: t("breadcrumbsadminconsole"),
                   path: "#",
                 }
               ]}

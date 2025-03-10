@@ -77,13 +77,13 @@ describe("AttendanceOverviewView", () => {
       expect(screen.getByText(/overall attendance/i)).toBeInTheDocument();
     });
 
-    const authorisedAbsences = screen.getAllByText(/authorised absence/i);
-    expect(authorisedAbsences).toHaveLength(2);
+    const authorisedAbsences = screen.getAllByText(/attendanceoverview.authorisedabsence/i);
+    expect(authorisedAbsences).toHaveLength(1);
 
-    const unauthorisedAbsences = screen.getAllByText(/unauthorised absence/i);
+    const unauthorisedAbsences = screen.getAllByText(/attendanceoverview.unauthorisedabsence/i);
     expect(unauthorisedAbsences).toHaveLength(1);
 
-    const persistentAbsences = screen.getAllByText(/persistent absence/i);
+    const persistentAbsences = screen.getAllByText(/attendanceoverview.persistentabsence/i);
     expect(persistentAbsences).toHaveLength(1);
   });
 

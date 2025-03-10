@@ -14,7 +14,12 @@ import {
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import PupilDemographics from "./PupilDemographics.logic";
+
 
 const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
   const {
@@ -23,7 +28,8 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
     error
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
-
+    const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
     const renderLoaderTileCard: () => JSX.Element = () => (
       <TileCard
         primaryText={
@@ -67,7 +73,7 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
       );
     if (data?.payload.pupilOnRoll !== null) {
       return renderDataTileCard(
-        "Pupils on roll",
+        t("pupildemographics.pupilsonroll"),
         data?.payload.pupilOnRoll.toString()
       );
     }
@@ -83,7 +89,7 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
       );
     if (data?.payload.pupilPremiumPercentage !== null) {
       return renderDataTileCard(
-        "Pupil premium (PP)",
+        t("pupildemographics.pupilpremium"),
         `${data?.payload.pupilPremiumPercentage}% (${data?.payload.totalPupilPremium})`
       );
     }
@@ -96,7 +102,7 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
       return renderErrorTileCard("FSM insight unavailable", "fsm-error");
     if (data?.payload.fsmePercentage !== null) {
       return renderDataTileCard(
-        "Free school meals (FSM)",
+        t("pupildemographics.freeschoolmeals"),
         `${data?.payload.fsmePercentage}% (${data?.payload.totalPupilFsme})`
       );
     }
