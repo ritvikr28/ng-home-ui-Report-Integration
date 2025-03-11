@@ -1,3 +1,4 @@
+import React from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
 import DocumentManagementServerView from "./DocumentManagementServer.view";
 
@@ -110,7 +111,7 @@ export const getTableHeadersData: {
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
     columnWidth: "129px",
-  },
+  }
 ];
 export const tableBodyData: {
   id: string;
@@ -142,7 +143,7 @@ export const tableBodyData: {
     "Date added": "01 Jan 2025",
     Format: "doc",
     Size: "3KB",
-  },
+  }
 ];
 const DocumentManagementServer: React.FC = () => (
   <>
