@@ -45,7 +45,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   quicklinkData,
   setQuickLinkData,
   isLoader = false,
-  isSIMSIDAdmin = false,
+  isSIMSIDAdmin = false
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -92,7 +92,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
             handleStarClick,
             showQuickLinkView,
             isLoader,
-            isOpen,
+            isOpen
           })
         : renderClosedPanel(togglePanel)}
       <div />
@@ -142,7 +142,7 @@ const handleStarClickAsync: (
     event: "interact_click",
     elementType,
     elementTextOrLabel: name,
-    elementLocation: "sidebar",
+    elementLocation: "sidebar"
   });
 };
 
@@ -177,7 +177,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
   handleStarClick,
   showQuickLinkView,
   isLoader,
-  isOpen,
+  isOpen
 }: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
@@ -209,7 +209,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
                 showQuickLinkView,
                 isLoader,
                 togglePanel,
-                isMobileView,
+                isMobileView
               })}
         </div>
       </SideNavigationPanelContent>
@@ -226,7 +226,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
       showQuickLinkView,
       isLoader,
       togglePanel,
-      isMobileView,
+      isMobileView
     })
   );
 };
@@ -326,7 +326,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView,
+  isMobileView
 }: RenderQuickLinkContentProps) => (
   <div>
     <div className="quick-lint-display-dertfsg11463f">
@@ -343,7 +343,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
           showQuickLinkView,
           isLoader,
           togglePanel,
-          isMobileView,
+          isMobileView
         })}
   </div>
 );
@@ -375,7 +375,7 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView,
+  isMobileView
 }: QuickLinkSidePanel): JSX.Element | null => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
@@ -405,7 +405,7 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
                 <div
                   className="quick-panel-cont-dertfsg11463f"
                   onClick={() => {
-                    const classViewLink = quicklinkData.find(
+                    const classViewLink :any  = quicklinkData.find(
                       (link: any) => link.name === "Class View"
                     )?.link;
                     if (classViewLink) {
@@ -415,7 +415,7 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
                         linkText: "Class View",
                         linkUrl: classViewLink,
                         clickType: "link",
-                        clickLocation: "sidebar",
+                        clickLocation: "sidebar"
                       });
                     }
                   }}
@@ -438,7 +438,7 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
                           linkText: sidelink.name,
                           linkUrl: sidelink.link,
                           clickType: "link",
-                          clickLocation: "sidebar",
+                          clickLocation: "sidebar"
                         });
                       }}
                       style={{ cursor: "pointer" }}

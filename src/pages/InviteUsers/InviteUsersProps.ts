@@ -191,7 +191,7 @@ export  const tableDataObj: any[] = [
     {
       active: false,
       linkName: "Invite users",
-      path: "/",
+      path: "/"
     }
   ];
   

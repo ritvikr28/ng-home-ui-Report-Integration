@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Notification as NotificationBanner,
   NotificationStatus
@@ -7,10 +7,9 @@ import './style.scss';
 import { envConfig } from '../../utils';
 
 export const WhatsNewBanner: () => JSX.Element = () => {
-  const [isBannerVisible, setIsBannerVisible] = useState(true);
-
+  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   useEffect(() => {
-    const isBannerClosed = sessionStorage.getItem('isBannerClosed');
+    const isBannerClosed: string | null = sessionStorage.getItem('isBannerClosed');
     if (isBannerClosed === 'true') {
       setIsBannerVisible(false);
     }

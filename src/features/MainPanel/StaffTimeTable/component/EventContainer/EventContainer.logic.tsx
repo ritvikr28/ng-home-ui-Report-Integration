@@ -189,7 +189,7 @@ const hasStaffTimeTableV2: boolean = hasFeaturePermission(`${envConfig.APPLICATI
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
+  const roomCode: string = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 

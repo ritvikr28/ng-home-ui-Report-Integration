@@ -28,7 +28,7 @@ const StaffTimeTableLinkview: () => JSX.Element = () => {
                 linkText: "View full timetable",
                 linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
                 clickType: "link",
-                clickLocation: "body",
+                clickLocation: "body"
               })
             }
           >

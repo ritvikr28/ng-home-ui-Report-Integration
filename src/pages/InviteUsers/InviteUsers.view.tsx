@@ -22,64 +22,66 @@ import {
   tableDataObj
 } from "./InviteUsersProps";
 
-const InviteUserView : React.FC<InviteUserProps> = ({
-  
-}) => {
+const InviteUserView: React.FC<InviteUserProps> = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const [isOpen, setIsOpen] = useState<boolean>(!isMobileView);
-
-  const handleButtonClick = () => {
-    setIsOpen(!isOpen);
-  };
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(!isMobileView);
 
   useEffect(() => {
-    setIsOpen(!isMobileView);
+    setIsSidebarOpen(!isMobileView);
   }, [isMobileView]);
 
+  const toggleSidebar = (): void => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
+  const closeSidebar = (): void => {
+    setIsSidebarOpen(false);
+  };
+
+  const onBreadcrumbClick = (): void => {};
+
   return (
-    <Grid className="dms-layout" style={{ display: "flex" }} >
-      <GridItem className={isOpen ? "side-width" : "no-side-width"}>
-        {!isOpen && (
+    <Grid className="dms-layout" style={{ display: "flex" }}>
+      <GridItem className={isSidebarOpen ? "side-width" : "no-side-width"}>
+        {!isSidebarOpen && (
           <Button
             className="base-class"
             color={ButtonColor.Utility}
             dataTestId="btn-collapse"
             iconColor={IconColor.Neutral800}
             iconName="open-panel--left--filled"
-            onClick={handleButtonClick}
+            onClick={toggleSidebar}
             size={ButtonSize.Small}
           />
         )}
         <LocalisedMenu
           customHeight={100}
           menuHeading="Admin Console"
-          onCloseSideNavigationPanel={() => setIsOpen(false)}
-          isOpenSideNavigation={isOpen}
+          onCloseSideNavigationPanel={closeSidebar}
+          isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
             text: "Invite users",
-            value: `${window.location.origin}/inviteusers`,
+            value: `${window.location.origin}/inviteusers`
           }}
         />
       </GridItem>
-      <GridItem className={isOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
+      <GridItem className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
         <div style={{ marginBottom: 16, width: "100%" }}>
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
             className="essui-Breadcrumbs"
             dataTestId="breadcrumb-test-id"
             id="element-id"
-            onItemClick={() => {}}
+            onItemClick={onBreadcrumbClick}
           />
           <ControlledList
             {...getDefaultControlledListProps()}
             isAddEventBtnShow={false}
             dataTestId="invite-user-list-test-id"
-            filterDDLOptions={[
-              { id: "1", text: "All", value: "All" }
-            ]}
+            filterDDLOptions={[{ id: "1", text: "All", value: "All" }]}
             editSelectedBtnTitle="Edit selected"
             headingText="Invite users"
             subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
@@ -113,9 +115,9 @@ const InviteUserView : React.FC<InviteUserProps> = ({
               isNotificationanner: false,
               notificationStatus: NotificationStatus.SUCCESS,
               okText: "Discard",
-              onCancel: function noRefCheck() {},
-              onConfirm: function noRefCheck() {},
-              template: DialogTemplate.Confirmation,
+              onCancel: (): void => {},
+              onConfirm: (): void => {},
+              template: DialogTemplate.Confirmation
             }}
             titleConfirmation="Discard changes?"
             toastNotificationStatus={NotificationStatus.SUCCESS}
@@ -127,9 +129,9 @@ const InviteUserView : React.FC<InviteUserProps> = ({
               {
                 autoclose: false,
                 isShow: true,
-                message: 'To manage user email name and role, please access SIMS7.',
-                title: 'User details are managed in SIMS7',
-                variant: 'highlight',
+                message: "To manage user email name and role, please access SIMS7.",
+                title: "User details are managed in SIMS7",
+                variant: "highlight",
                 hideCloseButton: true
               }
             ]}

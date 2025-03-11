@@ -56,7 +56,7 @@ const AdminConsole: React.FC = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "About",
-              value: `${window.location.origin}/adminconsole`,
+              value: `${window.location.origin}/adminconsole`
             }}
           />
         </GridItem>
@@ -71,12 +71,12 @@ const AdminConsole: React.FC = () => {
                 {
                   active: true,
                   linkName: t("breadcrumbshome"),
-                  path: window.location.origin,
+                  path: window.location.origin
                 },
                 {
                   active: false,
                   linkName: t("breadcrumbsadminconsole"),
-                  path: "#",
+                  path: "#"
                 }
               ]}
               className="essui-Breadcrumbs"
