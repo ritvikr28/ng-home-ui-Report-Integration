@@ -21,6 +21,7 @@ import {
   InviteUserProps,
   tableDataObj
 } from "./InviteUsersProps";
+import "./style.scss";
 
 const InviteUserView: React.FC<InviteUserProps> = () => {
   const isMobileView: boolean = useMediaQuery(
@@ -69,7 +70,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
         />
       </GridItem>
       <GridItem className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
-        <div style={{ marginBottom: 16, width: "100%" }}>
+        <div className="invite-users-table-align" style={{ marginBottom: 16, width: "100%" }}>
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
             className="essui-Breadcrumbs"
@@ -88,7 +89,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             id="Inviteusers-list"
             filterDDLuseAutoWidth={true}
             filterDDLisSelected={true}
-            filterDDLlabel="Invitation Status"
+            filterDDLlabel="Invitation status"
             filterDDLplaceholder="Select"
             filterDDLselectedItem={{ text: "All", value: "All" }}
             filterDDLdisabled={false}
@@ -97,7 +98,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             paginationCount={4}
             paginationMinCountToHideNextPreviousBtn={0}
             resultNotFoundMessage=""
-            searchHeadingText="Search Users"
+            searchHeadingText="Search user"
             searchPlaceholderText="Text"
             searchTerm=""
             secondaryButtonTitle="Cancel"
