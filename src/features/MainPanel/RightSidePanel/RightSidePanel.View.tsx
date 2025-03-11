@@ -14,11 +14,16 @@ import {
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import { IRightSidePanelViewProps } from "./RightSidePanelViewProps";
 import { envConfig } from "../../../shared/utils/constants";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { logger } from "../../../shared/components/AppInsights";
 import { getUser, getUserOrganisation } from "../../../shared/utils";
+
 
 
 export const RightSidePanelView: (
@@ -47,6 +52,9 @@ export const RightSidePanelView: (
     handleClassViewClick,
     classViewURL
   }: IRightSidePanelViewProps = props;
+
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
 
   const handlePanelClose:()=>void = () => {
     togglePanel(SchoolEventexternalId);
@@ -93,7 +101,7 @@ export const RightSidePanelView: (
               className="essui-global-typography-default-control-label margin-bottom-label"
               data-testid="time-label"
             >
-              Time:
+              {t("homeStaffTimeTableEventTiles.time")}:
             </div>
             <div
               className="essui-global-typography-default-body margin-bottom"
@@ -105,7 +113,7 @@ export const RightSidePanelView: (
               className="essui-global-typography-default-control-label margin-bottom-label"
               data-testid="staff-label"
             >
-              Staff:
+              {t("homeStaffTimeTableEventTiles.staff")}:
             </div>
             <div
               className="essui-global-typography-default-body margin-bottom"
@@ -119,7 +127,7 @@ export const RightSidePanelView: (
                   className="essui-global-typography-default-control-label margin-bottom-label"
                   data-testid="staff-label"
                 >
-                  Cover Staff:
+                  {t("homeStaffTimeTableEventTiles.coverstaff")}:
                 </div>
                 <div
                   className="essui-global-typography-default-body margin-bottom"
@@ -133,7 +141,7 @@ export const RightSidePanelView: (
               className="essui-global-typography-default-control-label margin-bottom-label"
               data-testid="location-label"
             >
-              Location:
+              {t("homeStaffTimeTableEventTiles.location")}:
             </div>
             <div
               className="essui-global-typography-default-body margin-bottom"
@@ -151,7 +159,7 @@ export const RightSidePanelView: (
                         href={classViewURL}
                         onClick={handleClassViewClick}
                       >
-                       Class View
+                       {t("homeStaffTimeTableEventTiles.classview")}
                       </Link>
                     </div>
                   )
@@ -178,7 +186,7 @@ export const RightSidePanelView: (
                 {GroupDescription === null || GroupDescription === undefined
                   ? ""
                   : GroupDescription}{" "}
-                register
+                {t("homeStaffTimeTableEventTiles.register")} 
               </span>
 
               <span data-testid="take-reg">
@@ -188,7 +196,7 @@ export const RightSidePanelView: (
                   color={ButtonColor.Secondary}
                   onClick={onTRButtonClick}
                 >                  
-                  Take register
+                   {t("homeStaffTimeTableEventTiles.takeregister")}
                 </Button>
               </span>
             </div>
@@ -271,7 +279,7 @@ export const RightSidePanelView: (
             id="close-button-id"
             dataTestId="close-button"
           >
-            Close
+            {t("homeStaffTimeTableEventTiles.close")}
           </Button>
           </div>
         </SidePanelFooter>

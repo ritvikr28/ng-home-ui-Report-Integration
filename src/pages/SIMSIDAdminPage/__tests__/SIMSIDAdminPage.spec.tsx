@@ -28,7 +28,7 @@ describe("SIMSIDAdminPage", () => {
     const containerWelcomeMessage = screen.getByTestId('subparent-element');
 
     const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'strong' });
-    const welcomeMessage = 'Hi John, welcome back!';
+    const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
 
     expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
     expect(getByTestId('notification-test-id')).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe("SIMSIDAdminPage", () => {
     const containerWelcomeMessage = screen.getByTestId('subparent-element');
 
     const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'strong' });
-    const welcomeMessage = 'Hi John, welcome back!';
+    const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
 
     const containerNotificationSection = screen.queryByTestId('notification-test-id');
 

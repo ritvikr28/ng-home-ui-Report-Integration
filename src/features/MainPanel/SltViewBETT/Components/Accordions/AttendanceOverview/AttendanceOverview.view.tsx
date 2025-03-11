@@ -16,9 +16,17 @@ import {
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
+
+
 const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
   const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
   const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
@@ -35,7 +43,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
 
   const persistentAbsenteesData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
-      Name: "Persistent Absentees",
+      Name: t("attendanceoverview.persistentabsence"),
       currentYearAvg:
         data?.payload.attendanceInsights.persistentAbsenteeCurrentYear || 0,
       previousYearAvg:
@@ -48,7 +56,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
 
   const authorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
-      Name: "Authorised Absence",
+      Name: t("attendanceoverview.authorisedabsence"),
       currentYearAvg:
         data?.payload.attendanceInsights.authorisedAbsentCurrentYear || 0,
       previousYearAvg:
@@ -60,7 +68,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
 
   const unauthorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
     {
-      Name: "Unauthorised Absence",
+      Name: t("attendanceoverview.unauthorisedabsence"),
       currentYearAvg:
         data?.payload.attendanceInsights.unauthorisedAbsentCurrentYear || 0,
       previousYearAvg:
@@ -72,17 +80,17 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
 
   const barGraphConfig: { label: string; dataKey: string; color: string }[] = [
     {
-      label: "Current year average",
+      label: t("attendanceoverview.currentyearaverage"),
       dataKey: "currentYearAvg",
       color: "#006970"
     },
     {
-      label: "Previous year average",
+      label: t("attendanceoverview.previousyearaverage"),
       dataKey: "previousYearAvg",
       color: "#78D5DB"
     },
     {
-      label: "National average",
+      label: t("attendanceoverview.nationalaverage"),
       dataKey: "nationalAvg",
       color: "#00A0AA"
     }
@@ -164,7 +172,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
                         data={authorisedAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Authorised absence"
+                        title={t("attendanceoverview.authorisedabsence")}
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}
@@ -181,7 +189,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
                         data={unauthorisedAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Unauthorised absence"
+                        title={t("attendanceoverview.unauthorisedabsence")}
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}
@@ -198,7 +206,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
                         data={persistentAbsenteesData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title="Persistent absence"
+                        title={t("attendanceoverview.persistentabsence")}
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}

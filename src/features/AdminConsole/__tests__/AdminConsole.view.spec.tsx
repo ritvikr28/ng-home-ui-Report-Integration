@@ -1,67 +1,56 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import React from "react";
+import { useMediaQuery } from "@essnextgen/ui-kit";
 import AdminConsole from "../AdminConsole.view";
 import BreadcrumbWrapper from "../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
-// interface IBreadcrumbAction {
-//   active: boolean;
-//   linkName: string;
-//   path: string;
-// }
 
-// interface IBreadcrumbsProps {
-//   breadcrumbActions: IBreadcrumbAction[];
-//   className: string;
-//   dataTestId: string;
-//   id: string;
-//   onItemClick: (action: IBreadcrumbAction) => void;
-// }
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn(),
+}));
 
 interface LocalisedMenuProps {
   onCloseSideNavigationPanel: () => void;
   isOpenSideNavigation: boolean;
 }
 
-// jest.mock("@essnextgen/ui-kit", () => ({
-//   Breadcrumbs: ({ breadcrumbActions, onItemClick }: IBreadcrumbsProps) => (
-//     <nav>
-//       {breadcrumbActions.map((action, index) => (
-//         <a
-//           key={index}
-//           href={action.path}
-//           className={action.active ? "active" : ""}
-//           data-testid={`breadcrumb-${index}`}
-//           onClick={() => onItemClick(action)}
-//         >
-//           {action.linkName}
-//         </a>
-//       ))}
-//     </nav>
-//   ),
-// }));
-
 jest.mock("@essnextgen/ui-application-kit", () => ({
   LocalisedMenu: ({
     onCloseSideNavigationPanel,
     isOpenSideNavigation,
   }: LocalisedMenuProps) => (
-    <button type="button" onClick={onCloseSideNavigationPanel}>
+    <button type="button" data-testid="menu-toggle" onClick={onCloseSideNavigationPanel}>
       {isOpenSideNavigation ? "Close Menu" : "Open Menu"}
     </button>
   ),
 }));
 
 describe("AdminConsole component", () => {
-  it("calls setIsOpen with false when menu is closed", () => {
-    const setIsOpen = jest.fn();
-    jest.spyOn(React, "useState").mockImplementation(() => [true, setIsOpen]);
-
+ 
+  test("toggles side panel on button click", () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(true); 
     render(<AdminConsole />);
 
-    const closeButton = screen.getByText("Close Menu");
+    const toggleButton = screen.getByTestId("btn-collapse");
+    fireEvent.click(toggleButton); 
+    expect(screen.getByTestId("menu-toggle")).toHaveTextContent("Close Menu");
+    
+  });
+
+  test("renders component correctly", () => {
+    const {getByText} = render(<AdminConsole />);
+    expect(getByText("breadcrumbshome")).toBeInTheDocument();
+    expect(getByText("breadcrumbsadminconsole")).toBeInTheDocument();
+  });
+
+  test("closes the side panel when the menu close button is clicked", () => {
+    (useMediaQuery as jest.Mock).mockReturnValue(true); 
+    render(<AdminConsole />);
+
+    const closeButton = screen.getByTestId("menu-toggle");
     fireEvent.click(closeButton);
 
-    expect(setIsOpen).toHaveBeenCalledWith(false);
+    expect(closeButton).toHaveTextContent("Open Menu");
   });
 
   test("calls onCloseSideNavigationPanel when Admin Console breadcrumb is clicked", () => {

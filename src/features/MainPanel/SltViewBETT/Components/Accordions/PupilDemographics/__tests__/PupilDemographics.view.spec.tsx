@@ -7,6 +7,11 @@ jest.mock("../PupilDemographics.logic", () => ({
   default: jest.fn(),
 }));
 
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn(),
+}));
+
 describe("PupilDemographicsView", () => {
   const mockData = {
     payload: {
@@ -56,7 +61,7 @@ describe("PupilDemographicsView", () => {
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/pupils on roll/i)).toBeInTheDocument();
+    expect(screen.getByText(/pupildemographics.pupilsonroll/i)).toBeInTheDocument();
     expect(screen.getByText(/449/i)).toBeInTheDocument();
   });
 
@@ -81,8 +86,9 @@ describe("PupilDemographicsView", () => {
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/pupil premium \(pp\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/pupildemographics.pupilpremium/i)).toBeInTheDocument();
     expect(screen.getByText(/0% \(0\)/i)).toBeInTheDocument();
+    
   });
 
   test("renders error state for FSM", () => {
@@ -104,7 +110,7 @@ describe("PupilDemographicsView", () => {
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/free school meals \(fsm\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/pupildemographics.freeschoolmeals/i)).toBeInTheDocument();
     expect(screen.getByText(/24.28% \(109\)/i)).toBeInTheDocument();
   });
 
@@ -116,6 +122,7 @@ describe("PupilDemographicsView", () => {
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.queryByText(/pupils on roll/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/pupildemographics.pupilsonroll/i)).not.toBeInTheDocument();
   });
+
 });
