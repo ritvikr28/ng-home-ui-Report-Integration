@@ -4,7 +4,8 @@ import React,{ useState, useEffect } from "react"
 import { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
 import "./style.scss"
 
-const DocumentManagementServerView = () => {
+const DocumentManagementServerView : React.FC= () => {
+    
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -41,7 +42,7 @@ const DocumentManagementServerView = () => {
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
                             text: "Documents",
-                            value: `${window.location.origin}/documents`,
+                            value: `${window.location.origin}/documents`
                         }}
                     />
                 </GridItem>
@@ -209,8 +210,8 @@ const DocumentManagementServerView = () => {
                                     isNotificationanner: false,
                                     notificationStatus: NotificationStatus.SUCCESS,
                                     okText: 'Discard',
-                                    onCancel: function noRefCheck() { },
-                                    onConfirm: function noRefCheck() { },
+                                    onCancel: (): void => {},
+                                    onConfirm: (): void => {},
                                     template: DialogTemplate.Confirmation
                                 }
                             }
