@@ -262,5 +262,11 @@
     "pupilsonroll":"Myfyrwyr wedi’u cofrestru",
     "pupilpremium":"Premiwm disgybl",
     "freeschoolmeals":"Prydau Ysgol am Ddim"
+  },
+  "classviewbanner":{
+    "title":"Eisiau mwy o amser i addysgu?",
+    "classviewtext":"Mae gwybodaeth allweddol disgyblion a thasgau hanfodol yn yr ystafell ddosbarth bellach i gyd mewn un lle.",
+    "classviewlinktext":"Golwg Dosbarth Agored",
+    "learnmorelinktext":"Dysgu mwy"
   }
 }
