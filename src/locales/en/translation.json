@@ -323,5 +323,11 @@
     "pupilsonroll":"Pupils on roll",
     "pupilpremium":"Pupil premium (PP)",
     "freeschoolmeals":"Free school meals (FSM)"
+  },
+  "classviewbanner":{
+    "title":"Want more time to teach?",
+    "classviewtext":"Key pupil information and essential classroom tasks are now all in one place.",
+    "classviewlinktext":"Open Class View",
+    "learnmorelinktext":"Learn more"
   }
 }
