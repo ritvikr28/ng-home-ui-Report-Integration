@@ -60,5 +60,4 @@ export const WhatsNewBanner: () => JSX.Element = () => {
     </>
   );
 };
-
 export default WhatsNewBanner;
