@@ -251,9 +251,9 @@
    "breadcrumbshome":"Cartref",
   "breadcrumbsadminconsole":"Consol gweinyddol",
   "attendanceoverview" : {
-    "authorisedname" : "Absenoldeb wedi’i awdurdodi",
-    "unauthorised": "Absenoldeb heb ei awdurdodi",
-    "persistent": "Absenoldeb mynych",
+    "authorisedabsence" : "Absenoldeb wedi’i awdurdodi",
+    "unauthorisedabsence": "Absenoldeb heb ei awdurdodi",
+    "persistentabsence": "Absenoldeb mynych",
     "currentyearaverage": "Cyfartaledd y flwyddyn bresennol",
     "previousyearaverage": "Cyfartaledd y flwyddyn flaenorol",
     "nationalaverage":"Cyfartaledd cenedlaethol"
