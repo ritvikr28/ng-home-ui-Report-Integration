@@ -23,24 +23,24 @@ const App: (props: ILayoutProps) => JSX.Element = ({
       cy: translationCy
     }
   });
-    /* istanbul ignore next */
+  /* istanbul ignore next */
   const getFeatureFlags: () => Promise<IResponse> = () =>
-  service.get('v1/features');
- /* istanbul ignore next */
-const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
-  authService.isAuthenticated() ? getFeatureFlags : undefined;
+    service.get('v1/features');
+  /* istanbul ignore next */
+  const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
+    authService.isAuthenticated() ? getFeatureFlags : undefined;
   gtmAnalytics.pushLogInEvent();
   return (
     <FeatureFlagsProvider fetchFeatures={fetchFeatureFlags} applicationName={`${envConfig.APPLICATION}`}>
-    <Provider store={configureStore()}>
-      <ErrorBoundary>
-        <Layout
-          isStandaloneApp={isStandaloneApp}
-          baseRouteName={baseRouteName}
-        />
-      </ErrorBoundary>
-    </Provider>
-   </FeatureFlagsProvider> 
+      <Provider store={configureStore()}>
+        <ErrorBoundary>
+          <Layout
+            isStandaloneApp={isStandaloneApp}
+            baseRouteName={baseRouteName}
+          />
+        </ErrorBoundary>
+      </Provider>
+    </FeatureFlagsProvider>
   );
 };
 
