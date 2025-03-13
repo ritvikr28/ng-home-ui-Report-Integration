@@ -355,6 +355,9 @@
   "stafftimetable":{
     "noeventtoday": "No events today",
     "nomoreevent":"No more events"
+  },
+  "sltviewbelt" :{
+    "schoolheadlines":"School headlines"
   }
   
 }

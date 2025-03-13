@@ -294,6 +294,8 @@
   "stafftimetable":{
     "noeventtoday": "No events today",
     "nomoreevent":"Dim mwy o ddigwyddiadau"
+  },
+  "sltviewbelt" :{
+    "schoolheadlines":"Penawdau'r ysgol"
   }
-  
 }

@@ -204,9 +204,9 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       <Grid className="register-icon">
         <GridItem sm={9} lg className="c-clear-padding">
           <SectionTitle
-            title="Your registers"
+            title={t("takeRegister.takeregisterlink")}
             hasLink
-            linkText="View all registers"
+            linkText= {t("takeRegister.takeregistertext")}
             linkhref={envConfig.REGISTER_BASE_URL}
           />
         </GridItem>
