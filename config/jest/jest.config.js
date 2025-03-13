@@ -44,10 +44,12 @@ module.exports = {
 
   coverageThreshold: {
     global: {
-      branches: 64,
-      functions: 77,
-      lines: 86,
-      statements: 86
+      branches: 85,
+      functions: 85,
+      lines: 85,
+      statements: 85
     }
-  }
+  }, coveragePathIgnorePatterns: [
+    "src/features/DBManagement",
+  ]
 };

@@ -68,7 +68,7 @@ test('Empty input should be invalid with no errors', () => {
    
     
    const {container,getByTestId}: any=render(   
-  <Search isOpen={true}/>
+  <Search isOpen/>
   )
 expect(getByTestId("new-search-element")).toBeInTheDocument();
 getByTestId("new-search-element").focus();
@@ -85,7 +85,7 @@ await waitFor(() => {
    
     
    const {container,getByTestId}: any=render(   
-  <Search isOpen={true}/>
+  <Search isOpen/>
   )
 expect(getByTestId("new-search-element")).toBeInTheDocument();
 getByTestId("new-search-element").focus();

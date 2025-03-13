@@ -1,56 +1,59 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem } from "@essnextgen/ui-kit";
+import {
+  Button,
+  ButtonColor,
+  ButtonSize,
+  Divider,
+  Grid,
+  GridItem,
+  IconColor
+} from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
-import SIMSupdatesView from "./SIMSUpdates/SIMSupdates.view";
 import "./style.scss";
-// import SwitchViewLogic from "./SwitchView/SwitchView.logic";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import SltViewBett from "./SltViewBETT/SltViewBett.view";
 import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
+import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
-    Securable: 'NG.Calendar.Staff.Timetable',
-
-    Operation: 'View'
+    Securable: "NG.Calendar.Staff.Timetable",
+    Operation: "View"
   },
   {
-    Securable: 'NG.Staff',
-
-    Operation: 'View'
+    Securable: "NG.Staff",
+    Operation: "View"
   },
   {
-    Securable: 'NG.Homepage.Timetable',
-
-    Operation: 'View'
+    Securable: "NG.Homepage.Timetable",
+    Operation: "View"
   }
 ];
 
 const requiredRegisterPermissions: Permission[] = [
   {
-    Securable: 'NG.Homepage.Registers',
-
-    Operation: 'View'
-  }  
+    Securable: "NG.Homepage.Registers",
+    Operation: "View"
+  }
 ];
 
 const requiredPupilProfilePermissions: Permission[] = [
   {
     Securable: "NG.Learner.Personal",
-    Operation: 'View'
+    Operation: "View"
   },
   {
     Securable: "NG.Learner.Registration",
-    Operation: 'View'
+    Operation: "View"
   },
   {
     Securable: "NG.Learner.Identifier",
-    Operation: 'View'
+    Operation: "View"
   },
   {
     Securable: "NG.Homepage.PupilProfile",
@@ -61,7 +64,6 @@ const requiredPupilProfilePermissions: Permission[] = [
 const requiredSLTviewPermissions: Permission[] = [
   {
     Securable: "NG.Homepage.SLT",
-
     Operation: "View"
   }
 ];
@@ -74,109 +76,93 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     isError,
     isSchoolPrimary,
     isOpen,
-    setIsOpen
+    setIsOpen,
   }: IMainPanelProps = props;
 
   const SLTviewBETT: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SLTviewBETT"
   );
-  // //  ------------------Needed if sidepanel needs to be closed-----------------
-  // const isClosedSidePanel: boolean = useMediaQuery(
-  //   "(max-width: 1023.9px)"
-  // );
+
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
 
-  //  -----------------To close sidepanel------------------------
-  // useEffect(() => {
-  //   SLTviewBETT &&
-  //   hasSLTviewOrgPermission &&
-  //   authService.isAuthorised(
-  //     requiredSLTviewPermissions,
-  //     MatchPermissions.all
-  //   ) && isClosedSidePanel && setIsOpen ? setIsOpen(false) : setIsOpen && setIsOpen(true)
-
-  // }, [isClosedSidePanel])
-
-
+  const togglePanel: () => void = () => {
+    setIsOpen(!isOpen);
+  };
 
   return (
-    <div className={isOpen ? " " : "welcome-user-fixed-dertfsg11463f"}>
-      <Grid dataTestId="mainPanelView">
-        <GridItem className="teacher-panel-container-dertfsg11463f">
+    <div>
+      <Grid className="new-margin-b-container">
+        {!isOpen && (
+          <GridItem className="c-clear-padding">
+            <Button
+              className="new-sidepanel-toggle-btn"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={togglePanel}
+              size={ButtonSize.Small}
+            />
+          </GridItem>
+        )}
+        <GridItem sm md lg xl xxl className="c-clear-padding">
           <WelcomeUser
             isApiError={isError}
             organisationName={schoolName}
             isOpen={isOpen}
-            isSchoolNameToBeDisplayed={true}
+            isSchoolNameToBeDisplayed
           />
-          {authService.isAuthorised(
-            requiredStaffTimeTablePermissions,
-            MatchPermissions.all
-          ) &&
-            isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
-          {authService.isAuthorised(
-            requiredRegisterPermissions,
-            MatchPermissions.all
-          ) && (
-              <>
-                <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-                <div
-                  className={
-                    isOpen
-                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
-                      : "divider-container-dertfsg11463f"
-                  }
-                />
-              </>
-            )}
-
-          {authService.isAuthorised(
-            requiredPupilProfilePermissions,
-            MatchPermissions.all
-          ) && (
-              <>
-                <Search isOpen={isOpen} />
-                <div
-                  className={
-                    isOpen
-                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
-                      : "divider-container-dertfsg11463f"
-                  }
-                />
-              </>
-            )}
-          {
-            SLTviewBETT &&
-            hasSLTviewOrgPermission &&
-            authService.isAuthorised(
-              requiredSLTviewPermissions,
-              MatchPermissions.all
-            ) &&
-            (
-              <>
-                <SltViewBett isOpen={isOpen} />
-                <div
-                  className={
-                    isOpen
-                      ? "divider-container-dertfsg11463f open-divider-dertfsg11463f"
-                      : "divider-container-dertfsg11463f"
-                  }
-                />
-              </>
-            )}
-
-          <SIMSupdatesView isOpen={isOpen} />
-          {/* <SwitchViewLogic
-            organisationName={schoolName}
-            isApiError={isError} 
-      /> */}
         </GridItem>
       </Grid>
+
+      {authService.isAuthorised(
+        requiredStaffTimeTablePermissions,
+        MatchPermissions.all
+      ) &&
+        isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
+      {authService.isAuthorised(
+        requiredRegisterPermissions,
+        MatchPermissions.all
+      ) && (
+        <>
+          <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+          <div className="new-divider-spacing">
+            <Divider />
+          </div>
+        </>
+      )}
+      {authService.isAuthorised(
+        requiredPupilProfilePermissions,
+        MatchPermissions.all
+      ) && (
+        <>
+          <Search isOpen={isOpen} />
+          <div className="new-divider-spacing">
+            <Divider />
+          </div>
+        </>
+      )}
+
+      {SLTviewBETT &&
+        hasSLTviewOrgPermission &&
+        authService.isAuthorised(
+          requiredSLTviewPermissions,
+          MatchPermissions.all
+        ) && (
+          <>
+            <SltViewBett />
+            <div className="new-divider-spacing">
+              <Divider />
+            </div>
+          </>
+        )}
+      <div className="new-margin-b-container">
+        <SIMSupdatesView isOpen={isOpen} />
+      </div>
     </div>
   );
 };
-
 
 export default MainPanelView;

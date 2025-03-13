@@ -11,8 +11,8 @@ const RefreshDatabase: () => JSX.Element = () => {
       <HeadingSubHeading
         headingText={t("RefreshDB_T.headingTitle")}
         subHeadingText={t("RefreshDB_T.description")}
-        isShowHeading={true}
-        isShowSubHeading={true}
+        isShowHeading
+        isShowSubHeading
       />
     </div>
   </>

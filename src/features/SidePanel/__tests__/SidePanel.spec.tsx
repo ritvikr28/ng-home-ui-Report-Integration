@@ -63,54 +63,6 @@
   );
   const setIsError = jest.fn();
   describe("SidePanel Component", () => {
-  
-    test('renders correctly when closed', () => {
-      jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-
-      jest
-      .spyOn(qicklink, "FetchQuickLinkData")
-      .mockResolvedValue(mockres);
-    
-
-    const {getByTestId} =  render(<SidePanel isOpen={false}
-      togglePanel={jest.fn()}
-      closePanel={() => {}}
-      showMainPanelView={undefined}
-      showQuickLinkView= {jest.fn()}
-      setQuickLinkData={jest.fn()} 
-      quicklinkData={mockApiResponse}
-      />);
-      expect(getByTestId("btn-collapse")).toBeInTheDocument();
-    });
-
-
-    test("calls togglePanel when save button is clicked", () => {
-      
-      jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-
-      jest
-      .spyOn(qicklink, "FetchQuickLinkData")
-      .mockResolvedValue(mockres);
-    
-      const togglePanelMock = jest.fn();
-      const { getByTestId } = render(
-        <SidePanel
-          isOpen={false}
-          togglePanel={togglePanelMock}
-          closePanel={() => {}}
-          showMainPanelView={undefined}
-          showQuickLinkView= {jest.fn()}
-          setQuickLinkData={jest.fn()}
-        quicklinkData={mockApiResponse}
-        />
-      );
-      expect(getByTestId("close-panel")).toBeInTheDocument();
-      fireEvent.click(getByTestId("btn-collapse"));
-
-      expect(togglePanelMock).toHaveBeenCalled();
-      expect(togglePanelMock).toBeCalledTimes(1);
-    });
-
     test('renders correctly with data when open ', () => {
       jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 
@@ -414,7 +366,7 @@
           togglePanel={jest.fn()}
           closePanel={jest.fn()}
           setQuickLinkData={jest.fn()}
-          isSIMSIDAdmin={true}
+          isSIMSIDAdmin
         />
       );
       

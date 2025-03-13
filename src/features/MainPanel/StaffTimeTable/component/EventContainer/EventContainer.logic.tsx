@@ -3,8 +3,11 @@ import "./style.scss";
 import {
   EventCard,
   EventCardStatus,
+  Grid,
+  GridItem,
   Loader,
-  LoaderType
+  LoaderType,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
@@ -17,7 +20,7 @@ import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/st
 import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
-  isOpen
+  isOpen,
 }: any) => {
   const [isError, setIsError]: [
     boolean,
@@ -43,8 +46,17 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
-  const [staffNames, setStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
-  const [coverStaffNames, setCoverStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
+  const [staffNames, setStaffNames]: [
+    Record<string, string>,
+    React.Dispatch<React.SetStateAction<Record<string, string>>>
+  ] = useState<Record<string, string>>({});
+  const [coverStaffNames, setCoverStaffNames]: [
+    Record<string, string>,
+    React.Dispatch<React.SetStateAction<Record<string, string>>>
+  ] = useState<Record<string, string>>({});
+  const isMobileView: boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1117px)"
+  );
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
@@ -52,13 +64,13 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       try {
         const {
           status: responseStatus,
-          responseData
+          responseData,
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
         } = (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null
+          responseData: null,
         };
         if (
           /* istanbul ignore next */
@@ -70,7 +82,6 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
           /* istanbul ignore next */
           setStatus(responseStatus);
           setIsError(false);
-
           setSchoolEventsData(responseData);
           setLoader(false);
 
@@ -78,16 +89,22 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
             setSelectedItem(responseData[0].externalId);
           }
 
-          const staffNamePromises: Promise<string>[] = responseData.map((eventData: IStaffTimeTableEventsResponse) =>
-            formatStaffName(eventData)
-          );
-          const coverStaffNamePromises: Promise<string>[] = responseData.map((eventData: IStaffTimeTableEventsResponse) =>
-            formatCoverStaffName(eventData)
+          const staffNamePromises: Promise<string>[] = responseData.map(
+            (eventData: IStaffTimeTableEventsResponse) =>
+              formatStaffName(eventData)
           );
 
-          const resolvedStaffNames: string[] = await Promise.all(staffNamePromises);
-          const resolvedCoverStaffNames: string[] = await Promise.all(coverStaffNamePromises);
+          const coverStaffNamePromises: Promise<string>[] = responseData.map(
+            (eventData: IStaffTimeTableEventsResponse) =>
+              formatCoverStaffName(eventData)
+          );
 
+          const resolvedStaffNames: string[] = await Promise.all(
+            staffNamePromises
+          );
+          const resolvedCoverStaffNames: string[] = await Promise.all(
+            coverStaffNamePromises
+          );
           const staffNamesMap: Record<string, string> = {};
           const coverStaffNamesMap: Record<string, string> = {};
 
@@ -96,7 +113,6 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
             coverStaffNamesMap[eventData.externalId] =
               resolvedCoverStaffNames[index];
           });
-
           setStaffNames(staffNamesMap);
           setCoverStaffNames(coverStaffNamesMap);
         }
@@ -120,19 +136,16 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
 
   if (isLoader) {
     return (
-      <div style={{ height: "110px" }}>
-        <Loader
-          dataTestId="staff-data-loader"
-          className="reg-loader loader-margin loader-size reg-loader-margin"
-          loaderText="Loading..."
-          loaderType={LoaderType.Circular}
-        />
-      </div>
+      <Loader
+        dataTestId="staff-data-loader"
+        className="reg-loader loader-margin loader-size reg-loader-margin"
+        loaderText="Loading..."
+        loaderType={LoaderType.Circular}
+      />
     );
   }
   return returnEventContainer({
     schoolEventsData,
-    // togglePanel,
     isOpen,
     isOpenPanel,
     selectedItem,
@@ -140,7 +153,8 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     setIsOpenPanel,
     setSelectedItem,
     staffNames,
-    coverStaffNames
+    coverStaffNames,
+    isMobileView,
   });
 };
 
@@ -160,9 +174,10 @@ const formatEventTitleData = (eventTitleData: any) => {
   return `${desc} ${code} ${details}`;
 };
 
-const formatEventTimeData: (
-  eventTimeData: IStaffTimeTableEventsResponse
-) => { truncated: string; full: string } = (eventTimeData: IStaffTimeTableEventsResponse) => {
+const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
+  truncated: string;
+  full: string;
+} = (eventTimeData: IStaffTimeTableEventsResponse) => {
   // const day: string = dayjs(eventTimeData.eventStart).format("ddd");
   const starttime: string = dayjs(eventTimeData.eventStart).format("HH:mm");
   const endtime: string = dayjs(eventTimeData.eventEnd).format("HH:mm");
@@ -180,11 +195,14 @@ const formatEventTimeData: (
 
   return {
     truncated: `${truncatedDescription} | ${starttime} - ${endtime}`,
-    full: `${eventDescription} | ${starttime} - ${endtime}`
+    full: `${eventDescription} | ${starttime} - ${endtime}`,
   };
 };
 
-const hasStaffTimeTableV2: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "IsStaffV2");
+const hasStaffTimeTableV2: boolean = hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "IsStaffV2"
+);
 
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
@@ -201,20 +219,27 @@ const formatStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors
+    supervisors,
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
-  if (originalStaffExternalID && coveringStaffExternalID && !isCovered && isCovering) {
-    const staffDetails: any = await fetchStaffDetails([originalStaffExternalID]);
+  if (
+    originalStaffExternalID &&
+    coveringStaffExternalID &&
+    !isCovered &&
+    isCovering
+  ) {
+    const staffDetails: any = await fetchStaffDetails([
+      originalStaffExternalID
+    ]);
     const originalStaffDetail: any = staffDetails?.payload?.find(
-      (x: any) => x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
+      (x: any) =>
+        x.externalId.toUpperCase() === originalStaffExternalID.toUpperCase()
     );
-    if(!originalStaffDetail){
-      return '';
+    if (!originalStaffDetail) {
+      return "";
     }
     return `${originalStaffDetail.forename} ${originalStaffDetail.surname}`;
   }
-
   return `${supervisors[0].forename} ${supervisors[0].surname}`;
 };
 
@@ -226,30 +251,31 @@ const formatCoverStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors
+    supervisors,
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID) {
     if (isCovered && !isCovering) {
       const coveringStaffIds: string[] = coveringStaffExternalID
-        .split(',')
+        .split(",")
         .map((id) => id.toUpperCase().trim());
 
       if (coveringStaffIds.length > 0) {
         const staffDetails: any = await fetchStaffDetails(coveringStaffIds);
         const coverStaffNames: string = staffDetails?.payload
-          ?.filter((detail: any) => coveringStaffIds.includes(detail.externalId.toUpperCase()))
+          ?.filter((detail: any) =>
+            coveringStaffIds.includes(detail.externalId.toUpperCase())
+          )
           .map((detail: any) => `${detail.forename} ${detail.surname}`)
-          .join(', ');
+          .join(", ");
 
-        return coverStaffNames || '';
+        return coverStaffNames || "";
       }
     } else if (!isCovered && isCovering) {
       return `${supervisors[0].forename} ${supervisors[0].surname}`;
     }
   }
-
-  return '';
+  return "";
 };
 
 const formateventPeriodNum = (
@@ -264,21 +290,32 @@ const formateventPeriodNum = (
     /* istanbul ignore next */
     return eventTimeData.eventDescription || "";
   }
-
   return "";
 };
+
 const renderNoEventsCard: () => JSX.Element = () => (
-  <EventCard
-    dataTestId="no-events-today"
-    id="no-events-today-id"
-    primaryText=""
-    secondaryText=""
-    status={EventCardStatus.DEFAULT}
-    title="No events today"
-    // inputWidth={166}
-    inputHeight={67}
-    className="dynamiceventcard event-primary-text no-events no-events-staff"
-  />
+  <Grid>
+    <GridItem
+      key="no-events" // Ensure unique key for each item
+      sm
+      md={2}
+      lg={2}
+      className="c-clear-padding"
+    >
+      <div className="new-event-card-box">
+        <EventCard
+          dataTestId="no-events-today"
+          id="no-events-today-id"
+          primaryText=""
+          secondaryText=""
+          status={EventCardStatus.DEFAULT}
+          title="No events today"
+          inputHeight={67}
+          className="dynamiceventcard event-primary-text no-events no-events-staff"
+        />
+      </div>
+    </GridItem>
+  </Grid>
 );
 
 const returnEventContainer: React.FC<{
@@ -291,9 +328,9 @@ const returnEventContainer: React.FC<{
   setSelectedItem: React.Dispatch<React.SetStateAction<string>>;
   staffNames: Record<string, string>;
   coverStaffNames: Record<string, string>;
-}> = ({ 
+  isMobileView?: boolean;
+}> = ({
   schoolEventsData,
-  // togglePanel,
   isOpen,
   isOpenPanel,
   selectedItem,
@@ -301,76 +338,92 @@ const returnEventContainer: React.FC<{
   setIsOpenPanel,
   setSelectedItem,
   staffNames,
-  coverStaffNames
+  coverStaffNames,
+  isMobileView,
 }) => {
-  const togglePanel: (externalId: string) => void = (externalId: string) => {
-    if (!isOpenPanel[externalId]) {
-      gtmAnalytics.pushEvent({
-        event: "interact_click",
-        elementType: "card",
-        elementTextOrLabel: "[RemovedEventName]",
-        elementLocation: "body"
-      });
-    }
-    setIsOpenPanel((prevIsOpen: any) => ({
-      ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId]
-    }));
-    setSelectedItem(
-      !isOpenPanel || isOpenPanel[externalId]
-        ? schoolEventsData[0].externalId
-        : externalId
+    const togglePanel: (externalId: string) => void = (externalId: string) => {
+      if (!isOpenPanel[externalId]) {
+        gtmAnalytics.pushEvent({
+          event: "interact_click",
+          elementType: "card",
+          elementTextOrLabel: "[RemovedEventName]",
+          elementLocation: "body",
+        });
+      }
+      setIsOpenPanel((prevIsOpen: any) => ({
+        ...prevIsOpen,
+        [externalId]: !prevIsOpen[externalId],
+      }));
+      setSelectedItem(
+        !isOpenPanel || isOpenPanel[externalId]
+          ? schoolEventsData[0].externalId
+          : externalId
+      );
+    };
+
+    const baseValue = schoolEventsData.length < 5 ? 3 : 2;
+    const finalValue = isOpen && !isMobileView ? 2 : 3;
+    const cardCol = isOpen ? finalValue : baseValue;
+
+    return (
+      <div>
+        <Grid>
+          {schoolEventsData.map((item: any, index: number) => (
+            <GridItem
+              key={item.externalId} // Ensure unique key for each item
+              sm={4}
+              md={2}
+              lg={cardCol}
+              className="c-clear-padding"
+            >
+              <div className="new-event-card-box">
+                <EventContainerView
+                  SchoolEventexternalId={item.externalId}
+                  EventTitle={formatEventTitleData(item)}
+                  EventTime={formatEventTimeData(item)}
+                  RoomCode={formatRoomCode(item)}
+                  EventStartDate={item.eventStart}
+                  EventEndDate={item.eventEnd}
+                  GroupExternalId={item.group.externalId}
+                  EventPeriodNum={formateventPeriodNum(item)}
+                  togglePanel={() => togglePanel(item.externalId)}
+                  isOpen={isOpen}
+                  isOpenPanel={isOpenPanel[item.externalId]}
+                  GroupDescription={item?.group?.shortName ?? ""}
+                  StaffName={staffNames[item.externalId] ?? ""}
+                  CoverStaffName={coverStaffNames[item.externalId] ?? ""}
+                  index={index}
+                  EventCardColor={getBackgroundColor(item)}
+                  EventTypeCode={item.eventTypeCode}
+                  EventDescription={item.eventDescription}
+                  ClassPeriodExternalId={item.classPeriodExternalId}
+                  EventInstanceExternalId={item.eventInstanceExternalId}
+                  SelectedItem={selectedItem}
+                  isLoader={isLoader}
+                />
+              </div>
+            </GridItem>
+          ))}
+
+          {/* Show "No More Events" only ONCE when schoolEventsData.length < 6 */}
+          {schoolEventsData.length < 6 && !isLoader && (
+            <GridItem sm={4} md={2} lg={cardCol} className="c-clear-padding">
+              <div className="new-event-card-box">
+                <EventCard
+                  dataTestId="no-events-to-display"
+                  id="no-events-to-display-id"
+                  primaryText=""
+                  secondaryText=""
+                  status={EventCardStatus.DEFAULT}
+                  title="No more events"
+                  inputHeight={67}
+                />
+              </div>
+            </GridItem>
+          )}
+        </Grid>
+      </div>
     );
   };
-  return (
-    <div className={isOpen? "parent-event-container open-con": "parent-event-container"}>
-      {schoolEventsData.map((item: any, index: any) => (
-        <div key={item.externalId}>
-          <EventContainerView
-            SchoolEventexternalId={item.externalId}
-            EventTitle={formatEventTitleData(item)}
-            EventTime={formatEventTimeData(item)}
-            RoomCode={formatRoomCode(item)}
-            EventStartDate={item.eventStart}
-            EventEndDate={item.eventEnd}
-            GroupExternalId={item.group.externalId}
-            EventPeriodNum={formateventPeriodNum(item)}
-            togglePanel={() => togglePanel(item.externalId)}
-            isOpen={isOpen}
-            isOpenPanel={isOpenPanel[item.externalId]}
-            GroupDescription={item?.group?.shortName ?? ""}
-            StaffName={staffNames[item.externalId] ?? ""}
-            CoverStaffName={coverStaffNames[item.externalId] ?? ""}
-            index={index}
-            EventCardColor={getBackgroundColor(item)}
-            EventTypeCode={item.eventTypeCode}
-            EventDescription={item.eventDescription}
-            ClassPeriodExternalId={item.classPeriodExternalId}
-            EventInstanceExternalId={item.eventInstanceExternalId}
-            SelectedItem={selectedItem}
-            isLoader={isLoader}
-          />
-        </div>
-      ))}
-      {schoolEventsData.length < 6 && !isLoader && (
-        <EventCard
-          dataTestId="no-events-to-display"
-          id="no-events-to-display-id"
-          primaryText=""
-          secondaryText=""
-          status={EventCardStatus.DEFAULT}
-          title="No more events"
-          // inputWidth={166}
-          inputHeight={67}
-          className={
-            isOpen
-              ? `dynamiceventcard isopen event-primary-text no-events no-events-staff`
-              : `dynamiceventcard isclose event-primary-text no-events no-events-staff`
-          }
-        />
-      )}
-    </div>
-  );
-};
 
 export default EventContainer;

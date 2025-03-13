@@ -1,0 +1,98 @@
+@import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
+
+.new-discoverbtn-style {
+  font-size: 16px;
+  line-height: 24px;
+  font-family: Segoe UI;
+  font-weight: 600;
+  text-align: center;
+}
+
+.new-sims-uppersection {
+  align-items: center;
+}
+
+.new-actioncard {
+  border-radius: 8px;
+  gap: 16px;
+  width: 100%;
+}
+
+.new-footer-actioncards {
+  display: flex !important;
+}
+
+
+.footer-section-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+}
+
+.new-footer-simstitle {
+  font-size: 20px;
+}
+
+.new-footer-discoverbtn {
+  color: var(--primary-500, #2177c2);
+  text-align: center;
+  font-family: Segoe UI;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  white-space: nowrap;
+}
+
+.new-actioncard .primary-text {
+  font-size: 20px;
+  line-height: 24px;
+  font-weight: 400;
+  font-family: Segoe UI;
+}
+
+.secondary-text {
+  font-size: 16px;
+  line-height: 24px;
+  font-weight: 400;
+  font-family: Segoe UI;
+}
+
+.first-actioncard {
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.new-sims-title {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.new-sims-discoverbtn {
+  display: flex;
+  justify-content: end;
+}
+
+.new-sims-title .new-title-container {
+  margin-bottom: 0;
+}
+
+.new-footer-actioncards .essui-activity-card-center {
+  width: 100%;
+}
+
+// --------------------------mediaQueries--------------------
+@media only screen and (max-width: 1023.9px) {
+  .new-footer-actioncards {
+    gap: 16px;
+    display: flex !important;
+  }
+
+}
+
+@media only screen and (max-width:1439.9px) {
+  .new-actioncard .secondary-text {
+    height: unset !important;
+  }
+}

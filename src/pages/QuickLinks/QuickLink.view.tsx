@@ -1,18 +1,17 @@
-import {  Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
-import {
-  useTranslation,
-  UseTranslationResponse
-} from "@essnextgen/ui-intl-kit";
+import { Button, ButtonColor, ButtonSize, Divider, IconColor, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
+import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
 import "./style.scss";
-import "../NewHomePage/style.scss";
+// import "../NewHomePage/style.scss";
 import { IQuickLinkViewProps } from "./props";
-import SIMSupdatesView from "../SIMSUpdates/SIMSupdates.view";
 import gtmAnalytics from "../../shared/utils/analytics";
+import SIMSupdatesView from "../../shared/components/SIMSUpdates/SIMSupdates.view";
+
+
 
 const requiredPermissions: Permission[] = [
   {
@@ -21,38 +20,53 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
+const QuickLink: ({ }: IQuickLinkViewProps) => JSX.Element = ({
   apiQuickLinkData,
   apiError,
   displaystarredicon,
-  isOpen
-  
-}: IQuickLinkViewProps): JSX.Element => {  
+  isOpen,
+  togglePanel
+
+}: IQuickLinkViewProps): JSX.Element => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
- const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all) 
+  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
   const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== "Class View") || [];
-
-  return isPermission ? (
   
-      <Grid className="quicklink-dertfsg11463f">
-      <GridItem className="teacher-panel-container-dertfsg11463f quicklink-nomargin121">
-      <GridItem className={isOpen? "breadcrumbs-open" : 'breadcrumbs'}> <BreadcrumbWrapper/></GridItem>
-        <GridItem className={isOpen? "quicklink-container-dertfsg11463f open-quicklink-dertfsg11463f nopadding-dertfsg11463f quicklink-padding-dertfsg11463f":  "nopadding-dertfsg11463f quicklink-container-closed-dertfsg11463f "}>
-          <GridItem className="quicklinkheading-dertfsg11463f">{t("quickLink.headingTitle")}</GridItem>
-          <GridItem className="quicklinktext-dertfsg11463f">
-          {t("quickLink.quicklinkText")}
-          </GridItem>
-          <GridItem>
-          {!apiError &&  (
-              <TableWrapper  className={isOpen ? "quicklinktable-dertfsg11463f quick-link-table-res-dertfsg11463f" : "quicklinktable-close-dertfsg11463f quick-link-table-res-dertfsg11463f"} >
+  return isPermission ? (
+    <>
+      <div className="quicklink-main-container">
+
+        <div className="quicklink-breadcrumb">
+          {!isOpen && <div className="quicklink-openclose-btn">
+            <Button
+              className="new-sidepanel-toggle-btn"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={togglePanel}
+              size={ButtonSize.Small}
+            />
+          </div>
+          }
+          <BreadcrumbWrapper />
+        </div>
+        <div className="quicklink-table">
+          <>
+            <div className="quicklinks-heading">{t("quickLink.headingTitle")}</div>
+            <div className="quicklinks-subheading"> {t("quickLink.quicklinkText")}</div>
+          </>
+          <div className={isOpen ? "quicklinks-table" : ""}>
+            {!apiError && (
+              <TableWrapper>
                 <Table dataTestId="test-id" id="element-id" >
                   <TableHead>
                     <TableRow>
-                      <TableCell header className="theader">
+                      <TableCell header className="theader" columnWidth="449px">
                       {t("quickLink.quicklinkTableColumnName")}
                       </TableCell>
-                      <TableCell header className="theadercell">
+                      <TableCell header className="theadercell" columnWidth="700px">
                       {t("quickLink.quicklinkTableColumStarred")}
                       </TableCell>
                     </TableRow>
@@ -61,36 +75,34 @@ const QuickLink: ({}: IQuickLinkViewProps) => JSX.Element = ({
                     {
                       filteredQuickLinkData.map((link) => (
                         <TableRow key={link.id}>
-                          <TableCell>                            
+                          <TableCell columnWidth="449px">
                             <Link data-testid="link" href={link.link} target="_self" >
-                              <span onClick={() =>  gtmAnalytics.pushEvent({
-                                        event: "click",
-                                        linkText: link.name,
-                                        linkUrl: link.link,
-                                        clickType: "link",
-                                        clickLocation:"body"
-                                })}>
+                              <span onClick={() => gtmAnalytics.pushEvent({
+                                event: "click",
+                                linkText: link.name,
+                                linkUrl: link.link,
+                                clickType: "link",
+                                clickLocation: "body"
+                              })}>
                                 {link.name}
                               </span>
-                            </Link>   
+                            </Link>
                           </TableCell>
-                          <TableCell>{displaystarredicon(link.favourite, link.id , link.name)}</TableCell>
+                          <TableCell columnWidth="700px">{displaystarredicon(link.favourite, link.id, link.name)}</TableCell>
                         </TableRow>
                       ))}
                   </TableBody>
                 </Table>
               </TableWrapper>
             )}
-          </GridItem>
-          <GridItem>
-          <div className={isOpen? "quicklink-divider-container-dertfsg11463f": "quicklink-divider-container-dertfsg11463f quicklink-divider-container-closed-dertfsg11463f"} />
-          <div className="simspadding-dertfsg11463f">
-            <SIMSupdatesView isOpen={isOpen}/>
           </div>
-          </GridItem>
-        </GridItem>
-        </GridItem>
-      </Grid>
+          <>
+            <div className="quicklinks-divider"><Divider /></div>
+            <div className="new-margin-b-container-sims"><SIMSupdatesView isOpen={isOpen} /></div>
+          </>
+        </div>
+      </div>
+    </>
   ) : (
     <Redirect to="/noAccess" />
   );

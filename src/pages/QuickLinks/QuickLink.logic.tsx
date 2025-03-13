@@ -13,7 +13,8 @@ const QuickLinkLogic: React.FC<
 > = ({
   setQuickLinkData,
   apiQuickLinkData,
-  isOpen
+  isOpen,
+  togglePanel
 }: QuicklinkComponentProps & { isOpen: boolean }) => {
   const [isError, setIsError]: [
     boolean,
@@ -76,7 +77,7 @@ const QuickLinkLogic: React.FC<
     id: number,
     name: string
   ) => (
-    <div className="icon-quicklinkwidth">      
+    <div className="icon-quicklinkwidth">
       <Icon
         color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
         dataTestId={`btn-star${id}`}
@@ -97,6 +98,7 @@ const QuickLinkLogic: React.FC<
         apiError={isError}
         displaystarredicon={displaystarredicon}
         isOpen ={isOpen}
+        togglePanel={togglePanel as any}
        
       />
    

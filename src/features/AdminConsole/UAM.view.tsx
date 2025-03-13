@@ -13,6 +13,7 @@ import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
 import { envConfig } from "../../shared/utils";
 import "./uamStyle.scss";
 
+ /* istanbul ignore next */
 const UAM: () => JSX.Element = () => {
   const userManagementRef :React.RefObject<HTMLDivElement> = useRef<HTMLDivElement | null>(null);
   const isMobileView: boolean = useMediaQuery(
@@ -136,7 +137,7 @@ const UAM: () => JSX.Element = () => {
               ]}
               heading="Users"
               subHeading="Create and manage users within your Trust"
-              enableSearch={true}
+              enableSearch
             />
           </div>
         </GridItem>

@@ -3,5 +3,5 @@ export interface IMainPanelProps {
   isError?: boolean;
   isSchoolPrimary?: boolean;
   isOpen?: boolean;
-  setIsOpen?: (isOpen: boolean) => void;
+  setIsOpen: (isOpen: boolean) => void;
 }

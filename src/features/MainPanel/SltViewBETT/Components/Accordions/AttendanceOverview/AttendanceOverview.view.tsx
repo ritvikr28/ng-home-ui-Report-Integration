@@ -12,8 +12,7 @@ import {
   Loader,
   LoaderType,
   Notification,
-  NotificationStatus,
-  useMediaQuery
+  NotificationStatus
 } from "@essnextgen/ui-kit";
 import "../../../style.scss";
 import {
@@ -24,12 +23,19 @@ import AttendanceOverview from "./AttendanceOverview.logic";
 
 
 
-const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
+
+
+const AttendanceOverviewView: React.FC = () => {
   const { t }: UseTranslationResponse<"translation", undefined> =
   useTranslation();
   const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
-  const overallAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
+  const overallAbsenceData: {
+    Name: string;
+    currentYearAvg: number;
+    previousYearAvg: number;
+    nationalAvg: number;
+  }[] = [
     {
       Name: "Overall Absence",
       currentYearAvg:
@@ -41,7 +47,12 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
     }
   ];
 
-  const persistentAbsenteesData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
+  const persistentAbsenteesData: {
+    Name: string;
+    currentYearAvg: number;
+    previousYearAvg: number;
+    nationalAvg: number;
+  }[] = [
     {
       Name: t("attendanceoverview.persistentabsence"),
       currentYearAvg:
@@ -54,7 +65,12 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
     }
   ];
 
-  const authorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
+  const authorisedAbsenceData: {
+    Name: string;
+    currentYearAvg: number;
+    previousYearAvg: number;
+    nationalAvg: number;
+  }[] = [
     {
       Name: t("attendanceoverview.authorisedabsence"),
       currentYearAvg:
@@ -62,11 +78,16 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
       previousYearAvg:
         data?.payload.attendanceInsights.authorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0
+        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0,
     }
   ];
 
-  const unauthorisedAbsenceData: { Name: string; currentYearAvg: number; previousYearAvg: number; nationalAvg: number }[] = [
+  const unauthorisedAbsenceData: {
+    Name: string;
+    currentYearAvg: number;
+    previousYearAvg: number;
+    nationalAvg: number;
+  }[] = [
     {
       Name: t("attendanceoverview.unauthorisedabsence"),
       currentYearAvg:
@@ -74,7 +95,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
       previousYearAvg:
         data?.payload.attendanceInsights.unauthorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0
+        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0,
     }
   ];
 
@@ -82,12 +103,12 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
     {
       label: t("attendanceoverview.currentyearaverage"),
       dataKey: "currentYearAvg",
-      color: "#006970"
+      color: "#006970",
     },
     {
       label: t("attendanceoverview.previousyearaverage"),
       dataKey: "previousYearAvg",
-      color: "#78D5DB"
+      color: "#78D5DB",
     },
     {
       label: t("attendanceoverview.nationalaverage"),
@@ -100,22 +121,10 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
     window.location.href = `${window.location.origin}/reporting`;
   };
 
-   const isDesktopView: boolean = useMediaQuery(
-     "(min-width:1024px) and (max-width: 3900px)"
-   );
-
-   let className = "";
-   if (isOpen && isDesktopView) {
-     className = "welcome-parent parent1-open pupil-demo";
-   } else if (isDesktopView) {
-     className = "welcome-parent parent1 pupil-demo";
-   }
-   
   return (
-    <Grid
-      className={className}>
-      <GridItem sm={12} md={11} lg={11}>
-        <div className="attendance-overview">
+    <Grid>
+      <GridItem sm md={12} lg={12} className="c-clear-padding-left">
+        <div>
           {error ? (
             <Notification
               className="attendance-error-banner"
@@ -124,7 +133,7 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
               message="There was an error fetching the attendance data. Please try again later."
             />
           ) : (
-            <Accordion defaultExpanded>
+            <Accordion defaultExpanded className="c-clear-margin">
               <AccordionHeader dataTestId="pupils-accordion-header-test-id">
                 <span className="essui-global-typography-default-subtitle">
                   Attendance overview
@@ -134,15 +143,20 @@ const AttendanceOverviewView: React.FC = ({ isOpen }: any) => {
                 id="analytics-accordion-content"
                 dataTestId="analytics-insights-accordion-panel-test-id"
               >
-                <Button
-                  className="insights-redirect-button"
-                  dataTestId="insights-button"
-                  size={ButtonSize.Small}
-                  color={ButtonColor.Secondary}
-                  onClick={handleButtonClick}
-                >
-                  More attendance insights
-                </Button>
+                <Grid className="new-attendace-overview-row">
+                  <GridItem className="c-clear-padding">
+                    <Button
+                      className="insights-redirect-button"
+                      dataTestId="insights-button"
+                      size={ButtonSize.Small}
+                      color={ButtonColor.Secondary}
+                      onClick={handleButtonClick}
+                    >
+                      More attendance insights
+                    </Button>
+                  </GridItem>
+                </Grid>
+
                 <div className="bargraphs-container">
                   {loading ? (
                     <Loader

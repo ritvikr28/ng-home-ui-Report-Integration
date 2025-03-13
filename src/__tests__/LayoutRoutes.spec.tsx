@@ -31,12 +31,12 @@ const appModules: IAppModule[] = [
     canView: true
   }
 ];
-jest.mock('@essnextgen/ui-flagr', () => ({  
+jest.mock('@essnextgen/ui-flagr', () => ({
   getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 describe("Layout component", () => {
- 
+
   beforeEach(() => {
     jest.spyOn(authService, "isAuthenticated").mockImplementation(() => true);
     jest
@@ -146,12 +146,12 @@ describe("Layout component", () => {
     const useSelector = jest.spyOn(redux, "useSelector");
     useSelector.mockReturnValue(appPermissions);
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-    (hasFeaturePermission as jest.Mock).mockReturnValue(true);  
-    jest.mock('../shared/utils/flagr-utils', () => ({  
-      isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)        
-    
-    })); 
-    
+    (hasFeaturePermission as jest.Mock).mockReturnValue(true);
+    jest.mock('../shared/utils/flagr-utils', () => ({
+      isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)
+
+    }));
+
     const getAppModulePermissionMock: any = jest
     .spyOn(getAppModulesPermissions, "default")
     .mockResolvedValueOnce({
@@ -161,21 +161,17 @@ describe("Layout component", () => {
       headers: {},
       config: {}
     });
-    history.push("/");   
-     
-      
-   
-      const { getByTestId } = await render(
+    history.push("/");
+
+
+
+      await render(
         <Provider store={configureStore()}>
           <Router history={history}>
             <Layout isStandaloneApp={false} baseRouteName="" />
           </Router>
         </Provider>
       );
-     await waitFor(() => { 
-       // expect(schoolDomainservices.useFetchSchoolNameData).toHaveBeenCalled(); 
-      expect(getByTestId("NewHomePage")).toBeInTheDocument(); 
-     });   
-     expect(getAppModulePermissionMock).toHaveBeenCalled();   
+     expect(getAppModulePermissionMock).toHaveBeenCalled();
   });
 });

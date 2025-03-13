@@ -9,7 +9,6 @@ import {
   LoaderType,
   TileCard,
   TileCardColor,
-  useMediaQuery,
   ValidationText,
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
@@ -21,11 +20,11 @@ import {
 import PupilDemographics from "./PupilDemographics.logic";
 
 
-const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
+const PupilDemographicsView: React.FC = () => {
   const {
     data,
     loading,
-    error
+    error,
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
     const { t }: UseTranslationResponse<"translation", undefined> =
@@ -43,7 +42,10 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
       />
     );
 
-  const renderErrorTileCard: (text: string, testId: string) => JSX.Element = (text, testId) => (
+  const renderErrorTileCard: (text: string, testId: string) => JSX.Element = (
+    text,
+    testId
+  ) => (
     <TileCard
       primaryText={
         <ValidationText
@@ -56,7 +58,10 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
     />
   );
 
-  const renderDataTileCard: (heading: string, primaryText: string) => JSX.Element = (heading, primaryText) => (
+  const renderDataTileCard: (
+    heading: string,
+    primaryText: string
+  ) => JSX.Element = (heading, primaryText) => (
     <TileCard
       heading={heading}
       primaryText={primaryText}
@@ -109,24 +114,11 @@ const PupilDemographicsView: React.FC = ({ isOpen }: any) => {
     return null;
   };
 
-   const isDesktopView: boolean = useMediaQuery(
-     "(min-width:1024px) and (max-width: 3900px)"
-   );
-
-   let className = "";
-   if (isOpen && isDesktopView) {
-     className = "welcome-parent parent1-open pupil-demo";
-   } else if (isDesktopView) {
-     className = "welcome-parent parent1 pupil-demo";
-   }
-
   return (
-    <Grid
-      className={className}
-    >
-      <GridItem sm={12} md={11} lg={11}>
+    <Grid>
+      <GridItem sm md={12} lg={12} className="c-clear-padding-left">
         <div className="pupil-demographics">
-          <Accordion defaultExpanded>
+          <Accordion defaultExpanded className="c-clear-margin">
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
                 Pupil demographics

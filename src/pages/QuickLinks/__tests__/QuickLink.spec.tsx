@@ -128,7 +128,7 @@ describe("QuickLink Component", () => {
     .mockResolvedValue(mockres);
     setIsError(false);
  
-   const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} apiError={false} displaystarredicon={jest.fn()}/>);
+   const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} apiError={false} displaystarredicon={jest.fn()} togglePanel={()=>{}}/>);
     expect(getByText('Link 1')).toBeInTheDocument();
     expect(getByText('Link 2')).toBeInTheDocument();
     expect(getByText('Link 3')).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("QuickLink Component", () => {
       jest
       .spyOn(qicklink, "FetchQuickLinkData")
       .mockResolvedValue(mockres);
-      const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} isOpen apiError={false} displaystarredicon={jest.fn()}/>);
+      const {getByText} =  render(<QuickLink apiQuickLinkData={mockApiResponse} isOpen apiError={false} displaystarredicon={jest.fn()} togglePanel={()=>{}}/>);
    
     const linkElement = getByText("Link 1");
  

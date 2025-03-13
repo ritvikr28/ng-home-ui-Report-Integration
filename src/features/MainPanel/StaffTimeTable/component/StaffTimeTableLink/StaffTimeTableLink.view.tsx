@@ -1,4 +1,4 @@
-import "./style.scss";
+import "../../style.scss";
 import { Link } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { envConfig } from "../../../../../shared/utils";

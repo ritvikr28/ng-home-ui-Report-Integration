@@ -1,5 +1,10 @@
 import "./style.scss";
-import { EventCard, Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
+import {
+  EventCard,
+  Tooltip,
+  TooltipAlign,
+  TooltipPosition
+} from "@essnextgen/ui-kit";
 import { IEventContainerProps } from "./EventContainerProps";
 import { RightSidePanel } from "../../../RightSidePanel/RightSidePanel.logic";
 
@@ -27,14 +32,13 @@ export const EventContainerView: (
     ClassPeriodExternalId,
     EventInstanceExternalId,
     SelectedItem,
-    isOpenPanel
+    isOpenPanel,
   }: IEventContainerProps = props;
 
   const { truncated, full }: { truncated: string; full: string } = EventTime;
 
   return (
     <>
-    <div className="staff-homepage-564f">
       <EventCard
         key={SchoolEventexternalId}
         id={`elementid-${index}`}
@@ -43,7 +47,7 @@ export const EventContainerView: (
           EventTime.truncated.length > EventTime.full.length ? (
             <Tooltip
               dataTestId={`tooltip-eventtime-${index}`}
-              content={full} 
+              content={full}
               align={TooltipAlign.Center}
               position={TooltipPosition.Bottom}
             >
@@ -56,29 +60,32 @@ export const EventContainerView: (
         secondaryText={RoomCode}
         // isTextTruncate
         status={EventCardColor}
-        title={EventTitle.length>18?`${EventTitle.substring(0,18)}...` : EventTitle}
-        // inputWidth={isOpen ? 166 : 145}
+        title={
+          EventTitle.length > 18
+            ? `${EventTitle.substring(0, 18)}...`
+            : EventTitle
+        }
         inputHeight={67}
         dataTestId={`eventid${index}`}
-         /* eslint-disable  */
+        /* eslint-disable  */
         /* istanbul ignore next */
         className={
           SelectedItem === SchoolEventexternalId
             ? index === 0
               ? isOpen
-                ? `dynamiceventcard isopen event-primary-text event-highlight-0`
-                : `dynamiceventcard isclose event-primary-text event-highlight-0`
+                ? `event-primary-text event-highlight-0`
+                : `event-primary-text event-highlight-0`
               : isOpen
-              ? `dynamiceventcard isopen event-primary-text event-${EventCardColor}-1`
-              : `dynamiceventcard isclose event-primary-text event-${EventCardColor}-1`
+              ? `event-primary-text event-${EventCardColor}-1`
+              : `event-primary-text event-${EventCardColor}-1`
             : isOpen
-            ? `dynamiceventcard isopen event-primary-text`
-            : `dynamiceventcard isclose event-primary-text`
+            ? `event-primary-text`
+            : `event-primary-text`
         }
         /* eslint-enable  */
       />
 
-      <div>
+      <div className="new-right-sidepanel">
         {isOpenPanel && (
           <RightSidePanel
             SchoolEventexternalId={SchoolEventexternalId}
@@ -100,7 +107,6 @@ export const EventContainerView: (
             EventInstanceExternalId={EventInstanceExternalId}
           />
         )}
-      </div>
       </div>
     </>
   );

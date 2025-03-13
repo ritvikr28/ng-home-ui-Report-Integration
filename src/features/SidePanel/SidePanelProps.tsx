@@ -12,7 +12,6 @@ export interface SidePanelProps {
   isLoader?:boolean;
   isSIMSIDAdmin?:boolean;
 }
-
 export interface QuickLinkSidePanel{
   isPermissionquicklink: any;
   isError:any;

@@ -2,30 +2,16 @@
 @import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens.module.scss";
 /* stylelint-enable  */
 
-.side-panel-main-container {
-  padding-top: 16px;
-  padding-left: 16px;
-  padding-bottom: 16px;
-  padding-right: 16px;
-}
-
-.margin-bottom-label {
-  margin-bottom: 8px !important;
-}
-
 .margin-bottom {
   margin-bottom: 24px !important;
   color: $global-color-neutral-800;
 }
 
-.divider {
-  height: 1px;
-  align-self: stretch;
-}
+.parent-close-button {
+  margin: 32px 16px;
+  display: flex;
+  justify-content: flex-end;
 
-.margin-24 {
-  margin-bottom: rem(24) !important;
-  margin-top: rem(24) !important;
 }
 
 .div-container {
@@ -35,7 +21,9 @@
   padding: 24px 0;
 }
 
-.side-panel {
+.new-right-side-panel {
+  height: 160vh;
+
   .parent {
     display: flex;
     flex-direction: column;
@@ -68,102 +56,19 @@
   }
 }
 
-@media only screen and (min-device-width: 768px) and (max-device-width: 1439.9px) {
-  .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
-    height: 100vh !important;
-    margin-top: 0 !important;
-  }
-}
-
 .divider-right-panel .essui-divider {
-  margin-top: 8px;
-}
-
-@media (min-width: 1024px) and (max-width: 1439.9px) {
-  .divider-right-panel .essui-divider {
-    margin-top: 8px;
-  }
-
-  .parent-close-button {
-    position: relative;
-    justify-content: right;
-    display: flex;
-    margin-top: 24px;
-    margin-bottom: 32px;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023.9px) {
-  .divider-right-panel .essui-divider {
-    margin-top: 8px;
-  }
-
-  .parent-close-button {
-    position: relative;
-    justify-content: center;
-    display: flex;
-  }
-
-  .child-close {
-    flex: 1;
-    margin-top: 32px;
-    margin-bottom: 32px !important;
-  }
-}
-
-@media (min-width: 390px) and (max-width: 767.9px) {
-  .divider-right-panel .essui-divider {
-    margin-top: 8px;
-  }
-
-  .parent-close-button {
-    position: relative;
-    justify-content: center;
-    display: flex;
-    margin-bottom: 32px;
-    margin-top: 24px;
-  }
-
-  .child-close {
-    flex: 1;
-  }
-}
-
-@media (min-width: 320px) and (max-width: 389.9px) {
-  .divider-right-panel .essui-divider {
-    margin-top: 8px;
-  }
-
-  .parent-close-button {
-    position: relative;
-    justify-content: center;
-    display: flex;
-    margin-bottom: 32px;
-  }
-
-  .child-close {
-    flex: 1;
-    margin-top: 32px;
-    margin-bottom: 32px !important;
-  }
+  /* stylelint-disable-next-line length-zero-no-unit */
+  margin: 24px 0px;
 }
 
 .rightsidepanel-grid-item .essui-side-panel-heading {
   padding: 16px 32px 0 16px !important;
 }
 
-@media (min-width: 320px) and (max-width: 767.9px) {
-  .rightsidepanel-grid-item .essui-side-panel {
+// -----------------mediaQueries-----------------------------
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+  .new-right-sidepanel .essui-side-panel-container-grid-item {
     height: 100vh !important;
-    position: fixed;
-  }
-
-  .side-panel-main-container {
-    margin-left: -7px;
-  }
-  
-  .rightsidepanel-grid-item .essui-side-panel-container-grid-item {
-    max-width: 100vw;
-    height: 100vh;
+    margin-top: 1px !important;
   }
 }

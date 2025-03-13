@@ -88,7 +88,7 @@ describe("ConfirmDialog Component", () => {
         description="Testing default props"
         onSubmitHandle={mockOnSubmitHandle}
         onCloseHandle={mockOnCloseHandle}
-        isOpen={true} 
+        isOpen 
       />
     );
 
@@ -110,8 +110,8 @@ describe("ConfirmDialog Component", () => {
         description="Testing default button text"
         onSubmitHandle={mockOnSubmitHandle}
         onCloseHandle={mockOnCloseHandle}
-        isOpen={true}
-        optionalButton={true} // Ensure optionalButton is true to render the cancel button
+        isOpen
+        optionalButton // Ensure optionalButton is true to render the cancel button
       />
     );
 

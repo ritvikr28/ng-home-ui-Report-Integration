@@ -7,6 +7,7 @@ export interface IQuickLinkViewProps {
     apiError?: boolean;
     displaystarredicon: (favorites: boolean, id: number, name: string) => JSX.Element;
     isOpen?:boolean;
+    togglePanel: () => void;
     
     
   } 
@@ -14,4 +15,5 @@ export interface IQuickLinkViewProps {
     apiQuickLinkData?: IQuickLinkApiResponse[] | null;
     setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
     setIsError?: React.Dispatch<React.SetStateAction<boolean>>;
+    togglePanel?:(obj:boolean)=>void
   }

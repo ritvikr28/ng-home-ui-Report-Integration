@@ -1,21 +1,17 @@
-import { Grid, GridItem, HeadingSubHeading } from "@essnextgen/ui-kit";
+import { Divider } from "@essnextgen/ui-kit";
 import AttendanceOverview from "./Components/Accordions/AttendanceOverview/AttendanceOverview.view";
 import PupilDemographics from "./Components/Accordions/PupilDemographics/PupilDemographics.view";
+import { SectionTitle } from "../../../shared/components/SectionTitle/SectionTitle";
 
-const SltViewBettView: ({ isOpen }: any) => JSX.Element = ({ isOpen }: any) => (
-  <Grid className={isOpen ? "sltview-bett-class" : "sltview-bett-class-close"}>
-    <GridItem sm={12} md={12} lg={12}>
-      <div>
-        <HeadingSubHeading
-          headingText="School headlines"
-          isShowHeading={true}
-          isShowSubHeading={false}
-        />
-      </div>
-      <AttendanceOverview />
-      <PupilDemographics />
-    </GridItem>
-  </Grid>
+const SltViewBettView: () => JSX.Element = () => (
+  <>
+    <SectionTitle title="School headlines" />
+    <AttendanceOverview />
+    <div className="new-divider-spacing">
+      <Divider />
+    </div>
+    <PupilDemographics />
+  </>
 );
 
 export default SltViewBettView;

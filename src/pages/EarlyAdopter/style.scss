@@ -25,10 +25,10 @@
   div.module-block:nth-child(odd) {
     margin-right: 0 !important;
   }
-
-  .essui-grid-col {
-    padding: 16px;
-  }
+  //Please do not overrride the existing classes directly
+  // .essui-grid-col {
+  //   padding: 16px;
+  // }
 
   .page-heading {
     padding-top: 16px;

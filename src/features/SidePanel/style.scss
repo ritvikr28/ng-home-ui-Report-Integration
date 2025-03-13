@@ -1,31 +1,29 @@
 @import "../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
 
-.side-view-dertfsg11463f {
-  //width: 265px;
+.side-view-panel {
   height: 148vh;
   padding: 16px 0;
   background-color: #fff;
 }
 
 @media (max-width: 1023.9px) {
-  .side-view-dertfsg11463f {
-    // padding: 8px;
+  .side-view-panel {
     height: 100vh;
   }
 }
 
 @media (max-width: 319.9px) {
-  .side-view-dertfsg11463f {
+  .side-view-panel {
     width: 267px;
   }
 }
 
-.side-view-closed-dertfsg11463f {
+.side-view-closed {
   height: fit-content;
   background-color: #f7f7f7;
 }
 
-.open-panel-dertfsg11463f .essui-button .essui-button--utility .essui-button-icon-only--small .base-class {
+.open-panel-view .essui-button .essui-button--utility .essui-button-icon-only--small .base-class {
   width: 40px;
   height: 40px;
   left: 16px;
@@ -38,26 +36,33 @@
   background-color: #fff;
 }
 
-.open-panel-dertfsg11463f .essui-icon--16 {
+.open-panel-view .essui-icon--16 {
   min-height: 16px;
   min-width: 16px;
 }
 
-.icon-close-dertfsg11463f {
-  margin-right: 15px;
+.close-btn {
+  /* stylelint-disable-next-line length-zero-no-unit */
+  padding: 0px 33px;
+}
+
+.close-btn .essui-icon-button {
+  padding: unset !important;
+}
+
+.left-side-close-btn .essui-icon-button {
+  margin-right: 5%;
 }
 
 .essui-open-panel-filled .essui-button-icon-only--small {
   height: 40px;
   margin: 0;
   padding: 0;
-  // width: 40px;
   margin-left: 20px;
 }
 
-.quick-panel-cont-dertfsg11463f {
+.quick-link-panel-item {
   display: flex;
-  //width: 227px;
   padding: 12px 16px;
   align-items: center;
   gap: 8px;
@@ -90,7 +95,7 @@
   word-break: break-all;
 }
 
-.quick-link-dertfsg11463f {
+.quick-link-title {
   color: var(--neutral-800, #303030);
   font-family: Segoe UI;
   font-size: 16px;
@@ -98,13 +103,17 @@
   font-weight: 700;
   line-height: 24px;
   margin-left: 16px;
+  /* stylelint-disable-next-line length-zero-no-unit */
+  padding: 12px 16px 12px 0px;
+  gap: 8px;
 }
 
-.quick-link-padding-dertfsg11463f {
-  padding: 20px;
+.quick-link-section {
+  margin-left: 15px;
+
 }
 
-.quick-link-username-dertfsg11463f {
+.quick-link-username {
   font-size: 16px;
   white-space: nowrap;
   overflow: hidden;
@@ -122,15 +131,15 @@
     // font-size: 12px;
   }
 
-  .quick-link-dertfsg11463f {
+  .quick-link-title {
     margin-left: 0;
   }
 }
 
-.quick-lint-display-dertfsg11463f {
+.user-name-display {
   display: flex;
-  margin-bottom: 24px;
   justify-content: space-between;
+  margin-bottom: 24px;
 }
 
 .icon-margin-dertfsg11463f {
@@ -152,23 +161,9 @@
 .left-sidepanel-home113 .essui-button--tertiary:focus-visible {
   background-color: inherit;
   box-shadow: none;
-  // color: #005faf;
-  // outline: 0;
-}
-
-.sidepanel-mobile-divider-dertfsg11463f {
-  //border: solid #c6c6c6;
-  //border-width: 0 0 1px;
-  flex-shrink: 0;
-  list-style: none;
-  margin: auto;
 }
 
 @media (min-width: 320px) and (max-width: 768.9px) {
-
-  // .filled-icon-align{
-  //   margin-left: -12px !important;
-  // }
   .essui-open-panel-filled .essui-button-icon-only--small {
     margin-left: 16px;
   }
@@ -181,4 +176,12 @@
   line-height: 16px;
 
   text-align: left;
+}
+
+.new-main-panel .essui-grid-nested-container {
+  margin: 0;
+}
+
+.new-main-panel .essui-grid-nested-container {
+  margin: 0;
 }

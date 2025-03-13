@@ -1,11 +1,9 @@
 import React from 'react';
-import { Grid, GridItem } from "@essnextgen/ui-kit";
 import { authService, MatchPermissions, Permission } from '@essnextgen/auth-ui';
 import DiscoverMoreView from "./Components/DiscoverMore.view";
-import styles from "./DiscoverStyle.module.scss";
 /* eslint-disable */
 interface SIMSupdatesViewProps {
-  isOpen?: boolean;  
+  isOpen?: boolean;
 }
 
 const requiredAdminPermissions: Permission[] = [
@@ -45,15 +43,7 @@ export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) => {
     );
 
   return (
-    <Grid>
-      <GridItem
-        className={`${styles["sims-container"]} ${
-          isOpen ? styles["sims-open"] : ""
-        } ${isSystemManager ? styles["sys-mgr"] : ""}`}
-      >
-        <DiscoverMoreView isOpen={isOpen} />
-      </GridItem>
-    </Grid>
+    <DiscoverMoreView isOpen={isOpen} />
   );
 };
 /* eslint-enable */

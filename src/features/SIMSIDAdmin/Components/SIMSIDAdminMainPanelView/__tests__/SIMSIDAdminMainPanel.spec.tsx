@@ -15,7 +15,7 @@ describe("SIMSIDAdminMainPanel", () => {
     usePersistantState.mockReturnValue([true, setNotificationDisable]);
     render(
       <SIMSIDAdminMainPanel
-        isOpen = {true}
+        isOpen
       />
     );
     
@@ -28,7 +28,7 @@ describe("SIMSIDAdminMainPanel", () => {
     usePersistantState.mockReturnValue([false, setNotificationDisable]);
     render(
       <SIMSIDAdminMainPanel
-        isOpen = {true}
+        isOpen
       />
     );
     expect(screen.queryByTestId("SIMSID-Admin-View")).toBeInTheDocument();
@@ -39,7 +39,7 @@ describe("SIMSIDAdminMainPanel", () => {
     const { getByTestId, container } = render(
       <SIMSIDAdminMainPanelView
         isOpen = {false}
-        enableNotification={true}
+        enableNotification
         setDisableNotification={() => {}}
       />
     );
@@ -69,8 +69,8 @@ describe("SIMSIDAdminMainPanel", () => {
   test("renders SIMSIDAdminMainPanelView with Notification enabled with isOpen true", async () => {
     const { getByTestId, container } = render(
       <SIMSIDAdminMainPanelView
-        isOpen = {true}
-        enableNotification={true}
+        isOpen
+        enableNotification
         setDisableNotification={() => {}}
       />
     );
@@ -86,7 +86,7 @@ describe("SIMSIDAdminMainPanel", () => {
   test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen true", async () => {
     const { getByTestId } = render(
       <SIMSIDAdminMainPanelView
-        isOpen = {true}
+        isOpen
         enableNotification={false}
         setDisableNotification={() => {}}
       />

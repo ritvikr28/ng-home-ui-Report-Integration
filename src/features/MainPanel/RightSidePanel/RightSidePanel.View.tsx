@@ -62,29 +62,29 @@ export const RightSidePanelView: (
   const StaffTTClassView: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "StaffTTClassViewBtn"
-  ); 
-  const onTRButtonClick:()=>void = () => {
-    const url:string  = (EventTypeCode === "AttendanceSession")
+  );
+  const onTRButtonClick: () => void = () => {
+    const url: string = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
       : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
-      
-      logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`)
-      
-      gtmAnalytics.pushEvent({
-        event: "click",
-        linkText: "Take register",
-        linkUrl: url,
-        clickType: "button",
-        clickLocation: "right_bar"
-      });
-      window.location.href = url
+
+    logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`)
+
+    gtmAnalytics.pushEvent({
+      event: "click",
+      linkText: "Take register",
+      linkUrl: url,
+      clickType: "button",
+      clickLocation: "right_bar"
+    });
+    window.location.href = url
   };
 
- 
+
   return (
     <div
       data-testid="side-panel"
-      className="side-panel rightsidepanel-grid-item"
+      className="new-right-side-panel"
       key={SchoolEventexternalId}
     >
       <SidePanel
@@ -93,12 +93,11 @@ export const RightSidePanelView: (
         isOpen={isOpen}
         onClose={handlePanelClose}
         initialFocusElementId="close-button-id"
-        // className={isOpen? '': 'side-panel-close-view'}
       >
         <SidePanelContent>
-          <div className="side-panel-main-container">
+          <div>
             <div
-              className="essui-global-typography-default-control-label margin-bottom-label"
+              className="essui-global-typography-default-control-label"
               data-testid="time-label"
             >
               {t("homeStaffTimeTableEventTiles.time")}:
@@ -110,7 +109,7 @@ export const RightSidePanelView: (
               {EventTime}
             </div>
             <div
-              className="essui-global-typography-default-control-label margin-bottom-label"
+              className="essui-global-typography-default-control-label"
               data-testid="staff-label"
             >
               {t("homeStaffTimeTableEventTiles.staff")}:
@@ -124,7 +123,7 @@ export const RightSidePanelView: (
             {CoverStaffName && (
               <>
                 <div
-                  className="essui-global-typography-default-control-label margin-bottom-label"
+                  className="essui-global-typography-default-control-label"
                   data-testid="staff-label"
                 >
                   {t("homeStaffTimeTableEventTiles.coverstaff")}:
@@ -138,7 +137,7 @@ export const RightSidePanelView: (
               </>
             )}
             <div
-              className="essui-global-typography-default-control-label margin-bottom-label"
+              className="essui-global-typography-default-control-label"
               data-testid="location-label"
             >
               {t("homeStaffTimeTableEventTiles.location")}:
@@ -149,7 +148,7 @@ export const RightSidePanelView: (
             >
               {Location}
             </div>
-           
+
             <div>
               { StaffTTClassView && EventTypeCode !== 'TTNTPer' && (
                     <div data-testid="class-view">
@@ -166,7 +165,7 @@ export const RightSidePanelView: (
               }
             </div>
 
-            <div data-testid="horizontal-panel-divider" className="divider">
+            <div data-testid="horizontal-panel-divider" className="divider-right-panel">
               <Divider
                 as="li"
                 dataTestId="panel-divider"
@@ -220,7 +219,7 @@ export const RightSidePanelView: (
                   />
                 )
               )}
-              
+
               {isLoader ? (
                 <Loader
                   data-testid="data-loader"
@@ -231,7 +230,7 @@ export const RightSidePanelView: (
               ) : (
                 GroupMembersData &&
                 GroupMembersData.length > 0 && (
-                  <div className="margin-24">
+                  <>
                     <div className="parent">
                       {GroupMembersData.map((pupil, index) => (
                         <span className="child">
@@ -249,29 +248,28 @@ export const RightSidePanelView: (
                             href={`${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`}
                             target="_self"
                           >
-                             <span data-testId={`link-click-${index}`} onClick={() =>  gtmAnalytics.pushEvent({
-                                  event: "click",
-                                  linkText: "[RemovedPupilName]",
-                                  linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
-                                  clickType: "link",
-                                  clickLocation: "right_bar"
-                                })}>
+                            <span data-testId={`link-click-${index}`} onClick={() => gtmAnalytics.pushEvent({
+                              event: "click",
+                              linkText: "[RemovedPupilName]",
+                              linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
+                              clickType: "link",
+                              clickLocation: "right_bar"
+                            })}>
                               {pupil.personalInfo.preferredForename}{" "}
                               {pupil.personalInfo.preferredSurname}
-                              </span>
+                            </span>
                           </Link>
                         </span>
                       ))}
                     </div>
-                  </div>
+                  </>
                 )
               )}
             </div>
           </div>
         </SidePanelContent>
 
-        <SidePanelFooter>
-          <div className="parent-close-button">
+        <SidePanelFooter className="parent-close-button">
           <Button
             size={ButtonSize.Medium}
             className="btn-full-width cancel-btn child-close"
@@ -281,7 +279,6 @@ export const RightSidePanelView: (
           >
             {t("homeStaffTimeTableEventTiles.close")}
           </Button>
-          </div>
         </SidePanelFooter>
       </SidePanel>
     </div>

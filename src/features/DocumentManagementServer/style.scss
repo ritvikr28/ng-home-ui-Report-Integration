@@ -30,10 +30,11 @@
   align-self: end !important;
 }
 
-.essui-grid-col--lg-2,
-.dropdown {
-  flex-basis: content;
-}
+//Please do not overrride the existing classes directly
+// .essui-grid-col--lg-2,
+// .dropdown {
+//   flex-basis: content;
+// }
 
 .relatedto-tag {
   position: relative;
@@ -52,7 +53,7 @@
 }
 
 #search-autocomplete div.input-wrapper {
-  width: 480px;
+  // width: 480px;
 }
 
 .filter-btn {
@@ -90,7 +91,7 @@
 // --------------------------390px to 767px-----------------
 @media (min-width: 390px) and (max-width: 767.9px) {
   .side-width .essui-side-navigation-panel-container-grid-item {
-    width: 264px; 
+    width: 264px;
   };
 
 };

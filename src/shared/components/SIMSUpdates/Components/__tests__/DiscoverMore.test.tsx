@@ -20,7 +20,7 @@ describe("DiscoverMoreView Component", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     render(<DiscoverMoreView isOpen/>);
     expect(
-      screen.getByText("discoverMore.simsupdatemoretext")
+      screen.getByText("discoverMore.simsupdatetext")
     ).toBeInTheDocument();
   });
 

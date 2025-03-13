@@ -3,27 +3,36 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import { FormLabel, Search, Suggestion, TextInputSize,ISearchItemProp } from "@essnextgen/ui-kit";
+import {
+  FormLabel,
+  Search,
+  Suggestion,
+  TextInputSize,
+  ISearchItemProp,
+  Grid,
+  GridItem
+} from "@essnextgen/ui-kit";
 import { ISearchViewProps } from "./Search.props";
 import { envConfig } from "../../../shared/utils";
 import "./Style.scss";
 import gtmAnalytics from "../../../shared/utils/analytics";
+import { SectionTitle } from "../../../shared/components/SectionTitle/SectionTitle";
 
-export const onItemClickFunc: any = (e: ISearchItemProp | null,  setSuggestions: any) => {
-
+export const onItemClickFunc: any = (
+  e: ISearchItemProp | null,
+  setSuggestions: any
+) => {
   const { link }: any = e;
   gtmAnalytics.pushEvent({
     event: "click",
     linkText: "[RemovedPupilName]",
-    linkUrl:`${envConfig.LEARNER_UI_URL}${link}`,
+    linkUrl: `${envConfig.LEARNER_UI_URL}${link}`,
     clickType: "dropdown_option",
-    clickLocation: "search_suggestion"
-  })
- 
-  setSuggestions([]);
-window.location.href=`${envConfig.LEARNER_UI_URL}${link}`;
+    clickLocation: "search_suggestion",
+  });
 
- 
+  setSuggestions([]);
+  window.location.href = `${envConfig.LEARNER_UI_URL}${link}`;
 };
 const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
   const {
@@ -33,52 +42,59 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
     suggestions,
     isLoading,
     setSuggestions,
-    onChange,
-    isOpen
+    onChange
   }: ISearchViewProps = props;
-  const hasItems: boolean = suggestions.some((x: Suggestion) => x.values.length > 0);
+  const hasItems: boolean = suggestions.some(
+    (x: Suggestion) => x.values.length > 0
+  );
   const onItemClick: any = (e: ISearchItemProp | null) => {
     onItemClickFunc(e, setSuggestions);
   };
   const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
-  const noDataTemplateText =`${t("UI_KIT_SearchNoResultsFound.FirstPart")} - {value} - ${t(
-      "UI_KIT_SearchNoResultsFound.SecondPart"
-    )}`;
-    const className = `pupil-profile-suggestion ${value ? "icon-search" : "no-icon-search"}`;
+    useTranslation();
+  const noDataTemplateText = `${t(
+    "UI_KIT_SearchNoResultsFound.FirstPart"
+  )} - {value} - ${t("UI_KIT_SearchNoResultsFound.SecondPart")}`;
+  const className = `pupil-profile-suggestion ${
+    value ? "icon-search" : "no-icon-search"
+  }`;
 
   return (
-    <>
-      <FormLabel forId="search" className="pupil-profile-font-df65s76dfs">
-        Pupil Profile
-      </FormLabel>      
-      <div className={`search-df65s76dfs ${isOpen ? "search-comp-boreder":"search-comp-boreder-close"}`}>
-      <Search
-      dataTestId="new-search-element"
-                id="search"               
-                suggestions={hasItems ? suggestions : []}
-                headingText={t("searchpage.searchHelper")}
-                onKeyUpLenght={2}
-                className={className}
-                placeholderText={t("searchpage.searchBar")}
-                onItemClick={onItemClick}
-                keyUpHandler={(e: any) => {
-                  onChange(e);
-                }}
-                showLoading={isLoading}
-                value={value}
-                onCloseHandle={() => { setValue(""); }}
-                onKeyDown={handleKeyPress}
-                onFocus={(e: any) => {
-                  onChange(e);
-                }}
-                size={TextInputSize.Large}     
-                debouncerTreshold={1000}    
-                noDataTemplate={noDataTemplateText}    
-                 />
-
-      </div>
-    </>
+    <Grid>
+      <GridItem sm md lg className="c-clear-padding-left">
+        <FormLabel forId="search">
+          <SectionTitle title="Pupil Profile" />
+        </FormLabel>
+        <div className="search-df65s76dfs new-search-container">
+          <Search
+            clear={false}
+            dataTestId="new-search-element"
+            id="search"
+            suggestions={hasItems ? suggestions : []}
+            headingText={t("searchpage.searchHelper")}
+            onKeyUpLenght={2}
+            className={className}
+            placeholderText={t("searchpage.searchBar")}
+            onItemClick={onItemClick}
+            keyUpHandler={(e: any) => {
+              onChange(e);
+            }}
+            showLoading={isLoading}
+            value={value}
+            onCloseHandle={() => {
+              setValue("");
+            }}
+            onKeyDown={handleKeyPress}
+            onFocus={(e: any) => {
+              onChange(e);
+            }}
+            size={TextInputSize.Large}
+            debouncerTreshold={1000}
+            noDataTemplate={noDataTemplateText}
+          />
+        </div>
+      </GridItem>
+    </Grid>
   );
 };
 

@@ -33,23 +33,24 @@ const AdminConsole: React.FC = () => {
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
+  useEffect(() => {
+    document.body.classList.remove('no-scroll');
+  }, [])
 
+  const layoutValues = {
+    grid1: isOpen ? { lg: 3, md: 2, xl: 2, xxl: 1 } : { lg: 0, md: 0, xl: 0, xxl: 1 },
+    grid2: isOpen ? { lg: 9, md: 8, xl: 9, xxl: 10 } : { lg: 12, md: 8, xl: 12, xxl: 10 },
+  };
   return (
     <>
-      <Grid className="admin-mobile-rwaf92428">
-        <GridItem lg={isOpen?3:0} md={isOpen?2:0} xl ={isOpen?2:0} className="side-width">
-          {isMobileView && !isOpen && (
-            <Button
-              className="base-class"
-              color={ButtonColor.Utility}
-              dataTestId="btn-collapse"
-              iconColor={IconColor.Neutral800}
-              iconName="open-panel--left--filled"
-              onClick={handleButtonClick}
-              size={ButtonSize.Small}
-            />
-          )}
-          <LocalisedMenu 
+      <Grid
+        className={!isOpen ? "new-adminconsole-container" : "new-adminconsole-container-grid"}
+      >
+        <GridItem
+          lg={layoutValues.grid1.lg} md={layoutValues.grid1.md} xl={layoutValues.grid1.xl} xxl={2}
+          className="new-adminconsole-sidepanel"
+        >
+          <LocalisedMenu
             customHeight={100}
             menuHeading="Admin Console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
@@ -60,12 +61,21 @@ const AdminConsole: React.FC = () => {
             }}
           />
         </GridItem>
-        <GridItem style={{ marginTop: "24px" }} lg={isOpen?9:12} md={isOpen?8:8} xl ={isOpen?10:12}>
-          <div
-            className={
-              isOpen ? "adminConsole-sidepanelopen" : "adminconsole-breadcrumb"
-            }
-          >
+        <GridItem
+          lg={layoutValues.grid2.lg} md={layoutValues.grid2.md} xl={layoutValues.grid2.xl} xxl={9}
+
+        >
+          <div className="new-adminconsole-breadcrumb">
+            {isMobileView && !isOpen && (
+              <Button
+                color={ButtonColor.Utility}
+                dataTestId="btn-collapse"
+                iconColor={IconColor.Neutral800}
+                iconName="open-panel--left--filled"
+                onClick={handleButtonClick}
+                size={ButtonSize.Small}
+              />
+            )}
             <Breadcrumbs
               breadcrumbActions={[
                 {
@@ -79,10 +89,9 @@ const AdminConsole: React.FC = () => {
                   path: "#"
                 }
               ]}
-              className="essui-Breadcrumbs"
               dataTestId="breadcrumb-test-id"
               id="element-id"
-              onItemClick={() => {}}
+              onItemClick={() => { }}
             />
           </div>
           <About />

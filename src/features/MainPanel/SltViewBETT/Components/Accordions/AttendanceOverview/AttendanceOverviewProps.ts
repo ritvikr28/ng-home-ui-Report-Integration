@@ -3,7 +3,6 @@ export interface IAttendanceOverviewProps {
   setIsOpen?: (isOpen: boolean) => void;
   cols: ICols;
 }
-
 export interface ICols {
   sm: number;
   md: number;

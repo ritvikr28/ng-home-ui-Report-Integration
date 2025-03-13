@@ -1,94 +1,14 @@
 @import "../../../../node_modules/@essnextgen/ui-kit/dist/build/assets/scss/tokens-typography";
 
-.register-container {
- 
-  gap: 20px;
-  margin-top: 40px;
-  font-size: 24px;
-}
-
-.register-link-container {
-  width: 1116px;
-  gap: 8px;
-  display: flex;
-  align-items: baseline;
-  //margin-bottom: 10px;
-}
-
-@media (min-width: 320px) and (max-width: 389.9px) {
-  .register-link-container {
-    gap: 1px;
-    flex-direction: column;
-  }
-}
-
-@media (min-width: 320px) and (max-width: 1439.9px) {
-  .register-link-container {
-    width: 100vw;
-  }
-}
-
-.your-registers-tr-5567f {
-  color: var(--neutral-800, #303030);
-  font-family: Segoe UI;
-  font-size: 24px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 32px;
-}
-
-@media (min-width: 390px) and (max-width: 767.9px) {
-  .your-registers-tr-5567f {
-    @include essui-global-typography-small-screen-h3;
-  }
-}
-
-.register-link-url {
-  color: var(--primary-500, #2177c2);
-  text-align: center;
-  font-family: Segoe UI;
-  font-size: 16px;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 24px;
-  text-decoration-line: underline;
-}
-
 .register-icon .essui-button-icon-only--small {
-
   display: "flex";
 }
 
 .register-icon {
   margin-right: 17px;
   gap: 8px;
-}
-
-.register-link-event-open {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
-  width: 77.3vw;
-  justify-content: end;
-  margin-left: 0;
-  margin-top: -34px;
 }
-
-.register-link-event-close {
-  display: flex;
-  
-  align-items: center;
-  width: 80.7vw;
-  justify-content: end;
-  margin-left: -57px;
-  margin-top: -38px;
-}
-
-// @media (min-width: 1900px)  {
-//   .register-link-event-open {
-//     width: 78.4vw;
-//   }
-// }
 
 @media (min-width: 1440px) {
   .register-link-event-close {
@@ -100,20 +20,6 @@
   .register-icon {
     gap: 8px;
     margin-top: -4vw;
-  }
-
-  .register-link-event-open {
-    width: 71.6vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  .register-link-event-close {
-    width: 96.3vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
   }
 }
 
@@ -147,116 +53,10 @@
   }
 }
 
-.actioncard-div-tr1123 {
-  width: 17.8vw;
-  margin: 0 12px 0 20px;
-}
-
-.actioncard-div-close-tr4567 {
-  width: 17.95vw;
+.new-action-card-accodian-container {
   margin: 0 12px;
 }
 
-@media (min-width: 1024px) and (max-width: 1439.9px) {
-  .actioncard-div-tr1123 {
-    margin: 0 12px;
-    width: 34vw;
-  }
-
-  .actioncard-div-close-tr4567 {
-    margin: 0 12px;
-    width: 30.1vw;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023.9px) {
-  .actioncard-div-tr1123 {
-    margin: 0 12px;
-    width: 45vw;
-  }
-
-  .actioncard-div-close-tr4567 {
-    margin: 0 12px;
-    width: 45vw;
-  }
-
-  .register-link-event-open {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 96vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  .register-link-event-close {
-    width: 96vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
-  }
-}
-
-@media (min-width: 390px) and (max-width: 767.9px) {
-  .actioncard-div-tr1123 {
-    margin: 0 12px;
-    width: 92vw;
-  }
-
-  .actioncard-div-close-tr4567 {
-    margin: 0 12px;
-    width: 92vw;
-  }
-
-  .register-container {
-    width: 100vw !important;
-  }
-
-  .register-link-event-open {
-    width: 95vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  .register-link-event-close {
-    width: 95vw;
-    justify-content: end;
-    margin-left: 1vw;
-    margin-top: 0;
-  }
-}
-
-@media (min-width: 320px) and (max-width: 389.9px) {
-  .actioncard-div-tr1123 {
-    margin: 0 12px;
-    width: 90vw;
-  }
-
-  .actioncard-div-close-tr4567 {
-    margin: 0 12px;
-    width: 90vw;
-  }
-
-  .register-container {
-    width: 100vw !important;
-  }
-
-  .register-link-event-open {
-    width: 94vw;
-    justify-content: end;
-    margin-left: 0;
-    margin-top: 0;
-  }
-
-  .register-link-event-close {
-    width: 94vw;
-    justify-content: end;
-    margin-left: 2vw;
-    margin-top: 0;
-  }
-}
 
 .noregisterblock {
   margin: 20px 12px 20px 0;

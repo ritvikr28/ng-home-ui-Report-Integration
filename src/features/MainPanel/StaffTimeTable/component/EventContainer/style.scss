@@ -52,38 +52,6 @@
   }
 }
 
-.parent-event-container {
-  margin-left: 6px;
-}
-
-@media (min-width: 1440px) {
-  .parent-event-container {
-    margin-left: 8.9px;
-    width: 100vw;
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1439.9px) {
-  .parent-event-container {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100vw;
-  }
-
-  .open-con {
-    display: flex;
-    flex-wrap: wrap;
-    width: 75vw !important;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023.9px) {
-  .parent-event-container {
-    display: flex;
-    flex-wrap: wrap;
-    width: 100vw;
-  }
-}
 
 @media (min-width: 390px) and (max-width: 767.9px) {
   .parent-event-container {
@@ -99,9 +67,7 @@
   }
 }
 
-
-.event-primary-text {
-
+.new-event-card-box .event-primary-text {
   /* stylelint-disable */
   .essui-event__primaryfont {
     /* stylelint-enable */
@@ -109,7 +75,25 @@
     cursor: pointer;
     font-size: 14px;
     font-weight: 600;
+    line-height: 16px;
+    margin-bottom: 1px;
   }
+}
+/* stylelint-disable */
+.new-event-card-box .essui-event__secondary {
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 16px;
+}
+
+.new-event-card-box .essui-event {
+  padding: 4px !important;
+}
+
+.new-event-card-box {
+  margin: 0 12px 20px 4px;
 }
 
 .no-events:focus {
@@ -118,9 +102,10 @@
   outline: none;
 }
 
-.event-highlight-0 {
+.new-event-card-box .event-highlight-0 {
   box-shadow: 0 0 0 4px #428fed;
-  border-left: 0;
+  border-left: 0 !important;
+  padding-left: 12px !important
 }
 
 .event-primary-1 {
@@ -182,36 +167,15 @@
   border-left-color: #cb8024;
 }
 
-/* stylelint-disable */
 .staff-homepage-564f .essui-event__secondary {
   font-size: 14px;
 }
 
-/* stylelint-enable */
-@media (min-width: 1440px) {
-  .event-primary-text {
-    width: 11.47vw;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1023.9px) {
-  .event-primary-text {
-    width: 21vw !important;
-  }
-}
-
-@media (min-width: 390px) and (max-width: 767.9px) {
-  .event-primary-text {
-    width: 92vw !important;
-  }
-}
-
-@media (min-width: 320px) and (max-width: 389.9px) {
-  .event-primary-text {
-    width: 90vw !important;
-  }
-}
-
 .no-events-staff {
   width: 11.6vw;
+}
+
+.new-event-card-box {
+  margin-right: 12px;
+  margin-bottom: 20px;
 }

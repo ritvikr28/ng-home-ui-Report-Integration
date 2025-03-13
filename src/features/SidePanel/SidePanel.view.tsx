@@ -1,8 +1,5 @@
 import React, { useState } from "react";
 import {
-  Button,
-  ButtonColor,
-  ButtonSize,
   Icon,
   IconColor,
   SideNavigationPanel,
@@ -12,16 +9,11 @@ import {
   Tooltip,
   TooltipAlign,
   TooltipPosition,
-  useMediaQuery,
-  Orientation,
-  Divider
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import {
-  useTranslation,
-  UseTranslationResponse
-} from "@essnextgen/ui-intl-kit";
+import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
 import { SidePanelProps, QuickLinkSidePanel } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
@@ -33,7 +25,7 @@ import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemode
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View"
+    Operation: "View",
   }
 ];
 
@@ -45,7 +37,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   quicklinkData,
   setQuickLinkData,
   isLoader = false,
-  isSIMSIDAdmin = false
+  isSIMSIDAdmin = false,
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -70,32 +62,30 @@ const SidePanel: React.FC<SidePanelProps> = ({
     favorite: boolean,
     name: string
   ): Promise<void> => {
-    try {
-      await handleStarClickAsync(id, favorite, name, setQuickLinkData);
-    } catch (error) {
-      setIsError(true);
-    }
-  };
+      try {
+        await handleStarClickAsync(id, favorite, name, setQuickLinkData);
+      } catch (error) {
+        setIsError(true);
+      }
+    };
 
   return (
-    <div className={`side-view-dertfsg11463f ${getSideViewClass(isOpen)}`}>
-      {isOpen
-        ? renderSideNavigationPanel({
-            isMobileView,
-            loginFullname,
-            togglePanel,
-            closePanel,
-            isSIMSIDAdmin,
-            isPermissionquicklink,
-            isError,
-            quicklinkData,
-            handleStarClick,
-            showQuickLinkView,
-            isLoader,
-            isOpen
-          })
-        : renderClosedPanel(togglePanel)}
-      <div />
+    <div className={`side-view-panel ${getSideViewClass(isOpen)}`}>
+      {isOpen &&
+        renderSideNavigationPanel({
+          isMobileView,
+          loginFullname,
+          togglePanel,
+          closePanel,
+          isSIMSIDAdmin,
+          isPermissionquicklink,
+          isError,
+          quicklinkData,
+          handleStarClick,
+          showQuickLinkView,
+          isLoader,
+          isOpen,
+        })}
     </div>
   );
 };
@@ -108,10 +98,7 @@ const getLoginFullName: (fullName: string | null) => string = (
 
 const getSideViewClass: (isOpen: boolean) => string = (
   isOpen: boolean
-): string =>
-  isOpen
-    ? "open-dertfsg11463f open-panel-dertfsg11463f side-view-res-dertfsg11463f"
-    : "side-view-closed-dertfsg11463f";
+): string => (isOpen ? "open-sideview open-panel-view" : "side-view-closed");
 
 const handleStarClickAsync: (
   id: number,
@@ -124,27 +111,27 @@ const handleStarClickAsync: (
   name: string,
   setQuickLinkData: React.Dispatch<React.SetStateAction<any>>
 ): Promise<void> => {
-  const { status }: { status: number } = await FetchQuickLinkpost(id, favorite);
-  if (status === 200) {
-    const responseapidata:
-      | { response: IQuickLinkApiResponse[]; status: boolean }
-      | null
-      | undefined = await fetchQuickLinkDetails();
-    if (responseapidata != null) {
-      setQuickLinkData(responseapidata.response);
+    const { status }: { status: number } = await FetchQuickLinkpost(id, favorite);
+    if (status === 200) {
+      const responseapidata:
+        | { response: IQuickLinkApiResponse[]; status: boolean }
+        | null
+        | undefined = await fetchQuickLinkDetails();
+      if (responseapidata != null) {
+        setQuickLinkData(responseapidata.response);
+      }
     }
-  }
-  /* eslint-disable */
-  let elementType: "empty_star" | "filled_star" = favorite
-    ? "empty_star"
-    : "filled_star";
-  gtmAnalytics.pushEvent({
-    event: "interact_click",
-    elementType,
-    elementTextOrLabel: name,
-    elementLocation: "sidebar"
-  });
-};
+    /* eslint-disable */
+    let elementType: "empty_star" | "filled_star" = favorite
+      ? "empty_star"
+      : "filled_star";
+    gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType,
+      elementTextOrLabel: name,
+      elementLocation: "sidebar",
+    });
+  };
 
 interface RenderSideNavigationPanelProps {
   isMobileView: boolean;
@@ -177,7 +164,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
   handleStarClick,
   showQuickLinkView,
   isLoader,
-  isOpen
+  isOpen,
 }: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
@@ -185,18 +172,9 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
       isOpen={isOpen}
       onClose={togglePanel}
     >
-      <div className="sidepanel-mobile-divider-dertfsg11463f">
-        <Divider
-          as="li"
-          dataTestId="panel-divider"
-          id="panel-divider"
-          orientation={Orientation.HORIZONTAL}
-          role="separator"
-        />
-      </div>
       <SideNavigationPanelContent>
         <div>
-          <div className="quick-lint-display-dertfsg11463f">
+          <div className="user-name-display">
             {isMobileView ? "" : renderCloseIcon(closePanel)}
           </div>
           {isSIMSIDAdmin
@@ -226,10 +204,11 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
       showQuickLinkView,
       isLoader,
       togglePanel,
-      isMobileView
+      isMobileView,
     })
   );
 };
+
 /* eslint-disable */
 const getNavigationPanelTitle: (
   loginFullname: string,
@@ -245,10 +224,11 @@ const getNavigationPanelTitle: (
       >
         <span className="quick-link-username-tooltip-dertfsg11463f">
           {`${loginFullname.substring(0, 24)}...`}
+          {`${loginFullname.substring(0, 24)}...`}
         </span>
       </Tooltip>
     ) : (
-      <span className="quick-link-username-dertfsg11463f">
+      <span className="quick-link-username">
         {`${loginFullname.substring(0, 24)}...`}
       </span>
     )
@@ -257,7 +237,7 @@ const getNavigationPanelTitle: (
       <strong>{loginFullname}</strong>
     </span>
   ) : (
-    <span className="quick-link-username-dertfsg11463f">
+    <span className="quick-link-username">
       <strong>{loginFullname}</strong>
     </span>
   );
@@ -266,36 +246,19 @@ const getNavigationPanelTitle: (
 const renderCloseIcon: (closePanel: () => void) => JSX.Element = (
   closePanel: () => void
 ): JSX.Element => (
-  <span className="icon-close-dertfsg11463f">
+  <span className="close-btn">
     <Icon
       color={IconColor.Primary500}
       dataTestId="btn-90"
       id="variable-2"
       name="close"
+      className="left-side-close-btn"
       onClick={closePanel}
       size={24}
     />
   </span>
 );
 
-const renderClosedPanel: (togglePanel: () => void) => JSX.Element = (
-  togglePanel: () => void
-) => (
-  <div
-    className="open-panel-dertfsg11463f essui-open-panel-filled filled-icon-align"
-    data-testId="close-panel"
-  >
-    <Button
-      className="base-class"
-      color={ButtonColor.Utility}
-      dataTestId="btn-collapse"
-      iconColor={IconColor.Neutral800}
-      iconName="open-panel--left--filled"
-      onClick={togglePanel}
-      size={ButtonSize.Small}
-    />
-  </div>
-);
 
 interface RenderQuickLinkContentProps {
   loginFullname: string;
@@ -326,34 +289,34 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView
+  isMobileView,
 }: RenderQuickLinkContentProps) => (
   <div>
-    <div className="quick-lint-display-dertfsg11463f">
+    <div className="user-name-display">
       {getNavigationPanelTitle(loginFullname, isMobileView)}
       {renderCloseIcon(closePanel)}
     </div>
     {isSIMSIDAdmin
       ? simsIdAdminQuickLink()
       : quickLink({
-          isPermissionquicklink,
-          isError,
-          quicklinkData,
-          handleStarClick,
-          showQuickLinkView,
-          isLoader,
-          togglePanel,
-          isMobileView
-        })}
+        isPermissionquicklink,
+        isError,
+        quicklinkData,
+        handleStarClick,
+        showQuickLinkView,
+        isLoader,
+        togglePanel,
+        isMobileView,
+      })}
   </div>
 );
 
 const simsIdAdminQuickLink: () => JSX.Element = () => (
   <div className="left-sidepanel-home113">
-    <div className="quick-link-dertfsg11463f">Quick Links</div>
-    <div className="quick-link-padding-dertfsg11463f ">
+    <div className="quick-link-title">Quick Links</div>
+    <div className="quick-link-section">
       <div
-        className="quick-panel-cont-dertfsg11463f label-css"
+        className="quick-link-panel-item label-css"
         key={1}
         onClick={() => {
           window.location.href = `${envConfig.INVITE_STAFF_URL}`;
@@ -366,7 +329,6 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
   </div>
 );
 //  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
-
 const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   isPermissionquicklink,
   isError,
@@ -375,125 +337,121 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView
-}: QuickLinkSidePanel): JSX.Element | null => {
+  isMobileView,
+}: QuickLinkSidePanel): JSX.Element | null =>{
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-  return (
-    isPermissionquicklink && (
-      <div className="left-sidepanel-home113">
-        <div className="quick-link-dertfsg11463f">
-          {t("quickLink.headingTitle")}
-        </div>
-        <div className="quick-link-padding-dertfsg11463f">
-          {/*
-          eslint-disable
-          */}
-          {isLoader ? (
-            <div>
-              <Loader
-                dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
-                className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
-                loaderText="Loading..."
-                loaderType={LoaderType.Circular}
-              />
-            </div>
-          ) : (
-            !isError &&
-            quicklinkData && (
-              <>
-                <div
-                  className="quick-panel-cont-dertfsg11463f"
-                  onClick={() => {
-                    const classViewLink :any  = quicklinkData.find(
-                      (link: any) => link.name === "Class View"
-                    )?.link;
-                    if (classViewLink) {
-                      window.location.href = classViewLink;
+  return (isPermissionquicklink && (
+    <div className="left-sidepanel-home113">
+      <div className="quick-link-title"> {t("quickLink.headingTitle")}</div>
+      <div className="quick-link-section">
+        {/*
+eslint-disable
+*/}
+        {isLoader ? (
+          <div>
+            <Loader
+              dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
+              className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
+              loaderText="Loading..."
+              loaderType={LoaderType.Circular}
+            />
+          </div>
+        ) : (
+          !isError &&
+          quicklinkData && (
+            <>
+              <div
+                className="quick-link-panel-item"
+                onClick={() => {
+                  const classViewLink = quicklinkData.find(
+                    (link: any) => link.name === "Class View"
+                  )?.link;
+                  if (classViewLink) {
+                    window.location.href = classViewLink;
+                    gtmAnalytics.pushEvent({
+                      event: "click",
+                      linkText: "Class View",
+                      linkUrl: classViewLink,
+                      clickType: "link",
+                      clickLocation: "sidebar",
+                    });
+                  }
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                Class View
+              </div>
+
+              {quicklinkData
+                .filter((sidelink: any) => sidelink.name !== "Class View")
+                .slice(0, 6)
+                .map((sidelink: any) => (
+                  <div
+                    className="quick-link-panel-item"
+                    key={sidelink.id}
+                    onClick={() => {
+                      window.location.href = sidelink.link;
                       gtmAnalytics.pushEvent({
                         event: "click",
-                        linkText: "Class View",
-                        linkUrl: classViewLink,
+                        linkText: sidelink.name,
+                        linkUrl: sidelink.link,
                         clickType: "link",
-                        clickLocation: "sidebar"
+                        clickLocation: "sidebar",
                       });
-                    }
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  Class View
-                </div>
-
-                {quicklinkData
-                  .filter((sidelink: any) => sidelink.name !== "Class View")
-                  .slice(0, 6)
-                  .map((sidelink: any) => (
-                    <div
-                      className="quick-panel-cont-dertfsg11463f"
-                      key={sidelink.id}
-                      onClick={() => {
-                        window.location.href = sidelink.link;
-                        gtmAnalytics.pushEvent({
-                          event: "click",
-                          linkText: sidelink.name,
-                          linkUrl: sidelink.link,
-                          clickType: "link",
-                          clickLocation: "sidebar"
-                        });
+                    }}
+                    style={{ cursor: "pointer" }}
+                  >
+                    {sidelink.name}
+                    <Icon
+                      color={
+                        sidelink.favourite
+                          ? IconColor.Primary500
+                          : IconColor.Neutral800
+                      }
+                      className="icon-margin-dertfsg11463f"
+                      dataTestId={`btn-star${sidelink.id}`}
+                      id="variable-2"
+                      name={sidelink.favourite ? "star--filled" : "star"}
+                      size={16}
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevent the div click event from being triggered
+                        handleStarClick(
+                          sidelink.id,
+                          !sidelink.favourite,
+                          sidelink.name
+                        );
                       }}
-                      style={{ cursor: "pointer" }}
-                    >
-                      {sidelink.name}
-                      <Icon
-                        color={
-                          sidelink.favourite
-                            ? IconColor.Primary500
-                            : IconColor.Neutral800
-                        }
-                        className="icon-margin-dertfsg11463f"
-                        dataTestId={`btn-star${sidelink.id}`}
-                        id="variable-2"
-                        name={sidelink.favourite ? "star--filled" : "star"}
-                        size={16}
-                        onClick={(e) => {
-                          e.stopPropagation(); // Prevent the div click event from being triggered
-                          handleStarClick(
-                            sidelink.id,
-                            !sidelink.favourite,
-                            sidelink.name
-                          );
-                        }}
-                      />
-                    </div>
-                  ))}
-              </>
-            )
-          )}
+                    />
+                  </div>
+                ))}
+            </>
+          )
+        )}
 
-          {/*
-          eslint-disable jsx-a11y/anchor-is-valid,
-          no-script-url
-          */}
-          <a
-            href="javascript:void(0)"
-            className="see-all-dertfsg11463f"
-            onClick={() => {
-              isMobileView ? togglePanel() : "";
-              showQuickLinkView();
-            }}
-            /* eslint-enable */
-          >
-            {t("quickLink.quicklinkseeall")}
-          </a>
-          {/*
-          eslint-enable jsx-a11y/anchor-is-valid,
-          no-script-url
-          */}
-        </div>
+        {/*
+eslint-disable jsx-a11y/anchor-is-valid,
+no-script-url
+*/}
+        <a
+          href="javascript:void(0)"
+          className="see-all-dertfsg11463f"
+          onClick={() => {
+            isMobileView ? togglePanel() : "";
+            showQuickLinkView();
+          }}
+          /* eslint-enable */
+        >
+          {t("quickLink.quicklinkseeall")}
+        </a>
+        {/*
+eslint-enable jsx-a11y/anchor-is-valid,
+no-script-url
+*/}
       </div>
-    )
-  );
-};
+    </div>
+  ));
+}
 
 /* eslint-enable */
 export default SidePanel;

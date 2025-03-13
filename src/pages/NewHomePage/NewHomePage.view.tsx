@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
-import { Grid, GridItem, useMediaQuery } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
-import SidePanelView from "../../features/SidePanel/SidePanel.view";
+
+import { useMediaQuery } from "@essnextgen/ui-kit";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import {
@@ -16,6 +16,7 @@ import MainPanel from "../../features/MainPanel/MainPanel.logic";
 import { envConfig, getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
+import SidePanelView from "../../features/SidePanel/SidePanel.view";
 
 const requiredPermissions: Permission[] = [
   {
@@ -27,7 +28,7 @@ const requiredPermissions: Permission[] = [
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View"
+    Operation: "View",
   }
 ];
 
@@ -48,29 +49,46 @@ const requiredPermissionsforquicklink: Permission[] = [
 // };
 
 const NewHomepageView: React.FC = () => {
-  const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all);
-  const isPermissionquicklink: boolean = authService.isAuthorised(requiredPermissionsforquicklink, MatchPermissions.all);
-  const isMobileView : boolean = useMediaQuery(
+  const isPermission: boolean = authService.isAuthorised(
+    requiredPermissions,
+    MatchPermissions.all
+  );
+  const isPermissionquicklink: boolean = authService.isAuthorised(
+    requiredPermissionsforquicklink,
+    MatchPermissions.all
+  );
+  const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-  const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
-  const [showQuickLink, setShowQuickLink]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isOpen, setIsOpen]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(!isMobileView);
+  const [showQuickLink, setShowQuickLink]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   const [quickLinkData, setQuickLinkData]: [
     IQuickLinkApiResponse[] | null,
     React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>
   ] = useState<IQuickLinkApiResponse[] | null>(null);
-  const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isError, setIsError]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
-  const isTabletView: boolean = useMediaQuery('(min-width:320px) and (max-width: 1023.9px)');
   // const isMiniMobileView = useMediaQuery('(min-width:390px) and (max-width: 767.9px)');
-  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [isLoader, setLoader]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
 
   const ClassViewNotificationBanner: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "ClassViewNotificationBanner"
-  ); 
-  
+  );
+
   const showQuickLinkView: () => void = () => {
     setShowQuickLink(true);
   };
@@ -86,25 +104,29 @@ const NewHomepageView: React.FC = () => {
   const closePanel: () => void = () => {
     setIsOpen(false);
   };
+  useEffect(() => {
+    document.body.classList.add('no-scroll')
+  }, [])
 
   useEffect(() => {
     (async () => {
-      try {   
-        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`)
-        gtmAnalytics.pushPageViewEvent(); 
-        const responseapidata: IFetchQuickLinkDetailsFunctionResponse| null | undefined  = await fetchQuickLinkDetails(); 
-       /* istanbul ignore next */
-        if( responseapidata !=null )
-       { 
-        setQuickLinkData(responseapidata.response);
-        setIsError(responseapidata.status);
-        setLoader(false);     
-       }
-       
-      } catch (error) { 
-        setLoader(false); 
-        console.log(error);       
-      }      
+      try {
+        logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
+        gtmAnalytics.pushPageViewEvent();
+        const responseapidata:
+          | IFetchQuickLinkDetailsFunctionResponse
+          | null
+          | undefined = await fetchQuickLinkDetails();
+        /* istanbul ignore next */
+        if (responseapidata != null) {
+          setQuickLinkData(responseapidata.response);
+          setIsError(responseapidata.status);
+          setLoader(false);
+        }
+      } catch (error) {
+        setLoader(false);
+        console.log(error);
+      }
     })();
   }, []);
 
@@ -114,8 +136,11 @@ const NewHomepageView: React.FC = () => {
       return (
         <QuickLinkLogic
           setQuickLinkData={setQuickLinkData}
-          apiQuickLinkData={isError ? [] : /* istanbul ignore next */ quickLinkData}
+          apiQuickLinkData={
+            isError ? [] : /* istanbul ignore next */ quickLinkData
+          }
           isOpen={isOpen}
+          togglePanel={togglePanel}
         />
       );
     }
@@ -123,57 +148,29 @@ const NewHomepageView: React.FC = () => {
   };
 
   return isPermission ? (
-    <>
-      <Grid>
-        <GridItem lg ={10}>
-          {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
-        </GridItem>
-      </Grid>  
+    <div className="new-container">
+       {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
+      {isOpen &&
+      <div className="new-side-panel">
+        <SidePanelView
+          isOpen={isOpen}
+          togglePanel={togglePanel}
+          closePanel={closePanel}
+          showQuickLinkView={showQuickLinkView}
+          showMainPanelView={showMainPanelView}
+          setQuickLinkData={setQuickLinkData}
+          quicklinkData={isError ? [] : quickLinkData}
+          data-testid="btn-show-quick-link"
+          isLoader={isLoader}
+          isSIMSIDAdmin={false}
+        />
+      </div>
+}
+      <div className="new-main-panel">
 
-      <Grid className="app-dertfsg11463f" dataTestId="NewHomePage">
-        
-        <GridItem
-        /* eslint-disable */
-          className={
-            isOpen
-              ? showQuickLink
-                ? "side-margin-dertfsg11463f side-margin-quicklink-dertfsg11463f"
-                : "side-margin-dertfsg11463f"
-              : "side-margin-closed-dertfsg11463f"
-          }
-            /* eslint-enable */
-          lg={isOpen ? 3 : 0}
-        >
-          <SidePanelView
-            isOpen={isOpen}
-            togglePanel={togglePanel}
-            closePanel={closePanel}
-            showQuickLinkView={showQuickLinkView}
-            showMainPanelView={showMainPanelView}
-            setQuickLinkData={setQuickLinkData}
-            quicklinkData={isError ? [] : quickLinkData}
-            data-testid="btn-show-quick-link"
-            isLoader={isLoader}
-            isSIMSIDAdmin={false}
-          />
-        </GridItem>
-        {/* eslint-disable */}
-        <GridItem
-          className={
-            !isTabletView
-              ? isOpen
-                ? "body-open-panel-dertfsg11463f"
-                : "body-panel-dertfsg11463f res-body-dertfsg11463f"
-              : isOpen
-              ? "body-panel-mobile-open-dertfsg11463f"
-              : "body-panel-mobile-dertfsg11463f"
-          }
-        >
-          {renderContent()}
-        </GridItem>
-        {/* eslint-enable */}
-      </Grid>
-    </>
+        {renderContent()}
+      </div>
+    </div>
   ) : (
     <Redirect to="/noAccess" />
   );

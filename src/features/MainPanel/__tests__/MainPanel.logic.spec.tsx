@@ -20,46 +20,49 @@ describe('MainPanel', () => {
       jest.clearAllMocks();
     });
 
+    const tempFun=jest.fn();
     const setSchoolName = jest.fn();
-    const setIsError = jest.fn(); 
+    const setIsError = jest.fn();
     const setIsSchoolPrimary = jest.fn();
 
     test('renders schoolname successfully when status is successful', async () => {
+
+
         jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockSchoolDetails);
         setSchoolName(mockSchoolDetails.schoolName);
         setIsError(false);
         setIsSchoolPrimary(mockSchoolDetails.isSchoolPrimary);
-        render(<MainPanel/>);
+        render(<MainPanel setIsOpen={tempFun}/>);
         expect(setSchoolName).toHaveBeenCalledWith("test");
         expect(setIsError).toHaveBeenCalledWith(false);
         expect(setIsSchoolPrimary).toHaveBeenCalledWith(false);
-      }); 
+      });
 
       test('renders schoolname successfully when status is successful and school is primary', async () => {
-      
+
         jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(mockSchoolDetailsForPrimary);
         setSchoolName(mockSchoolDetailsForPrimary.schoolName);
         setIsError(false);
         setIsSchoolPrimary(mockSchoolDetailsForPrimary.isSchoolPrimary);
-        render(<MainPanel/>);
+        render(<MainPanel setIsOpen={tempFun} />);
         expect(setSchoolName).toHaveBeenCalledWith("test");
         expect(setIsError).toHaveBeenCalledWith(false);
         expect(setIsSchoolPrimary).toHaveBeenCalledWith(true);
-      }); 
+      });
 
-      test('renders schoolname successfully when status is successful and data is null', async () => {      
+      test('renders schoolname successfully when status is successful and data is null', async () => {
         jest.spyOn(schoolServices,"useFetchSchoolNameData").mockResolvedValue(null);
         setSchoolName("");
         setIsError(false);
         setIsSchoolPrimary(true);
-        render(<MainPanel/>);
+        render(<MainPanel setIsOpen={tempFun}/>);
         expect(setSchoolName).toHaveBeenCalledWith("");
         expect(setIsError).toHaveBeenCalledWith(false);
         expect(setIsSchoolPrimary).toHaveBeenCalledWith(true);
-      }); 
-      
+      });
 
-      
+
+
       test('should handle unsuccessful data fetch', async () => {
         const mockres:any={
           status: 500
@@ -69,7 +72,7 @@ describe('MainPanel', () => {
         setSchoolName("");
         setIsError(true);
         setIsSchoolPrimary(false);
-        render(<MainPanel/>);
+        render(<MainPanel setIsOpen={tempFun} />);
         expect(setSchoolName).toHaveBeenCalledWith("");
         expect(setIsError).toHaveBeenCalledWith(true);
         expect(setIsSchoolPrimary).toHaveBeenCalledWith(false);
@@ -80,8 +83,8 @@ describe('MainPanel', () => {
             throw new Error('Unexpected error');
           });
         setSchoolName("");
-        setIsError(true);     
-        render(<MainPanel />);
+        setIsError(true);
+        render(<MainPanel setIsOpen={tempFun} />);
         expect(setSchoolName).toHaveBeenCalledWith("");
         expect(setIsError).toHaveBeenCalledWith(true);
       });

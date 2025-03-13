@@ -316,8 +316,8 @@ describe("SyncDataView Component", () => {
       <ConfirmDialog
         title="Test Dialog"
         description="Test description"
-        isOpen={true}
-        optionalButton={true}
+        isOpen
+        optionalButton
         onSubmitHandle={jest.fn()}
         onCloseHandle={onCloseMock}
       />

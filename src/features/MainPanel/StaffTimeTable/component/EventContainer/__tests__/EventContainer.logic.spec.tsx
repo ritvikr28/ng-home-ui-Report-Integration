@@ -770,7 +770,7 @@ describe("EventContainer", () => {
         mockStaffApiResponseForStaffApiResponsePayloadReturnsNull
       );
 
-    render(<EventContainer isOpen={true} />);
+    render(<EventContainer isOpen />);
 
     await waitFor(() =>
       expect(
@@ -795,7 +795,7 @@ describe("EventContainer", () => {
       .spyOn(staffDomainServices, "fetchStaffDetails")
       .mockResolvedValue(mockStaffApiResponseForStaffApiResponseReturnsNull);
 
-    render(<EventContainer isOpen={true} />);
+    render(<EventContainer isOpen />);
 
     await waitFor(() =>
       expect(
@@ -820,7 +820,7 @@ describe("EventContainer", () => {
       .spyOn(staffDomainServices, "fetchStaffDetails")
       .mockResolvedValue(mockStaffApiResponseForStaffApiResponseReturnsNull);
 
-    render(<EventContainer isOpen={true} />);
+    render(<EventContainer isOpen />);
 
     await waitFor(() =>
       expect(
@@ -941,8 +941,8 @@ describe("EventContainer", () => {
         SchoolEventexternalId="1"
         EventTitle="Title: Some description: 1"
         EventTime={{
-          truncated: "08:00 AM - 09:00 AM", 
-          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00" 
+          truncated: "08:00 AM - 09:00 AM",
+          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00"
       }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"
@@ -976,8 +976,8 @@ describe("EventContainer", () => {
         SchoolEventexternalId="1"
         EventTitle="Title: Some description: 1"
         EventTime={{
-          truncated: "08:00 AM - 09:00 AM", 
-          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00" 
+          truncated: "08:00 AM - 09:00 AM",
+          full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00"
       }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"

@@ -11,9 +11,9 @@ export interface IStaffTimeTableEventsResponse {
     userPreference: string;
     yearGroupId: string;
     classPeriodExternalId:string;
-    group:IEventGroupData
-    room:IEventRoomData
-    subject:IEventSubjectData
+    group:any
+    room:any
+    subject:any
     supervisors: IEventSupervisorsData[]
     isCovered:boolean |null;
     isCovering:boolean |null;
@@ -42,10 +42,10 @@ export interface IStaffTimeTableEventsResponse {
         externalId: string;
         forename: string;
         surname: string;
-        preferredForename?: string | null; 
+        preferredForename?: string | null;
         preferredSurname?: string | null;
   }
-  
+
   export interface IGroupMemberDetailsResponse {
     membershipId: string;
     pupilExternalId: string;
@@ -78,7 +78,7 @@ export interface IStaffTimeTableEventsResponse {
         imagePath:string|null;
         isThumbnailPresent:boolean;
     }|null;
-  } 
+  }
 
 export interface ISchoolNameDataResponse {
     externalId: string;

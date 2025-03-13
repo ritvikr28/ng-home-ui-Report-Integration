@@ -14,7 +14,7 @@ describe("SIMSIDAdminPage", () => {
   });
 
   test("renders welcome message and sims id admin page if authorised, with notification enabled, in desktop view", () => {
-    
+
     (useMediaQuery as jest.Mock).mockReturnValue(false);
 
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
@@ -27,7 +27,7 @@ describe("SIMSIDAdminPage", () => {
 
     const containerWelcomeMessage = screen.getByTestId('subparent-element');
 
-    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'strong' });
+    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'span' });
     const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
 
     expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe("SIMSIDAdminPage", () => {
   });
 
   test("renders sims id admin page if authorised, with notification enabled, in mobile view", () => {
-    
+
     (useMediaQuery as jest.Mock).mockReturnValue(true);
 
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
@@ -64,7 +64,7 @@ describe("SIMSIDAdminPage", () => {
         clear: jest.fn(),
         removeItem: jest.fn(),
       };
-      
+
       Object.defineProperty(window, 'sessionStorage', {
         value: sessionStorageMock,
         writable: true,
@@ -79,7 +79,7 @@ describe("SIMSIDAdminPage", () => {
 
     const containerWelcomeMessage = screen.getByTestId('subparent-element');
 
-    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'strong' });
+    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'span' });
     const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
 
     const containerNotificationSection = screen.queryByTestId('notification-test-id');

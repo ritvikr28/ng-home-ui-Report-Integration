@@ -32,7 +32,7 @@
   width: 100vw;
 }
 
-.body-open-panel-dertfsg11463f {
+.body-open-panel-view {
   flex: 1;
   // top: 88px;
   gap: 28px;
@@ -44,17 +44,20 @@
     margin-left: 184px;
   }
 }
+
 @media (min-width: 1024px) and (max-width: 1439.9px) {
   .body-panel-dertfsg11463f {
     width: 100vw;
   }
 
-  .body-open-panel-dertfsg11463f {
+  .body-open-panel-view {
     width: 74vw;
+    height: 100%;
   }
 }
+
 @media (min-width: 768px) and (max-width: 1023.9px) {
-  .body-panel-mobile-open-dertfsg11463f {
+  .body-panel-mobile-open-sideview {
     width: 97vw;
     margin-left: -5px;
   }
@@ -64,8 +67,9 @@
     margin-left: 16px;
   }
 }
+
 @media (min-width: 390px) and (max-width: 767.9px) {
-  .body-panel-mobile-open-dertfsg11463f {
+  .body-panel-mobile-open-sideviewf {
     width: 94vw;
     margin-left: -9px;
   }
@@ -75,8 +79,9 @@
     margin-left: 3px;
   }
 }
+
 @media (min-width: 320px) and (max-width: 389.9px) {
-  .body-panel-mobile-open-dertfsg11463f {
+  .body-panel-mobile-open-sideview {
     width: 95vw;
     margin-left: -4px;
   }
@@ -207,6 +212,7 @@
     max-width: 264px !important;
   }
 }
+
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .side-margin-dertfsg11463f {
     max-width: 0 !important;
@@ -217,7 +223,9 @@
     width: fit-content;
   }
 }
+
 @media (min-width: 1024px) and (max-width: 1439.9px) {
+
   // .side-margin {
   //   max-width: 0px !important;
   // }
@@ -237,6 +245,7 @@
     width: fit-content;
   }
 }
+
 @media (min-width: 320px) and (max-width: 389.9px) {
   .side-margin-dertfsg11463f {
     max-width: 0 !important;
@@ -267,3 +276,49 @@
   }
 }
 
+
+//home page revamp css start//
+
+html,
+body {
+  height: 100%;
+  overflow-y: auto;
+  /* Enable scrolling by default */
+}
+
+.no-scroll {
+  overflow: hidden;
+  /* Disable scroll */
+}
+
+.new-container {
+  font-family: "Segoe UI", sans-serif;
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.new-side-panel {
+  flex: 0 0 17%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.new-main-panel {
+  margin: 20px 30px;
+  flex: 1;
+  height: 80vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+@media only screen and (max-width: 600px) {
+  .new-container {
+    display: unset;
+  }
+
+  .new-main-panel {
+    margin: 16px;
+  }
+}

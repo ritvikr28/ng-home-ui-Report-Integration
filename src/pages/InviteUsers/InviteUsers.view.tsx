@@ -104,8 +104,8 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             secondaryButtonTitle="Cancel"
             showConfirmDialog
             tableBodyData={tableDataObj}
-            isShowEditSelectedBtn={true}
-            isShowSearch={true}
+            isShowEditSelectedBtn
+            isShowSearch
             tableFirstColumnWidth="56px"
             tableHeadersData={getTableHeadersData}
             tableLastColumnWidth="10px"
@@ -124,8 +124,8 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             toastNotificationStatus={NotificationStatus.SUCCESS}
             toastNotificationTitle=""
             isOpenConfirmationDialog={false}
-            isShowOverflowMenuCol={true}
-            isPagination={true}
+            isShowOverflowMenuCol
+            isPagination
             globalNotificationMsgBannerObject={[
               {
                 autoclose: false,

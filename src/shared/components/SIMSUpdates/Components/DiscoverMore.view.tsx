@@ -8,17 +8,15 @@ import {
   GridItem,
   useMediaQuery
 } from "@essnextgen/ui-kit";
-import {
-  useTranslation,
-  UseTranslationResponse
-} from "@essnextgen/ui-intl-kit";
-import styles from "../DiscoverStyle.module.scss";
+import { SectionTitle } from "../../SectionTitle/SectionTitle";
 /* eslint-disable */
+import "../style.scss"
+import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
 const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
   useTranslation();
   const isMobileView: boolean = useMediaQuery(
-    "(min-width:320px) and (max-width: 767.9px)"
+    "(max-width: 767.9px)"
   );
   /* eslint-disable */
   const onButtonClick: () => void = () => {
@@ -32,47 +30,28 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   }
 
   const rel: RelType = { rel: "noopener noreferrer" };
-  const onCardClick: () => void = () => {};
+  const onCardClick: () => void = () => { };
   return (
     <>
-      <div
-        className={`${styles["action-card131424"]} ${
-          isOpen
-            ? styles["sims-link-container"]
-            : styles["sims-link-container-close"]
-        }`}
-      >
-        <span className={styles["sims-updates"]}>
-          {isMobileView
-            ? t("discoverMore.simsupdatetext")
-            :  t("discoverMore.simsupdatemoretext")}{" "}
-        </span>
-        <span className={styles["sims-link-url"]}>
+      <Grid className="new-sims-uppersection c-clear-padding new-margin-b-container">
+        <GridItem sm lg className="new-sims-title c-clear-padding">
+          <SectionTitle title={t("discoverMore.simsupdatetext")} />
+        </GridItem>
+
+        <GridItem sm lg className="new-sims-discoverbtn">
           <Button
-            className={styles["base-class-more"]}
             color={ButtonColor.Secondary}
             dataTestId="btn-save"
             onClick={onButtonClick}
             size={ButtonSize.Small}
           >
-            {isMobileView ? t("discoverMore.mobilesimsupdatetext") : t("discoverMore.mobilesimsupdatemoretext")}
+            <span className="new-discoverbtn-style">{isMobileView ? t("discoverMore.mobilesimsupdatetext") : t("discoverMore.mobilesimsupdatemoretext")}</span>
           </Button>
-        </span>
-      </div>
-      <Grid
-        className={
-          isOpen
-            ? `${styles["action-card-container"]} sims-ng`
-            : `${styles["action-card-container-close"]} ${styles[" sims-ng"]}`
-        }
-      >
-        <GridItem
-          className={
-            isOpen
-              ? `${styles["what-new"]} ${styles["what-new-open"]}`
-              : `${styles["what-new"]}`
-          }
-        >
+        </GridItem>
+      </Grid>
+
+      <Grid className={"new-footer-actioncards c-clear-padding"}>
+        <GridItem lg={6} className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
@@ -80,7 +59,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             {...rel}
           >
             <ActionCard
-              className={styles["primary-text"]}
+              className={"first-actioncard"}
               dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
@@ -89,13 +68,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             />
           </Link>
         </GridItem>
-        <GridItem
-          className={
-            isOpen
-              ? `${styles["action-card-link2"]} ${styles["onecard"]} ${styles["onecard-open"]}`
-              : `${styles["action-card-link2"]} ${styles["onecard"]}`
-          }
-        >
+        <GridItem lg={6} className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"
@@ -103,7 +76,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             {...rel}
           >
             <ActionCard
-              className={styles["primary-text"]}
+              className={"second-actioncard"}
               dataTestId="test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
