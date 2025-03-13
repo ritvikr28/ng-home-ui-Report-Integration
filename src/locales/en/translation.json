@@ -307,7 +307,8 @@
   "searchpage" :
   {
    "searchHelper": "Search by first or last name",
-   "searchBar":"For more results press enter"
+   "searchBar":"For more results press enter",
+   "pupilprofile": "Pupil Profile"
   },
   "breadcrumbshome":"Home",
   "breadcrumbsadminconsole":"Admin console",
@@ -317,17 +318,43 @@
     "persistentabsence": "Persistent absence",
     "currentyearaverage": "Current year average",
     "previousyearaverage": "Previous year average",
-    "nationalaverage":"National average"
+    "nationalaverage":"National average",
+    "overallattendance":"Overall attendance",
+    "moreattendanceinsights":"More attendance insights",
+    "attendanceoverviewheading": "Attendance overview"
   },
   "pupildemographics":{
     "pupilsonroll":"Pupils on roll",
     "pupilpremium":"Pupil premium (PP)",
-    "freeschoolmeals":"Free school meals (FSM)"
+    "freeschoolmeals":"Free school meals (FSM)",
+    "pupildemographicsheading":"Pupil demographics"
   },
   "classviewbanner":{
     "title":"Want more time to teach?",
     "classviewtext":"Key pupil information and essential classroom tasks are now all in one place.",
     "classviewlinktext":"Open Class View",
     "learnmorelinktext":"Learn more"
+  },
+  "initialadmin": {
+    "limitedaccesssims": "You have limited access to SIMS Next Gen",
+    "whattodonext": "What to do next:",
+    "invitestaffmembers": "Invite staff members",
+    "invitestaffdescription":"You can invite staff members to access SIMS Next Gen by selecting the Invite Staff option in the left side panel or from the main menu.",
+    "contactsimsmanager": "Contact your SIMS 7 System Manager",
+    "contactsimsdescription":"For access to more SIMS Next Gen features, ask your SIMS 7 System Manager to assign you the necessary security groups."
+   },
+  "sltviewbettheading": "School headlines",
+  "adminconsole":
+  {
+    "abouttext" : "Manage all background processes and modules' settings centrally from the Admin console."
+  },
+  "takeregister" :{
+  "noregistertoday": "No registers today",
+  "nomoreregister": "No more registers"
+  },
+  "stafftimetable":{
+    "noeventtoday": "No events today",
+    "nomoreevent":"No more events"
   }
+  
 }

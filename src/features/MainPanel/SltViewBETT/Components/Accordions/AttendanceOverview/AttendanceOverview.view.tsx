@@ -21,10 +21,6 @@ import {
 } from "@essnextgen/ui-intl-kit";
 import AttendanceOverview from "./AttendanceOverview.logic";
 
-
-
-
-
 const AttendanceOverviewView: React.FC = () => {
   const { t }: UseTranslationResponse<"translation", undefined> =
   useTranslation();
@@ -37,7 +33,7 @@ const AttendanceOverviewView: React.FC = () => {
     nationalAvg: number;
   }[] = [
     {
-      Name: "Overall Absence",
+      Name: t("attendanceoverview.overallattendance"),
       currentYearAvg:
         data?.payload.attendanceInsights.attendanceCurrentYear || 0,
       previousYearAvg:
@@ -136,7 +132,7 @@ const AttendanceOverviewView: React.FC = () => {
             <Accordion defaultExpanded className="c-clear-margin">
               <AccordionHeader dataTestId="pupils-accordion-header-test-id">
                 <span className="essui-global-typography-default-subtitle">
-                  Attendance overview
+                {t("attendanceoverview.attendanceoverviewheading")}
                 </span>
               </AccordionHeader>
               <AccordionPanel
@@ -152,7 +148,7 @@ const AttendanceOverviewView: React.FC = () => {
                       color={ButtonColor.Secondary}
                       onClick={handleButtonClick}
                     >
-                      More attendance insights
+                       {t("attendanceoverview.moreattendanceinsights")}
                     </Button>
                   </GridItem>
                 </Grid>

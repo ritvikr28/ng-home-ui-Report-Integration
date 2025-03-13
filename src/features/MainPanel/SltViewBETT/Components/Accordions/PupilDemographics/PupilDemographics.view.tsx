@@ -121,7 +121,7 @@ const PupilDemographicsView: React.FC = () => {
           <Accordion defaultExpanded className="c-clear-margin">
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
-                Pupil demographics
+              {t("pupildemographics.pupildemographicsheading")}
               </span>
             </AccordionHeader>
             <AccordionPanel
