@@ -104,6 +104,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
               iconName="open-panel--left--filled"
               onClick={togglePanel}
               size={ButtonSize.Small}
+              ariaLabel="new-sidepanel-toggle-btn"
             />
           </GridItem>
         )}

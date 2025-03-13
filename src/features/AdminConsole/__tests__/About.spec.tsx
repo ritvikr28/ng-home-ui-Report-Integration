@@ -5,10 +5,10 @@ describe("About component", () => {
   it("renders heading and subheading text", () => {
     render(<About />);
 
-    expect(screen.getByText("Admin console")).toBeInTheDocument();
+    expect(screen.getByText("breadcrumbsadminconsole")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Manage all background processes and modules' settings centrally from the Admin console."
+        "adminconsole.abouttext"
       )
     ).toBeInTheDocument();
   });
@@ -16,9 +16,9 @@ describe("About component", () => {
   it("renders HeadingSubHeading component with correct props", () => {
     render(<About />);
 
-    const headingElement = screen.getByText("Admin console");
+    const headingElement = screen.getByText("breadcrumbsadminconsole");
     const subHeadingElement = screen.getByText(
-      "Manage all background processes and modules' settings centrally from the Admin console."
+      "adminconsole.abouttext"
     );
 
     expect(headingElement).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe("About component", () => {
     render(<About />);
 
     const textElements = screen.getAllByText(
-      /Admin console|Manage all background processes and modules' settings centrally from the Admin console./
+      /breadcrumbsadminconsole|adminconsole.abouttext/
     );
 
     expect(textElements).toHaveLength(2);

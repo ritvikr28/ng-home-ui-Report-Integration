@@ -11,6 +11,10 @@ import {
   TagColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import { IRegisterViewProps } from "./props";
 
 import "./carousalstyle.scss";
@@ -25,11 +29,13 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { logger } from "../../../../../shared/components/AppInsights";
 import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
 
+
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
   apiError,
   isOpen,
 }: IRegisterViewProps): JSX.Element => {
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(
@@ -317,7 +323,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                   icon={<FilledGraphDataIcon />}
                   id="no-more-register-id"
                   onClickActionCard={() => {}}
-                  primaryText="No more registers"
+                  primaryText={t("takeregister.nomoreregister")} 
                   isShowArrowIcon={false}
                 />
               </div>
@@ -335,7 +341,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 icon={<></>}
                 id="no-register-id"
                 onClickActionCard={() => {}}
-                primaryText="No registers today"
+                primaryText= {t("takeregister.noregistertoday")}
                 isShowArrowIcon={false}
               />
             </div>

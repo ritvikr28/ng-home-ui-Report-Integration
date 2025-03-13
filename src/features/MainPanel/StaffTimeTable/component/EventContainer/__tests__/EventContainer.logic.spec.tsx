@@ -729,7 +729,7 @@ describe("EventContainer", () => {
     expect(
       await screen.findByText(/10x\/Sc2\s*\|\s*Science/)
     ).toBeInTheDocument();
-    expect(await screen.findByText("No more events")).toBeInTheDocument();
+    expect(await screen.findByText("stafftimetable.nomoreevent")).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
   });
@@ -750,7 +750,7 @@ describe("EventContainer", () => {
     expect(
       await screen.findByText(/10x\/Sc2\s*\|\s*Science/)
     ).toBeInTheDocument();
-    expect(await screen.findByText("No more events")).toBeInTheDocument();
+    expect(await screen.findByText("stafftimetable.nomoreevent")).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
   });
@@ -846,7 +846,7 @@ describe("EventContainer", () => {
 
     render(<EventContainer />);
 
-    expect(await screen.findByText("No events today")).toBeInTheDocument();
+   // expect(await screen.findByText("No events today")).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(204);
   });

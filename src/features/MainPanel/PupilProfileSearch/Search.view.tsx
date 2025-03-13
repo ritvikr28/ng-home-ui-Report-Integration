@@ -63,7 +63,7 @@ const SearchView: React.FC<ISearchViewProps> = (props: ISearchViewProps) => {
     <Grid>
       <GridItem sm md lg className="c-clear-padding-left">
         <FormLabel forId="search">
-          <SectionTitle title="Pupil Profile" />
+          <SectionTitle title={t("searchpage.pupilprofile")} />
         </FormLabel>
         <div className="search-df65s76dfs new-search-container">
           <Search

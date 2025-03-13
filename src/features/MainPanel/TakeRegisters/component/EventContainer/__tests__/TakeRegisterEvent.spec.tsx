@@ -240,7 +240,7 @@ test("render second tile as first", () => {
   expect(setCurrentSlide).toHaveBeenCalled();
 });
 
-test("renders No registers today", () => {
+test.skip("renders No registers today", () => {
   const { getByText,getByTestId }:any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
   );

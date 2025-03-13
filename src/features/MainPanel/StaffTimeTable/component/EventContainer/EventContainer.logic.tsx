@@ -11,6 +11,10 @@ import {
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
@@ -57,6 +61,8 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1117px)"
   );
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
@@ -155,6 +161,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     staffNames,
     coverStaffNames,
     isMobileView,
+    t
   });
 };
 
@@ -293,7 +300,10 @@ const formateventPeriodNum = (
   return "";
 };
 
-const renderNoEventsCard: () => JSX.Element = () => (
+const renderNoEventsCard: () => JSX.Element = () => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
+  return (
   <Grid>
     <GridItem
       key="no-events" // Ensure unique key for each item
@@ -309,14 +319,15 @@ const renderNoEventsCard: () => JSX.Element = () => (
           primaryText=""
           secondaryText=""
           status={EventCardStatus.DEFAULT}
-          title="No events today"
+          title={t("stafftimetable.noeventtoday")}
           inputHeight={67}
           className="dynamiceventcard event-primary-text no-events no-events-staff"
         />
       </div>
     </GridItem>
   </Grid>
-);
+  )
+};
 
 const returnEventContainer: React.FC<{
   schoolEventsData: IStaffTimeTableEventsResponse[];
@@ -329,6 +340,7 @@ const returnEventContainer: React.FC<{
   staffNames: Record<string, string>;
   coverStaffNames: Record<string, string>;
   isMobileView?: boolean;
+  t: any
 }> = ({
   schoolEventsData,
   isOpen,
@@ -340,6 +352,7 @@ const returnEventContainer: React.FC<{
   staffNames,
   coverStaffNames,
   isMobileView,
+  t
 }) => {
     const togglePanel: (externalId: string) => void = (externalId: string) => {
       if (!isOpenPanel[externalId]) {
@@ -415,7 +428,7 @@ const returnEventContainer: React.FC<{
                   primaryText=""
                   secondaryText=""
                   status={EventCardStatus.DEFAULT}
-                  title="No more events"
+                  title= {t("stafftimetable.nomoreevent")} 
                   inputHeight={67}
                 />
               </div>

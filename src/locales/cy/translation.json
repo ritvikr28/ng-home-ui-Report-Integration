@@ -197,7 +197,7 @@
   },
   "quickLink": {
     "headingTitle": "Dolenni cyflym",
-    "quicklinkText": "Mynediad un-clic hawdd. Bydd hoff eitemau yn sicrhau bod eich dewisiadau gorau bob amser yn weladwy.",
+    "quicklinkText": "Mynediad un clic hawdd. Bydd ffafrio eitemau yn sicrhau bod eich hoff ddewisiadau bob amser yn weladwy.",
     "quicklinkTableColumnName":"Enw",
     "quicklinkTableColumStarred": "Gyda seren",
     "quicklinkseeall": "Gweld popeth"
@@ -246,7 +246,8 @@
   "searchpage" :
   {
    "searchHelper": "Chwilio yn ôl enw cyntaf neu olaf",
-   "searchBar":"Am fwy o ganlyniadau cliciwch 'enter'"
+   "searchBar":"Am fwy o ganlyniadau cliciwch 'enter'",
+    "pupilprofile": "Proffil Disgybl"
   },
    "breadcrumbshome":"Cartref",
   "breadcrumbsadminconsole":"Consol gweinyddol",
@@ -256,17 +257,43 @@
     "persistentabsence": "Absenoldeb mynych",
     "currentyearaverage": "Cyfartaledd y flwyddyn bresennol",
     "previousyearaverage": "Cyfartaledd y flwyddyn flaenorol",
-    "nationalaverage":"Cyfartaledd cenedlaethol"
+    "nationalaverage":"Cyfartaledd cenedlaethol",
+    "overallattendance":"Presenoldeb cyffredinol",
+    "moreattendanceinsights":"Mwy o fewnwelediadau presenoldeb",
+    "attendanceoverviewheading": "Trosolwg presenoldeb"
   },
   "pupildemographics":{
     "pupilsonroll":"Myfyrwyr wedi’u cofrestru",
     "pupilpremium":"Premiwm disgybl",
-    "freeschoolmeals":"Prydau Ysgol am Ddim"
+    "freeschoolmeals":"Prydau Ysgol am Ddim",
+    "pupildemographicsheading":"Demograffeg disgyblion"
   },
   "classviewbanner":{
     "title":"Eisiau mwy o amser i addysgu?",
     "classviewtext":"Mae gwybodaeth allweddol disgyblion a thasgau hanfodol yn yr ystafell ddosbarth bellach i gyd mewn un lle.",
     "classviewlinktext":"Golwg Dosbarth Agored",
     "learnmorelinktext":"Dysgu mwy"
+  },
+  "initialadmin": {
+    "limitedaccesssims": "Mae gennych fynediad cyfyngedig i SIMS Next Gen",
+    "whattodonext": "Beth i'w wneud nesaf:",
+    "invitestaffmembers": "Gwahodd aelodau staff ",
+    "invitestaffdescription":"Gallwch wahodd aelodau staff i gael mynediad at SIMS Next Gen trwy ddewis yr opsiwn Gwahodd Staff yn y panel ochr chwith neu o'r brif ddewislen.",
+    "contactsimsmanager": "Cysylltu â'ch Rheolwr System SIMS 7",
+    "contactsimsdescription":"I gael mynediad at fwy o nodweddion SIMS Next Gen, gofynnwch i'ch Rheolwr System SIMS 7 aseinio'r grwpiau diogelwch angenrheidiol i chi."
+   },
+    "sltviewbettheading": "Penawdau'r ysgol",
+    "adminconsole":
+  {
+    "abouttext" : "Rheoli holl brosesau cefndir a gosodiadau modiwlau yn ganolog o'r consol Gweinyddol."
+  },
+  "takeregister" :{
+  "noregistertoday": "Dim cofrestrau heddiw",
+  "nomoreregister": "Dim mwy o gofrestrau"
+  },
+  "stafftimetable":{
+    "noeventtoday": "No events today",
+    "nomoreevent":"Dim mwy o ddigwyddiadau"
   }
+  
 }

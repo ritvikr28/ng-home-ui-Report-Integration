@@ -1,15 +1,20 @@
 import { HeadingSubHeading } from "@essnextgen/ui-kit";
 import "./style.scss";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 
-const About: () => JSX.Element = () => (
-  <>
+const About: () => JSX.Element = () => {
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation(); 
+  return (<>
     <HeadingSubHeading
-      headingText="Admin console"
-      subHeadingText="Manage all background processes and modules' settings centrally from the Admin console."
+      headingText={t("breadcrumbsadminconsole")}
+      subHeadingText={t("adminconsole.abouttext")}
       isShowHeading
       isShowSubHeading
     />
-  </>
-);
+  </>)
+};
 
 export default About;
