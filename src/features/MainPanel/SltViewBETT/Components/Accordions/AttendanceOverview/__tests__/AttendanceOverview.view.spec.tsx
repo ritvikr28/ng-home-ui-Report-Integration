@@ -74,7 +74,7 @@ describe("AttendanceOverviewView", () => {
     render(<AttendanceOverviewView />);
 
     await waitFor(() => {
-      expect(screen.getByText(/overall attendance/i)).toBeInTheDocument();
+      expect(screen.getByText(/attendanceoverview.overallattendance/i)).toBeInTheDocument();
     });
 
     const authorisedAbsences = screen.getAllByText(/attendanceoverview.authorisedabsence/i);
