@@ -6,8 +6,7 @@ const WelcomeUserView: (props: IWelcomeUserViewProps) => JSX.Element = (
   props: IWelcomeUserViewProps
 ) => {
   const { fullName }: IWelcomeUserViewProps = props
-  const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
   return (
     <>

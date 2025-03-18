@@ -12,6 +12,7 @@ import {
 import dayjs from "dayjs";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {
+  TFunction,
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
@@ -137,7 +138,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   }
 
   if (status === 204 && (!schoolEventsData || schoolEventsData.length === 0)) {
-    return renderNoEventsCard();
+    return renderNoEventsCard(t);
   }
 
   if (isLoader) {
@@ -300,34 +301,30 @@ const formateventPeriodNum = (
   return "";
 };
 
-const renderNoEventsCard: () => JSX.Element = () => {
-  const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
-  return (
-  <Grid>
-    <GridItem
-      key="no-events" // Ensure unique key for each item
-      sm
-      md={2}
-      lg={2}
-      className="c-clear-padding"
-    >
-      <div className="new-event-card-box">
-        <EventCard
-          dataTestId="no-events-today"
-          id="no-events-today-id"
-          primaryText=""
-          secondaryText=""
-          status={EventCardStatus.DEFAULT}
-          title={t("stafftimetable.noeventtoday")}
-          inputHeight={67}
-          className="dynamiceventcard event-primary-text no-events no-events-staff"
-        />
-      </div>
-    </GridItem>
-  </Grid>
-  )
-};
+const renderNoEventsCard: (t?: TFunction<"translation", undefined>) => JSX.Element = (t) => (
+    <Grid>
+      <GridItem
+        key="no-events" // Ensure unique key for each item
+        sm
+        md={2}
+        lg={2}
+        className="c-clear-padding"
+      >
+        <div className="new-event-card-box">
+          <EventCard
+            dataTestId="no-events-today"
+            id="no-events-today-id"
+            primaryText=""
+            secondaryText=""
+            status={EventCardStatus.DEFAULT}
+            title={t && t("stafftimetable.noeventtoday") || "No events today"}
+            inputHeight={67}
+            className="dynamiceventcard event-primary-text no-events no-events-staff"
+          />
+        </div>
+      </GridItem>
+    </Grid>
+  );
 
 const returnEventContainer: React.FC<{
   schoolEventsData: IStaffTimeTableEventsResponse[];
