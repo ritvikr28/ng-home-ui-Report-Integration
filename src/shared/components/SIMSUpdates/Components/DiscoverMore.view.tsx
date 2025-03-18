@@ -51,7 +51,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
       </Grid>
 
       <Grid className={"new-footer-actioncards c-clear-padding"}>
-        <GridItem lg={6} className="new-actioncard c-clear-padding-left">
+        <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link1"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
@@ -68,7 +68,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             />
           </Link>
         </GridItem>
-        <GridItem lg={6} className="new-actioncard c-clear-padding-left">
+        <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link2"
             href="https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053850&sys_kb_id=cdd557f91b3db550408d8557d34bcb61&spa=1"

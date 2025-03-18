@@ -144,12 +144,15 @@ const NewHomepageView: React.FC = () => {
         />
       );
     }
-    return <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />;
+    return <>
+    {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
+    <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
+    </>
   };
 
   return isPermission ? (
     <div className="new-container">
-       {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
+       
       {isOpen &&
       <div className="new-side-panel">
         <SidePanelView

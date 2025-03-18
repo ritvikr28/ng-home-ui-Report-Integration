@@ -6,7 +6,8 @@ import {
   Divider,
   Grid,
   GridItem,
-  IconColor
+  IconColor,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
@@ -19,6 +20,7 @@ import SltViewBett from "./SltViewBETT/SltViewBett.view";
 import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
+import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -90,9 +92,17 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
   };
+  const isMobileView: boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 1023.9px)"
+  );
 
+  const ClassViewNotificationBanner: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "ClassViewNotificationBanner"
+  );
   return (
     <div>
+        {(!isMobileView && ClassViewNotificationBanner) && (<WhatsNewBanner />)}
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">
