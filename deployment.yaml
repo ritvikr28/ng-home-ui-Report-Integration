@@ -50,6 +50,7 @@ spec:
       containers:
         - name: ng-home-ui
           image: pazshdpfmconrg.azurecr.io/ng-home-ui:#{Build.BuildId}#
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           resources:
