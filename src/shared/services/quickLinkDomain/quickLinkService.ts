@@ -13,7 +13,8 @@ export const FetchQuickLinkData:(role: string) => Promise<{
   status: number;
   response: IQuickLinkApiResponse[] } | null> = async (role: string) => {
     try {
-        const userLanguage = navigator.language || navigator.language;
+        const languageCode = navigator.language || navigator.language;
+        const userLanguage = languageCode.includes("en") ? "en-US": languageCode;
         const responseData: AxiosResponse<IQuickLinkApiResponse[]> = await service.get(
           `v1/quicklink?role=${role}&languageCode=${userLanguage}`,
           buildApplicationUrl(apiUrls)
