@@ -341,8 +341,6 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
 }: QuickLinkSidePanel): JSX.Element | null =>{
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-    console.log("test",t("quickLink.classview"));
-    console.log("test1",quicklinkData);
   return (isPermissionquicklink && (
     <div className="left-sidepanel-home113">
       <div className="quick-link-title"> {t("quickLink.headingTitle")}</div>

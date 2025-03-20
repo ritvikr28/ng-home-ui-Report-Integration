@@ -87,7 +87,7 @@ describe("QuickLink Component", () => {
     </MemoryRouter>
   );
  
-    expect(getByText("Home")).toBeInTheDocument();
+    expect(getByText("breadcrumbshome")).toBeInTheDocument();
    
   });
  
