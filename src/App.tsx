@@ -3,6 +3,8 @@ import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { withAITracking } from "@microsoft/applicationinsights-react-js";
 import { authService } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
+import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
+import { uiKitTranslation } from "@essnextgen/ui-kit";
 import { ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
 import ErrorBoundary from "./shared/components/ErrorBoundary/Index";
@@ -19,8 +21,8 @@ const App: (props: ILayoutProps) => JSX.Element = ({
 }: ILayoutProps) => {
   IntlProvider.init({
     translation: {
-      en: translationEn,
-      cy: translationCy
+      en: { ...uiKitTranslation.en, ...uiAppKitTranslation.en, ...translationEn },
+      cy: { ...uiKitTranslation.cy, ...uiAppKitTranslation.cy, ...translationCy }
     }
   });
   /* istanbul ignore next */
