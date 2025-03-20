@@ -341,6 +341,8 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
 }: QuickLinkSidePanel): JSX.Element | null =>{
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+    console.log("test",t("quickLink.classview"));
+    console.log("test1",quicklinkData);
   return (isPermissionquicklink && (
     <div className="left-sidepanel-home113">
       <div className="quick-link-title"> {t("quickLink.headingTitle")}</div>
@@ -365,7 +367,7 @@ eslint-disable
                 className="quick-link-panel-item"
                 onClick={() => {
                   const classViewLink = quicklinkData.find(
-                    (link: any) => link.name === "Class View"
+                    (link: any) => link.name === t("quickLink.classview")
                   )?.link;
                   if (classViewLink) {
                     window.location.href = classViewLink;
@@ -380,11 +382,11 @@ eslint-disable
                 }}
                 style={{ cursor: "pointer" }}
               >
-                Class View
+                {t("quickLink.classview")}
               </div>
 
               {quicklinkData
-                .filter((sidelink: any) => sidelink.name !== "Class View")
+                .filter((sidelink: any) => sidelink.name !== t("quickLink.classview"))
                 .slice(0, 6)
                 .map((sidelink: any) => (
                   <div
