@@ -31,7 +31,7 @@ const QuickLink: ({ }: IQuickLinkViewProps) => JSX.Element = ({
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
   const isPermission: boolean = authService.isAuthorised(requiredPermissions, MatchPermissions.all)
-  const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== "Class View") || [];
+  const filteredQuickLinkData = apiQuickLinkData?.filter(link => link.name !== t("quickLink.classview")) || [];
   
   return isPermission ? (
     <>

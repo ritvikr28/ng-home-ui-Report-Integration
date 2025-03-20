@@ -446,7 +446,7 @@
       );
 
 
-      const classViewLink = getByText(/class view/i);
+      const classViewLink = getByText(/quickLink.classview/i);
       expect(classViewLink).toBeInTheDocument();
 
 
