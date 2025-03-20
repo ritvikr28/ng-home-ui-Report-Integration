@@ -56,7 +56,7 @@ describe("AdminConsole component", () => {
   test("calls onCloseSideNavigationPanel when Admin Console breadcrumb is clicked", () => {
     const handleClick = jest.fn();
     render(<BreadcrumbWrapper />);
-    const adminConsoleBreadcrumb = screen.getByText("Home");
+    const adminConsoleBreadcrumb = screen.getByText("breadcrumbshome");
     fireEvent.click(adminConsoleBreadcrumb);
     expect(handleClick).toHaveBeenCalledTimes(0);
   });

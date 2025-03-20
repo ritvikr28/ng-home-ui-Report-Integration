@@ -1,17 +1,24 @@
 import React from "react";
 import { Breadcrumbs } from "@essnextgen/ui-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 
-const BreadcrumbWrapper: React.FC = () => (
+const BreadcrumbWrapper: React.FC = () => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+  useTranslation();
+  return (
 <Breadcrumbs
       breadcrumbActions={[
         {
           active: true,
-          linkName: "Home",
+          linkName: t("breadcrumbshome"),
           path: window.location.pathname
         },
         {
           active: false,
-          linkName: "Quick Links",
+          linkName: t("quickLink.headingTitle"),
           path: "#"
         }
       ]}
@@ -20,7 +27,6 @@ const BreadcrumbWrapper: React.FC = () => (
       id="element-id"
       onItemClick={() => {}}
     />
-  
-);
+    )};
 
 export default BreadcrumbWrapper;
