@@ -170,12 +170,18 @@
   justify-content: end;
 }
 
-@media (max-width: 320px) {
+@media (max-width: 319px) {
   .bargraphs-container .recharts-wrapper {
     padding: 18px;
   }
 
   .bargraphs-container .recharts-label-list {
     font-size: 12px !important;
+  }
+}
+
+@media (max-width: 320px) {
+  .bargraphs-container .recharts-label-list {
+    font-size: 13px !important;
   }
 }
