@@ -111,7 +111,7 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   }, [GroupExternalId, EventStart, EventEnd]);
 
   return (
-    <div key={SchoolEventexternalId}>
+    <div key={SchoolEventexternalId} className="new-right-sidepanel">
       <RightSidePanelView
         SchoolEventexternalId={SchoolEventexternalId}
         EventTitle={EventTitle}

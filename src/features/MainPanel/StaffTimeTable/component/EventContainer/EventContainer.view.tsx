@@ -85,7 +85,6 @@ export const EventContainerView: (
         /* eslint-enable  */
       />
 
-      <div className="new-right-sidepanel">
         {isOpenPanel && (
           <RightSidePanel
             SchoolEventexternalId={SchoolEventexternalId}
@@ -107,7 +106,6 @@ export const EventContainerView: (
             EventInstanceExternalId={EventInstanceExternalId}
           />
         )}
-      </div>
     </>
   );
 };
