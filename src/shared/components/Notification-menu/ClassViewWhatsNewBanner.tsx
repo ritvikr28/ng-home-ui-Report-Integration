@@ -10,7 +10,7 @@ import { envConfig } from '../../utils';
 export const WhatsNewBanner: () => JSX.Element = () => {
   const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   useEffect(() => {
-    const isBannerClosed: string | null = sessionStorage.getItem('isBannerClosed');
+    const isBannerClosed: string | null = localStorage.getItem('isBannerClosed');
     if (isBannerClosed === 'true') {
       setIsBannerVisible(false);
     }
@@ -20,7 +20,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
     useTranslation();
 
   const handleExit: () => void = () => {
-    sessionStorage.setItem('isBannerClosed', 'true');
+    localStorage.setItem('isBannerClosed', 'true');
     setIsBannerVisible(false);
   };
 
