@@ -19,7 +19,7 @@ describe('WhatsNewBanner Component', () => {
   });
 
   it('should not render the banner if localStorage item isBannerClosed is true', () => {
-    localStorage.setItem('isBannerClosed', 'true');
+    window.localStorage.setItem('isBannerClosed', 'true');
     render(<WhatsNewBanner />);
     expect(screen.queryByTestId('whatsnew-banner')).not.toBeInTheDocument();
   });
