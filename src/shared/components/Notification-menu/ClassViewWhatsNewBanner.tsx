@@ -10,19 +10,23 @@ import { envConfig } from '../../utils';
 export const WhatsNewBanner: () => JSX.Element = () => {
   const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   useEffect(() => {
-    const isBannerClosed: string | null = window.localStorage.getItem('isBannerClosed');
-    if (isBannerClosed === 'true') {
-      setIsBannerVisible(false);
+    if (typeof window !== "undefined") {
+      const isBannerClosed = window.localStorage.getItem("isBannerClosed");
+      setIsBannerVisible(isBannerClosed !== "true");
     }
   }, []);
 
-  const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
-
-  const handleExit: () => void = () => {
-    window.localStorage.setItem('isBannerClosed', 'true');
+  const handleExit = () => {
+    try {
+      window.localStorage.setItem("isBannerClosed", "true");
+    } catch (error) {
+      console.error("Failed to set localStorage:", error);
+    }
     setIsBannerVisible(false);
   };
+
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
 
   return (
     <>
