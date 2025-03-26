@@ -295,7 +295,7 @@
   "ready":"Parod"
   },
   "stafftimetable":{
-    "noeventtoday": "No events today",
+    "noeventdisplay": "Dim digwyddiadau i'w dangos",
     "nomoreevent":"Dim mwy o ddigwyddiadau"
   },
   "sltviewbelt" :{

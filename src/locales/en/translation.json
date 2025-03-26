@@ -356,7 +356,7 @@
   "ready":"Ready"
   },
   "stafftimetable":{
-    "noeventtoday": "No events today",
+    "noeventdisplay": "No events to display",
     "nomoreevent":"No more events"
   },
   "sltviewbelt" :{

@@ -317,7 +317,7 @@ const renderNoEventsCard: (t?: TFunction<"translation", undefined>) => JSX.Eleme
             primaryText=""
             secondaryText=""
             status={EventCardStatus.DEFAULT}
-            title={t && t("stafftimetable.noeventtoday") || "No events today"}
+            title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
             inputHeight={67}
             className="dynamiceventcard event-primary-text no-events no-events-staff"
           />
