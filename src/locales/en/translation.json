@@ -351,7 +351,9 @@
   },
   "takeregister" :{
   "noregistertoday": "No registers today",
-  "nomoreregister": "No more registers"
+  "nomoreregister": "No more registers",
+  "completed":"Completed",
+  "ready":"Ready"
   },
   "stafftimetable":{
     "noeventtoday": "No events today",
