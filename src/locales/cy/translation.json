@@ -290,7 +290,9 @@
   },
   "takeregister" :{
   "noregistertoday": "Dim cofrestrau heddiw",
-  "nomoreregister": "Dim mwy o gofrestrau"
+  "nomoreregister": "Dim mwy o gofrestrau",
+  "completed":"wedi'i Gwblhau",
+  "ready":"Parod"
   },
   "stafftimetable":{
     "noeventtoday": "No events today",

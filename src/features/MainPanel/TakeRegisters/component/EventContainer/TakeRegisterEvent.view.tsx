@@ -305,7 +305,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                             item.room ? ` | ${item.room.roomName!}` : ""
                           }`
                     }
-                    tagText={item.isCompleted ? "Completed" : "Ready"}
+                    tagText={item.isCompleted ? t("takeregister.completed") : t("takeregister.ready")}
                     isShowTag
                     tagColor={
                       item.isCompleted ? TagColor.Success : TagColor.Outstanding
