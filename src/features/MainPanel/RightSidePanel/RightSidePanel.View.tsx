@@ -181,11 +181,11 @@ export const RightSidePanelView: (
               data-testid="register-label"
               className="essui-global-typography-default-subtitle margin-24 div-container"
             >
-              <span data-testid="register-text">               
+              <span data-testid="register-text">
                 {GroupDescription === null || GroupDescription === undefined
                   ? ""
                   : GroupDescription}{" "}
-                {t("homeStaffTimeTableEventTiles.register")} 
+                {t("homeStaffTimeTableEventTiles.register")}
               </span>
 
               <span data-testid="take-reg">
@@ -194,7 +194,7 @@ export const RightSidePanelView: (
                   size={ButtonSize.Small}
                   color={ButtonColor.Secondary}
                   onClick={onTRButtonClick}
-                >                  
+                >
                    {t("homeStaffTimeTableEventTiles.takeregister")}
                 </Button>
               </span>
@@ -269,10 +269,10 @@ export const RightSidePanelView: (
           </div>
         </SidePanelContent>
 
-        <SidePanelFooter className="parent-close-button">
+        <SidePanelFooter>
           <Button
             size={ButtonSize.Medium}
-            className="btn-full-width cancel-btn child-close"
+            className="btn-full-width"
             onClick={() => handlePanelClose()}
             id="close-button-id"
             dataTestId="close-button"
