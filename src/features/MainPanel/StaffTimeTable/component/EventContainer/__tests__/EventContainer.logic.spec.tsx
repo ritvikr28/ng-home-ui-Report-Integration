@@ -832,7 +832,7 @@ describe("EventContainer", () => {
     );
   });
 
-  test("No events today when status is 204", async () => {
+  test("No events display when status is 204", async () => {
     const mockres: any = {
       status: 204,
       responseData: mockStaffTimeTableEventsNoRecords,
