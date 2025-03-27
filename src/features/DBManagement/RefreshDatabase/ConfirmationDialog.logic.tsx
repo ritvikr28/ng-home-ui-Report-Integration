@@ -60,7 +60,9 @@ export const ConfirmDialog: React.FC<IProps> = ({
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
-      onClose={handleOnClose}
+      onClose={()=>{
+        handleOnSubmit();
+        handleOnClose();}}
       title={title}
     >
       <DialogContent className='dialog-content'>{description}</DialogContent>
