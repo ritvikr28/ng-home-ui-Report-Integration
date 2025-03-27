@@ -53,6 +53,21 @@ describe('WhatsNewBanner Component', () => {
     expect(screen.getByTestId('whatsnew-banner')).toBeInTheDocument();
   });
 
+  it('should log an error if updating localStorage fails', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {}); // Mock console.error
+    jest.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+      throw new Error('Storage quota exceeded');
+    });
+  
+    render(<WhatsNewBanner />);
+    fireEvent.click(screen.getByRole('button', { name: /close/i }));
+  
+    expect(console.error).toHaveBeenCalledWith('Failed to update localStorage:', expect.any(Error));
+  
+    (console.error as jest.Mock).mockRestore();
+    (Storage.prototype.setItem as jest.Mock).mockRestore();
+  });
+
   it('should not remove other orgIds when updating localStorage', () => {
     const existingData = [
       { orgId: 'org_999', isClosed: true },
