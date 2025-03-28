@@ -9,7 +9,6 @@ export const WhatsNewBanner: () => JSX.Element = () => {
   const orgId = getUserOrganisation();
 
   useEffect(() => {
-    
     if (typeof window !== "undefined") {
       const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
 
@@ -36,7 +35,6 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
-  
   return (
     <>
       {isBannerVisible && (
