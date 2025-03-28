@@ -4,9 +4,9 @@ import { service } from "../../utils/api-service";
 import apiUrls from "../../hook/ApiConfig.json";
 import { IRegistersDetails } from "../../model/RegisterDomain/responsemodels";
 
-
-
-export const FetchRegisterEventData: () => Promise<IRegistersDetails[] | null> = async () => {
+export const FetchRegisterEventData: () => Promise<
+  IRegistersDetails[] | null
+> = async () => {
   try {
     const response: AxiosResponse<IRegistersDetails[]> = await service.get(
       `RegisterDetails/LessonAndClassDetails`,
@@ -15,11 +15,9 @@ export const FetchRegisterEventData: () => Promise<IRegistersDetails[] | null> =
 
     if (response.status === 200 && response !== null) {
       return response.data;
-    } 
-      return null;
-    
-  } catch (err:any) {
-   return null;
+    }
+    return null;
+  } catch (err: any) {
+    return null;
   }
 };
-

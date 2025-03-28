@@ -7,15 +7,17 @@ export interface SidePanelProps {
   closePanel: () => void;
   showMainPanelView?: any;
   showQuickLinkView?: any;
-  quicklinkData? : IQuickLinkApiResponse[] | null;
-  setQuickLinkData: React.Dispatch<React.SetStateAction<IQuickLinkApiResponse[] | null>>;
-  isLoader?:boolean;
-  isSIMSIDAdmin?:boolean;
+  quicklinkData?: IQuickLinkApiResponse[] | null;
+  setQuickLinkData: React.Dispatch<
+    React.SetStateAction<IQuickLinkApiResponse[] | null>
+  >;
+  isLoader?: boolean;
+  isSIMSIDAdmin?: boolean;
 }
-export interface QuickLinkSidePanel{
+export interface QuickLinkSidePanel {
   isPermissionquicklink: any;
-  isError:any;
-  quicklinkData:any;
+  isError: any;
+  quicklinkData: any;
   handleStarClick: any;
   showQuickLinkView: any;
   isLoader: any;

@@ -1,5 +1,5 @@
 import { RenderResult, render, waitFor } from "@testing-library/react";
-import { Provider} from "react-redux";
+import { Provider } from "react-redux";
 import { createBrowserHistory } from "history";
 import * as redux from "react-redux";
 import { Router } from "react-router-dom";
@@ -9,39 +9,37 @@ import LandingPage from "../index";
 import { AppPermissionState } from "../../../types/AppPermission";
 import LandingPageView from "../LandingPage.view";
 
-jest.mock('../../../shared/utils', () => ({
+jest.mock("../../../shared/utils", () => ({
   envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: 'True'
-  },
+    IS_NEWHOMEPAGE_ACCESSIBLE: "True"
+  }
 }));
 
-jest.mock('@essnextgen/ui-flagr', () => ({  
+jest.mock("@essnextgen/ui-flagr", () => ({
   hasFeaturePermission: jest.fn()
 }));
 
-describe("Landing Page", () => { 
+describe("Landing Page", () => {
   jest.mock("@essnextgen/ui-intl-kit");
-  
+
   const history = createBrowserHistory();
- 
-  beforeEach(() => {  
-    
-  });
+
+  beforeEach(() => {});
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 
-  it('should redirect to /noAccess when there are no active modules', () => {
+  it("should redirect to /noAccess when there are no active modules", () => {
     const appPermissions: AppPermissionState = {
       modules: [],
       isLoaded: true
     };
     const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(appPermissions); 
+    spy.mockReturnValue(appPermissions);
     jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(appPermissions);  
-    history.push("/") 
+    spy.mockReturnValue(appPermissions);
+    history.push("/");
     render(
       <Provider store={configureStore()}>
         <Router history={history}>
@@ -49,30 +47,32 @@ describe("Landing Page", () => {
         </Router>
       </Provider>
     );
-    expect(history.location.pathname).toEqual('/noAccess')
+    expect(history.location.pathname).toEqual("/noAccess");
   });
-  it('should redirect to Landing Page when there is no active modules but include Home', () => {
+  it("should redirect to Landing Page when there is no active modules but include Home", () => {
     const apps: AppPermissionState = {
-      modules: [{
-        title: "",
-        description: "",
-        code: "Home",
-        canView: false
-      },
-      {
-        title: "",
-        description: "",
-        code: "StaffProfile",
-        canView: false
-      }],
+      modules: [
+        {
+          title: "",
+          description: "",
+          code: "Home",
+          canView: false
+        },
+        {
+          title: "",
+          description: "",
+          code: "StaffProfile",
+          canView: false
+        }
+      ],
       isLoaded: true
     };
     const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(apps); 
+    spy.mockReturnValue(apps);
     jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(apps);  
-    history.push("/") 
-    const {getByTestId}:RenderResult=render(
+    spy.mockReturnValue(apps);
+    history.push("/");
+    const { getByTestId }: RenderResult = render(
       <Provider store={configureStore()}>
         <Router history={history}>
           <LandingPage />
@@ -81,46 +81,44 @@ describe("Landing Page", () => {
     );
     expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
   });
-  it('should display loader when active modules include only Home', () => {
+  it("should display loader when active modules include only Home", () => {
     const apps: AppPermissionState = {
-      modules: [{
-        title: "",
-        description: "",
-        code: "Home",
-        canView: true
-      }
-     ],
+      modules: [
+        {
+          title: "",
+          description: "",
+          code: "Home",
+          canView: true
+        }
+      ],
       isLoaded: true
     };
     const spy = jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(apps); 
+    spy.mockReturnValue(apps);
     jest.spyOn(redux, "useSelector");
-    spy.mockReturnValue(apps);  
-    history.push("/") 
-    const {getByTestId}:RenderResult=render(
+    spy.mockReturnValue(apps);
+    history.push("/");
+    const { getByTestId }: RenderResult = render(
       <Provider store={configureStore()}>
         <Router history={history}>
           <LandingPage />
         </Router>
       </Provider>
     );
-    expect(getByTestId("loader-cir")).toBeInTheDocument();   
+    expect(getByTestId("loader-cir")).toBeInTheDocument();
   });
 });
 
-jest.spyOn(authService, 'isAuthorised').mockImplementation(() => true);
-    const mockHistoryPush = jest.fn();
+jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+const mockHistoryPush = jest.fn();
 
-  jest.mock('react-router-dom', () => ({
-    ...jest.requireActual('react-router-dom'),
-    useHistory: () => ({
-      push: mockHistoryPush,
-    }),
-  }));
-describe("Landing Page tests", () => { 
-
-  
- 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => ({
+    push: mockHistoryPush
+  })
+}));
+describe("Landing Page tests", () => {
   jest.mock("react-redux", () => ({
     ...jest.requireActual("react-redux"),
     useSelector: jest.fn(
@@ -128,22 +126,20 @@ describe("Landing Page tests", () => {
     ),
     useDispatch: jest.fn(() => jest.fn())
   }));
-   
+
   jest.mock("../../../actions/storeActions", () => ({
     saveAppPermission: jest.fn(),
     clearAppPermission: jest.fn(),
     startRequest: jest.fn()
   }));
-  beforeEach(() => {
-    
-  });
+  beforeEach(() => {});
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
   });
- 
+
   it("should render the loading spinner while fetching data", async () => {
-    const { getByTestId }: RenderResult = renderWithProvider();  
+    const { getByTestId }: RenderResult = renderWithProvider();
 
     await waitFor(() => {
       expect(getByTestId("loader-arc")).toBeInTheDocument();
@@ -151,34 +147,45 @@ describe("Landing Page tests", () => {
   });
 
   it("should render the loading spinner while fetching data is empty", async () => {
-    const { getByTestId }: RenderResult = render( <LandingPageView
-      data={[]}
-    />);
-   
+    const { getByTestId }: RenderResult = render(<LandingPageView data={[]} />);
+
     await waitFor(() => {
-      expect(getByTestId("loader-arc")).toBeInTheDocument();      
+      expect(getByTestId("loader-arc")).toBeInTheDocument();
     });
   });
 
-  it("should return null when canview is false", async () => {   
-    const { getByTestId }: RenderResult = render( <LandingPageView
-      data={[{ code: "Test", canView: false ,title:"Test",description:""}]}
-    />);
-   
+  it("should return null when canview is false", async () => {
+    const { getByTestId }: RenderResult = render(
+      <LandingPageView
+        data={[
+          { code: "Test", canView: false, title: "Test", description: "" }
+        ]}
+      />
+    );
+
     await waitFor(() => {
       expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
-      
     });
   });
-  it("should return tile with empty link when canview is true", async () => {   
-    const { getByTestId }: RenderResult = render( <LandingPageView
-      data={[{ code: "Test", canView: true ,title:"Test",description:"",link:""}]}
-    />);
-   
+  it("should return tile with empty link when canview is true", async () => {
+    const { getByTestId }: RenderResult = render(
+      <LandingPageView
+        data={[
+          {
+            code: "Test",
+            canView: true,
+            title: "Test",
+            description: "",
+            link: ""
+          }
+        ]}
+      />
+    );
+
     await waitFor(() => {
-      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();      
+      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
     });
-  });  
+  });
 
   it('should display "New Homepage" button text for modules with code "NewHomePage"', async () => {
     const appPermissions: AppPermissionState = {
@@ -190,10 +197,10 @@ describe("Landing Page tests", () => {
           canView: true,
           link: "/new-homepage",
           linkText: "New Homepage Link",
-          appUrl: "/new-homepage-app",
+          appUrl: "/new-homepage-app"
         }
       ],
-      isLoaded: true,
+      isLoaded: true
     };
 
     const spy = jest.spyOn(redux, "useSelector");
@@ -203,7 +210,9 @@ describe("Landing Page tests", () => {
 
     await waitFor(() => {
       expect(getByText("New Homepage Module")).toBeInTheDocument();
-      expect(getByText("This module is for the new homepage")).toBeInTheDocument();
+      expect(
+        getByText("This module is for the new homepage")
+      ).toBeInTheDocument();
       expect(getByText("New Homepage Link")).toBeInTheDocument();
       expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
     });
@@ -219,10 +228,10 @@ describe("Landing Page tests", () => {
           canView: true,
           link: "/fire-register",
           linkText: "Fire Register Link",
-          appUrl: "/fire-register-app",
+          appUrl: "/fire-register-app"
         }
       ],
-      isLoaded: true,
+      isLoaded: true
     };
 
     const spy = jest.spyOn(redux, "useSelector");
@@ -232,7 +241,9 @@ describe("Landing Page tests", () => {
 
     await waitFor(() => {
       expect(getByText("Fire Register Module")).toBeInTheDocument();
-      expect(getByText("This module is for the fire register")).toBeInTheDocument();
+      expect(
+        getByText("This module is for the fire register")
+      ).toBeInTheDocument();
       expect(getByText("Fire Register Link")).toBeInTheDocument();
       expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
     });
@@ -248,10 +259,10 @@ describe("Landing Page tests", () => {
           canView: true,
           link: "/general-module",
           linkText: "General Link",
-          appUrl: "/general-app",
+          appUrl: "/general-app"
         }
       ],
-      isLoaded: true,
+      isLoaded: true
     };
 
     const spy = jest.spyOn(redux, "useSelector");
@@ -267,7 +278,6 @@ describe("Landing Page tests", () => {
     });
   });
 });
-
 
 function renderWithProvider() {
   return render(

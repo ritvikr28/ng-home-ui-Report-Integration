@@ -10,14 +10,15 @@ import {
 } from "@essnextgen/ui-kit";
 import { SectionTitle } from "../../SectionTitle/SectionTitle";
 /* eslint-disable */
-import "../style.scss"
-import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
+import "../style.scss";
+import {
+  UseTranslationResponse,
+  useTranslation
+} from "@essnextgen/ui-intl-kit";
 const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
-  const isMobileView: boolean = useMediaQuery(
-    "(max-width: 767.9px)"
-  );
+    useTranslation();
+  const isMobileView: boolean = useMediaQuery("(max-width: 767.9px)");
   /* eslint-disable */
   const onButtonClick: () => void = () => {
     const url =
@@ -30,7 +31,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   }
 
   const rel: RelType = { rel: "noopener noreferrer" };
-  const onCardClick: () => void = () => { };
+  const onCardClick: () => void = () => {};
   return (
     <>
       <Grid className="new-sims-uppersection c-clear-padding new-margin-b-container">
@@ -45,7 +46,11 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             onClick={onButtonClick}
             size={ButtonSize.Small}
           >
-            <span className="new-discoverbtn-style">{isMobileView ? t("discoverMore.mobilesimsupdatetext") : t("discoverMore.mobilesimsupdatemoretext")}</span>
+            <span className="new-discoverbtn-style">
+              {isMobileView
+                ? t("discoverMore.mobilesimsupdatetext")
+                : t("discoverMore.mobilesimsupdatemoretext")}
+            </span>
           </Button>
         </GridItem>
       </Grid>
@@ -63,8 +68,8 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
-              primaryText= {t("discoverMore.primarytext")}
-              secondaryText= {t("discoverMore.secondarytext")}
+              primaryText={t("discoverMore.primarytext")}
+              secondaryText={t("discoverMore.secondarytext")}
             />
           </Link>
         </GridItem>
@@ -80,7 +85,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               dataTestId="test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
-              primaryText= {t("discoverMore.primarytextsimsnextgen")}
+              primaryText={t("discoverMore.primarytextsimsnextgen")}
               secondaryText={t("discoverMore.secondarytextsimsnextgen")}
             />
           </Link>

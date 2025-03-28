@@ -6,7 +6,6 @@ import TakeRegisterEvent from "../TakeRegisterEvent.logic";
 import { FetchRegisterEventData } from "../../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
 
-
 const mockTakeRegisterData = [
   {
     externalId: "37fe774b-52cd-4ed8-88ff-7f621f443168",
@@ -18,18 +17,18 @@ const mockTakeRegisterData = [
     classPeriodExternalId: "8f8ad67d-5a06-4535-89c7-e9f9304c828f",
     group: {
       externalId: "bba26eef-6670-4a9d-8501-e6ccc5c33790",
-      shortName: "9x/Sc31",
+      shortName: "9x/Sc31"
     },
     room: {
       externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomName: "Science Lab 7",
+      roomName: "Science Lab 7"
     },
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
-    isCompleted: false,
+    isCompleted: false
   },
   {
     externalId: "26c16326-d7c6-4c8e-8283-bd7c0e06dfa3",
@@ -44,17 +43,17 @@ const mockTakeRegisterData = [
 
     group: {
       externalId: "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
-      shortName: "9x/Sc32",
+      shortName: "9x/Sc32"
     },
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
     room: {
       externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomName: "Science Lab 7",
-    },
+      roomName: "Science Lab 7"
+    }
   },
   {
     externalId: "c482ab21-e627-4fc2-b708-c6cf2b8f456a",
@@ -69,14 +68,14 @@ const mockTakeRegisterData = [
 
     group: {
       externalId: "d9476c06-6946-4c01-8fd1-c5bbe3b70cb8",
-      shortName: "9x/Sc33",
+      shortName: "9x/Sc33"
     },
 
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
-    room: null,
+    room: null
   },
   {
     externalId: "4b57b778-8cab-4eea-a098-068ac3608b7a",
@@ -91,17 +90,17 @@ const mockTakeRegisterData = [
 
     group: {
       externalId: "d9476c06-6946-4c01-8fd1-c5bbe3b70cb8",
-      shortName: "9x/Sc34",
+      shortName: "9x/Sc34"
     },
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
     room: {
       externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomName: "Science Lab 7",
-    },
+      roomName: "Science Lab 7"
+    }
   },
   {
     externalId: "4fd1b76e-34cc-457d-9174-980229e42495",
@@ -116,17 +115,17 @@ const mockTakeRegisterData = [
 
     group: {
       externalId: "bba26eef-6670-4a9d-8501-e6ccc5c33790",
-      shortName: "9x/Sc3",
+      shortName: "9x/Sc3"
     },
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
     room: {
       externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomName: "Science Lab 7",
-    },
+      roomName: "Science Lab 7"
+    }
   },
   {
     externalId: "ad724f9c-9f1a-4da0-b2d8-c4fe0ccb6496",
@@ -139,24 +138,24 @@ const mockTakeRegisterData = [
     isCompleted: false,
     group: {
       externalId: "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
-      shortName: "9x/Sc3",
+      shortName: "9x/Sc3"
     },
     subject: {
       externalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
-      name: "Science",
+      name: "Science"
     },
     room: {
       externalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomName: "Science Lab 7",
-    },
+      roomName: "Science Lab 7"
+    }
   }
 ];
 
 jest.mock(
   "../../../../../../shared/services/registersDomain/registerEventsDetails",
   () => ({
-    FetchRegisterEventData: jest.fn(),
+    FetchRegisterEventData: jest.fn()
   })
 );
 
@@ -207,29 +206,29 @@ test("renders without errors", () => {
 test("render tile on basis of time", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
   const setCurrentSlide = jest.fn();
-  const useStateMock:any = (init:any) => [init, setCurrentSlide];
+  const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
 
   const { container } = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}     
-      isOpen 
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen
     />
   );
   expect(container).toBeTruthy();
   expect(setCurrentSlide).toHaveBeenCalled();
-  expect(setCurrentSlide).toHaveBeenCalledWith(5);  
+  expect(setCurrentSlide).toHaveBeenCalledWith(5);
 });
 
 test("render second tile as first", () => {
-   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
+  jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
   const setCurrentSlide = jest.fn();
-  const useStateMock:any = (init:any) => [init, setCurrentSlide];
+  const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { container }:any = render(
+  const { container }: any = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -241,25 +240,28 @@ test("render second tile as first", () => {
 });
 
 test.skip("renders No registers today", () => {
-  const { getByText,getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByText, getByTestId }: any = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={null}
+      isOpen
+    />
   );
   fireEvent.click(getByTestId("no-test-id"));
-  expect(getByText("No registers today")).toBeInTheDocument(); 
-
+  expect(getByText("No registers today")).toBeInTheDocument();
 });
 
 test.skip("click the previous button should render previous tile", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
-  const setCurrentSlide:any = jest.fn();
-  const useStateMock:any = () => [5, setCurrentSlide];
+  const setCurrentSlide: any = jest.fn();
+  const useStateMock: any = () => [5, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { getByTestId }:any = render(
+  const { getByTestId }: any = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}  
-      isOpen={false}   
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen={false}
     />
   );
   expect(getByTestId("btn-previous")).not.toBeDisabled();
@@ -270,15 +272,15 @@ test.skip("click the previous button should render previous tile", () => {
 
 test.skip("click the next button should render next tile", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
-  const setCurrentSlide:any = jest.fn();
-  const useStateMock:any = () => [1, setCurrentSlide];
+  const setCurrentSlide: any = jest.fn();
+  const useStateMock: any = () => [1, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
   const { getByTestId } = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}  
-      isOpen   
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen
     />
   );
   expect(getByTestId("btn-next")).not.toBeDisabled();
@@ -288,8 +290,12 @@ test.skip("click the next button should render next tile", () => {
 });
 
 test("disables the previous button when api returns null", () => {
-  const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByTestId }: any = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={null}
+      isOpen
+    />
   );
   const previousButton = getByTestId("btn-previous");
 
@@ -297,8 +303,12 @@ test("disables the previous button when api returns null", () => {
 });
 
 test("disables the next button when api returns null", () => {
-  const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByTestId }: any = render(
+    <TakeRegisterEventView
+      apiError={false}
+      apiRegsiterEventData={null}
+      isOpen
+    />
   );
   const nextButton = getByTestId("btn-next");
 

@@ -9,16 +9,17 @@ export interface TakeRegisterProps {
   setIsOpen?: (isOpen: boolean) => void;
 }
 
-
-export const TakeRegisterView: React.FC<TakeRegisterProps> = ({ isOpen, setIsOpen }) => {
-
+export const TakeRegisterView: React.FC<TakeRegisterProps> = ({
+  isOpen,
+  setIsOpen
+}) => {
   return (
     <Grid>
       <GridItem sm={4} className="c-clear-padding">
         <TakeRegisterEvent isOpen={isOpen} setIsOpen={setIsOpen} />
       </GridItem>
     </Grid>
-  )
+  );
 };
 
 export default TakeRegisterView;

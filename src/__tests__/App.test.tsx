@@ -47,19 +47,20 @@ describe("Testing App Component", () => {
       const appPermissions: AppPermissionState = {
         modules: [],
         isLoaded: true
-      };      
+      };
       const useSelector = jest.spyOn(redux, "useSelector");
       useSelector.mockReturnValue(appPermissions);
-      const spy:any =jest
-      .spyOn(service, "get")
-      jest.spyOn(authService, "isAuthenticated").mockImplementationOnce(() => false);     
+      const spy: any = jest.spyOn(service, "get");
+      jest
+        .spyOn(authService, "isAuthenticated")
+        .mockImplementationOnce(() => false);
       history.push("/");
       renderWithHistory(history);
-     
+
       await waitFor(() => {
         expect(spy).not.toHaveBeenCalled();
       });
-    });    
+    });
   });
 
   function renderWithHistory(history: any) {

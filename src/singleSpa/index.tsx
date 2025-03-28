@@ -5,9 +5,9 @@ import singleSpaLeakedGlobals from "single-spa-leaked-globals";
 import { fetchConfigData, SetupEnvConfig } from "./ConfigHelper";
 
 // SetupEnvConfig();
-const initializeVariable:()=>void=async()=>{
-  const data:any =await fetchConfigData();  
-  await SetupEnvConfig(data); 
+const initializeVariable: () => void = async () => {
+  const data: any = await fetchConfigData();
+  await SetupEnvConfig(data);
 };
 
 const App = lazy(() => import("../App"));
@@ -19,21 +19,23 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
   ] = React.useState<boolean>(false);
   useEffect(() => {
     (async () => {
-      try {          
-        await initializeVariable(); 
+      try {
+        await initializeVariable();
         setglobarvar(true);
-      } catch (error) { 
-        console.log(error);       
-      }      
+      } catch (error) {
+        console.log(error);
+      }
     })();
-  }, [globarvar]);  
-  return(
-  <Suspense fallback={<></>}>
-    <>
-    {globarvar && <App isStandaloneApp={false} baseRouteName={baseRouteName} />}
-    </>  
-</Suspense>
-)  
+  }, [globarvar]);
+  return (
+    <Suspense fallback={<></>}>
+      <>
+        {globarvar && (
+          <App isStandaloneApp={false} baseRouteName={baseRouteName} />
+        )}
+      </>
+    </Suspense>
+  );
 };
 
 const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({

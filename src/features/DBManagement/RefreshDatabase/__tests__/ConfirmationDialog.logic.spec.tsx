@@ -15,7 +15,7 @@ describe("ConfirmDialog Component", () => {
     isOpen: true,
     optionalButton: true,
     onSubmitHandle: mockOnSubmitHandle,
-    onCloseHandle: mockOnCloseHandle,
+    onCloseHandle: mockOnCloseHandle
   };
 
   afterEach(() => {
@@ -32,7 +32,9 @@ describe("ConfirmDialog Component", () => {
   it("should render the confirm and cancel buttons with correct text", () => {
     render(<ConfirmDialog {...defaultProps} />);
 
-    const confirmButton = screen.getByText(defaultProps.confirmActionButtonText);
+    const confirmButton = screen.getByText(
+      defaultProps.confirmActionButtonText
+    );
     const cancelButton = screen.getByText(defaultProps.cancelActionButtonText);
 
     expect(confirmButton).toBeInTheDocument();
@@ -42,7 +44,9 @@ describe("ConfirmDialog Component", () => {
   it("should call `onSubmitHandle` when confirm button is clicked", () => {
     render(<ConfirmDialog {...defaultProps} />);
 
-    const confirmButton = screen.getByText(defaultProps.confirmActionButtonText);
+    const confirmButton = screen.getByText(
+      defaultProps.confirmActionButtonText
+    );
     fireEvent.click(confirmButton);
 
     expect(mockOnSubmitHandle).toHaveBeenCalledTimes(1);
@@ -67,7 +71,9 @@ describe("ConfirmDialog Component", () => {
   it("should handle the absence of optional cancel button", () => {
     render(<ConfirmDialog {...defaultProps} optionalButton={false} />);
 
-    const cancelButton = screen.queryByText(defaultProps.cancelActionButtonText);
+    const cancelButton = screen.queryByText(
+      defaultProps.cancelActionButtonText
+    );
     expect(cancelButton).not.toBeInTheDocument();
   });
 
@@ -78,7 +84,9 @@ describe("ConfirmDialog Component", () => {
     const cancelButton = screen.getByText(defaultProps.cancelActionButtonText);
     fireEvent.click(cancelButton);
 
-    expect(document.body.classList.contains("essui-body--no-scroll")).toBe(false);
+    expect(document.body.classList.contains("essui-body--no-scroll")).toBe(
+      false
+    );
   });
 
   it("should handle default props if not provided", () => {
@@ -88,12 +96,14 @@ describe("ConfirmDialog Component", () => {
         description="Testing default props"
         onSubmitHandle={mockOnSubmitHandle}
         onCloseHandle={mockOnCloseHandle}
-        isOpen 
+        isOpen
       />
     );
 
     expect(screen.getByRole("button", { name: /Ok/i })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: /Cancel/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /Cancel/i })
+    ).not.toBeInTheDocument();
   });
 
   it("should not render the dialog when isOpen is false", () => {

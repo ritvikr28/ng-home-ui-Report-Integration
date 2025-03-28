@@ -78,7 +78,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     isError,
     isSchoolPrimary,
     isOpen,
-    setIsOpen,
+    setIsOpen
   }: IMainPanelProps = props;
 
   const SLTviewBETT: boolean = hasFeaturePermission(
@@ -102,7 +102,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   );
   return (
     <div>
-        {(!isMobileView && ClassViewNotificationBanner) && (<WhatsNewBanner />)}
+      {!isMobileView && ClassViewNotificationBanner && <WhatsNewBanner />}
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">

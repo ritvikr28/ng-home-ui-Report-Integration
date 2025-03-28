@@ -1,5 +1,5 @@
 export interface IEmail {
-    contactEmailExternalId: string,
-    contactEmailAddress: string,
-    emailLocationType: string,
+  contactEmailExternalId: string;
+  contactEmailAddress: string;
+  emailLocationType: string;
 }

@@ -10,7 +10,6 @@ export const FetchSchoolInsights: (
     const responseData: AxiosResponse<ISchoolInsightsResponse> =
       await service.get(
         `${envConfig.BASE_URL}/v1/schoolinsights?IsCompulsoryAgeView=${isCompulsoryAgeView}`
-        
       );
 
     return responseData.data;

@@ -24,8 +24,6 @@ import gtmAnalytics from "../../../shared/utils/analytics";
 import { logger } from "../../../shared/components/AppInsights";
 import { getUser, getUserOrganisation } from "../../../shared/utils";
 
-
-
 export const RightSidePanelView: (
   props: IRightSidePanelViewProps
 ) => JSX.Element = (props: IRightSidePanelViewProps) => {
@@ -54,9 +52,9 @@ export const RightSidePanelView: (
   }: IRightSidePanelViewProps = props;
 
   const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
+    useTranslation();
 
-  const handlePanelClose:()=>void = () => {
+  const handlePanelClose: () => void = () => {
     togglePanel(SchoolEventexternalId);
   };
   const StaffTTClassView: boolean = hasFeaturePermission(
@@ -64,11 +62,14 @@ export const RightSidePanelView: (
     "StaffTTClassViewBtn"
   );
   const onTRButtonClick: () => void = () => {
-    const url: string = (EventTypeCode === "AttendanceSession")
-      ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
-      : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
+    const url: string =
+      EventTypeCode === "AttendanceSession"
+        ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
+        : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
 
-    logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`)
+    logger.info(
+      `Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`
+    );
 
     gtmAnalytics.pushEvent({
       event: "click",
@@ -77,9 +78,8 @@ export const RightSidePanelView: (
       clickType: "button",
       clickLocation: "right_bar"
     });
-    window.location.href = url
+    window.location.href = url;
   };
-
 
   return (
     <div
@@ -150,22 +150,24 @@ export const RightSidePanelView: (
             </div>
 
             <div>
-              { StaffTTClassView && EventTypeCode !== 'TTNTPer' && (
-                    <div data-testid="class-view">
-                      <Link
-                        dataTestId="class-view-button"
-                        id="class-view-button"
-                        href={classViewURL}
-                        onClick={handleClassViewClick}
-                      >
-                       {t("homeStaffTimeTableEventTiles.classview")}
-                      </Link>
-                    </div>
-                  )
-              }
+              {StaffTTClassView && EventTypeCode !== "TTNTPer" && (
+                <div data-testid="class-view">
+                  <Link
+                    dataTestId="class-view-button"
+                    id="class-view-button"
+                    href={classViewURL}
+                    onClick={handleClassViewClick}
+                  >
+                    {t("homeStaffTimeTableEventTiles.classview")}
+                  </Link>
+                </div>
+              )}
             </div>
 
-            <div data-testid="horizontal-panel-divider" className="divider-right-panel">
+            <div
+              data-testid="horizontal-panel-divider"
+              className="divider-right-panel"
+            >
               <Divider
                 as="li"
                 dataTestId="panel-divider"
@@ -176,30 +178,30 @@ export const RightSidePanelView: (
               />
             </div>
 
-            {isPupilSectionEnable &&
-            <div
-              data-testid="register-label"
-              className="essui-global-typography-default-subtitle margin-24 div-container"
-            >
-              <span data-testid="register-text">
-                {GroupDescription === null || GroupDescription === undefined
-                  ? ""
-                  : GroupDescription}{" "}
-                {t("homeStaffTimeTableEventTiles.register")}
-              </span>
+            {isPupilSectionEnable && (
+              <div
+                data-testid="register-label"
+                className="essui-global-typography-default-subtitle margin-24 div-container"
+              >
+                <span data-testid="register-text">
+                  {GroupDescription === null || GroupDescription === undefined
+                    ? ""
+                    : GroupDescription}{" "}
+                  {t("homeStaffTimeTableEventTiles.register")}
+                </span>
 
-              <span data-testid="take-reg">
-                <Button
-                  dataTestId="take-reg-button"
-                  size={ButtonSize.Small}
-                  color={ButtonColor.Secondary}
-                  onClick={onTRButtonClick}
-                >
-                   {t("homeStaffTimeTableEventTiles.takeregister")}
-                </Button>
-              </span>
-            </div>
-}
+                <span data-testid="take-reg">
+                  <Button
+                    dataTestId="take-reg-button"
+                    size={ButtonSize.Small}
+                    color={ButtonColor.Secondary}
+                    onClick={onTRButtonClick}
+                  >
+                    {t("homeStaffTimeTableEventTiles.takeregister")}
+                  </Button>
+                </span>
+              </div>
+            )}
 
             <div>
               {errCodeMessage ? (
@@ -248,13 +250,18 @@ export const RightSidePanelView: (
                             href={`${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`}
                             target="_self"
                           >
-                            <span data-testId={`link-click-${index}`} onClick={() => gtmAnalytics.pushEvent({
-                              event: "click",
-                              linkText: "[RemovedPupilName]",
-                              linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
-                              clickType: "link",
-                              clickLocation: "right_bar"
-                            })}>
+                            <span
+                              data-testId={`link-click-${index}`}
+                              onClick={() =>
+                                gtmAnalytics.pushEvent({
+                                  event: "click",
+                                  linkText: "[RemovedPupilName]",
+                                  linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
+                                  clickType: "link",
+                                  clickLocation: "right_bar"
+                                })
+                              }
+                            >
                               {pupil.personalInfo.preferredForename}{" "}
                               {pupil.personalInfo.preferredSurname}
                             </span>

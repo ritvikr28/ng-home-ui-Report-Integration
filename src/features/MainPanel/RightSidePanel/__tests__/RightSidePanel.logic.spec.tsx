@@ -1,12 +1,11 @@
 import React from "react";
-import { render, waitFor ,screen} from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
 import { RightSidePanel } from "../RightSidePanel.logic";
 import * as schoolDomainservices from "../../../../shared/services/schoolDomain/schoolServices";
 import { IRightSidePanelProps } from "../RightSidePanelProps";
 import { IGroupMemberDetailsResponse } from "../../../../shared/model/SchoolDomain/responsemodels";
 import { RightSidePanelView } from "../RightSidePanel.View";
 import { IRightSidePanelViewProps } from "../RightSidePanelViewProps";
-
 
 const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -89,11 +88,11 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
     endDate: "2024-07-19T00:00:00",
     yearGroup: {
       externalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
-      name: "Year  7",
+      name: "Year  7"
     },
     regGroup: {
       externalId: "d846ee5e-3486-4727-b0a1-bc9389b4c3ac",
-      name: "7A",
+      name: "7A"
     },
     personalInfo: {
       preferredForename: "Borris",
@@ -101,9 +100,9 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
       preferredName: "Borris Becker",
       legalForename: "Borris",
       legalSurname: "Becker",
-      legalName: "Borris Becker",
+      legalName: "Borris Becker"
     },
-    personImage: null,
+    personImage: null
   },
   {
     membershipId: "7607fe8b-7063-423f-a5c2-26fff7c36c2d",
@@ -112,11 +111,11 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
     endDate: "2024-07-19T00:00:00",
     yearGroup: {
       externalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
-      name: "Year  7",
+      name: "Year  7"
     },
     regGroup: {
       externalId: "ab4d38b5-ad43-488e-8977-7edf527db780",
-      name: "7C",
+      name: "7C"
     },
     personalInfo: {
       preferredForename: "Harvey",
@@ -124,9 +123,9 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
       preferredName: "Harvey Anderson",
       legalForename: "Harvey",
       legalSurname: "Anderson",
-      legalName: "Harvey Anderson",
+      legalName: "Harvey Anderson"
     },
-    personImage: null,
+    personImage: null
   }
 ];
 
@@ -139,11 +138,11 @@ const mockSortedListofGroupExternalIdBySurname: IGroupMemberDetailsResponse[] =
       endDate: "2024-07-19T00:00:00",
       yearGroup: {
         externalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
-        name: "Year  7",
+        name: "Year  7"
       },
       regGroup: {
         externalId: "ab4d38b5-ad43-488e-8977-7edf527db780",
-        name: "7C",
+        name: "7C"
       },
       personalInfo: {
         preferredForename: "Harvey",
@@ -151,9 +150,9 @@ const mockSortedListofGroupExternalIdBySurname: IGroupMemberDetailsResponse[] =
         preferredName: "Harvey Anderson",
         legalForename: "Harvey",
         legalSurname: "Anderson",
-        legalName: "Harvey Anderson",
+        legalName: "Harvey Anderson"
       },
-      personImage: null,
+      personImage: null
     },
     {
       membershipId: "20be3c01-76c0-4cbe-ba1a-59d91ede62fe",
@@ -162,11 +161,11 @@ const mockSortedListofGroupExternalIdBySurname: IGroupMemberDetailsResponse[] =
       endDate: "2024-07-19T00:00:00",
       yearGroup: {
         externalId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
-        name: "Year  7",
+        name: "Year  7"
       },
       regGroup: {
         externalId: "d846ee5e-3486-4727-b0a1-bc9389b4c3ac",
-        name: "7A",
+        name: "7A"
       },
       personalInfo: {
         preferredForename: "Borris",
@@ -174,26 +173,32 @@ const mockSortedListofGroupExternalIdBySurname: IGroupMemberDetailsResponse[] =
         preferredName: "Borris Becker",
         legalForename: "Borris",
         legalSurname: "Becker",
-        legalName: "Borris Becker",
+        legalName: "Borris Becker"
       },
-      personImage: null,
+      personImage: null
     }
   ];
 // handleClassViewClick.js
-export const handleClassViewClick = (params: { ClassPeriodExternalId: any; EventDescription: any; GroupExternalId: any; ExternalId: any; envConfig: any; setClassViewURL: any; }) => {
+export const handleClassViewClick = (params: {
+  ClassPeriodExternalId: any;
+  EventDescription: any;
+  GroupExternalId: any;
+  ExternalId: any;
+  envConfig: any;
+  setClassViewURL: any;
+}) => {
   const {
-      ClassPeriodExternalId,
-      EventDescription,
-      GroupExternalId,
-      ExternalId,
-      envConfig,
-      setClassViewURL
+    ClassPeriodExternalId,
+    EventDescription,
+    GroupExternalId,
+    ExternalId,
+    envConfig,
+    setClassViewURL
   } = params;
 
-  const classPeriodOrSessionId = ClassPeriodExternalId === null
-      ? EventDescription
-      : ClassPeriodExternalId;
-  
+  const classPeriodOrSessionId =
+    ClassPeriodExternalId === null ? EventDescription : ClassPeriodExternalId;
+
   const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId}/${classPeriodOrSessionId}/${ExternalId}`;
   setClassViewURL(classViewUrl);
 };
@@ -205,7 +210,7 @@ describe("RigthSidePanel", () => {
 
   jest.mock("react", () => ({
     ...jest.requireActual("react"),
-    useState: jest.fn(),
+    useState: jest.fn()
   }));
 
   const setLoader = jest.fn();
@@ -243,9 +248,9 @@ describe("RigthSidePanel", () => {
         CoverStaffName={mockHealthyEvent.CoverStaffName}
         EventTypeCode={mockHealthyEvent.EventTypeCode}
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
-        EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId} 
-        EventDescription={mockHealthyEvent.EventDescription} 
-         />
+        EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}
+        EventDescription={mockHealthyEvent.EventDescription}
+      />
     );
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
@@ -276,8 +281,7 @@ describe("RigthSidePanel", () => {
       EventInstanceExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
       EventDescription: "test"
     };
-    
-    
+
     jest
       .spyOn(React, "useState")
       .mockImplementationOnce(() => [false, setLoader])
@@ -306,8 +310,8 @@ describe("RigthSidePanel", () => {
         CoverStaffName={mockHealthyEvent1.CoverStaffName}
         EventTypeCode="TTPeriod"
         ClassPeriodExternalId={mockHealthyEvent1.ClassPeriodExternalId}
-        EventInstanceExternalId={mockHealthyEvent1.EventInstanceExternalId} 
-        EventDescription={mockHealthyEvent1.EventDescription}       
+        EventInstanceExternalId={mockHealthyEvent1.EventInstanceExternalId}
+        EventDescription={mockHealthyEvent1.EventDescription}
       />
     );
     await waitFor(() => {
@@ -317,7 +321,6 @@ describe("RigthSidePanel", () => {
       expect(setPupilSection).toHaveBeenCalledWith(false);
     });
   });
- 
 
   test("should handle unsuccessful data fetch", async () => {
     jest
@@ -346,10 +349,10 @@ describe("RigthSidePanel", () => {
         GroupDescription={mockHealthyEvent.GroupDescription}
         StaffName={mockHealthyEvent.StaffName}
         CoverStaffName={mockHealthyEvent.CoverStaffName}
-        EventTypeCode={mockHealthyEvent.EventTypeCode} 
+        EventTypeCode={mockHealthyEvent.EventTypeCode}
         ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
         EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId}
-        EventDescription={mockHealthyEvent.EventDescription}           
+        EventDescription={mockHealthyEvent.EventDescription}
       />
     );
     await waitFor(() => {
@@ -359,7 +362,6 @@ describe("RigthSidePanel", () => {
         "We've experienced a technical issue that's stopped us from showing pupil information for this register. Please check back in a bit."
       );
       expect(setPupilSection).toHaveBeenCalledWith(true);
-
     });
   });
   test("should not set any values if EventTypecode is ttntper", async () => {
@@ -386,8 +388,9 @@ describe("RigthSidePanel", () => {
         CoverStaffName={mockEventTitleMeeting.CoverStaffName}
         EventTypeCode={mockEventTitleMeeting.EventTypeCode}
         ClassPeriodExternalId={mockEventTitleMeeting.ClassPeriodExternalId}
-        EventInstanceExternalId={mockEventTitleMeeting.EventInstanceExternalId} 
-        EventDescription={mockEventTitleMeeting.EventDescription} />
+        EventInstanceExternalId={mockEventTitleMeeting.EventInstanceExternalId}
+        EventDescription={mockEventTitleMeeting.EventDescription}
+      />
     );
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
@@ -408,7 +411,9 @@ describe("RigthSidePanel", () => {
 
     render(
       <RightSidePanel
-        SchoolEventexternalId={mockEventTitleMeetingTTPeriod.SchoolEventexternalId}
+        SchoolEventexternalId={
+          mockEventTitleMeetingTTPeriod.SchoolEventexternalId
+        }
         EventTitle={mockEventTitleMeetingTTPeriod.EventTitle}
         RoomCode={mockEventTitleMeetingTTPeriod.RoomCode}
         EventStart={mockEventTitleMeetingTTPeriod.EventStart}
@@ -421,9 +426,13 @@ describe("RigthSidePanel", () => {
         StaffName={mockEventTitleMeetingTTPeriod.StaffName}
         CoverStaffName={mockEventTitleMeetingTTPeriod.CoverStaffName}
         EventTypeCode={mockEventTitleMeetingTTPeriod.EventTypeCode}
-        ClassPeriodExternalId={mockEventTitleMeetingTTPeriod.ClassPeriodExternalId}
-        EventInstanceExternalId={mockEventTitleMeetingTTPeriod.EventInstanceExternalId} 
-        EventDescription={mockEventTitleMeetingTTPeriod.EventDescription}          
+        ClassPeriodExternalId={
+          mockEventTitleMeetingTTPeriod.ClassPeriodExternalId
+        }
+        EventInstanceExternalId={
+          mockEventTitleMeetingTTPeriod.EventInstanceExternalId
+        }
+        EventDescription={mockEventTitleMeetingTTPeriod.EventDescription}
       />
     );
     await waitFor(() => {
@@ -459,21 +468,17 @@ describe("RigthSidePanel", () => {
         CoverStaffName={mockNullClassViewEvent.CoverStaffName}
         EventTypeCode={mockNullClassViewEvent.EventTypeCode}
         ClassPeriodExternalId={mockNullClassViewEvent.ClassPeriodExternalId}
-        EventInstanceExternalId={mockNullClassViewEvent.EventInstanceExternalId} 
-        EventDescription={mockNullClassViewEvent.EventDescription}             
+        EventInstanceExternalId={mockNullClassViewEvent.EventInstanceExternalId}
+        EventDescription={mockNullClassViewEvent.EventDescription}
       />
     );
     await waitFor(() => {
       expect(setLoader).toHaveBeenCalledWith(false);
-   
-     
-     
     });
   });
-  describe('RightSidePanel View', () => {  
-   
-    test('renders loader when isLoader is true', () => {
-      const otherEventTypeProps:IRightSidePanelViewProps = {
+  describe("RightSidePanel View", () => {
+    test("renders loader when isLoader is true", () => {
+      const otherEventTypeProps: IRightSidePanelViewProps = {
         SchoolEventexternalId: "123",
         EventTitle: "Test",
         EventTime: "1 | 09:00 15:30",
@@ -496,55 +501,54 @@ describe("RigthSidePanel", () => {
         handleClassViewClick: jest.fn(),
         classViewURL: ""
       };
-      render(
-        <RightSidePanelView {...otherEventTypeProps}
-        />
-      );
+      render(<RightSidePanelView {...otherEventTypeProps} />);
       expect(screen.getByTestId("error-loader")).toBeInTheDocument();
-    })
+    });
   });
 });
-describe('handleClassViewClick', () => {
+describe("handleClassViewClick", () => {
   let setClassViewURL: jest.Mock<any, any>;
   const envConfig = {
-      SEATING_PLAN_CLASS_VIEW_URL: 'http://example.com'
+    SEATING_PLAN_CLASS_VIEW_URL: "http://example.com"
   };
 
   beforeEach(() => {
-      setClassViewURL = jest.fn();
+    setClassViewURL = jest.fn();
   });
 
-  test('should use ClassPeriodExternalId when it is not null', () => {
-      const params = {
-          ClassPeriodExternalId: 'CP123',
-          EventDescription: 'EventA',
-          GroupExternalId: 'Group1',
-          ExternalId: 'Ext1',
-          envConfig,
-          setClassViewURL
-      };
+  test("should use ClassPeriodExternalId when it is not null", () => {
+    const params = {
+      ClassPeriodExternalId: "CP123",
+      EventDescription: "EventA",
+      GroupExternalId: "Group1",
+      ExternalId: "Ext1",
+      envConfig,
+      setClassViewURL
+    };
 
-      handleClassViewClick(params);
+    handleClassViewClick(params);
 
-      expect(setClassViewURL).toHaveBeenCalledWith('http://example.com/classview/select-seating-plan/Group1/CP123/Ext1');
+    expect(setClassViewURL).toHaveBeenCalledWith(
+      "http://example.com/classview/select-seating-plan/Group1/CP123/Ext1"
+    );
   });
 
-  test('should use EventDescription when ClassPeriodExternalId is null', () => {
-      const params = {
-          ClassPeriodExternalId: null,
-          EventDescription: 'EventA',
-          GroupExternalId: 'Group1',
-          ExternalId: 'Ext1',
-          envConfig,
-          setClassViewURL
-      };
+  test("should use EventDescription when ClassPeriodExternalId is null", () => {
+    const params = {
+      ClassPeriodExternalId: null,
+      EventDescription: "EventA",
+      GroupExternalId: "Group1",
+      ExternalId: "Ext1",
+      envConfig,
+      setClassViewURL
+    };
 
-      handleClassViewClick(params);
+    handleClassViewClick(params);
 
-      expect(setClassViewURL).toHaveBeenCalledWith('http://example.com/classview/select-seating-plan/Group1/EventA/Ext1');
+    expect(setClassViewURL).toHaveBeenCalledWith(
+      "http://example.com/classview/select-seating-plan/Group1/EventA/Ext1"
+    );
   });
-
-
 
   // test('should handle undefined ClassPeriodExternalId correctly', () => {
   //     const params = {
@@ -560,6 +564,4 @@ describe('handleClassViewClick', () => {
 
   //     expect(setClassViewURL).toHaveBeenCalledWith('http://example.com/classview/select-seating-plan/Group1/EventA/Ext1');
   // });
-
-  
 });

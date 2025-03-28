@@ -3,10 +3,9 @@ import { useMediaQuery } from "@essnextgen/ui-kit";
 import AdminConsole from "../AdminConsole.view";
 import BreadcrumbWrapper from "../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
-
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
-  useMediaQuery: jest.fn(),
+  useMediaQuery: jest.fn()
 }));
 
 interface LocalisedMenuProps {
@@ -17,34 +16,36 @@ interface LocalisedMenuProps {
 jest.mock("@essnextgen/ui-application-kit", () => ({
   LocalisedMenu: ({
     onCloseSideNavigationPanel,
-    isOpenSideNavigation,
+    isOpenSideNavigation
   }: LocalisedMenuProps) => (
-    <button type="button" data-testid="menu-toggle" onClick={onCloseSideNavigationPanel}>
+    <button
+      type="button"
+      data-testid="menu-toggle"
+      onClick={onCloseSideNavigationPanel}
+    >
       {isOpenSideNavigation ? "Close Menu" : "Open Menu"}
     </button>
-  ),
+  )
 }));
 
 describe("AdminConsole component", () => {
- 
   test("toggles side panel on button click", () => {
-    (useMediaQuery as jest.Mock).mockReturnValue(true); 
+    (useMediaQuery as jest.Mock).mockReturnValue(true);
     render(<AdminConsole />);
 
     const toggleButton = screen.getByTestId("btn-collapse");
-    fireEvent.click(toggleButton); 
+    fireEvent.click(toggleButton);
     expect(screen.getByTestId("menu-toggle")).toHaveTextContent("Close Menu");
-    
   });
 
   test("renders component correctly", () => {
-    const {getByText} = render(<AdminConsole />);
+    const { getByText } = render(<AdminConsole />);
     expect(getByText("breadcrumbshome")).toBeInTheDocument();
-   // expect(getByText("breadcrumbsadminconsole")).toBeInTheDocument();
+    // expect(getByText("breadcrumbsadminconsole")).toBeInTheDocument();
   });
 
   test("closes the side panel when the menu close button is clicked", () => {
-    (useMediaQuery as jest.Mock).mockReturnValue(true); 
+    (useMediaQuery as jest.Mock).mockReturnValue(true);
     render(<AdminConsole />);
 
     const closeButton = screen.getByTestId("menu-toggle");

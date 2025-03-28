@@ -1,18 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { Notification as NotificationBanner, NotificationStatus } from '@essnextgen/ui-kit';
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
-import './style.scss';
-import { envConfig, getUserOrganisation } from '../../utils';
+import React, { useState, useEffect } from "react";
+import {
+  Notification as NotificationBanner,
+  NotificationStatus
+} from "@essnextgen/ui-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
+import "./style.scss";
+import { envConfig, getUserOrganisation } from "../../utils";
 
 export const WhatsNewBanner: () => JSX.Element = () => {
-  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isBannerVisible, setIsBannerVisible]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   const orgId = getUserOrganisation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
+      const storedBanners = JSON.parse(
+        localStorage.getItem("classViewBannerClosed") || "[]"
+      );
 
-      const isClosed = storedBanners.some((item: { orgId: string; isClosed: boolean }) => item.orgId === orgId && item.isClosed);
+      const isClosed = storedBanners.some(
+        (item: { orgId: string; isClosed: boolean }) =>
+          item.orgId === orgId && item.isClosed
+      );
 
       setIsBannerVisible(!isClosed);
     }
@@ -20,20 +34,27 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
   const handleExit = () => {
     try {
-      const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
-      const updatedBanners = storedBanners.filter((item: { orgId: string }) => item.orgId !== orgId);
+      const storedBanners = JSON.parse(
+        localStorage.getItem("classViewBannerClosed") || "[]"
+      );
+      const updatedBanners = storedBanners.filter(
+        (item: { orgId: string }) => item.orgId !== orgId
+      );
 
       updatedBanners.push({ orgId, isClosed: true });
 
-      localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
+      localStorage.setItem(
+        "classViewBannerClosed",
+        JSON.stringify(updatedBanners)
+      );
       setIsBannerVisible(false);
-
     } catch (error) {
       console.error("Failed to update localStorage:", error);
     }
   };
 
-  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
 
   return (
     <>
@@ -48,7 +69,12 @@ export const WhatsNewBanner: () => JSX.Element = () => {
               <>
                 <p>{t("classviewbanner.classviewtext")}</p>
                 <div>
-                  <a className="link-data" href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">
+                  <a
+                    className="link-data"
+                    href={`${envConfig.CLASSVIEW_BASE_URL}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     {t("classviewbanner.classviewlinktext")}
                   </a>
                   <span>

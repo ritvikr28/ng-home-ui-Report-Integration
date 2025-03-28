@@ -1,11 +1,10 @@
-import React,{ useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { IRightSidePanelProps } from "./RightSidePanelProps";
 import { FetchGroupMemberDetailsData } from "../../../shared/services/schoolDomain/schoolServices";
 import { IGroupMemberDetailsResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { RightSidePanelView } from "./RightSidePanel.View";
 import { envConfig } from "../../../shared/utils";
-
 
 export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
   props: IRightSidePanelProps
@@ -29,14 +28,36 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
     EventInstanceExternalId
   }: IRightSidePanelProps = props;
 
-  const [isLoader, setLoader]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [errCodeMessage, setErrCodeMessage]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]:[string,React.Dispatch<React.SetStateAction<string>>] =useState<string>("");
-  const [groupMemberDetails, setGroupMemberDetailsData]:[IGroupMemberDetailsResponse[],React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>] = useState<IGroupMemberDetailsResponse[]>([]);
-  const [isPupilSectionEnable, setPupilSection]:[boolean,React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [classViewURL, setClassViewURL]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>('');
-  
-  const formatEventTimeData:( EventStartDate: string,EventEndDate: string,EventPeriodNum: string)=> string = (
+  const [isLoader, setLoader]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
+  const [errCodeMessage, setErrCodeMessage]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
+  const [pupilDetailErrorCodeMessage, setPupilDetailErrorCodeMessage]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("");
+  const [groupMemberDetails, setGroupMemberDetailsData]: [
+    IGroupMemberDetailsResponse[],
+    React.Dispatch<React.SetStateAction<IGroupMemberDetailsResponse[]>>
+  ] = useState<IGroupMemberDetailsResponse[]>([]);
+  const [isPupilSectionEnable, setPupilSection]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(true);
+  const [classViewURL, setClassViewURL]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("");
+
+  const formatEventTimeData: (
+    EventStartDate: string,
+    EventEndDate: string,
+    EventPeriodNum: string
+  ) => string = (
     EventStartDate: string,
     EventEndDate: string,
     EventPeriodNum: string
@@ -50,27 +71,35 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
       : `${eventPeriodNum} | ${starttime} - ${endtime}`;
   };
 
-  const pupilSortLogic:(pupilList: IGroupMemberDetailsResponse[]) => void = (pupilList: IGroupMemberDetailsResponse[]) => {
-    const sortedPupilList:IGroupMemberDetailsResponse[] = [...pupilList].sort((a, b) =>
-      a.personalInfo.preferredSurname.localeCompare(
-        b.personalInfo.preferredSurname
-      )
+  const pupilSortLogic: (pupilList: IGroupMemberDetailsResponse[]) => void = (
+    pupilList: IGroupMemberDetailsResponse[]
+  ) => {
+    const sortedPupilList: IGroupMemberDetailsResponse[] = [...pupilList].sort(
+      (a, b) =>
+        a.personalInfo.preferredSurname.localeCompare(
+          b.personalInfo.preferredSurname
+        )
     );
     setGroupMemberDetailsData(sortedPupilList);
   };
 
-
-  const handleClassViewClick: () => void = () => {   
-    const classPeriodOrSessionId: string | null =    
-    ClassPeriodExternalId === null
-        ? EventDescription
-        : ClassPeriodExternalId;
-        const classViewUrl = `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/${GroupExternalId ?? ''}/${classPeriodOrSessionId ?? ''}/${EventInstanceExternalId ?? ''}`;
+  const handleClassViewClick: () => void = () => {
+    const classPeriodOrSessionId: string | null =
+      ClassPeriodExternalId === null ? EventDescription : ClassPeriodExternalId;
+    const classViewUrl = `${
+      envConfig.SEATING_PLAN_CLASS_VIEW_URL
+    }/classview/select-seating-plan/${GroupExternalId ?? ""}/${
+      classPeriodOrSessionId ?? ""
+    }/${EventInstanceExternalId ?? ""}`;
     setClassViewURL(classViewUrl);
   };
 
   useEffect(() => {
-    const FetchGroupMemberDetails:(groupExternalId: string,EventStartDate: string,EventEndDate: string) => Promise<void> = async (
+    const FetchGroupMemberDetails: (
+      groupExternalId: string,
+      EventStartDate: string,
+      EventEndDate: string
+    ) => Promise<void> = async (
       groupExternalId: string,
       EventStartDate: string,
       EventEndDate: string
@@ -85,14 +114,17 @@ export const RightSidePanel: (props: IRightSidePanelProps) => JSX.Element = (
           setErrCodeMessage(false);
           setLoader(false);
           setGroupMemberDetailsData([]);
-          setPupilSection(false)
+          setPupilSection(false);
         } else {
-          const responseData:IGroupMemberDetailsResponse[] |null = await FetchGroupMemberDetailsData(
-            groupExternalId,
-            EventStartDate,
-            EventEndDate
-          );
-         if(responseData!==undefined && responseData!==null){ pupilSortLogic(responseData)}
+          const responseData: IGroupMemberDetailsResponse[] | null =
+            await FetchGroupMemberDetailsData(
+              groupExternalId,
+              EventStartDate,
+              EventEndDate
+            );
+          if (responseData !== undefined && responseData !== null) {
+            pupilSortLogic(responseData);
+          }
           setErrCodeMessage(false);
           setLoader(false);
           setPupilSection(true);

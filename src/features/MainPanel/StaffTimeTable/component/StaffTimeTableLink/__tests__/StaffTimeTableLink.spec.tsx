@@ -4,38 +4,38 @@ import gtmAnalytics from "../../../../../../shared/utils/analytics";
 import StaffTimeTableLinkview from "../StaffTimeTableLink.view";
 import { envConfig } from "../../../../../../shared/utils";
 
-  jest.mock('../../../../../../shared/utils', () => ({
-    envConfig: {
-        REGISTER_BASE_URL: "https://example.com",
-        SCHOOL_BASE_URL: "https://example.com"
-    },
-  }));
+jest.mock("../../../../../../shared/utils", () => ({
+  envConfig: {
+    REGISTER_BASE_URL: "https://example.com",
+    SCHOOL_BASE_URL: "https://example.com"
+  }
+}));
 
 describe("staffTimeTableLink component", () => {
-
   test("renders correctly", () => {
-   const {getByText} =  render(<StaffTimeTableLinkview />);
+    const { getByText } = render(<StaffTimeTableLinkview />);
 
     expect(getByText("staffTimetable.stafftimetablelink")).toBeInTheDocument();
-    expect(getByText("staffTimetable.stafftimetablelinktext")).toBeInTheDocument();
+    expect(
+      getByText("staffTimetable.stafftimetablelinktext")
+    ).toBeInTheDocument();
   });
 
-    test("should render the component with the correct link", () => {
-        const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
+  test("should render the component with the correct link", () => {
+    const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =
       jest.spyOn(gtmAnalytics, "pushEvent");
-      const { getByTestId } = render(<StaffTimeTableLinkview />);
-  
-      const link = getByTestId("link-staffid"); 
-    
-     
-      fireEvent.click(link);
-      expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
-      expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
-        event: "click",
-        linkText: "View full timetable",
-        linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
-        clickType: "link",
-        clickLocation: "body"
-      });
+    const { getByTestId } = render(<StaffTimeTableLinkview />);
+
+    const link = getByTestId("link-staffid");
+
+    fireEvent.click(link);
+    expect(gtmAnalyticsPushSpy).toHaveBeenCalledTimes(1);
+    expect(gtmAnalyticsPushSpy).toHaveBeenCalledWith({
+      event: "click",
+      linkText: "View full timetable",
+      linkUrl: `${envConfig.SCHOOL_BASE_URL}/staff-timetable`,
+      clickType: "link",
+      clickLocation: "body"
     });
+  });
 });

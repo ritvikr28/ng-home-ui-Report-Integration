@@ -8,16 +8,16 @@ declare global {
     AppInsightsConnectionString: string;
     REACT_GA_TRACKING_ID: string;
     IS_NEWHOMEPAGE_ACCESSIBLE: boolean;
-    SCHOOL_BASE_URL:string;
-    REGISTER_BASE_URL: string;    
+    SCHOOL_BASE_URL: string;
+    REGISTER_BASE_URL: string;
     LEARNER_UI_URL: string;
     LEARNER_API_URL: string;
-    REACT_ENVIRONMENT:string;
-    APPLICATION:string;
-    INVITE_STAFF_URL:string;
-    HOME_UI_BASEURL:string;
+    REACT_ENVIRONMENT: string;
+    APPLICATION: string;
+    INVITE_STAFF_URL: string;
+    HOME_UI_BASEURL: string;
     SEATING_PLAN_CLASS_VIEW_URL: string;
-    REFRESH_INTERVAL:number;
+    REFRESH_INTERVAL: number;
     CLASSVIEW_BASE_URL: string;
   }
 }
@@ -45,7 +45,7 @@ export const fetchConfigData = async () => {
   return configItem;
 };
 
-export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
+export const SetupEnvConfig: (data: any) => void = async (data: any) => {
   try {
     const configData: any = data;
 
@@ -54,15 +54,15 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.REACT_GA_TRACKING_ID = configData.REACT_GA_TRACKING_ID;
     window.IS_NEWHOMEPAGE_ACCESSIBLE = configData.IS_NEWHOMEPAGE_ACCESSIBLE;
     window.SCHOOL_BASE_URL = configData.SCHOOL_BASE_URL;
-    window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;    
+    window.REGISTER_BASE_URL = configData.REGISTER_BASE_URL;
     window.LEARNER_UI_URL = configData.LEARNER_UI_URL;
-    window.LEARNER_API_URL=configData.LEARNER_API_URL;
-    window.REACT_ENVIRONMENT=configData.ASPNETCORE_ENVIRONMENT;
-    window.APPLICATION=configData.APPLICATION;
-    window.INVITE_STAFF_URL=configData.INVITE_STAFF_URL;
-    window.HOME_UI_BASEURL=configData.HOME_UI_BASEURL;
-    window.SEATING_PLAN_CLASS_VIEW_URL=configData.SEATING_PLAN_CLASS_VIEW_URL;
-    window.REFRESH_INTERVAL=configData.REFRESH_INTERVAL;
+    window.LEARNER_API_URL = configData.LEARNER_API_URL;
+    window.REACT_ENVIRONMENT = configData.ASPNETCORE_ENVIRONMENT;
+    window.APPLICATION = configData.APPLICATION;
+    window.INVITE_STAFF_URL = configData.INVITE_STAFF_URL;
+    window.HOME_UI_BASEURL = configData.HOME_UI_BASEURL;
+    window.SEATING_PLAN_CLASS_VIEW_URL = configData.SEATING_PLAN_CLASS_VIEW_URL;
+    window.REFRESH_INTERVAL = configData.REFRESH_INTERVAL;
     window.CLASSVIEW_BASE_URL = configData.CLASSVIEW_BASE_URL;
 
     UpdateEnvConfig({
@@ -70,16 +70,16 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       AppInsightsConnectionString: window.AppInsightsConnectionString,
       REACT_GA_TRACKING_ID: window.REACT_GA_TRACKING_ID,
       IS_NEWHOMEPAGE_ACCESSIBLE: window.IS_NEWHOMEPAGE_ACCESSIBLE,
-      SCHOOL_BASE_URL:window.SCHOOL_BASE_URL,
-      REGISTER_BASE_URL: window.REGISTER_BASE_URL,      
+      SCHOOL_BASE_URL: window.SCHOOL_BASE_URL,
+      REGISTER_BASE_URL: window.REGISTER_BASE_URL,
       LEARNER_UI_URL: window.LEARNER_UI_URL,
-      LEARNER_API_URL:window.LEARNER_API_URL,
-      REACT_ENVIRONMENT:window.REACT_ENVIRONMENT,
-      APPLICATION:window.APPLICATION,
-      INVITE_STAFF_URL:window.INVITE_STAFF_URL,
-      HOME_UI_BASEURL:window.HOME_UI_BASEURL,
-      SEATING_PLAN_CLASS_VIEW_URL:window.SEATING_PLAN_CLASS_VIEW_URL,
-      REFRESH_INTERVAL:window.REFRESH_INTERVAL,
+      LEARNER_API_URL: window.LEARNER_API_URL,
+      REACT_ENVIRONMENT: window.REACT_ENVIRONMENT,
+      APPLICATION: window.APPLICATION,
+      INVITE_STAFF_URL: window.INVITE_STAFF_URL,
+      HOME_UI_BASEURL: window.HOME_UI_BASEURL,
+      SEATING_PLAN_CLASS_VIEW_URL: window.SEATING_PLAN_CLASS_VIEW_URL,
+      REFRESH_INTERVAL: window.REFRESH_INTERVAL,
       CLASSVIEW_BASE_URL: window.CLASSVIEW_BASE_URL
     });
   } catch (ex) {

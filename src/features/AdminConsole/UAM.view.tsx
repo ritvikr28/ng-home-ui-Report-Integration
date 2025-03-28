@@ -13,16 +13,17 @@ import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
 import { envConfig } from "../../shared/utils";
 import "./uamStyle.scss";
 
- /* istanbul ignore next */
+/* istanbul ignore next */
 const UAM: () => JSX.Element = () => {
-  const userManagementRef :React.RefObject<HTMLDivElement> = useRef<HTMLDivElement | null>(null);
+  const userManagementRef: React.RefObject<HTMLDivElement> =
+    useRef<HTMLDivElement | null>(null);
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-  const isAdminconsoleView :boolean = useMediaQuery(
+  const isAdminconsoleView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1024px)"
   );
- 
+
   const [isOpen, setIsOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -42,13 +43,11 @@ const UAM: () => JSX.Element = () => {
   useEffect(() => {
     const observer = new MutationObserver(() => {
       if (userManagementRef.current) {
-       
         const textContent = userManagementRef.current.innerText || "";
         setHasData(!textContent.includes("No data to display"));
       }
     });
 
-   
     if (userManagementRef.current) {
       observer.observe(userManagementRef.current, {
         childList: true,
@@ -58,13 +57,13 @@ const UAM: () => JSX.Element = () => {
     }
 
     return () => {
-      observer.disconnect(); 
+      observer.disconnect();
     };
   }, []);
   useEffect(() => {
     document.body.style.overflowY = hasData ? "auto" : "hidden";
     return () => {
-      document.body.style.overflowY = "auto"; 
+      document.body.style.overflowY = "auto";
     };
   }, [hasData]);
 
@@ -90,7 +89,7 @@ const UAM: () => JSX.Element = () => {
             />
           )}
           <LocalisedMenu
-            customHeight={(isAdminconsoleView)? 369.5 : 169.5}
+            customHeight={isAdminconsoleView ? 369.5 : 169.5}
             menuHeading="Admin console"
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}

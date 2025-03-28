@@ -4,12 +4,12 @@ import * as PupilDemographics from "../PupilDemographics.logic";
 
 jest.mock("../PupilDemographics.logic", () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: jest.fn()
 }));
 
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
-  useMediaQuery: jest.fn(),
+  useMediaQuery: jest.fn()
 }));
 
 describe("PupilDemographicsView", () => {
@@ -19,8 +19,8 @@ describe("PupilDemographicsView", () => {
       pupilPremiumPercentage: 0,
       totalPupilPremium: 0,
       fsmePercentage: 24.28,
-      totalPupilFsme: 109,
-    },
+      totalPupilFsme: 109
+    }
   };
 
   beforeEach(() => {
@@ -31,7 +31,7 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: null,
       loading: true,
-      error: null,
+      error: null
     });
 
     render(<PupilDemographicsView />);
@@ -44,7 +44,7 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: null,
       loading: false,
-      error: "Failed to fetch data",
+      error: "Failed to fetch data"
     });
 
     render(<PupilDemographicsView />);
@@ -57,11 +57,13 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: mockData,
       loading: false,
-      error: null,
+      error: null
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/pupildemographics.pupilsonroll/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/pupildemographics.pupilsonroll/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/449/i)).toBeInTheDocument();
   });
 
@@ -69,7 +71,7 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: { payload: { pupilOnRoll: null } },
       loading: false,
-      error: "Failed to fetch data",
+      error: "Failed to fetch data"
     });
 
     render(<PupilDemographicsView />);
@@ -82,20 +84,21 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: mockData,
       loading: false,
-      error: null,
+      error: null
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/pupildemographics.pupilpremium/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/pupildemographics.pupilpremium/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/0% \(0\)/i)).toBeInTheDocument();
-    
   });
 
   test("renders error state for FSM", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: { payload: { pupilOnRoll: null, pupilPremiumPercentage: null } },
       loading: false,
-      error: "Failed to fetch data",
+      error: "Failed to fetch data"
     });
 
     render(<PupilDemographicsView />);
@@ -106,11 +109,13 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: mockData,
       loading: false,
-      error: null,
+      error: null
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.getByText(/pupildemographics.freeschoolmeals/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/pupildemographics.freeschoolmeals/i)
+    ).toBeInTheDocument();
     expect(screen.getByText(/24.28% \(109\)/i)).toBeInTheDocument();
   });
 
@@ -118,11 +123,12 @@ describe("PupilDemographicsView", () => {
     (PupilDemographics.default as jest.Mock).mockReturnValue({
       data: { payload: { pupilOnRoll: null } },
       loading: false,
-      error: null,
+      error: null
     });
 
     render(<PupilDemographicsView />);
-    expect(screen.queryByText(/pupildemographics.pupilsonroll/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/pupildemographics.pupilsonroll/i)
+    ).not.toBeInTheDocument();
   });
-
 });

@@ -3,20 +3,22 @@ import { useMediaQuery } from "@essnextgen/ui-kit";
 import NotifyExceptionView from "../NotifyException.view";
 
 jest.mock("@essnextgen/ui-kit", () => ({
-  Notification: jest.fn(({ onClickClose, title, message, status, ...props }) => (
-    <div {...props}>
-      <h1>{title}</h1>
-      <p>{message}</p>
-      <p>Status: {status}</p>
-      <button onClick={onClickClose} type="submit">
-        Close
-      </button>
-    </div>
-  )),
+  Notification: jest.fn(
+    ({ onClickClose, title, message, status, ...props }) => (
+      <div {...props}>
+        <h1>{title}</h1>
+        <p>{message}</p>
+        <p>Status: {status}</p>
+        <button onClick={onClickClose} type="submit">
+          Close
+        </button>
+      </div>
+    )
+  ),
   NotificationStatus: {
-    WARNING: "warning",
+    WARNING: "warning"
   },
-  useMediaQuery: jest.fn(() => true), // Simulate default as mobile view
+  useMediaQuery: jest.fn(() => true) // Simulate default as mobile view
 }));
 
 describe("NotifyExceptionView", () => {
@@ -32,11 +34,15 @@ describe("NotifyExceptionView", () => {
     );
 
     // Check if Notification renders
-    const notificationElement = container.querySelector("#notification-open-panel");
+    const notificationElement = container.querySelector(
+      "#notification-open-panel"
+    );
     expect(notificationElement).toBeInTheDocument();
 
     // Check for title and message
-    expect(screen.getByText("Unable to process the request.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Unable to process the request.")
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team."
@@ -55,7 +61,9 @@ describe("NotifyExceptionView", () => {
       <NotifyExceptionView setDisableNotification={setDisableNotification} />
     );
 
-    expect(container.querySelector("#notification-open-panel")).not.toBeInTheDocument();
+    expect(
+      container.querySelector("#notification-open-panel")
+    ).not.toBeInTheDocument();
   });
 
   test("calls setDisableNotification when close button is clicked", () => {

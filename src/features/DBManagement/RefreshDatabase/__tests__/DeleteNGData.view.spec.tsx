@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  cleanup
+} from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import DeleteNGDataView from "../DeleteNGData.view";
 import { service } from "../../../../shared/utils";
@@ -13,8 +19,8 @@ jest.mock("../../../../shared/utils", () => ({
   },
   getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
   envConfig: {
-    BASE_URL: "https://example.com",
-  },
+    BASE_URL: "https://example.com"
+  }
 }));
 
 describe("DeleteNGDataView Component", () => {
@@ -64,7 +70,9 @@ describe("DeleteNGDataView Component", () => {
       expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
     });
 
-    expect(await screen.findByText("Deletion of NG Data in Progress")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Deletion of NG Data in Progress")
+    ).toBeInTheDocument();
   });
 
   it("should handle button click and disable proceed button if already deleted", async () => {
@@ -87,12 +95,16 @@ describe("DeleteNGDataView Component", () => {
       expect(statusMock).toHaveBeenCalledWith("Deleted");
     });
 
-    const proceedButton = await screen.findByRole("button", { name: /Proceed/i });
+    const proceedButton = await screen.findByRole("button", {
+      name: /Proceed/i
+    });
     expect(proceedButton).toBeDisabled();
   });
 
   it("should handle button click and call handleException on error", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+    (service.get as jest.Mock).mockRejectedValueOnce(
+      new Error("Network Error")
+    );
 
     render(
       <DeleteNGDataView
@@ -134,7 +146,9 @@ describe("DeleteNGDataView Component", () => {
   });
 
   it("should handle delete action and call handleException on error", async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+    (service.post as jest.Mock).mockRejectedValueOnce(
+      new Error("Network Error")
+    );
 
     render(
       <DeleteNGDataView
@@ -195,7 +209,6 @@ describe("DeleteNGDataView Component", () => {
       expect(handleExceptionMock).toHaveBeenCalled();
     });
   });
-
 
   it("should disable the Proceed button when data is Deleted", async () => {
     const mockApiResponse = {

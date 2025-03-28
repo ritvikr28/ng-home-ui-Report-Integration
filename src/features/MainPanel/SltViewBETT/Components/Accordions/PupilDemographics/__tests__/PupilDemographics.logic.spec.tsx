@@ -19,9 +19,9 @@ describe("PupilDemographics", () => {
         pupilPremiumPercentage: 0,
         totalPupilPremium: 0,
         fsmePercentage: 24.28,
-        totalPupilFsme: 109,
+        totalPupilFsme: 109
       },
-      status: 200,
+      status: 200
     };
 
     (FetchSchoolInsights as jest.Mock).mockResolvedValue(mockResponse);

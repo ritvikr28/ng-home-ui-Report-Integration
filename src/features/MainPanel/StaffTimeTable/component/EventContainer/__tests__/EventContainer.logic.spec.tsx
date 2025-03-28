@@ -29,16 +29,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Science",
+        name: "Science"
       },
       supervisors: [
         {
@@ -46,7 +46,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -61,7 +61,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     },
@@ -78,16 +78,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Marathi",
+        name: "Marathi"
       },
       supervisors: [
         {
@@ -95,7 +95,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -110,7 +110,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     },
@@ -127,16 +127,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Hindi",
+        name: "Hindi"
       },
       supervisors: [
         {
@@ -144,7 +144,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -159,7 +159,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: {
         externalId: "e2823d8b-fbad-4820-a56c-868fac364117",
@@ -180,16 +180,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Sanskrit",
+        name: "Sanskrit"
       },
       supervisors: [
         {
@@ -197,7 +197,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -217,7 +217,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       }
     },
     {
@@ -233,16 +233,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
       group: {
         externalId: "335eb87a-6ce9-4fff-b10d-203ca2a632ef",
-        shortName: "7B/Sc",
+        shortName: "7B/Sc"
       },
       room: {
         externalId: "9242dd90-4787-415a-b161-846b8ab223bb",
         roomCode: "S5",
-        roomName: "Science Lab 5",
+        roomName: "Science Lab 5"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Algebra",
+        name: "Algebra"
       },
       supervisors: [
         {
@@ -250,7 +250,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -265,7 +265,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     },
@@ -282,16 +282,16 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
       yearGroupId: "2b459f51-407d-4a52-ab4a-341f89259fb1",
       group: {
         externalId: "335eb87a-6ce9-4fff-b10d-203ca2a632ef",
-        shortName: "7B/Sc",
+        shortName: "7B/Sc"
       },
       room: {
         externalId: "9242dd90-4787-415a-b161-846b8ab223bb",
         roomCode: "S5",
-        roomName: "Science Lab 5",
+        roomName: "Science Lab 5"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Geometry",
+        name: "Geometry"
       },
       supervisors: [
         {
@@ -299,7 +299,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -314,7 +314,7 @@ const mockStaffTimeTableEventsResponseWithSixRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     }
@@ -335,16 +335,16 @@ const mockStaffTimeTableEventsResponseWithOneRecords: IStaffTimeTableEventsRespo
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Science",
+        name: "Science"
       },
       supervisors: [
         {
@@ -352,7 +352,7 @@ const mockStaffTimeTableEventsResponseWithOneRecords: IStaffTimeTableEventsRespo
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -367,7 +367,7 @@ const mockStaffTimeTableEventsResponseWithOneRecords: IStaffTimeTableEventsRespo
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     }
@@ -388,16 +388,16 @@ const mockStaffTimeTableEventsResponseWithOneRecordsNullcheck: IStaffTimeTableEv
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Science",
+        name: "Science"
       },
       supervisors: [
         {
@@ -405,7 +405,7 @@ const mockStaffTimeTableEventsResponseWithOneRecordsNullcheck: IStaffTimeTableEv
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: null,
@@ -420,7 +420,7 @@ const mockStaffTimeTableEventsResponseWithOneRecordsNullcheck: IStaffTimeTableEv
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     }
@@ -443,16 +443,16 @@ const mockStaffTimeTableEventsResponseWithCoverStaffRecord: IStaffTimeTableEvent
       yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
       group: {
         externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-        shortName: "10x/Sc2",
+        shortName: "10x/Sc2"
       },
       room: {
         externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
         roomCode: "S3",
-        roomName: "Science Lab 3",
+        roomName: "Science Lab 3"
       },
       subject: {
         externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-        name: "Science",
+        name: "Science"
       },
       supervisors: [
         {
@@ -460,13 +460,14 @@ const mockStaffTimeTableEventsResponseWithCoverStaffRecord: IStaffTimeTableEvent
           forename: "Lynn",
           surname: "Chase",
           preferredForename: null,
-          preferredSurname: null,
+          preferredSurname: null
         }
       ],
       isCovered: true,
       isCovering: false,
       originalStaffExternalID: "93fbd183-c32b-40a6-93d0-ab5187a2aa08",
-      coveringStaffExternalID: "339A9B54-769D-466B-BAAD-523B72E2A7A3, 7B12311A-FFB2-47B6-88B1-537624D3D073",
+      coveringStaffExternalID:
+        "339A9B54-769D-466B-BAAD-523B72E2A7A3, 7B12311A-FFB2-47B6-88B1-537624D3D073",
       eventInstanceExternalId: "62e2f4e9-453a-4a53-a940-139a492f5f96",
       classPeriodExternalId: "9b9fa124-fcda-4db0-ad71-0f73e7c09ea7",
       yearGroupExternalId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
@@ -475,7 +476,7 @@ const mockStaffTimeTableEventsResponseWithCoverStaffRecord: IStaffTimeTableEvent
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       },
       roomCover: null
     }
@@ -495,16 +496,16 @@ const mockStaffTimeTableEventsResponseWithCoveringStaffRecord = [
     yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
     group: {
       externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-      shortName: "10x/Sc2",
+      shortName: "10x/Sc2"
     },
     room: {
       externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
       roomCode: "S3",
-      roomName: "Science Lab 3",
+      roomName: "Science Lab 3"
     },
     subject: {
       externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-      name: "Science",
+      name: "Science"
     },
     supervisors: [
       {
@@ -512,7 +513,7 @@ const mockStaffTimeTableEventsResponseWithCoveringStaffRecord = [
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       }
     ],
     isCovered: false,
@@ -527,7 +528,7 @@ const mockStaffTimeTableEventsResponseWithCoveringStaffRecord = [
       forename: "Lynn",
       surname: "Chase",
       preferredForename: null,
-      preferredSurname: null,
+      preferredSurname: null
     },
     roomCover: null
   }
@@ -542,7 +543,7 @@ const mockStaffApiResponseForCoverTeacher = {
       surname: "Peters",
       isTeachingStaff: true,
       preferredForename: "Brenda",
-      preferredSurname: "Peters",
+      preferredSurname: "Peters"
     },
     {
       externalId: "7B12311A-FFB2-47B6-88B1-537624D3D073",
@@ -551,17 +552,17 @@ const mockStaffApiResponseForCoverTeacher = {
       surname: "Camby",
       isTeachingStaff: true,
       preferredForename: "Arthur",
-      preferredSurname: "Camby",
+      preferredSurname: "Camby"
     }
   ],
   error: "",
-  status: 200,
+  status: 200
 };
 
 const mockStaffApiResponseForStaffApiResponsePayloadReturnsNull = {
   payload: null,
   error: "",
-  status: 200,
+  status: 200
 };
 
 const mockStaffApiResponseForStaffApiResponseReturnsNull = null;
@@ -580,16 +581,16 @@ const mockStaffApiResponseForOrgininalStaffDetailReturnsNull = [
     yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
     group: {
       externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-      shortName: "10x/Sc2",
+      shortName: "10x/Sc2"
     },
     room: {
       externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
       roomCode: "S3",
-      roomName: "Science Lab 3",
+      roomName: "Science Lab 3"
     },
     subject: {
       externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-      name: "Science",
+      name: "Science"
     },
     supervisors: [
       {
@@ -597,7 +598,7 @@ const mockStaffApiResponseForOrgininalStaffDetailReturnsNull = [
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       }
     ],
     isCovered: false,
@@ -612,7 +613,7 @@ const mockStaffApiResponseForOrgininalStaffDetailReturnsNull = [
       forename: "Lynn",
       surname: "Chase",
       preferredForename: null,
-      preferredSurname: null,
+      preferredSurname: null
     },
     roomCover: null
   }
@@ -632,16 +633,16 @@ const mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue = [
     yearGroupId: "d1c94243-c70e-4c9f-870a-a2a61a7e838d",
     group: {
       externalId: "6d6ce6d4-8652-47e5-92d5-7cd0bc877517",
-      shortName: "10x/Sc2",
+      shortName: "10x/Sc2"
     },
     room: {
       externalId: "0fc24a31-779f-416e-87ba-e7d34d1dd9a5",
       roomCode: "S3",
-      roomName: "Science Lab 3",
+      roomName: "Science Lab 3"
     },
     subject: {
       externalId: "cac55de6-6878-456c-bde4-096fa3af0c48",
-      name: "Science",
+      name: "Science"
     },
     supervisors: [
       {
@@ -649,7 +650,7 @@ const mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue = [
         forename: "Lynn",
         surname: "Chase",
         preferredForename: null,
-        preferredSurname: null,
+        preferredSurname: null
       }
     ],
     isCovered: true,
@@ -664,7 +665,7 @@ const mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue = [
       forename: "Lynn",
       surname: "Chase",
       preferredForename: null,
-      preferredSurname: null,
+      preferredSurname: null
     },
     roomCover: null
   }
@@ -677,13 +678,13 @@ describe("EventContainer", () => {
 
   jest.mock("react", () => ({
     ...jest.requireActual("react"),
-    useState: jest.fn(),
+    useState: jest.fn()
   }));
 
   const togglePanel = jest.fn((externalId) => {
     setIsOpen((prevIsOpen: any) => ({
       ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId],
+      [externalId]: !prevIsOpen[externalId]
     }));
   });
 
@@ -695,7 +696,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and have 6 records", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithSixRecords,
+      responseData: mockStaffTimeTableEventsResponseWithSixRecords
     };
 
     jest
@@ -716,7 +717,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and have less than 6 record", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithOneRecords,
+      responseData: mockStaffTimeTableEventsResponseWithOneRecords
     };
 
     jest
@@ -729,7 +730,9 @@ describe("EventContainer", () => {
     expect(
       await screen.findByText(/10x\/Sc2\s*\|\s*Science/)
     ).toBeInTheDocument();
-    expect(await screen.findByText("stafftimetable.nomoreevent")).toBeInTheDocument();
+    expect(
+      await screen.findByText("stafftimetable.nomoreevent")
+    ).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
   });
@@ -737,7 +740,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and return null for formateventPeriodNum ", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithOneRecordsNullcheck,
+      responseData: mockStaffTimeTableEventsResponseWithOneRecordsNullcheck
     };
 
     jest
@@ -750,7 +753,9 @@ describe("EventContainer", () => {
     expect(
       await screen.findByText(/10x\/Sc2\s*\|\s*Science/)
     ).toBeInTheDocument();
-    expect(await screen.findByText("stafftimetable.nomoreevent")).toBeInTheDocument();
+    expect(
+      await screen.findByText("stafftimetable.nomoreevent")
+    ).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(200);
   });
@@ -758,7 +763,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and original staff details response returns null", async () => {
     const mockRes = {
       status: 200,
-      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull,
+      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull
     };
 
     jest
@@ -785,7 +790,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and original staff API response returns null", async () => {
     const mockRes = {
       status: 200,
-      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull,
+      responseData: mockStaffApiResponseForOrgininalStaffDetailReturnsNull
     };
 
     jest
@@ -810,7 +815,7 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and Orginal StaffDetail IsCovered Is True", async () => {
     const mockRes = {
       status: 200,
-      responseData: mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue,
+      responseData: mockStaffApiResponseForOriginalStaffDetailIsCoveredIsTrue
     };
 
     jest
@@ -835,7 +840,7 @@ describe("EventContainer", () => {
   test("No events display when status is 204", async () => {
     const mockres: any = {
       status: 204,
-      responseData: mockStaffTimeTableEventsNoRecords,
+      responseData: mockStaffTimeTableEventsNoRecords
     };
 
     jest
@@ -846,7 +851,7 @@ describe("EventContainer", () => {
 
     render(<EventContainer />);
 
-   // expect(await screen.findByText("No events today")).toBeInTheDocument();
+    // expect(await screen.findByText("No events today")).toBeInTheDocument();
     expect(setIsError).toHaveBeenCalledWith(false);
     expect(setStatus).toHaveBeenCalledWith(204);
   });
@@ -854,7 +859,7 @@ describe("EventContainer", () => {
   test("should handle unsuccessful data fetch", async () => {
     const mockres: any = {
       status: 500,
-      responseData: undefined,
+      responseData: undefined
     };
 
     jest
@@ -873,17 +878,14 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and have 1 record with cover staff scenario", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithCoverStaffRecord,
+      responseData: mockStaffTimeTableEventsResponseWithCoverStaffRecord
     };
 
     jest
       .spyOn(schoolDomainservices, "FetchStaffTimeTableEventsData")
       .mockResolvedValue(mockres);
     jest
-      .spyOn(
-        staffDomainServices,
-        "fetchStaffDetails"
-      )
+      .spyOn(staffDomainServices, "fetchStaffDetails")
       .mockResolvedValue(mockStaffApiResponseForCoverTeacher);
     setIsError(false);
     setStatus(mockres.status);
@@ -900,17 +902,14 @@ describe("EventContainer", () => {
   test("renders events successfully when status is 200 and have 1 record with covering staff scenario", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithCoveringStaffRecord,
+      responseData: mockStaffTimeTableEventsResponseWithCoveringStaffRecord
     };
 
     jest
       .spyOn(schoolDomainservices, "FetchStaffTimeTableEventsData")
       .mockResolvedValue(mockres);
     jest
-      .spyOn(
-        staffDomainServices,
-        "fetchStaffDetails"
-      )
+      .spyOn(staffDomainServices, "fetchStaffDetails")
       .mockResolvedValue(mockStaffApiResponseForCoverTeacher);
     setIsError(false);
     setStatus(mockres.status);
@@ -943,7 +942,7 @@ describe("EventContainer", () => {
         EventTime={{
           truncated: "08:00 AM - 09:00 AM",
           full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00"
-      }}
+        }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"
         EventEndDate="2023-11-08T09:00:00"
@@ -960,8 +959,8 @@ describe("EventContainer", () => {
         ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
-        EventDescription= "test"
-        />
+        EventDescription="test"
+      />
     );
 
     fireEvent.click(screen.getByTestId("eventid0"));
@@ -978,7 +977,7 @@ describe("EventContainer", () => {
         EventTime={{
           truncated: "08:00 AM - 09:00 AM",
           full: "2023-11-08T08:00:00 - 2023-11-08T09:00:00"
-      }}
+        }}
         RoomCode="A101"
         EventStartDate="2023-11-08T08:00:00"
         EventEndDate="2023-11-08T09:00:00"
@@ -996,7 +995,7 @@ describe("EventContainer", () => {
         ClassPeriodExternalId="62e2f4e9-453a-4a53-a940-139a492f5f96"
         EventInstanceExternalId="9b9fa124-fcda-4db0-ad71-0f73e7c09ea7"
         SelectedItem="1"
-        EventDescription= "test"
+        EventDescription="test"
       />
     );
     expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
@@ -1004,7 +1003,7 @@ describe("EventContainer", () => {
   test("should log google analytics", async () => {
     const mockres: any = {
       status: 200,
-      responseData: mockStaffTimeTableEventsResponseWithSixRecords,
+      responseData: mockStaffTimeTableEventsResponseWithSixRecords
     };
 
     const gtmAnalyticsPushSpy: jest.SpyInstance<void, [events: object]> =

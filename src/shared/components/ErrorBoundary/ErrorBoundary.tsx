@@ -13,7 +13,7 @@ const ErrorBoundary: ({}: ErrorBoundaryProps) => JSX.Element = ({
     error: Error,
     info: { componentStack: string }
   ) => {
-      console.log(error);
+    console.log(error);
     console.log(info);
   };
 

@@ -1,13 +1,12 @@
-import  React,{  useState } from 'react';
+import React, { useState } from "react";
 import { Icon, IconColor } from "@essnextgen/ui-kit";
 import QuickLink from "./QuickLink.view";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
-import  { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
-import { QuicklinkComponentProps } from './props';
-import { IFetchQuickLinkDetailsFunctionResponse } from '../../shared/model/quickLink/responsemodels';
+import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
+import { QuicklinkComponentProps } from "./props";
+import { IFetchQuickLinkDetailsFunctionResponse } from "../../shared/model/quickLink/responsemodels";
 import gtmAnalytics from "../../shared/utils/analytics";
- 
- 
+
 const QuickLinkLogic: React.FC<
   QuicklinkComponentProps & { isOpen: boolean }
 > = ({
@@ -20,20 +19,19 @@ const QuickLinkLogic: React.FC<
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-   
-  const [isStarClickable, setIsStarClickable]:any = useState(true);
+
+  const [isStarClickable, setIsStarClickable]: any = useState(true);
   const handleStarClick: (
     id: number,
     favorite: boolean,
     name: string
-  ) => Promise<void> = async (id: number, favorite: boolean,  name: string) => {
- 
-      try {
-        /* istanbul ignore next */
-        if (!isStarClickable) {         
-          return;
-        }
-        setIsStarClickable(false);
+  ) => Promise<void> = async (id: number, favorite: boolean, name: string) => {
+    try {
+      /* istanbul ignore next */
+      if (!isStarClickable) {
+        return;
+      }
+      setIsStarClickable(false);
       const { status }: { status: number } = await FetchQuickLinkpost(
         id,
         favorite
@@ -45,38 +43,34 @@ const QuickLinkLogic: React.FC<
           | undefined = await fetchQuickLinkDetails();
         if (responseapidata != null) {
           setQuickLinkData(responseapidata.response);
-         
         }
       }
-      
+
       type ElementType = "empty_star" | "filled_star";
       const elementType: ElementType = favorite ? "empty_star" : "filled_star";
-     
+
       gtmAnalytics.pushEvent({
         event: "interact_click",
         elementType,
         elementTextOrLabel: name,
         elementLocation: "body"
       });
-      
     } catch (error) {
-       /* istanbul ignore next */
+      /* istanbul ignore next */
       setIsError(true);
-     
-    }
-    finally {
+    } finally {
       /* istanbul ignore next */
       setTimeout(() => {
         setIsStarClickable(true);
       }, 1000);
     }
   };
- 
-  const displaystarredicon: (favorites: boolean, id: number,name: string) => JSX.Element = (
+
+  const displaystarredicon: (
     favorites: boolean,
     id: number,
     name: string
-  ) => (
+  ) => JSX.Element = (favorites: boolean, id: number, name: string) => (
     <div className="icon-quicklinkwidth">
       <Icon
         color={favorites ? IconColor.Primary500 : IconColor.Neutral800}
@@ -87,21 +81,18 @@ const QuickLinkLogic: React.FC<
         onClick={() => {
           handleStarClick(id, !favorites, name);
         }}
-    />
-    </div>
-    );
- 
-  return (
-   
-      <QuickLink
-        apiQuickLinkData={apiQuickLinkData}
-        apiError={isError}
-        displaystarredicon={displaystarredicon}
-        isOpen ={isOpen}
-        togglePanel={togglePanel as any}
-       
       />
-   
+    </div>
+  );
+
+  return (
+    <QuickLink
+      apiQuickLinkData={apiQuickLinkData}
+      apiError={isError}
+      displaystarredicon={displaystarredicon}
+      isOpen={isOpen}
+      togglePanel={togglePanel as any}
+    />
   );
 };
 export default QuickLinkLogic;

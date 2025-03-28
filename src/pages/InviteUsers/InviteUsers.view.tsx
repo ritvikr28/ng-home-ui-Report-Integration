@@ -69,8 +69,13 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
           }}
         />
       </GridItem>
-      <GridItem className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
-        <div className="invite-users-table-align" style={{ marginBottom: 16, width: "100%" }}>
+      <GridItem
+        className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}
+      >
+        <div
+          className="invite-users-table-align"
+          style={{ marginBottom: 16, width: "100%" }}
+        >
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
             className="essui-Breadcrumbs"
@@ -130,7 +135,8 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
               {
                 autoclose: false,
                 isShow: true,
-                message: "To manage user email name and role, please access SIMS7.",
+                message:
+                  "To manage user email name and role, please access SIMS7.",
                 title: "User details are managed in SIMS7",
                 variant: "highlight",
                 hideCloseButton: true

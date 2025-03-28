@@ -1,5 +1,15 @@
-import { Tag, TagSize, TagColor, Card, CardType, FormLabel } from "@essnextgen/ui-kit";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+import {
+  Tag,
+  TagSize,
+  TagColor,
+  Card,
+  CardType,
+  FormLabel
+} from "@essnextgen/ui-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
 import { AxiosResponse } from "axios";
@@ -26,7 +36,8 @@ export const FetchPreCheckStatus = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory>
 ): Promise<IPrecheckStatusApiResponse | null> => {
-  const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
+  const schoolData: ISchoolNameDataResponse | null =
+    await useFetchSchoolNameData();
   const orgName: string = schoolData == null ? "" : schoolData.schoolName;
   const orgId = getUserOrganisation();
 
@@ -45,12 +56,10 @@ export const FetchPreCheckStatus = async (
       } else {
         handleException();
       }
-    }
-    else if (err.message && err.message.includes("Invalid token")) {
+    } else if (err.message && err.message.includes("Invalid token")) {
       console.log("Invalid token detected. Redirecting...");
       history.replace("/unauthorized");
-    }
-    else {
+    } else {
       console.log("API call failed without a response from the server.");
     }
     console.log("Failed to fetch the status");
@@ -93,10 +102,9 @@ export const handleComplete: (props: IHandleCompleteProps) => string = (
     setActiveIndex(index + 1);
   }
   return updatedFlags[index];
-}
+};
 
 const RefreshDatabaseView: () => JSX.Element = () => {
-
   const history = useHistory();
 
   const [activeIndex, setActiveIndex]: [
@@ -109,10 +117,22 @@ const RefreshDatabaseView: () => JSX.Element = () => {
 
   // Define items with the components to be rendered
   items = [
-    { title: t("RefreshDB_T.moduleBlock.detachDB.content2"), component: DetachDatabaseView },
-    { title: t("RefreshDB_T.moduleBlock.DeleteNGData.title"), component: DeleteNGDataView },
-    { title: t("RefreshDB_T.moduleBlock.attachDB.content"), component: AttachDatabaseView },
-    { title: t("RefreshDB_T.moduleBlock.syncProcess.title"), component: SyncDataView }
+    {
+      title: t("RefreshDB_T.moduleBlock.detachDB.content2"),
+      component: DetachDatabaseView
+    },
+    {
+      title: t("RefreshDB_T.moduleBlock.DeleteNGData.title"),
+      component: DeleteNGDataView
+    },
+    {
+      title: t("RefreshDB_T.moduleBlock.attachDB.content"),
+      component: AttachDatabaseView
+    },
+    {
+      title: t("RefreshDB_T.moduleBlock.syncProcess.title"),
+      component: SyncDataView
+    }
   ];
 
   const [flagValues, setFlagValues]: [
@@ -151,36 +171,43 @@ const RefreshDatabaseView: () => JSX.Element = () => {
 
           // Map statuses to corresponding step labels
           const initialFlags = statuses.map((status, index) => {
-            if (index === 3) { // Assuming syncDataStatus is at index 3
-              if(status === "Active") return "";
-              if (status === "Completed" ) {
+            if (index === 3) {
+              // Assuming syncDataStatus is at index 3
+              if (status === "Active") return "";
+              if (status === "Completed") {
                 clearInterval(intervalId); // Stop auto-refresh
-                return "Completed";}
-             
-              if (status === "Not Started" || status === "In Progress") return "In Progress";
+                return "Completed";
+              }
+
+              if (status === "Not Started" || status === "In Progress")
+                return "In Progress";
               return ""; // Default to empty if unrecognized
             }
-            if (status === "Detached") return t("RefreshDB_T.moduleBlock.status.content3");
-            if (status === "Deleted") return t("RefreshDB_T.moduleBlock.status.content");
-            if (status === "Attached") return t("RefreshDB_T.moduleBlock.status.content1");
-            if (status === "In Progress") return t("RefreshDB_T.moduleBlock.status.content2");
-            
+            if (status === "Detached")
+              return t("RefreshDB_T.moduleBlock.status.content3");
+            if (status === "Deleted")
+              return t("RefreshDB_T.moduleBlock.status.content");
+            if (status === "Attached")
+              return t("RefreshDB_T.moduleBlock.status.content1");
+            if (status === "In Progress")
+              return t("RefreshDB_T.moduleBlock.status.content2");
+
             return ""; // Default to empty if unrecognized
           });
           setFlagValues(initialFlags);
 
           // Determine the active step
-          let activeStep = initialFlags.findIndex((flag) => flag === "In Progress");
+          let activeStep = initialFlags.findIndex(
+            (flag) => flag === "In Progress"
+          );
           if (activeStep === -1) {
             activeStep = initialFlags.findIndex((flag) => flag === "");
           }
           if (activeStep === -1) {
-              activeStep = items.length - 1; // Default to the last step if all are complete
-          
+            activeStep = items.length - 1; // Default to the last step if all are complete
           }
           setActiveIndex(activeStep);
-           // Stop auto-refresh if specific conditions are met
-      
+          // Stop auto-refresh if specific conditions are met
         }
       } catch (error) {
         console.log("Error fetching precheck status:");
@@ -198,7 +225,6 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     return () => clearInterval(intervalId);
   }, [history]); // Add history as a dependency
 
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -212,20 +238,23 @@ const RefreshDatabaseView: () => JSX.Element = () => {
         </div>
       )}
       <div id="list-item">
-        <Card id='refreshDB-card' type={CardType.Default}>
+        <Card id="refreshDB-card" type={CardType.Default}>
           {items.map((item, index) => {
             const CurrentComponent: ComponentType<any> = item.component;
             const isActive = index === activeIndex;
             const syncDataStatus = flagValues[3];
             return (
-              <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
+              <div
+                key={index}
+                style={{ pointerEvents: isActive ? "auto" : "none" }}
+              >
                 <div className="list-item" style={{ padding: "16px" }}>
                   <div style={{ display: "flex" }}>
-                    <FormLabel id='default-list-item' >
+                    <FormLabel id="default-list-item">
                       {`${index + 1}. ${item.title}`}
                     </FormLabel>
                     {flagValues[index].trim() !== "" && (
-                      <span style={{ marginLeft: "10px" }} >
+                      <span style={{ marginLeft: "10px" }}>
                         <Tag
                           size={TagSize.Small}
                           color={TagColor.Success}
@@ -253,7 +282,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                       }}
                       // Pass handleException to trigger notification in case of exception
                       handleException={handleException}
-                     syncDataStatus={syncDataStatus}
+                      syncDataStatus={syncDataStatus}
                     />
                   )}
                 </div>

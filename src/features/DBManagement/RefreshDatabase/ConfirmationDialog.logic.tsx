@@ -56,43 +56,45 @@ export const ConfirmDialog: React.FC<IProps> = ({
 
   return (
     <Dialog
-     id='cnd-dialog'
+      id="cnd-dialog"
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
-      onClose={()=>{
+      onClose={() => {
         handleOnSubmit();
-        handleOnClose();}}
+        handleOnClose();
+      }}
       title={title}
     >
-      <DialogContent className='dialog-content'>{description}</DialogContent>
-     
-        <DialogFooter>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '20px' }}>
-          
-            {optionalButton && (
-              <span style={{ marginLeft: '10px' }}>
-                <Button
-                  dataTestId={`${dataTestId}-close-btn`}
-                  onClick={handleOnClose}
-                  color={ButtonColor.Secondary}
+      <DialogContent className="dialog-content">{description}</DialogContent>
+
+      <DialogFooter>
+        <div
+          style={{ display: "flex", justifyContent: "flex-end", gap: "20px" }}
+        >
+          {optionalButton && (
+            <span style={{ marginLeft: "10px" }}>
+              <Button
+                dataTestId={`${dataTestId}-close-btn`}
+                onClick={handleOnClose}
+                color={ButtonColor.Secondary}
               >
                 {cancelActionButtonText}
               </Button>
-              </span>
-            )}
-            <Button
-                  dataTestId={`${dataTestId}-ok-btn`}
-                  onClick={() => {
-                    handleOnSubmit();
-                    handleOnClose();
-                  }}
-                  color={ButtonColor.Primary}
-                  >
-                  {confirmActionButtonText}
-              </Button>
-            </div>
-        </DialogFooter>
+            </span>
+          )}
+          <Button
+            dataTestId={`${dataTestId}-ok-btn`}
+            onClick={() => {
+              handleOnSubmit();
+              handleOnClose();
+            }}
+            color={ButtonColor.Primary}
+          >
+            {confirmActionButtonText}
+          </Button>
+        </div>
+      </DialogFooter>
     </Dialog>
   );
 };

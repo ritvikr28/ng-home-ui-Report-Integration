@@ -9,13 +9,13 @@ import QuickLinkLogic from "../../QuickLinks";
 
 jest.mock("../../../shared/utils", () => ({
   envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: "True",
-  },
+    IS_NEWHOMEPAGE_ACCESSIBLE: "True"
+  }
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  Redirect: jest.fn(() => null),
+  Redirect: jest.fn(() => null)
 }));
 const mockApiResponse: IQuickLinkApiResponse[] = [
   {
@@ -23,28 +23,28 @@ const mockApiResponse: IQuickLinkApiResponse[] = [
     name: "Link 1",
     link: "/link-1",
     favourite: true,
-    createdOn: "2023-01-01T12:00:00Z",
+    createdOn: "2023-01-01T12:00:00Z"
   },
   {
     id: 2,
     name: "Link 2",
     link: "/link-2",
     favourite: false,
-    createdOn: "2023-01-01T12:00:00Z",
+    createdOn: "2023-01-01T12:00:00Z"
   },
   {
     id: 3,
     name: "Link 3",
     link: "/link-3",
     favourite: true,
-    createdOn: "2023-01-01T12:00:00Z",
+    createdOn: "2023-01-01T12:00:00Z"
   },
   {
     id: 4,
     name: "Link 4",
     link: "/link-4",
     favourite: true,
-    createdOn: "2023-01-01T12:00:00Z",
+    createdOn: "2023-01-01T12:00:00Z"
   }
 ];
 
@@ -60,7 +60,7 @@ describe("<NewHomepageView />", () => {
   test("test state change for quick Link when response is not null", () => {
     const mockres: any = {
       status: 200,
-      response: mockApiResponse,
+      response: mockApiResponse
     };
     const setIsOpen = jest.fn();
     const setQuickLinkData = jest.fn();
@@ -79,7 +79,7 @@ describe("<NewHomepageView />", () => {
       .mockResolvedValueOnce(mockres);
     const getUserOrganisationMock = jest.fn();
     jest.mock("../../../shared/utils", () => ({
-      getUserOrganisation: getUserOrganisationMock,
+      getUserOrganisation: getUserOrganisationMock
     }));
     render(<NewHomepageView />);
     waitFor(() => {
@@ -91,7 +91,7 @@ describe("<NewHomepageView />", () => {
   test.skip("test state change for quick Link when response is null", () => {
     const mockres: any = {
       status: true,
-      response: [],
+      response: []
     };
     const setIsOpen = jest.fn();
     const setQuickLinkData = jest.fn();
@@ -113,7 +113,7 @@ describe("<NewHomepageView />", () => {
       .mockResolvedValueOnce(mockres);
     const getUserOrganisationMock = jest.fn();
     jest.mock("../../../shared/utils", () => ({
-      getUserOrganisation: getUserOrganisationMock,
+      getUserOrganisation: getUserOrganisationMock
     }));
 
     render(<NewHomepageView />);
@@ -128,7 +128,7 @@ describe("<NewHomepageView />", () => {
   test.skip("renders with mock data when apiQuickLinkData is available", async () => {
     const mockres: any = {
       status: false,
-      response: mockApiResponse,
+      response: mockApiResponse
     };
     const setIsOpen = jest.fn();
     const setQuickLinkData = jest.fn();
@@ -153,7 +153,7 @@ describe("<NewHomepageView />", () => {
     jest.spyOn(qicklink, "fetchQuickLinkDetails").mockResolvedValue(mockres);
     const getUserOrganisationMock = jest.fn();
     jest.mock("../../../shared/utils", () => ({
-      getUserOrganisation: getUserOrganisationMock,
+      getUserOrganisation: getUserOrganisationMock
     }));
 
     render(
@@ -175,7 +175,7 @@ describe("<NewHomepageView />", () => {
   test.skip("renders with no data when apiQuickLinkData is empty", () => {
     const mockres: any = {
       status: true,
-      response: [],
+      response: []
     };
     const setIsOpen = jest.fn();
     const setQuickLinkData = jest.fn();
@@ -197,7 +197,7 @@ describe("<NewHomepageView />", () => {
       .mockResolvedValueOnce(mockres);
     const getUserOrganisationMock = jest.fn();
     jest.mock("../../../shared/utils", () => ({
-      getUserOrganisation: getUserOrganisationMock,
+      getUserOrganisation: getUserOrganisationMock
     }));
 
     render(

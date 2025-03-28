@@ -15,23 +15,34 @@ jest.mock("../SyncData.view", () => () => <div>SyncDataView</div>);
 jest.mock("../../../../shared/utils", () => ({
   getUserOrganisation: jest.fn(() => "org123"),
   service: {
-    get: jest.fn(() => Promise.resolve({ data: { statusCode: 200, dbDetachedStatus: "Detached", deleteNGDataStatus: "Deleted", dbReAttachedStatus: "Attached", syncDataStatus: "Completed" } })),
-  },
+    get: jest.fn(() =>
+      Promise.resolve({
+        data: {
+          statusCode: 200,
+          dbDetachedStatus: "Detached",
+          deleteNGDataStatus: "Deleted",
+          dbReAttachedStatus: "Attached",
+          syncDataStatus: "Completed"
+        }
+      })
+    )
+  }
 }));
 
-
-jest.mock("../NotifyException.view", () => jest.fn(() => <div>NotifyExceptionView</div>));
+jest.mock("../NotifyException.view", () =>
+  jest.fn(() => <div>NotifyExceptionView</div>)
+);
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(() =>
     Promise.resolve({ schoolName: "Test School" })
-  ),
+  )
 }));
 jest.mock("../../../../shared/utils", () => ({
   envConfig: { BASE_URL: "http://test-url" },
   getUserOrganisation: jest.fn(() => "TestOrgId"),
   service: {
-    get: jest.fn(),
-  },
+    get: jest.fn()
+  }
 }));
 
 describe("RefreshDatabaseView Component", () => {
@@ -40,7 +51,7 @@ describe("RefreshDatabaseView Component", () => {
   });
 
   const mockHistory = {
-    push: jest.fn(),
+    push: jest.fn()
   };
 
   it("should display loading state initially", async () => {
@@ -48,7 +59,7 @@ describe("RefreshDatabaseView Component", () => {
     expect(screen.getByText("Loading...")).toBeInTheDocument();
     await act(async () => {});
   });
-  
+
   it("renders the steps after fetching precheck status", async () => {
     const mockResponse = {
       data: {
@@ -74,8 +85,8 @@ describe("RefreshDatabaseView Component", () => {
         dbDetachedStatus: "Detached",
         deleteNGDataStatus: "Deleted",
         dbReAttachedStatus: "Attached",
-        syncDataStatus: "Completed",
-      },
+        syncDataStatus: "Completed"
+      }
     };
 
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
@@ -87,18 +98,22 @@ describe("RefreshDatabaseView Component", () => {
   });
 
   it("should handle exception and show notification panel", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce({ response: { status: 400 } });
-  
+    (service.get as jest.Mock).mockRejectedValueOnce({
+      response: { status: 400 }
+    });
+
     render(<RefreshDatabaseView />);
-  
+
     // Wait for React updates
-    await act(async () => {});  
-    
+    await act(async () => {});
+
     expect(screen.getByText("NotifyExceptionView")).toBeInTheDocument();
   });
 
   it("calls FetchPreCheckStatus and handles error response", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce({ response: { status: 401 } });
+    (service.get as jest.Mock).mockRejectedValueOnce({
+      response: { status: 401 }
+    });
 
     const handleException = jest.fn();
     await FetchPreCheckStatus(handleException, mockHistory);
@@ -112,7 +127,7 @@ describe("RefreshDatabaseView Component", () => {
       value: "Detached",
       flagValues: ["", "Deleted", "Attached", "Completed"],
       setFlagValues: jest.fn(),
-      setActiveIndex: jest.fn(),
+      setActiveIndex: jest.fn()
     };
 
     const result = handleComplete(mockHandleCompleteProps);
@@ -132,7 +147,7 @@ describe("RefreshDatabaseView Component", () => {
       value: "Completed",
       flagValues: ["Detached", "Deleted", "Attached", ""],
       setFlagValues: jest.fn(),
-      setActiveIndex: jest.fn(),
+      setActiveIndex: jest.fn()
     };
 
     const result = handleComplete(mockHandleCompleteProps);
@@ -145,7 +160,6 @@ describe("RefreshDatabaseView Component", () => {
     expect(mockHandleCompleteProps.setActiveIndex).toHaveBeenCalledWith(0);
     expect(result).toBe("Completed");
   });
-
 
   it("displays notification panel on exception", async () => {
     jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Fetch failed"));
@@ -173,13 +187,12 @@ describe("RefreshDatabaseView Component", () => {
         dbDetachedStatus: "Detached",
         deleteNGDataStatus: "Deleted",
         dbReAttachedStatus: "Attached",
-        syncDataStatus: "Completed",
-      },
+        syncDataStatus: "Completed"
+      }
     };
-  
+
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
     const result = await FetchPreCheckStatus(jest.fn(), mockHistory);
     expect(result).toEqual(mockResponse.data);
   });
-
 });

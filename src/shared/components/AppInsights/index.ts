@@ -72,11 +72,10 @@ export const logger: loggerType = {
     }
     ai.trackTrace(
       {
-        message: `Home UI Logs - ${  message}`,
+        message: `Home UI Logs - ${message}`,
         severityLevel: SeverityLevel.Information
       },
       { pathName: window.location.pathname }
     );
   }
 };
-

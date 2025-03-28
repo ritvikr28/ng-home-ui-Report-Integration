@@ -19,7 +19,9 @@ const PupilDemographics = () => {
 
   useEffect(() => {
     const fetchData: () => Promise<void> = async () => {
-      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true);
+      const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(
+        true
+      );
       if (result) {
         setData(result);
       } else {

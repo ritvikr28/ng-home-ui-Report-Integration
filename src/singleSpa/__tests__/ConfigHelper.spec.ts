@@ -45,7 +45,7 @@ describe("fetchConfigData", () => {
     jest
       .spyOn(service, "get")
       .mockImplementation(() => Promise.resolve(axiosResponse));
-      const configData: any = await fetchConfigData();
+    const configData: any = await fetchConfigData();
     await SetupEnvConfig(configData);
     await waitFor(() => {
       expect(envConfig.BASE_URL).toBe("https://test.sims.co.uk/api");
@@ -61,12 +61,12 @@ describe("fetchConfigData", () => {
     expect(envConfig.BASE_URL).toBe("");
     expect(envConfig.AppInsightsConnectionString).toBe("");
   });
-  test("should envconfig initialization failed", async () => {  
+  test("should envconfig initialization failed", async () => {
     jest.spyOn(console, "log").mockImplementation(() => "error message");
 
     SetupEnvConfig(undefined);
-    
-    expect(console.log).toHaveBeenCalledTimes(1);    
+
+    expect(console.log).toHaveBeenCalledTimes(1);
     expect(envConfig.BASE_URL).toBe("");
     expect(envConfig.AppInsightsConnectionString).toBe("");
   });

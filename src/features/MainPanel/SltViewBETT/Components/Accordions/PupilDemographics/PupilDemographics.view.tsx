@@ -19,28 +19,27 @@ import {
 } from "@essnextgen/ui-intl-kit";
 import PupilDemographics from "./PupilDemographics.logic";
 
-
 const PupilDemographicsView: React.FC = () => {
   const {
     data,
     loading,
-    error,
+    error
   }: { data: any; loading: boolean; error: string | null } =
     PupilDemographics();
-    const { t }: UseTranslationResponse<"translation", undefined> =
+  const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-    const renderLoaderTileCard: () => JSX.Element = () => (
-      <TileCard
-        primaryText={
-          <Loader
-            loaderText="Please wait..."
-            loaderType={LoaderType.Circular}
-            className="tilecard-loader"
-          />
-        }
-        status={TileCardColor?.HIGHLIGHT}
-      />
-    );
+  const renderLoaderTileCard: () => JSX.Element = () => (
+    <TileCard
+      primaryText={
+        <Loader
+          loaderText="Please wait..."
+          loaderType={LoaderType.Circular}
+          className="tilecard-loader"
+        />
+      }
+      status={TileCardColor?.HIGHLIGHT}
+    />
+  );
 
   const renderErrorTileCard: (text: string, testId: string) => JSX.Element = (
     text,
@@ -121,7 +120,7 @@ const PupilDemographicsView: React.FC = () => {
           <Accordion defaultExpanded className="c-clear-margin">
             <AccordionHeader dataTestId="pupils-accordion-header-test-id">
               <span className="essui-global-typography-default-subtitle">
-              {t("pupildemographics.pupildemographicsheading")}
+                {t("pupildemographics.pupildemographicsheading")}
               </span>
             </AccordionHeader>
             <AccordionPanel

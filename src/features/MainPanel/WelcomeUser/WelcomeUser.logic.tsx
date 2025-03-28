@@ -20,7 +20,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = () => {
       } catch (error: any) {
         logger.error({
           error: "Error fetching username",
-          code: error.name,
+          code: error.name
         });
         console.error("Error fetching username:", error);
       }
