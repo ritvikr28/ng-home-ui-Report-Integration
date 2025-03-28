@@ -127,6 +127,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     /* eslint-enable */
   const onAuthenticated: any = () => {
     /* istanbul ignore next */
+    sessionStorage.removeItem("IS_NAVIGATED_FROM_COVER");
     if (authService.isAuthenticated()) {
       service.init();
       setIsServiceInitiated(true);
