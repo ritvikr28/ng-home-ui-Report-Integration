@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Notification as NotificationBanner,
-  NotificationStatus
-} from '@essnextgen/ui-kit';
+import { Notification as NotificationBanner, NotificationStatus } from '@essnextgen/ui-kit';
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import './style.scss';
 import { envConfig, getUserOrganisation } from '../../utils';
 
 export const WhatsNewBanner: () => JSX.Element = () => {
-  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const orgId = getUserOrganisation();
 
   useEffect(() => {
