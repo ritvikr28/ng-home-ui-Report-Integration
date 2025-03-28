@@ -22,5 +22,5 @@ export interface IEventContainerProps {
   SelectedItem: string;
   isOpen?: boolean;
   isOpenPanel?: boolean;
-  isLoader?: boolean;
+  isLoader?:boolean;
 }

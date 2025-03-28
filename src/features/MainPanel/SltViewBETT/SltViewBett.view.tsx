@@ -8,18 +8,17 @@ import PupilDemographics from "./Components/Accordions/PupilDemographics/PupilDe
 import { SectionTitle } from "../../../shared/components/SectionTitle/SectionTitle";
 
 const SltViewBettView: () => JSX.Element = () => {
-  const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   return (
-    <>
-      <SectionTitle title={t("sltviewbelt.schoolheadlines")} />
-      <AttendanceOverview />
-      <div className="new-divider-spacing">
-        <Divider />
-      </div>
-      <PupilDemographics />
-    </>
-  );
+  <>
+    <SectionTitle title={t("sltviewbelt.schoolheadlines")} />
+    <AttendanceOverview />
+    <div className="new-divider-spacing">
+      <Divider />
+    </div>
+    <PupilDemographics />
+  </>
+  )
 };
 
 export default SltViewBettView;

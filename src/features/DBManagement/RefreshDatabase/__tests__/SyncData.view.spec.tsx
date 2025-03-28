@@ -1,18 +1,14 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { Router } from "react-router-dom";
-import SyncDataView, {
-  FetchSyncStatus,
-  TriggerSync,
-  handleButtonClick
-} from "../SyncData.view";
+import SyncDataView, { FetchSyncStatus, TriggerSync, handleButtonClick } from "../SyncData.view";
 import { service } from "../../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse } from "../../../../shared/model/RefreshDatabase/responsemodel";
 import ConfirmDialog from "../ConfirmationDialog.logic";
 
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
-  useFetchSchoolNameData: jest.fn()
+  useFetchSchoolNameData: jest.fn(),
 }));
 
 jest.mock("../../../../shared/utils", () => ({
@@ -22,8 +18,8 @@ jest.mock("../../../../shared/utils", () => ({
   },
   getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
   envConfig: {
-    BASE_URL: "https://example.com"
-  }
+    BASE_URL: "https://example.com",
+  },
 }));
 
 describe("SyncDataView Component", () => {
@@ -53,7 +49,7 @@ describe("SyncDataView Component", () => {
   it("should call FetchSyncStatus with history and handle success response", async () => {
     const mockResponse = { statusCode: 200, uiStatus: "Completed" };
     (service.get as jest.Mock).mockResolvedValueOnce({
-      data: mockResponse
+      data: mockResponse,
     });
 
     const result = await FetchSyncStatus(mockHandleException, history);
@@ -64,7 +60,7 @@ describe("SyncDataView Component", () => {
 
   it("should redirect to unauthorized page when FetchSyncStatus gets 401", async () => {
     (service.get as jest.Mock).mockRejectedValueOnce({
-      response: { status: 401 }
+      response: { status: 401 },
     });
 
     await FetchSyncStatus(mockHandleException, history);
@@ -75,7 +71,7 @@ describe("SyncDataView Component", () => {
   it("should call TriggerSync and handle success response", async () => {
     const mockResponse = { statusCode: 200 };
     (service.post as jest.Mock).mockResolvedValueOnce({
-      data: mockResponse
+      data: mockResponse,
     });
 
     const result = await TriggerSync(mockHandleException, history);
@@ -86,7 +82,7 @@ describe("SyncDataView Component", () => {
 
   it("should redirect to unauthorized page when TriggerSync gets 401", async () => {
     (service.post as jest.Mock).mockRejectedValueOnce({
-      response: { status: 401 }
+      response: { status: 401 },
     });
 
     await TriggerSync(mockHandleException, history);
@@ -109,9 +105,7 @@ describe("SyncDataView Component", () => {
   });
 
   it("should call handleException on API failure", async () => {
-    (useFetchSchoolNameData as jest.Mock).mockRejectedValue(
-      new Error("API Error")
-    );
+    (useFetchSchoolNameData as jest.Mock).mockRejectedValue(new Error("API Error"));
 
     render(
       <SyncDataView
@@ -132,14 +126,14 @@ describe("SyncDataView Component", () => {
   it("should handle FetchSyncStatus successfully", async () => {
     const mockResponse: ISchoolDetailsDRApiResponse = {
       statusCode: 200,
-      uiStatus: "In Progress"
+      uiStatus: "In Progress",
     };
 
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.get as jest.Mock).mockResolvedValue({
-      data: mockResponse
+      data: mockResponse,
     });
 
     const response = await FetchSyncStatus(handleExceptionMock, history);
@@ -158,14 +152,14 @@ describe("SyncDataView Component", () => {
   it("should display 'Data Sync Failed' dialog when API response indicates failure", async () => {
     const mockResponse: ISchoolDetailsDRApiResponse = {
       statusCode: 500,
-      uiStatus: "Error"
+      uiStatus: "Error",
     };
 
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.get as jest.Mock).mockResolvedValue({
-      data: mockResponse
+      data: mockResponse,
     });
     handleButtonClick(
       mockHandleException,
@@ -197,19 +191,19 @@ describe("SyncDataView Component", () => {
     });
   });
 
-  it("should open Data Sync in progress dialog when API response indicates in progress status", async () => {
+  it('should open Data Sync in progress dialog when API response indicates in progress status', async () => {
     const mockResponse: ISchoolDetailsDRApiResponse = {
       statusCode: 200,
-      uiStatus: "In Progress"
+      uiStatus: "In Progress",
     };
-
+  
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.get as jest.Mock).mockResolvedValue({
-      data: mockResponse
+      data: mockResponse,
     });
-
+  
     render(
       <Router history={history}>
         <SyncDataView
@@ -220,26 +214,26 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
       expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
     });
   });
 
-  it("should open Data Sync successful dialog when API response indicates completed status", async () => {
+  it('should open Data Sync successful dialog when API response indicates completed status', async () => {
     const mockResponse = {
       statusCode: 200,
-      uiStatus: "Completed"
+      uiStatus: 'Completed',
     };
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: 'Test School',
     });
     (service.get as jest.Mock).mockResolvedValue({
-      data: mockResponse
+      data: mockResponse,
     });
 
     handleButtonClick(
@@ -263,7 +257,7 @@ describe("SyncDataView Component", () => {
         syncDataStatus="Completed"
       />
     );
-    fireEvent.click(screen.getByText("Sync"));
+    fireEvent.click(screen.getByText('Sync'));
 
     await waitFor(() => {
       expect(mockSetShowSyncCompleteDialog).toHaveBeenCalledWith(true);
@@ -271,9 +265,7 @@ describe("SyncDataView Component", () => {
   });
 
   it("should handle fetch sync status failure on mount", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce(
-      new Error("Network Error")
-    );
+    (service.get as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
 
     render(
       <SyncDataView
@@ -300,24 +292,20 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).toBeInTheDocument();
     });
-
+  
     const closeButton = screen.getByTestId("dialog-close-button");
     fireEvent.click(closeButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).not.toBeInTheDocument();
     });
   });
 
@@ -368,15 +356,13 @@ describe("SyncDataView Component", () => {
     fireEvent.click(syncButton);
 
     (service.get as jest.Mock).mockResolvedValueOnce({
-      data: { uiStatus: "InProgress" }
+      data: { uiStatus: "InProgress" },
     });
 
     fireEvent.click(syncButton);
 
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content2")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content2")).toBeInTheDocument();
     });
   });
 
@@ -391,24 +377,20 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")).toBeInTheDocument();
     });
-
+  
     const closeButton = screen.getByTestId("dialog-close-button");
     fireEvent.click(closeButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")).not.toBeInTheDocument();
     });
   });
 
@@ -423,24 +405,20 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).toBeInTheDocument();
     });
-
+  
     const submitButton = screen.getByTestId("default-dialog-ok-btn");
     fireEvent.click(submitButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).not.toBeInTheDocument();
     });
   });
 
@@ -455,24 +433,20 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")).toBeInTheDocument();
     });
-
+  
     const submitButton = screen.getByTestId("default-dialog-ok-btn");
     fireEvent.click(submitButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content1")).not.toBeInTheDocument();
     });
   });
 
@@ -487,109 +461,102 @@ describe("SyncDataView Component", () => {
         />
       </Router>
     );
-
+  
     const syncButton = screen.getByRole("button", { name: /Sync/i });
-
+  
     fireEvent.click(syncButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).toBeInTheDocument();
     });
-
+  
     const closeButton = screen.getByTestId("dialog-close-button");
     fireEvent.click(closeButton);
-
+  
     await waitFor(() => {
-      expect(
-        screen.queryByText("RefreshDB_T.moduleBlock.modal.content")
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("RefreshDB_T.moduleBlock.modal.content")).not.toBeInTheDocument();
     });
   });
 
   it("should handle successful TriggerSync call", async () => {
     const mockResponse = { statusCode: 200 };
     (service.post as jest.Mock).mockResolvedValueOnce({
-      data: mockResponse
+      data: mockResponse,
     });
-
+  
     const result = await TriggerSync(mockHandleException, history);
-
+  
     expect(result).toEqual(mockResponse);
     expect(history.replace).not.toHaveBeenCalled();
   });
 
   it("should handle TriggerSync call failure without a response", async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce(
-      new Error("Network Error")
-    );
-
+    (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+  
     const result = await TriggerSync(mockHandleException, history);
-
+  
     expect(result).toBeNull();
     expect(mockHandleException).not.toHaveBeenCalledWith("Network Error");
   });
 
-  it("should handle TriggerSync API call failure with invalid token", async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce({
-      message: "Invalid token"
-    });
-
-    await TriggerSync(mockHandleException, history);
-
-    expect(history.replace).toHaveBeenCalledWith("/unauthorized");
+it("should handle TriggerSync API call failure with invalid token", async () => {
+  (service.post as jest.Mock).mockRejectedValueOnce({
+    message: "Invalid token",
   });
 
-  it("should handle TriggerSync API call failure without response", async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce(
-      new Error("Network Error")
-    );
+  await TriggerSync(mockHandleException, history);
 
-    const result = await TriggerSync(mockHandleException, history);
+  expect(history.replace).toHaveBeenCalledWith("/unauthorized");
+});
 
-    expect(result).toBeNull();
-    expect(mockHandleException).toHaveBeenCalled();
+it("should handle TriggerSync API call failure without response", async () => {
+  (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
+
+  const result = await TriggerSync(mockHandleException, history);
+
+  expect(result).toBeNull();
+  expect(mockHandleException).toHaveBeenCalled();
+});
+
+it("should handle button click when syncDataStatus is 'In Progress'", async () => {
+  render(
+    <Router history={history}>
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+        status={statusMock}
+        syncDataStatus="In Progress"
+      />
+    </Router>
+  );
+
+  const syncButton = screen.getByRole("button", { name: /Sync/i });
+  fireEvent.click(syncButton);
+
+  await waitFor(() => {
+    expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
   });
+});
 
-  it("should handle button click when syncDataStatus is 'In Progress'", async () => {
-    render(
-      <Router history={history}>
-        <SyncDataView
-          handleException={handleExceptionMock}
-          inProgressStatus={inProgressStatusMock}
-          status={statusMock}
-          syncDataStatus="In Progress"
-        />
-      </Router>
-    );
+it("should handle button click when clicked before", async () => {
+  render(
+    <Router history={history}>
+      <SyncDataView
+        handleException={handleExceptionMock}
+        inProgressStatus={inProgressStatusMock}
+        status={statusMock}
+        syncDataStatus="In Progress"
+      />
+    </Router>
+  );
 
-    const syncButton = screen.getByRole("button", { name: /Sync/i });
-    fireEvent.click(syncButton);
+  const syncButton = screen.getByRole("button", { name: /Sync/i });
+  fireEvent.click(syncButton);
+  fireEvent.click(syncButton);
 
-    await waitFor(() => {
-      expect(inProgressStatusMock).toHaveBeenCalledWith("In Progress");
-    });
+  await waitFor(() => {
+    expect(mockSetShowSyncDialog).not.toHaveBeenCalledWith(true);
   });
+});
 
-  it("should handle button click when clicked before", async () => {
-    render(
-      <Router history={history}>
-        <SyncDataView
-          handleException={handleExceptionMock}
-          inProgressStatus={inProgressStatusMock}
-          status={statusMock}
-          syncDataStatus="In Progress"
-        />
-      </Router>
-    );
-
-    const syncButton = screen.getByRole("button", { name: /Sync/i });
-    fireEvent.click(syncButton);
-    fireEvent.click(syncButton);
-
-    await waitFor(() => {
-      expect(mockSetShowSyncDialog).not.toHaveBeenCalledWith(true);
-    });
-  });
 });

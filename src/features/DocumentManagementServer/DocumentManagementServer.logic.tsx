@@ -20,7 +20,7 @@ export const getTableHeadersData: {
     isShow: false,
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
-    columnWidth: "16px"
+    columnWidth: "16px",
   },
   {
     text: "Document",
@@ -43,7 +43,7 @@ export const getTableHeadersData: {
           text="Locked"
         />
       </div>
-    )
+    ),
   },
   {
     text: "Related to",
@@ -64,7 +64,7 @@ export const getTableHeadersData: {
           text="Year / Reg"
         />
       </div>
-    )
+    ),
   },
   {
     text: "Category",
@@ -73,14 +73,14 @@ export const getTableHeadersData: {
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 20,
     isColumnSorting: false,
-    columnWidth: "144px"
+    columnWidth: "144px",
   },
   {
     text: "Added by",
     isShow: true,
     showValAs: ShowValAs.Text,
     headerTxtTrunctLength: 50,
-    columnWidth: "180px"
+    columnWidth: "180px",
   },
   {
     text: "Date added",
@@ -88,7 +88,7 @@ export const getTableHeadersData: {
     columnWidth: "140px",
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
-    isColumnSorting: false
+    isColumnSorting: false,
   },
   {
     text: "Format",
@@ -99,7 +99,7 @@ export const getTableHeadersData: {
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "120px"
+    columnWidth: "120px",
   },
   {
     text: "Size",
@@ -110,7 +110,7 @@ export const getTableHeadersData: {
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "129px"
+    columnWidth: "129px",
   }
 ];
 export const tableBodyData: {
@@ -131,7 +131,7 @@ export const tableBodyData: {
     Addedby: "Helen Avery",
     "Date added": "01 Jan 2025",
     Format: "pdf",
-    Size: "300 bytes"
+    Size: "300 bytes",
   },
   {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
@@ -142,7 +142,7 @@ export const tableBodyData: {
     Addedby: "Richard Wilton",
     "Date added": "01 Jan 2025",
     Format: "doc",
-    Size: "3KB"
+    Size: "3KB",
   }
 ];
 const DocumentManagementServer: React.FC = () => (

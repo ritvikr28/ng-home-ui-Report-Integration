@@ -23,9 +23,8 @@ import AttendanceOverview from "./AttendanceOverview.logic";
 
 const AttendanceOverviewView: React.FC = () => {
   const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
-  const { data, loading, error }: { data: any; loading: boolean; error: any } =
-    AttendanceOverview();
+  useTranslation();
+  const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
 
   const overallAbsenceData: {
     Name: string;
@@ -57,7 +56,8 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.persistentAbsenteePreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.persistentAbsenteesNationalAverage || 0
+        data?.payload.attendanceInsights.persistentAbsenteesNationalAverage ||
+        0
     }
   ];
 
@@ -74,7 +74,7 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.authorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0
+        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0,
     }
   ];
 
@@ -91,7 +91,7 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.unauthorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0
+        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0,
     }
   ];
 
@@ -99,12 +99,12 @@ const AttendanceOverviewView: React.FC = () => {
     {
       label: t("attendanceoverview.currentyearaverage"),
       dataKey: "currentYearAvg",
-      color: "#006970"
+      color: "#006970",
     },
     {
       label: t("attendanceoverview.previousyearaverage"),
       dataKey: "previousYearAvg",
-      color: "#78D5DB"
+      color: "#78D5DB",
     },
     {
       label: t("attendanceoverview.nationalaverage"),
@@ -132,7 +132,7 @@ const AttendanceOverviewView: React.FC = () => {
             <Accordion defaultExpanded className="c-clear-margin">
               <AccordionHeader dataTestId="pupils-accordion-header-test-id">
                 <span className="essui-global-typography-default-subtitle">
-                  {t("attendanceoverview.attendanceoverviewheading")}
+                {t("attendanceoverview.attendanceoverviewheading")}
                 </span>
               </AccordionHeader>
               <AccordionPanel
@@ -148,7 +148,7 @@ const AttendanceOverviewView: React.FC = () => {
                       color={ButtonColor.Secondary}
                       onClick={handleButtonClick}
                     >
-                      {t("attendanceoverview.moreattendanceinsights")}
+                       {t("attendanceoverview.moreattendanceinsights")}
                     </Button>
                   </GridItem>
                 </Grid>
@@ -165,7 +165,7 @@ const AttendanceOverviewView: React.FC = () => {
                         data={overallAbsenceData}
                         configInfo={barGraphConfig}
                         cols={{ xxl: 12, xl: 12, lg: 12, md: 8, sm: 4 }}
-                        title={t("attendanceoverview.overallattendance")}
+                        title= {t("attendanceoverview.overallattendance")}
                         Name=""
                         CurrentYearAvg={null}
                         PreviousYearAvg={null}

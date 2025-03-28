@@ -27,7 +27,7 @@ const gtmAnalytics: gtmAnalyticsType = {
     } = {
       gtmId: trackingId
     };
-
+    
     TagManager.initialize(tagManagerArgs);
   },
 

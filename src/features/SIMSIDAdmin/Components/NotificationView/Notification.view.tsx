@@ -27,21 +27,21 @@ const NotificationView: React.FC<INotificationProps> = ({
         <div className="secondary-text-simsid">
           <br />
           <div className="secondary-text-simsid-admin-sec-heading">
-            {t("initialadmin.whattodonext")}
+          {t("initialadmin.whattodonext")}
           </div>
 
           <Grid>
             <GridItem className="secondary-text-span-simsid-admin">
               <span>{t("initialadmin.invitestaffmembers")} - </span>
               <div className="secondary-text-simsid-admin">
-                {t("initialadmin.invitestaffdescription")}
+              {t("initialadmin.invitestaffdescription")}
               </div>
             </GridItem>
 
             <GridItem className="secondary-text-second-para">
               <span>{t("initialadmin.contactsimsmanager")} - </span>
               <div className="secondary-text-simsid-admin">
-                {t("initialadmin.contactsimsdescription")}
+              {t("initialadmin.contactsimsdescription")}
               </div>
             </GridItem>
           </Grid>

@@ -1,5 +1,5 @@
-import React from "react";
-import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
+import React from 'react';
+import { authService, MatchPermissions, Permission } from '@essnextgen/auth-ui';
 import DiscoverMoreView from "./Components/DiscoverMore.view";
 /* eslint-disable */
 interface SIMSupdatesViewProps {
@@ -10,28 +10,29 @@ const requiredAdminPermissions: Permission[] = [
   {
     Securable: "NG.Homepage.Admin",
 
-    Operation: "View"
-  }
+    Operation: "View",
+  },
 ];
 
 const requiredPupilProfilePermissions: Permission[] = [
   {
     Securable: "NG.Learner.Personal",
-    Operation: "View"
+    Operation: "View",
   },
   {
     Securable: "NG.Learner.Registration",
-    Operation: "View"
+    Operation: "View",
   },
   {
     Securable: "NG.Learner.Identifier",
-    Operation: "View"
+    Operation: "View",
   },
   {
     Securable: "NG.Homepage.PupilProfile",
-    Operation: "View"
-  }
+    Operation: "View",
+  },
 ];
+
 
 export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) => {
   const isSystemManager =
@@ -41,7 +42,9 @@ export const SIMSupdatesView: React.FC<SIMSupdatesViewProps> = ({ isOpen }) => {
       MatchPermissions.all
     );
 
-  return <DiscoverMoreView isOpen={isOpen} />;
+  return (
+    <DiscoverMoreView isOpen={isOpen} />
+  );
 };
 /* eslint-enable */
 export default SIMSupdatesView;

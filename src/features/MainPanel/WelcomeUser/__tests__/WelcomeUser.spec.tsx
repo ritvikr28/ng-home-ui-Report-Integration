@@ -7,29 +7,30 @@ import { ISchoolNameDataResponse } from "../../../../shared/model/SchoolDomain/r
 import { useFetchSchoolNameData } from "../../../../shared/services/schoolDomain/schoolServices";
 import WelcomeUserView from "../WelcomeUser.view";
 
+ 
 const mockApiResponse: ISchoolNameDataResponse = {
   externalId: "822cd4b0-a50b-4e58-bf67-262835cfb4b5",
   schoolName: "Waters Edge Primary School",
-  isSchoolPrimary: true
+  isSchoolPrimary:true
 };
 
 const setIsError = jest.fn();
 
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
-  useFetchSchoolNameData: jest.fn()
+  useFetchSchoolNameData: jest.fn(),
 }));
 
-jest.mock("@essnextgen/ui-flagr", () => ({
+jest.mock('@essnextgen/ui-flagr', () => ({  
   getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 
-jest.mock("@essnextgen/ui-flagr", () => ({
+jest.mock('@essnextgen/ui-flagr', () => ({  
   getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 
-const mediaQuery = require("@essnextgen/ui-kit");
+const mediaQuery = require('@essnextgen/ui-kit');
 
 test("renders welcome message if authorized and envConfig is set to True", () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
@@ -39,13 +40,11 @@ test("renders welcome message if authorized and envConfig is set to True", () =>
     .spyOn(authService, "getUsername")
 
     .mockImplementation(() => "John");
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
-  const { getByText } = render(
-    <WelcomeUser
-      organisationName={mockApiResponse.schoolName}
-      isApiError={false}
-    />
-  );
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+  const { getByText } = render(<WelcomeUser
+    organisationName={mockApiResponse.schoolName}
+    isApiError={false}
+  />);
   expect(getByText("John")).toBeInTheDocument();
 });
 
@@ -58,13 +57,11 @@ test("renders welcome message when authorized with a long username", () => {
       () =>
         "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
     );
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
-  const { getByText } = render(
-    <WelcomeUser
-      organisationName={mockApiResponse.schoolName}
-      isApiError={false}
-    />
-  );
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+  const { getByText } = render(<WelcomeUser
+                        organisationName={mockApiResponse.schoolName}
+                        isApiError={false}
+                        />);
   expect(
     getByText(
       "Brendapeterssfeeismynameitsalongnamendeetebtjhtwwwbtswrygoptcrrwtfseetuymbmllswwrtyyndhhttdsretemnusretet"
@@ -84,14 +81,12 @@ test.skip("fetches and displays school name", async () => {
     .spyOn(authService, "getUsername")
 
     .mockImplementation(() => "John");
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
-  const { findByText } = render(
-    <WelcomeUser
-      organisationName={mockApiResponse.schoolName}
-      isApiError={false}
-      isSchoolNameToBeDisplayed
-    />
-  );
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+  const { findByText } = render(<WelcomeUser
+                          organisationName={mockApiResponse.schoolName}
+                          isApiError={false}
+                          isSchoolNameToBeDisplayed
+                        />);
   expect(await findByText(/Waters Edge Primary School/i)).toBeInTheDocument();
 });
 
@@ -114,7 +109,7 @@ test("handles errors during data fetching", async () => {
   jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
   jest.spyOn(authService, "getUsername").mockImplementation(() => "John");
   jest.spyOn(console, "error").mockImplementation(() => {});
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
+  jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
   (useFetchSchoolNameData as jest.Mock).mockRejectedValueOnce(
     new Error("Mocked error")
   );
@@ -123,69 +118,62 @@ test("handles errors during data fetching", async () => {
 
   await act(async () => {
     setIsError(true);
-    render(
-      <WelcomeUser
-        organisationName={mockApiResponse.schoolName}
-        isApiError={false}
-      />
-    );
+    render(<WelcomeUser
+      organisationName={mockApiResponse.schoolName}
+      isApiError={false}
+    />);
   });
   expect(setIsError).toHaveBeenCalledWith(true);
-});
+})
 
-test("should render correctly for desktop view", () => {
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
-  const props = {
-    fullName: "John Doe",
-    isLongName: false,
-    parentClassName: "custom-parent",
-    subparentClassName: "custom-subparent",
-    organisationName: "Example School",
-    isApiError: false,
-    isOpen: true
-  };
+  test("should render correctly for desktop view", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
+    const props = {
+      fullName: "John Doe",
+      isLongName: false,
+      parentClassName: "custom-parent",
+      subparentClassName: "custom-subparent",
+      organisationName: "Example School",
+      isApiError: false,
+      isOpen: true,
+    };
 
-  render(<WelcomeUserView {...props} />);
-  const desktopContent = screen.getAllByText((content, node: any) => {
-    const hasText = (str: any) => node.textContent.trim().includes(str);
-    return (
-      hasText("welcomePage.himsg") &&
-      hasText("John Doe") &&
-      hasText("welcomePage.welcomemsg")
-    );
+
+
+    render(<WelcomeUserView {...props} />);
+    const desktopContent = screen.getAllByText((content, node:any) => {
+      const hasText = (str:any) => node.textContent.trim().includes(str);
+      return hasText("welcomePage.himsg") && hasText("John Doe") && hasText("welcomePage.welcomemsg");
+    });
+
+    expect(desktopContent).toHaveLength(4);
   });
 
-  expect(desktopContent).toHaveLength(4);
-});
 
-test("should render correctly for mobile view", () => {
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => true);
-  const props = {
-    fullName: "John Doe",
-    isLongName: false,
-    parentClassName: "custom-parent",
-    subparentClassName: "custom-subparent",
-    organisationName: "Example School",
-    isApiError: false,
-    isOpen: true,
-    isSchoolNameToBeDisplayed: false
-  };
+  test("should render correctly for mobile view", () => {
+    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
+    const props = {
+      fullName: "John Doe",
+      isLongName: false,
+      parentClassName: "custom-parent",
+      subparentClassName: "custom-subparent",
+      organisationName: "Example School",
+      isApiError: false,
+      isOpen: true,
+      isSchoolNameToBeDisplayed: false
+    };
 
   render(<WelcomeUserView {...props} />);
-  const mobileContent = screen.getAllByText((content, node: any) => {
-    const hasText = (str: any) => node.textContent.trim().includes(str);
-    return (
-      hasText("welcomePage.himsg") &&
-      hasText("John Doe") &&
-      hasText("welcomePage.welcomemsg")
-    );
+    const mobileContent = screen.getAllByText((content, node:any) => {
+      const hasText = (str:any) => node.textContent.trim().includes(str);
+      return hasText("welcomePage.himsg") && hasText("John Doe") && hasText("welcomePage.welcomemsg");
+    });
+
+    expect(mobileContent).toHaveLength(4);
   });
 
-  expect(mobileContent).toHaveLength(4);
-});
-
-test("renders WhatsNewBanner when ClassViewNotificationBanner is true", () => {
-  const defaultProps = {
+  test("renders WhatsNewBanner when ClassViewNotificationBanner is true", () => { 
+    const defaultProps = {
     fullName: "John Doe",
     isLongName: false,
     parentClassName: "test-parent",
@@ -195,9 +183,9 @@ test("renders WhatsNewBanner when ClassViewNotificationBanner is true", () => {
     isOpen: true,
     isSchoolNameToBeDisplayed: false
   };
-  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => true);
+  jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => true);
   (hasFeaturePermission as jest.Mock).mockReturnValue(true);
-  render(<WelcomeUserView {...defaultProps} />);
+    render(<WelcomeUserView {...defaultProps}/>);
 
-  // expect(screen.getByTestId("whatsnew-banner")).toBeInTheDocument();
-});
+   // expect(screen.getByTestId("whatsnew-banner")).toBeInTheDocument();
+  });

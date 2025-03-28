@@ -1,4 +1,5 @@
-export interface ISchoolName {
-  externalId?: string;
-  schoolName?: string;
-}
+export interface  ISchoolName
+{
+    externalId?:  string; 
+    schoolName?: string;
+} 

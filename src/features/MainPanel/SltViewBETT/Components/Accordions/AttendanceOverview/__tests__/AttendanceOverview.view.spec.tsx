@@ -10,7 +10,7 @@ interface BargraphsProps {
 
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
-  Bargraphs: ({ title }: BargraphsProps) => <div>{title}</div>
+  Bargraphs: ({ title }: BargraphsProps) => <div>{title}</div>,
 }));
 
 describe("AttendanceOverviewView", () => {
@@ -22,7 +22,7 @@ describe("AttendanceOverviewView", () => {
     (AttendanceOverview as jest.Mock).mockReturnValue({
       data: null,
       loading: true,
-      error: null
+      error: null,
     });
 
     render(<AttendanceOverviewView />);
@@ -34,7 +34,7 @@ describe("AttendanceOverviewView", () => {
     (AttendanceOverview as jest.Mock).mockReturnValue({
       data: null,
       loading: false,
-      error: "Failed to fetch data"
+      error: "Failed to fetch data",
     });
 
     render(<AttendanceOverviewView />);
@@ -60,38 +60,30 @@ describe("AttendanceOverviewView", () => {
           authorisedAbsentNationalAverage: 5,
           unauthorisedAbsentCurrentYear: 0,
           unauthorisedAbsentPreviousYear: 1.3,
-          unauthorisedAbsentNationalAverage: 2.4
-        }
-      }
+          unauthorisedAbsentNationalAverage: 2.4,
+        },
+      },
     };
 
     (AttendanceOverview as jest.Mock).mockReturnValue({
       data: mockData,
       loading: false,
-      error: null
+      error: null,
     });
 
     render(<AttendanceOverviewView />);
 
     await waitFor(() => {
-      expect(
-        screen.getByText(/attendanceoverview.overallattendance/i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/attendanceoverview.overallattendance/i)).toBeInTheDocument();
     });
 
-    const authorisedAbsences = screen.getAllByText(
-      /attendanceoverview.authorisedabsence/i
-    );
+    const authorisedAbsences = screen.getAllByText(/attendanceoverview.authorisedabsence/i);
     expect(authorisedAbsences).toHaveLength(1);
 
-    const unauthorisedAbsences = screen.getAllByText(
-      /attendanceoverview.unauthorisedabsence/i
-    );
+    const unauthorisedAbsences = screen.getAllByText(/attendanceoverview.unauthorisedabsence/i);
     expect(unauthorisedAbsences).toHaveLength(1);
 
-    const persistentAbsences = screen.getAllByText(
-      /attendanceoverview.persistentabsence/i
-    );
+    const persistentAbsences = screen.getAllByText(/attendanceoverview.persistentabsence/i);
     expect(persistentAbsences).toHaveLength(1);
   });
 
@@ -99,7 +91,7 @@ describe("AttendanceOverviewView", () => {
     (AttendanceOverview as jest.Mock).mockReturnValue({
       data: null,
       loading: false,
-      error: null
+      error: null,
     });
 
     const originalLocation = window.location;
@@ -109,11 +101,11 @@ describe("AttendanceOverviewView", () => {
       origin: "http://localhost",
       assign: jest.fn(),
       replace: jest.fn(),
-      reload: jest.fn()
+      reload: jest.fn(),
     };
     Object.defineProperty(window, "location", {
       value: mockLocation,
-      writable: true
+      writable: true,
     });
 
     render(<AttendanceOverviewView />);
@@ -127,7 +119,7 @@ describe("AttendanceOverviewView", () => {
 
     Object.defineProperty(window, "location", {
       value: originalLocation,
-      writable: true
+      writable: true,
     });
   });
 });

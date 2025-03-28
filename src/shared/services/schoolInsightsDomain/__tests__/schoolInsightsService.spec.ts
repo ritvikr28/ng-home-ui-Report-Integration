@@ -4,8 +4,8 @@ import { ISchoolInsightsResponse } from "../../../model/SchoolInsightsDomain/res
 
 jest.mock("../../../utils/api-service", () => ({
   service: {
-    get: jest.fn()
-  }
+    get: jest.fn(),
+  },
 }));
 
 describe("FetchSchoolInsights", () => {
@@ -29,10 +29,10 @@ describe("FetchSchoolInsights", () => {
         authorisedAbsentNationalAverage: 5,
         unauthorisedAbsentCurrentYear: 0,
         unauthorisedAbsentPreviousYear: 1.3,
-        unauthorisedAbsentNationalAverage: 2.4
-      }
+        unauthorisedAbsentNationalAverage: 2.4,
+      },
     },
-    status: 200
+    status: 200,
   };
 
   afterEach(() => {

@@ -5,6 +5,6 @@ export interface IWelcomeUserLogicProps {
   isApiError?: boolean;
   organisationName?: string;
   isOpen?: boolean;
-  isMobileView?: any;
-  isSchoolNameToBeDisplayed?: boolean;
+  isMobileView?:any;
+  isSchoolNameToBeDisplayed?:boolean;
 }

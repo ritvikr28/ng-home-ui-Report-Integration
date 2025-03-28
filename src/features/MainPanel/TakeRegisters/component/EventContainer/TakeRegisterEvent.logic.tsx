@@ -8,7 +8,7 @@ import "./carousalstyle.scss";
 /* eslint-disable */
 const TakeRegisterEvent: ({ isOpen, setIsOpen }: any) => JSX.Element = ({
   isOpen,
-  setIsOpen
+  setIsOpen,
 }) => {
   /* eslint-enable */
   const [registerEventData, setRegisterEventApiData]: [

@@ -3,24 +3,25 @@ export interface ISchoolDetailsDRApiResponse {
   uiStatus: string;
 }
 
+
 export interface IPrecheckStatusApiResponse {
-  dbDetachedStatus: string;
-  deleteNGDataStatus: string;
-  dbReAttachedStatus: string;
-  syncDataStatus: string;
-  syncCompletedSeenStatus: string;
-  responseMessage: string;
-  statusCode: number;
+  dbDetachedStatus: string,
+  deleteNGDataStatus: string,
+  dbReAttachedStatus: string,
+  syncDataStatus: string,
+  syncCompletedSeenStatus: string,
+  responseMessage: string,
+  statusCode: number
 }
 
 export interface IProcessNGDeletionApiResponse {
-  statusCode: number;
-  uiStatus: string;
-  responseMessage: string;
+  statusCode: number,
+  uiStatus: string,
+  responseMessage: string
 }
 
 export interface ISyncCompletedSeenStatusResponse {
-  statusCode: number;
-  uiStatus: string;
-  responseMessage: string;
+  statusCode: number,
+  uiStatus: string,
+  responseMessage: string
 }

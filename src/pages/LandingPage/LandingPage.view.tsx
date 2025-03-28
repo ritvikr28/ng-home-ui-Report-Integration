@@ -38,13 +38,11 @@ const LandingPageView: ({}: IProps) => JSX.Element = ({
         )}
         <a
           className="essui-button essui-button--primary essui-button--small app-link"
-          href={x.appUrl}
+          href={x.appUrl}          
           rel="noopener noreferrer"
           key={`module-link-${i}`}
         >
-          {x.code === "NewHomePage" || x.code === "FireRegister"
-            ? t("homePage.newHomepagebtnText")
-            : t("homePage.btnText")}
+          {(x.code === "NewHomePage") || (x.code ==="FireRegister")? t("homePage.newHomepagebtnText"): t("homePage.btnText")}          
         </a>
       </div>
     );

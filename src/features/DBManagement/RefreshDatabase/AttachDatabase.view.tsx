@@ -5,12 +5,9 @@ import {
   ReactionButton,
   FormLabel
 } from "@essnextgen/ui-kit";
-import {
-  useTranslation,
-  UseTranslationResponse
-} from "@essnextgen/ui-intl-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { AxiosResponse } from "axios";
-import { useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom"; 
 import { authService } from "@essnextgen/auth-ui";
 import { envConfig, service, getUserOrganisation } from "../../../shared/utils";
 import "../style.scss";
@@ -23,55 +20,55 @@ export const FetchIsAttached = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory> // Accept history to handle redirects
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
-  try {
-    const schoolData: ISchoolNameDataResponse | null =
-      await useFetchSchoolNameData();
-    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+    try {
+      const schoolData: ISchoolNameDataResponse | null =
+        await useFetchSchoolNameData();
+      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
 
-    const requestData: {
-      operationIndicator: string;
-      orgId: string;
-      orgName: string;
-      tableFlagValue: string;
-      actorName: string;
-    } = {
-      operationIndicator: "R",
-      orgId: getUserOrganisation(),
-      orgName,
-      tableFlagValue: "Y",
-      actorName: authService.getUsername()
-    };
-    const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
-      await service.post(
-        `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
-        requestData
-      );
-    return response.data;
-  } catch (err: any) {
-    if (err.response) {
-      const statusCode = err.response.status;
-      console.log(`API call failed with status code: ${statusCode}`);
-      if (statusCode === 401) {
-        errorHandler.handle401Error(statusCode, history);
-      } else {
+      const requestData: {
+        operationIndicator: string;
+        orgId: string;
+        orgName: string;
+        tableFlagValue: string;
+        actorName: string;
+      } = {
+        operationIndicator: "R",
+        orgId: getUserOrganisation(),
+        orgName,
+        tableFlagValue: "Y",
+        actorName: authService.getUsername()
+      };
+      const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
+        await service.post(
+          `${envConfig.BASE_URL}/TrainingDB/SchoolDetailsDR`,
+          requestData
+        );
+      return response.data;
+    } catch (err: any) {
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          errorHandler.handle401Error(statusCode, history);
+        } else {
+          handleException();
+        }
+      } 
+      else if (err.message && err.message.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized");
+      }
+      else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
         handleException();
       }
-    } else if (err.message && err.message.includes("Invalid token")) {
-      console.log("Invalid token detected. Redirecting...");
-      history.replace("/unauthorized");
-    } else {
-      console.log(
-        "Failed to fetch data, API call failed without a response from the server."
-      );
-      handleException();
+        return null;
     }
-    return null;
-  }
-};
+  };
 
 export interface AttachDatabaseViewProps {
   status: (value: string) => string;
-  handleException: () => void;
+  handleException: () => void; 
 }
 
 const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
@@ -85,25 +82,24 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
 
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+  
+    const history = useHistory(); // Initialize useHistory
 
-  const history = useHistory(); // Initialize useHistory
 
   const handleSetIsAttached = async () => {
     // Get Re-attached status
-    const response: ISchoolDetailsDRApiResponse | null = await FetchIsAttached(
-      handleException,
-      history
-    );
+    const response: ISchoolDetailsDRApiResponse | null =
+      await FetchIsAttached(handleException, history);
 
-    if (response != null) {
-      if (response.statusCode === 200) {
-        status(response.uiStatus as string);
+      if (response != null) {
+        if (response.statusCode === 200) {
+          status(response.uiStatus as string);
+        } else {
+          handleException(); 
+        }
       } else {
-        handleException();
+        handleException(); 
       }
-    } else {
-      handleException();
-    }
   };
 
   const handleSelectionChange = async (value: string) => {
@@ -116,39 +112,29 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
 
   return (
     <>
-      <div id="detach-container">
-        <FormLabel dataTestId="attachDbTitle" id="default-control-label">
-          {t("RefreshDB_T.moduleBlock.attachDB.title")}
-        </FormLabel>
-        <FormLabel dataTestId="attachDbButton" id="default-label">
-          {t("RefreshDB_T.moduleBlock.attachDB.button")}
-        </FormLabel>
-
-        <ReactionButtonGroup
-          id="add-side-panel-types"
-          dataTestId="type-test-id"
-          size={ButtonSize.Small}
-          selectedValue={selectedOption}
-          onChange={(
-            e: SyntheticEvent<Element, Event>,
-            selectedValue: string | number
-          ) => {
-            handleSelectionChange(selectedValue as string);
-          }}
-        >
-          <ReactionButton
-            dataTestId="Yes"
-            id="reaction-button"
-            label={t("RefreshDB_T.moduleBlock.modal.button2")}
-            value="Yes"
-          />
-          <ReactionButton
-            dataTestId="No"
-            id="reaction-button"
-            label={t("RefreshDB_T.moduleBlock.modal.button3")}
-            value="No"
-          />
-        </ReactionButtonGroup>
+    <div id='detach-container'>
+      <FormLabel dataTestId="attachDbTitle" id="default-control-label">
+        {t("RefreshDB_T.moduleBlock.attachDB.title")}
+      </FormLabel>
+      <FormLabel dataTestId="attachDbButton" id="default-label">
+        {t("RefreshDB_T.moduleBlock.attachDB.button")}
+      </FormLabel>
+      
+      <ReactionButtonGroup
+        id="add-side-panel-types"
+        dataTestId="type-test-id"
+        size={ButtonSize.Small}
+        selectedValue={selectedOption}
+        onChange={(
+          e: SyntheticEvent<Element, Event>,
+          selectedValue: string | number
+        ) => {
+          handleSelectionChange(selectedValue as string);
+        }}
+      >
+        <ReactionButton dataTestId="Yes" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button2")} value="Yes" />
+        <ReactionButton dataTestId="No" id="reaction-button" label={t("RefreshDB_T.moduleBlock.modal.button3")} value="No" />
+      </ReactionButtonGroup>
       </div>
     </>
   );

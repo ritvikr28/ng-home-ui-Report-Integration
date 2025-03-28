@@ -29,13 +29,13 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { logger } from "../../../../../shared/components/AppInsights";
 import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
 
+
 const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
   apiRegsiterEventData,
   apiError,
-  isOpen
+  isOpen,
 }: IRegisterViewProps): JSX.Element => {
-  const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const carouselRef: any = useRef(null);
   const [effectTriggered, setEffectTriggered] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(
@@ -194,7 +194,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
       linkText: "[RemovedClassName]",
       linkUrl: url,
       clickType: "card",
-      clickLocation: "body"
+      clickLocation: "body",
     });
     /* istanbul ignore next */
     window.open(url, "_self");
@@ -206,7 +206,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           <SectionTitle
             title={t("takeRegister.takeregisterlink")}
             hasLink
-            linkText={t("takeRegister.takeregistertext")}
+            linkText= {t("takeRegister.takeregistertext")}
             linkhref={envConfig.REGISTER_BASE_URL}
           />
         </GridItem>
@@ -305,11 +305,7 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                             item.room ? ` | ${item.room.roomName!}` : ""
                           }`
                     }
-                    tagText={
-                      item.isCompleted
-                        ? t("takeregister.completed")
-                        : t("takeregister.ready")
-                    }
+                    tagText={item.isCompleted ? t("takeregister.completed") : t("takeregister.ready")}
                     isShowTag
                     tagColor={
                       item.isCompleted ? TagColor.Success : TagColor.Outstanding
@@ -319,13 +315,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
                 </div>
               ))}
             {apiRegsiterEventData.length > 0 && (
-              <div className="new-action-card-accodian-container noregister eventcardnohighlight">
+              <div
+                className="new-action-card-accodian-container noregister eventcardnohighlight"
+              >
                 <ActionCard
                   dataTestId="test-id"
                   icon={<FilledGraphDataIcon />}
                   id="no-more-register-id"
                   onClickActionCard={() => {}}
-                  primaryText={t("takeregister.nomoreregister")}
+                  primaryText={t("takeregister.nomoreregister")} 
                   isShowArrowIcon={false}
                 />
               </div>
@@ -335,13 +333,15 @@ const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
           apiError === false &&
           (apiRegsiterEventData == null ||
             apiRegsiterEventData.length === 0) && (
-            <div className="new-action-card-accodian-container carousel-item-padding-40-px noregisterblock no-register-box eventcardnohighlight">
+            <div
+              className="new-action-card-accodian-container carousel-item-padding-40-px noregisterblock no-register-box eventcardnohighlight"
+            >
               <ActionCard
                 dataTestId="no-test-id"
                 icon={<></>}
                 id="no-register-id"
                 onClickActionCard={() => {}}
-                primaryText={t("takeregister.noregistertoday")}
+                primaryText= {t("takeregister.noregistertoday")}
                 isShowArrowIcon={false}
               />
             </div>

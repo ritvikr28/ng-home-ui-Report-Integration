@@ -29,9 +29,9 @@ describe("AttendanceOverview", () => {
           authorisedAbsentNationalAverage: 5,
           unauthorisedAbsentCurrentYear: 0,
           unauthorisedAbsentPreviousYear: 1.3,
-          unauthorisedAbsentNationalAverage: 2.4
-        }
-      }
+          unauthorisedAbsentNationalAverage: 2.4,
+        },
+      },
     };
 
     (FetchSchoolInsights as jest.Mock).mockResolvedValueOnce(mockData);

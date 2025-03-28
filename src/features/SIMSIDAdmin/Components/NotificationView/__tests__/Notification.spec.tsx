@@ -1,42 +1,34 @@
-import { render, screen, fireEvent } from "@testing-library/react";
-import NotificationView from "../Notification.view";
+import { render, screen, fireEvent } from '@testing-library/react';
+import NotificationView from '../Notification.view';
 
-jest.mock("@essnextgen/ui-kit", () => ({
+jest.mock('@essnextgen/ui-kit', () => ({
   Notification: jest.fn(({ onClickClose, ...props }) => (
     <div {...props}>
-      <button onClick={onClickClose} type="submit">
-        Close
-      </button>
+      <button onClick={onClickClose} type='submit'>Close</button>
     </div>
   )),
   NotificationStatus: {
-    HIGHLIGHT: "highlight"
-  }
+    HIGHLIGHT: 'highlight',
+  },
 }));
 
-describe("NotificationView", () => {
+describe('NotificationView', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("renders Notification component with correct props", () => {
+  test('renders Notification component with correct props', () => {
     const setDisableNotification = jest.fn();
 
-    const { container } = render(
-      <NotificationView setDisableNotification={setDisableNotification} />
-    );
-    expect(
-      container.querySelector(".notification-id-sims")
-    ).toBeInTheDocument();
-    expect(container.querySelector("#element-id")).toBeInTheDocument();
+    const { container } = render(<NotificationView setDisableNotification={setDisableNotification} />);
+    expect(container.querySelector('.notification-id-sims')).toBeInTheDocument();
+    expect(container.querySelector('#element-id')).toBeInTheDocument();
   });
 
-  test("calls setDisableNotification when close button is clicked", () => {
+  test('calls setDisableNotification when close button is clicked', () => {
     const setDisableNotification = jest.fn();
-    render(
-      <NotificationView setDisableNotification={setDisableNotification} />
-    );
-    fireEvent.click(screen.getByText("Close"));
+    render(<NotificationView setDisableNotification={setDisableNotification} />);
+    fireEvent.click(screen.getByText('Close'));
     expect(setDisableNotification).toHaveBeenCalledWith(false);
   });
 });

@@ -10,28 +10,28 @@ import { errorHandler } from "../../../../shared/utils/errorHandler";
 
 jest.mock("../../../../shared/utils", () => ({
   service: {
-    post: jest.fn()
+    post: jest.fn(),
   },
   getUserOrganisation: jest.fn().mockReturnValue("test-org-id"),
   envConfig: {
-    BASE_URL: "https://example.com"
-  }
+    BASE_URL: "https://example.com",
+  },
 }));
 
 jest.mock("@essnextgen/auth-ui", () => ({
   authService: {
-    getUsername: jest.fn().mockReturnValue("test-user")
-  }
+    getUsername: jest.fn().mockReturnValue("test-user"),
+  },
 }));
 
 jest.mock("../../../../shared/services/schoolDomain/schoolServices", () => ({
-  useFetchSchoolNameData: jest.fn()
+  useFetchSchoolNameData: jest.fn(),
 }));
 
 jest.mock("../../../../shared/utils/errorHandler", () => ({
   errorHandler: {
-    handle401Error: jest.fn()
-  }
+    handle401Error: jest.fn(),
+  },
 }));
 
 describe("AttachDatabaseView Component", () => {
@@ -63,14 +63,14 @@ describe("AttachDatabaseView Component", () => {
   it("should call FetchIsAttached and handle success response", async () => {
     const mockResponse: ISchoolDetailsDRApiResponse = {
       statusCode: 200,
-      uiStatus: "Completed"
+      uiStatus: "Completed",
     };
 
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.post as jest.Mock).mockResolvedValue({
-      data: mockResponse
+      data: mockResponse,
     });
 
     render(
@@ -92,10 +92,10 @@ describe("AttachDatabaseView Component", () => {
 
   it("should call handleException on API failure with response", async () => {
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.post as jest.Mock).mockRejectedValue({
-      response: { status: 500, data: "Internal Server Error" }
+      response: { status: 500, data: "Internal Server Error" },
     });
 
     render(
@@ -117,10 +117,10 @@ describe("AttachDatabaseView Component", () => {
 
   it("should call handle401Error on API failure with 401 status", async () => {
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.post as jest.Mock).mockRejectedValue({
-      response: { status: 401 }
+      response: { status: 401 },
     });
 
     render(
@@ -142,7 +142,7 @@ describe("AttachDatabaseView Component", () => {
 
   it("should call handleException on API failure without response", async () => {
     (useFetchSchoolNameData as jest.Mock).mockResolvedValue({
-      schoolName: "Test School"
+      schoolName: "Test School",
     });
     (service.post as jest.Mock).mockRejectedValue(new Error("Network Error"));
 

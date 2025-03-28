@@ -31,11 +31,12 @@ const appModules: IAppModule[] = [
     canView: true
   }
 ];
-jest.mock("@essnextgen/ui-flagr", () => ({
+jest.mock('@essnextgen/ui-flagr', () => ({
   getFeaturePermission: jest.fn(),
   hasFeaturePermission: jest.fn()
 }));
 describe("Layout component", () => {
+
   beforeEach(() => {
     jest.spyOn(authService, "isAuthenticated").mockImplementation(() => true);
     jest
@@ -63,7 +64,7 @@ describe("Layout component", () => {
   });
   it("renders the NotFound component", async () => {
     const spy = jest.spyOn(redux, "useSelector");
-    const { getByTestId } = render(<PageNotFound />);
+    const {getByTestId} = render(<PageNotFound />);
     spy.mockReturnValue(appPermissions);
 
     history.push("*");
@@ -74,7 +75,9 @@ describe("Layout component", () => {
     //     </Router>
     //   </Provider>
     // );
-    const container: any = getByTestId("page-not-found-1144534sdw");
+    const container: any = getByTestId(
+      "page-not-found-1144534sdw"
+    );
     await waitFor(() => {
       expect(
         container
@@ -144,28 +147,31 @@ describe("Layout component", () => {
     useSelector.mockReturnValue(appPermissions);
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
     (hasFeaturePermission as jest.Mock).mockReturnValue(true);
-    jest.mock("../shared/utils/flagr-utils", () => ({
-      isOrganisationInVariant: jest.fn().mockImplementationOnce(() => true)
+    jest.mock('../shared/utils/flagr-utils', () => ({
+      isOrganisationInVariant: jest.fn().mockImplementationOnce(()=>true)
+
     }));
 
     const getAppModulePermissionMock: any = jest
-      .spyOn(getAppModulesPermissions, "default")
-      .mockResolvedValueOnce({
-        data: [{ code: "module1" }, { code: "module2" }],
-        status: 200,
-        statusText: "",
-        headers: {},
-        config: {}
-      });
+    .spyOn(getAppModulesPermissions, "default")
+    .mockResolvedValueOnce({
+      data: [{ code: "module1" }, { code: "module2" }],
+      status: 200,
+      statusText: "",
+      headers: {},
+      config: {}
+    });
     history.push("/");
 
-    await render(
-      <Provider store={configureStore()}>
-        <Router history={history}>
-          <Layout isStandaloneApp={false} baseRouteName="" />
-        </Router>
-      </Provider>
-    );
-    expect(getAppModulePermissionMock).toHaveBeenCalled();
+
+
+      await render(
+        <Provider store={configureStore()}>
+          <Router history={history}>
+            <Layout isStandaloneApp={false} baseRouteName="" />
+          </Router>
+        </Provider>
+      );
+     expect(getAppModulePermissionMock).toHaveBeenCalled();
   });
 });

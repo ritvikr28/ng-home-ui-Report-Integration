@@ -21,30 +21,19 @@ const App: (props: ILayoutProps) => JSX.Element = ({
 }: ILayoutProps) => {
   IntlProvider.init({
     translation: {
-      en: {
-        ...uiKitTranslation.en,
-        ...uiAppKitTranslation.en,
-        ...translationEn
-      },
-      cy: {
-        ...uiKitTranslation.cy,
-        ...uiAppKitTranslation.cy,
-        ...translationCy
-      }
+      en: { ...uiKitTranslation.en, ...uiAppKitTranslation.en, ...translationEn },
+      cy: { ...uiKitTranslation.cy, ...uiAppKitTranslation.cy, ...translationCy }
     }
   });
   /* istanbul ignore next */
   const getFeatureFlags: () => Promise<IResponse> = () =>
-    service.get("v1/features");
+    service.get('v1/features');
   /* istanbul ignore next */
   const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
     authService.isAuthenticated() ? getFeatureFlags : undefined;
   gtmAnalytics.pushLogInEvent();
   return (
-    <FeatureFlagsProvider
-      fetchFeatures={fetchFeatureFlags}
-      applicationName={`${envConfig.APPLICATION}`}
-    >
+    <FeatureFlagsProvider fetchFeatures={fetchFeatureFlags} applicationName={`${envConfig.APPLICATION}`}>
       <Provider store={configureStore()}>
         <ErrorBoundary>
           <Layout

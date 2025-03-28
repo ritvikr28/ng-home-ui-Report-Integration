@@ -25,7 +25,7 @@ import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/st
 import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
-  isOpen
+  isOpen,
 }: any) => {
   const [isError, setIsError]: [
     boolean,
@@ -63,7 +63,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
     "(min-width:320px) and (max-width: 1117px)"
   );
   const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
+  useTranslation();
 
   useEffect(() => {
     const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
@@ -71,13 +71,13 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       try {
         const {
           status: responseStatus,
-          responseData
+          responseData,
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
         } = (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null
+          responseData: null,
         };
         if (
           /* istanbul ignore next */
@@ -203,7 +203,7 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
 
   return {
     truncated: `${truncatedDescription} | ${starttime} - ${endtime}`,
-    full: `${eventDescription} | ${starttime} - ${endtime}`
+    full: `${eventDescription} | ${starttime} - ${endtime}`,
   };
 };
 
@@ -215,10 +215,7 @@ const hasStaffTimeTableV2: boolean = hasFeaturePermission(
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode: string = hasStaffTimeTableV2
-    ? staffTimeTableEventData?.roomCover?.roomCode ||
-      staffTimeTableEventData?.room?.roomCode
-    : staffTimeTableEventData?.room?.roomCode;
+  const roomCode: string = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 
@@ -230,7 +227,7 @@ const formatStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors
+    supervisors,
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (
@@ -262,7 +259,7 @@ const formatCoverStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors
+    supervisors,
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID) {
@@ -304,34 +301,30 @@ const formateventPeriodNum = (
   return "";
 };
 
-const renderNoEventsCard: (
-  t?: TFunction<"translation", undefined>
-) => JSX.Element = (t) => (
-  <Grid>
-    <GridItem
-      key="no-events" // Ensure unique key for each item
-      sm
-      md={2}
-      lg={2}
-      className="c-clear-padding"
-    >
-      <div className="new-event-card-box">
-        <EventCard
-          dataTestId="no-events-today"
-          id="no-events-today-id"
-          primaryText=""
-          secondaryText=""
-          status={EventCardStatus.DEFAULT}
-          title={
-            (t && t("stafftimetable.noeventdisplay")) || "No events to display"
-          }
-          inputHeight={67}
-          className="dynamiceventcard event-primary-text no-events no-events-staff"
-        />
-      </div>
-    </GridItem>
-  </Grid>
-);
+const renderNoEventsCard: (t?: TFunction<"translation", undefined>) => JSX.Element = (t) => (
+    <Grid>
+      <GridItem
+        key="no-events" // Ensure unique key for each item
+        sm
+        md={2}
+        lg={2}
+        className="c-clear-padding"
+      >
+        <div className="new-event-card-box">
+          <EventCard
+            dataTestId="no-events-today"
+            id="no-events-today-id"
+            primaryText=""
+            secondaryText=""
+            status={EventCardStatus.DEFAULT}
+            title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
+            inputHeight={67}
+            className="dynamiceventcard event-primary-text no-events no-events-staff"
+          />
+        </div>
+      </GridItem>
+    </Grid>
+  );
 
 const returnEventContainer: React.FC<{
   schoolEventsData: IStaffTimeTableEventsResponse[];
@@ -344,7 +337,7 @@ const returnEventContainer: React.FC<{
   staffNames: Record<string, string>;
   coverStaffNames: Record<string, string>;
   isMobileView?: boolean;
-  t: any;
+  t: any
 }> = ({
   schoolEventsData,
   isOpen,
@@ -358,89 +351,89 @@ const returnEventContainer: React.FC<{
   isMobileView,
   t
 }) => {
-  const togglePanel: (externalId: string) => void = (externalId: string) => {
-    if (!isOpenPanel[externalId]) {
-      gtmAnalytics.pushEvent({
-        event: "interact_click",
-        elementType: "card",
-        elementTextOrLabel: "[RemovedEventName]",
-        elementLocation: "body"
-      });
-    }
-    setIsOpenPanel((prevIsOpen: any) => ({
-      ...prevIsOpen,
-      [externalId]: !prevIsOpen[externalId]
-    }));
-    setSelectedItem(
-      !isOpenPanel || isOpenPanel[externalId]
-        ? schoolEventsData[0].externalId
-        : externalId
+    const togglePanel: (externalId: string) => void = (externalId: string) => {
+      if (!isOpenPanel[externalId]) {
+        gtmAnalytics.pushEvent({
+          event: "interact_click",
+          elementType: "card",
+          elementTextOrLabel: "[RemovedEventName]",
+          elementLocation: "body",
+        });
+      }
+      setIsOpenPanel((prevIsOpen: any) => ({
+        ...prevIsOpen,
+        [externalId]: !prevIsOpen[externalId],
+      }));
+      setSelectedItem(
+        !isOpenPanel || isOpenPanel[externalId]
+          ? schoolEventsData[0].externalId
+          : externalId
+      );
+    };
+
+    const baseValue = schoolEventsData.length < 5 ? 3 : 2;
+    const finalValue = isOpen && !isMobileView ? 2 : 3;
+    const cardCol = isOpen ? finalValue : baseValue;
+
+    return (
+      <div>
+        <Grid>
+          {schoolEventsData.map((item: any, index: number) => (
+            <GridItem
+              key={item.externalId} // Ensure unique key for each item
+              sm={4}
+              md={2}
+              lg={cardCol}
+              className="c-clear-padding"
+            >
+              <div className="new-event-card-box">
+                <EventContainerView
+                  SchoolEventexternalId={item.externalId}
+                  EventTitle={formatEventTitleData(item)}
+                  EventTime={formatEventTimeData(item)}
+                  RoomCode={formatRoomCode(item)}
+                  EventStartDate={item.eventStart}
+                  EventEndDate={item.eventEnd}
+                  GroupExternalId={item.group.externalId}
+                  EventPeriodNum={formateventPeriodNum(item)}
+                  togglePanel={() => togglePanel(item.externalId)}
+                  isOpen={isOpen}
+                  isOpenPanel={isOpenPanel[item.externalId]}
+                  GroupDescription={item?.group?.shortName ?? ""}
+                  StaffName={staffNames[item.externalId] ?? ""}
+                  CoverStaffName={coverStaffNames[item.externalId] ?? ""}
+                  index={index}
+                  EventCardColor={getBackgroundColor(item)}
+                  EventTypeCode={item.eventTypeCode}
+                  EventDescription={item.eventDescription}
+                  ClassPeriodExternalId={item.classPeriodExternalId}
+                  EventInstanceExternalId={item.eventInstanceExternalId}
+                  SelectedItem={selectedItem}
+                  isLoader={isLoader}
+                />
+              </div>
+            </GridItem>
+          ))}
+
+          {/* Show "No More Events" only ONCE when schoolEventsData.length < 6 */}
+          {schoolEventsData.length < 6 && !isLoader && (
+            <GridItem sm={4} md={2} lg={cardCol} className="c-clear-padding">
+              <div className="new-event-card-box">
+                <EventCard
+                  dataTestId="no-events-to-display"
+                  id="no-events-to-display-id"
+                  primaryText=""
+                  secondaryText=""
+                  status={EventCardStatus.DEFAULT}
+                  title= {t("stafftimetable.nomoreevent")} 
+                  inputHeight={67}
+                />
+              </div>
+            </GridItem>
+          )}
+        </Grid>
+      </div>
     );
   };
-
-  const baseValue = schoolEventsData.length < 5 ? 3 : 2;
-  const finalValue = isOpen && !isMobileView ? 2 : 3;
-  const cardCol = isOpen ? finalValue : baseValue;
-
-  return (
-    <div>
-      <Grid>
-        {schoolEventsData.map((item: any, index: number) => (
-          <GridItem
-            key={item.externalId} // Ensure unique key for each item
-            sm={4}
-            md={2}
-            lg={cardCol}
-            className="c-clear-padding"
-          >
-            <div className="new-event-card-box">
-              <EventContainerView
-                SchoolEventexternalId={item.externalId}
-                EventTitle={formatEventTitleData(item)}
-                EventTime={formatEventTimeData(item)}
-                RoomCode={formatRoomCode(item)}
-                EventStartDate={item.eventStart}
-                EventEndDate={item.eventEnd}
-                GroupExternalId={item.group.externalId}
-                EventPeriodNum={formateventPeriodNum(item)}
-                togglePanel={() => togglePanel(item.externalId)}
-                isOpen={isOpen}
-                isOpenPanel={isOpenPanel[item.externalId]}
-                GroupDescription={item?.group?.shortName ?? ""}
-                StaffName={staffNames[item.externalId] ?? ""}
-                CoverStaffName={coverStaffNames[item.externalId] ?? ""}
-                index={index}
-                EventCardColor={getBackgroundColor(item)}
-                EventTypeCode={item.eventTypeCode}
-                EventDescription={item.eventDescription}
-                ClassPeriodExternalId={item.classPeriodExternalId}
-                EventInstanceExternalId={item.eventInstanceExternalId}
-                SelectedItem={selectedItem}
-                isLoader={isLoader}
-              />
-            </div>
-          </GridItem>
-        ))}
-
-        {/* Show "No More Events" only ONCE when schoolEventsData.length < 6 */}
-        {schoolEventsData.length < 6 && !isLoader && (
-          <GridItem sm={4} md={2} lg={cardCol} className="c-clear-padding">
-            <div className="new-event-card-box">
-              <EventCard
-                dataTestId="no-events-to-display"
-                id="no-events-to-display-id"
-                primaryText=""
-                secondaryText=""
-                status={EventCardStatus.DEFAULT}
-                title={t("stafftimetable.nomoreevent")}
-                inputHeight={67}
-              />
-            </div>
-          </GridItem>
-        )}
-      </Grid>
-    </div>
-  );
-};
 
 export default EventContainer;

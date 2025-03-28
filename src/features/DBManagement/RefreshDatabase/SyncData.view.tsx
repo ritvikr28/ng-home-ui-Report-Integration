@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { ButtonSize, Button, ButtonColor, FormLabel } from "@essnextgen/ui-kit";
-import {
-  useTranslation,
-  UseTranslationResponse
-} from "@essnextgen/ui-intl-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { authService } from "@essnextgen/auth-ui";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
 import ConfirmDialog from "./ConfirmationDialog.logic";
-import {
-  IPrecheckStatusApiResponse,
-  ISchoolDetailsDRApiResponse,
-  ISyncCompletedSeenStatusResponse
-} from "../../../shared/model/RefreshDatabase/responsemodel";
+import { IPrecheckStatusApiResponse, ISchoolDetailsDRApiResponse, ISyncCompletedSeenStatusResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
@@ -37,10 +30,9 @@ export const FetchSyncStatus = async (
     const orgName: string = schoolData == null ? "" : schoolData.schoolName;
     const orgId = getUserOrganisation();
 
-    const response: AxiosResponse<ISchoolDetailsDRApiResponse> =
-      await service.get(
-        `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
-      );
+    const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
+      `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
+    );
     return response.data;
   } catch (err: any) {
     if (err.response) {
@@ -51,13 +43,13 @@ export const FetchSyncStatus = async (
       } else {
         handleException();
       }
-    } else if (err.message && err.message.includes("Invalid token")) {
+    }
+    else if (err.message && err.message.includes("Invalid token")) {
       console.log("Invalid token detected. Redirecting...");
       history.replace("/unauthorized");
-    } else {
-      console.log(
-        "Failed to fetch data, API call failed without a response from the server."
-      );
+    }
+    else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
       handleException();
     }
     return null;
@@ -89,13 +81,13 @@ export const FetchPrecheckStatus = async (
       } else {
         handleException();
       }
-    } else if (err.message && err.message.includes("Invalid token")) {
+    }
+    else if (err.message && err.message.includes("Invalid token")) {
       console.log("Invalid token detected. Redirecting...");
       history.replace("/unauthorized");
-    } else {
-      console.log(
-        "Failed to fetch data, API call failed without a response from the server."
-      );
+    }
+    else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
       handleException();
     }
     return null;
@@ -139,18 +131,18 @@ export const TriggerSync = async (
       } else {
         handleException();
       }
-    } else if (err.message && err.message.includes("Invalid token")) {
+    }
+    else if (err.message && err.message.includes("Invalid token")) {
       console.log("Invalid token detected. Redirecting...");
       history.replace("/unauthorized");
-    } else {
-      console.log(
-        "Failed to fetch data, API call failed without a response from the server."
-      );
+    }
+    else {
+      console.log("Failed to fetch data, API call failed without a response from the server.");
       handleException();
     }
     return null;
   }
-};
+}
 
 // Handle button click
 export const handleButtonClick = async (
@@ -163,8 +155,9 @@ export const handleButtonClick = async (
   inProgressStatus: (value: string) => void,
   setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  history: ReturnType<typeof useHistory>, // Pass the history object
+  history: ReturnType<typeof useHistory>,// Pass the history object
   syncDataStatus: string
+
 ) => {
   try {
     setIsLoading(true);
@@ -174,17 +167,14 @@ export const handleButtonClick = async (
     }
     if (syncDataStatus === "In Progress") {
       setShowSyncDialog(true);
-      inProgressStatus("In Progress");
+      inProgressStatus("In Progress")
       return;
     }
     if (!clicked) {
-      const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(
-        handleException,
-        history
-      );
+      const response: ISchoolDetailsDRApiResponse | null = await TriggerSync(handleException, history);
       if (response?.statusCode === 200) {
         setClicked(true);
-        inProgressStatus("In Progress");
+        inProgressStatus("In Progress")
       } else {
         handleException();
         setShowSyncFailedDialog(true);
@@ -198,8 +188,8 @@ export const handleButtonClick = async (
     setSyncStatus("In Progress");
 
     if (clicked) {
-      const response: ISchoolDetailsDRApiResponse | null =
-        await FetchSyncStatus(handleException, history);
+
+      const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if (response?.statusCode === 200) {
         if (response.uiStatus === "Completed") {
           setShowSyncCompleteDialog(true);
@@ -207,9 +197,10 @@ export const handleButtonClick = async (
           setClicked(false);
         } else if (response.uiStatus === "Error") {
           setShowSyncFailedDialog(true);
-        } else {
+        }
+        else {
           setShowSyncDialog(true);
-          inProgressStatus("In Progress");
+          inProgressStatus("In Progress")
         }
       } else {
         handleException();
@@ -217,10 +208,12 @@ export const handleButtonClick = async (
       }
     }
     setSyncStatus("In Progress");
+
   } catch (error) {
     console.log("Error while checking status:");
     handleException();
-  } finally {
+  }
+  finally {
     setIsLoading(false);
   }
 };
@@ -230,6 +223,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   handleException,
   status,
   syncDataStatus
+
 }) => {
   const history = useHistory(); // Initialize history
   const [syncStatus, setSyncStatus]: [
@@ -257,20 +251,16 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
 
+  
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
   const initializeSteps = async (): Promise<void> => {
     try {
-      const precheckResponse = await FetchPreCheckStatus(
-        handleException,
-        history
-      );
+
+      const precheckResponse = await FetchPreCheckStatus(handleException, history);
       const response = await FetchSyncStatus(handleException, history);
-      if (
-        response?.uiStatus === "Completed" &&
-        precheckResponse?.syncCompletedSeenStatus === "Not Seen"
-      ) {
+      if (response?.uiStatus === "Completed" && precheckResponse?.syncCompletedSeenStatus === "Not Seen") {
         setSyncStatus("Completed");
 
         if (!showSyncCompleteDialog) {
@@ -289,17 +279,19 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   };
 
   useEffect(() => {
+
     const intervalId = setInterval(() => {
       initializeSteps();
     }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
 
     return () => clearInterval(intervalId);
+
   }, [syncStatus, showSyncCompleteDialog, history, handleException]);
 
   return (
     <>
-      <div style={{ marginTop: "16px" }}>
-        <FormLabel id="sync-body-text" dataTestId="modelSyncComplete">
+      <div style={{ marginTop: '16px' }}>
+        <FormLabel id='sync-body-text' dataTestId="modelSyncComplete">
           {t("RefreshDB_T.moduleBlock.modal.content3")}
         </FormLabel>
       </div>
@@ -308,21 +300,18 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         className="btn-full-width"
         size={ButtonSize.Small}
         color={ButtonColor.Utility}
-        onClick={() =>
-          handleButtonClick(
-            handleException,
-            setSyncStatus,
-            setShowSyncCompleteDialog,
-            setShowSyncDialog,
-            clicked,
-            setClicked,
-            inProgressStatus,
-            setShowSyncFailedDialog,
-            setIsLoading,
-            history,
-            syncDataStatus
-          )
-        }
+        onClick={() => handleButtonClick(
+          handleException,
+          setSyncStatus,
+          setShowSyncCompleteDialog,
+          setShowSyncDialog,
+          clicked,
+          setClicked,
+          inProgressStatus,
+          setShowSyncFailedDialog,
+          setIsLoading, history, syncDataStatus
+        )}
+
         disabled={isLoading || showSyncCompleteDialog}
       >
         {isLoading ? "Loading.." : "Sync"}
@@ -341,24 +330,26 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         confirmActionButtonText={t("RefreshDB_T.moduleBlock.modal.button1")}
         title={t("RefreshDB_T.moduleBlock.modal.content")}
         onCloseHandle={async () => {
+
           try {
+
             // Prepare request data
             const requestData: {
-              orgId: string;
-              tableFlagValue: string;
-              status: string;
+              orgId: string,
+              tableFlagValue: string,
+              status: string
             } = {
               orgId: getUserOrganisation(),
               tableFlagValue: "S",
               status: "Seen"
             };
 
-            const response: AxiosResponse<ISyncCompletedSeenStatusResponse> =
-              await service.post(
-                `${envConfig.BASE_URL}/TrainingDB/SyncCompletedSeenStatusUpdate`,
-                requestData
-              );
+            const response: AxiosResponse<ISyncCompletedSeenStatusResponse> = await service.post(
+              `${envConfig.BASE_URL}/TrainingDB/SyncCompletedSeenStatusUpdate`,
+              requestData
+            );
             return response.data;
+
           } catch (err: any) {
             if (err.response) {
               const statusCode = err.response.status;
@@ -368,18 +359,19 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
               } else {
                 handleException();
               }
-            } else if (err.message && err.message.includes("Invalid token")) {
+            }
+            else if (err.message && err.message.includes("Invalid token")) {
               console.log("Invalid token detected. Redirecting...");
               history.replace("/unauthorized");
-            } else {
-              console.log(
-                "Failed to fetch data, API call failed without a response from the server."
-              );
+            }
+            else {
+              console.log("Failed to fetch data, API call failed without a response from the server.");
               handleException();
             }
             return null;
           }
           // need to call getsync status
+
         }}
         onSubmitHandle={() => {
           setShowSyncCompleteDialog(false);
@@ -402,3 +394,4 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 };
 
 export default SyncDataView;
+

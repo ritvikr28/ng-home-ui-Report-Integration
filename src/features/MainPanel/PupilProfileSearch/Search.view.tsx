@@ -28,7 +28,7 @@ export const onItemClickFunc: any = (
     linkText: "[RemovedPupilName]",
     linkUrl: `${envConfig.LEARNER_UI_URL}${link}`,
     clickType: "dropdown_option",
-    clickLocation: "search_suggestion"
+    clickLocation: "search_suggestion",
   });
 
   setSuggestions([]);

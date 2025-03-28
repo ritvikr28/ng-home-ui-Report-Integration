@@ -3,6 +3,7 @@ import { waitFor } from "@testing-library/react";
 import { service } from "../../../utils";
 import { FetchRegisterEventData } from "../registerEventsDetails";
 
+
 const mockTakeRegisterData = [
   {
     externalId: "37fe774b-52cd-4ed8-88ff-7f621f443168",
@@ -18,20 +19,20 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "bba26eef-6670-4a9d-8501-e6ccc5c33790",
       code: "9x/Sc31",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
-    isLesson: true
+    isLesson: true,
   },
   {
     externalId: "26c16326-d7c6-4c8e-8283-bd7c0e06dfa3",
@@ -47,20 +48,20 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
       code: "9x/Sc32",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
-    isLesson: true
+    isLesson: true,
   },
   {
     externalId: "c482ab21-e627-4fc2-b708-c6cf2b8f456a",
@@ -76,20 +77,20 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "d9476c06-6946-4c01-8fd1-c5bbe3b70cb8",
       code: "9x/Sc33",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
-    isLesson: true
+    isLesson: true,
   },
   {
     externalId: "4b57b778-8cab-4eea-a098-068ac3608b7a",
@@ -105,20 +106,20 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "d9476c06-6946-4c01-8fd1-c5bbe3b70cb8",
       code: "9x/Sc34",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
-    isLesson: true
+    isLesson: true,
   },
   {
     externalId: "4fd1b76e-34cc-457d-9174-980229e42495",
@@ -134,20 +135,20 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "bba26eef-6670-4a9d-8501-e6ccc5c33790",
       code: "9x/Sc3",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
-    isLesson: true
+    isLesson: true,
   },
   {
     externalId: "ad724f9c-9f1a-4da0-b2d8-c4fe0ccb6496",
@@ -163,17 +164,17 @@ const mockTakeRegisterData = [
     baseGroup: {
       externalId: "aabc2fa6-825c-4581-9341-f5ad0ad3dc69",
       code: "9x/Sc3",
-      description: "9x/Sc3"
+      description: "9x/Sc3",
     },
     subject: {
       subjectExternalId: "a247cac3-3c7f-4391-860a-f9d3d8e469dd",
       subjectCode: "Sc",
-      subjectDescription: "Science"
+      subjectDescription: "Science",
     },
     room: {
       roomExternalId: "6a91e7ce-37b9-4e32-b784-568fb3c35bb3",
       roomCode: "S7",
-      roomDescription: "Science Lab 7"
+      roomDescription: "Science Lab 7",
     },
 
     isLesson: true
@@ -185,7 +186,7 @@ const axiosResponse: AxiosResponse = {
   status: 200,
   statusText: "OK",
   config: {},
-  headers: {}
+  headers: {},
 };
 
 describe("RegisterEventDetails test", () => {
@@ -207,7 +208,7 @@ describe("RegisterEventDetails test", () => {
         status: 204,
         statusText: "OK",
         config: {},
-        headers: {}
+        headers: {},
       })
     );
 
@@ -223,4 +224,5 @@ describe("RegisterEventDetails test", () => {
 
     expect(result).toBeNull();
   });
+
 });

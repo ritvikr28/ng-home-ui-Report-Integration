@@ -28,7 +28,7 @@ const requiredPermissions: Permission[] = [
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View"
+    Operation: "View",
   }
 ];
 
@@ -105,8 +105,8 @@ const NewHomepageView: React.FC = () => {
     setIsOpen(false);
   };
   useEffect(() => {
-    document.body.classList.add("no-scroll");
-  }, []);
+    document.body.classList.add('no-scroll')
+  }, [])
 
   useEffect(() => {
     (async () => {
@@ -144,33 +144,35 @@ const NewHomepageView: React.FC = () => {
         />
       );
     }
-    return (
-      <>
-        {isMobileView && ClassViewNotificationBanner && <WhatsNewBanner />}
-        <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
-      </>
-    );
+    return <>
+    {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
+    <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
+    </>
   };
 
   return isPermission ? (
     <div className="new-container">
-      {isOpen && (
-        <div className="new-side-panel">
-          <SidePanelView
-            isOpen={isOpen}
-            togglePanel={togglePanel}
-            closePanel={closePanel}
-            showQuickLinkView={showQuickLinkView}
-            showMainPanelView={showMainPanelView}
-            setQuickLinkData={setQuickLinkData}
-            quicklinkData={isError ? [] : quickLinkData}
-            data-testid="btn-show-quick-link"
-            isLoader={isLoader}
-            isSIMSIDAdmin={false}
-          />
-        </div>
-      )}
-      <div className="new-main-panel">{renderContent()}</div>
+       
+      {isOpen &&
+      <div className="new-side-panel">
+        <SidePanelView
+          isOpen={isOpen}
+          togglePanel={togglePanel}
+          closePanel={closePanel}
+          showQuickLinkView={showQuickLinkView}
+          showMainPanelView={showMainPanelView}
+          setQuickLinkData={setQuickLinkData}
+          quicklinkData={isError ? [] : quickLinkData}
+          data-testid="btn-show-quick-link"
+          isLoader={isLoader}
+          isSIMSIDAdmin={false}
+        />
+      </div>
+}
+      <div className="new-main-panel">
+
+        {renderContent()}
+      </div>
     </div>
   ) : (
     <Redirect to="/noAccess" />

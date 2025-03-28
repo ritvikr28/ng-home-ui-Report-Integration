@@ -32,7 +32,7 @@ export const EventContainerView: (
     ClassPeriodExternalId,
     EventInstanceExternalId,
     SelectedItem,
-    isOpenPanel
+    isOpenPanel,
   }: IEventContainerProps = props;
 
   const { truncated, full }: { truncated: string; full: string } = EventTime;
@@ -85,27 +85,27 @@ export const EventContainerView: (
         /* eslint-enable  */
       />
 
-      {isOpenPanel && (
-        <RightSidePanel
-          SchoolEventexternalId={SchoolEventexternalId}
-          EventTitle={EventTitle}
-          RoomCode={RoomCode}
-          EventStart={EventStartDate}
-          EventEnd={EventEndDate}
-          GroupExternalId={GroupExternalId}
-          EventPeriodNo={EventPeriodNum}
-          togglePanel={() => togglePanel(SchoolEventexternalId)}
-          isOpen={isOpenPanel}
-          GroupDescription={GroupDescription}
-          StaffName={StaffName}
-          CoverStaffName={CoverStaffName}
-          data-testid={`right-panel-${index}`}
-          EventTypeCode={EventTypeCode}
-          EventDescription={EventDescription}
-          ClassPeriodExternalId={ClassPeriodExternalId}
-          EventInstanceExternalId={EventInstanceExternalId}
-        />
-      )}
+        {isOpenPanel && (
+          <RightSidePanel
+            SchoolEventexternalId={SchoolEventexternalId}
+            EventTitle={EventTitle}
+            RoomCode={RoomCode}
+            EventStart={EventStartDate}
+            EventEnd={EventEndDate}
+            GroupExternalId={GroupExternalId}
+            EventPeriodNo={EventPeriodNum}
+            togglePanel={() => togglePanel(SchoolEventexternalId)}
+            isOpen={isOpenPanel}
+            GroupDescription={GroupDescription}
+            StaffName={StaffName}
+            CoverStaffName={CoverStaffName}
+            data-testid={`right-panel-${index}`}
+            EventTypeCode={EventTypeCode}
+            EventDescription={EventDescription}
+            ClassPeriodExternalId={ClassPeriodExternalId}
+            EventInstanceExternalId={EventInstanceExternalId}
+          />
+        )}
     </>
   );
 };

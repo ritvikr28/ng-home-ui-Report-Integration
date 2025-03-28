@@ -44,7 +44,10 @@ describe("AppRoutes", () => {
     const RenderedDom = renderWithHistory(history, false);
 
     await waitFor(() => {
-      const container: any = getById(RenderedDom.container, "no-access-page");
+      const container: any = getById(
+        RenderedDom.container,
+        "no-access-page"
+      );
 
       expect(container).toBeInTheDocument();
       const { queryByTestId } = RenderedDom;
@@ -57,7 +60,10 @@ describe("AppRoutes", () => {
     const RenderedDom = renderWithHistory(history, true);
 
     await waitFor(() => {
-      const container: any = getById(RenderedDom.container, "no-access-page");
+      const container: any = getById(
+        RenderedDom.container,
+        "no-access-page"
+      );
       const { getByTestId } = RenderedDom;
 
       expect(container).toBeInTheDocument();
@@ -108,7 +114,7 @@ describe("AppRoutes", () => {
     // Assert that the app module permissions are not fetched
     expect(getAppModulePermissionMock).not.toHaveBeenCalled();
   });
-  test("Should not fetches app module permissions and catch the error", async () => {
+  test("Should not fetches app module permissions and catch the error", async () => {    
     const getAppModulePermissionMock: any = jest
       .spyOn(getAppModulesPermissions, "default")
       .mockRejectedValueOnce(new Error("Error"));
@@ -118,7 +124,7 @@ describe("AppRoutes", () => {
           <Layout isStandaloneApp={false} baseRouteName="" />
         </Router>
       </Provider>
-    );
+    );   
     expect(getAppModulePermissionMock).rejects.toThrow();
   });
 });
@@ -165,7 +171,7 @@ describe("getMenus", () => {
 
     expect(filteredMenus).toContainEqual(allMenus[0]); // Check if menu1 is included
     expect(filteredMenus).toContainEqual(allMenus[1]); // Check if menu3 is included
-  });
+  }); 
 });
 
 function renderWithHistory(history: any, isStandalone: boolean) {

@@ -7,13 +7,13 @@ import { FetchQuickLinkData } from "../../../services/quickLinkDomain/quickLinkS
 import { fetchQuickLinkDetails } from "../Quicklinkresponse";
 
 jest.mock("../../../utils", () => ({
-  getQuickLinkSecurablesList: jest.fn()
+  getQuickLinkSecurablesList: jest.fn(),
 }));
 
 jest.mock(
   "../../../../shared/services/quickLinkDomain/quickLinkService",
   () => ({
-    FetchQuickLinkData: jest.fn()
+    FetchQuickLinkData: jest.fn(),
   })
 );
 
@@ -32,21 +32,21 @@ describe("fetchQuickLinkDetails", () => {
       name: "Link 1",
       link: "/link-1",
       favourite: true,
-      createdOn: "2023-01-01T12:00:00Z"
+      createdOn: "2023-01-01T12:00:00Z",
     },
     {
       id: 2,
       name: "Link 2",
       link: "/link-2",
       favourite: false,
-      createdOn: "2023-01-01T12:00:00Z"
+      createdOn: "2023-01-01T12:00:00Z",
     },
     {
       id: 3,
       name: "Link 3",
       link: "/link-3",
       favourite: true,
-      createdOn: "2023-01-01T12:00:00Z"
+      createdOn: "2023-01-01T12:00:00Z",
     },
     {
       id: 4,
@@ -62,13 +62,13 @@ describe("fetchQuickLinkDetails", () => {
     (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockSecurables);
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({
       status: 200,
-      response: mockApiResponse
+      response: mockApiResponse,
     });
     const result = await fetchQuickLinkDetails();
 
     expect(result).toEqual({
       response: mockApiResponse,
-      status: false
+      status: false,
     });
 
     expect(getQuickLinkSecurablesList).toHaveBeenCalled();
@@ -83,14 +83,14 @@ describe("fetchQuickLinkDetails", () => {
 
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({
       status: 204,
-      response: []
+      response: [],
     });
 
     const result = await fetchQuickLinkDetails();
 
     expect(result).toEqual({
       response: [],
-      status: false
+      status: false,
     });
     expect(getQuickLinkSecurablesList).toHaveBeenCalled();
     expect(FetchQuickLinkData).toHaveBeenCalled();
@@ -113,14 +113,14 @@ describe("fetchQuickLinkDetails", () => {
 
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({
       status: 200,
-      response: mockApiResponse
+      response: mockApiResponse,
     });
 
     const result = await fetchQuickLinkDetails();
 
     expect(result).toEqual({
       response: mockApiResponse,
-      status: false
+      status: false,
     });
     expect(getQuickLinkSecurablesList).toHaveBeenCalled();
     expect(FetchQuickLinkData).toHaveBeenCalledWith("Teacher,Admin,SLT");
@@ -145,67 +145,63 @@ describe("fetchQuickLinkDetails", () => {
     expect(FetchQuickLinkData).toHaveBeenCalledWith("");
   });
 
-  test("should return {response, status: false} when FetchQuickLinkData returns a successful response with status 204", async () => {
-    (FetchQuickLinkData as jest.Mock).mockResolvedValue({
-      status: 204,
-      response: mockApiResponse
-    });
-    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([
-      { Securable: "some.value.for.permission" } as Permission
-    ]);
+  test('should return {response, status: false} when FetchQuickLinkData returns a successful response with status 204', async () => {
+   
+    (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 204, response: mockApiResponse });
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
 
     const result = await fetchQuickLinkDetails();
 
     expect(result).toEqual({ response: mockApiResponse, status: false });
   });
-
-  it("should return null when FetchQuickLinkData does not return a successful status", async () => {
+  
+  it('should return null when FetchQuickLinkData does not return a successful status', async () => {
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 500 });
-    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([
-      { Securable: "some.value.for.permission" } as Permission
-    ]);
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
 
     const result = await fetchQuickLinkDetails();
 
     expect(result).toBeNull();
   });
 
-  test("should return null when quickLinkDetails status is not 200 or 204", async () => {
-    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([
-      { Securable: "some.value.for.permission" } as Permission
-    ]);
+  test('should return null when quickLinkDetails status is not 200 or 204', async () => {
+    
+    (getQuickLinkSecurablesList as jest.Mock).mockReturnValue([{ Securable: 'some.value.for.permission' } as Permission]);
     (FetchQuickLinkData as jest.Mock).mockResolvedValue({ status: 500 });
-
+    
     const result = await fetchQuickLinkDetails();
-
+    
     expect(result).toBeNull();
   });
 
-  test("should return response and status false when quickLinkDetails status is 200", async () => {
+  test('should return response and status false when quickLinkDetails status is 200', async () => {
+
     const mockPermissions = [
-      { Securable: "some.value.teacher.role1" },
-      { Securable: "some.value.teacher.role2" }
+      { Securable: 'some.value.teacher.role1' },
+      { Securable: 'some.value.teacher.role2' }
     ];
-    const mockResponse = {
-      status: 200,
-      response: [{ id: 1, name: "QuickLink1" }]
-    };
-
+    const mockResponse = { status: 200, response: [{ id: 1, name: 'QuickLink1' }] };
+    
     (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockPermissions);
     (FetchQuickLinkData as jest.Mock).mockResolvedValue(mockResponse);
-
+    
+  
     const result = await fetchQuickLinkDetails();
-
+    
     expect(result).toEqual({ response: mockResponse.response, status: false });
   });
 
-  test("should return null when quickLinkDetails is null or undefined", async () => {
-    const mockPermissions = [{ Securable: "some.value.teacher.role1" }];
+  test('should return null when quickLinkDetails is null or undefined', async () => {
+   
+    const mockPermissions = [
+      { Securable: 'some.value.teacher.role1' }
+    ];
     (getQuickLinkSecurablesList as jest.Mock).mockReturnValue(mockPermissions);
     (FetchQuickLinkData as jest.Mock).mockResolvedValue(null);
-
+    
     const result = await fetchQuickLinkDetails();
-
+    
     expect(result).toBeNull();
   });
+
 });

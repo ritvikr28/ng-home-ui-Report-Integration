@@ -43,110 +43,110 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+ 
+  const FetchPreCheckStatus : () => Promise<IPrecheckStatusApiResponse|null> = async () => {
+    try {
+      const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
+      const orgName: string = schoolData?.schoolName ?? "";
+      const orgId: string = getUserOrganisation();
 
-  const FetchPreCheckStatus: () => Promise<IPrecheckStatusApiResponse | null> =
-    async () => {
-      try {
-        const schoolData: ISchoolNameDataResponse | null =
-          await useFetchSchoolNameData();
-        const orgName: string = schoolData?.schoolName ?? "";
-        const orgId: string = getUserOrganisation();
-
-        const response: AxiosResponse<IPrecheckStatusApiResponse> =
-          await service.get(
-            `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
-          );
-        return response.data;
-      } catch (err: any) {
-        if (err.response) {
-          const statusCode = err.response.status;
-          console.log(`API call failed with status code: ${statusCode}`);
-          if (statusCode === 401) {
-            errorHandler.handle401Error(statusCode, history); // Pass history here
-          } else {
-            handleException();
-          }
-        } else if (err.message?.includes("Invalid token")) {
-          console.log("Invalid token detected. Redirecting...");
-          history.replace("/unauthorized"); // Handle invalid token
+      const response: AxiosResponse<IPrecheckStatusApiResponse> = await service.get(
+        `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
+      );
+      return response.data;
+    } catch (err: any) {
+      if (err.response) {
+        const statusCode = err.response.status;
+        console.log(`API call failed with status code: ${statusCode}`);
+        if (statusCode === 401) {
+          errorHandler.handle401Error(statusCode, history); // Pass history here
         } else {
-          console.log(
-            "Failed to fetch data, API call failed without a response from the server."
-          );
           handleException();
         }
-        return null;
+      } else if (err.message?.includes("Invalid token")) {
+        console.log("Invalid token detected. Redirecting...");
+        history.replace("/unauthorized"); // Handle invalid token
+      }  else {
+        console.log("Failed to fetch data, API call failed without a response from the server.");
+        handleException();
       }
-    };
+      return null;
+    }
+  };
 
-  const handleButtonClick: () => Promise<void> = async () => {
+  const handleButtonClick :() => Promise<void> = async () => {
     try {
       setIsLoading(true);
-
-      const precheckStatus: IPrecheckStatusApiResponse | null =
-        await FetchPreCheckStatus();
+     
+      const precheckStatus :IPrecheckStatusApiResponse|null = await FetchPreCheckStatus();
 
       if (precheckStatus?.deleteNGDataStatus === "In Progress") {
         inProgressStatus("In Progress");
         setShowInProgressDialog(true);
-      } else if (precheckStatus?.deleteNGDataStatus !== "Deleted") {
+       
+      }
+      else if (precheckStatus?.deleteNGDataStatus !== "Deleted") {
         setShowDeleteDialog(true);
         setShowInProgressDialog(false);
+       
       } else if (precheckStatus?.deleteNGDataStatus === "Deleted") {
         setShowDeleteDialog(false);
         setShowInProgressDialog(false);
-
+        
         setIsProceedDisabled(true); // Disable the button
         status("Deleted");
+
       } else {
         console.warn("Unexpected precheck status:", precheckStatus);
       }
     } catch (error) {
       console.log("Error while checking status");
       handleException();
-    } finally {
+    }
+    finally {
       setIsLoading(false);
     }
+    
   };
 
-  const handleCloseDialog: () => void = () => {
+  const handleCloseDialog :() => void = () => {
     setShowDeleteDialog(false);
     setShowInProgressDialog(false);
+    
   };
 
-  const handleDelete: () => Promise<void> = async () => {
+  const handleDelete :() => Promise<void> = async ()  => {
     try {
       inProgressStatus("In Progress");
-      const schoolData: ISchoolNameDataResponse | null =
-        await useFetchSchoolNameData();
-      // Prepare request data
-      const requestData: {
-        orgId: string;
-        orgName: string;
-        dataDeletedStatus: string;
-        ngDomainDataDeletedBy: string;
-        appCode: string;
-        statusMessage: string;
-      } = {
-        orgId: getUserOrganisation(),
+      const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
+     // Prepare request data
+     const requestData: {
+      orgId: string,
+      orgName: string,
+      dataDeletedStatus:string,
+      ngDomainDataDeletedBy: string,
+      appCode:string,
+      statusMessage: string
+    } = {
+      orgId: getUserOrganisation(),
         orgName: schoolData == null ? "" : schoolData.schoolName,
         dataDeletedStatus: "N",
         ngDomainDataDeletedBy: authService.getUsername(),
         appCode: "",
         statusMessage: ""
-      };
+    };
 
-      const response: AxiosResponse<IProcessNGDeletionApiResponse> =
-        await service.post(
-          `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
-          requestData
-        );
+      const response: AxiosResponse<IProcessNGDeletionApiResponse> = await service.post(
+        `${envConfig.BASE_URL}/TrainingDB/ProcessNGDeletion`,
+        requestData
+      );
 
       if (response.data.statusCode === 200) {
         inProgressStatus("In Progress");
       } else if (response.data.statusCode === 401) {
         errorHandler.handle401Error(response.data.statusCode, history); // Pass history
-      } else {
+      }
+      else {
         console.log("Unexpected response during deletion:", response.data);
         history.replace("/unauthorized"); // Handle invalid token
         handleException();
@@ -169,7 +169,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
         onClick={handleButtonClick}
         disabled={isProceedDisabled || isLoading} // Button disabled condition
       >
-        {isLoading ? "Loading.." : "Proceed"}
+       {isLoading ? "Loading.." : "Proceed"}
       </Button>
       <ConfirmDialog
         isOpen={showDeleteDialog}

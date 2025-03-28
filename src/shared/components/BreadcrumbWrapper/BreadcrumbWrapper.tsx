@@ -7,9 +7,9 @@ import {
 
 const BreadcrumbWrapper: React.FC = () => {
   const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
+  useTranslation();
   return (
-    <Breadcrumbs
+<Breadcrumbs
       breadcrumbActions={[
         {
           active: true,
@@ -27,7 +27,6 @@ const BreadcrumbWrapper: React.FC = () => {
       id="element-id"
       onItemClick={() => {}}
     />
-  );
-};
+    )};
 
 export default BreadcrumbWrapper;

@@ -1,4 +1,4 @@
 export interface IGetClassDetailsProps {
-  yearGroup: string;
-  classGroup: string;
-}
+    yearGroup : string,
+    classGroup : string
+   }

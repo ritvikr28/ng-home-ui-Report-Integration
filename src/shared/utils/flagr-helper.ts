@@ -2,9 +2,10 @@ import {
   getFeaturePermission,
   IFeatureFlag,
   IFeatureFlagVariant
-} from "@essnextgen/ui-flagr";
-import { getUserOrganisation } from "./auth-helper";
-import { envConfig } from "./constants";
+} from '@essnextgen/ui-flagr';
+import { getUserOrganisation } from './auth-helper';
+import { envConfig } from './constants';
+
 
 interface IFeatureFlagVariantAttachment {
   Payload: Array<IAttachmentValue>;
@@ -26,7 +27,7 @@ const getFeatureFlagVariantAttachment: (
   variantName: string
 ) => {
   const visibilityVariant: IFeatureFlagVariant | undefined =
-    featurePermission.variants.find((x) => x.Key === variantName);
+    featurePermission.variants.find(x => x.Key === variantName);
 
   const defaultAttachment: IFeatureFlagVariantAttachment = {
     Payload: [],
@@ -45,10 +46,7 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   flagName: string,
   variantType: string
 ): any => {
-  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    flagName
-  );
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`,flagName);
 
   if (pilotReadyOrg?.enabled) {
     const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
@@ -60,7 +58,7 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
     ) {
       const isIncludedOrganisation: string | undefined =
         variantAttachmentPayload.IncludeOrganisations.find(
-          (x) => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
+          x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
         );
       if (isIncludedOrganisation === undefined) {
         return false;
