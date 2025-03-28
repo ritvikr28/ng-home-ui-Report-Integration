@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
+  Loader,
+  LoaderType,
   Notification as NotificationBanner,
   NotificationStatus
 } from '@essnextgen/ui-kit';
@@ -8,10 +10,11 @@ import './style.scss';
 import { envConfig, getUserOrganisation } from '../../utils';
 
 export const WhatsNewBanner: () => JSX.Element = () => {
-  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const orgId = getUserOrganisation();
 
   useEffect(() => {
+    
     if (typeof window !== "undefined") {
       const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
 
@@ -38,6 +41,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
+  
   return (
     <>
       {isBannerVisible && (
