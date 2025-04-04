@@ -1,5 +1,5 @@
 import React from 'react';
-import { authService, MatchPermissions, Permission } from '@essnextgen/auth-ui';
+import { Permission } from '@essnextgen/auth-ui';
 import DiscoverMoreView from "./Components/DiscoverMore.view";
 /* eslint-disable */
 interface SIMSupdatesViewProps {

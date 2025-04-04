@@ -43,7 +43,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
   };
   
 
-  const onBreadcrumbClick: (breadcrumb: string) => void = (_breadcrumb: string): void => {};
+  const onBreadcrumbClick: (breadcrumb: string) => void = () => {};
 
   return (
     <Grid className="dms-layout" style={{ display: "flex" }}>

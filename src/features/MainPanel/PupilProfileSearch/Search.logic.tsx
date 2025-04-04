@@ -23,7 +23,7 @@ import { IPupilSuggestions, ISearchProps } from "./Search.props";
 const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   logger.info("Search Feature is executing");
   const pagePath = "";
-  const [inputText, setInputText]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+  const [inputText]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [suggestionsResult, setSuggestionsResult]: [
     IPupilSuggestions[],
     React.Dispatch<React.SetStateAction<IPupilSuggestions[]>>
