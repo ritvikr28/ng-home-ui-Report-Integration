@@ -74,7 +74,7 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.authorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0,
+        data?.payload.attendanceInsights.authorisedAbsentNationalAverage || 0
     }
   ];
 
@@ -91,7 +91,7 @@ const AttendanceOverviewView: React.FC = () => {
       previousYearAvg:
         data?.payload.attendanceInsights.unauthorisedAbsentPreviousYear || 0,
       nationalAvg:
-        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0,
+        data?.payload.attendanceInsights.unauthorisedAbsentNationalAverage || 0
     }
   ];
 
@@ -99,12 +99,12 @@ const AttendanceOverviewView: React.FC = () => {
     {
       label: t("attendanceoverview.currentyearaverage"),
       dataKey: "currentYearAvg",
-      color: "#006970",
+      color: "#006970"
     },
     {
       label: t("attendanceoverview.previousyearaverage"),
       dataKey: "previousYearAvg",
-      color: "#78D5DB",
+      color: "#78D5DB"
     },
     {
       label: t("attendanceoverview.nationalaverage"),

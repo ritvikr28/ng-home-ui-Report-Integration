@@ -93,11 +93,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const fetchData: () => Promise<void> = async () => {
     try {
       const response: any = await getAppModulesPermissions();
-      const menusWithPermission: IApplicationMenu[] = getMenus(response.data, allMenus);
-      menuFilterHandler(menusWithPermission);
+      processFetchedData(response.data);
     } catch {
-      menuFilterHandler([]);
+      processFetchedData([]);
     }
+  };
+  
+  const processFetchedData: (data: IModulePermission[]) => void = (data: IModulePermission[]) => {
+    const menusWithPermission: IApplicationMenu[] = getMenus(data, allMenus);
+    menuFilterHandler(menusWithPermission);
   };
 
   const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (menus: IApplicationMenu[]) => {

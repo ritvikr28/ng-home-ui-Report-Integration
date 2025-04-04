@@ -14,7 +14,7 @@ import {
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
-import { SidePanelProps, QuickLinkSidePanel } from "./SidePanelProps";
+import { SidePanelProps, QuickLinkSidePanel, QuickLink } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -25,7 +25,7 @@ import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemode
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View",
+    Operation: "View"
   }
 ];
 
@@ -37,7 +37,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
   quicklinkData,
   setQuickLinkData,
   isLoader = false,
-  isSIMSIDAdmin = false,
+  isSIMSIDAdmin = false
 }) => {
   const [isError, setIsError]: [
     boolean,
@@ -84,7 +84,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
           handleStarClick,
           showQuickLinkView,
           isLoader,
-          isOpen,
+          isOpen
         })}
     </div>
   );
@@ -129,7 +129,7 @@ const handleStarClickAsync: (
       event: "interact_click",
       elementType,
       elementTextOrLabel: name,
-      elementLocation: "sidebar",
+      elementLocation: "sidebar"
     });
   };
 
@@ -164,7 +164,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
   handleStarClick,
   showQuickLinkView,
   isLoader,
-  isOpen,
+  isOpen
 }: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
@@ -204,7 +204,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
       showQuickLinkView,
       isLoader,
       togglePanel,
-      isMobileView,
+      isMobileView
     })
   );
 };
@@ -289,7 +289,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView,
+  isMobileView
 }: RenderQuickLinkContentProps) => (
   <div>
     <div className="user-name-display">
@@ -306,7 +306,7 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
         showQuickLinkView,
         isLoader,
         togglePanel,
-        isMobileView,
+        isMobileView
       })}
   </div>
 );
@@ -337,7 +337,7 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   showQuickLinkView,
   isLoader,
   togglePanel,
-  isMobileView,
+  isMobileView
 }: QuickLinkSidePanel): JSX.Element | null =>{
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
@@ -364,8 +364,8 @@ eslint-disable
               <div
                 className="quick-link-panel-item"
                 onClick={() => {
-                  const classViewLink = quicklinkData.find(
-                    (link: any) => link.name === t("quickLink.classview")
+                  const classViewLink: string | undefined = (quicklinkData as QuickLink[]).find(
+                    (link: QuickLink) => link.name === t("quickLink.classview")
                   )?.link;
                   if (classViewLink) {
                     window.location.href = classViewLink;
@@ -374,7 +374,7 @@ eslint-disable
                       linkText: "Class View",
                       linkUrl: classViewLink,
                       clickType: "link",
-                      clickLocation: "sidebar",
+                      clickLocation: "sidebar"
                     });
                   }
                 }}
@@ -397,7 +397,7 @@ eslint-disable
                         linkText: sidelink.name,
                         linkUrl: sidelink.link,
                         clickType: "link",
-                        clickLocation: "sidebar",
+                        clickLocation: "sidebar"
                       });
                     }}
                     style={{ cursor: "pointer" }}

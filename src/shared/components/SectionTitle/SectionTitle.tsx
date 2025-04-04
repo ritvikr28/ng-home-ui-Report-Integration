@@ -2,9 +2,14 @@ import { Link } from "@essnextgen/ui-kit"
 import gtmAnalytics from "../../utils/analytics"
 import { ICommomComponent } from "./SectionTitleProps"
 import "./style.scss"
+import React from "react"
 
-export const SectionTitle = (props: ICommomComponent) => {
-    const { title, hasLink, linkText, linkhref, path }: ICommomComponent = props
+export const SectionTitle: React.FC<ICommomComponent> = ({ 
+    title,
+    hasLink, 
+    linkText, 
+    linkhref, 
+    path }: ICommomComponent):JSX.Element => {
     return (
         <div className="new-title-container c-clear-margin-top c-clear-padding">
             <span className="new-title-text">{title} </span>

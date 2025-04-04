@@ -28,7 +28,7 @@ const requiredPermissions: Permission[] = [
 const requiredPermissionsforquicklink: Permission[] = [
   {
     Securable: "NG.Homepage.QuickLink",
-    Operation: "View",
+    Operation: "View"
   }
 ];
 

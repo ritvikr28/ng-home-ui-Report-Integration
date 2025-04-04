@@ -4,34 +4,38 @@ import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit"
 import './style.scss';
 import { envConfig, getUserOrganisation } from '../../utils';
 
+interface Banner {
+  orgId: string;
+  isClosed: boolean;
+}
 export const WhatsNewBanner: () => JSX.Element = () => {
   const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const orgId = getUserOrganisation();
+  const orgId: string | undefined = getUserOrganisation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
+      const storedBanners: Banner[] = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
 
-      const isClosed = storedBanners.some((item: { orgId: string; isClosed: boolean }) => item.orgId === orgId && item.isClosed);
+      const isClosed: boolean = storedBanners.some((item:Banner) => item.orgId === orgId && item.isClosed);
 
       setIsBannerVisible(!isClosed);
     }
   }, [orgId]);
 
-  const handleExit = () => {
+  const handleExit = (): void => {
     try {
-      const storedBanners = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
-      const updatedBanners = storedBanners.filter((item: { orgId: string }) => item.orgId !== orgId);
+        const storedBanners: Banner[] = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
+        const updatedBanners: Banner[] = storedBanners.filter((item: Banner) => item.orgId !== orgId);
 
-      updatedBanners.push({ orgId, isClosed: true });
+        updatedBanners.push({ orgId: orgId || "", isClosed: true });
 
-      localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
-      setIsBannerVisible(false);
+        localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
+        setIsBannerVisible(false);
 
-    } catch (error) {
-      console.error("Failed to update localStorage:", error);
+    } catch (error: unknown) { 
+        console.error("Failed to update localStorage:", error);
     }
-  };
+};
 
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
