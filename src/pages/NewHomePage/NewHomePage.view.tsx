@@ -169,7 +169,7 @@ const NewHomepageView: React.FC = () => {
         />
       </div>
 }
-      <div className="new-main-panel">
+      <div className={showQuickLink ? "new-main-panel-quicklink" : "new-main-panel"}>
 
         {renderContent()}
       </div>

@@ -1,7 +1,7 @@
 import { Redirect } from "react-router-dom";
 
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { Button, ButtonColor, ButtonSize, Divider, IconColor, Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
+import { Divider,Link, Table, TableBody, TableCell, TableHead, TableRow, TableWrapper } from "@essnextgen/ui-kit";
 import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
 import BreadcrumbWrapper from "../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 
@@ -10,7 +10,7 @@ import "./style.scss";
 import { IQuickLinkViewProps } from "./props";
 import gtmAnalytics from "../../shared/utils/analytics";
 import SIMSupdatesView from "../../shared/components/SIMSUpdates/SIMSupdates.view";
-
+import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 
 
 const requiredPermissions: Permission[] = [
@@ -39,15 +39,13 @@ const QuickLink: ({ }: IQuickLinkViewProps) => JSX.Element = ({
 
         <div className="quicklink-breadcrumb">
           {!isOpen && <div className="quicklink-openclose-btn">
-            <Button
-              className="new-sidepanel-toggle-btn"
-              color={ButtonColor.Utility}
-              dataTestId="btn-collapse"
-              iconColor={IconColor.Neutral800}
-              iconName="open-panel--left--filled"
+             <button
+              type="button"
+              className="new-sidepanel-toggle-btn-quicklink"
               onClick={togglePanel}
-              size={ButtonSize.Small}
-            />
+            >
+              <FilledLeftPanelIcon />
+            </button>
           </div>
           }
           <BreadcrumbWrapper />
