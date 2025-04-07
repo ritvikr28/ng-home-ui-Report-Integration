@@ -33,7 +33,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   const onCardClick: () => void = () => { };
   return (
     <>
-      <Grid className="new-sims-uppersection c-clear-padding new-margin-b-container">
+      <Grid className="new-sims-uppersection new-margin-b-container">
         <GridItem sm lg className="new-sims-title c-clear-padding">
           <SectionTitle title={t("discoverMore.simsupdatetext")} />
         </GridItem>

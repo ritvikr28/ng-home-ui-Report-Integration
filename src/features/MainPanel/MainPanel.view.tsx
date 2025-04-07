@@ -1,12 +1,8 @@
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {
-  Button,
-  ButtonColor,
-  ButtonSize,
   Divider,
   Grid,
   GridItem,
-  IconColor,
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
@@ -21,6 +17,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
+import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -106,16 +103,13 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">
-            <Button
+            <button
+              type="button"
               className="new-sidepanel-toggle-btn"
-              color={ButtonColor.Utility}
-              dataTestId="btn-collapse"
-              iconColor={IconColor.Neutral800}
-              iconName="open-panel--left--filled"
               onClick={togglePanel}
-              size={ButtonSize.Small}
-              ariaLabel="new-sidepanel-toggle-btn"
-            />
+            >
+              <FilledLeftPanelIcon />
+            </button>
           </GridItem>
         )}
         <GridItem sm md lg xl xxl className="c-clear-padding">
@@ -169,7 +163,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             </div>
           </>
         )}
-      <div className="new-margin-b-container">
+      <div className="new-margin-b-container c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />
       </div>
     </div>
