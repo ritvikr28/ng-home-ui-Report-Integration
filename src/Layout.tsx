@@ -21,7 +21,7 @@ export interface ILayoutProps {
 }
 
 export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => {
-  //const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const history = useHistory();
   const { t } = useTranslation();
   const [isServiceInitiated, setIsServiceInitiated] = useState(false);
