@@ -163,7 +163,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             </div>
           </>
         )}
-      <div className="new-margin-b-container c-clear-padding">
+      <div className="sims-section-footer c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />
       </div>
     </div>

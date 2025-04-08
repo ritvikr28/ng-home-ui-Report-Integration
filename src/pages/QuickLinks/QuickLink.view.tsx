@@ -97,6 +97,7 @@ const QuickLink: ({ }: IQuickLinkViewProps) => JSX.Element = ({
           <>
             <div className="quicklinks-divider"><Divider /></div>
             <div className="new-margin-b-container-sims"><SIMSupdatesView isOpen={isOpen} /></div>
+            <div style={{padding:"30px 0"}}/>
           </>
         </div>
       </div>
