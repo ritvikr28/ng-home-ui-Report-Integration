@@ -220,6 +220,7 @@ const DocumentManagementServerView : React.FC= () => {
                             toastNotificationTitle=""
                             isOpenConfirmationDialog={false}
                             isShowOverflowMenuCol={false}
+                            isShowFirstElement= {false}
                         />
                     </div>
                 </GridItem>
