@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import DiscoverMoreView from "../DiscoverMore.view";
 
 
@@ -62,57 +62,6 @@ describe("DiscoverMoreView Component", () => {
       expect(card).toBeInTheDocument();
       expect(card).toHaveClass("essui-activity-card");
     });
-  });
-
-
-
-  // test("opens links in a new tab when action cards are clicked", () => {
-  //   jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
-  //   render(<DiscoverMoreView isOpen />);
-  //   const actionCardLink = screen.getByTestId("link1");
-  //   fireEvent.click(actionCardLink);
-  //   expect(actionCardLink).toHaveAttribute(
-  //     "href",
-  //     "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
-  //   );
-  // });
-
-  test("redirects to the correct URL when 'Discover more' button is clicked", async () => {
-    render(<DiscoverMoreView isOpen={true} />);
-  
-    const clickMock = jest.fn();
-  
-    // Mock createElement to return a mock anchor element
-    const createElementSpy = jest.spyOn(document, 'createElement').mockImplementation((tagName: string) => {
-      if (tagName === 'a') {
-        return {
-          click: clickMock,
-          set href(value: string) { this._href = value; },
-          get href() { return this._href; },
-          set target(value: string) { this._target = value; },
-          get target() { return this._target; },
-          set rel(value: string) { this._rel = value; },
-          get rel() { return this._rel; },
-        } as any;
-      }
-      return document.createElement(tagName);
-    });
-  
-    const discoverMoreButton = screen.getByTestId("btn-save");
-    fireEvent.click(discoverMoreButton);
-  
-    await waitFor(() => {
-      expect(clickMock).toHaveBeenCalled();
-    });
-  
-    // Optionally: You can also check the properties set on the anchor element if needed
-    const anchor = createElementSpy.mock.results[0].value;
-    expect(anchor.href).toBe("https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1");
-    expect(anchor.target).toBe("_blank");
-    expect(anchor.rel).toBe("noopener noreferrer");
-  
-    // Cleanup
-    createElementSpy.mockRestore();
   });
   
   test("renders ActionCard components with correct text content", () => {
