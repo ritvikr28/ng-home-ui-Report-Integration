@@ -2,10 +2,12 @@ import { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "re
 import { ProtectedRoute, authService } from "@essnextgen/auth-ui";
 import { Switch, BrowserRouter as Router, useHistory, Redirect } from "react-router-dom";
 import {
-  Header
+  Header,
+  IApplicationMenu,
+  IModulePermission
 } from "@essnextgen/ui-application-kit";
 import { Loader, LoaderType } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import getAppModulesPermissions from "./actions/queries";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
@@ -24,8 +26,8 @@ export interface ILayoutProps {
 
 export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => {
   // const dispatch = useDispatch();
-  const history = useHistory();
-  const { t } = useTranslation();
+  const history: any = useHistory();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const [isServiceInitiated, setIsServiceInitiated]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -46,12 +48,12 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
     }
   };
 
-  const processFetchedData = (data: any) => {
-    const menusWithPermission = getMenus(data, []);
+  const processFetchedData = (data: IModulePermission[]): void => {
+    const menusWithPermission : IApplicationMenu[] = getMenus(data, []);
     menuFilterHandler(menusWithPermission, t);
   };
 
-  const onAuthenticated = () => {
+  const onAuthenticated = (): void => {
     if (authService.isAuthenticated()) {
       setIsServiceInitiated(true);
     } else {
