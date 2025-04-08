@@ -22,8 +22,11 @@ const DiscoverMoreView: ({isOpen} : any) => JSX.Element = ({isOpen}) => {
   );
   /* eslint-enable */
   const onButtonClick: () => void = () => {
-   const url = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1"
-  window.open(url,"_blank");
+    const anchor: HTMLAnchorElement = document.createElement("a");
+    anchor.href = "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053661&sys_kb_id=dbda86741b46fd14455842a7b04bcb89&spa=1";
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.click();
   };
 
   interface RelType {

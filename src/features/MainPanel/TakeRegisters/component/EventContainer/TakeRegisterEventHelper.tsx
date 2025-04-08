@@ -212,7 +212,13 @@ export const handleRegisterClick: (item: IRegistersDetails) => void = (item) => 
   });
 
   /* istanbul ignore next */
-  window.open(url, "_self");
+  const anchor : HTMLAnchorElement = document.createElement("a");
+  anchor.href = url;
+  anchor.target = "_self";
+  anchor.rel = "noopener noreferrer";
+  document.body.appendChild(anchor); // Attach to DOM
+  anchor.click();                     // Simulate click
+  document.body.removeChild(anchor); // Remove it after click
 };
 
 const FilledGraphDataIcon: () => JSX.Element = () => (
