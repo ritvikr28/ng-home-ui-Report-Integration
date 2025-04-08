@@ -1,4 +1,4 @@
-import { Suspense, lazy, FC, useEffect, useState } from "react";
+import { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "react";
 import { ProtectedRoute, authService } from "@essnextgen/auth-ui";
 import { Switch, BrowserRouter as Router, useHistory, Redirect } from "react-router-dom";
 import {
@@ -13,7 +13,9 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import { getMenus, menuFilterHandler, renderHomePage, hasPermission, hasFeatureFlag } from "./layoutHelpers";
 
 
-const NoAccess = lazy(() => import("./pages/NoAccess"));
+const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./pages/NoAccess")
+);
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -24,7 +26,10 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
   // const dispatch = useDispatch();
   const history = useHistory();
   const { t } = useTranslation();
-  const [isServiceInitiated, setIsServiceInitiated] = useState(false);
+  const [isServiceInitiated, setIsServiceInitiated]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isStandaloneApp) {
@@ -32,9 +37,9 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
     }
   }, []);
 
-  const fetchData = async () => {
+  const fetchData: () => Promise<void> = async () => {
     try {
-      const response = await getAppModulesPermissions();
+      const response : any = await getAppModulesPermissions();
       processFetchedData(response.data);
     } catch {
       processFetchedData([]);
