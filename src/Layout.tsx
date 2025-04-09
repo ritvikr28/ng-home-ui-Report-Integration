@@ -1,10 +1,11 @@
-import React , { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "react";
-import { ProtectedRoute, authService } from "@essnextgen/auth-ui";
-import { Switch, BrowserRouter as Router, useHistory, Redirect } from "react-router-dom";
+import React, { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "react";
+import { Auth, ProtectedRoute, authService } from "@essnextgen/auth-ui";
+import { Switch, BrowserRouter as Router, useHistory, Redirect, Route } from "react-router-dom";
 import {
   Header,
   IApplicationMenu,
-  IModulePermission
+  IModulePermission,
+  SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import { Loader, LoaderType } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
@@ -12,7 +13,13 @@ import getAppModulesPermissions from "./actions/queries";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
-import { getMenus, menuFilterHandler, renderHomePage, hasPermission, hasFeatureFlag } from "./layoutHelpers";
+import { getMenus, menuFilterHandler, renderHomePage, hasPermission, hasFeatureFlag, hasOrgVariant } from "./layoutHelpers";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+import DBManagement from "./features/DBManagement/DBManagement.view";
+import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
+import UAM from "./features/AdminConsole/UAM.view";
+import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
+import InviteUsersLogic from "./pages/InviteUsers";
 
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
@@ -105,6 +112,49 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
               render={() =>
                 hasPermission("NG.AdminConsole", "View") ? (
                   <AdminConsole />
+                ) : (
+                  <Redirect to="/unauthorized" />
+                )
+              }
+            />
+          )}
+          {hasFeatureFlag("AdminConsoleView") && (
+            <ProtectedRoute
+              exact
+              path="/documents"
+              render={() =>
+                hasPermission("NG.AdminConsole", "View") ? (
+                  <DocumentManagementServer />
+                ) : (
+                  <Redirect to="/unauthorized" />
+                )
+              }
+            />
+          )}
+          {hasOrgVariant("UAMView") && hasFeatureFlag("UAMView") && (
+            <ProtectedRoute exact path="/uam" component={UAM} />
+          )}
+
+          {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
+          <ProtectedRoute
+            exact
+            path="/adminConsole/userManagement"
+            render={() => <EarlyAdpterPage />}
+          />
+
+          <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
+
+          {isOrganisationInVariant("RefreshDBORG") && hasFeatureFlag("RefreshDBORG") && (
+            <ProtectedRoute exact path="/dbmanagement" component={DBManagement} />
+          )}
+
+          {hasFeatureFlag("InviteUserView") && (
+            <ProtectedRoute
+              exact
+              path="/inviteusers"
+              render={() =>
+                hasFeatureFlag("InviteUserView") ? (
+                  <InviteUsersLogic />
                 ) : (
                   <Redirect to="/unauthorized" />
                 )
