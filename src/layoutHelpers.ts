@@ -19,6 +19,23 @@ export const hasFeatureFlag: (feature: string) => boolean =
 export const hasOrgVariant: (variant: string) => boolean =
     (variant) => isOrganisationInVariant(variant);
 
+
+    export const shouldShowAdminConsole = () =>
+        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole", "View");
+      
+      export const shouldShowDocuments = () =>
+        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole", "View");
+      
+      export const shouldShowUAM = () =>
+        hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
+      
+      export const shouldShowInviteUsers = () =>
+        hasFeatureFlag("InviteUserView");
+      
+      export const shouldShowDBManagement = () =>
+        hasFeatureFlag("RefreshDBORG") && hasOrgVariant("RefreshDBORG");
+      
+
 export const renderHomePage: (
     hasNewHomePagePermission: boolean,
     hasTeacherPermission: boolean,
