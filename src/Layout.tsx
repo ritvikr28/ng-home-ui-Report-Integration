@@ -1,4 +1,4 @@
-import { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "react";
+import React , { Suspense, lazy, FC, useEffect, useState, LazyExoticComponent } from "react";
 import { ProtectedRoute, authService } from "@essnextgen/auth-ui";
 import { Switch, BrowserRouter as Router, useHistory, Redirect } from "react-router-dom";
 import {
@@ -41,19 +41,19 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
 
   const fetchData: () => Promise<void> = async () => {
     try {
-      const response : any = await getAppModulesPermissions();
+      const response: any = await getAppModulesPermissions();
       processFetchedData(response.data);
     } catch {
       processFetchedData([]);
     }
   };
 
-  const processFetchedData = (data: IModulePermission[]): void => {
-    const menusWithPermission : IApplicationMenu[] = getMenus(data, []);
+  const processFetchedData: (data: IModulePermission[]) => void = (data) => {
+    const menusWithPermission: IApplicationMenu[] = getMenus(data, []);
     menuFilterHandler(menusWithPermission, t);
   };
 
-  const onAuthenticated = (): void => {
+  const onAuthenticated: () => void = (): void => {
     if (authService.isAuthenticated()) {
       setIsServiceInitiated(true);
     } else {
@@ -67,7 +67,7 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
         <Header
           isRenderOnFrame
           menuFilterHandler={(menus) => menuFilterHandler(menus, t)}
-          onClickLogo={() => {}}
+          onClickLogo={() => { }}
           useSchoolPermission
         />
       )}
@@ -88,11 +88,11 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
             component={
               isServiceInitiated
                 ? renderHomePage(
-                    hasPermission("NG.Homepage", "View"),
-                    hasPermission("NG.Homepage.Teacher", "View"),
-                    hasPermission("NG.Homepage.SLT", "View"),
-                    hasPermission("NG.Homepage.Admin", "View")
-                  )
+                  hasPermission("NG.Homepage", "View"),
+                  hasPermission("NG.Homepage.Teacher", "View"),
+                  hasPermission("NG.Homepage.SLT", "View"),
+                  hasPermission("NG.Homepage.Admin", "View")
+                )
                 : () => <div />
             }
           />
