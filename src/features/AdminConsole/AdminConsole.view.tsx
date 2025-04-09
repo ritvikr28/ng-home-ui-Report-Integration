@@ -37,9 +37,14 @@ const AdminConsole: React.FC = () => {
     document.body.classList.remove('no-scroll');
   }, [])
 
-  const layoutValues = {
+  type LayoutValues = {
+    grid1: { lg: number; md: number; xl: number; xxl: number };
+    grid2: { lg: number; md: number; xl: number; xxl: number };
+  };
+
+  const layoutValues: LayoutValues = {
     grid1: isOpen ? { lg: 3, md: 2, xl: 2, xxl: 1 } : { lg: 0, md: 0, xl: 0, xxl: 1 },
-    grid2: isOpen ? { lg: 9, md: 8, xl: 9, xxl: 10 } : { lg: 12, md: 8, xl: 12, xxl: 10 },
+    grid2: isOpen ? { lg: 9, md: 8, xl: 9, xxl: 10 } : { lg: 12, md: 8, xl: 12, xxl: 10 }
   };
   return (
     <>

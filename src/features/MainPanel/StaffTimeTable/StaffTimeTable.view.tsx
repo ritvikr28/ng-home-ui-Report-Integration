@@ -14,7 +14,7 @@ export interface StaffTimeTableProps {
 }
 
 export const StaffTimeTableView: React.FC<StaffTimeTableProps> = ({
-  isOpen,
+  isOpen
 }) => {
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   return (

@@ -28,21 +28,22 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
     "(min-width:320px) and (max-width: 1023.9px)"
   );
 
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(!isMobileView);
+  const [isSidebarOpen, setIsSidebarOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
   }, [isMobileView]);
 
-  const toggleSidebar = (): void => {
-    setIsSidebarOpen((prev) => !prev);
+  const toggleSidebar: () => void = (): void => {
+    setIsSidebarOpen((prev: boolean): boolean => !prev); 
   };
 
-  const closeSidebar = (): void => {
-    setIsSidebarOpen(false);
+  const closeSidebar: () => void = (): void => {
+    setIsSidebarOpen(false); 
   };
+  
 
-  const onBreadcrumbClick = (): void => {};
+  const onBreadcrumbClick: (breadcrumb: string) => void = () => {};
 
   return (
     <Grid className="dms-layout" style={{ display: "flex" }}>

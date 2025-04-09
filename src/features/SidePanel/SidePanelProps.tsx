@@ -22,3 +22,10 @@ export interface QuickLinkSidePanel{
   togglePanel: any;
   isMobileView: any;
 }
+
+export interface QuickLink {
+  id: number;
+  name: string;
+  link: string;
+  favourite: boolean;
+}

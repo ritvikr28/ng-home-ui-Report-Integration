@@ -23,12 +23,12 @@ import { IPupilSuggestions, ISearchProps } from "./Search.props";
 const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
   logger.info("Search Feature is executing");
   const pagePath = "";
-  const [inputText] = useState("");
+  const [inputText]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [suggestionsResult, setSuggestionsResult]: [
     IPupilSuggestions[],
     React.Dispatch<React.SetStateAction<IPupilSuggestions[]>>
   ] = useState<IPupilSuggestions[]>([]);
-  const [value, setValue] = useState<string>("");
+  const [value, setValue]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [suggestions, setSuggestions]: [
     Array<Suggestion>,
     React.Dispatch<React.SetStateAction<Array<Suggestion>>>
@@ -47,7 +47,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
         {
           e,
           inputText,
-          pagePath,
+          pagePath
         },
         e.target.value
       );
@@ -57,7 +57,7 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
         linkText: "Show all results",
         linkUrl: url,
         clickType: "search_field",
-        clickLocation: "body",
+        clickLocation: "body"
       });
       if (validInput) window.location.href = url;
     }
@@ -99,8 +99,8 @@ const Search: React.FC<ISearchProps> = ({ isOpen }: ISearchProps) => {
             ...suggestionsResult,
             {
               pupilSearched: suggestionValue,
-              suggestions: dataItems,
-            },
+              suggestions: dataItems
+            }
           ]);
           /* eslint-enable */
         })
@@ -165,17 +165,17 @@ export function getValues(
     props: {
       externalId: v.learnerExternalId,
       link: redirectLink.replace("{externalId}", v.learnerExternalId),
-      name: `${v.preferredForename} ${v.preferredSurname}  (${v.legalForename} ${v.legalSurname})`,
+      name: `${v.preferredForename} ${v.preferredSurname}  (${v.legalForename} ${v.legalSurname})`
     },
     value: (
       <Tag
         text={getClassDetails({
           yearGroup: v.yearGroup,
-          classGroup: v.classGroup,
+          classGroup: v.classGroup
         })}
         color={TagColor.Warning}
         size={TagSize.Small}
       />
-    ),
+    )
   }));
 }

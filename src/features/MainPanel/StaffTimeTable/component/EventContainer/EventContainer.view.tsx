@@ -32,7 +32,7 @@ export const EventContainerView: (
     ClassPeriodExternalId,
     EventInstanceExternalId,
     SelectedItem,
-    isOpenPanel,
+    isOpenPanel
   }: IEventContainerProps = props;
 
   const { truncated, full }: { truncated: string; full: string } = EventTime;

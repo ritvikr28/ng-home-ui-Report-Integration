@@ -75,7 +75,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     isError,
     isSchoolPrimary,
     isOpen,
-    setIsOpen,
+    setIsOpen
   }: IMainPanelProps = props;
 
   const SLTviewBETT: boolean = hasFeaturePermission(

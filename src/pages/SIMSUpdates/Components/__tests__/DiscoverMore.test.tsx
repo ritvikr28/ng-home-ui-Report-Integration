@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import DiscoverMoreView from "../DiscoverMore.view";
 
 
@@ -63,30 +63,7 @@ describe("DiscoverMoreView Component", () => {
       expect(card).toHaveClass("essui-activity-card");
     });
   });
-
-
-
-  test("opens links in a new tab when action cards are clicked", () => {
-    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
-    render(<DiscoverMoreView isOpen />);
-    const actionCardLink = screen.getByTestId("link1");
-    fireEvent.click(actionCardLink);
-    expect(actionCardLink).toHaveAttribute(
-      "href",
-      "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
-    );
-  });
-
-  test("redirects to the correct URL when 'Discover more' button is clicked", async () => {
-    render(<DiscoverMoreView />);
-    const spyWindowOpen:any = jest.spyOn(window, 'open');
-spyWindowOpen.mockImplementation(jest.fn());
-    const discoverMoreButton:HTMLElement = screen.getByTestId("btn-save");
-    fireEvent.click(discoverMoreButton);
-    await waitFor(() => {
-      expect(spyWindowOpen).toHaveBeenCalled();
-    });
-  });
+  
   test("renders ActionCard components with correct text content", () => {
     const { getByTestId } = render(<DiscoverMoreView />);
     

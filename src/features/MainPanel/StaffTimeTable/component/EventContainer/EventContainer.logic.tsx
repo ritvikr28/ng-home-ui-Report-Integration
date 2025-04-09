@@ -25,7 +25,7 @@ import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/st
 import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
-  isOpen,
+  isOpen
 }: any) => {
   const [isError, setIsError]: [
     boolean,
@@ -71,13 +71,13 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       try {
         const {
           status: responseStatus,
-          responseData,
+          responseData
         }: {
           status: number | null;
           responseData: IStaffTimeTableEventsResponse[] | null;
         } = (await FetchStaffTimeTableEventsData()) ?? {
           status: null,
-          responseData: null,
+          responseData: null
         };
         if (
           /* istanbul ignore next */
@@ -203,7 +203,7 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
 
   return {
     truncated: `${truncatedDescription} | ${starttime} - ${endtime}`,
-    full: `${eventDescription} | ${starttime} - ${endtime}`,
+    full: `${eventDescription} | ${starttime} - ${endtime}`
   };
 };
 
@@ -227,7 +227,7 @@ const formatStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors,
+    supervisors
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (
@@ -259,7 +259,7 @@ const formatCoverStaffName = async (
     coveringStaffExternalID,
     isCovered,
     isCovering,
-    supervisors,
+    supervisors
   }: IStaffTimeTableEventsResponse = eventTimeData;
 
   if (originalStaffExternalID && coveringStaffExternalID) {
@@ -357,12 +357,12 @@ const returnEventContainer: React.FC<{
           event: "interact_click",
           elementType: "card",
           elementTextOrLabel: "[RemovedEventName]",
-          elementLocation: "body",
+          elementLocation: "body"
         });
       }
       setIsOpenPanel((prevIsOpen: any) => ({
         ...prevIsOpen,
-        [externalId]: !prevIsOpen[externalId],
+        [externalId]: !prevIsOpen[externalId]
       }));
       setSelectedItem(
         !isOpenPanel || isOpenPanel[externalId]
@@ -371,9 +371,9 @@ const returnEventContainer: React.FC<{
       );
     };
 
-    const baseValue = schoolEventsData.length < 5 ? 3 : 2;
-    const finalValue = isOpen && !isMobileView ? 2 : 3;
-    const cardCol = isOpen ? finalValue : baseValue;
+    const baseValue: number = schoolEventsData.length < 5 ? 3 : 2;
+    const finalValue: number = isOpen && !isMobileView ? 2 : 3;
+    const cardCol: number = isOpen ? finalValue : baseValue;
 
     return (
       <div>

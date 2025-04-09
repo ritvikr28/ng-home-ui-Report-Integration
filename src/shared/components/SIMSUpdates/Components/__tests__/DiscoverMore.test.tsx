@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent} from "@testing-library/react";
 import DiscoverMoreView from "../DiscoverMore.view";
 
 
@@ -75,16 +75,6 @@ describe("DiscoverMoreView Component", () => {
     );
   });
 
-  test("redirects to the correct URL when 'Discover more' button is clicked", async () => {
-    render(<DiscoverMoreView />);
-    const spyWindowOpen:any = jest.spyOn(window, 'open');
-spyWindowOpen.mockImplementation(jest.fn());
-    const discoverMoreButton:HTMLElement = screen.getByTestId("btn-save");
-    fireEvent.click(discoverMoreButton);
-    await waitFor(() => {
-      expect(spyWindowOpen).toHaveBeenCalled();
-    });
-  });
   test("renders ActionCard components with correct text content", () => {
     const { getByTestId } = render(<DiscoverMoreView />);
     

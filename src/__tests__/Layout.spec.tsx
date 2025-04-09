@@ -8,9 +8,10 @@ import {
   IApplicationMenu,
   IModulePermission
 } from "@essnextgen/ui-application-kit";
-import { Layout, getMenus } from "../Layout";
+import { Layout } from "../Layout";
 import configureStore from "../redux/store";
 import * as getAppModulesPermissions from "../actions/queries";
+import { getMenus } from "../layoutHelpers";
 
 describe("AppRoutes", () => {
   const history: any = createBrowserHistory();
