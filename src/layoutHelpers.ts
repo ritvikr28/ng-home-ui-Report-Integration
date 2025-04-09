@@ -57,12 +57,11 @@ export const menuFilterHandler: (
     t: (key: string) => string
 ) => IApplicationMenu[] = (
     menus,
+    // eslint-disable-next-line
     t
-) => {
-        // eslint-disable-next-line
-        const modules = filterAndMapModules(menus, t);
-        return menus;
-    };
+) => // eslint-disable-next-line
+    // const modules = filterAndMapModules(menus, t);
+     menus;
 
 export const filterAndMapModules: (
     menus: IApplicationMenu[],
