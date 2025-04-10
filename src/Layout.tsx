@@ -1,6 +1,6 @@
 import { Suspense, lazy, FC, LazyExoticComponent } from "react";
 import { Auth, ProtectedRoute } from "@essnextgen/auth-ui";
-import { Switch, BrowserRouter as Router, useHistory, Redirect, Route } from "react-router-dom";
+import { Switch, BrowserRouter as Router, Redirect, Route } from "react-router-dom";
 import {
   Header,
   SchoolGroupRedirect
@@ -30,14 +30,14 @@ export interface ILayoutProps {
 
 export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => {
   // const dispatch = useDispatch();
-  const history: any = useHistory();
+  // const history: any = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   // const [isServiceInitiated, setIsServiceInitiated]: [
   //   boolean,
   //   React.Dispatch<React.SetStateAction<boolean>>
   // ] = useState<boolean>(false);
 
-  const { isServiceInitiated } : any = useLayoutInit(isStandaloneApp, t);
+  const { isServiceInitiated , onAuthenticated } : any = useLayoutInit(isStandaloneApp, t);
 
   // useEffect(() => {
   //   if (!isStandaloneApp) {
@@ -67,11 +67,11 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
   //   }
   // };
 
-  const onAuthenticated : () => void = (): void => {
-    if (!isServiceInitiated) {
-      history.push("/auth");
-    }
-  };
+  // const onAuthenticated : () => void = (): void => {
+  //   if (!isServiceInitiated) {
+  //     history.push("/auth");
+  //   }
+  // };
 
   const homepageComponent : any =
     isServiceInitiated
