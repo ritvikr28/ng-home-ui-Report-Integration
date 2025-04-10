@@ -29,7 +29,7 @@ export const hasOrgVariant: (variant: string) => boolean =
       export const shouldShowUAM = () =>
         hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
       
-      export const shouldShowInviteUsers = () =>
+      export const shouldShowInviteUsers  : () => boolean = () => 
         hasFeatureFlag("InviteUserView");
       
       export const shouldShowDBManagement = () =>

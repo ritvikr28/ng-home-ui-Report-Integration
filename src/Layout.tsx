@@ -38,7 +38,7 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
   //   React.Dispatch<React.SetStateAction<boolean>>
   // ] = useState<boolean>(false);
 
-  const { isServiceInitiated } = useLayoutInit(isStandaloneApp, t);
+  const { isServiceInitiated } : any = useLayoutInit(isStandaloneApp, t);
 
   // useEffect(() => {
   //   if (!isStandaloneApp) {
@@ -68,13 +68,13 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
   //   }
   // };
 
-  const onAuthenticated = () => {
+  const onAuthenticated : () => void = (): void => {
     if (!isServiceInitiated) {
       history.push("/auth");
     }
   };
 
-  const homepageComponent =
+  const homepageComponent : any =
     isServiceInitiated
       ? renderHomePage(
           hasPermission("NG.Homepage", "View"),

@@ -11,13 +11,13 @@ export const useLayoutInit = (isStandaloneApp: boolean, t: (key: string) => stri
      boolean,
      React.Dispatch<React.SetStateAction<boolean>>
    ] = useState<boolean>(false);
-  const history = useHistory();
+  const history: any = useHistory();
 
   useEffect(() => {
     if (!isStandaloneApp) fetchData();
   }, []);
 
-  const fetchData = async () => {
+  const fetchData : () => Promise<void> = async () => {
     try {
       const response: any = await getAppModulesPermissions();
       processFetchedData(response.data);
@@ -26,12 +26,12 @@ export const useLayoutInit = (isStandaloneApp: boolean, t: (key: string) => stri
     }
   };
 
-  const processFetchedData = (data: IModulePermission[]) => {
+  const processFetchedData : (data: IModulePermission[]) => void = (data) => {
     const menusWithPermission: IApplicationMenu[] = getMenus(data, []);
     menuFilterHandler(menusWithPermission, t);
   };
 
-  const onAuthenticated = () => {
+  const onAuthenticated : () => void = (): void => {
     if (authService.isAuthenticated()) {
       setIsServiceInitiated(true);
     } else {
