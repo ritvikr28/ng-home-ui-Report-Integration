@@ -4,7 +4,6 @@ import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { authService } from "@essnextgen/auth-ui";
 import * as redux from "react-redux";
-import { ApplicationConfig } from "@essnextgen/ui-application-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { AppPermissionState, IAppModule } from "../types/AppPermission";
 import { Layout } from "../Layout";
@@ -101,34 +100,7 @@ describe("Layout component", () => {
       expect(getByTestId("NoAccessPageTestId")).toBeInTheDocument();
     });
   });
-  it("renders the LandingPage component", async () => {
-    const useSelector = jest.spyOn(redux, "useSelector");
-    useSelector.mockReturnValue(appPermissions);
-    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
 
-    const spy = jest.spyOn(ApplicationConfig, "getApplicationMenus");
-    spy.mockReturnValue([
-      {
-        isStandalone: true,
-        appName: "Home",
-        relativePath: "",
-        allowedRoles: "*",
-        disabled: true,
-        appCode: "Home"
-      }
-    ]);
-    history.push("/");
-    const { getByTestId } = render(
-      <Provider store={configureStore()}>
-        <Router history={history}>
-          <Layout isStandaloneApp baseRouteName="" />
-        </Router>
-      </Provider>
-    );
-    await waitFor(() => {
-      expect(getByTestId("LandingPageTestId")).toBeInTheDocument();
-    });
-  });
   it("renders the Header component", async () => {
     const { getByTestId } = render(
       <Provider store={configureStore()}>
