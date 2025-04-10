@@ -39,7 +39,7 @@ const SIMSIDAdminPageView: React.FC = () => {
                     setQuickLinkData={
                         /* istanbul ignore next */
                         () => { }}
-                    isSIMSIDAdmin={true}
+                    isSIMSIDAdmin
                 />
             </GridItem>
             {/* eslint-disable */}

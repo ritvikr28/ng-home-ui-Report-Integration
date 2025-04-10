@@ -37,9 +37,7 @@ import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 import InviteUsersLogic from "./pages/InviteUsers";
-
-
-
+import SystemStatus from "./features/RagStatus/RagStatus.view";
 
 
 const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
@@ -249,7 +247,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          
+          {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
           {hasInviteUserView && (
             <ProtectedRoute
               exact

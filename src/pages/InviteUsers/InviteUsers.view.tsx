@@ -88,8 +88,8 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             headingText="Invite users"
             subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
             id="Inviteusers-list"
-            filterDDLuseAutoWidth={true}
-            filterDDLisSelected={true}
+            filterDDLuseAutoWidth
+            filterDDLisSelected
             filterDDLlabel="Invitation status"
             filterDDLplaceholder="Select"
             filterDDLselectedItem={{ text: "All", value: "All" }}
