@@ -11,11 +11,10 @@ import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import { menuFilterHandler, renderHomePage, hasPermission, hasFeatureFlag, hasOrgVariant } from "./layoutHelpers";
-import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
-import DBManagement from "./features/DBManagement/DBManagement.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 import UAM from "./features/AdminConsole/UAM.view";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
+import DBManagement from "./features/DBManagement/DBManagement.view"; 
 import InviteUsersLogic from "./pages/InviteUsers";
 import { useLayoutInit } from "./useLayoutInit";
 
@@ -173,7 +172,7 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
             />
           )}
 
-          {isOrganisationInVariant("RefreshDBORG") && hasFeatureFlag("RefreshDBORG") && (
+          {hasOrgVariant("RefreshDBORG") && hasFeatureFlag("RefreshDBORG") && (
             <ProtectedRoute
               exact
               path="/dbmanagement"
