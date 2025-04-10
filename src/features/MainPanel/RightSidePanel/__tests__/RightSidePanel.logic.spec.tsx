@@ -130,6 +130,7 @@ const mockListofGroupExternalId: IGroupMemberDetailsResponse[] = [
   }
 ];
 
+// eslint-disable-next-line
 const mockSortedListofGroupExternalIdBySurname: IGroupMemberDetailsResponse[] =
   [
     {

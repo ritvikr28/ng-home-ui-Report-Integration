@@ -4,7 +4,6 @@ import { Router } from "react-router-dom";
 import { createBrowserHistory } from "history";
 import { authService } from "@essnextgen/auth-ui";
 import * as redux from "react-redux";
-import { ApplicationConfig } from "@essnextgen/ui-application-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { AppPermissionState, IAppModule } from "../types/AppPermission";
 import { Layout } from "../Layout";
