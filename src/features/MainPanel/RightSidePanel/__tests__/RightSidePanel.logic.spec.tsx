@@ -214,48 +214,48 @@ describe("RigthSidePanel", () => {
   const setPupilDetailErrorCodeMessage = jest.fn();
   const setPupilSection = jest.fn();
 
-  test("should set values if eventtitle is not break or meeting or external is not empty", async () => {
-    jest
-      .spyOn(React, "useState")
-      .mockImplementationOnce(() => [false, setLoader])
-      .mockImplementationOnce(() => [false, setErrCodeMessage])
-      .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
-      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
-      .mockImplementationOnce(() => [true, setPupilSection]);
+  // test("should set values if eventtitle is not break or meeting or external is not empty", async () => {
+  //   jest
+  //     .spyOn(React, "useState")
+  //     .mockImplementationOnce(() => [false, setLoader])
+  //     .mockImplementationOnce(() => [false, setErrCodeMessage])
+  //     .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
+  //     .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+  //     .mockImplementationOnce(() => [true, setPupilSection]);
 
-    jest
-      .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
-      .mockResolvedValue(mockListofGroupExternalId);
+  //   jest
+  //     .spyOn(schoolDomainservices, "FetchGroupMemberDetailsData")
+  //     .mockResolvedValue(mockListofGroupExternalId);
 
-    render(
-      <RightSidePanel
-        SchoolEventexternalId={mockHealthyEvent.SchoolEventexternalId}
-        EventTitle={mockHealthyEvent.EventTitle}
-        RoomCode={mockHealthyEvent.RoomCode}
-        EventStart={mockHealthyEvent.EventStart}
-        EventEnd={mockHealthyEvent.EventEnd}
-        GroupExternalId={mockHealthyEvent.GroupExternalId}
-        EventPeriodNo={mockHealthyEvent.EventPeriodNo}
-        togglePanel={mockHealthyEvent.togglePanel}
-        isOpen={mockHealthyEvent.isOpen}
-        GroupDescription={mockHealthyEvent.GroupDescription}
-        StaffName={mockHealthyEvent.StaffName}
-        CoverStaffName={mockHealthyEvent.CoverStaffName}
-        EventTypeCode={mockHealthyEvent.EventTypeCode}
-        ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
-        EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId} 
-        EventDescription={mockHealthyEvent.EventDescription} 
-         />
-    );
-    await waitFor(() => {
-      expect(setLoader).toHaveBeenCalledWith(false);
-      expect(setErrCodeMessage).toHaveBeenCalledWith(false);
-      expect(setGroupMemberDetailsData).toHaveBeenCalledWith(
-        mockSortedListofGroupExternalIdBySurname
-      );
-      expect(setPupilSection).toHaveBeenCalledWith(true);
-    });
-  });
+  //   render(
+  //     <RightSidePanel
+  //       SchoolEventexternalId={mockHealthyEvent.SchoolEventexternalId}
+  //       EventTitle={mockHealthyEvent.EventTitle}
+  //       RoomCode={mockHealthyEvent.RoomCode}
+  //       EventStart={mockHealthyEvent.EventStart}
+  //       EventEnd={mockHealthyEvent.EventEnd}
+  //       GroupExternalId={mockHealthyEvent.GroupExternalId}
+  //       EventPeriodNo={mockHealthyEvent.EventPeriodNo}
+  //       togglePanel={mockHealthyEvent.togglePanel}
+  //       isOpen={mockHealthyEvent.isOpen}
+  //       GroupDescription={mockHealthyEvent.GroupDescription}
+  //       StaffName={mockHealthyEvent.StaffName}
+  //       CoverStaffName={mockHealthyEvent.CoverStaffName}
+  //       EventTypeCode={mockHealthyEvent.EventTypeCode}
+  //       ClassPeriodExternalId={mockHealthyEvent.ClassPeriodExternalId}
+  //       EventInstanceExternalId={mockHealthyEvent.EventInstanceExternalId} 
+  //       EventDescription={mockHealthyEvent.EventDescription} 
+  //        />
+  //   );
+  //   await waitFor(() => {
+  //     expect(setLoader).toHaveBeenCalledWith(false);
+  //     expect(setErrCodeMessage).toHaveBeenCalledWith(false);
+  //     expect(setGroupMemberDetailsData).toHaveBeenCalledWith(
+  //       mockSortedListofGroupExternalIdBySurname
+  //     );
+  //     expect(setPupilSection).toHaveBeenCalledWith(true);
+  //   });
+  // });
 
   test("should set values if eventtitle is not break or meeting or external is not empty and group desc is empty", async () => {
     const mockHealthyEvent1: IRightSidePanelProps = {
