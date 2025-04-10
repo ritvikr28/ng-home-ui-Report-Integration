@@ -1,96 +1,197 @@
-import { Suspense, lazy, FC, LazyExoticComponent } from "react";
-import { Auth, ProtectedRoute } from "@essnextgen/auth-ui";
-import { Switch, BrowserRouter as Router, Redirect, Route } from "react-router-dom";
+import React,{ Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { ProtectedRoute, Auth, authService, MatchPermissions } from "@essnextgen/auth-ui";
+import {
+  Switch,
+  Route,
+  BrowserRouter as Router,
+  useHistory,
+  Redirect
+ } from "react-router-dom";
 import {
   Header,
+  IApplicationMenu,
+  ApplicationConfig,
+  IModulePermission,
   SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import { Loader, LoaderType } from "@essnextgen/ui-kit";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { saveAppPermission, startRequest } from "./actions/storeActions";
+import { IAppModule } from "./types/AppPermission";
+import getAppModulesPermissions from "./actions/queries";
+import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
+import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
+
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
+import DBManagement from "./features/DBManagement/DBManagement.view";
+import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
-import { menuFilterHandler, renderHomePage, hasPermission, hasFeatureFlag, hasOrgVariant } from "./layoutHelpers";
-import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 import UAM from "./features/AdminConsole/UAM.view";
+import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
-import DBManagement from "./features/DBManagement/DBManagement.view"; 
+import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 import InviteUsersLogic from "./pages/InviteUsers";
-import { useLayoutInit } from "./useLayoutInit";
 
 
+
+
+
+const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
+  () => import("./pages/LandingPage")
+);
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
+
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
 }
+const allMenus: IApplicationMenu[] = ApplicationConfig.getRoleBasedMenus();
+export const getMenus: (
+  data: IModulePermission[],
+  globalMenus: IApplicationMenu[]
+) => IApplicationMenu[] = (
+  data: IModulePermission[],
+  globalMenus: IApplicationMenu[]
+) => {
+  const menusWithPermission: IApplicationMenu[] = globalMenus.filter(
+    (menu: IApplicationMenu) =>
+      data.some(
+        (x: IModulePermission) =>
+          x.code === menu.appCode || menu.allowedRoles.includes("admin")
+      )
+  );
+  return menusWithPermission;
+};
+export const Layout: (props: ILayoutProps) => JSX.Element = ({
+  isStandaloneApp,
+  baseRouteName
+}: ILayoutProps) => {
+  const dispatch: any = useDispatch();
+  const history: ReturnType<typeof useHistory> = useHistory();
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+    const [isServiceInitiated, setIsServiceInitiated]: [
+      boolean,
+      React.Dispatch<React.SetStateAction<boolean>>
+    ] = useState<boolean>(false);
 
-export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => {
-  // const dispatch = useDispatch();
-  // const history: any = useHistory();
-  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
-  // const [isServiceInitiated, setIsServiceInitiated]: [
-  //   boolean,
-  //   React.Dispatch<React.SetStateAction<boolean>>
-  // ] = useState<boolean>(false);
+  useEffect(() => {
+    if (!isStandaloneApp) {
+      fetchData();
+    }
+  }, []);
 
-  const { isServiceInitiated , onAuthenticated } : any = useLayoutInit(isStandaloneApp, t);
+  const fetchData: () => Promise<void> = async () => {
+    try {
+      const response: any = await getAppModulesPermissions();
+      processFetchedData(response.data);
+    } catch {
+      processFetchedData([]);
+    }
+  };
+  
+  const processFetchedData: (data: IModulePermission[]) => void = (data: IModulePermission[]) => {
+    const menusWithPermission: IApplicationMenu[] = getMenus(data, allMenus);
+    menuFilterHandler(menusWithPermission);
+  };
 
-  // useEffect(() => {
-  //   if (!isStandaloneApp) {
-  //     fetchData();
-  //   }
-  // }, []);
+  const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (menus: IApplicationMenu[]) => {
+    startRequest();
+    const modules: IAppModule[] = filterAndMapModules(menus);
+    if (menus.length !== ApplicationConfig.getDefaultMenus().length) {
+      dispatch(saveAppPermission(modules));
+    }
+    return menus;
+  };
 
-  // const fetchData: () => Promise<void> = async () => {
-  //   try {
-  //     const response: any = await getAppModulesPermissions();
-  //     processFetchedData(response.data);
-  //   } catch {
-  //     processFetchedData([]);
-  //   }
-  // };
+  const filterAndMapModules: (menus: IApplicationMenu[]) => IAppModule[] = (menus: IApplicationMenu[]) => {
+    const filteredModules: IApplicationMenu[] = menus.filter(
+      (x) => !x.allowedRoles.includes("admin")
+    );
+     /* eslint-disable */
+    return filteredModules.map((x) => ({
+      appUrl: x.isStandalone === false ? x.relativePath : x.absolutePath,
+      title: t(`slices.${x.appCode}.title`),
+      description: t(`slices.${x.appCode}.description`),
+      code: x.appCode,
+      canView: true,
+      linkText: t(`slices.${x.appCode}.linkText`),
+      link: t(`slices.${x.appCode}.link`)
+    }));
+  };
+    /* eslint-enable */
+  const onAuthenticated: any = () => {
+    /* istanbul ignore next */
+    sessionStorage.removeItem("IS_NAVIGATED_FROM_COVER");
+    if (authService.isAuthenticated()) {
+      service.init();
+      setIsServiceInitiated(true);
+    }
+    /* istanbul ignore next */
+    else{
+      authService.logOut();
+      history.push("/auth");
+    }
+  };
 
-  // const processFetchedData: (data: IModulePermission[]) => void = (data) => {
-  //   const menusWithPermission: IApplicationMenu[] = getMenus(data, []);
-  //   menuFilterHandler(menusWithPermission, t);
-  // };
+const hasInviteUserView : boolean =  hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "InviteUserView"
+);
 
-  // const onAuthenticated: () => void = (): void => {
-  //   if (authService.isAuthenticated()) {
-  //     setIsServiceInitiated(true);
-  //   } else {
-  //     history.push("/auth");
-  //   }
-  // };
+  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
-  // const onAuthenticated : () => void = (): void => {
-  //   if (!isServiceInitiated) {
-  //     history.push("/auth");
-  //   }
-  // };
+  const hasUAMPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "UAMView"
+  );
+  const hasRefreshDBPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "RefreshDBORG"
+  );
 
-  const homepageComponent : any =
-    isServiceInitiated
-      ? renderHomePage(
-          hasPermission("NG.Homepage", "View"),
-          hasPermission("NG.Homepage.Teacher", "View"),
-          hasPermission("NG.Homepage.SLT", "View"),
-          hasPermission("NG.Homepage.Admin", "View")
-        )
-      : () => <div />;
+  const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
+  const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
 
+
+  const hasNewHomePagePermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.Homepage", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasTeacherPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.Teacher", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasSLTPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.SLT", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasAdminPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.Homepage.Admin", Operation: "View" }],
+    MatchPermissions.all
+  );
+  const hasAdminConsolePermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.AdminConsole", Operation: "View" }],
+    MatchPermissions.all
+  );
 
   return (
+    /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
       {isStandaloneApp && (
         <Header
           isRenderOnFrame
-          menuFilterHandler={(menus) => menuFilterHandler(menus, t)}
-          onClickLogo={() => { }}
+          menuFilterHandler={menuFilterHandler}
+          onClickLogo={() => {}}
           useSchoolPermission
         />
       )}
@@ -104,105 +205,91 @@ export const Layout: FC<ILayoutProps> = ({ isStandaloneApp, baseRouteName }) => 
         }
       >
         <Switch>
+          {/* eslint-disable */}
           <ProtectedRoute
+            onAuthenticated={onAuthenticated}
             exact
             path="/"
-            onAuthenticated={onAuthenticated}
-            component={homepageComponent}
-          />
-
-          <ProtectedRoute
-            exact
-            path="/noAccess"
-            component={NoAccess}
-          />
-
-          <ProtectedRoute
-            exact
-            path="/unauthorized"
-            component={UnAuthorisedAccess}
-          />
-
-          {hasFeatureFlag("AdminConsoleView") && (
-            <>
-              <ProtectedRoute
-                exact
-                path="/AdminConsole"
-                render={() =>
-                  hasPermission("NG.AdminConsole", "View") ? (
-                    <AdminConsole />
-                  ) : (
-                    <Redirect to="/unauthorized" />
+            component={
+              isServiceInitiated
+                ? renderHomePage(
+                    hasNewHomePagePermission,
+                    hasTeacherPermission,
+                    hasSLTPermission,
+                    hasAdminPermission
                   )
-                }
-              />
-              <ProtectedRoute
-                exact
-                path="/documents"
-                render={() =>
-                  hasPermission("NG.AdminConsole", "View") ? (
-                    <DocumentManagementServer />
-                  ) : (
-                    <Redirect to="/unauthorized" />
-                  )
-                }
-              />
-            </>
-          )}
-
-          {hasOrgVariant("UAMView") && hasFeatureFlag("UAMView") && (
+                : EmptyComponent
+            }
+          />
+           {/* eslint-enable */}
+          <ProtectedRoute exact path="/noAccess" component={NoAccess} />
+          <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
+          {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
-              path="/uam"
-              component={UAM}
+              /* istanbul ignore next */
+              path="/AdminConsole"
+              render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
             />
           )}
-
-          {hasFeatureFlag("InviteUserView") && (
+          {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
+              /* istanbul ignore next */
+              path="/documents"
+              render={() => hasAdminConsolePermissions ? <DocumentManagementServer /> : <Redirect to="/unauthorized" />}
+            />
+          )}
+          {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
+          {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
+          <ProtectedRoute
+              exact
+              path="/adminConsole/userManagement"
+              render={() => <EarlyAdpterPage /> }
+            />
+          <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
+          {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
+          
+          {hasInviteUserView && (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
               path="/inviteusers"
-              render={() =>
-                hasFeatureFlag("InviteUserView") ? (
-                  <InviteUsersLogic />
-                ) : (
-                  <Redirect to="/unauthorized" />
-                )
-              }
+              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />} 
             />
           )}
-
-          {hasOrgVariant("RefreshDBORG") && hasFeatureFlag("RefreshDBORG") && (
-            <ProtectedRoute
-              exact
-              path="/dbmanagement"
-              component={DBManagement}
-            />
-          )}
-
-          <ProtectedRoute
-            exact
-            path="/adminConsole/userManagement"
-            component={EarlyAdpterPage}
-          />
-
-          <ProtectedRoute
-            exact
-            path="/schoolRedirect"
-            component={SchoolGroupRedirect}
-          />
-
-          {isStandaloneApp && (
-            <Route exact path="/auth" component={Auth} />
-          )}
-
-          <ProtectedRoute
-            exact
-            path="*"
-            component={PageNotFound}
-          />
+          <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
     </Router>
   );
 };
+
+const renderHomePage: (
+  hasNewHomePagePermission: boolean,
+  hasTeacherPermission: boolean,
+  hasSLTPermission: boolean,
+  hasAdminPermission: boolean
+) => React.ComponentType<any> | undefined = (
+  hasNewHomePagePermission: boolean,
+  hasTeacherPermission: boolean,
+  hasSLTPermission: boolean,
+  hasAdminPermission: boolean
+) => {
+  /* istanbul ignore next */
+  if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
+    return NewHomepageView;
+  } /* eslint-disable */
+  else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+    return SIMSIDAdminPageView;
+  } /* istanbul ignore next */
+  else {
+    return LandingPage;
+  }
+};
+
+  {/* eslint-enable */}
+/* istanbul ignore next */
+const EmptyComponent: () => JSX.Element = () => (
+  <div data-testid="empty-component" className=""/>
+);
