@@ -62,7 +62,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             {...rel}
           >
             <ActionCard
-              className={"first-actioncard"}
+              className={"first-actioncard primary-text"}
               dataTestId="what-new-test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
@@ -79,7 +79,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
             {...rel}
           >
             <ActionCard
-              className={"second-actioncard"}
+              className={"second-actioncard primary-text"}
               dataTestId="test-id"
               id="action-card"
               onClickActionCard={() => onCardClick()}
