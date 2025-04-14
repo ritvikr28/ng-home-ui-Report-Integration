@@ -60,7 +60,7 @@ const RagStatus: React.FC = () => {
             onCloseSideNavigationPanel={() => setIsOpen(false)}
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
-              text: "System Status And Alerts",
+              text: "System status and alerts",
               value: `${window.location.origin}/ragstatus`
             }}
           />
@@ -91,7 +91,7 @@ const RagStatus: React.FC = () => {
                 },
                 {
                   active: false,
-                  linkName: "System Status And Alerts",
+                  linkName: "System status and alerts",
                   path: "#"
                 }
               ]}
