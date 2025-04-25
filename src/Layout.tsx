@@ -1,4 +1,4 @@
-import React,{ Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
+import React, { Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ProtectedRoute, Auth, authService, MatchPermissions } from "@essnextgen/auth-ui";
 import {
@@ -148,17 +148,17 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
-  const hasUAMPermission: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "UAMView"
-  );
+  // const hasUAMPermission: boolean = hasFeaturePermission(
+  //   `${envConfig.APPLICATION}`,
+  //   "UAMView"
+  // );
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "RefreshDBORG"
   );
 
   const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
-  const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
+  // const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
 
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
@@ -238,7 +238,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
               render={() => hasAdminConsolePermissions ? <DocumentManagementServer /> : <Redirect to="/unauthorized" />}
             />
           )}
-          {hasUAMOrgPermission && hasUAMPermission && <ProtectedRoute exact path="/uam" component={UAM} />}
+          <ProtectedRoute exact path="/uam" component={UAM} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
               exact
