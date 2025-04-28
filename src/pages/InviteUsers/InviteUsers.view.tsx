@@ -38,7 +38,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
 
   const toggleSidebar: () => void = (): void => {
     gtmAnalytics.pushEvent({
-      event: "toggle_sidebar",
+      event: "click",
       action: "Sidebar Toggled",
       category: "Navigation",
       label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened"
@@ -48,7 +48,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
 
   const closeSidebar: () => void = (): void => {
     gtmAnalytics.pushEvent({
-      event: "close_sidebar",
+      event: "click",
       action: "Sidebar Closed",
       category: "Navigation",
       label: "Admin Console Sidebar"
