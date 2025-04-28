@@ -22,6 +22,8 @@ import {
   tableDataObj
 } from "./InviteUsersProps";
 import "./style.scss";
+import gtmAnalytics from "../../shared/utils/analytics";
+import { envConfig } from "../../shared/utils";
 
 const InviteUserView: React.FC<InviteUserProps> = () => {
   const isMobileView: boolean = useMediaQuery(
@@ -35,15 +37,35 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
   }, [isMobileView]);
 
   const toggleSidebar: () => void = (): void => {
+    gtmAnalytics.pushEvent({
+      event: "click",
+      action: "Sidebar Toggled",
+      category: "Navigation",
+      label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened"
+    });
     setIsSidebarOpen((prev: boolean): boolean => !prev); 
   };
 
   const closeSidebar: () => void = (): void => {
+    gtmAnalytics.pushEvent({
+      event: "click",
+      action: "Sidebar Closed",
+      category: "Navigation",
+      label: "Admin Console Sidebar"
+    });
     setIsSidebarOpen(false); 
   };
   
 
-  const onBreadcrumbClick: (breadcrumb: string) => void = () => {};
+  const onBreadcrumbClick: (breadcrumb: string) => void = () => {
+    gtmAnalytics.pushEvent({
+    event: "click",
+    linkText: "View Invite users",
+    linkUrl: `${envConfig.INVITE_STAFF_URL}`,
+    clickType: "link",
+    clickLocation: "breadcrumb"
+  });
+  };
 
   return (
     <Grid className="dms-layout" style={{ display: "flex" }}>
