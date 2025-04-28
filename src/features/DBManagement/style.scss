@@ -324,4 +324,14 @@
 .skip-link:focus {
   top: 10px;
 }
+.db-management-container {
+  width: 100%;
+  overflow-x: auto; 
+  overflow-y: hidden;
+  padding: 0 16px;
 
+  .admin-mobile-rwaf92428 {
+    min-width: 1200px;
+    display: flex;
+  }
+}
