@@ -148,17 +148,19 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
-  // const hasUAMPermission: boolean = hasFeaturePermission(
-  //   `${envConfig.APPLICATION}`,
-  //   "UAMView"
-  // );
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "RefreshDBORG"
   );
 
   const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
-  // const hasUAMOrgPermission: boolean = isOrganisationInVariant("UAMView");
+  
+  const hasSystemStatusPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SystemStatusORG"
+  );
+
+  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
 
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
@@ -189,9 +191,8 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
         <Header
           isRenderOnFrame
           menuFilterHandler={menuFilterHandler}
-          onClickLogo={() => {}}
-          useSchoolPermission
-        />
+          onClickLogo={() => { } }
+          useSchoolPermission simsMenuData={[]}        />
       )}
       <Suspense
         fallback={
@@ -247,7 +248,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
+          {hasSystemStatusOrgPermission && hasSystemStatusPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
           {hasInviteUserView && (
             <ProtectedRoute
               exact
