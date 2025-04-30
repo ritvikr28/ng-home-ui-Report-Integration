@@ -23,7 +23,6 @@ import {
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
-import getAppModulesPermissions from "./actions/queries";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
 
@@ -40,9 +39,6 @@ import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/RagStatus/RagStatus.view";
 
 
-const LandingPage: LazyExoticComponent<() => JSX.Element> = lazy(
-  () => import("./pages/LandingPage")
-);
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
@@ -52,7 +48,7 @@ export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
 }
-const allMenus: IApplicationMenu[] = ApplicationConfig.getRoleBasedMenus();
+
 export const getMenus: (
   data: IModulePermission[],
   globalMenus: IApplicationMenu[]
@@ -81,27 +77,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       boolean,
       React.Dispatch<React.SetStateAction<boolean>>
     ] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!isStandaloneApp) {
-      fetchData();
-    }
-  }, []);
-
-  const fetchData: () => Promise<void> = async () => {
-    try {
-      const response: any = await getAppModulesPermissions();
-      processFetchedData(response.data);
-    } catch {
-      processFetchedData([]);
-    }
-  };
-  
-  const processFetchedData: (data: IModulePermission[]) => void = (data: IModulePermission[]) => {
-    const menusWithPermission: IApplicationMenu[] = getMenus(data, allMenus);
-    menuFilterHandler(menusWithPermission);
-  };
-
+ 
   const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (menus: IApplicationMenu[]) => {
     startRequest();
     const modules: IAppModule[] = filterAndMapModules(menus);
@@ -283,7 +259,7 @@ const renderHomePage: (
     return SIMSIDAdminPageView;
   } /* istanbul ignore next */
   else {
-    return LandingPage;
+    return UnAuthorisedAccess;
   }
 };
 

@@ -5,8 +5,8 @@ import { IApplicationMenu, IModulePermission } from "@essnextgen/ui-application-
 import { envConfig, isAuthzUserAdmin } from "./shared/utils";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import LandingPage from "./pages/LandingPage";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
+import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 
 export const hasPermission: (securable: string, operation: string) => boolean =
     (securable, operation) =>
@@ -56,7 +56,7 @@ export const renderHomePage: (
         if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
             return SIMSIDAdminPageView;
         }
-        return LandingPage;
+        return UnAuthorisedAccess;
     };
 
 export const getMenus: (
