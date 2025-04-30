@@ -39,6 +39,7 @@ const DBManagement: React.FC = () => {
           Skip to main content
       </a>
       <div className="db-management-container"> 
+     
         <Grid className="admin-mobile-rwaf92428">
           <GridItem
             lg={isOpen ? 3 : 0}
@@ -107,7 +108,7 @@ const DBManagement: React.FC = () => {
             <RefreshDatabaseView />
           </GridItem>
         </Grid>
-      </div>
+        </div>
     </>
   );
 };

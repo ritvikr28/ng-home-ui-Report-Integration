@@ -248,7 +248,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {hasSystemStatusOrgPermission && hasSystemStatusPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
+          {hasSystemStatusPermission || hasSystemStatusOrgPermission  &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
           {hasInviteUserView && (
             <ProtectedRoute
               exact

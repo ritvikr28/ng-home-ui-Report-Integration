@@ -36,7 +36,7 @@ export const hasOrgVariant: (variant: string) => boolean =
         hasFeatureFlag("RefreshDBORG") && hasOrgVariant("RefreshDBORG");
 
       export const shouldShowSystemStatus = () =>
-        hasFeatureFlag("SystemStatusORG") && hasOrgVariant("SystemStatusORG");
+        hasFeatureFlag("SystemStatusORG") || hasOrgVariant("SystemStatusORG");
       
 
 export const renderHomePage: (

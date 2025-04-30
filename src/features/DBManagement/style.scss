@@ -326,12 +326,26 @@
 }
 .db-management-container {
   width: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
   overflow-y: hidden;
   padding: 0 16px;
 
+@media (min-width: 1024px) {
   .admin-mobile-rwaf92428 {
-    min-width: 1200px;
     display: flex;
+    flex-wrap: nowrap; 
+    align-items: flex-start;
   }
+
+  .side-width {
+    min-width: 264px;
+    max-width: 400px;
+    flex-shrink: 0;
+  }
+
+  .admin-mobile-rwaf92428 > .essui-GridItem {
+    min-width: 0;
+    flex-grow: 1;
+  }
+}
 }
