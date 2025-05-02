@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, LazyExoticComponent, FC, useEffect, useState } from "react";
+import React, { Suspense, lazy, LazyExoticComponent, FC, useState } from "react";
 import { useDispatch } from "react-redux";
 import { ProtectedRoute, Auth, authService, MatchPermissions } from "@essnextgen/auth-ui";
 import {
