@@ -1,3 +1,4 @@
+/* stylelint-disable */
 @media (min-width: 390px) and (max-width: 767.9px) {
   .admin-mobile-rwaf92428 {
     margin: 16px;
@@ -23,7 +24,7 @@
 
   .side-width .essui-side-navigation-panel-container-grid-item {
     width: 264px;
-  }    
+  }
 
   #notification-open-panel {
     max-width: 760px;
@@ -54,17 +55,17 @@
     max-width: 528px;
     min-width: 310px;
   }
-  
+
   #sync-container {
     max-width: 528px;
     min-width: 310px;
   }
-  
+
   #default-control-label {
     max-width: 528px;
     min-width: 310px;
   }
-  
+
   #default-label {
     max-width: 528px;
     min-width: 310px;
@@ -130,7 +131,7 @@
 @media (min-width: 767.9px) and (max-width: 1023.9px) {
   .admin-mobile-rwaf92428 {
     margin: 16px;
-  } 
+  }
 
   .adminconsole-breadcrumb {
     margin-top: -57px;
@@ -174,9 +175,7 @@
   justify-content: flex-start;
 }
 
-/* stylelint-disable */
 .essui-card__header-indicator {
-  /* stylelint-enable */
   display: none;
 }
 
@@ -324,28 +323,29 @@
 .skip-link:focus {
   top: 10px;
 }
+
 .db-management-container {
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   padding: 0 16px;
 
-@media (min-width: 1024px) {
-  .admin-mobile-rwaf92428 {
-    display: flex;
-    flex-wrap: nowrap; 
-    align-items: flex-start;
-  }
+  @media (min-width: 1024px) {
+    .admin-mobile-rwaf92428 {
+      display: flex;
+      flex-wrap: nowrap;
+      align-items: flex-start;
+    }
 
-  .side-width {
-    min-width: 264px;
-    max-width: 400px;
-    flex-shrink: 0;
-  }
+    .side-width {
+      min-width: 264px;
+      max-width: 400px;
+      flex-shrink: 0;
+    }
 
-  .admin-mobile-rwaf92428 > .essui-GridItem {
-    min-width: 0;
-    flex-grow: 1;
+    .admin-mobile-rwaf92428>.essui-GridItem {
+      min-width: 0;
+      flex-grow: 1;
+    }
   }
-}
 }

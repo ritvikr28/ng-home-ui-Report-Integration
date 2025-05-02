@@ -8,7 +8,9 @@ describe("SIMSIDAdminMainPanel", () => {
     jest.clearAllMocks();
   });
 
-  const setNotificationDisable = jest.fn(); 
+  const setIsOpen = jest.fn();
+
+  const setNotificationDisable = jest.fn();
 
   test("renders SIMSIDAdminMainPanel with isOpen true and Notification enabled", async () => {
     const usePersistantState = jest.spyOn(stateHelper, 'usePersistantState');
@@ -16,6 +18,7 @@ describe("SIMSIDAdminMainPanel", () => {
     render(
       <SIMSIDAdminMainPanel
         isOpen
+        setIsOpen={setIsOpen}
       />
     );
     
@@ -29,6 +32,7 @@ describe("SIMSIDAdminMainPanel", () => {
     render(
       <SIMSIDAdminMainPanel
         isOpen
+        setIsOpen={setIsOpen}
       />
     );
     expect(screen.queryByTestId("SIMSID-Admin-View")).toBeInTheDocument();
@@ -38,9 +42,10 @@ describe("SIMSIDAdminMainPanel", () => {
   test("renders SIMSIDAdminMainPanelView with Notification enabled with isOpen false", async () => {
     const { getByTestId, container } = render(
       <SIMSIDAdminMainPanelView
-        isOpen = {false}
+        isOpen={false}
+        setIsOpen={setIsOpen}
         enableNotification
-        setDisableNotification={() => {}}
+        setDisableNotification={() => { }}
       />
     );
     const NotificationTestId = getByTestId('notification-test-id');
@@ -55,9 +60,10 @@ describe("SIMSIDAdminMainPanel", () => {
   test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen false", async () => {
     const { getByTestId } = render(
       <SIMSIDAdminMainPanelView
-        isOpen = {false}
+        isOpen={false}
+        setIsOpen={setIsOpen}
         enableNotification={false}
-        setDisableNotification={() => {}}
+        setDisableNotification={() => { }}
       />
     );
 
@@ -70,8 +76,9 @@ describe("SIMSIDAdminMainPanel", () => {
     const { getByTestId, container } = render(
       <SIMSIDAdminMainPanelView
         isOpen
+        setIsOpen={setIsOpen}
         enableNotification
-        setDisableNotification={() => {}}
+        setDisableNotification={() => { }}
       />
     );
     const SidePanelOpenAppendedClass = container.querySelector('.welcome-user-simsid-fixed');
@@ -87,8 +94,9 @@ describe("SIMSIDAdminMainPanel", () => {
     const { getByTestId } = render(
       <SIMSIDAdminMainPanelView
         isOpen
+        setIsOpen={setIsOpen}
         enableNotification={false}
-        setDisableNotification={() => {}}
+        setDisableNotification={() => { }}
       />
     );
 

@@ -32,7 +32,7 @@ const SIMSIDAdminPageView: React.FC = () => {
                 }
                 lg={isOpen ? 3 : 0}
             >
-                <SidePanelView
+                {isOpen && <SidePanelView
                     isOpen={isOpen}
                     togglePanel={togglePanel}
                     closePanel={closePanel}
@@ -40,7 +40,7 @@ const SIMSIDAdminPageView: React.FC = () => {
                         /* istanbul ignore next */
                         () => { }}
                     isSIMSIDAdmin
-                />
+                />}
             </GridItem>
             {/* eslint-disable */}
             <GridItem

@@ -1,6 +1,6 @@
 export interface ISIMSIDAdminMainPanelProps {
     isOpen?: boolean;
-    setIsOpen?: (isOpen: boolean) => void;
+    setIsOpen: (isOpen: boolean) => void;
 }
 
 export interface ISIMSIDAdminMainPanelViewProps extends ISIMSIDAdminMainPanelProps {
