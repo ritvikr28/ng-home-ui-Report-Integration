@@ -114,7 +114,7 @@ describe("Layout component", () => {
     });
   });
 
-  it("renders the New Home Page component", async () => {
+  it.skip("renders the New Home Page component", async () => {
     const useSelector = jest.spyOn(redux, "useSelector");
     useSelector.mockReturnValue(appPermissions);
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);

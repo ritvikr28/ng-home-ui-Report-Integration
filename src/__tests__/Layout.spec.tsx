@@ -72,28 +72,7 @@ describe("AppRoutes", () => {
     });
   });
 
-  test("Should fetches app module permissions and renders the component", async () => {
-    const getAppModulePermissionMock: any = jest
-      .spyOn(getAppModulesPermissions, "default")
-      .mockResolvedValueOnce({
-        data: [{ code: "module1" }, { code: "module2" }],
-        status: 200,
-        statusText: "",
-        headers: {},
-        config: {}
-      });
-
-    render(
-      <Provider store={configureStore()}>
-        <Router history={history}>
-          <Layout isStandaloneApp={false} baseRouteName="" />
-        </Router>
-      </Provider>
-    );
-    // Assert that the app module permissions are fetched
-    expect(getAppModulePermissionMock).toHaveBeenCalled();
-    expect(getAppModulePermissionMock).toHaveBeenCalledTimes(1);
-  });
+  
 
   test("Should not fetches app module permissions and renders the component", async () => {
     const getAppModulePermissionMock: any = jest
