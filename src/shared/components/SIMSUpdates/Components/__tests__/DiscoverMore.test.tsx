@@ -71,7 +71,7 @@ describe("DiscoverMoreView Component", () => {
     fireEvent.click(actionCardLink);
     expect(actionCardLink).toHaveAttribute(
       "href",
-      "https://parentpaygroup.service-now.com/csm?id=kb_article_view&sysparm_article=KB0053640&sys_kb_id=bea0de511bb9b510455842a7b04bcb75&spa=1"
+      "https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
     );
   });
 
