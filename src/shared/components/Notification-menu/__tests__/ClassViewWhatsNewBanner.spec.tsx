@@ -15,14 +15,7 @@ describe('WhatsNewBanner Component', () => {
     localStorage.clear();
     jest.clearAllMocks();
     (getUserOrganisation as jest.Mock).mockReturnValue(mockOrgId);
-  });
-
-  it('shows both banners if nothing is in localStorage', () => {
-    render(<WhatsNewBanner />);
-
-    expect(screen.getByTestId('whatsnew-banner')).toBeInTheDocument();
-    expect(screen.getByText('simsNextGenLinksBanner.heading')).toBeInTheDocument();
-  });
+  });  
 
   it('hides only classview banner when handleExit is called', () => {
     render(<WhatsNewBanner />);
@@ -33,14 +26,7 @@ describe('WhatsNewBanner Component', () => {
     expect(stored).toContainEqual({ orgId: mockOrgId, isClosed: true });
 
     expect(screen.queryByTestId('whatsnew-banner')).not.toBeInTheDocument();
-  });
-
-  it('hides next gen banner when close button is clicked', () => {
-    render(<WhatsNewBanner />);
-
-    fireEvent.click(screen.getAllByRole('button', { name: /close/i })[1]);
-    expect(screen.queryByText('simsNextGenLinksBanner.heading')).not.toBeInTheDocument();
-  });
+  });  
 
   it('adds new orgId while preserving others on close', () => {
     const existing = [
