@@ -336,6 +336,10 @@
     "classviewlinktext":"Open Class View",
     "learnmorelinktext":"Learn more"
   },
+  "simsNextGenLinksBanner":{
+    "heading":"Direct access to Connected Launcher",
+    "subHeading":"You can now easily access your suite of SIMS products ... and more! Click on the 3 dots icon at the top right of this page."
+  },
   "initialadmin": {
     "limitedaccesssims": "You have limited access to SIMS Next Gen",
     "whattodonext": "What to do next:",

@@ -10,6 +10,7 @@ interface Banner {
 }
 export const WhatsNewBanner: () => JSX.Element = () => {
   const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isNextGenLinksBannerVisible, setIsNextGenLinksBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const orgId: string | undefined = getUserOrganisation();
 
   useEffect(() => {
@@ -19,6 +20,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
       const isClosed: boolean = storedBanners.some((item:Banner) => item.orgId === orgId && item.isClosed);
 
       setIsBannerVisible(!isClosed);
+      setIsNextGenLinksBannerVisible(isClosed);
     }
   }, [orgId]);
 
@@ -31,6 +33,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
         localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
         setIsBannerVisible(false);
+        setIsNextGenLinksBannerVisible(false);
 
     } catch (error: unknown) { 
         console.error("Failed to update localStorage:", error);
@@ -67,6 +70,20 @@ export const WhatsNewBanner: () => JSX.Element = () => {
                   </span>
                 </div>
               </>
+            }
+            status={NotificationStatus.HIGHLIGHT}
+            onClickClose={handleExit}
+          />
+        </div>
+      )}
+
+      {isNextGenLinksBannerVisible && (
+        <div>
+          <NotificationBanner            
+            className="notification-banner-class-view"
+            title={t("simsNextGenLinksBanner.heading")}
+            message={
+              <p>{t("simsNextGenLinksBanner.subHeading")}</p>
             }
             status={NotificationStatus.HIGHLIGHT}
             onClickClose={handleExit}
