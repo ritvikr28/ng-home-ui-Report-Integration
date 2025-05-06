@@ -9,8 +9,8 @@ interface Banner {
   isClosed: boolean;
 }
 export const WhatsNewBanner: () => JSX.Element = () => {
-  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [isNextGenLinksBannerVisible, setIsNextGenLinksBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+
+  const [isNextGenLinksBannerVisible, setIsNextGenLinksBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const orgId: string | undefined = getUserOrganisation();
 
   useEffect(() => {
@@ -19,8 +19,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
       const isClosed: boolean = storedBanners.some((item:Banner) => item.orgId === orgId && item.isClosed);
 
-      setIsBannerVisible(!isClosed);
-      setIsNextGenLinksBannerVisible(isClosed);
+      setIsNextGenLinksBannerVisible(!isClosed);
     }
   }, [orgId]);
 
@@ -32,7 +31,6 @@ export const WhatsNewBanner: () => JSX.Element = () => {
         updatedBanners.push({ orgId: orgId || "", isClosed: true });
 
         localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
-        setIsBannerVisible(false);
         setIsNextGenLinksBannerVisible(false);
 
     } catch (error: unknown) { 
@@ -44,42 +42,10 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
   return (
     <>
-      {isBannerVisible && (
-        <div>
-          <NotificationBanner
-            id="notification-banner-class-view"
-            className="notification-banner-class-view"
-            dataTestId="whatsnew-banner"
-            title={t("classviewbanner.title")}
-            message={
-              <>
-                <p>{t("classviewbanner.classviewtext")}</p>
-                <div>
-                  <a className="link-data" href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">
-                    {t("classviewbanner.classviewlinktext")}
-                  </a>
-                  <span>
-                    <a
-                      className="link-data"
-                      href="https://www.ess-sims.co.uk/trial-sims-class-view?utm_source=website&utm_medium=organic&utm_campaign=sngclassviewhp&utm_content=maintestlp"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {t("classviewbanner.learnmorelinktext")}
-                    </a>
-                  </span>
-                </div>
-              </>
-            }
-            status={NotificationStatus.HIGHLIGHT}
-            onClickClose={handleExit}
-          />
-        </div>
-      )}
 
       {isNextGenLinksBannerVisible && (
         <div>
-          <NotificationBanner            
+          <NotificationBanner
             className="notification-banner-class-view"
             title={t("simsNextGenLinksBanner.heading")}
             message={
