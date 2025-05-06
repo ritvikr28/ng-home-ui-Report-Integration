@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Notification as NotificationBanner, NotificationStatus } from '@essnextgen/ui-kit';
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import './style.scss';
-import { envConfig, getUserOrganisation } from '../../utils';
+import { getUserOrganisation } from '../../utils';
 
 interface Banner {
   orgId: string;
