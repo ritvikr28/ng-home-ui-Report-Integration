@@ -8,10 +8,10 @@ import {
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import React, { useEffect, useRef, useState } from "react";
+import "./uamStyle.scss";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { UserManagement } from "@essnextgen/ui-user-access-management-kit";
 import { envConfig } from "../../shared/utils";
-import "./uamStyle.scss";
 
  /* istanbul ignore next */
 const UAM: () => JSX.Element = () => {
@@ -137,7 +137,7 @@ const UAM: () => JSX.Element = () => {
               ]}
               heading="Users"
               subHeading="Create and manage users within your Trust"
-              enableSearch
+              enableSearch={false}
             />
           </div>
         </GridItem>
