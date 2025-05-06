@@ -24,7 +24,7 @@ import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemode
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
-    Securable: "NG.Homepage.QuickLink",
+    Securable: "NG.Homepage",
     Operation: "View"
   }
 ];

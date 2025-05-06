@@ -40,17 +40,11 @@ export const hasOrgVariant: (variant: string) => boolean =
       
 
 export const renderHomePage: (
-    hasNewHomePagePermission: boolean,
-    hasTeacherPermission: boolean,
-    hasSLTPermission: boolean,
-    hasAdminPermission: boolean
+    hasNewHomePagePermission: boolean
 ) => React.ComponentType<any> | undefined = (
-    hasNewHomePagePermission,
-    hasTeacherPermission,
-    hasSLTPermission,
-    hasAdminPermission
+    hasNewHomePagePermission
 ) => {
-        if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
+        if (hasNewHomePagePermission) {
             return NewHomepageView;
         }
         if (!hasNewHomePagePermission && isAuthzUserAdmin()) {

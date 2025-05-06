@@ -25,13 +25,6 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-const requiredPermissionsforquicklink: Permission[] = [
-  {
-    Securable: "NG.Homepage.QuickLink",
-    Operation: "View"
-  }
-];
-
 // const fetchAndSetQuickLinkData = async (
 //   setQuickLinkData: Dispatch<SetStateAction<IQuickLinkApiResponse[] | null>>,
 //   setIsError: Dispatch<SetStateAction<boolean>>
@@ -53,10 +46,7 @@ const NewHomepageView: React.FC = () => {
     requiredPermissions,
     MatchPermissions.all
   );
-  const isPermissionquicklink: boolean = authService.isAuthorised(
-    requiredPermissionsforquicklink,
-    MatchPermissions.all
-  );
+
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
@@ -132,7 +122,7 @@ const NewHomepageView: React.FC = () => {
 
   const renderContent: () => JSX.Element = () => {
     /* istanbul ignore next */
-    if (showQuickLink && isPermissionquicklink) {
+    if (showQuickLink && isPermission) {
       return (
         <QuickLinkLogic
           setQuickLinkData={setQuickLinkData}

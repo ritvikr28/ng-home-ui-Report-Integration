@@ -60,9 +60,9 @@ const requiredPupilProfilePermissions: Permission[] = [
   }
 ];
 
-const requiredSLTviewPermissions: Permission[] = [
+const requiredSchoolOverviewPermissions: Permission[] = [
   {
-    Securable: "NG.Homepage.SLT",
+    Securable: "NG.Homepage.SchoolOverview",
     Operation: "View"
   }
 ];
@@ -153,7 +153,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       {SLTviewBETT &&
         hasSLTviewOrgPermission &&
         authService.isAuthorised(
-          requiredSLTviewPermissions,
+          requiredSchoolOverviewPermissions,
           MatchPermissions.all
         ) && (
           <>

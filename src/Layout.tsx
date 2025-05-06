@@ -43,7 +43,6 @@ const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
 
-
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
@@ -138,23 +137,11 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 
   const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
 
-
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
     MatchPermissions.all
   );
-  const hasTeacherPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.Homepage.Teacher", Operation: "View" }],
-    MatchPermissions.all
-  );
-  const hasSLTPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.Homepage.SLT", Operation: "View" }],
-    MatchPermissions.all
-  );
-  const hasAdminPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.Homepage.Admin", Operation: "View" }],
-    MatchPermissions.all
-  );
+
   const hasAdminConsolePermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.AdminConsole", Operation: "View" }],
     MatchPermissions.all
@@ -188,10 +175,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             component={
               isServiceInitiated
                 ? renderHomePage(
-                    hasNewHomePagePermission,
-                    hasTeacherPermission,
-                    hasSLTPermission,
-                    hasAdminPermission
+                    hasNewHomePagePermission
                   )
                 : EmptyComponent
             }
@@ -241,18 +225,12 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 };
 
 const renderHomePage: (
-  hasNewHomePagePermission: boolean,
-  hasTeacherPermission: boolean,
-  hasSLTPermission: boolean,
-  hasAdminPermission: boolean
+  hasNewHomePagePermission: boolean
 ) => React.ComponentType<any> | undefined = (
-  hasNewHomePagePermission: boolean,
-  hasTeacherPermission: boolean,
-  hasSLTPermission: boolean,
-  hasAdminPermission: boolean
+  hasNewHomePagePermission: boolean
 ) => {
   /* istanbul ignore next */
-  if (hasNewHomePagePermission && (hasTeacherPermission || hasSLTPermission || hasAdminPermission)) {
+  if (hasNewHomePagePermission) {
     return NewHomepageView;
   } /* eslint-disable */
   else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
