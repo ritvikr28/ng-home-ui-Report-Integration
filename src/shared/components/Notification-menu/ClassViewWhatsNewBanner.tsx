@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Notification as NotificationBanner, NotificationStatus } from '@essnextgen/ui-kit';
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import './style.scss';
-import { getUserOrganisation } from '../../utils';
+import { envConfig, getUserOrganisation } from '../../utils';
 
 interface Banner {
   orgId: string;
   isClosed: boolean;
 }
 export const WhatsNewBanner: () => JSX.Element = () => {
-
-  const [isNextGenLinksBannerVisible, setIsNextGenLinksBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [isBannerVisible, setIsBannerVisible]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const orgId: string | undefined = getUserOrganisation();
 
   useEffect(() => {
@@ -19,7 +18,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
       const isClosed: boolean = storedBanners.some((item:Banner) => item.orgId === orgId && item.isClosed);
 
-      setIsNextGenLinksBannerVisible(!isClosed);
+      setIsBannerVisible(!isClosed);
     }
   }, [orgId]);
 
@@ -31,7 +30,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
         updatedBanners.push({ orgId: orgId || "", isClosed: true });
 
         localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
-        setIsNextGenLinksBannerVisible(false);
+        setIsBannerVisible(false);
 
     } catch (error: unknown) { 
         console.error("Failed to update localStorage:", error);
@@ -42,14 +41,32 @@ export const WhatsNewBanner: () => JSX.Element = () => {
 
   return (
     <>
-
-      {isNextGenLinksBannerVisible && (
+      {isBannerVisible && (
         <div>
           <NotificationBanner
+            id="notification-banner-class-view"
             className="notification-banner-class-view"
-            title={t("simsNextGenLinksBanner.heading")}
+            dataTestId="whatsnew-banner"
+            title={t("classviewbanner.title")}
             message={
-              <p>{t("simsNextGenLinksBanner.subHeading")}</p>
+              <>
+                <p>{t("classviewbanner.classviewtext")}</p>
+                <div>
+                  <a className="link-data" href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">
+                    {t("classviewbanner.classviewlinktext")}
+                  </a>
+                  <span>
+                    <a
+                      className="link-data"
+                      href="https://www.ess-sims.co.uk/trial-sims-class-view?utm_source=website&utm_medium=organic&utm_campaign=sngclassviewhp&utm_content=maintestlp"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t("classviewbanner.learnmorelinktext")}
+                    </a>
+                  </span>
+                </div>
+              </>
             }
             status={NotificationStatus.HIGHLIGHT}
             onClickClose={handleExit}
