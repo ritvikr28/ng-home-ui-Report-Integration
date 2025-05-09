@@ -17,3 +17,4 @@ window.INVITE_STAFF_URL = "https://dev.home.sims.co.uk/registers/admin";
 window.HOME_UI_BASEURL = "https://dev.home.sims.co.uk/home";
 window.REFRESH_INTERVAL = 60000;
 window.CLASSVIEW_BASE_URL = "https://dev.home.sims.co.uk/seatingplans/classview";
+window.CLASSVIEW_BANNER_URL = "https://dev.home.sims.co.uk/seatingplans/classview";

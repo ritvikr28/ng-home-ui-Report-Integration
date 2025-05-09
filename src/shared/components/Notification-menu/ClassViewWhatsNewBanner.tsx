@@ -52,7 +52,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
               <>
                 <p>{t("classviewbanner.classviewtext")}</p>
                 <div>
-                  <a className="link-data" href={`${envConfig.CLASSVIEW_BASE_URL}`} target="_blank" rel="noopener noreferrer">
+                  <a className="link-data" href={`${envConfig.CLASSVIEW_BANNER_URL}`} target="_blank" rel="noopener noreferrer">
                     {t("classviewbanner.classviewlinktext")}
                   </a>
                   <span>
