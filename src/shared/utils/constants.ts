@@ -16,7 +16,8 @@ export const envConfig: any = {
   HOME_UI_BASEURL:(window as any).HOME_UI_BASEURL,
   SEATING_PLAN_CLASS_VIEW_URL: (window as any).SEATING_PLAN_CLASS_VIEW_URL,
   REFRESH_INTERVAL: (window as any).REFRESH_INTERVAL,
-  CLASSVIEW_BASE_URL: (window as any).CLASSVIEW_BASE_URL
+  CLASSVIEW_BASE_URL: (window as any).CLASSVIEW_BASE_URL,
+  CLASSVIEW_BANNER_URL: (window as any).CLASSVIEW_BANNER_URL
 };
 
 export const UpdateEnvConfig:any = ({
@@ -34,7 +35,8 @@ export const UpdateEnvConfig:any = ({
   HOME_UI_BASEURL,
   SEATING_PLAN_CLASS_VIEW_URL,
   REFRESH_INTERVAL,
-  CLASSVIEW_BASE_URL
+  CLASSVIEW_BASE_URL,
+  CLASSVIEW_BANNER_URL
 }: any) => {
   envConfig.BASE_URL = REACT_API_URL;
   envConfig.AppInsightsConnectionString = AppInsightsConnectionString;
@@ -51,4 +53,5 @@ export const UpdateEnvConfig:any = ({
   envConfig.SEATING_PLAN_CLASS_VIEW_URL=SEATING_PLAN_CLASS_VIEW_URL;
   envConfig.REFRESH_INTERVAL = REFRESH_INTERVAL;
   envConfig.CLASSVIEW_BASE_URL = CLASSVIEW_BASE_URL;
+  envConfig.CLASSVIEW_BANNER_URL = CLASSVIEW_BANNER_URL;
 };

@@ -19,6 +19,7 @@ declare global {
     SEATING_PLAN_CLASS_VIEW_URL: string;
     REFRESH_INTERVAL:number;
     CLASSVIEW_BASE_URL: string;
+    CLASSVIEW_BANNER_URL: string;
   }
 }
 
@@ -64,6 +65,7 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
     window.SEATING_PLAN_CLASS_VIEW_URL=configData.SEATING_PLAN_CLASS_VIEW_URL;
     window.REFRESH_INTERVAL=configData.REFRESH_INTERVAL;
     window.CLASSVIEW_BASE_URL = configData.CLASSVIEW_BASE_URL;
+    window.CLASSVIEW_BANNER_URL = configData.CLASSVIEW_BANNER_URL;
 
     UpdateEnvConfig({
       REACT_API_URL: window.REACT_API_URL,
@@ -80,7 +82,8 @@ export const SetupEnvConfig:(data:any)=>void = async (data:any) => {
       HOME_UI_BASEURL:window.HOME_UI_BASEURL,
       SEATING_PLAN_CLASS_VIEW_URL:window.SEATING_PLAN_CLASS_VIEW_URL,
       REFRESH_INTERVAL:window.REFRESH_INTERVAL,
-      CLASSVIEW_BASE_URL: window.CLASSVIEW_BASE_URL
+      CLASSVIEW_BASE_URL: window.CLASSVIEW_BASE_URL,
+      CLASSVIEW_BANNER_URL: window.CLASSVIEW_BANNER_URL
     });
   } catch (ex) {
     console.log(ex);
