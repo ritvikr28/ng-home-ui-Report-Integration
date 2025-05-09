@@ -61,7 +61,7 @@ test.skip("calls setIsOpen with false when menu is closed", () => {
     jest.spyOn(React, "useState").mockImplementation(useStateMock);
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     render(<InviteUserView />);
-    expect(screen.getByText("Invite users")).toBeInTheDocument();
+    expect(screen.getByText("Invite Users")).toBeInTheDocument();
   });
 
   test("mocks and renders ControlledList component", () => {
