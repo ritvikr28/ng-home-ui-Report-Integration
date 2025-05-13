@@ -1,7 +1,12 @@
-/* stylelint-disable */ 
+/* stylelint-disable */
 .invite-users-table-align .essui-table__cell {
-    border-right: 1px solid #e0e0e0;
-    color: #000;
-    line-height: 24px; 
-  }
-  
+  border-right: 1px solid #e0e0e0;
+  color: #000;
+  line-height: 24px;
+}
+
+.invite-user-status {
+  font-family: Segoe UI;
+  font-weight: 400;
+  font-size: 16px;
+}
