@@ -36,8 +36,7 @@ import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
 import InviteUsersLogic from "./pages/InviteUsers";
-import SystemStatus from "./features/RagStatus/RagStatus.view";
-
+import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")

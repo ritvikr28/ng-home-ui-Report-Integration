@@ -256,6 +256,23 @@
       }
     }
   },
+  "SystemStatus_T": {
+    "headingTitle": "System status and alerts",
+    "description": "Monitor key system statuses and sign up to email alerts when statuses change.",
+    "moduleBlock" : {
+      "notifyException":{
+        "title": "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.",
+        "content": "Information unavailable."
+      }
+    },
+    "DataSyncAlertName": "Data Sync",
+    "DataSyncLiveInfo": "Data is syncing between SIMS 7 and SIMS Next Gen.",
+    "DataSyncNotLiveInfo": "Data is not currently syncing between SIMS 7 and SIMS Next Gen.",
+    "SSMAlertName": "SSM Package",
+    "SSMLiveInfo": "Your system is using the most up-to-date SSM package.",
+    "SSMNotLiveInfo": "Your SSM package isn't the latest version.",
+    "WarningMessage": "Warning Message"
+  },
   "quickLink": {
     "headingTitle": "Quick Links",
     "quicklinkText": "Easy one-click access. Favouriting items will ensure your top selections are always visible.",

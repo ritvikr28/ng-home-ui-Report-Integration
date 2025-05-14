@@ -1,7 +1,6 @@
 import { render } from "@testing-library/react";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import SystemStatusAlerts from "../SystemStatusAlerts";
-
+import SystemStatusAlerts from "../SystemStatusAlerts/SystemStatusAlerts";
 
 jest.mock("@essnextgen/ui-intl-kit", () => ({
   useTranslation: jest.fn(),
@@ -26,14 +25,12 @@ describe("SystemStatusAlerts Component", () => {
   it("should render the component with heading and subheading", () => {
     const { getByTestId, getByText } = render(<SystemStatusAlerts />);
 
-
     const headingSubheading = getByTestId("heading-subheading");
     expect(headingSubheading).toBeInTheDocument();
 
-    expect(getByText("RagStatus_T.headingTitle")).toBeInTheDocument();
+    expect(getByText("SystemStatus_T.headingTitle")).toBeInTheDocument();
 
-
-    expect(getByText("RagStatus_T.description")).toBeInTheDocument();
+    expect(getByText("SystemStatus_T.description")).toBeInTheDocument();
   });
 
   it("should apply the correct class to the container", () => {

@@ -48,6 +48,23 @@ export const getUserOrganisation: () => string = () => {
 
   return '';
 };
+export const getUserEmail: () => string = () => {
+  const idToken: string | null = authService.getAuthTokens();
+
+  if (idToken) {
+    const decodedToken: any = decodeToken(idToken);
+
+    if (!isEmpty(decodedToken)) {
+      const subField = decodedToken.sub; 
+      if (subField) {
+        const parts = subField.split("|"); 
+        return parts[2] || ""; 
+      }
+    }
+  }
+
+  return ""; // Return an empty string if the token is invalid or missing
+};
  /* istanbul ignore next */
 export const getUser: () => string = () => {
   const authToken: string | null = authService.getAuthTokens();

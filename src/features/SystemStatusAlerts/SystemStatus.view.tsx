@@ -13,7 +13,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import SystemStatusAlerts from "./SystemStatusAlerts/SystemStatusAlerts.view";
 import { envConfig } from "../../shared/utils";
 
-const RagStatus: React.FC = () => {
+const SystemStatus: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
@@ -61,7 +61,7 @@ const RagStatus: React.FC = () => {
             isOpenSideNavigation={isOpen}
             defaultSelectedMenu={{
               text: "System status and alerts",
-              value: `${window.location.origin}/ragstatus`
+              value: `${window.location.origin}/systemstatus`
             }}
           />
         </GridItem>
@@ -108,4 +108,4 @@ const RagStatus: React.FC = () => {
   );
 };
 
-export default RagStatus;
+export default SystemStatus;

@@ -9,8 +9,8 @@ const SystemStatusAlerts: () => JSX.Element = () => {
   <>
     <div className="admin-heading heading-text-up admin-heading-psas1334f">
       <HeadingSubHeading
-        headingText={t("RagStatus_T.headingTitle")}
-        subHeadingText={t("RagStatus_T.description")}
+        headingText={t("SystemStatus_T.headingTitle")}
+        subHeadingText={t("SystemStatus_T.description")}
         isShowHeading
         isShowSubHeading
       />
