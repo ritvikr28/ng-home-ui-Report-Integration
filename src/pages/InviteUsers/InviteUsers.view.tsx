@@ -16,25 +16,57 @@ import React, { useState, useEffect } from "react";
 import {
   breadcrumbActions,
   editSelectedOptions,
-  getDefaultControlledListProps,
+  filterOptions,
   getTableHeadersData,
   InviteUserProps,
-  tableDataObj
+  pageSize
 } from "./InviteUsersProps";
 import "./style.scss";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
+import { fetchInviteUserDetails } from "./InviteUsersUtils";
 
-const InviteUserView: React.FC<InviteUserProps> = () => {
+const InviteUserView: React.FC<InviteUserProps> = (props) => {
+  const {
+    usersTableData,
+    setUsersTableData,
+    totalPage,
+    setTotalPage,
+    currentPage,
+    handlePageChange,
+    isLoader,
+    setLoader,
+    showInvitationConflictBanner,
+    setshowInvitationConflictBanner
+  } = props;
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-
-  const [isSidebarOpen, setIsSidebarOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
+  const [isSidebarOpen, setIsSidebarOpen]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(!isMobileView);
+  const [showErrorBanner, setShowErrorBanner]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
   }, [isMobileView]);
+  useEffect(() => {
+    setLoader(true);
+    fetchInviteUserDetails({
+      pageNumber: currentPage,
+      pageSize,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    }).then((res) => {
+      setLoader(false);
+      setUsersTableData(res);
+    });
+  }, [currentPage]);
 
   const toggleSidebar: () => void = (): void => {
     gtmAnalytics.pushEvent({
@@ -43,7 +75,7 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
       category: "Navigation",
       label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened"
     });
-    setIsSidebarOpen((prev: boolean): boolean => !prev); 
+    setIsSidebarOpen((prev: boolean): boolean => !prev);
   };
 
   const closeSidebar: () => void = (): void => {
@@ -53,18 +85,17 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
       category: "Navigation",
       label: "Admin Console Sidebar"
     });
-    setIsSidebarOpen(false); 
+    setIsSidebarOpen(false);
   };
-  
 
   const onBreadcrumbClick: (breadcrumb: string) => void = () => {
     gtmAnalytics.pushEvent({
-    event: "click",
-    linkText: "View Invite users",
-    linkUrl: `${envConfig.INVITE_STAFF_URL}`,
-    clickType: "link",
-    clickLocation: "breadcrumb"
-  });
+      event: "click",
+      linkText: "View Invite users",
+      linkUrl: `${envConfig.INVITE_STAFF_URL}`,
+      clickType: "link",
+      clickLocation: "breadcrumb"
+    });
   };
 
   return (
@@ -92,8 +123,13 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
           }}
         />
       </GridItem>
-      <GridItem className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
-        <div className="invite-users-table-align" style={{ marginBottom: 16, width: "100%" }}>
+      <GridItem
+        className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}
+      >
+        <div
+          className="invite-users-table-align"
+          style={{ marginBottom: 16, width: "100%" }}
+        >
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
             className="essui-Breadcrumbs"
@@ -102,10 +138,14 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             onItemClick={onBreadcrumbClick}
           />
           <ControlledList
-            {...getDefaultControlledListProps()}
+            dataTestId="invite-list-test-id"
+            isShowFirstElement
+            isBreadCrumbEnable={false}
+            resultNotFoundMessage="No data to display"
+            dynamictableIconName="information"
             isAddEventBtnShow={false}
-            dataTestId="invite-user-list-test-id"
-            filterDDLOptions={[{ id: "1", text: "All", value: "All" }]}
+            dynamicTableLoader ={isLoader}
+            filterDDLOptions={filterOptions}
             editSelectedBtnTitle="Edit selected"
             headingText="Invite Users"
             subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
@@ -118,15 +158,17 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             filterDDLdisabled={false}
             isOnCloseSidepnl
             sortingAlign="left"
-            paginationCount={4}
+            isPagination
+            paginationCount={totalPage}
+            paginationOnChange={handlePageChange}
+            paginationPage={currentPage}
             paginationMinCountToHideNextPreviousBtn={0}
-            resultNotFoundMessage=""
             searchHeadingText="Search user"
             searchPlaceholderText="Text"
             searchTerm=""
             secondaryButtonTitle="Cancel"
             showConfirmDialog
-            tableBodyData={tableDataObj}
+            tableBodyData={usersTableData || []}
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
@@ -148,15 +190,35 @@ const InviteUserView: React.FC<InviteUserProps> = () => {
             toastNotificationTitle=""
             isOpenConfirmationDialog={false}
             isShowOverflowMenuCol
-            isPagination
+            globalNotificationBannerOnClickClose={() => {
+              setShowErrorBanner(false);
+              setshowInvitationConflictBanner(false);
+            }}
             globalNotificationMsgBannerObject={[
               {
                 autoclose: false,
                 isShow: true,
-                message: "To manage user email name and role, please access SIMS7.",
+                message:
+                  "To manage user email name and role, please access SIMS7.",
                 title: "User details are managed in SIMS7",
                 variant: "highlight",
                 hideCloseButton: true
+              },
+              {
+                isShow: !!showErrorBanner,
+                variant: "warning",
+                title: "Information unavailable",
+                message:
+                  "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+                autoclose: true
+              },
+              {
+                isShow: !!showInvitationConflictBanner,
+                variant: "warning",
+                title: "Invitation conflict",
+                message:
+                  "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
+                autoclose: true
               }
             ]}
           />

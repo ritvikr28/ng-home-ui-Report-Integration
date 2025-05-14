@@ -3,36 +3,57 @@ import React from "react";
 import AdminConsole from "../../../features/AdminConsole/AdminConsole.view";
 import BreadcrumbWrapper from "../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
 import InviteUserView from "../InviteUsers.view";
+import { InviteUserProps } from "../InviteUsersProps";
 
 interface LocalisedMenuProps {
-    onCloseSideNavigationPanel: () => void;
-    isOpenSideNavigation: boolean;
-  }
-  const mediaQuery = require('@essnextgen/ui-kit');
+  onCloseSideNavigationPanel: () => void;
+  isOpenSideNavigation: boolean;
+}
+const mediaQuery = require("@essnextgen/ui-kit");
 
-  
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  ControlledList: jest.fn(() => (
+    <div data-testid="mock-controlled-list">Mock ControlledList</div>
+  ))
+}));
 
-  jest.mock("@essnextgen/ui-kit", () => ({
-    ...jest.requireActual("@essnextgen/ui-kit"),
-    ControlledList: jest.fn(() => <div data-testid="mock-controlled-list">Mock ControlledList</div>),
-  }));
-
-  jest.mock("@essnextgen/ui-application-kit", () => ({
-    LocalisedMenu: ({
-      onCloseSideNavigationPanel,
-      isOpenSideNavigation,
-    }: LocalisedMenuProps) => (
-      <button type="button" onClick={onCloseSideNavigationPanel}>
-        {isOpenSideNavigation ? "Close Menu" : "Open Menu"}
-      </button>
-    ),
-  }));
-
-
+jest.mock("@essnextgen/ui-application-kit", () => ({
+  LocalisedMenu: ({
+    onCloseSideNavigationPanel,
+    isOpenSideNavigation
+  }: LocalisedMenuProps) => (
+    <button type="button" onClick={onCloseSideNavigationPanel}>
+      {isOpenSideNavigation ? "Close Menu" : "Open Menu"}
+    </button>
+  )
+}));
 
 describe("InviteUserView", () => {
-    
-test.skip("calls setIsOpen with false when menu is closed", () => {
+  const mockInviteUserProps: InviteUserProps = {
+    usersTableData: [
+      {
+        externalId: "12345",
+        forename: "John",
+        surname: "Doe",
+        emailId: "john.doe@example.com",
+        userType: "Staff",
+        invitationStatus: "Not invited"
+      }
+    ],
+    setUsersTableData: jest.fn(),
+    isLoader: false,
+    setLoader: jest.fn(),
+    totalPage: 5,
+    setTotalPage: jest.fn(),
+    currentPage: 1,
+    setCurrentPage: jest.fn(),
+    handlePageChange: jest.fn(),
+    showInvitationConflictBanner: false,
+    setshowInvitationConflictBanner: jest.fn()
+  };
+
+  test.skip("calls setIsOpen with false when menu is closed", () => {
     const setIsOpen = jest.fn();
     jest.spyOn(React, "useState").mockImplementation(() => [true, setIsOpen]);
 
@@ -44,8 +65,6 @@ test.skip("calls setIsOpen with false when menu is closed", () => {
     expect(setIsOpen).toHaveBeenCalledWith(false);
   });
 
-  
-
   test("calls onCloseSideNavigationPanel when Admin Console breadcrumb is clicked", () => {
     const handleClick = jest.fn();
     render(<BreadcrumbWrapper />);
@@ -53,25 +72,24 @@ test.skip("calls setIsOpen with false when menu is closed", () => {
     fireEvent.click(adminConsoleBreadcrumb);
     expect(handleClick).toHaveBeenCalledTimes(0);
   });
-  
+
   test("renders InviteUserView without crashing", () => {
     const setIsOpen = jest.fn();
-    const useStateMock:any = (init:any) => [init, setIsOpen];
-  
+    const useStateMock: any = (init: any) => [init, setIsOpen];
+
     jest.spyOn(React, "useState").mockImplementation(useStateMock);
-    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
-    render(<InviteUserView />);
+    jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
+    render(<InviteUserView {...mockInviteUserProps} />);
     expect(screen.getByText("Invite Users")).toBeInTheDocument();
   });
 
   test("mocks and renders ControlledList component", () => {
     const setIsOpen = jest.fn();
-    const useStateMock:any = (init:any) => [init, setIsOpen];
-  
+    const useStateMock: any = (init: any) => [init, setIsOpen];
+
     jest.spyOn(React, "useState").mockImplementation(useStateMock);
-    jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
-    render(<InviteUserView />);
+    jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
+    render(<InviteUserView {...mockInviteUserProps} />);
     expect(screen.getByTestId("mock-controlled-list")).toBeInTheDocument();
   });
-
 });
