@@ -28,6 +28,14 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
     anchor.click();
   };  
 
+  const getConductEventsUrl = (): string => {
+    return `${window.location.origin}/conduct/events`;
+  };
+  const onConductCardClick = () => {
+    window.open(getConductEventsUrl(), "_blank", "noopener noreferrer");
+  };
+
+
   interface RelType {
     rel: string;
   }
@@ -57,7 +65,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link1"
-            href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
+            //href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
             target="_blank"
             {...rel}
           >
@@ -65,7 +73,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               className={"first-actioncard primary-text"}
               dataTestId="what-new-test-id"
               id="action-card"
-              onClickActionCard={() => onCardClick()}
+              onClickActionCard={() => onConductCardClick()}
               primaryText= {t("discoverMore.primarytext")}
               secondaryText= {t("discoverMore.secondarytext")}
             />
