@@ -263,7 +263,33 @@
       "notifyException":{
         "title": "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.",
         "content": "Information unavailable."
+      },
+      "ErrorMessagesDataSync":{
+        "content1":"We’ve identified a potential issue that might be preventing data from syncing between SIMS Next Gen and SIMS 7. The most common cause is a problem with your SSM server. A restart of the SSM service will often resolve this.",
+        "content2":"What to do next:",
+        "content3":"Restart your SSM server: Instructions on restarting your SSM server can be found here",
+        "content4":"KB0055528 - Troubleshooting issues.",
+        "content5":"Check that the SSM server is running. If the server is operational, then please check the sync status.",
+        "content6":"Check the sync status. After 24 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider.",
+        "content7":"Your IT or SIMS support provider can assist if required."
+        
+      },
+      "ErrorMessagesSSMPackage":{
+        "content1":"Your school’s SSM host package hasn’t yet been updated to the latest version, which was released over 24 hours ago. To keep your system secure, efficient, and up to date, we recommend upgrading at your earliest opportunity.",
+        "content2":"What’s New:",
+        "content3":"Latest Version:",
+        "content4":"Your Current Version:",
+        "content5":"Updating to this new version will bring:",
+        "content6":"Improved performance",
+        "content7":"Bug fixes",
+        "content8":"Enhanced security features",
+        "content9":"How to Upgrade:",
+        "content10":"For step-by-step guidance, please refer to the attached knowledge base article:",
+        "content11":"SIMS - Preparing SSM (SIMS Services Manager) for Next Gen | ParentPay Group",
+        "content12":"Please contact your IT or SIMS support provider should you need assistance with this.",
+        "content13":"An unknown issue has occurred. Please contact your support team for further assistance."
       }
+
     },
     "DataSyncAlertName": "Data Sync",
     "DataSyncLiveInfo": "Data is syncing between SIMS 7 and SIMS Next Gen.",

@@ -115,21 +115,6 @@ const mockActivateEmailAlert = activateEmailAlert as jest.Mock;
     expect(screen.getByText("Failed to update email alert.")).toBeInTheDocument()
   );
 });
-
-it("displays side panel with upgrade instructions for alert id 2 (SSM Package)", async () => {
-  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
-
-  render(<SystemStatusAlertsView />);
-  await waitFor(() => screen.getByText("SSM Package"));
-
-  fireEvent.click(screen.getAllByLabelText("Overflow menu")[1]);
-  fireEvent.click(screen.getByText("View"));
-
-  await waitFor(() => {
-    expect(screen.getByText(/Your school’s SSM host package hasn’t yet been updated/i)).toBeInTheDocument();
-  });
-});
-
 it("closes the side panel on button click", async () => {
   mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
 
@@ -142,6 +127,47 @@ it("closes the side panel on button click", async () => {
   await waitFor(() => screen.getByTestId("side-panel"));
   fireEvent.click(screen.getByTestId("btn-close"));
 
+});
+
+
+it("renders TableComponent when alerts are available", async () => {
+  (fetchEmailAlertStatus as jest.Mock).mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Live", eMailAlert: false },
+    ssmHostData: { ssmHostStatus: "Live", eMailAlert: true, latestSSMHostVersion: "2.0", currentSSMHostVersion: "1.5" }
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("Data Sync")).toBeInTheDocument();
+    expect(screen.getByText("SSM Package")).toBeInTheDocument();
+  });
+});
+
+it("opens SidePanel and shows SSM Package error messages for Red status", async () => {
+  const redAlertResponse = {
+    listenerData: {
+      listenerStatus: "Live",
+      eMailAlert: false,
+    },
+    ssmHostData: {
+      ssmHostStatus: "Not Live", // Triggers Red status
+      eMailAlert: true,
+      latestSSMHostVersion: "2.1",
+      currentSSMHostVersion: "2.0"
+    },
+  };
+  (fetchEmailAlertStatus as jest.Mock).mockResolvedValueOnce(redAlertResponse);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => expect(screen.getByText("SSM Package")).toBeInTheDocument());
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[1]); // Open overflow menu for second alert
+  fireEvent.click(screen.getByText("View"));
+
+  await waitFor(() => {
+    expect(screen.getByText("2.1")).toBeInTheDocument(); // Version display
+    expect(screen.getByText("2.0")).toBeInTheDocument();
+  });
 });
 
 });

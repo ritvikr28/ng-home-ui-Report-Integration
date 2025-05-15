@@ -1,4 +1,4 @@
-import React, { SyntheticEvent, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -29,7 +29,7 @@ import NotifyExceptionView from "./NotifyException.view";
 
 interface Alert {
   id: string;
-  status: "Green" | "Red" | "No Data";
+  status: "Green" | "Red" | "Yellow";
   alertName: string;
   information: string;
   emailSubscribed: boolean;
@@ -51,13 +51,10 @@ const SystemStatusAlertsView: React.FC = () => {
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const [enableNotification, setEnableNotification] = useState<boolean>(false);
   const history = useHistory();
-
   const handleException = () => {
     setEnableNotification(true);
   };
-
-  useEffect(() => {
-    const fetchAlerts = async () => {
+ const fetchAlerts = async () => {
       setLoading(true);
       setErrorText(null);
 
@@ -74,8 +71,8 @@ const SystemStatusAlertsView: React.FC = () => {
               alertName: "Data Sync",
               information:
                 listenerData.listenerStatus === "Live"
-                  ? "Data is syncing between SIMS 7 and SIMS Next Gen."
-                  : "Data is not currently syncing between SIMS 7 and SIMS Next Gen.",
+                  ? t(t("SystemStatus_T.DataSyncLiveInfo"))
+                  : t(t("SystemStatus_T.DataSyncNotLiveInfo")),
               emailSubscribed: listenerData.eMailAlert,
               latestSSMHostVersion: "",
               currentSSMHostVersion: "",
@@ -85,9 +82,9 @@ const SystemStatusAlertsView: React.FC = () => {
               status: ssmHostData.ssmHostStatus === "Live" ? "Green" : "Red",
               alertName: "SSM Package",
               information:
-                listenerData.listenerStatus === "Live"
-                  ? "Your system is using the most up-to-date SSM package."
-                  : "Your SSM package isn't the latest version.",
+                ssmHostData.ssmHostStatus === "Live"
+                  ? t(t("SystemStatus_T.SSMLiveInfo"))
+                  : t(t("SystemStatus_T.SSMNotLiveInfo")),
               emailSubscribed: ssmHostData.eMailAlert,
               latestSSMHostVersion: ssmHostData.latestSSMHostVersion,
               currentSSMHostVersion: ssmHostData.currentSSMHostVersion,
@@ -96,11 +93,34 @@ const SystemStatusAlertsView: React.FC = () => {
 
           setAlerts(apiAlerts);
         }
+        else {
+          setAlerts([
+            {
+              id: "1",
+              status: "Yellow",
+              alertName: "Data Sync",
+              information: "Connection Error",
+              emailSubscribed: false,
+              latestSSMHostVersion: "",
+              currentSSMHostVersion: "",
+            },
+            {
+              id: "2",
+              status: "Yellow",
+              alertName: "SSM Package",
+              information: "Connection Error",
+              emailSubscribed: false,
+              latestSSMHostVersion: "",
+              currentSSMHostVersion: "",
+            }
+          ]);
+        }
+
       } catch (fetchError) {
         setAlerts([
           {
             id: "1",
-            status: "No Data",
+            status: "Yellow",
             alertName: "Data Sync",
             information: "Connection Error",
             emailSubscribed: false,
@@ -109,7 +129,7 @@ const SystemStatusAlertsView: React.FC = () => {
           },
           {
             id: "2",
-            status: "No Data",
+            status: "Yellow",
             alertName: "SSM Package",
             information: "Connection Error",
             emailSubscribed: false,
@@ -121,9 +141,9 @@ const SystemStatusAlertsView: React.FC = () => {
         setLoading(false);
       }
     };
-
-    fetchAlerts();
-  }, [history]);
+useEffect(() => {
+  fetchAlerts();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -151,12 +171,8 @@ const SystemStatusAlertsView: React.FC = () => {
         emailSubscribed,
         () => {
           setSuccessMessage("Changes Saved.");
-          setAlerts((prevAlerts) =>
-            prevAlerts.map((a) =>
-              a.id === alert.id ? { ...a, emailSubscribed: !emailSubscribed } : a
-            )
-          );
-          setLoading1(false);
+fetchAlerts();
+     setLoading1(false);
         },
         (msg) => {
           setLoading1(false);
@@ -216,18 +232,27 @@ const SystemStatusAlertsView: React.FC = () => {
           isLoaderModal
         />
       )}
+{(() => {
+  let content;
 
-      {loading ? (
-        <div className="loading">Loading...</div>
-      ) : (
-        <TableComponent
-          alerts={alerts}
-          overflowMenuIndex={overflowMenuIndex}
-          setOverflowMenuIndex={setOverflowMenuIndex}
-          overflowMenuRef={overflowMenuRef}
-          handleActionClick={handleActionClick}
-        />
-      )}
+  if (loading) {
+    content = <div className="loading">Loading...</div>;
+  } else if (alerts.length > 0) {
+    content = (
+      <TableComponent
+        alerts={alerts}
+        overflowMenuIndex={overflowMenuIndex}
+        setOverflowMenuIndex={setOverflowMenuIndex}
+        overflowMenuRef={overflowMenuRef}
+        handleActionClick={handleActionClick}
+      />
+    );
+  } else {
+    content = <div>No results found.</div>;
+  }
+
+  return content;
+})()}
 
       <SidePanel
         dataTestId="side-panel"
@@ -259,18 +284,20 @@ const SystemStatusAlertsView: React.FC = () => {
                       (
                         <>
                           <p>
-                            We’ve identified a potential issue that might be preventing data from syncing between SIMS Next Gen and SIMS 7. The most common cause is a problem with your SSM server. A restart of the SSM service will often resolve this.
+                            {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content1")}
                           </p>
-                          <p><strong>What to do next:</strong></p>
+                          <p>
+                            <strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content2")}</strong>
+                          </p>
                           <ul>
                             <li>
-                              Restart your SSM server: Instructions on restarting your SSM server can be found here <strong>KB0055528 - Troubleshooting issues</strong>. Your IT or SIMS support provider can assist if required.
+                              {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content3")} <strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content4")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content7")}
                             </li>
                             <li>
-                              Check that the SSM server is running. If the server is operational, then please check the sync status.
+                              {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content5")}
                             </li>
                             <li>
-                              Check the sync status. After 24 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider.
+                              {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content6")}
                             </li>
                           </ul>
                         </>
@@ -280,24 +307,24 @@ const SystemStatusAlertsView: React.FC = () => {
                       (
                         <>
                           <p>
-                            Your school’s SSM host package hasn’t yet been updated to the latest version, which was released over 24 hours ago. To keep your system secure, efficient, and up to date, we recommend upgrading at your earliest opportunity.
+                            {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content1")}
                           </p>
-                          <p><strong>What’s New:</strong></p>
+                          <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content2")}</strong></p>
                           <ul>
-                            <li><strong>Latest Version:</strong> { selectedAlert.latestSSMHostVersion }</li>
-                            <li><strong>Your Current Version:</strong> { selectedAlert.currentSSMHostVersion }</li>
+                            <li><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content3")}</strong> {selectedAlert.latestSSMHostVersion}</li>
+                            <li><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content4")}</strong> {selectedAlert.currentSSMHostVersion}</li>
                           </ul>
-                          <p>Updating to this new version will bring:</p>
+                          <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content5")}</p>
                           <ul>
-                            <li>Improved performance</li>
-                            <li>Bug fixes</li>
-                            <li>Enhanced security features</li>
+                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content6")}</li>
+                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content7")}</li>
+                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content8")}</li>
                           </ul>
-                          <p><strong>How to Upgrade:</strong> For step-by-step guidance, please refer to the attached knowledge base article: <strong>SIMS - Preparing SSM (SIMS Services Manager) for Next Gen | ParentPay Group</strong>.</p>
-                          <p>Please contact your IT or SIMS support provider should you need assistance with this.</p>
+                          <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content11")}</strong></p>
+                          <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content12")}</p>
                         </>
                       ) : (
-                        <p>An unknown issue has occurred. Please contact your support team for further assistance.</p>
+                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content12")}</p>
                       )}
                   </div>
                 )}
@@ -321,7 +348,6 @@ const SystemStatusAlertsView: React.FC = () => {
   );
 };
 
-
 const TableComponent: React.FC<{
   alerts: Alert[];
   overflowMenuIndex: string;
@@ -334,9 +360,22 @@ const TableComponent: React.FC<{
   setOverflowMenuIndex,
   overflowMenuRef,
   handleActionClick
-}) => (
-    <TableWrapper className="system-status-table-wrapper" >
-      <Table className="system-status-table" >
+}) => {
+  const getTableStatus = (status: string): TableStatus => {
+    if (status === "Yellow") return TableStatus.WARNING;
+    if (status === "Red") return TableStatus.CRITICAL;
+    return TableStatus.SUCCESS;
+  };
+
+  const getStatusLabel = (status: string): string => {
+    if (status === "Yellow") return "No Data";
+    if (status === "Green") return "Live";
+    return "Fail";
+  };
+
+  return (
+    <TableWrapper className="system-status-table-wrapper">
+      <Table className="system-status-table">
         <TableHead>
           <TableRow>
             <TableCell header>Status</TableCell>
@@ -347,68 +386,77 @@ const TableComponent: React.FC<{
           </TableRow>
         </TableHead>
         <TableBody>
-          {alerts.map((alert, index) => (
-            <TableRow key={alert.id}>
-              <TableCell
-                status={alert.status === "Red" ? TableStatus.CRITICAL : TableStatus.SUCCESS}
-              >
-                <span className={`status-pill ${alert.status === "Green" ? "live" : "Fail"}`}>
-                  {alert.status === "Green" ? "Live" : "Fail"}
+          {alerts.map((alert, index) => {
+            const status = getTableStatus(alert.status);
+            const statusLabel = getStatusLabel(alert.status);
+            const statusClass = alert.status === "Green" ? "Live" : "Fail";
 
-                </span>
-              </TableCell>
-              <TableCell>{alert.alertName}</TableCell>
-              <TableCell>{alert.information}</TableCell>
-              <TableCell>{alert.emailSubscribed ? "Yes" : "No"}</TableCell>
-              <TableCell>
-                <span className="action-table-cell">
-                  {overflowMenuIndex === `overflow-${index}` && (
-                    <span ref={overflowMenuRef}>
-                      <OverflowMenu
-                        dataTestId="overflow-menu"
-                        id={`overflow-${index}`}
-                        onClick={(
-                          e: SyntheticEvent<Element, Event>,
-                          selectedValue: object
-                        ) => {
-                          handleActionClick((selectedValue as { value: string }).value, alert);
-                        }}
-                      >
-                        <OverflowMenuItem
-                          value="View"
-
-                        >View
-                        </OverflowMenuItem>
-                        <OverflowMenuItem
-                          value={alert.emailSubscribed ? "Deactivate Email" : "Activate Email"}
-
-                        >{alert.emailSubscribed ? "Deactivate Email" : "Activate Email"}</OverflowMenuItem>
-                      </OverflowMenu>
-                    </span>
-                  )}
-                  <Button
-                    size={ButtonSize.Small}
-                    color={
-                      overflowMenuIndex === `overflow-${index}`
-                        ? ButtonColor.Primary
-                        : ButtonColor.Utility
-                    }
-                    onClick={() =>
-                      overflowMenuIndex === `overflow-${index}`
-                        ? setOverflowMenuIndex("")
-                        : setOverflowMenuIndex(`overflow-${index}`)
-                    }
-                    iconName="overflow-menu--horizontal"
-                    ariaLabel="Overflow menu"
-                  />
-                </span>
-              </TableCell>
-            </TableRow>
-          ))}
+            return (
+              <TableRow key={alert.id}>
+                <TableCell status={status}>
+                  <span className={`status-pill ${statusClass}`}>
+                    {statusLabel}
+                  </span>
+                </TableCell>
+                <TableCell>{alert.alertName}</TableCell>
+                <TableCell>{alert.information}</TableCell>
+                <TableCell>{alert.emailSubscribed ? "Yes" : "No"}</TableCell>
+                <TableCell>
+                  <span className="action-table-cell">
+                    {overflowMenuIndex === `overflow-${index}` && (
+                      <span ref={overflowMenuRef}>
+                        <OverflowMenu
+                          dataTestId="overflow-menu"
+                          id={`overflow-${index}`}
+                          onClick={(e, selectedValue) =>
+                            handleActionClick(
+                              (selectedValue as { value: string }).value,
+                              alert
+                            )
+                          }
+                        >
+                          <OverflowMenuItem value="View">View</OverflowMenuItem>
+                          <OverflowMenuItem
+                            value={
+                              alert.emailSubscribed
+                                ? "Deactivate Email"
+                                : "Activate Email"
+                            }
+                          >
+                            {alert.emailSubscribed
+                              ? "Deactivate Email"
+                              : "Activate Email"}
+                          </OverflowMenuItem>
+                        </OverflowMenu>
+                      </span>
+                    )}
+                    <Button
+                      size={ButtonSize.Small}
+                      color={
+                        overflowMenuIndex === `overflow-${index}`
+                          ? ButtonColor.Primary
+                          : ButtonColor.Utility
+                      }
+                      onClick={() =>
+                        overflowMenuIndex === `overflow-${index}`
+                          ? setOverflowMenuIndex("")
+                          : setOverflowMenuIndex(`overflow-${index}`)
+                      }
+                      iconName="overflow-menu--horizontal"
+                      ariaLabel="Overflow menu"
+                      disabled={alert.status === "Yellow"}
+                    />
+                  </span>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </TableWrapper>
   );
+};
+
 
 export default SystemStatusAlertsView;
 

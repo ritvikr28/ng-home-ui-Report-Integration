@@ -81,13 +81,13 @@ export const activateEmailAlert = async (
       requestBody
     );
 
-    if (response.status === 204) {
+    if (response.status === 200) {
       onSuccess();
     } else {
-      onError("Failed to update email alert status.");
+      onError("A Technical issue at our end has stopped us from action.");
     }
   } catch (error) {
     console.error("Error updating email alert:", error);
-    onError("Failed to update email alert status.");
+    onError("A Technical issue at our end has stopped us from action.");
   }
 };

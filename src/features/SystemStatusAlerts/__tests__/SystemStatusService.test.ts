@@ -151,7 +151,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
     it("should call onSuccess when API call is successful", async () => {
       const mockOnSuccess = jest.fn();
       const mockOnError = jest.fn();
-      (service.post as jest.Mock).mockResolvedValueOnce({ status: 204 });
+      (service.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
 
       await activateEmailAlert("alert123", true, mockOnSuccess, mockOnError);
 
@@ -161,7 +161,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "D", // Matches emailSubscribed = true
+          indicator: "D"
         }
       );
       expect(mockOnSuccess).toHaveBeenCalled();
@@ -181,11 +181,11 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", // Matches emailSubscribed = false
+          indicator: "A", 
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("Failed to update email alert status.");
+      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
     });
 
     it("should call onError when API call throws an error", async () => {
@@ -201,11 +201,11 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", // Matches emailSubscribed = false
+          indicator: "A", 
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("Failed to update email alert status.");
+      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
     });
   });
 });
