@@ -10,7 +10,8 @@ import {
   ControlledList,
   DialogTemplate,
   NotificationStatus,
-  useMediaQuery
+  useMediaQuery,
+  ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect } from "react";
 import {
@@ -142,9 +143,13 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isShowFirstElement
             isBreadCrumbEnable={false}
             resultNotFoundMessage="No data to display"
-            dynamictableIconName="information"
+            dynamictableIconName={
+              showErrorBanner ? "warning--alt" : "information"
+            }
+            dynamictableNoMsgColor={ValidationTextLevel.Warning}
+            isShowdynamictableNoMsg={showErrorBanner}
             isAddEventBtnShow={false}
-            dynamicTableLoader ={isLoader}
+            dynamicTableLoader={isLoader}
             filterDDLOptions={filterOptions}
             editSelectedBtnTitle="Edit selected"
             headingText="Invite Users"
