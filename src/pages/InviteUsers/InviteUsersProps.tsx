@@ -148,7 +148,7 @@ export const editSelectedOptions: OptionsEntity[] = [
     text: "Send invite",
     value: "SendInvite",
     isShowDivider: false,
-    isSelected: true
+    isSelected: false
   }
 ];
 

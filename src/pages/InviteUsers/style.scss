@@ -10,3 +10,52 @@
   font-weight: 400;
   font-size: 16px;
 }
+
+@media screen and (min-width: 768px) and (max-width: 1023.9px) {
+  .essui-grid-col .essui-side-navigation-panel-container-grid-item {
+    width: 264px;
+  }
+
+  .dynamic-table {
+    width: max-content;
+    margin: 1px 1px !important;
+    overflow: auto;
+  }
+
+  .heading-title .heading-font {
+    margin: 1px 16px;
+  }
+  #breadcrumbs-wrapper {
+    margin-top: 7px;
+    margin-left: 11px;
+  }
+}
+
+@media (min-width: 390px) and (max-width: 767.9px) {
+  .dropdown {
+    margin-top: 10px;
+    margin-left: 13px;
+  }
+
+  .dynamic-table {
+    margin: 1px 1px !important;
+    overflow-x: scroll;
+  }
+
+  .edit-selected-btn {
+    margin-top: -5px;
+    margin-left: 13px;
+  }
+
+  #breadcrumbs-wrapper {
+    margin-top: 7px;
+    margin-left: 11px;
+  }
+}
+
+@media only screen and (width: 712px) {
+  .dropdown {
+    margin-top: -10px;
+    margin-left: 13px;
+  }
+}

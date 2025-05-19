@@ -100,19 +100,8 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
   };
 
   return (
-    <Grid className="dms-layout" style={{ display: "flex" }}>
+    <Grid className="admin-mobile-rwaf92428">
       <GridItem className={isSidebarOpen ? "side-width" : "no-side-width"}>
-        {!isSidebarOpen && (
-          <Button
-            className="base-class"
-            color={ButtonColor.Utility}
-            dataTestId="btn-collapse"
-            iconColor={IconColor.Neutral800}
-            iconName="open-panel--left--filled"
-            onClick={toggleSidebar}
-            size={ButtonSize.Small}
-          />
-        )}
         <LocalisedMenu
           customHeight={100}
           menuHeading="Admin Console"
@@ -127,10 +116,18 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       <GridItem
         className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}
       >
-        <div
-          className="invite-users-table-align"
-          style={{ marginBottom: 16, width: "100%" }}
-        >
+        <div style={{ display: "flex" }}>
+          {!isSidebarOpen && (
+            <Button
+              className="base-class"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={toggleSidebar}
+              size={ButtonSize.Small}
+            />
+          )}
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
             className="essui-Breadcrumbs"
@@ -138,96 +135,97 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
             id="element-id"
             onItemClick={onBreadcrumbClick}
           />
-          <ControlledList
-            dataTestId="invite-list-test-id"
-            isShowFirstElement
-            isBreadCrumbEnable={false}
-            resultNotFoundMessage="No data to display"
-            dynamictableIconName={
-              showErrorBanner ? "warning--alt" : "information"
-            }
-            dynamictableNoMsgColor={ValidationTextLevel.Warning}
-            isShowdynamictableNoMsg={showErrorBanner}
-            isAddEventBtnShow={false}
-            dynamicTableLoader={isLoader}
-            filterDDLOptions={filterOptions}
-            editSelectedBtnTitle="Edit selected"
-            headingText="Invite Users"
-            subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
-            id="Inviteusers-list"
-            filterDDLuseAutoWidth
-            filterDDLisSelected
-            filterDDLlabel="Invitation status"
-            filterDDLplaceholder="Select"
-            filterDDLselectedItem={{ text: "All", value: "All" }}
-            filterDDLdisabled={false}
-            isOnCloseSidepnl
-            sortingAlign="left"
-            isPagination
-            paginationCount={totalPage}
-            paginationOnChange={handlePageChange}
-            paginationPage={currentPage}
-            paginationMinCountToHideNextPreviousBtn={0}
-            searchHeadingText="Search user"
-            searchPlaceholderText="Text"
-            searchTerm=""
-            secondaryButtonTitle="Cancel"
-            showConfirmDialog
-            tableBodyData={usersTableData || []}
-            isShowEditSelectedBtn
-            isShowSearch
-            tableFirstColumnWidth="56px"
-            tableHeadersData={getTableHeadersData}
-            tableLastColumnWidth="10px"
-            editSelectedOptions={editSelectedOptions}
-            templatePropsConfirmation={{
-              cancelText: "Cancel",
-              contentText: "You have unsaved changes that will be lost.",
-              isNotificationanner: false,
-              notificationStatus: NotificationStatus.SUCCESS,
-              okText: "Discard",
-              onCancel: (): void => {},
-              onConfirm: (): void => {},
-              template: DialogTemplate.Confirmation
-            }}
-            titleConfirmation="Discard changes?"
-            toastNotificationStatus={NotificationStatus.SUCCESS}
-            toastNotificationTitle=""
-            isOpenConfirmationDialog={false}
-            isShowOverflowMenuCol
-            globalNotificationBannerOnClickClose={() => {
-              setShowErrorBanner(false);
-              setshowInvitationConflictBanner(false);
-            }}
-            globalNotificationMsgBannerObject={[
-              {
-                autoclose: false,
-                isShow: true,
-                message:
-                  "To manage user email name and role, please access SIMS7.",
-                title: "User details are managed in SIMS7",
-                variant: "highlight",
-                hideCloseButton: true
-              },
-              {
-                isShow: !!showErrorBanner,
-                variant: "warning",
-                title: "Information unavailable",
-                message:
-                  "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
-                autoclose: true
-              },
-              {
-                isShow: !!showInvitationConflictBanner,
-                variant: "warning",
-                title: "Invitation conflict",
-                message:
-                  "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
-                autoclose: true
-              }
-            ]}
-          />
         </div>
+        <ControlledList
+          className="invite-users-table"
+          dataTestId="invite-list-test-id"
+          isShowFirstElement
+          isBreadCrumbEnable={false}
+          resultNotFoundMessage="No data to display"
+          dynamictableIconName={
+            showErrorBanner ? "warning--alt" : "information"
+          }
+          dynamictableNoMsgColor={ValidationTextLevel.Warning}
+          isShowdynamictableNoMsg={showErrorBanner}
+          isAddEventBtnShow={false}
+          dynamicTableLoader={isLoader}
+          filterDDLOptions={filterOptions}
+          editSelectedBtnTitle="Edit selected"
+          headingText="Invite Users"
+          subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
+          id="Inviteusers-list"
+          filterDDLuseAutoWidth
+          filterDDLisSelected
+          filterDDLlabel="Invitation status"
+          filterDDLplaceholder="Select"
+          filterDDLselectedItem={{ text: "All", value: "All" }}
+          filterDDLdisabled={false}
+          isOnCloseSidepnl
+          sortingAlign="left"
+          isPagination
+          paginationCount={totalPage}
+          paginationOnChange={handlePageChange}
+          paginationPage={currentPage}
+          paginationMinCountToHideNextPreviousBtn={0}
+          searchHeadingText="Search user"
+          searchPlaceholderText="Text"
+          searchTerm=""
+          secondaryButtonTitle="Cancel"
+          showConfirmDialog
+          tableBodyData={usersTableData || []}
+          isShowEditSelectedBtn
+          isShowSearch
+          tableFirstColumnWidth="56px"
+          tableHeadersData={getTableHeadersData}
+          tableLastColumnWidth="10px"
+          editSelectedOptions={editSelectedOptions}
+          templatePropsConfirmation={{
+            cancelText: "Cancel",
+            contentText: "You have unsaved changes that will be lost.",
+            isNotificationanner: false,
+            notificationStatus: NotificationStatus.SUCCESS,
+            okText: "Discard",
+            onCancel: (): void => {},
+            onConfirm: (): void => {},
+            template: DialogTemplate.Confirmation
+          }}
+          titleConfirmation="Discard changes?"
+          toastNotificationStatus={NotificationStatus.SUCCESS}
+          toastNotificationTitle=""
+          isOpenConfirmationDialog={false}
+          isShowOverflowMenuCol
+          globalNotificationBannerOnClickClose={() => {
+            setShowErrorBanner(false);
+            setshowInvitationConflictBanner(false);
+          }}
+          globalNotificationMsgBannerObject={[
+            {
+              autoclose: false,
+              isShow: true,
+              message:
+                "To manage user email name and role, please access SIMS7.",
+              title: "User details are managed in SIMS7",
+              variant: "highlight",
+              hideCloseButton: true
+            },
+            {
+              isShow: !!showErrorBanner,
+              variant: "warning",
+              title: "Information unavailable",
+              message:
+                "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+              autoclose: true
+            },
+            {
+              isShow: !!showInvitationConflictBanner,
+              variant: "warning",
+              title: "Invitation conflict",
+              message:
+                "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
+              autoclose: true
+            }
+          ]}
+        />
       </GridItem>
     </Grid>
   );
