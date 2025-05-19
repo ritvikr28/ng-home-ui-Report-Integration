@@ -56,6 +56,8 @@ export interface TableHeader {
   isColumnSorting?: boolean;
   anyComponent?: any;
   isSimpleText?: boolean;
+  isColumnSortByDefault?: boolean;
+  isColumnSortAscFirst?: boolean;
 }
 
 export const getTableHeadersData: TableHeader[] = [
@@ -75,7 +77,9 @@ export const getTableHeadersData: TableHeader[] = [
     columnWidth: "285px",
     headerTxtTrunctLength: 50,
     isSimpleText: true,
-    isColumnSorting: true
+    isColumnSorting: true,
+    isColumnSortByDefault: true,
+    isColumnSortAscFirst: true
   },
   {
     text: "Email",
@@ -85,7 +89,7 @@ export const getTableHeadersData: TableHeader[] = [
     isHeaderTextTruncate: false,
     headerTxtTrunctLength: 17,
     isSimpleText: true,
-    isColumnSorting: false,
+    isColumnSorting: true,
     columnWidth: "325px"
   },
   {
@@ -118,7 +122,7 @@ export const getTableHeadersData: TableHeader[] = [
     isTextTruncate: false,
     isHeaderTextTruncate: false,
     headerTxtTrunctLength: 50,
-    isColumnSorting: true,
+    isColumnSorting: false,
     columnWidth: "206px"
   }
 ];
@@ -177,6 +181,8 @@ export interface IPaginationOptions {
   setshowInvitationConflictBanner?: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  columnName?: string;
+  sortDirection?: boolean;
 }
 
 // eslint-disable-next-line no-shadow

@@ -1,6 +1,8 @@
+import React from "react";
 import { service } from "../../shared/utils/api-service";
 import {
   IInviteUserData,
+  IInviteUserDetails,
   InvitationStatusFilterOptions,
   IPaginationOptions
 } from "./InviteUsersProps";
@@ -8,9 +10,15 @@ import {
 export const getUsersData: (
   props: IPaginationOptions
 ) => Promise<IInviteUserData> = async (props: IPaginationOptions) => {
-  const response: any = await service.get(
-    `/InviteUser/Users?PageNumber=${props.pageNumber}&PageSize=${props.pageSize}`
-  );
+  const { pageNumber, pageSize, columnName, sortDirection } = props;
+  let url = `/InviteUser/Users?PageNumber=${pageNumber}&PageSize=${pageSize}`;
+  if (columnName) {
+    url += `&SortBy=${columnName}`;
+  }
+  if (sortDirection !== undefined) {
+    url += `&Asc=${sortDirection}`;
+  }
+  const response: any = await service.get(url);
   return response?.data;
 };
 
@@ -40,12 +48,10 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
       ?.filter(
         (item: any) =>
           !(
-            (item?.forename === "" &&
-            item?.surname === "") &&
+            item?.forename === "" &&
+            item?.surname === "" &&
             item?.emailId === "Work main email address is missing"
           )
-          
-
       )
       .map((item: any) => ({
         id: item?.externalId,
@@ -81,4 +87,46 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
     }
     return [];
   }
+};
+
+export const inviteUsersSorting = async (
+  columnName: string,
+  sortDirection: boolean,
+  setSortDirection: React.Dispatch<React.SetStateAction<boolean>>,
+  setSortBy: React.Dispatch<React.SetStateAction<string>>,
+  pageNumber: number,
+  pageSize: number,
+  setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>,
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowErrorBanner?: React.Dispatch<React.SetStateAction<boolean>>,
+  setshowInvitationConflictBanner?: React.Dispatch<
+    React.SetStateAction<boolean>
+  >
+): Promise<void> => {
+  let apiColumnName = columnName;
+  switch (columnName) {
+    case "Name":
+      apiColumnName = "Forename";
+      break;
+    case "Email":
+      apiColumnName = "EmailId";
+      break;
+    default:
+      apiColumnName = columnName;
+      break;
+  }
+  setSortBy(apiColumnName);
+  setSortDirection(sortDirection);
+  setLoader(true);
+  fetchInviteUserDetails({
+    pageNumber,
+    pageSize,
+    columnName: apiColumnName,
+    sortDirection,
+    setShowErrorBanner,
+    setshowInvitationConflictBanner
+  }).then((res) => {
+    setLoader(false);
+    setUsersTableData(res);
+  });
 };

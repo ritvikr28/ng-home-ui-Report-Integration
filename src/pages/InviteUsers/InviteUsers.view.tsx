@@ -25,7 +25,7 @@ import {
 import "./style.scss";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
-import { fetchInviteUserDetails } from "./InviteUsersUtils";
+import { fetchInviteUserDetails, inviteUsersSorting } from "./InviteUsersUtils";
 
 const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const {
@@ -51,6 +51,8 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [sortBy, setSortBy] = useState<string>("Forename");
+  const [sortDirection, setSortDirection] = useState<boolean>(true);
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
@@ -60,6 +62,8 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     fetchInviteUserDetails({
       pageNumber: currentPage,
       pageSize,
+      columnName: sortBy,
+      sortDirection,
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner
@@ -98,7 +102,6 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       clickLocation: "breadcrumb"
     });
   };
-
   return (
     <Grid className="admin-mobile-rwaf92428">
       <GridItem className={isSidebarOpen ? "side-width" : "no-side-width"}>
@@ -145,6 +148,39 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
           dynamictableIconName={
             showErrorBanner ? "warning--alt" : "information"
           }
+          sortingAlign="left"
+          sortingOnClickEvent={(
+            e: React.SyntheticEvent,
+            columnName: string
+          ) => {
+            setshowInvitationConflictBanner(false);
+            const apiColumnName =
+              columnName === "Name" ? "Forename" : "EmailId";
+            let newDirection = true;
+
+            if (sortBy === apiColumnName) {
+              newDirection = !sortDirection;
+            } else {
+              newDirection = true;
+              setSortBy(apiColumnName);
+            }
+
+            setSortBy(apiColumnName);
+            setSortDirection(newDirection);
+
+            inviteUsersSorting(
+              columnName,
+              newDirection,
+              setSortDirection,
+              setSortBy,
+              currentPage,
+              pageSize,
+              setUsersTableData,
+              setLoader,
+              setShowErrorBanner,
+              setshowInvitationConflictBanner
+            );
+          }}
           dynamictableNoMsgColor={ValidationTextLevel.Warning}
           isShowdynamictableNoMsg={showErrorBanner}
           isAddEventBtnShow={false}
@@ -161,7 +197,6 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
           filterDDLselectedItem={{ text: "All", value: "All" }}
           filterDDLdisabled={false}
           isOnCloseSidepnl
-          sortingAlign="left"
           isPagination
           paginationCount={totalPage}
           paginationOnChange={handlePageChange}
