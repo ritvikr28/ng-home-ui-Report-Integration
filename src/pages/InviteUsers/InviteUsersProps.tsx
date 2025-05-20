@@ -137,7 +137,6 @@ export const breadcrumbActions: IBreadcrumbLink[] = [
     active: false,
     linkName: "Admin Console",
     path: homeurl,
-    isExternalLink: true
   },
   {
     active: false,

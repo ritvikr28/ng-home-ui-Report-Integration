@@ -31,7 +31,7 @@
   }
 }
 
-@media (min-width: 390px) and (max-width: 767.9px) {
+@media (min-width: 360px) and (max-width: 767.9px) {
   .dropdown {
     margin-top: 10px;
     margin-left: 13px;
@@ -43,8 +43,11 @@
   }
 
   .edit-selected-btn {
-    margin-top: -5px;
-    margin-left: 13px;
+    margin-top: 20px;
+  }
+
+  .essui-dropdown-container {
+    width: 120px;
   }
 
   #breadcrumbs-wrapper {
