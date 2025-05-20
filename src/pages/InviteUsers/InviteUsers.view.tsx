@@ -93,7 +93,8 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setIsSidebarOpen(false);
   };
 
-  const onBreadcrumbClick: (breadcrumb: string) => void = () => {
+  const onBreadcrumbClick = (path: string) => {
+    window.location.assign(path);
     gtmAnalytics.pushEvent({
       event: "click",
       linkText: "View Invite users",
