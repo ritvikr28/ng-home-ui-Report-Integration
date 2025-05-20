@@ -196,47 +196,67 @@
   	}
   },
   "SystemStatus_T": {
-    "headingTitle": "System status and alerts",
-    "description": "Monitor key system statuses and sign up to email alerts when statuses change.",
+    "headingTitle": "Statws y system a rhybuddion",
+    "description": "Monitro statws allweddol y system a chofrestru ar gyfer rhybuddion e-bost pan fydd statws yn newid.",
     "moduleBlock" : {
       "notifyException":{
-        "title": "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.",
-        "content": "Information unavailable."
+        "title": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cwblhau eich cais. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth",
+        "content": "Gwybodaeth ddim ar gael."
       },
       "ErrorMessagesDataSync":{
         "content1":"Rydym wedi nodi mater posibl a allai fod yn atal data rhag cysoni rhwng SIMS Next Gen a SIMS 7. Yr achos mwyaf cyffredin yw problem gyda'ch gweinydd SSM. Bydd ailgychwyn y gwasanaeth SSM yn datrys hyn yn aml.",
         "content2":"Beth i'w wneud nesaf:",
-        "content3":"Ailgychwyn eich gweinydd SSM: Gellir dod o hyd i gyfarwyddiadau ar ailgychwyn eich gweinydd SSM yma",
-        "content4":" KB0055528 - Datrys problemau.",
-        "content5":"Gwiriwch fod y gweinydd SSM yn rhedeg Os yw'r gweinydd yn weithredol, gwiriwch y statws cysoni.",
-        "content6":"Gwiriwch y statws cysoni Ar ôl 72 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS.",
-        "content7":"Gall eich darparwr cymorth TG neu SIMS gynorthwyo os oes angen."
-        
+        "content3":"Ailgychwyn eich gweinydd SSM:",
+        "content4":"KB0055528 - Datrys problemau",
+        "content5":"Gwiriwch fod y gweinydd SSM yn rhedeg.",
+        "content6":"Gwiriwch y statws cysoni",
+        "content7":"Gall eich darparwr cymorth TG neu SIMS gynorthwyo os oes angen.",
+        "content8":"Gellir dod o hyd i gyfarwyddiadau ar ailgychwyn eich gweinydd SSM yma",
+        "content9":"Os yw'r gweinydd yn weithredol, gwiriwch y statws cysoni.",
+        "content10":"Ar ôl 72 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS."
+
       },
       "ErrorMessagesSSMPackage":{
         "content1":"Nid yw pecyn cynnal SSM eich ysgol wedi'i ddiweddaru eto i'r fersiwn ddiweddaraf, a ryddhawyd dros 72 awr yn ôl. Er mwyn cadw'ch system yn ddiogel, yn effeithlon ac yn gyfredol, rydym yn argymell uwchraddio cyn gynted â phosib.",
         "content2":"Beth sy'n Newydd:",
-        "content3":" Fersiwn Diweddaraf:",
+        "content3":"Fersiwn Diweddaraf:",
         "content4":"Eich Fersiwn Cyfredol:",
         "content5":"Bydd diweddaru i'r fersiwn newydd hwn yn dod â:",
         "content6":"Gwell perfformiad",
         "content7":"Atgyweiriadau Bygiau",
-        "content8":" Nodweddion diogelwch gwell",
+        "content8":"Nodweddion diogelwch gwell",
         "content9":"Sut i Uwchraddio:",
         "content10":"Am arweiniad cam wrth gam, cyfeiriwch at yr erthygl wybodaeth sylfaen atodedig:",
         "content11":"SIMS - Paratoi SSM (Rheolwr Gwasanaethau SIMS) ar gyfer Next Gen | Grŵp ParentPay.",
-        "content12":" Cysylltwch â'ch darparwr cymorth TG neu SIMS os oes angen cymorth arnoch gyda hyn.",
+        "content12":"Cysylltwch â'ch darparwr cymorth TG neu SIMS os oes angen cymorth arnoch gyda hyn.",
         "content13":"An unknown issue has occurred. Please contact your support team for further assistance."
       }
 
     },
-    "DataSyncAlertName": "Data Sync",
-    "DataSyncLiveInfo": "Data is syncing between SIMS 7 and SIMS Next Gen.",
-    "DataSyncNotLiveInfo": "Nid yw data'n cysoni ar hyn o bryd rhwng SIMS 7 a SIMS Next Gen.",
-    "SSMAlertName": "SSM Package",
-    "SSMLiveInfo": "Your system is using the most up-to-date SSM package.",
+    "DataSyncAlertName": "Cydamseru data",
+    "DataSyncLiveInfo": "Mae data’n cael ei gydamseru rhwng SIMS 7 a SIMS Next Gen.",
+    "DataSyncNotLiveInfo": "Nid yw data'n cydamseru ar hyn o bryd rhwng SIMS 7 a SIMS Next Gen.",
+    "SSMAlertName": "Pecyn SSM",
+    "SSMLiveInfo": "Mae eich system yn defnyddio’r pecyn SSM diweddaraf.",
     "SSMNotLiveInfo": "Nid yw eich pecyn SSM yn y fersiwn ddiweddaraf.",
-    "WarningMessage": "Warning Message"
+    "WarningMessage": "Gwall cysylltiad",
+    "Yes": "Ydw",
+    "No": "Nac ydy",
+    "Live": "Byw",  
+    "Fail": "Methu",
+    "SSMPackage": "Pecyn SSM",
+    "Activateemail": "Gweithredwch e-bost",
+    "Deactivateemail": "Datgysylltwch e-bost",
+    "Unabletosubscribetoemail":"Methu tanysgrifio i e-bost",
+    "Unabletounsubscribetoemail":"Methu dad-danysgrifio o e-bost",
+    "Changessaved":"Cadwyd y newidiadau",
+    "NoData":"Nid oes Data",
+    "Status":"Statws",
+    "Information":"Gyswllt",
+    "Close":"Cau",
+    "Alert":"Gwall",
+    "EmailAlerts":"E-bost Rhybuddion",
+     "View":"Golwg"
   },
   "quickLink": {
     "headingTitle": "Dolenni cyflym",

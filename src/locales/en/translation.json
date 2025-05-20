@@ -267,15 +267,19 @@
       "ErrorMessagesDataSync":{
         "content1":"We’ve identified a potential issue that might be preventing data from syncing between SIMS Next Gen and SIMS 7. The most common cause is a problem with your SSM server. A restart of the SSM service will often resolve this.",
         "content2":"What to do next:",
-        "content3":"Restart your SSM server: Instructions on restarting your SSM server can be found here",
-        "content4":"KB0055528 - Troubleshooting issues.",
-        "content5":"Check that the SSM server is running. If the server is operational, then please check the sync status.",
-        "content6":"Check the sync status. After 24 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider.",
-        "content7":"Your IT or SIMS support provider can assist if required."
+        "content3":"Restart your SSM server:",
+        "content4":"KB0055528 - Troubleshooting issues",
+        "content5":"Check that the SSM server is running",
+        "content6":"Check the sync status.",
+        "content7":"Your IT or SIMS support provider can assist if required.",
+        "content8":"Instructions on restarting your SSM server can be found here",
+        "content9":"If the server is operational then please check the sync status.",
+        "content10":"After 72 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider."
+
         
       },
       "ErrorMessagesSSMPackage":{
-        "content1":"Your school’s SSM host package hasn’t yet been updated to the latest version, which was released over 24 hours ago. To keep your system secure, efficient, and up to date, we recommend upgrading at your earliest opportunity.",
+        "content1":"Your school’s SSM host package hasn’t yet been updated to the latest version, which was released over 72 hours ago. To keep your system secure, efficient, and up to date, we recommend upgrading at your earliest opportunity.",
         "content2":"What’s New:",
         "content3":"Latest Version:",
         "content4":"Your Current Version:",
@@ -297,7 +301,26 @@
     "SSMAlertName": "SSM Package",
     "SSMLiveInfo": "Your system is using the most up-to-date SSM package.",
     "SSMNotLiveInfo": "Your SSM package isn't the latest version.",
-    "WarningMessage": "Warning Message"
+    "WarningMessage": "Connection error",
+    "Yes": "Yes",
+    "No": "No",
+    "Live": "Live",  
+    "Fail": "Fail",
+    "SSMPackage": "SSM Package",
+    "Activateemail": "Activate Email",
+    "Deactivateemail": "Deactivate Email",
+    "Unabletosubscribetoemail":"Methu tanysgrifio i e-bost",
+    "Unabletounsubscribetoemail":"Methu dad-danysgrifio o e-bost",
+    "Changessaved":"Changes saved",
+    "NoData":"No Data",
+    "Status":"Status",
+    "Information":"Information",
+    "Close":"Close",
+    "Alert":"Alert",
+    "EmailAlerts":"Email Alerts",
+    "View":"View",
+    "FailedAlert":"Failed to update email alert."
+
   },
   "quickLink": {
     "headingTitle": "Quick Links",
