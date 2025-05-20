@@ -21,6 +21,13 @@
     margin: 1px 1px !important;
     overflow: auto;
   }
+  .essui-grid-col--md-2 {
+    flex-basis: 0%;
+    max-width: 25%;
+  }
+  .essui-dropdown-container {
+    width: 120px;
+  }
 
   .heading-title .heading-font {
     margin: 1px 16px;
@@ -60,5 +67,14 @@
   .dropdown {
     margin-top: -10px;
     margin-left: 13px;
+  }
+}
+@media only screen and (width: 753px) {
+  .edit-selected-btn {
+    margin-top: 0px;
+  }
+  .dropdown {
+    margin-top: 0px;
+    margin-left: 0px;
   }
 }
