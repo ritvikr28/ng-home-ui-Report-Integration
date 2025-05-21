@@ -36,7 +36,7 @@ const SystemStatus: React.FC = () => {
       <a href="#main-content" className="skip-link">
           Skip to main content
       </a>
-      <Grid className="admin-mobile-rwaf92428">
+      <Grid className="admin-mobile-rwaf92428 admin-console-grid">
         <GridItem
           lg={isOpen ? 3 : 0}
           md={isOpen ? 2 : 0}
