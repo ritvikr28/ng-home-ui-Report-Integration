@@ -27,6 +27,7 @@ data:
     window.REFRESH_INTERVAL = "#{REFRESH_INTERVAL}#"
     window.CLASSVIEW_BASE_URL = "#{CLASSVIEW_BASE_URL}#"
     window.CLASSVIEW_BANNER_URL = "#{CLASSVIEW_BANNER_URL}#"
+    window.INVITE_USERS_URL = "#{INVITE_USERS_URL}#"
 
 ---
 apiVersion: apps/v1
