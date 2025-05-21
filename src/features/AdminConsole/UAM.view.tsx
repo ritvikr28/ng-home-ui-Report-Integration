@@ -15,7 +15,8 @@ import { envConfig } from "../../shared/utils";
 
  /* istanbul ignore next */
 const UAM: () => JSX.Element = () => {
-  const userManagementRef :React.RefObject<HTMLDivElement> = useRef<HTMLDivElement | null>(null);
+  const userManagementRef: React.RefObject<HTMLDivElement> =
+    useRef<HTMLDivElement | null>(null);
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
@@ -68,7 +69,7 @@ const UAM: () => JSX.Element = () => {
     };
   }, [hasData]);
 
-  const homeurl = `${envConfig.HOME_UI_BASEURL}/AdminConsole`;
+  const homeurl = `${envConfig.HOME_UI_BASEURL}/adminconsole`;
   return (
     <>
       <Grid className="admin-mobile-rwaf92428">
@@ -123,8 +124,7 @@ const UAM: () => JSX.Element = () => {
 
                   linkName: "Admin Console",
 
-                  path: homeurl,
-                  isExternalLink: true
+                  path: homeurl
                 },
 
                 {
@@ -132,7 +132,7 @@ const UAM: () => JSX.Element = () => {
 
                   linkName: "Users",
 
-                  path: "/"
+                  path: "/users"
                 }
               ]}
               heading="Users"
