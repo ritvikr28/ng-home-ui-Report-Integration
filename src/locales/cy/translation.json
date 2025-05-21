@@ -235,7 +235,7 @@
     },
     "DataSyncAlertName": "Cydamseru data",
     "DataSyncLiveInfo": "Mae data’n cael ei gydamseru rhwng SIMS 7 a SIMS Next Gen.",
-    "DataSyncNotLiveInfo": "Nid yw data'n cydamseru ar hyn o bryd rhwng SIMS 7 a SIMS Next Gen.",
+    "DataSyncNotLiveInfo": "Nid yw data'n cysoni ar hyn o bryd rhwng SIMS 7 a SIMS Next Gen.",
     "SSMAlertName": "Pecyn SSM",
     "SSMLiveInfo": "Mae eich system yn defnyddio’r pecyn SSM diweddaraf.",
     "SSMNotLiveInfo": "Nid yw eich pecyn SSM yn y fersiwn ddiweddaraf.",
@@ -254,7 +254,7 @@
     "Status":"Statws",
     "Information":"Gyswllt",
     "Close":"Cau",
-    "Alert":"Gwall",
+    "Alert":"Rhybudd",
     "EmailAlerts":"E-bost Rhybuddion",
      "View":"Golwg"
   },
