@@ -149,6 +149,7 @@
   "RefreshDB_T": {
     "headingTitle": "Ailosodwch y cronfeydd data Next Gen a SIMS7 ",
     "description": "Rheoli'r cronfeydd data i ddarparu llechen lân ar gyfer arddangosiadau. Cwblhewch y 4 cam er mwyn ailosod y cronfeydd data.",
+    "RefreshDB":"Adnewyddu Cronfa Ddata",
     "moduleBlock": {
       "detachDB": {
         "content": "A yw'r gronfa ddata SIMS7 wedi’i hatodi?",
@@ -208,12 +209,12 @@
         "content2":"Beth i'w wneud nesaf:",
         "content3":"Ailgychwyn eich gweinydd SSM:",
         "content4":"KB0012954 - Datrys problemau",
-        "content5":"Gwiriwch fod y gweinydd SSM yn rhedeg.",
+        "content5":"Gwiriwch fod y gweinydd SSM yn rhedeg",
         "content6":"Gwiriwch y statws cysoni",
         "content7":"Gall eich darparwr cymorth TG neu SIMS gynorthwyo os oes angen.",
         "content8":"Gellir dod o hyd i gyfarwyddiadau ar ailgychwyn eich gweinydd SSM yma",
         "content9":"Os yw'r gweinydd yn weithredol, gwiriwch y statws cysoni.",
-        "content10":"Ar ôl 72 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS."
+        "content10":"Ar ôl 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS."
 
       },
       "ErrorMessagesSSMPackage":{

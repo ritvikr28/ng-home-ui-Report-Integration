@@ -87,6 +87,12 @@
   #list-item {
     width: 560px;
   }
+
+ .essui-table-wrapper {
+    overflow-x: clip !important;
+    margin-top: 20px !important;
+    height: 500px !important;
+}
 }
 
 @media (min-width: 1024px) and (max-width: 1439.9px) {
@@ -857,3 +863,7 @@
 .overflow-menu-top {
   transform: translateY(-60px);
 }
+.status-table .essui-table__body .essui-table__cell {
+    border-bottom: 0 !important;
+}
+ 

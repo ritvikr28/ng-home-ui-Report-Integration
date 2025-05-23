@@ -10,6 +10,7 @@ import {
 } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import SystemStatusAlerts from "./SystemStatusAlerts/SystemStatusAlerts.view";
 import { envConfig } from "../../shared/utils";
 
@@ -26,7 +27,7 @@ const SystemStatus: React.FC = () => {
   const handleButtonClick: () => void = () => {
     setIsOpen(!isOpen);
   };
-
+ const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
@@ -80,18 +81,18 @@ const SystemStatus: React.FC = () => {
               breadcrumbActions={[
                 {
                   active: true,
-                  linkName: "Home",
+                  linkName: t("breadcrumbshome"),
                   path: window.location.origin
                 },
                 {
                   active: false,
-                  linkName: "Admin console",
+                  linkName:t("breadcrumbsadminconsole"),
                   path: `${envConfig.HOME_UI_BASEURL}/AdminConsole`,
                   isExternalLink: true
                 },
                 {
                   active: false,
-                  linkName: "System status and alerts",
+                  linkName: t("SystemStatus_T.headingTitle"),
                   path: "#"
                 }
               ]}
