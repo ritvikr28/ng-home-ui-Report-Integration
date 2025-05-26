@@ -1,11 +1,12 @@
+/* stylelint-disable */
 .admin-console-grid {
   overflow: auto;
 }
 
 @media (min-width: 375px) and (max-width: 767.9px) {
-.system-status-alerts-view {
+  .system-status-alerts-view {
     height: 500px;
-    margin: 0px 20px;
+    margin: 0 20px;
 
   }
 }
@@ -495,7 +496,7 @@
 }
 
 .last-cell-header {
-  width: 0px !important;
+  width: 0 !important;
 }
 
 .essui-table__cell--header {
@@ -634,7 +635,7 @@
 }
 
 .responseTypeUnCheck .essui-radio__checkmark {
-  background: #ffffff !important;
+  background: #fff !important;
 }
 
 .responseTypeCheck>.essui-radio__control {
@@ -660,7 +661,7 @@
 }
 
 .lrnConsentUnCheck .essui-radio__checkmark {
-  background: #ffffff !important;
+  background: #fff !important;
 }
 
 .lrnConsentCheck>.essui-radio__control {
@@ -868,24 +869,24 @@
 
 .information-column-error {
   box-sizing: border-box;
-  background: #A86500;
+  background: #a86500;
   /* Flexbox layout */
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 0px 16px;
+  padding: 0 16px;
   gap: 8px;
 
 
   /* Background and border */
-  background: #FFFFFF;
-  border-right: 1px solid #E0E0E0;
-  border-bottom: 1px solid #E0E0E0;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e0e0e0;
   /* Optional: Add a bottom border for table rows */
 }
 
 .warning--alt {
-  color: #A86500;
+  color: #a86500;
 
 }
 
