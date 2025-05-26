@@ -339,7 +339,7 @@ const SystemStatusAlertsView: React.FC = () => {
                           <p>
                             {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content1")}
                           </p>
-                          <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content2")}</strong></p>
+                          <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content2")}</p>
                           <ul>
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content3")} {selectedAlert.latestSSMHostVersion}</li>
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content4")} {selectedAlert.currentSSMHostVersion}</li>
@@ -432,7 +432,7 @@ const TableComponent: React.FC<{
                 <TableCell header>{t("SystemStatus_T.Alert")}</TableCell>
                 <TableCell header>{t("SystemStatus_T.Information")}</TableCell>
                 <TableCell header>{t("SystemStatus_T.EmailAlerts")}</TableCell>
-                <TableCell header />
+                <TableCell header className="last-cell-header"/>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -467,7 +467,7 @@ const TableComponent: React.FC<{
                       {getEmailSubscriptionText(alert)}
                     </TableCell>
                     <TableCell>
-                      <span className="action-table-cell">
+                      <span className="action-table-cell text-cent"  >
                         {alert.isErrorResponse ? (
                           <button
                             type="button"
@@ -478,6 +478,7 @@ const TableComponent: React.FC<{
                           </button>
                         ) : (
                           <Button
+                          
                             size={ButtonSize.Small}
                             color={
                               overflowMenuIndex === `overflow-${index}`
@@ -491,6 +492,7 @@ const TableComponent: React.FC<{
                             }
                             iconName="overflow-menu--horizontal"
                             ariaLabel="Overflow menu"
+                            className="btn-option"
                           />
                         )}
                         {overflowMenuIndex === `overflow-${index}` && (
