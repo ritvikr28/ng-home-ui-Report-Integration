@@ -86,7 +86,10 @@ describe("InviteUsersUtils", () => {
               }
             ]
           },
-          isShowActionBtn: true
+          isShowActionBtn: true,
+          isShowCheckBox: true, 
+          forename: "John", 
+          surname: "Doe" 
         }
       ]);
     });
@@ -167,7 +170,10 @@ describe("fetchInviteUserDetails", () => {
             }
           ]
         },
-        isShowActionBtn: false
+        isShowActionBtn: false,
+        isShowCheckBox: false, 
+        forename: "Jane", 
+        surname: "Smith"
       }
     ]);
   });
