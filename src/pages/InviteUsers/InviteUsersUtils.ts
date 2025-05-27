@@ -178,7 +178,7 @@ export const handleSendInvite = async ({
     await postSendInvitation({
       requestBody: [requestBody],
       setShowInviteErrBanner
-    }).then((res) => {
+    }).then(() => {
       setDataUpdated(true);
     });
   } catch (error) {

@@ -1,3 +1,4 @@
+import React from "react";
 import {
   Button,
   Dialog,
@@ -10,6 +11,7 @@ interface IInviteUsersDialogProps {
 }
 
 const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
+  const { setShowDialog } = props;
   return (
     <Dialog
       dataTestId="test-id"
@@ -21,10 +23,7 @@ const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
         action.
       </DialogContent>
       <DialogFooter className="invite-user-dialog-okay-btn">
-        <Button
-          dataTestId="close-btn"
-          onClick={() => props.setShowDialog(false)}
-        >
+        <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
           Okay
         </Button>
       </DialogFooter>

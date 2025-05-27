@@ -256,9 +256,9 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
           tableHeadersData={getTableHeadersData}
           tableLastColumnWidth="10px"
           editSelectedOptions={editSelectedOptions}
-          onEditSelectedBtnClick={(e: any) => {}}
+          onEditSelectedBtnClick={() => {}}
           onEditSelectedOverFlowMenu={(e: any) => {
-            if (e.target?.innerHTML == "Send invite") {
+            if (e.target?.innerHTML === "Send invite") {
               if (selectedCheckBoxIds.length === 0) {
                 setShowDialog(true);
               }
@@ -293,7 +293,7 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
           toastNotificationTitle=""
           isOpenConfirmationDialog={showConfirmDialog}
           isShowOverflowMenuCol
-          globalNotificationBannerOnClickClose={(e) => {
+          globalNotificationBannerOnClickClose={() => {
             setShowErrorBanner(false);
             setShowInviteErrBanner(false);
             setshowInvitationConflictBanner(false);
@@ -333,10 +333,10 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
               autoclose: true
             }
           ]}
-          onClickOverflowItem={(e: any, selectedRowItem: any) => {
+          onClickOverflowItem={(e: any, selectedRow: any) => {
             if (e.target?.innerHTML === "Send Invite") {
               setShowConfirmDialog(true);
-              setSelectedRowItem(selectedRowItem);
+              setSelectedRowItem(selectedRow);
             }
           }}
           onChangeListCheckBox={(index: number, id: string) => {
