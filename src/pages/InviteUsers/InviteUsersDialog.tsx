@@ -17,6 +17,7 @@ const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
       dataTestId="test-id"
       id="invite-user-element-id"
       title="No items selected"
+      onClose={() => setShowDialog(false)}
     >
       <DialogContent>
         Please select at least one item from the search results to perform the
