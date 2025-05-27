@@ -136,7 +136,7 @@ export const breadcrumbActions: IBreadcrumbLink[] = [
   {
     active: false,
     linkName: "Admin Console",
-    path: homeurl,
+    path: homeurl
   },
   {
     active: false,
@@ -163,6 +163,8 @@ export interface IInviteUserDetails {
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
+  isShowCheckBox?: boolean;
+  isCheckBoxSelected?: boolean;
 }
 
 export interface IInviteUserData {
@@ -231,3 +233,15 @@ export const filterOptions: IFilterOptions[] = [
     value: InvitationStatusFilterOptions.Accepted
   }
 ];
+
+export interface IPostSendInvitation {
+  requestBody: ISendInviteReqBody[];
+  setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface ISendInviteReqBody {
+  externalId: string;
+  forename: string;
+  surname: string;
+  emailId: string;
+}

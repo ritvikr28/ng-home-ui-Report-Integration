@@ -25,7 +25,14 @@ import {
 import "./style.scss";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
-import { fetchInviteUserDetails, inviteUsersSorting } from "./InviteUsersUtils";
+import {
+  fetchInviteUserDetails,
+  handleCheckBoxSelection,
+  handleSelectedUserData,
+  handleSendInvite,
+  inviteUsersSorting
+} from "./InviteUsersUtils";
+import InviteUsersDialog from "./InviteUsersDialog";
 
 const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const {
@@ -51,12 +58,34 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [showInviteErrBanner, setShowInviteErrBanner]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   const [sortBy, setSortBy] = useState<string>("Forename");
   const [sortDirection, setSortDirection] = useState<boolean>(true);
+  const [showConfirmDialog, setShowConfirmDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [selectedRowItem, setSelectedRowItem] = useState<any>(null);
+  const [isDataUpdated, setDataUpdated]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [selectedCheckBoxIds, setSelectedCheckBoxIds]: [
+    string[],
+    React.Dispatch<React.SetStateAction<string[]>>
+  ] = useState<string[]>([]);
+  const [showDialog, setShowDialog]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
   }, [isMobileView]);
+
   useEffect(() => {
     setLoader(true);
     fetchInviteUserDetails({
@@ -70,8 +99,17 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
+      setDataUpdated(false);
     });
-  }, [currentPage]);
+  }, [currentPage, isDataUpdated]);
+
+  useEffect(() => {
+    handleSelectedUserData({
+      selectedCheckBoxIds,
+      usersTableData,
+      setUsersTableData
+    });
+  }, [selectedCheckBoxIds]);
 
   const toggleSidebar: () => void = (): void => {
     gtmAnalytics.pushEvent({
@@ -103,8 +141,11 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       clickLocation: "breadcrumb"
     });
   };
+
   return (
     <Grid className="admin-mobile-rwaf92428">
+      {showDialog && <InviteUsersDialog setShowDialog={setShowDialog} />}
+
       <GridItem className={isSidebarOpen ? "side-width" : "no-side-width"}>
         <LocalisedMenu
           customHeight={100}
@@ -215,23 +256,46 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
           tableHeadersData={getTableHeadersData}
           tableLastColumnWidth="10px"
           editSelectedOptions={editSelectedOptions}
+          onEditSelectedBtnClick={(e: any) => {}}
+          onEditSelectedOverFlowMenu={(e: any) => {
+            if (e.target?.innerHTML == "Send invite") {
+              if (selectedCheckBoxIds.length === 0) {
+                setShowDialog(true);
+              }
+            }
+          }}
+          handleCloseDialogConfirmation={() => {
+            setShowConfirmDialog(false);
+          }}
           templatePropsConfirmation={{
             cancelText: "Cancel",
-            contentText: "You have unsaved changes that will be lost.",
+            contentText:
+              "This user will be sent an invite to access the system.",
             isNotificationanner: false,
             notificationStatus: NotificationStatus.SUCCESS,
-            okText: "Discard",
-            onCancel: (): void => {},
-            onConfirm: (): void => {},
+            okText: "Save",
+            onCancel: (): void => {
+              setShowConfirmDialog(false);
+            },
+            onConfirm: (): void => {
+              setShowConfirmDialog(false);
+              handleSendInvite({
+                selectedRowItem,
+                setLoader,
+                setShowInviteErrBanner,
+                setDataUpdated
+              });
+            },
             template: DialogTemplate.Confirmation
           }}
-          titleConfirmation="Discard changes?"
+          titleConfirmation="Invite user?"
           toastNotificationStatus={NotificationStatus.SUCCESS}
           toastNotificationTitle=""
-          isOpenConfirmationDialog={false}
+          isOpenConfirmationDialog={showConfirmDialog}
           isShowOverflowMenuCol
-          globalNotificationBannerOnClickClose={() => {
+          globalNotificationBannerOnClickClose={(e) => {
             setShowErrorBanner(false);
+            setShowInviteErrBanner(false);
             setshowInvitationConflictBanner(false);
           }}
           globalNotificationMsgBannerObject={[
@@ -259,8 +323,32 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
               message:
                 "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
               autoclose: true
+            },
+            {
+              isShow: !!showInviteErrBanner,
+              variant: "warning",
+              title: "Unable to save",
+              message:
+                "A technical issue at our end has stopped us from saving the changes. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time.",
+              autoclose: true
             }
           ]}
+          onClickOverflowItem={(e: any, selectedRowItem: any) => {
+            if (e.target?.innerHTML === "Send Invite") {
+              setShowConfirmDialog(true);
+              setSelectedRowItem(selectedRowItem);
+            }
+          }}
+          onChangeListCheckBox={(index: number, id: string) => {
+            handleCheckBoxSelection({
+              id,
+              selectedCheckBoxIds,
+              setSelectedCheckBoxIds
+            });
+          }}
+          selectedCheckboxIds={(ids: string[]) => {
+            setSelectedCheckBoxIds(ids);
+          }}
         />
       </GridItem>
     </Grid>
