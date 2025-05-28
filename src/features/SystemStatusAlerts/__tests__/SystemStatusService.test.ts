@@ -1,5 +1,5 @@
 import { History } from "history";
-import { activateEmailAlert, fetchEmailAlertStatus } from "../SystemStatusAlerts/SystemStatusService";
+import { activateEmailAlert, fetchEmailAlertStatus, handleCloseMenuOnOutsideClick, systemStatusOverflowMenuOutSideClickHandler } from "../SystemStatusAlerts/SystemStatusService";
 import { getUserEmail, getUserOrganisation ,envConfig, service} from "../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 
@@ -211,3 +211,137 @@ it("should replace history if error message includes 'Invalid token'", async () 
 });
 });
  
+
+describe("handleCloseMenuOnOutsideClick", () => {
+  let setActiveRow: jest.Mock;
+
+  beforeEach(() => {
+    setActiveRow = jest.fn();
+
+    // Set up DOM elements
+    document.body.innerHTML = `
+      <div>
+        <div class="system-status-overflow-menu" id="menu"></div>
+        <button class="system-status-overflow-btn-active" id="button"></button>
+        <div id="outside"></div>
+      </div>
+    `;
+  });
+
+  afterEach(() => {
+    document.body.innerHTML = "";
+    jest.clearAllMocks();
+  });
+
+  it("should add and remove event listener", () => {
+    const addSpy = jest.spyOn(document, "addEventListener");
+    const removeSpy = jest.spyOn(document, "removeEventListener");
+    const cleanup = handleCloseMenuOnOutsideClick("1", setActiveRow);
+    expect(addSpy).toHaveBeenCalledWith("mousedown", expect.any(Function));
+    if (cleanup) cleanup();
+    expect(removeSpy).toHaveBeenCalledWith("mousedown", expect.any(Function));
+  });
+
+  it("should call setActiveRow(null) when clicking outside menu and button", () => {
+    handleCloseMenuOnOutsideClick("1", setActiveRow);
+
+    const outside = document.getElementById("outside")!;
+    outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+
+    expect(setActiveRow).toHaveBeenCalledWith(null);
+  });
+
+  it("should NOT call setActiveRow(null) when clicking inside menu", () => {
+    handleCloseMenuOnOutsideClick("1", setActiveRow);
+
+    const menu = document.getElementById("menu")!;
+    menu.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+
+    expect(setActiveRow).not.toHaveBeenCalled();
+  });
+
+  it("should NOT call setActiveRow(null) when clicking the button", () => {
+    handleCloseMenuOnOutsideClick("1", setActiveRow);
+
+    const button = document.getElementById("button")!;
+    button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+
+    expect(setActiveRow).not.toHaveBeenCalled();
+  });
+
+  it("should do nothing if activeRow is null", () => {
+    const addSpy = jest.spyOn(document, "addEventListener");
+    handleCloseMenuOnOutsideClick(null, setActiveRow);
+    expect(addSpy).not.toHaveBeenCalled();
+  });
+});
+
+
+
+const mockCleanup = jest.fn();
+
+
+describe("systemStatusOverflowMenuOutSideClickHandler", () => {
+  let setOverflowMenuIndex: jest.Mock;
+  jest.mock("../SystemStatusAlerts/SystemStatusService", () => {
+    const original = jest.requireActual(
+      "../SystemStatusAlerts/SystemStatusService"
+    );
+    return {
+      ...original,
+      handleCloseMenuOnOutsideClick: jest.fn(() => mockCleanup)
+    };
+  });
+
+  beforeEach(() => {
+    setOverflowMenuIndex = jest.fn();
+    mockCleanup.mockClear();
+    jest.clearAllMocks();
+    // Remove all scroll listeners if needed
+  });
+
+
+
+  it('should call setOverflowMenuIndex("") when scroll event is triggered', () => {
+    // Spy before calling the handler
+    const addSpy = jest.spyOn(window, "addEventListener");
+    const removeSpy = jest.spyOn(window, "removeEventListener");
+
+    const cleanup = systemStatusOverflowMenuOutSideClickHandler(
+      "1",
+      setOverflowMenuIndex
+    );
+
+    // Find the scroll handler added
+    let scrollHandler: ((event: Event) => void) | undefined;
+    addSpy.mock.calls.forEach((call) => {
+      if (call[0] === "scroll")
+        scrollHandler = call[1] as (event: Event) => void;
+    });
+
+    // Simulate scroll event using the handler directly (if found)
+    if (scrollHandler) {
+      scrollHandler(new Event("scroll"));
+      expect(setOverflowMenuIndex).toHaveBeenCalledWith("");
+    } else {
+      // Fallback: dispatch a real scroll event on window
+      window.dispatchEvent(new Event("scroll"));
+      expect(setOverflowMenuIndex).toHaveBeenCalledWith("");
+    }
+
+    if (cleanup) cleanup();
+
+    addSpy.mockRestore();
+    removeSpy.mockRestore();
+  });
+
+  it("should return undefined and not add listeners if overflowMenuIndex is falsy", () => {
+    const addSpy = jest.spyOn(window, "addEventListener");
+    const cleanup = systemStatusOverflowMenuOutSideClickHandler(
+      "",
+      setOverflowMenuIndex
+    );
+    expect(addSpy).not.toHaveBeenCalled();
+    expect(cleanup).toBeUndefined();
+  });
+});
