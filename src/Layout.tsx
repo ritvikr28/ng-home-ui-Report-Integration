@@ -187,7 +187,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
               exact
               /* istanbul ignore next */
               path="/AdminConsole"
-              render={() => hasAdminConsolePermissions ? <AdminConsole /> : <Redirect to="/unauthorized" />}
+              render={() => hasAdminConsolePermissions || isAuthzUserAdmin() ? <AdminConsole /> : <Redirect to="/unauthorized" />}
             />
           )}
           {hasAdminConsoleFlagrPermission && (
