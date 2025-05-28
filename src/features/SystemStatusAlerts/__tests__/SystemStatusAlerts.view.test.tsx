@@ -20,6 +20,7 @@ jest.mock("../SystemStatusAlerts/NotifyException.view", () => () => (
 jest.mock("../SystemStatusAlerts/SystemStatusService", () => ({
   fetchEmailAlertStatus: jest.fn(),
   activateEmailAlert: jest.fn(),
+  systemStatusOverflowMenuOutSideClickHandler:jest.fn()
 }));
 const mockActivateEmailAlert = activateEmailAlert as jest.Mock;
 describe("SystemStatusAlertsView Component", () => {

@@ -91,3 +91,58 @@ export const activateEmailAlert = async (
     onError("A Technical issue at our end has stopped us from action.");
   }
 };
+
+
+export const handleCloseMenuOnOutsideClick = (
+  activeRow: string | null,
+  setActiveRow: (row: string | null) => void
+): (() => void) => {
+  if (activeRow === null) {
+   
+    return () => {};
+  }
+
+  const handleClickOutside: (event: MouseEvent) => void = (
+    event: MouseEvent
+  ) => {
+    const menu: HTMLElement | null = document.querySelector(
+      ".system-status-overflow-menu"
+    );
+    const button: HTMLElement | null = document.querySelector(
+      ".system-status-overflow-btn-active"
+    );
+    if (
+      menu &&
+      !menu.contains(event.target as Node) &&
+      button &&
+      !button.contains(event.target as Node)
+    ) {
+      setActiveRow(null);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+  return () => document.removeEventListener("mousedown", handleClickOutside);
+};
+
+
+export const systemStatusOverflowMenuOutSideClickHandler:Function = (
+  overflowMenuIndex:any,
+  setOverflowMenuIndex:any
+) => {
+  if (overflowMenuIndex) {
+    const cleanup: (() => void) | undefined = handleCloseMenuOnOutsideClick(
+      overflowMenuIndex,
+      () => setOverflowMenuIndex("")
+    );
+
+    const handleScroll: (event: Event) => void = () => setOverflowMenuIndex("");
+    window.addEventListener("scroll", handleScroll, true);
+
+    return () => {
+      if (cleanup) cleanup();
+      window.removeEventListener("scroll", handleScroll, true);
+    };
+  }
+  return undefined; 
+};
