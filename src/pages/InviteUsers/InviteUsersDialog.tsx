@@ -5,6 +5,7 @@ import {
   DialogContent,
   DialogFooter
 } from "@essnextgen/ui-kit";
+import './style.scss'
 
 interface IInviteUsersDialogProps {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
@@ -18,12 +19,13 @@ const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
       id="invite-user-element-id"
       title="No items selected"
       onClose={() => setShowDialog(false)}
+      className="invite-user-dialog-footer"
     >
       <DialogContent>
         Please select at least one item from the search results to perform the
         action.
       </DialogContent>
-      <DialogFooter className="invite-user-dialog-okay-btn">
+      <DialogFooter>
         <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
           Okay
         </Button>
