@@ -1,17 +1,17 @@
 import { render, screen } from "@testing-library/react";
+import { ValidationTextLevel } from "@essnextgen/ui-kit";
 import InviteUsersLogic from "../InviteUsers.logic";
 import InviteUserView from "../InviteUsers.view";
 import { getTableHeadersData } from "../InviteUsersProps";
-import { ValidationTextLevel } from "@essnextgen/ui-kit";
 
 jest.mock("../InviteUsers.view", () =>
   jest.fn(() => <div>Mock InviteUserView</div>)
 );
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
-  ValidationText: (props: any) => (
-    <div data-testid="mock-validation-text" {...props}>
-      {props.text}
+  ValidationText: ({ text, ...rest }: any) => (
+    <div data-testid="mock-validation-text" {...rest}>
+      {text}
     </div>
   )
 }));
