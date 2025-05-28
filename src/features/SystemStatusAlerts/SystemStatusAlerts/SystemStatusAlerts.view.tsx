@@ -37,7 +37,15 @@ interface Alert {
   currentSSMHostVersion: string;
   isErrorResponse?: boolean;
 }
-
+export const getClassNameToHandleOverFlowPostion = (
+  index: number,
+  length: number
+): string => {
+  if (index === length - 1) {
+    return "template-menu-popover overflow-menu-top";
+  }
+  return "template-menu-popover";
+};
 const SystemStatusAlertsView: React.FC = () => {
   const [sidePanelIsOpen, setSidePanelOpen] = useState<boolean>(false);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
@@ -184,7 +192,7 @@ const SystemStatusAlertsView: React.FC = () => {
         (msg) => {
           setLoading1(false);
           setErrorNote(msg || t("SystemStatus_T.FailedAlert"));
-         
+
         }
       );
     } else if (action === "View") {
@@ -275,26 +283,26 @@ const SystemStatusAlertsView: React.FC = () => {
           <>
             <SidePanelContent>
               <div className="alert-panel-content">
-                 {selectedAlert.isErrorResponse ? (
-            <Notification
-              status={NotificationStatus.WARNING}
-              title={t("SystemStatus_T.WarningMessage")}
-              hideCloseButton
-            />
-          ) : (
-                <Notification
-                  dataTestId={`notification-${selectedAlert.status.toLowerCase()}`}
-                  escapeExits
-                  id={`notification-${selectedAlert.status.toLowerCase()}-id`}
-                  onClickClose={() => setSidePanelOpen(false)}
-                  status={
-                    selectedAlert.status === "Green"
-                      ? NotificationStatus.SUCCESS
-                      : NotificationStatus.ERROR
-                  }
-                  title={selectedAlert.information}
-                  hideCloseButton
-                />
+                {selectedAlert.isErrorResponse ? (
+                  <Notification
+                    status={NotificationStatus.WARNING}
+                    title={t("SystemStatus_T.WarningMessage")}
+                    hideCloseButton
+                  />
+                ) : (
+                  <Notification
+                    dataTestId={`notification-${selectedAlert.status.toLowerCase()}`}
+                    escapeExits
+                    id={`notification-${selectedAlert.status.toLowerCase()}-id`}
+                    onClickClose={() => setSidePanelOpen(false)}
+                    status={
+                      selectedAlert.status === "Green"
+                        ? NotificationStatus.SUCCESS
+                        : NotificationStatus.ERROR
+                    }
+                    title={selectedAlert.information}
+                    hideCloseButton
+                  />
                 )}
                 {selectedAlert.status === "Red" && (
                   <div className="alert-description">
@@ -342,7 +350,7 @@ const SystemStatusAlertsView: React.FC = () => {
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content7")}</li>
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content8")}</li>
                           </ul>
-                          <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>
+                          <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>
                             <a
                               href="https://help.parentpaygroup.com/csm?id=copy_of_kb_article_view_1&sysparm_article=KB0013199"
                               target="_blank"
@@ -405,21 +413,26 @@ const TableComponent: React.FC<{
       return t("SystemStatus_T.Fail");
     };
 
-
+    const getEmailSubscriptionText = (alert: Alert): string => {
+      if (alert.isErrorResponse) {
+        return "-";
+      }
+      return alert.emailSubscribed ? t("SystemStatus_T.Yes") : t("SystemStatus_T.No");
+    };
     return (
-      
+
       <TableWrapper
-        className="system-status-table-wrapper-systam_alert_table custom-table-style"
+
       >
         <div className="responsive-table-container">
-          <Table>
+          <Table isStatus className="status-table">
             <TableHead>
               <TableRow>
                 <TableCell header className="status-table-cell">{t("SystemStatus_T.Status")}</TableCell>
                 <TableCell header>{t("SystemStatus_T.Alert")}</TableCell>
                 <TableCell header>{t("SystemStatus_T.Information")}</TableCell>
                 <TableCell header>{t("SystemStatus_T.EmailAlerts")}</TableCell>
-                <TableCell header />
+                <TableCell header className="last-cell-header"/>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -451,12 +464,11 @@ const TableComponent: React.FC<{
                       )}
                     </TableCell>
                     <TableCell>
-                      {alert.emailSubscribed ? t("SystemStatus_T.Yes") : t("SystemStatus_T.No")}
+                      {getEmailSubscriptionText(alert)}
                     </TableCell>
                     <TableCell>
-                      <span className="action-table-cell">
+                      <span className="action-table-cell text-cent"  >
                         {alert.isErrorResponse ? (
-
                           <button
                             type="button"
                             onClick={() => handleActionClick("View", alert)}
@@ -464,10 +476,9 @@ const TableComponent: React.FC<{
                           >
                             {t("SystemStatus_T.View")}
                           </button>
-
                         ) : (
-
                           <Button
+                          
                             size={ButtonSize.Small}
                             color={
                               overflowMenuIndex === `overflow-${index}`
@@ -481,19 +492,24 @@ const TableComponent: React.FC<{
                             }
                             iconName="overflow-menu--horizontal"
                             ariaLabel="Overflow menu"
+                            className="btn-option"
                           />
                         )}
                         {overflowMenuIndex === `overflow-${index}` && (
                           <span ref={overflowMenuRef}>
                             <OverflowMenu
-                              dataTestId="overflow-menu"
-                              id={`overflow-${index}`}
+                              dataTestId="childcare-overflow-menu"
+                              id={`childcare-overflow-menu-${index}`}
                               onClick={(e, selectedValue) =>
                                 handleActionClick(
                                   (selectedValue as { value: string }).value,
                                   alert
                                 )
                               }
+                              className={getClassNameToHandleOverFlowPostion(
+                                index,
+                                alerts.length
+                              )}
                             >
                               <OverflowMenuItem value="View">
                                 {t("SystemStatus_T.View")}
