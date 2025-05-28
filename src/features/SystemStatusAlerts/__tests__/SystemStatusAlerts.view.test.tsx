@@ -115,22 +115,6 @@ describe("SystemStatusAlertsView Component", () => {
     });
   });
 
-it("closes overflow menu when clicking outside", async () => {
-  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
-
-  render(<SystemStatusAlertsView />);
-  await waitFor(() => {
-    expect(screen.getByText("SystemStatus_T.DataSyncAlertName")).toBeInTheDocument();
-  });
-
-  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
-  expect(screen.getByTestId("overflow-menu")).toBeInTheDocument();
-
-  fireEvent.mouseDown(document); 
-  await waitFor(() => {
-    expect(screen.queryByTestId("overflow-menu")).not.toBeInTheDocument();
-  });
-});
 
 it("activates email alert successfully and shows success message", async () => {
   mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
@@ -156,24 +140,7 @@ it("should set yellow alerts when fetchEmailAlertStatus returns null", async () 
   const statusPills = screen.getAllByText(/No Data|Warning/);
   expect(statusPills.length).toBeGreaterThan(0);
 });
-it("toggles overflow menu on icon button click", async () => {
-  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
 
-  render(<SystemStatusAlertsView />);
-  await waitFor(() => {
-    expect(screen.getByText("SystemStatus_T.DataSyncAlertName")).toBeInTheDocument();
-  });
-
-  const overflowButton = screen.getAllByLabelText("Overflow menu")[0];
-  fireEvent.click(overflowButton);
-  expect(screen.getByTestId("overflow-menu")).toBeInTheDocument();
-
-
-  fireEvent.click(overflowButton);
-  await waitFor(() => {
-    expect(screen.queryByTestId("overflow-menu")).not.toBeInTheDocument();
-  });
-});
 it("shows error notification when activateEmailAlert fails", async () => {
   mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
 

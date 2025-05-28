@@ -211,6 +211,7 @@
   "RefreshDB_T": {
     "headingTitle": "Reset the SIMS7 and Next Gen databases",
     "description": "Manage the databases to provide a clean slate for demos. Please complete the 4 steps in order to reset the databases.",
+    "RefreshDB": "Refresh Database",
     "moduleBlock": {
       "detachDB": {
         "content": "Is the SIMS7 database detached?",
@@ -268,13 +269,13 @@
         "content1":"We’ve identified a potential issue that might be preventing data from syncing between SIMS Next Gen and SIMS 7. The most common cause is a problem with your SSM server. A restart of the SSM service will often resolve this.",
         "content2":"What to do next:",
         "content3":"Restart your SSM server:",
-        "content4":"KB0055528 - Troubleshooting issues",
+        "content4":"KB0012954 - Troubleshooting issues",
         "content5":"Check that the SSM server is running",
-        "content6":"Check the sync status.",
+        "content6":"Check the sync status",
         "content7":"Your IT or SIMS support provider can assist if required.",
         "content8":"Instructions on restarting your SSM server can be found here",
         "content9":"If the server is operational then please check the sync status.",
-        "content10":"After 72 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider."
+        "content10":"After 2 hours, check that data is now synchronising. If the issue persists, then please log a case with your SIMS support provider."
 
         
       },

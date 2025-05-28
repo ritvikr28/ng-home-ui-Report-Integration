@@ -349,3 +349,10 @@
     }
   }
 }
+.essui-reaction-button-group {
+    grid-gap: 16px;
+    box-sizing: border-box;
+    display: inline-flex;
+    grid-auto-rows: auto;
+    margin: 8px 0;
+}

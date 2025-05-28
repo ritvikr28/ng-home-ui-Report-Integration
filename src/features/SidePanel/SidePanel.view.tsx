@@ -325,6 +325,16 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
       >
         Invite Staff
       </div>
+      <div
+        className="quick-link-panel-item label-css"
+        key={2}
+        onClick={() => {
+          window.location.href = `${envConfig.INVITE_USERS_URL}`;
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        Invite Users
+      </div>
     </div>
   </div>
 );

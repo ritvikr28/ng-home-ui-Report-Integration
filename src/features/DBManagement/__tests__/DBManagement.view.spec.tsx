@@ -22,7 +22,7 @@ describe("DBManagement Component", () => {
     expect(screen.getByText("Refresh Database")).toBeInTheDocument();
   });
 
-  it.skip("should handle button click to open side navigation in mobile view", () => {
+  it("should handle button click to open side navigation in mobile view", () => {
     (useMediaQuery as jest.Mock).mockReturnValue(true); // Mock mobile view
 
     render(<DBManagement />);
@@ -33,7 +33,7 @@ describe("DBManagement Component", () => {
     expect(screen.getByText("Refresh Database")).toBeInTheDocument();
   });
 
-  it.skip("should close side navigation when onCloseSideNavigationPanel is called", () => {
+  it("should close side navigation when onCloseSideNavigationPanel is called", () => {
     (useMediaQuery as jest.Mock).mockReturnValue(true); // Mock mobile view
 
     render(<DBManagement />);
@@ -47,7 +47,7 @@ describe("DBManagement Component", () => {
     expect(screen.queryByText("Refresh Database")).toBeInTheDocument();
   });
 
-  it.skip("should update isOpen state based on media query", () => {
+  it("should update isOpen state based on media query", () => {
     (useMediaQuery as jest.Mock).mockReturnValueOnce(false); // Mock desktop view
     (useMediaQuery as jest.Mock).mockReturnValueOnce(true); // Mock mobile view
 
