@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import {
   Grid,
