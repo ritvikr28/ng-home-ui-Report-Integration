@@ -82,6 +82,14 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [toastMessage, setToastMessage]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("");
+  const [showToast, setShowToast]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
@@ -102,7 +110,29 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setUsersTableData(res);
       setDataUpdated(false);
     });
-  }, [currentPage, isDataUpdated]);
+  }, [currentPage]);
+
+  useEffect(() => {
+    if (isDataUpdated) {
+      setLoader(true);
+      fetchInviteUserDetails({
+        pageNumber: currentPage,
+        pageSize,
+        columnName: sortBy,
+        sortDirection,
+        setTotalPage,
+        setShowErrorBanner,
+        setshowInvitationConflictBanner
+      }).then((res) => {
+        setLoader(false);
+        setUsersTableData(res);
+        setDataUpdated(false);
+        setShowToast(true);
+        setToastMessage("Changes saved");
+      });
+      setTimeout(() => setShowToast(false), 9000);
+    }
+  }, [isDataUpdated]);
 
   useEffect(() => {
     handleSelectedUserData({
@@ -291,8 +321,10 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
               template: DialogTemplate.Confirmation
             }}
             titleConfirmation="Invite user?"
-            toastNotificationStatus={NotificationStatus.SUCCESS}
-            toastNotificationTitle=""
+            toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
+            toastNotificationTitle={toastMessage}
+            showToastNotification={showToast}
+            toastNotificationAutoclose={true}
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
             globalNotificationBannerOnClickClose={() => {

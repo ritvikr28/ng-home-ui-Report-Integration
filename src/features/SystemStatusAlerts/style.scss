@@ -17,7 +17,7 @@
   }
 
 
-  
+
 
 
 
@@ -906,4 +906,25 @@
 
 .status-table .essui-table__cell:nth-child(3) {
   width: 602px;
+}
+
+.status-table .essui-table__cell:nth-child(5) {
+  width: 40px;
+}
+
+.template-menu-popover {
+  width: 150px;
+}
+
+.overflow-menu-top {
+  transform: translateY(-70px);
+}
+
+.overflow-menu-position {
+  position: absolute;
+  z-index: 9999;
+}
+
+.system-status-overflow-btn-wrapper {
+  margin-left: 5px;
 }
