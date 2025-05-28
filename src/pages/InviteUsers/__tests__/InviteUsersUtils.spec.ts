@@ -86,7 +86,10 @@ describe("InviteUsersUtils", () => {
               }
             ]
           },
-          isShowActionBtn: true
+          isShowActionBtn: true,
+          isShowCheckBox: true,
+          forename: "John",
+          surname: "Doe"
         }
       ]);
     });
@@ -167,7 +170,10 @@ describe("fetchInviteUserDetails", () => {
             }
           ]
         },
-        isShowActionBtn: false
+        isShowActionBtn: false,
+        isShowCheckBox: false,
+        forename: "Jane",
+        surname: "Smith"
       }
     ]);
   });
@@ -387,5 +393,439 @@ describe("inviteUsersSorting", () => {
     await Promise.resolve();
     expect(setLoader).toHaveBeenCalledWith(false);
     expect(setUsersTableData).toHaveBeenCalledWith([{ id: "mock" }]);
+  });
+});
+describe("fetchInviteUserDetails - tableDataObj mapping", () => {
+  let setTotalPage: jest.Mock;
+  let setShowErrorBanner: jest.Mock;
+  let setshowInvitationConflictBanner: jest.Mock;
+
+  beforeEach(() => {
+    setTotalPage = jest.fn();
+    setShowErrorBanner = jest.fn();
+    setshowInvitationConflictBanner = jest.fn();
+    jest.spyOn(InviteUsersUtils, "getUsersData");
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should filter out users with empty forename, surname and missing email", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 2,
+        payload: [
+          {
+            externalId: "1",
+            forename: "",
+            surname: "",
+            emailId: "Work main email address is missing",
+            userType: "User",
+            invitationStatus: "Pending"
+          },
+          {
+            externalId: "2",
+            forename: "Jane",
+            surname: "Smith",
+            emailId: "jane.smith@example.com",
+            userType: "User",
+            invitationStatus: "Pending"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 2,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result).toHaveLength(1);
+    expect(result[0].id).toBe("2");
+  });
+
+  it("should replace missing emailId with 'Primary email unavailable'", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "3",
+            forename: "No",
+            surname: "Email",
+            emailId: "Work main email address is missing",
+            userType: "User",
+            invitationStatus: "Pending"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].emailId).toBe("Primary email unavailable");
+  });
+
+  it("should set isShowCheckBox and isShowActionBtn to false for 'Accepted' status", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "4",
+            forename: "Accepted",
+            surname: "User",
+            emailId: "accepted@example.com",
+            userType: "User",
+            invitationStatus: "Accepted"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].isShowCheckBox).toBe(false);
+    expect(result[0].isShowActionBtn).toBe(false);
+  });
+
+  it("should set isShowCheckBox and isShowActionBtn to false for 'Invitation conflict' status", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "5",
+            forename: "Conflict",
+            surname: "User",
+            emailId: "conflict@example.com",
+            userType: "User",
+            invitationStatus: "Invitation conflict"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].isShowCheckBox).toBe(false);
+    expect(result[0].isShowActionBtn).toBe(false);
+  });
+
+  it("should set isShowCheckBox and isShowActionBtn to false if emailId is missing", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "6",
+            forename: "No",
+            surname: "Email",
+            emailId: "Work main email address is missing",
+            userType: "User",
+            invitationStatus: "Pending"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].isShowCheckBox).toBe(false);
+    expect(result[0].isShowActionBtn).toBe(false);
+  });
+
+  it("should map forename and surname correctly", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "7",
+            forename: "First",
+            surname: "Last",
+            emailId: "first.last@example.com",
+            userType: "User",
+            invitationStatus: "Pending"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].forename).toBe("First");
+    expect(result[0].surname).toBe("Last");
+    expect(result[0].name).toBe("First Last");
+  });
+
+  it("should handle null and undefined fields gracefully", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: null,
+            forename: undefined,
+            surname: undefined,
+            emailId: undefined,
+            userType: undefined,
+            invitationStatus: undefined
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].id).toBe(null);
+    expect(result[0].forename).toBeUndefined();
+    expect(result[0].surname).toBeUndefined();
+    expect(result[0].emailId).toBeUndefined();
+    expect(result[0].userType).toBeUndefined();
+    expect(result[0].invitationStatus).toBeUndefined();
+  });
+
+  it("should map actions.options correctly", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 1,
+        payload: [
+          {
+            externalId: "8",
+            forename: "Action",
+            surname: "Test",
+            emailId: "action.test@example.com",
+            userType: "User",
+            invitationStatus: "Pending"
+          }
+        ]
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result[0].actions).toEqual({
+      options: [
+        {
+          disabled: false,
+          isSelected: false,
+          text: "Send Invite",
+          value: "SendInvite"
+        }
+      ]
+    });
+  });
+
+  it("should return empty array if payload is undefined", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 0,
+        payload: undefined
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result).toEqual([]);
+  });
+
+  it("should return empty array if payload is null", async () => {
+    (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
+      {
+        total: 0,
+        payload: null
+      }
+    ]);
+    const props = {
+      pageNumber: 1,
+      pageSize: 1,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    };
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+    expect(result).toEqual([]);
+  });
+});
+
+describe("handleSendInvite", () => {
+  it("should call postSendInvitation and setDataUpdated on success", async () => {
+    const setLoader = jest.fn();
+    const setShowInviteErrBanner = jest.fn();
+    const setDataUpdated = jest.fn();
+    const selectedRowItem = {
+      id: "1",
+      emailId: "test@example.com",
+      forename: "Test",
+      surname: "User"
+    };
+    jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
+
+    await InviteUsersUtils.handleSendInvite({
+      selectedRowItem,
+      setLoader,
+      setShowInviteErrBanner,
+      setDataUpdated
+    });
+
+    expect(setLoader).toHaveBeenCalledWith(true);
+    expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
+      requestBody: [
+        {
+          emailId: "test@example.com",
+          externalId: "1",
+          forename: "Test",
+          surname: "User"
+        }
+      ],
+      setShowInviteErrBanner
+    });
+    expect(setDataUpdated).toHaveBeenCalledWith(true);
+  });
+
+  it("should setLoader(true)", async () => {
+    const setLoader = jest.fn();
+    const setShowInviteErrBanner = jest.fn();
+    const setDataUpdated = jest.fn();
+    const selectedRowItem = {
+      id: "1",
+      emailId: "test@example.com",
+      forename: "Test",
+      surname: "User"
+    };
+
+    await InviteUsersUtils.handleSendInvite({
+      selectedRowItem,
+      setLoader,
+      setShowInviteErrBanner,
+      setDataUpdated
+    });
+
+    expect(setLoader).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("handleCheckBoxSelection", () => {
+  it("should add id if not present", () => {
+    const setSelectedCheckBoxIds = jest.fn();
+    InviteUsersUtils.handleCheckBoxSelection({
+      id: "2",
+      selectedCheckBoxIds: ["1"],
+      setSelectedCheckBoxIds
+    });
+    expect(setSelectedCheckBoxIds).toHaveBeenCalledWith(["1", "2"]);
+  });
+
+  it("should remove id if already present", () => {
+    const setSelectedCheckBoxIds = jest.fn();
+    InviteUsersUtils.handleCheckBoxSelection({
+      id: "1",
+      selectedCheckBoxIds: ["1", "2"],
+      setSelectedCheckBoxIds
+    });
+    expect(setSelectedCheckBoxIds).toHaveBeenCalledWith(["2"]);
+  });
+});
+
+describe("handleSelectedUserData", () => {
+  it("should update usersTableData with isCheckboxSelected true for selected ids", () => {
+    const setUsersTableData = jest.fn();
+    const usersTableData = [
+      {
+        id: "1",
+        name: "A",
+        emailId: "a@example.com",
+        externalId: "1",
+        forename: "A",
+        surname: "Test",
+        userType: "User",
+        invitationStatus: "Pending",
+        actions: { options: [] },
+        isShowActionBtn: true,
+        isShowCheckBox: true
+      },
+      {
+        id: "2",
+        name: "B",
+        emailId: "b@example.com",
+        externalId: "2",
+        forename: "B",
+        surname: "Test",
+        userType: "User",
+        invitationStatus: "Pending",
+        actions: { options: [] },
+        isShowActionBtn: true,
+        isShowCheckBox: true
+      }
+    ];
+    InviteUsersUtils.handleSelectedUserData({
+      selectedCheckBoxIds: ["2"],
+      usersTableData,
+      setUsersTableData
+    });
+    expect(setUsersTableData).toHaveBeenCalledWith([
+      {
+        ...usersTableData[0],
+        isCheckboxSelected: false
+      },
+      {
+        ...usersTableData[1],
+        isCheckboxSelected: true
+      }
+    ]);
+  });
+
+  it("should do nothing if usersTableData is empty", () => {
+    const setUsersTableData = jest.fn();
+    InviteUsersUtils.handleSelectedUserData({
+      selectedCheckBoxIds: ["1"],
+      usersTableData: [],
+      setUsersTableData
+    });
+    expect(setUsersTableData).not.toHaveBeenCalled();
   });
 });

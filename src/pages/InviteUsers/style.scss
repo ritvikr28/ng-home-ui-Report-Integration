@@ -21,10 +21,12 @@
     margin: 1px 1px !important;
     overflow: auto;
   }
+
   .essui-grid-col--md-2 {
     flex-basis: 0%;
     max-width: 25%;
   }
+
   .essui-dropdown-container {
     width: 120px;
   }
@@ -32,9 +34,15 @@
   .heading-title .heading-font {
     margin: 1px 16px;
   }
+
   #breadcrumbs-wrapper {
     margin-top: 7px;
     margin-left: 11px;
+  }
+
+  .invite-user-dialog-footer .essui-dialog__footer {
+    display: flex;
+    flex-direction: row-reverse
   }
 }
 
@@ -61,6 +69,11 @@
     margin-top: 7px;
     margin-left: 11px;
   }
+
+  .invite-user-dialog-footer .essui-dialog__footer {
+    display: flex;
+    flex-direction: row-reverse
+  }
 }
 
 @media only screen and (width: 712px) {
@@ -68,13 +81,34 @@
     margin-top: -10px;
     margin-left: 13px;
   }
+
+  .invite-user-dialog-footer .essui-dialog__footer {
+    display: flex;
+    flex-direction: row-reverse
+  }
 }
+
 @media only screen and (width: 753px) {
   .edit-selected-btn {
     margin-top: 0px;
   }
+
   .dropdown {
     margin-top: 0px;
     margin-left: 0px;
   }
+
+  .invite-user-dialog-footer .essui-dialog__footer {
+    display: flex;
+    flex-direction: row-reverse
+  }
+}
+
+.invite-users-table .filter-tool .edit-selected .essui-overflow-menu {
+  position: relative !important;
+}
+
+.invite-user-dialog-footer .essui-dialog__footer {
+  display: flex;
+  flex-direction: row-reverse
 }

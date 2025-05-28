@@ -4,7 +4,9 @@ import {
   IInviteUserData,
   IInviteUserDetails,
   InvitationStatusFilterOptions,
-  IPaginationOptions
+  IPaginationOptions,
+  IPostSendInvitation,
+  ISendInviteReqBody
 } from "./InviteUsersProps";
 
 export const getUsersData: (
@@ -20,6 +22,21 @@ export const getUsersData: (
   }
   const response: any = await service.get(url);
   return response?.data;
+};
+
+export const postSendInvitation = async (props: IPostSendInvitation) => {
+  try {
+    const url = `InviteUser/SendInvitation`;
+    const postReqBody = {
+      inviteUsers: props.requestBody
+    };
+    const response: any = await service.post(url, postReqBody);
+    return response?.data;
+  } catch (error) {
+    console.error("Error sending invitation:", error);
+    props.setShowInviteErrBanner(true);
+    throw error;
+  }
 };
 
 export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
@@ -72,12 +89,20 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             }
           ]
         },
+        isShowCheckBox:
+          !(
+            item?.invitationStatus === InvitationStatusFilterOptions.Accepted ||
+            item?.invitationStatus ===
+              InvitationStatusFilterOptions.InvitationConflict
+          ) && item?.emailId !== "Work main email address is missing",
         isShowActionBtn:
           !(
             item?.invitationStatus === InvitationStatusFilterOptions.Accepted ||
             item?.invitationStatus ===
               InvitationStatusFilterOptions.InvitationConflict
-          ) && item?.emailId !== "Work main email address is missing"
+          ) && item?.emailId !== "Work main email address is missing",
+        forename: item?.forename,
+        surname: item?.surname
       }));
 
     return tableDataObj;
@@ -129,4 +154,72 @@ export const inviteUsersSorting = async (
     setLoader(false);
     setUsersTableData(res);
   });
+};
+
+export const handleSendInvite = async ({
+  selectedRowItem,
+  setLoader,
+  setShowInviteErrBanner,
+  setDataUpdated
+}: {
+  selectedRowItem: any;
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+}) => {
+  const requestBody: ISendInviteReqBody = {
+    emailId: selectedRowItem?.emailId,
+    externalId: selectedRowItem?.id,
+    forename: selectedRowItem?.forename,
+    surname: selectedRowItem?.surname
+  };
+  setLoader(true);
+  try {
+    await postSendInvitation({
+      requestBody: [requestBody],
+      setShowInviteErrBanner
+    }).then(() => {
+      setDataUpdated(true);
+    });
+  } catch (error) {
+    setLoader(false);
+  }
+};
+
+export const handleCheckBoxSelection: (props: {
+  id: string;
+  selectedCheckBoxIds: string[];
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+}) => void = (props: {
+  id: string;
+  selectedCheckBoxIds: string[];
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+}) => {
+  const { id, selectedCheckBoxIds, setSelectedCheckBoxIds } = props;
+  const updatedCheckBoxIds = [...selectedCheckBoxIds];
+  if (updatedCheckBoxIds.includes(id)) {
+    updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
+  } else {
+    updatedCheckBoxIds.push(id);
+  }
+  setSelectedCheckBoxIds(updatedCheckBoxIds);
+};
+
+export const handleSelectedUserData: (props: {
+  selectedCheckBoxIds: string[];
+  usersTableData: IInviteUserDetails[];
+  setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>;
+}) => void = (props: {
+  selectedCheckBoxIds: string[];
+  usersTableData: IInviteUserDetails[];
+  setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>;
+}) => {
+  const { usersTableData, selectedCheckBoxIds, setUsersTableData } = props;
+  if (usersTableData.length > 0) {
+    const updatedData = usersTableData.map((user: any) => ({
+      ...user,
+      isCheckboxSelected: selectedCheckBoxIds.includes(user.id)
+    }));
+    setUsersTableData(updatedData);
+  }
 };
