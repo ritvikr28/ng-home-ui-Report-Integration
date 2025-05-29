@@ -2,7 +2,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
 import AdminConsole from "../../../features/AdminConsole/AdminConsole.view";
 import BreadcrumbWrapper from "../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper";
-import InviteUserView from "../InviteUsers.view";
+import { InviteUserView } from "../InviteUsers.view";
 import { InviteUserProps } from "../InviteUsersProps";
 
 interface LocalisedMenuProps {
@@ -49,7 +49,9 @@ const mockInviteUserProps: InviteUserProps = {
   setCurrentPage: jest.fn(),
   handlePageChange: jest.fn(),
   showInvitationConflictBanner: false,
-  setshowInvitationConflictBanner: jest.fn()
+  setshowInvitationConflictBanner: jest.fn(),
+  isSearchLoader: false,
+  setSearchLoader: jest.fn()
 };
 
 describe("InviteUserView", () => {

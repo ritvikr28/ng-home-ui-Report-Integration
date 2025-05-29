@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import InviteUserView from "./InviteUsers.view";
+import { InviteUserView } from "./InviteUsers.view";
 import { IInviteUserDetails } from "./InviteUsersProps";
-
 
 export const InviteUsersLogic = () => {
   const [currentPage, setCurrentPage]: [
@@ -16,6 +15,10 @@ export const InviteUsersLogic = () => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [isSearchLoader, setSearchLoader]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
   const [usersTableData, setUsersTableData] = useState<IInviteUserDetails[]>(
     []
   );
@@ -23,7 +26,7 @@ export const InviteUsersLogic = () => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  
+
   const handlePageChange: (event: any, handlepageCount: number) => void = (
     event: any,
     handlepageCount: number
@@ -46,6 +49,8 @@ export const InviteUsersLogic = () => {
       handlePageChange={handlePageChange}
       showInvitationConflictBanner={showInvitationConflictBanner}
       setshowInvitationConflictBanner={setshowInvitationConflictBanner}
+      isSearchLoader={isSearchLoader}
+      setSearchLoader={setSearchLoader}
     />
   );
 };

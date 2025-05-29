@@ -1,12 +1,21 @@
-import { render, screen } from "@testing-library/react";
+import React from "react";
+import { render, fireEvent, screen } from "@testing-library/react";
 import { ValidationTextLevel } from "@essnextgen/ui-kit";
 import InviteUsersLogic from "../InviteUsers.logic";
-import InviteUserView from "../InviteUsers.view";
 import { getTableHeadersData } from "../InviteUsersProps";
 
-jest.mock("../InviteUsers.view", () =>
-  jest.fn(() => <div>Mock InviteUserView</div>)
-);
+jest.mock("../InviteUsers.view", () => ({
+  InviteUserView: ({ handlePageChange, currentPage }: any) => (
+    <div>
+      <p>InviteUserView Rendered</p>
+      <p data-testid="current-page">{currentPage}</p>
+      <button type="button" onClick={() => handlePageChange({}, currentPage + 1)}>
+        Next Page
+      </button>
+    </div>
+  )
+}));
+
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
   ValidationText: ({ text, ...rest }: any) => (
@@ -15,58 +24,38 @@ jest.mock("@essnextgen/ui-kit", () => ({
     </div>
   )
 }));
-
 describe("InviteUsersLogic", () => {
-  test("renders InviteUserView component", () => {
+  test("should render InviteUserView", () => {
     render(<InviteUsersLogic />);
-    expect(screen.getByText("Mock InviteUserView")).toBeInTheDocument();
+    expect(screen.getByText("InviteUserView Rendered")).toBeInTheDocument();
   });
 
-  test("initializes state correctly", () => {
+  test("should update current page when Next Page button is clicked", () => {
     render(<InviteUsersLogic />);
-    expect(InviteUserView).toHaveBeenCalledWith(
-      expect.objectContaining({
-        usersTableData: [],
-        isLoader: false,
-        totalPage: 0,
-        currentPage: 1,
-        showInvitationConflictBanner: false
-      }),
-      {}
-    );
+    const pageValue = screen.getByTestId("current-page");
+    expect(pageValue.textContent).toBe("1");
+
+    fireEvent.click(screen.getByText("Next Page"));
+
+    expect(screen.getByTestId("current-page").textContent).toBe("2");
   });
 
-  test("updates usersTableData when setUsersTableData is called", () => {
+  test("should hide invitation conflict banner on page change", () => {
+    const setBannerSpy = jest.fn();
+    jest
+      .spyOn(React, "useState")
+      .mockImplementationOnce(() => [1, jest.fn()]) // currentPage
+      .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
+      .mockImplementationOnce(() => [false, jest.fn()]) // isLoader
+      .mockImplementationOnce(() => [false, jest.fn()]) // isSearchLoader
+      .mockImplementationOnce(() => [[], jest.fn()]) // usersTableData
+      .mockImplementationOnce(() => [true, setBannerSpy]); // showInvitationConflictBanner
+
     render(<InviteUsersLogic />);
-    const props = (InviteUserView as jest.Mock).mock.calls[0][0];
+    // Click the button to change page
+    fireEvent.click(screen.getByText("Next Page"));
 
-    props.setUsersTableData([
-      { externalId: "123", forename: "John", surname: "Doe" }
-    ]);
-
-    expect(props.usersTableData).toEqual([]);
-  });
-
-  test("shows and hides the loader correctly", () => {
-    render(<InviteUsersLogic />);
-    const props = (InviteUserView as jest.Mock).mock.calls[0][0];
-
-    props.setLoader(true);
-    expect(props.isLoader).toBe(false);
-
-    props.setLoader(false);
-    expect(props.isLoader).toBe(false);
-  });
-
-  test("toggles showInvitationConflictBanner correctly", () => {
-    render(<InviteUsersLogic />);
-    const props = (InviteUserView as jest.Mock).mock.calls[0][0];
-
-    props.setshowInvitationConflictBanner(true);
-    expect(props.showInvitationConflictBanner).toBe(false);
-
-    props.setshowInvitationConflictBanner(false);
-    expect(props.showInvitationConflictBanner).toBe(false);
+    expect(setBannerSpy).toHaveBeenCalledWith(false);
   });
   it("should be an array with expected length and structure", () => {
     expect(Array.isArray(getTableHeadersData)).toBe(true);

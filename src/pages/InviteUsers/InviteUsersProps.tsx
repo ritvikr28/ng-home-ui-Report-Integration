@@ -1,5 +1,6 @@
 import {
   IBreadcrumbLink,
+  ISelectedItem,
   OptionsEntity,
   ShowValAs,
   ValidationText,
@@ -22,6 +23,8 @@ export interface InviteUserProps {
   setshowInvitationConflictBanner: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  isSearchLoader: boolean;
+  setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export const homeurl = `${envConfig.HOME_UI_BASEURL}/adminconsole`;
@@ -184,6 +187,12 @@ export interface IPaginationOptions {
   >;
   columnName?: string;
   sortDirection?: boolean;
+  searchAndStatusFilter?: {
+    searchTermExternalId: string;
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  };
+  setNoDataTextToDisplay?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // eslint-disable-next-line no-shadow

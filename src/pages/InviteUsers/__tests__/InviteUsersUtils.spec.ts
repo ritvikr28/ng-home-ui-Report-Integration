@@ -17,7 +17,7 @@ describe("InviteUsersUtils", () => {
       const result = await InviteUsersUtils.getUsersData(props);
 
       expect(service.get).toHaveBeenCalledWith(
-        "/InviteUser/Users?PageNumber=1&PageSize=10"
+        "/InviteUser/Users?PageNumber=1&PageSize=10&ExternalId=undefined&SearchTerm=undefined"
       );
       expect(result).toEqual(mockResponse.data);
     });

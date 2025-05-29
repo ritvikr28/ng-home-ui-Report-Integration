@@ -1,4 +1,5 @@
 import React from "react";
+import { ISelectedItem, Suggestion } from "@essnextgen/ui-kit";
 import { service } from "../../shared/utils/api-service";
 import {
   IInviteUserData,
@@ -8,11 +9,22 @@ import {
   IPostSendInvitation,
   ISendInviteReqBody
 } from "./InviteUsersProps";
+import { getValues, NoDataMessage } from "./InviteUsers.view";
 
 export const getUsersData: (
   props: IPaginationOptions
 ) => Promise<IInviteUserData> = async (props: IPaginationOptions) => {
-  const { pageNumber, pageSize, columnName, sortDirection } = props;
+  const {
+    pageNumber,
+    pageSize,
+    columnName,
+    sortDirection,
+    searchAndStatusFilter,
+    setNoDataTextToDisplay
+  } = props;
+
+  const searchTermExternalId = searchAndStatusFilter?.searchTermExternalId;
+  const searchTerm = searchAndStatusFilter?.searchText;
   let url = `/InviteUser/Users?PageNumber=${pageNumber}&PageSize=${pageSize}`;
   if (columnName) {
     url += `&SortBy=${columnName}`;
@@ -20,7 +32,22 @@ export const getUsersData: (
   if (sortDirection !== undefined) {
     url += `&Asc=${sortDirection}`;
   }
+  if (searchTermExternalId !== "") {
+    url += `&ExternalId=${searchTermExternalId}`;
+  }
+  if (searchTerm !== "") {
+    url += `&SearchTerm=${searchTerm}`;
+  }
   const response: any = await service.get(url);
+  if (response?.data[0]?.payload?.length === 0) {
+    if (setNoDataTextToDisplay) {
+      setNoDataTextToDisplay(
+        searchTerm
+          ? NoDataMessage.noDataOnSearch(searchTerm)
+          : NoDataMessage.noDataToDisplay
+      );
+    }
+  }
   return response?.data;
 };
 
@@ -44,10 +71,12 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
     pageSize,
     setTotalPage,
     setShowErrorBanner,
-    setshowInvitationConflictBanner
+    setshowInvitationConflictBanner,
+    setNoDataTextToDisplay
   } = props;
   try {
     const InviteUsersData: any = await getUsersData(props);
+
     if (setshowInvitationConflictBanner) {
       setshowInvitationConflictBanner(
         InviteUsersData[0]?.payload.some(
@@ -110,6 +139,9 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
     if (setShowErrorBanner) {
       setShowErrorBanner(true);
     }
+    if (setNoDataTextToDisplay) {
+      setNoDataTextToDisplay(NoDataMessage.noDataToDisplay);
+    }
     return [];
   }
 };
@@ -126,7 +158,12 @@ export const inviteUsersSorting = async (
   setShowErrorBanner?: React.Dispatch<React.SetStateAction<boolean>>,
   setshowInvitationConflictBanner?: React.Dispatch<
     React.SetStateAction<boolean>
-  >
+  >,
+  searchAndStatusFilter?: {
+    searchTermExternalId: string;
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }
 ): Promise<void> => {
   let apiColumnName = columnName;
   switch (columnName) {
@@ -149,7 +186,8 @@ export const inviteUsersSorting = async (
     columnName: apiColumnName,
     sortDirection,
     setShowErrorBanner,
-    setshowInvitationConflictBanner
+    setshowInvitationConflictBanner,
+    searchAndStatusFilter
   }).then((res) => {
     setLoader(false);
     setUsersTableData(res);
@@ -222,4 +260,50 @@ export const handleSelectedUserData: (props: {
     }));
     setUsersTableData(updatedData);
   }
+};
+
+export const handleSearch: Function = async (
+  event: React.ChangeEvent<HTMLInputElement>,
+  setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
+  setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setSearchAndStatusFilter: React.Dispatch<
+    React.SetStateAction<{
+      searchTermExternalId: string;
+      searchText: string;
+      selectedStatus: ISelectedItem;
+    }>
+  >,
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  setSearchAndStatusFilter((prev: any) => ({
+    ...prev,
+    searchText: event.target.value || ""
+  }));
+  if (event.target.value === "") {
+    setSearchLoader(false);
+    return undefined;
+  } if (event?.target?.value?.length >= 2) {
+    try {
+      setSearchLoader(true);
+      setShowSearchError(false);
+      const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
+      const response: any = await service.get(url);
+
+      const suggestionList = [
+        {
+          name: "",
+          values: getValues(response?.data)
+        }
+      ];
+
+      setSearchSuggestions(suggestionList);
+      setSearchLoader(false);
+      return suggestionList;
+    } catch (error) {
+      setShowSearchError(true);
+      setSearchLoader(false);
+      return [];
+    }
+  }
+  return undefined;
 };

@@ -12,7 +12,10 @@ import {
   DialogTemplate,
   NotificationStatus,
   useMediaQuery,
-  ValidationTextLevel
+  ValidationTextLevel,
+  Suggestion,
+  ISearchItemProp,
+  ISelectedItem
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect } from "react";
 import {
@@ -20,6 +23,8 @@ import {
   editSelectedOptions,
   filterOptions,
   getTableHeadersData,
+  IInviteUserDetails,
+  InvitationStatusFilterOptions,
   InviteUserProps,
   pageSize
 } from "./InviteUsersProps";
@@ -29,24 +34,28 @@ import { envConfig } from "../../shared/utils";
 import {
   fetchInviteUserDetails,
   handleCheckBoxSelection,
+  handleSearch,
   handleSelectedUserData,
   handleSendInvite,
   inviteUsersSorting
 } from "./InviteUsersUtils";
 import InviteUsersDialog from "./InviteUsersDialog";
 
-const InviteUserView: React.FC<InviteUserProps> = (props) => {
+export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const {
     usersTableData,
     setUsersTableData,
     totalPage,
     setTotalPage,
     currentPage,
+    setCurrentPage,
     handlePageChange,
     isLoader,
     setLoader,
     showInvitationConflictBanner,
-    setshowInvitationConflictBanner
+    setshowInvitationConflictBanner,
+    isSearchLoader,
+    setSearchLoader
   } = props;
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
@@ -60,6 +69,10 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
   const [showInviteErrBanner, setShowInviteErrBanner]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [showSearchError, setShowSearchError]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
@@ -90,6 +103,29 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [searchSuggestions, setSearchSuggestions] = React.useState<
+    Suggestion[]
+  >([]);
+  const [enterKeyPressed, setEnterKeyPressed] = React.useState<boolean>(false);
+  const [searchAndStatusFilter, setSearchAndStatusFilter] = React.useState<{
+    searchTermExternalId: string;
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }>({
+    searchTermExternalId: "",
+    searchText: "",
+    selectedStatus: {
+      text: InvitationStatusFilterOptions.All,
+      value: InvitationStatusFilterOptions.All
+    }
+  });
+  const [noDataTextToDisplay, setNoDataTextToDisplay]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>(NoDataMessage.noDataToDisplay);
+  const hasItems: boolean = searchSuggestions.some(
+    (x: Suggestion) => x.values.length > 0
+  );
 
   useEffect(() => {
     setIsSidebarOpen(!isMobileView);
@@ -102,15 +138,22 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       pageSize,
       columnName: sortBy,
       sortDirection,
+      searchAndStatusFilter,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
+      setEnterKeyPressed(false);
       setUsersTableData(res);
       setDataUpdated(false);
     });
-  }, [currentPage]);
+  }, [
+    currentPage,
+    searchAndStatusFilter.searchTermExternalId,
+    enterKeyPressed
+  ]);
 
   useEffect(() => {
     if (isDataUpdated) {
@@ -120,6 +163,7 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
         pageSize,
         columnName: sortBy,
         sortDirection,
+        searchAndStatusFilter,
         setTotalPage,
         setShowErrorBanner,
         setshowInvitationConflictBanner
@@ -134,6 +178,40 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
     }
   }, [isDataUpdated]);
 
+  const handleClearSearch: () => void = () => {
+    setShowErrorBanner(false);
+    setNoDataTextToDisplay(NoDataMessage.noDataToDisplay);
+    setSearchAndStatusFilter((prev) => ({
+      ...prev,
+      searchTermExternalId: "",
+      searchText: ""
+    }));
+    setSearchLoader(false);
+    setLoader(true);
+    fetchInviteUserDetails({
+      pageNumber: currentPage,
+      pageSize,
+      columnName: sortBy,
+      sortDirection,
+      searchAndStatusFilter: {
+        searchTermExternalId: "",
+        searchText: "",
+        selectedStatus: {
+          text: InvitationStatusFilterOptions.All,
+          value: InvitationStatusFilterOptions.All
+        }
+      },
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner,
+      setNoDataTextToDisplay
+    }).then((res) => {
+      setLoader(false);
+      setUsersTableData(res);
+      setEnterKeyPressed(false);
+      setDataUpdated(false);
+    });
+  };
   useEffect(() => {
     handleSelectedUserData({
       selectedCheckBoxIds,
@@ -171,6 +249,19 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
       clickType: "link",
       clickLocation: "breadcrumb"
     });
+  };
+  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e?.target?.value?.length === 0) {
+      handleClearSearch();
+    } else {
+      handleSearch(
+        e,
+        setSearchLoader,
+        setSearchSuggestions,
+        setSearchAndStatusFilter,
+        setShowSearchError
+      );
+    }
   };
 
   return (
@@ -218,7 +309,7 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
             dataTestId="invite-list-test-id"
             isShowFirstElement
             isBreadCrumbEnable={false}
-            resultNotFoundMessage="No data to display"
+            resultNotFoundMessage={noDataTextToDisplay}
             dynamictableIconName={
               showErrorBanner ? "warning--alt" : "information"
             }
@@ -227,33 +318,44 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
               e: React.SyntheticEvent,
               columnName: string
             ) => {
-              setshowInvitationConflictBanner(false);
-              const apiColumnName =
-                columnName === "Name" ? "Forename" : "EmailId";
-              let newDirection = true;
+              if (columnName === "Email" || columnName === "Name") {
+                setshowInvitationConflictBanner(false);
+                const apiColumnName =
+                  columnName === "Name" ? "Forename" : "EmailId";
+                let newDirection = true;
 
-              if (sortBy === apiColumnName) {
-                newDirection = !sortDirection;
-              } else {
-                newDirection = true;
+                if (sortBy === apiColumnName) {
+                  newDirection = !sortDirection;
+                } else {
+                  newDirection = true;
+                  setSortBy(apiColumnName);
+                }
+                if (sortBy === apiColumnName) {
+                  newDirection = !sortDirection;
+                } else {
+                  newDirection = true;
+                  setSortBy(apiColumnName);
+                }
+
                 setSortBy(apiColumnName);
+                setSortDirection(newDirection);
+                setSortBy(apiColumnName);
+                setSortDirection(newDirection);
+
+                inviteUsersSorting(
+                  columnName,
+                  newDirection,
+                  setSortDirection,
+                  setSortBy,
+                  currentPage,
+                  pageSize,
+                  setUsersTableData,
+                  setLoader,
+                  setShowErrorBanner,
+                  setshowInvitationConflictBanner,
+                  searchAndStatusFilter
+                );
               }
-
-              setSortBy(apiColumnName);
-              setSortDirection(newDirection);
-
-              inviteUsersSorting(
-                columnName,
-                newDirection,
-                setSortDirection,
-                setSortBy,
-                currentPage,
-                pageSize,
-                setUsersTableData,
-                setLoader,
-                setShowErrorBanner,
-                setshowInvitationConflictBanner
-              );
             }}
             dynamictableNoMsgColor={ValidationTextLevel.Warning}
             isShowdynamictableNoMsg={showErrorBanner}
@@ -277,7 +379,42 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
             paginationPage={currentPage}
             paginationMinCountToHideNextPreviousBtn={0}
             searchHeadingText="Search user"
-            searchPlaceholderText="Text"
+            searchPlaceholderText="Search by name"
+            searchIsLoader={isSearchLoader}
+            isSearchShowLoading={isSearchLoader}
+            isSearchHideClearIcon={
+              searchAndStatusFilter?.searchText.length === 0
+            }
+            searchDebouncerTreshold={1000}
+            searchValue={searchAndStatusFilter?.searchText || ""}
+            onKeyUpLenght={2}
+            searchOnChange={(e: any) => handleOnChange(e)}
+            searchValidationText={
+              showSearchError
+                ? "Search unavailable. Please try again after sometime"
+                : undefined
+            }
+            searchValidationTextLevel={
+              showSearchError ? ValidationTextLevel.Warning : undefined
+            }
+            onSearchKeyDown={(e: any) => {
+              if (e.key === "Enter") {
+                setEnterKeyPressed(true);
+                setCurrentPage(1);
+              }
+            }}
+            onSearchSuggestionItemClick={(item: ISearchItemProp | null) => {
+              setCurrentPage(1);
+              setSearchAndStatusFilter((prev: any) => ({
+                ...prev,
+                searchTermExternalId: item?.externalId || "",
+                searchText: item?.text || ""
+              }));
+            }}
+            searchOnCloseHandle={() => {
+              handleClearSearch();
+            }}
+            searchSuggestions={hasItems ? searchSuggestions : []}
             searchTerm=""
             secondaryButtonTitle="Cancel"
             showConfirmDialog
@@ -390,4 +527,32 @@ const InviteUserView: React.FC<InviteUserProps> = (props) => {
   );
 };
 
-export default InviteUserView;
+export const NoDataMessage = {
+  noDataOnSearch: (keyword: string) =>
+    `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
+  noDataToDisplay: "No data to display"
+};
+
+export const getValues = (
+  data: IInviteUserDetails[]
+): Array<{
+  text: string;
+  props: {
+    externalId: string;
+    name: string;
+  };
+  value: JSX.Element;
+}> =>
+  data
+    .filter(
+      (record: IInviteUserDetails) =>
+        record?.externalId && record?.externalId !== undefined
+    )
+    .map((record: IInviteUserDetails) => ({
+      text: `${record?.forename} ${record?.surname} `,
+      props: {
+        externalId: record?.externalId,
+        name: `${record?.forename} ${record?.surname}`
+      },
+      value: <></>
+    }));
