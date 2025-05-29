@@ -357,7 +357,7 @@ const SystemStatusAlertsView: React.FC = () => {
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content7")}</li>
                             <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content8")}</li>
                           </ul>
-                          <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>
+                          <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>
                             <a
                               href="https://help.parentpaygroup.com/csm?id=copy_of_kb_article_view_1&sysparm_article=KB0013199"
                               target="_blank"

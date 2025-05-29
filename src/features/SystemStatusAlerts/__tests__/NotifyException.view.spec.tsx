@@ -36,10 +36,10 @@ describe("NotifyExceptionView", () => {
     expect(notificationElement).toBeInTheDocument();
   
 
-    expect(screen.getByText("Information unavailable.")).toBeInTheDocument();
+    expect(screen.getByText("Information unavailable")).toBeInTheDocument();
     expect(
       screen.getByText(
-        "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team."
+        "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team."
       )
     ).toBeInTheDocument();
   

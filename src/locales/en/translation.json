@@ -262,8 +262,8 @@
     "description": "Monitor key system statuses and sign up to email alerts when statuses change.",
     "moduleBlock" : {
       "notifyException":{
-        "title": "A technical issue at our end has stopped us from completing your request. Please try again later. If the issue persists please get in touch with our support team.",
-        "content": "Information unavailable."
+        "title": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team.",
+        "content": "Information unavailable"
       },
       "ErrorMessagesDataSync":{
         "content1":"We’ve identified a potential issue that might be preventing data from syncing between SIMS Next Gen and SIMS 7. The most common cause is a problem with your SSM server. A restart of the SSM service will often resolve this.",
