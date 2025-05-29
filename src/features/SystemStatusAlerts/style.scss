@@ -59,7 +59,7 @@
 
 
 
-.system-status-table-wrapper{
+.system-status-table-wrapper {
   margin-top: 20px;
 }
 
@@ -78,16 +78,17 @@
 .status-table .essui-table__cell:nth-child(3) {
   width: 602px;
 }
-.status-table .essui-table__cell:nth-child(5) {
-    width: 40px;
-  }
 
-.template-menu-popover{
+.status-table .essui-table__cell:nth-child(5) {
+  width: 40px;
+}
+
+.template-menu-popover {
   width: 150px;
 }
-  
+
 .overflow-menu-top {
-transform: translateY(-70px);
+  transform: translateY(-70px);
 }
 
 .overflow-menu-position {
@@ -95,16 +96,6 @@ transform: translateY(-70px);
   z-index: 9999;
 }
 
-.system-status-overflow-btn-wrapper{
-  margin-left: 10px;
+.system-status-overflow-btn-wrapper {
+  margin-left: 5px;
 }
-
-
-
-
-
-
-
-
- 
-
