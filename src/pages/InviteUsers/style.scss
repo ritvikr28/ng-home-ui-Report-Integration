@@ -62,7 +62,7 @@
   }
 
   .edit-selected-btn {
-    margin-top: 20px;
+    margin-top: 10px;
   }
 
   .essui-dropdown-container {
@@ -77,6 +77,16 @@
   .invite-user-dialog-footer .essui-dialog__footer {
     display: flex;
     flex-direction: row-reverse;
+  }
+}
+
+@media (min-width: 637px) and (max-width: 767.9px) {
+  .dropdown {
+    margin: 0;
+  }
+
+  .edit-selected-btn {
+    margin: 0px;
   }
 }
 
@@ -110,6 +120,7 @@
 
 .invite-users-table .filter-tool .edit-selected .essui-overflow-menu {
   position: relative !important;
+  width: auto;
 }
 
 .invite-user-dialog-footer .essui-dialog__footer {
