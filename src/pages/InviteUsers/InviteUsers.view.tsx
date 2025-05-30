@@ -381,7 +381,6 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             searchHeadingText="Search user"
             searchPlaceholderText="Search by name"
             searchIsLoader={isSearchLoader}
-            isSearchShowLoading={isSearchLoader}
             isSearchHideClearIcon={
               searchAndStatusFilter?.searchText.length === 0
             }
