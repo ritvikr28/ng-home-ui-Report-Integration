@@ -106,13 +106,14 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const [searchSuggestions, setSearchSuggestions] = React.useState<
     Suggestion[]
   >([]);
-  const [enterKeyPressed, setEnterKeyPressed] = React.useState<boolean>(false);
+  const [searchTerm, setSearchTerm]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = React.useState<string>("");
   const [searchAndStatusFilter, setSearchAndStatusFilter] = React.useState<{
-    searchTermExternalId: string;
     searchText: string;
     selectedStatus: ISelectedItem;
   }>({
-    searchTermExternalId: "",
     searchText: "",
     selectedStatus: {
       text: InvitationStatusFilterOptions.All,
@@ -145,14 +146,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
-      setEnterKeyPressed(false);
       setUsersTableData(res);
       setDataUpdated(false);
     });
   }, [
     currentPage,
-    searchAndStatusFilter.searchTermExternalId,
-    enterKeyPressed
+    searchAndStatusFilter.searchText,
+    searchAndStatusFilter.selectedStatus.value
   ]);
 
   useEffect(() => {
@@ -181,10 +181,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const handleClearSearch: () => void = () => {
     setShowErrorBanner(false);
     setNoDataTextToDisplay(NoDataMessage.noDataToDisplay);
+    setSearchTerm("");
     setSearchAndStatusFilter((prev) => ({
       ...prev,
-      searchTermExternalId: "",
-      searchText: ""
+      searchText: "",
+      selectedStatus: searchAndStatusFilter.selectedStatus
     }));
     setSearchLoader(false);
     setLoader(true);
@@ -194,12 +195,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       columnName: sortBy,
       sortDirection,
       searchAndStatusFilter: {
-        searchTermExternalId: "",
         searchText: "",
-        selectedStatus: {
-          text: InvitationStatusFilterOptions.All,
-          value: InvitationStatusFilterOptions.All
-        }
+        selectedStatus: searchAndStatusFilter.selectedStatus
       },
       setTotalPage,
       setShowErrorBanner,
@@ -208,7 +205,6 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
-      setEnterKeyPressed(false);
       setDataUpdated(false);
     });
   };
@@ -254,12 +250,14 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     if (e?.target?.value?.length === 0) {
       handleClearSearch();
     } else {
+      setSearchTerm(e.target.value);
       handleSearch(
         e,
         setSearchLoader,
         setSearchSuggestions,
-        setSearchAndStatusFilter,
-        setShowSearchError
+        setSearchTerm,
+        setShowSearchError,
+        searchAndStatusFilter
       );
     }
   };
@@ -368,9 +366,21 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             id="Inviteusers-list"
             filterDDLuseAutoWidth
             filterDDLisSelected
+            filterDDLonSelect={(e, selectedItem) => {
+              setSearchAndStatusFilter((prev: any) => ({
+                ...prev,
+                selectedStatus: selectedItem
+              }));
+              setCurrentPage(1);
+            }}
             filterDDLlabel="Invitation status"
             filterDDLplaceholder="Select"
-            filterDDLselectedItem={{ text: "All", value: "All" }}
+            filterDDLselectedItem={
+              searchAndStatusFilter?.selectedStatus || {
+                text: InvitationStatusFilterOptions.All,
+                value: InvitationStatusFilterOptions.All
+              }
+            }
             filterDDLdisabled={false}
             isOnCloseSidepnl
             isPagination
@@ -398,7 +408,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }
             onSearchKeyDown={(e: any) => {
               if (e.key === "Enter") {
-                setEnterKeyPressed(true);
+                setSearchAndStatusFilter((prev: any) => ({
+                  ...prev,
+                  searchText: searchTerm
+                }));
                 setCurrentPage(1);
               }
             }}
@@ -406,8 +419,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setCurrentPage(1);
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
-                searchTermExternalId: item?.externalId || "",
-                searchText: item?.text || ""
+                searchText: item?.name || ""
               }));
             }}
             searchOnCloseHandle={() => {
@@ -460,7 +472,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
             toastNotificationTitle={toastMessage}
             showToastNotification={showToast}
-            toastNotificationAutoclose={true}
+            toastNotificationAutoclose
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
             globalNotificationBannerOnClickClose={() => {
