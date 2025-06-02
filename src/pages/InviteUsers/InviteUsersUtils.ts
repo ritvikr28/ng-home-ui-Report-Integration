@@ -106,7 +106,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
         name: `${item?.forename} ${item?.surname}`,
         emailId:
           item?.emailId === "Work main email address is missing"
-            ? "Primary email unavailable"
+            ? "Main work email unavailable"
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,

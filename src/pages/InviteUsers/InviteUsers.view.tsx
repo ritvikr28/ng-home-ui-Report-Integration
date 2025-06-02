@@ -122,8 +122,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   }>({
     searchText: "",
     selectedStatus: {
-      text: InvitationStatusFilterOptions.All,
-      value: InvitationStatusFilterOptions.All
+      text: InvitationStatusFilterOptions.NotInvited,
+      value: "Not invited"
     }
   });
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
@@ -384,8 +384,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLplaceholder="Select"
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
-                text: InvitationStatusFilterOptions.All,
-                value: InvitationStatusFilterOptions.All
+                text: InvitationStatusFilterOptions.NotInvited,
+                value: "Not invited"
               }
             }
             filterDDLdisabled={false}
@@ -504,15 +504,6 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setshowInvitationConflictBanner(false);
             }}
             globalNotificationMsgBannerObject={[
-              {
-                autoclose: false,
-                isShow: true,
-                message:
-                  "To manage user email name and role, please access SIMS7.",
-                title: "User details are managed in SIMS7",
-                variant: "highlight",
-                hideCloseButton: true
-              },
               {
                 isShow: !!showErrorBanner,
                 variant: "warning",

@@ -476,7 +476,7 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       setshowInvitationConflictBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
-    expect(result[0].emailId).toBe("Primary email unavailable");
+    expect(result[0].emailId).toBe("Main work email unavailable");
   });
 
   it("should set isShowCheckBox and isShowActionBtn to false for 'Accepted' status", async () => {
