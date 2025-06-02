@@ -123,6 +123,7 @@ const UAM: () => JSX.Element = () => {
                   active: false,
 
                   linkName: "Admin Console",
+                  isExternalLink: true,
 
                   path: homeurl
                 },

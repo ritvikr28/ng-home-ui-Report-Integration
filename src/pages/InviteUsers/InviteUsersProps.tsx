@@ -167,7 +167,7 @@ export interface IInviteUserDetails {
   userType: string;
   isShowActionBtn?: boolean;
   isShowCheckBox?: boolean;
-  isCheckBoxSelected?: boolean;
+  isCheckboxSelected?: boolean;
 }
 
 export interface IInviteUserData {
@@ -254,3 +254,25 @@ export interface ISendInviteReqBody {
   surname: string;
   emailId: string;
 }
+
+export const BulkInviteErrBanner = ({
+  selectedRowItems
+}: {
+  selectedRowItems: IInviteUserDetails[];
+}) => {
+  console.log(selectedRowItems, "selectedRowItems in BulkInviteErrBanner");
+  const emails = selectedRowItems.map((item) => item.emailId).join("; ");
+  return (
+    <>
+      <p>
+        A technical issue at our end has stopped us from inviting the following
+        users:
+      </p>
+      <p>&nbsp; • &nbsp; {emails}</p>
+      <p>
+        Please try again. If the issue persists, please get in touch with our
+        support team.
+      </p>
+    </>
+  );
+};

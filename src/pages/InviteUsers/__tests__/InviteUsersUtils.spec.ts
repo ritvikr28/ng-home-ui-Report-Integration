@@ -706,7 +706,14 @@ describe("handleSendInvite", () => {
     jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
 
     await InviteUsersUtils.handleSendInvite({
-      selectedRowItem,
+      requestBody: [
+        {
+          emailId: selectedRowItem.emailId,
+          externalId: selectedRowItem.id,
+          forename: selectedRowItem.forename,
+          surname: selectedRowItem.surname
+        }
+      ],
       setLoader,
       setShowInviteErrBanner,
       setDataUpdated
@@ -727,19 +734,79 @@ describe("handleSendInvite", () => {
     expect(setDataUpdated).toHaveBeenCalledWith(true);
   });
 
+  it("should call postSendInvitation and setDataUpdated on success with array of selectedRowItems", async () => {
+    const setLoader = jest.fn();
+    const setShowInviteErrBanner = jest.fn();
+    const setDataUpdated = jest.fn();
+    const selectedRowItem = [
+      {
+        id: "1",
+        emailId: "test@example.com",
+        forename: "Test",
+        surname: "User"
+      },
+      {
+        id: "2",
+        emailId: "another@example.com",
+        forename: "Another",
+        surname: "Person"
+      }
+    ];
+    jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
+
+    await InviteUsersUtils.handleSendInvite({
+      requestBody: selectedRowItem.map(item => ({
+        emailId: item.emailId,
+        externalId: item.id,
+        forename: item.forename,
+        surname: item.surname
+      })),
+      setLoader,
+      setShowInviteErrBanner,
+      setDataUpdated
+    });
+
+    expect(setLoader).toHaveBeenCalledWith(true);
+    expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
+      requestBody: [
+        {
+          emailId: "test@example.com",
+          externalId: "1",
+          forename: "Test",
+          surname: "User"
+        },
+        {
+          emailId: "another@example.com",
+          externalId: "2",
+          forename: "Another",
+          surname: "Person"
+        }
+      ],
+      setShowInviteErrBanner
+    });
+    expect(setDataUpdated).toHaveBeenCalledWith(true);
+  });
+
   it("should setLoader(true)", async () => {
     const setLoader = jest.fn();
     const setShowInviteErrBanner = jest.fn();
     const setDataUpdated = jest.fn();
-    const selectedRowItem = {
-      id: "1",
-      emailId: "test@example.com",
-      forename: "Test",
-      surname: "User"
-    };
+    const selectedRowItem = [
+      {
+        id: "1",
+        emailId: "test@example.com",
+        forename: "Test",
+        surname: "User"
+      }
+    ];
 
     await InviteUsersUtils.handleSendInvite({
-      selectedRowItem,
+      requestBody: selectedRowItem.map(item => ({
+        emailId: item.emailId,
+        externalId: item.id,
+        forename: item.forename,
+        surname: item.surname
+      })),
       setLoader,
       setShowInviteErrBanner,
       setDataUpdated

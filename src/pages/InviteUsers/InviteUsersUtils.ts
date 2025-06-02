@@ -195,26 +195,20 @@ export const inviteUsersSorting = async (
 };
 
 export const handleSendInvite = async ({
-  selectedRowItem,
+  requestBody,
   setLoader,
   setShowInviteErrBanner,
   setDataUpdated
 }: {
-  selectedRowItem: any;
+  requestBody: ISendInviteReqBody[];
   setLoader: React.Dispatch<React.SetStateAction<boolean>>;
   setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
   setDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const requestBody: ISendInviteReqBody = {
-    emailId: selectedRowItem?.emailId,
-    externalId: selectedRowItem?.id,
-    forename: selectedRowItem?.forename,
-    surname: selectedRowItem?.surname
-  };
   setLoader(true);
   try {
     await postSendInvitation({
-      requestBody: [requestBody],
+      requestBody,
       setShowInviteErrBanner
     }).then(() => {
       setDataUpdated(true);
@@ -282,7 +276,8 @@ export const handleSearch: Function = async (
   if (event.target.value === "") {
     setSearchLoader(false);
     return undefined;
-  } if (event?.target?.value?.length >= 2) {
+  }
+  if (event?.target?.value?.length >= 2) {
     try {
       setSearchLoader(true);
       setShowSearchError(false);
