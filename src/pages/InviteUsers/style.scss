@@ -11,7 +11,7 @@
   font-size: 16px;
 }
 
-.dropdown {
+.invite-users-table .dropdown {
   align-self: normal !important;
 }
 
@@ -51,21 +51,21 @@
 }
 
 @media (min-width: 360px) and (max-width: 767.9px) {
-  .dropdown {
+  .invite-users-table .dropdown {
     margin-top: 10px;
     margin-left: 13px;
   }
 
-  .dynamic-table {
+  .invite-users-table .dynamic-table {
     margin: 1px 1px !important;
     overflow-x: scroll;
   }
 
-  .edit-selected-btn {
+  .invite-users-table .edit-selected-btn {
     margin-top: 10px;
   }
 
-  .essui-dropdown-container {
+  .invite-users-table .essui-dropdown-container {
     width: 120px;
   }
 
@@ -81,17 +81,17 @@
 }
 
 @media (min-width: 637px) and (max-width: 767.9px) {
-  .dropdown {
+  .invite-users-table .dropdown {
     margin: 0;
   }
 
-  .edit-selected-btn {
+  .invite-users-table .edit-selected-btn {
     margin: 0px;
   }
 }
 
 @media only screen and (width: 712px) {
-  .dropdown {
+  .invite-users-table .dropdown {
     margin-top: -10px;
     margin-left: 13px;
   }
@@ -103,11 +103,11 @@
 }
 
 @media only screen and (width: 753px) {
-  .edit-selected-btn {
+  .invite-users-table .edit-selected-btn {
     margin-top: 0px;
   }
 
-  .dropdown {
+  .invite-users-table .dropdown {
     margin-top: 0px;
     margin-left: 0px;
   }
@@ -128,28 +128,28 @@
   flex-direction: row-reverse;
 }
 
-.admin-console-table-wrapper
+.invite-users-table .admin-console-table-wrapper
   #search-autocomplete.with-suggestions
   #suggestions-wrapper {
   display: flex;
 }
 
-.filter-tool #search-autocomplete.with-suggestions #suggestions-wrapper {
+.invite-users-table .filter-tool #search-autocomplete.with-suggestions #suggestions-wrapper {
   display: block;
   top: 110%;
   z-index: 1;
 }
 
-.filter-tool #search-autocomplete .icon-container.position-right {
+.invite-users-table .filter-tool #search-autocomplete .icon-container.position-right {
   display: flex;
 }
 
-.filter-tool #search-autocomplete .icon-container.position-right .essui-loader {
+.invite-users-table .filter-tool #search-autocomplete .icon-container.position-right .essui-loader {
   display: flex;
   margin: 0;
   margin-top: 0.7rem;
 }
 
-.filter-tool .essui-validation-text {
+.invite-users-table .filter-tool .essui-validation-text {
   margin-top: 10px;
 }
