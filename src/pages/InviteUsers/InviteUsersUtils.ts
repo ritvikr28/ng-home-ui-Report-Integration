@@ -23,8 +23,9 @@ export const getUsersData: (
     setNoDataTextToDisplay
   } = props;
 
-  const searchTermExternalId = searchAndStatusFilter?.searchTermExternalId;
   const searchTerm = searchAndStatusFilter?.searchText;
+  const selectedStatus = searchAndStatusFilter?.selectedStatus;
+
   let url = `/InviteUser/Users?PageNumber=${pageNumber}&PageSize=${pageSize}`;
   if (columnName) {
     url += `&SortBy=${columnName}`;
@@ -32,12 +33,13 @@ export const getUsersData: (
   if (sortDirection !== undefined) {
     url += `&Asc=${sortDirection}`;
   }
-  if (searchTermExternalId !== "") {
-    url += `&ExternalId=${searchTermExternalId}`;
-  }
   if (searchTerm !== "") {
     url += `&SearchTerm=${searchTerm}`;
   }
+  if (selectedStatus?.value !== "All") {
+    url += `&InvitationStatus=${selectedStatus?.value}`;
+  }
+
   const response: any = await service.get(url);
   if (response?.data[0]?.payload?.length === 0) {
     if (setNoDataTextToDisplay) {
@@ -160,7 +162,6 @@ export const inviteUsersSorting = async (
     React.SetStateAction<boolean>
   >,
   searchAndStatusFilter?: {
-    searchTermExternalId: string;
     searchText: string;
     selectedStatus: ISelectedItem;
   }
@@ -260,19 +261,10 @@ export const handleSearch: Function = async (
   event: React.ChangeEvent<HTMLInputElement>,
   setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
   setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setSearchAndStatusFilter: React.Dispatch<
-    React.SetStateAction<{
-      searchTermExternalId: string;
-      searchText: string;
-      selectedStatus: ISelectedItem;
-    }>
-  >,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  setSearchAndStatusFilter((prev: any) => ({
-    ...prev,
-    searchText: event.target.value || ""
-  }));
+  setSearchTerm(event.target.value || "");
   if (event.target.value === "") {
     setSearchLoader(false);
     return undefined;
@@ -283,7 +275,6 @@ export const handleSearch: Function = async (
       setShowSearchError(false);
       const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
       const response: any = await service.get(url);
-
       const suggestionList = [
         {
           name: "",

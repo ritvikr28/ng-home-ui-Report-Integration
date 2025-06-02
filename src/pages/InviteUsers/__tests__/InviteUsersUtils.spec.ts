@@ -1,10 +1,15 @@
 import * as InviteUsersUtils from "../InviteUsersUtils";
 import { service } from "../../../shared/utils/api-service";
+import { getValues } from "../InviteUsers.view";
 
 jest.mock("../../../shared/utils/api-service", () => ({
   service: {
     get: jest.fn()
   }
+}));
+
+jest.mock("../InviteUsers.view", () => ({
+  getValues: jest.fn(() => ["mocked values"])
 }));
 
 describe("InviteUsersUtils", () => {
@@ -17,7 +22,7 @@ describe("InviteUsersUtils", () => {
       const result = await InviteUsersUtils.getUsersData(props);
 
       expect(service.get).toHaveBeenCalledWith(
-        "/InviteUser/Users?PageNumber=1&PageSize=10&ExternalId=undefined&SearchTerm=undefined"
+        "/InviteUser/Users?PageNumber=1&PageSize=10&SearchTerm=undefined&InvitationStatus=undefined"
       );
       expect(result).toEqual(mockResponse.data);
     });
@@ -894,5 +899,86 @@ describe("handleSelectedUserData", () => {
       setUsersTableData
     });
     expect(setUsersTableData).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSearch", () => {
+  let setSearchLoader: jest.Mock;
+  let setSearchSuggestions: jest.Mock;
+  let setSearchAndStatusFilter: jest.Mock;
+  let setShowSearchError: jest.Mock;
+  let event: any;
+
+  beforeEach(() => {
+    setSearchLoader = jest.fn();
+    setSearchSuggestions = jest.fn();
+    setSearchAndStatusFilter = jest.fn();
+    setShowSearchError = jest.fn();
+    event = { target: { value: "" } };
+    (getValues as jest.Mock).mockClear();
+    (service.get as jest.Mock).mockClear();
+  });
+
+  it("returns undefined and disables loader if input is empty", async () => {
+    const result = await InviteUsersUtils.handleSearch(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setSearchAndStatusFilter,
+      setShowSearchError,
+      { selectedStatus: { value: "All" } }
+    );
+    expect(setSearchLoader).toHaveBeenCalledWith(false);
+    expect(result).toBeUndefined();
+  });
+
+  it("returns undefined if input is less than 2 characters", async () => {
+    event.target.value = "a";
+    const result = await InviteUsersUtils.handleSearch(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setSearchAndStatusFilter,
+      setShowSearchError,
+      { selectedStatus: { value: "All" } }
+    );
+    expect(result).toBeUndefined();
+  });
+
+  it("calls API and getValues with all data if status is All", async () => {
+    event.target.value = "Al";
+    (service.get as jest.Mock).mockResolvedValue({
+      data: [{ invitationStatus: "Invited" }]
+    });
+    const result = await InviteUsersUtils.handleSearch(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setSearchAndStatusFilter,
+      setShowSearchError,
+      { selectedStatus: { value: "All" } }
+    );
+    expect(service.get).toHaveBeenCalled();
+    expect(getValues).toHaveBeenCalledWith([{ invitationStatus: "Invited" }]);
+    expect(setSearchSuggestions).toHaveBeenCalled();
+    expect(setSearchLoader).toHaveBeenCalledWith(false);
+    expect(result).toBeDefined();
+  });
+
+
+  it("handles API error and sets error state", async () => {
+    event.target.value = "Al";
+    (service.get as jest.Mock).mockRejectedValue(new Error("API error"));
+    const result = await InviteUsersUtils.handleSearch(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setSearchAndStatusFilter,
+      setShowSearchError,
+      { selectedStatus: { value: "All" } }
+    );
+    expect(setShowSearchError).toHaveBeenCalledWith(true);
+    expect(setSearchLoader).toHaveBeenCalledWith(false);
+    expect(result).toEqual([]);
   });
 });

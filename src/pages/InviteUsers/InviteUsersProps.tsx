@@ -188,7 +188,6 @@ export interface IPaginationOptions {
   columnName?: string;
   sortDirection?: boolean;
   searchAndStatusFilter?: {
-    searchTermExternalId: string;
     searchText: string;
     selectedStatus: ISelectedItem;
   };
@@ -207,7 +206,7 @@ export enum InvitationStatusFilterOptions {
 export interface IFilterOptions {
   id: string;
   text: InvitationStatusFilterOptions;
-  value: InvitationStatusFilterOptions;
+  value: string;
 }
 
 export const filterOptions: IFilterOptions[] = [
@@ -219,7 +218,7 @@ export const filterOptions: IFilterOptions[] = [
   {
     id: "2",
     text: InvitationStatusFilterOptions.NotInvited,
-    value: InvitationStatusFilterOptions.NotInvited
+    value: "Not invited"
   },
   {
     id: "3",
