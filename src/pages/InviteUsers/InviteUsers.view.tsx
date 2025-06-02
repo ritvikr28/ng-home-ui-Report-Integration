@@ -20,12 +20,14 @@ import {
 import React, { useState, useEffect } from "react";
 import {
   breadcrumbActions,
+  BulkInviteErrBanner,
   editSelectedOptions,
   filterOptions,
   getTableHeadersData,
   IInviteUserDetails,
   InvitationStatusFilterOptions,
   InviteUserProps,
+  ISendInviteReqBody,
   pageSize
 } from "./InviteUsersProps";
 import "./style.scss";
@@ -76,13 +78,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [source, setSource]: [
+    string,
+    React.Dispatch<React.SetStateAction<string>>
+  ] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("Forename");
   const [sortDirection, setSortDirection] = useState<boolean>(true);
   const [showConfirmDialog, setShowConfirmDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const [selectedRowItem, setSelectedRowItem] = useState<any>(null);
+  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
   const [isDataUpdated, setDataUpdated]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -172,6 +178,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setUsersTableData(res);
         setDataUpdated(false);
         setShowToast(true);
+        setSelectedRowItems([]);
         setToastMessage("Changes saved");
       });
       setTimeout(() => setShowToast(false), 9000);
@@ -441,6 +448,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               if (e.target?.innerHTML === "Send invite") {
                 if (selectedCheckBoxIds.length === 0) {
                   setShowDialog(true);
+                } else {
+                  setSource("Bulk");
+                  setSelectedRowItems(
+                    usersTableData.filter((user) => user.isCheckboxSelected)
+                  );
+                  setShowConfirmDialog(true);
                 }
               }
             }}
@@ -450,7 +463,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             templatePropsConfirmation={{
               cancelText: "Cancel",
               contentText:
-                "This user will be sent an invite to access the system.",
+                source === "Bulk"
+                  ? `${selectedCheckBoxIds.length} users will be sent invites to access the system`
+                  : "This user will be sent an invite to access the system.",
               isNotificationanner: false,
               notificationStatus: NotificationStatus.SUCCESS,
               okText: "Save",
@@ -459,8 +474,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
+                const requestBody: ISendInviteReqBody[] = selectedRowItems.map(
+                  (item) => ({
+                    emailId: item?.emailId,
+                    externalId: item?.id,
+                    forename: item?.forename,
+                    surname: item?.surname
+                  })
+                );
                 handleSendInvite({
-                  selectedRowItem,
+                  requestBody,
                   setLoader,
                   setShowInviteErrBanner,
                   setDataUpdated
@@ -507,18 +530,26 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 autoclose: true
               },
               {
-                isShow: !!showInviteErrBanner,
+                isShow: !!showInviteErrBanner && source !== "Bulk",
                 variant: "warning",
                 title: "Unable to save",
                 message:
                   "A technical issue at our end has stopped us from saving the changes. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time.",
                 autoclose: true
+              },
+              {
+                isShow: !!showInviteErrBanner && source === "Bulk",
+                variant: "warning",
+                title: "Unable to invite",
+                message: BulkInviteErrBanner({selectedRowItems}),
+                autoclose: true
               }
             ]}
             onClickOverflowItem={(e: any, selectedRow: any) => {
               if (e.target?.innerHTML === "Send Invite") {
+                setSource("Overflow");
                 setShowConfirmDialog(true);
-                setSelectedRowItem(selectedRow);
+                setSelectedRowItems([selectedRow]);
               }
             }}
             onChangeListCheckBox={(index: number, id: string) => {

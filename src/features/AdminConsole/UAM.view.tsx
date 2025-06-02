@@ -123,6 +123,7 @@ const UAM: () => JSX.Element = () => {
                   active: false,
 
                   linkName: "Admin Console",
+                  isExternalLink: true,
 
                   path: homeurl
                 },
@@ -137,7 +138,6 @@ const UAM: () => JSX.Element = () => {
               ]}
               heading="Users"
               subHeading="Create and manage users within your Trust"
-              enableSearch
             />
           </div>
         </GridItem>
