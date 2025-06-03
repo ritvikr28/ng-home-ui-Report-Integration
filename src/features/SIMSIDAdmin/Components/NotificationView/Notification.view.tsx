@@ -11,13 +11,19 @@ import {
 } from "@essnextgen/ui-intl-kit";
 import { INotificationProps } from "./NotificationProps";
 import "./style.scss";
+import SIMSConnectedLauncher from "../../../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 
 const NotificationView: React.FC<INotificationProps> = ({
   setDisableNotification
 }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+
+ 
+
   return (
+    <>
+    <SIMSConnectedLauncher/>
     <Notification
       className="notification-id-sims"
       dataTestId="notification-test-id"
@@ -51,6 +57,7 @@ const NotificationView: React.FC<INotificationProps> = ({
       status={NotificationStatus.HIGHLIGHT}
       title="You have limited access to SIMS Next Gen"
     />
+    </>
   );
 };
 

@@ -339,6 +339,10 @@
     "classviewlinktext":"Golwg Dosbarth Agored",
     "learnmorelinktext":"Dysgu mwy"
   },
+  "simsNextGenLinksBanner":{
+    "heading":"Mynediad uniongyrchol i'r Lansiwr Connected",
+    "subHeading":"Gallwch nawr gyrchu'ch cyfres o gynhyrchion SIMS yn hawdd … a mwy! Cliciwch ar yr eicon 3 dot ar frig dde y dudalen hon."
+  },
   "initialadmin": {
     "limitedaccesssims": "Mae gennych fynediad cyfyngedig i SIMS Next Gen",
     "whattodonext": "Beth i'w wneud nesaf:",

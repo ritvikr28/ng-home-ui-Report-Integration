@@ -18,6 +18,7 @@ import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
+import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -99,7 +100,8 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   );
   return (
     <div>
-        {(!isMobileView && ClassViewNotificationBanner) && (<WhatsNewBanner />)}
+       <SIMSConnectedLauncher/>
+      {(!isMobileView && ClassViewNotificationBanner) && (<WhatsNewBanner />)}
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">
