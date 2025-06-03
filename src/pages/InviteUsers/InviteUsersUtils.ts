@@ -257,6 +257,46 @@ export const handleSelectedUserData: (props: {
   }
 };
 
+// Debounce utility
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: Parameters<T>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
+const debouncedAutosuggest = debounce(
+  async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
+    setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+    setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    try {
+      setSearchLoader(true);
+      setShowSearchError(false);
+      const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
+
+      const response: any = await service.get(url);
+      const suggestionList = [
+        {
+          name: "",
+          values: getValues(response?.data)
+        }
+      ];
+      setSearchSuggestions(suggestionList);
+      setSearchLoader(false);
+      return suggestionList;
+    } catch (error) {
+      setShowSearchError(true);
+      setSearchLoader(false);
+      return [];
+    }
+  },
+  1000
+);
+
 export const handleSearch: Function = async (
   event: React.ChangeEvent<HTMLInputElement>,
   setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
@@ -270,26 +310,13 @@ export const handleSearch: Function = async (
     return undefined;
   }
   if (event?.target?.value?.length >= 2) {
-    try {
-      setSearchLoader(true);
-      setShowSearchError(false);
-      const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
-      const response: any = await service.get(url);
-      const suggestionList = [
-        {
-          name: "",
-          values: getValues(response?.data)
-        }
-      ];
-
-      setSearchSuggestions(suggestionList);
-      setSearchLoader(false);
-      return suggestionList;
-    } catch (error) {
-      setShowSearchError(true);
-      setSearchLoader(false);
-      return [];
-    }
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError
+    );
+    return undefined;
   }
   return undefined;
 };

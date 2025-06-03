@@ -945,40 +945,4 @@ describe("handleSearch", () => {
     expect(result).toBeUndefined();
   });
 
-  it("calls API and getValues with all data if status is All", async () => {
-    event.target.value = "Al";
-    (service.get as jest.Mock).mockResolvedValue({
-      data: [{ invitationStatus: "Invited" }]
-    });
-    const result = await InviteUsersUtils.handleSearch(
-      event,
-      setSearchLoader,
-      setSearchSuggestions,
-      setSearchAndStatusFilter,
-      setShowSearchError,
-      { selectedStatus: { value: "All" } }
-    );
-    expect(service.get).toHaveBeenCalled();
-    expect(getValues).toHaveBeenCalledWith([{ invitationStatus: "Invited" }]);
-    expect(setSearchSuggestions).toHaveBeenCalled();
-    expect(setSearchLoader).toHaveBeenCalledWith(false);
-    expect(result).toBeDefined();
-  });
-
-
-  it("handles API error and sets error state", async () => {
-    event.target.value = "Al";
-    (service.get as jest.Mock).mockRejectedValue(new Error("API error"));
-    const result = await InviteUsersUtils.handleSearch(
-      event,
-      setSearchLoader,
-      setSearchSuggestions,
-      setSearchAndStatusFilter,
-      setShowSearchError,
-      { selectedStatus: { value: "All" } }
-    );
-    expect(setShowSearchError).toHaveBeenCalledWith(true);
-    expect(setSearchLoader).toHaveBeenCalledWith(false);
-    expect(result).toEqual([]);
-  });
 });

@@ -281,7 +281,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
             text: "Invite Users",
-            value: `${window.location.origin}/inviteusers`
+            value: window.location.href
           }}
         />
       </GridItem>
@@ -464,10 +464,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               cancelText: "Cancel",
               contentText:
                 source === "Bulk"
-                  ? `${selectedCheckBoxIds.length} users will be sent invites to access the system`
+                  ? ""
                   : "This user will be sent an invite to access the system.",
-              isNotificationanner: false,
-              notificationStatus: NotificationStatus.SUCCESS,
+              isNotificationanner: source === "Bulk",
+              notificationTitle: `${selectedCheckBoxIds.length} users will be sent invites to access the system`,
+              notificationStatus: NotificationStatus.WARNING,
               okText: "Save",
               onCancel: (): void => {
                 setShowConfirmDialog(false);
@@ -498,10 +499,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             toastNotificationAutoclose
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
-            globalNotificationBannerOnClickClose={() => {
-              setShowErrorBanner(false);
-              setShowInviteErrBanner(false);
-              setshowInvitationConflictBanner(false);
+            globalNotificationBannerOnClickClose={(e, index) => {
+              if (index === 0) {
+                setShowErrorBanner(false);
+              }
+              if (index === 1) {
+                setshowInvitationConflictBanner(false);
+              }
+              if (index === 2 || index === 3) {
+                setShowInviteErrBanner(false);
+              }
             }}
             globalNotificationMsgBannerObject={[
               {
@@ -532,7 +539,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
                 title: "Unable to invite",
-                message: BulkInviteErrBanner({selectedRowItems}),
+                message: BulkInviteErrBanner({ selectedRowItems }),
                 autoclose: true
               }
             ]}

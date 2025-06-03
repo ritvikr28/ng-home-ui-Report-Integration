@@ -259,7 +259,6 @@ export const BulkInviteErrBanner = ({
 }: {
   selectedRowItems: IInviteUserDetails[];
 }) => {
-  console.log(selectedRowItems, "selectedRowItems in BulkInviteErrBanner");
   const emails = selectedRowItems.map((item) => item.emailId).join("; ");
   return (
     <>
