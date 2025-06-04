@@ -273,11 +273,16 @@ const debouncedAutosuggest = debounce(
     setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
+    const { value } = event.target;
+    if (!value || value.trim().length === 0) {
+      setSearchLoader(false);
+      setSearchSuggestions([]);
+      return;
+    }
     try {
       setSearchLoader(true);
       setShowSearchError(false);
-      const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
-
+      const url = `/InviteUser/Autosuggest?searchTerm=${value}`;
       const response: any = await service.get(url);
       const suggestionList = [
         {
@@ -287,11 +292,9 @@ const debouncedAutosuggest = debounce(
       ];
       setSearchSuggestions(suggestionList);
       setSearchLoader(false);
-      return suggestionList;
     } catch (error) {
       setShowSearchError(true);
       setSearchLoader(false);
-      return [];
     }
   },
   1000
