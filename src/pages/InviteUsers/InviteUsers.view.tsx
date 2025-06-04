@@ -310,6 +310,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         </div>
         <div className="invite-users-table">
           <ControlledList
+            key={searchAndStatusFilter.selectedStatus.value}
             className="invite-users-table"
             dataTestId="invite-list-test-id"
             isShowFirstElement
@@ -402,7 +403,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               searchAndStatusFilter?.searchText.length === 0
             }
             searchDebouncerTreshold={1000}
-            searchValue={searchAndStatusFilter?.searchText || ""}
+            sortAscFirst={sortDirection}
+            searchValue={searchTerm || ""}
             onKeyUpLenght={2}
             searchOnChange={(e: any) => handleOnChange(e)}
             searchValidationText={
@@ -413,6 +415,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             searchValidationTextLevel={
               showSearchError ? ValidationTextLevel.Warning : undefined
             }
+            setSearchTerm={searchTerm}
             onSearchKeyDown={(e: any) => {
               if (e.key === "Enter") {
                 setSearchAndStatusFilter((prev: any) => ({
@@ -424,6 +427,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }}
             onSearchSuggestionItemClick={(item: ISearchItemProp | null) => {
               setCurrentPage(1);
+              setSearchTerm(item?.name || "");
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
                 searchText: item?.name || ""
@@ -440,7 +444,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
-            tableHeadersData={getTableHeadersData}
+            tableHeadersData={getTableHeadersData(sortBy)}
             tableLastColumnWidth="10px"
             editSelectedOptions={editSelectedOptions}
             onEditSelectedBtnClick={() => {}}

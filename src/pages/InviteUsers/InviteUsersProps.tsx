@@ -62,8 +62,7 @@ export interface TableHeader {
   isColumnSortByDefault?: boolean;
   isColumnSortAscFirst?: boolean;
 }
-
-export const getTableHeadersData: TableHeader[] = [
+export const getTableHeadersData = (sortBy: string): TableHeader[] => [
   {
     text: "Id",
     isShow: false,
@@ -81,8 +80,7 @@ export const getTableHeadersData: TableHeader[] = [
     headerTxtTrunctLength: 50,
     isSimpleText: true,
     isColumnSorting: true,
-    isColumnSortByDefault: true,
-    isColumnSortAscFirst: true
+    isColumnSortByDefault: sortBy === "Forename"
   },
   {
     text: "Email",
@@ -93,6 +91,7 @@ export const getTableHeadersData: TableHeader[] = [
     headerTxtTrunctLength: 17,
     isSimpleText: true,
     isColumnSorting: true,
+    isColumnSortByDefault: sortBy !== "Forename",
     columnWidth: "325px"
   },
   {

@@ -266,23 +266,29 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
-const debouncedAutosuggest = debounce(
+export const debouncedAutosuggest = debounce(
   async (
     event: React.ChangeEvent<HTMLInputElement>,
     setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
     setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-    setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
+    setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
+    searchAndStatusFilter: {
+      searchText: string;
+      selectedStatus: ISelectedItem;
+    }
   ) => {
     const { value } = event.target;
     if (!value || value.trim().length === 0) {
       setSearchLoader(false);
-      setSearchSuggestions([]);
       return;
     }
     try {
       setSearchLoader(true);
       setShowSearchError(false);
-      const url = `/InviteUser/Autosuggest?searchTerm=${value}`;
+      let url = `/InviteUser/Autosuggest?searchTerm=${value}`;
+      if (searchAndStatusFilter?.selectedStatus?.value !== "All") {
+        url += `&InvitationStatus=${searchAndStatusFilter?.selectedStatus?.value}`;
+      }
       const response: any = await service.get(url);
       const suggestionList = [
         {
@@ -305,7 +311,12 @@ export const handleSearch: Function = async (
   setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
   setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
+
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
+  searchAndStatusFilter: {
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }
 ) => {
   setSearchTerm(event.target.value || "");
   if (event.target.value === "") {
@@ -317,7 +328,8 @@ export const handleSearch: Function = async (
       event,
       setSearchLoader,
       setSearchSuggestions,
-      setShowSearchError
+      setShowSearchError,
+      searchAndStatusFilter
     );
     return undefined;
   }
