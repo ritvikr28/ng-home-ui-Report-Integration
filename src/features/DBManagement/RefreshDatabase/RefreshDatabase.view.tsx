@@ -146,17 +146,21 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             precheckStatus.dbDetachedStatus || "",
             precheckStatus.deleteNGDataStatus || "",
             precheckStatus.dbReAttachedStatus || "",
-            precheckStatus.syncDataStatus || ""
+            precheckStatus.syncDataStatus || "",
+            precheckStatus.syncCompletedSeenStatus || ""
           ];
 
           // Map statuses to corresponding step labels
           const initialFlags = statuses.map((status, index) => {
             if (index === 3) { // Assuming syncDataStatus is at index 3
-              if(status === "Active") return "";
-              if (status === "Completed" ) {
+              if (status === "Active") return "";
+              if (status === "Completed" && precheckStatus.syncCompletedSeenStatus === "Seen")
+                return "";
+              if (status === "Completed") {
                 clearInterval(intervalId); // Stop auto-refresh
-                return "Completed";}
-             
+                return "Completed";
+              }
+
               if (status === "Not Started" || status === "In Progress") return "In Progress";
               return ""; // Default to empty if unrecognized
             }
@@ -164,23 +168,24 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             if (status === "Deleted") return t("RefreshDB_T.moduleBlock.status.content");
             if (status === "Attached") return t("RefreshDB_T.moduleBlock.status.content1");
             if (status === "In Progress") return t("RefreshDB_T.moduleBlock.status.content2");
-            
+
             return ""; // Default to empty if unrecognized
           });
           setFlagValues(initialFlags);
 
           // Determine the active step
-          let activeStep = initialFlags.findIndex((flag) => flag === "In Progress");
+          let activeStep = initialFlags.findIndex((flag) => flag === "In Progress" || flag === "Completed"); // Find the first step that is in progress or not started
           if (activeStep === -1) {
             activeStep = initialFlags.findIndex((flag) => flag === "");
           }
+
           if (activeStep === -1) {
-              activeStep = items.length - 1; // Default to the last step if all are complete
-          
+            activeStep = items.length - 1; // Default to the last step if all are complete
+
           }
           setActiveIndex(activeStep);
-           // Stop auto-refresh if specific conditions are met
-      
+          // Stop auto-refresh if specific conditions are met
+
         }
       } catch (error) {
         console.log("Error fetching precheck status:");
@@ -253,7 +258,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                       }}
                       // Pass handleException to trigger notification in case of exception
                       handleException={handleException}
-                     syncDataStatus={syncDataStatus}
+                      syncDataStatus={syncDataStatus}
                     />
                   )}
                 </div>
