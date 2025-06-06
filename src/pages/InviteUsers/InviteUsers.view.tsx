@@ -17,7 +17,7 @@ import {
   ISearchItemProp,
   ISelectedItem
 } from "@essnextgen/ui-kit";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   breadcrumbActions,
   BulkInviteErrBanner,
@@ -130,6 +130,18 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>(NoDataMessage.noDataToDisplay);
+  const statusFilterRef = useRef<ISelectedItem>({
+    text: InvitationStatusFilterOptions.NotInvited,
+    value: "Not invited"
+  });
+
+  useEffect(() => {
+    setSearchAndStatusFilter((prev) => ({
+      ...prev,
+      selectedStatus: statusFilterRef?.current as ISelectedItem
+    }));
+  }, [statusFilterRef?.current]);
+
   const hasItems: boolean = searchSuggestions.some(
     (x: Suggestion) => x.values.length > 0
   );
@@ -157,8 +169,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     });
   }, [
     currentPage,
-    searchAndStatusFilter.searchText,
-    searchAndStatusFilter.selectedStatus.value
+    searchAndStatusFilter?.searchText,
+    searchAndStatusFilter.selectedStatus?.value
   ]);
 
   useEffect(() => {
@@ -310,7 +322,6 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         </div>
         <div className="invite-users-table">
           <ControlledList
-            key={searchAndStatusFilter.selectedStatus.value}
             className="invite-users-table"
             dataTestId="invite-list-test-id"
             isShowFirstElement
@@ -375,6 +386,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLuseAutoWidth
             filterDDLisSelected
             filterDDLonSelect={(e, selectedItem) => {
+              statusFilterRef.current = selectedItem;
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
                 selectedStatus: selectedItem
@@ -403,7 +415,6 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               searchAndStatusFilter?.searchText.length === 0
             }
             searchDebouncerTreshold={1000}
-            sortAscFirst={sortDirection}
             searchValue={searchTerm || ""}
             onKeyUpLenght={2}
             searchOnChange={(e: any) => handleOnChange(e)}
@@ -444,7 +455,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
-            tableHeadersData={getTableHeadersData(sortBy)}
+            tableHeadersData={getTableHeadersData}
             tableLastColumnWidth="10px"
             editSelectedOptions={editSelectedOptions}
             onEditSelectedBtnClick={() => {}}

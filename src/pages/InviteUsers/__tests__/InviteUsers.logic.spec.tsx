@@ -9,10 +9,7 @@ jest.mock("../InviteUsers.view", () => ({
     <div>
       <p>InviteUserView Rendered</p>
       <p data-testid="current-page">{currentPage}</p>
-      <button
-        type="button"
-        onClick={() => handlePageChange({}, currentPage + 1)}
-      >
+      <button type="button" onClick={() => handlePageChange({}, currentPage + 1)}>
         Next Page
       </button>
     </div>
@@ -61,17 +58,19 @@ describe("InviteUsersLogic", () => {
     expect(setBannerSpy).toHaveBeenCalledWith(false);
   });
   it("should be an array with expected length and structure", () => {
-    const headers = getTableHeadersData("Forename");
-    expect(Array.isArray(headers)).toBe(true);
-    expect(headers.length).toBeGreaterThan(0);
-    const header = headers.find((h) => h.text === "Invitation status");
+    expect(Array.isArray(getTableHeadersData)).toBe(true);
+    expect(getTableHeadersData.length).toBeGreaterThan(0);
+    const header = getTableHeadersData.find(
+      (h) => h.text === "Invitation status"
+    );
     expect(header).toBeDefined();
     expect(typeof header?.anyComponent).toBe("function");
   });
 
   it("anyComponent renders ValidationText for 'Invitation conflict'", () => {
-    const headers = getTableHeadersData("Forename");
-    const header = headers.find((h) => h.text === "Invitation status");
+    const header = getTableHeadersData.find(
+      (h) => h.text === "Invitation status"
+    );
     const result = header?.anyComponent("Invitation conflict");
     const { getByTestId } = render(<>{result}</>);
     const validationText = getByTestId("mock-validation-text");
@@ -84,8 +83,9 @@ describe("InviteUsersLogic", () => {
   });
 
   it("anyComponent returns the input for non-conflict values", () => {
-    const headers = getTableHeadersData("Forename");
-    const header = headers.find((h) => h.text === "Invitation status");
+    const header = getTableHeadersData.find(
+      (h) => h.text === "Invitation status"
+    );
     const result = header?.anyComponent("Invited");
     expect(result).toBe("Invited");
   });
