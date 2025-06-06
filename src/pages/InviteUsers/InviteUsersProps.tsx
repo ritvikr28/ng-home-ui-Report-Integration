@@ -62,7 +62,6 @@ export interface TableHeader {
   isColumnSortByDefault?: boolean;
   isColumnSortAscFirst?: boolean;
 }
-
 export const getTableHeadersData: TableHeader[] = [
   {
     text: "Id",
@@ -81,8 +80,7 @@ export const getTableHeadersData: TableHeader[] = [
     headerTxtTrunctLength: 50,
     isSimpleText: true,
     isColumnSorting: true,
-    isColumnSortByDefault: true,
-    isColumnSortAscFirst: true
+    isColumnSortByDefault: true
   },
   {
     text: "Email",
@@ -259,7 +257,6 @@ export const BulkInviteErrBanner = ({
 }: {
   selectedRowItems: IInviteUserDetails[];
 }) => {
-  console.log(selectedRowItems, "selectedRowItems in BulkInviteErrBanner");
   const emails = selectedRowItems.map((item) => item.emailId).join("; ");
   return (
     <>

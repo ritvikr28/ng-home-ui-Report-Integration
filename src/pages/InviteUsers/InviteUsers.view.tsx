@@ -17,7 +17,7 @@ import {
   ISearchItemProp,
   ISelectedItem
 } from "@essnextgen/ui-kit";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   breadcrumbActions,
   BulkInviteErrBanner,
@@ -130,6 +130,18 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>(NoDataMessage.noDataToDisplay);
+  const statusFilterRef = useRef<ISelectedItem>({
+    text: InvitationStatusFilterOptions.NotInvited,
+    value: "Not invited"
+  });
+
+  useEffect(() => {
+    setSearchAndStatusFilter((prev) => ({
+      ...prev,
+      selectedStatus: statusFilterRef?.current as ISelectedItem
+    }));
+  }, [statusFilterRef?.current]);
+
   const hasItems: boolean = searchSuggestions.some(
     (x: Suggestion) => x.values.length > 0
   );
@@ -157,8 +169,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     });
   }, [
     currentPage,
-    searchAndStatusFilter.searchText,
-    searchAndStatusFilter.selectedStatus.value
+    searchAndStatusFilter?.searchText,
+    searchAndStatusFilter.selectedStatus?.value
   ]);
 
   useEffect(() => {
@@ -264,7 +276,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setSearchSuggestions,
         setSearchTerm,
         setShowSearchError,
-        searchAndStatusFilter
+        {
+          searchText: e.target.value,
+          selectedStatus: statusFilterRef.current 
+        }
       );
     }
   };
@@ -281,7 +296,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
             text: "Invite Users",
-            value: `${window.location.origin}/inviteusers`
+            value: window.location.href
           }}
         />
       </GridItem>
@@ -374,6 +389,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLuseAutoWidth
             filterDDLisSelected
             filterDDLonSelect={(e, selectedItem) => {
+              statusFilterRef.current = selectedItem;
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
                 selectedStatus: selectedItem
@@ -402,7 +418,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               searchAndStatusFilter?.searchText.length === 0
             }
             searchDebouncerTreshold={1000}
-            searchValue={searchAndStatusFilter?.searchText || ""}
+            searchValue={searchTerm || ""}
             onKeyUpLenght={2}
             searchOnChange={(e: any) => handleOnChange(e)}
             searchValidationText={
@@ -413,6 +429,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             searchValidationTextLevel={
               showSearchError ? ValidationTextLevel.Warning : undefined
             }
+            setSearchTerm={searchTerm}
             onSearchKeyDown={(e: any) => {
               if (e.key === "Enter") {
                 setSearchAndStatusFilter((prev: any) => ({
@@ -424,6 +441,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }}
             onSearchSuggestionItemClick={(item: ISearchItemProp | null) => {
               setCurrentPage(1);
+              setSearchTerm(item?.name || "");
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
                 searchText: item?.name || ""
@@ -464,10 +482,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               cancelText: "Cancel",
               contentText:
                 source === "Bulk"
-                  ? `${selectedCheckBoxIds.length} users will be sent invites to access the system`
+                  ? ""
                   : "This user will be sent an invite to access the system.",
-              isNotificationanner: false,
-              notificationStatus: NotificationStatus.SUCCESS,
+              isNotificationanner: source === "Bulk",
+              notificationTitle: `${selectedCheckBoxIds.length} users will be sent invites to access the system`,
+              notificationStatus: NotificationStatus.WARNING,
               okText: "Save",
               onCancel: (): void => {
                 setShowConfirmDialog(false);
@@ -498,10 +517,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             toastNotificationAutoclose
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
-            globalNotificationBannerOnClickClose={() => {
-              setShowErrorBanner(false);
-              setShowInviteErrBanner(false);
-              setshowInvitationConflictBanner(false);
+            globalNotificationBannerOnClickClose={(e, index) => {
+              if (index === 0) {
+                setShowErrorBanner(false);
+              }
+              if (index === 1) {
+                setshowInvitationConflictBanner(false);
+              }
+              if (index === 2 || index === 3) {
+                setShowInviteErrBanner(false);
+              }
             }}
             globalNotificationMsgBannerObject={[
               {
@@ -532,7 +557,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
                 title: "Unable to invite",
-                message: BulkInviteErrBanner({selectedRowItems}),
+                message: BulkInviteErrBanner({ selectedRowItems }),
                 autoclose: true
               }
             ]}

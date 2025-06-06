@@ -257,23 +257,38 @@ export const handleSelectedUserData: (props: {
   }
 };
 
-export const handleSearch: Function = async (
-  event: React.ChangeEvent<HTMLInputElement>,
-  setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
-  setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  setSearchTerm(event.target.value || "");
-  if (event.target.value === "") {
-    setSearchLoader(false);
-    return undefined;
-  }
-  if (event?.target?.value?.length >= 2) {
+// Debounce utility
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: Parameters<T>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
+export const debouncedAutosuggest = debounce(
+  async (
+    event: React.ChangeEvent<HTMLInputElement>,
+    setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
+    setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+    setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
+    searchAndStatusFilter: {
+      searchText: string;
+      selectedStatus: ISelectedItem;
+    }
+  ) => {
+    const { value } = event.target;
+    if (!value || value.trim().length === 0) {
+      setSearchLoader(false);
+      return;
+    }
     try {
       setSearchLoader(true);
       setShowSearchError(false);
-      const url = `/InviteUser/Autosuggest?searchTerm=${event.target.value}`;
+      let url = `/InviteUser/Autosuggest?searchTerm=${value}`;
+      if (searchAndStatusFilter?.selectedStatus?.value !== "All") {
+        url += `&InvitationStatus=${searchAndStatusFilter?.selectedStatus?.value}`;
+      }
       const response: any = await service.get(url);
       const suggestionList = [
         {
@@ -281,15 +296,42 @@ export const handleSearch: Function = async (
           values: getValues(response?.data)
         }
       ];
-
       setSearchSuggestions(suggestionList);
       setSearchLoader(false);
-      return suggestionList;
     } catch (error) {
       setShowSearchError(true);
       setSearchLoader(false);
-      return [];
     }
+  },
+  1000
+);
+
+export const handleSearch: Function = async (
+  event: React.ChangeEvent<HTMLInputElement>,
+  setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
+  setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
+  searchAndStatusFilter: {
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }
+) => {
+  setSearchTerm(event.target.value || "");
+  if (event.target.value === "") {
+    setSearchLoader(false);
+    return undefined;
+  }
+  if (event?.target?.value?.length >= 2) {
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    return undefined;
   }
   return undefined;
 };

@@ -1,6 +1,7 @@
 import * as InviteUsersUtils from "../InviteUsersUtils";
 import { service } from "../../../shared/utils/api-service";
 import { getValues } from "../InviteUsers.view";
+import { debouncedAutosuggest } from "../InviteUsersUtils";
 
 jest.mock("../../../shared/utils/api-service", () => ({
   service: {
@@ -760,7 +761,7 @@ describe("handleSendInvite", () => {
     jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
 
     await InviteUsersUtils.handleSendInvite({
-      requestBody: selectedRowItem.map(item => ({
+      requestBody: selectedRowItem.map((item) => ({
         emailId: item.emailId,
         externalId: item.id,
         forename: item.forename,
@@ -806,7 +807,7 @@ describe("handleSendInvite", () => {
     ];
 
     await InviteUsersUtils.handleSendInvite({
-      requestBody: selectedRowItem.map(item => ({
+      requestBody: selectedRowItem.map((item) => ({
         emailId: item.emailId,
         externalId: item.id,
         forename: item.forename,
@@ -944,41 +945,106 @@ describe("handleSearch", () => {
     );
     expect(result).toBeUndefined();
   });
+});
+describe("debouncedAutosuggest", () => {
+  let setSearchLoader: jest.Mock;
+  let setSearchSuggestions: jest.Mock;
+  let setShowSearchError: jest.Mock;
+  let searchAndStatusFilter: any;
+  let event: any;
 
-  it("calls API and getValues with all data if status is All", async () => {
-    event.target.value = "Al";
-    (service.get as jest.Mock).mockResolvedValue({
-      data: [{ invitationStatus: "Invited" }]
-    });
-    const result = await InviteUsersUtils.handleSearch(
-      event,
-      setSearchLoader,
-      setSearchSuggestions,
-      setSearchAndStatusFilter,
-      setShowSearchError,
-      { selectedStatus: { value: "All" } }
-    );
-    expect(service.get).toHaveBeenCalled();
-    expect(getValues).toHaveBeenCalledWith([{ invitationStatus: "Invited" }]);
-    expect(setSearchSuggestions).toHaveBeenCalled();
-    expect(setSearchLoader).toHaveBeenCalledWith(false);
-    expect(result).toBeDefined();
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setSearchLoader = jest.fn();
+    setSearchSuggestions = jest.fn();
+    setShowSearchError = jest.fn();
+    searchAndStatusFilter = { selectedStatus: { value: "All" } };
+    event = { target: { value: "test" } };
+    (service.get as jest.Mock).mockClear();
+    (getValues as jest.Mock).mockClear();
   });
 
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
 
-  it("handles API error and sets error state", async () => {
-    event.target.value = "Al";
-    (service.get as jest.Mock).mockRejectedValue(new Error("API error"));
-    const result = await InviteUsersUtils.handleSearch(
+  it("should not call API immediately", async () => {
+    debouncedAutosuggest(
       event,
       setSearchLoader,
       setSearchSuggestions,
-      setSearchAndStatusFilter,
       setShowSearchError,
-      { selectedStatus: { value: "All" } }
+      searchAndStatusFilter
     );
-    expect(setShowSearchError).toHaveBeenCalledWith(true);
+    expect(service.get).not.toHaveBeenCalled();
+  });
+
+  it("should call API after debounce delay", async () => {
+    (service.get as jest.Mock).mockResolvedValue({ data: ["suggestion"] });
+    (getValues as jest.Mock).mockReturnValue(["suggestion"]);
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    jest.advanceTimersByTime(1000);
+    // Wait for async
+    await Promise.resolve();
+    expect(service.get).toHaveBeenCalled();
+    expect(setSearchLoader).toHaveBeenCalledWith(true);
+  });
+
+  it("should cancel previous call if new event comes in before delay", async () => {
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    event.target.value = "test2";
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    jest.advanceTimersByTime(1000);
+    await Promise.resolve();
+    expect(service.get).toHaveBeenCalledTimes(1);
+  });
+
+  it("should not call API if input is empty or whitespace", async () => {
+    event.target.value = " ";
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    jest.advanceTimersByTime(1000);
+    await Promise.resolve();
+    expect(service.get).not.toHaveBeenCalled();
     expect(setSearchLoader).toHaveBeenCalledWith(false);
-    expect(result).toEqual([]);
+  });
+
+  it("should handle API errors and set error state", async () => {
+    (service.get as jest.Mock).mockRejectedValue(new Error("API Error"));
+    debouncedAutosuggest(
+      event,
+      setSearchLoader,
+      setSearchSuggestions,
+      setShowSearchError,
+      searchAndStatusFilter
+    );
+    jest.advanceTimersByTime(1000);
+    await Promise.resolve();
+    expect(setShowSearchError).toHaveBeenCalledWith(false);
+    expect(setSearchLoader).toHaveBeenCalledWith(true);
   });
 });

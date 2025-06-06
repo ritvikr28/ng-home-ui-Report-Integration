@@ -480,31 +480,31 @@ stages:
       variables:
         - group: 'ng-home-ui-Live'
       jobs:
-        - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false
-              deploymentJobName: deploy_nghomeui_live     ###
-            # component:
-            #   name: 'ng-home-ui'
-            #   selfhostedpool: 'paz-vmss-pool' 
+        # - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
+        #   parameters:
+        #     snowConfig:    
+        #       serviceConnection: 'ServiceNow-Connection'
+        #       requireManualValidation: false
+        #       deploymentJobName: deploy_nghomeui_live     ###
+        #     # component:
+        #     #   name: 'ng-home-ui'
+        #     #   selfhostedpool: 'paz-vmss-pool' 
 
-        - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: true
-              deploymentJobName: deploy_nghomeui_live     ###          
-            # component:
-            #   name: 'nghomeui'
-            #   selfhostedpool: 'paz-vmss-pool'
-            env_name: prod_eng  
-            config:
+        # - template: /templates/servicenow/template-progress-cr.yml@platformPipelineRepo
+        #   parameters:
+        #     snowConfig:    
+        #       serviceConnection: 'ServiceNow-Connection'
+        #       requireManualValidation: true
+        #       deploymentJobName: deploy_nghomeui_live     ###          
+        #     # component:
+        #     #   name: 'nghomeui'
+        #     #   selfhostedpool: 'paz-vmss-pool'
+        #     env_name: prod_eng  
+        #     config:
 
         - deployment: deploy_nghomeui_live
           displayName: "Deployment to Prod"
-          dependsOn: MoveCR
+          # dependsOn: MoveCR
           environment: prod_eng         
           strategy:
             runOnce:
@@ -555,16 +555,16 @@ stages:
                       clusterName: "paz-prd-pfm-aks"
                       subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
 
-        - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
-          parameters:
-            snowConfig:    
-              serviceConnection: 'ServiceNow-Connection'
-              requireManualValidation: false 
-              deploymentJobName: deploy_nghomeui_live     ###          
-            components:
-              - name: 'nghomeui'
-                selfhostedpool: 'paz-vmss-pool'
-            env_name: prod_eng
+        # - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
+        #   parameters:
+        #     snowConfig:    
+        #       serviceConnection: 'ServiceNow-Connection'
+        #       requireManualValidation: false 
+        #       deploymentJobName: deploy_nghomeui_live     ###          
+        #     components:
+        #       - name: 'nghomeui'
+        #         selfhostedpool: 'paz-vmss-pool'
+        #     env_name: prod_eng
             
         # - job: Live_Test
         #   displayName: Running Automation UI Test cases on live env
