@@ -19,6 +19,7 @@ import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
+import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -98,10 +99,22 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     `${envConfig.APPLICATION}`,
     "ClassViewNotificationBanner"
   );
+
+  const { hasConnectedLauncher, isLoading } = useSIMSNextGenLinks();
+  const shouldShowWhatsNew = !isLoading && !hasConnectedLauncher; 
+
   return (
     <div>
-       <SIMSConnectedLauncher/>
-      {(!isMobileView && ClassViewNotificationBanner) && (<WhatsNewBanner />)}
+      {!isLoading && hasConnectedLauncher && (
+        <div data-testid="sims-launcher">
+          <SIMSConnectedLauncher />
+        </div>
+      )}
+      {(!isMobileView && ClassViewNotificationBanner && shouldShowWhatsNew) && (
+        <div data-testid="whats-new-banner">
+          <WhatsNewBanner />
+        </div>
+      )}
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">
