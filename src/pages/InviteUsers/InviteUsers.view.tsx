@@ -276,7 +276,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setSearchSuggestions,
         setSearchTerm,
         setShowSearchError,
-        searchAndStatusFilter
+        {
+          searchText: e.target.value,
+          selectedStatus: statusFilterRef.current 
+        }
       );
     }
   };
