@@ -175,6 +175,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
 
   useEffect(() => {
     if (isDataUpdated) {
+      if (source === "Bulk") {
+        setSelectedCheckBoxIds([]);
+      }
       setLoader(true);
       fetchInviteUserDetails({
         pageNumber: currentPage,
@@ -575,6 +578,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 setSelectedCheckBoxIds
               });
             }}
+            isClearSelectedCheckbox={selectedCheckBoxIds.length === 0}
             selectedCheckboxIds={(ids: string[]) => {
               setSelectedCheckBoxIds(ids);
             }}
