@@ -139,7 +139,7 @@ const UAM: () => JSX.Element = () => {
               heading="Users"
               subHeading="Create and manage users within your Trust"
               enableSort
-              showMakeInactive
+              showMakeInactive={true}
             />
           </div>
         </GridItem>
