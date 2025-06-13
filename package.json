@@ -17,7 +17,7 @@
     "@essnextgen/ui-flagr": "^0.0.3",
     "@essnextgen/ui-intl-kit": "^0.0.9",
     "@essnextgen/ui-kit": "^0.24.1-alpha.2",
-    "@essnextgen/ui-user-access-management-kit": "^1.0.15-alpha.0",
+    "@essnextgen/ui-user-access-management-kit": "^1.0.15-alpha.1",
     "@microsoft/applicationinsights-react-js": "^3.4.0",
     "@microsoft/applicationinsights-web": "^2.8.9",
     "axios": "0.27.2",
