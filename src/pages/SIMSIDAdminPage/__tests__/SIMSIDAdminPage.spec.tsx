@@ -1,92 +1,134 @@
-import { render, screen, within } from "@testing-library/react";
-import { authService } from "@essnextgen/auth-ui";
+import { render, fireEvent } from "@testing-library/react";
 import { useMediaQuery } from "@essnextgen/ui-kit";
 import SIMSIDAdminPageView from "../SIMSIDAdminPage.view";
 
-jest.mock('@essnextgen/ui-kit', () => ({
-    ...jest.requireActual('@essnextgen/ui-kit'),
-    useMediaQuery: jest.fn(),
-  }));
 
-describe("SIMSIDAdminPage", () => {
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn(),
+  Grid: ({ children, className, dataTestId }: any) => (
+    <div className={className} data-testid={dataTestId}>{children}</div>
+  ),
+  GridItem: ({ children, className, lg }: any) => (
+    <div className={className} data-lg={lg}>{children}</div>
+  ),
+}));
+
+jest.mock("../../../features/SidePanel/SidePanel.view", () => ({
+  __esModule: true,
+  default: ({ togglePanel, closePanel }: any) => (
+    <div data-testid="side-panel-mock">
+      <button type="button" onClick={togglePanel} data-testid="toggle-button">Toggle</button>
+      <button type="button" onClick={closePanel} data-testid="close-button">Close</button>
+    </div>
+  ),
+}));
+
+jest.mock("../../../features/SIMSIDAdmin/Components/SIMSIDAdminMainPanelView/SIMSIDAdminMainPanel.logic", () => ({
+  __esModule: true,
+  default: ({ isOpen, setIsOpen }: any) => (
+    <div data-testid="main-panel-mock">
+      Main Panel (isOpen: {isOpen.toString()})
+      <button type="button" onClick={() => setIsOpen(!isOpen)} data-testid="main-panel-toggle">
+        Toggle from Main Panel
+      </button>
+    </div>
+  ),
+}));
+
+describe("SIMSIDAdminPageView", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("renders welcome message and sims id admin page if authorised, with notification enabled, in desktop view", () => {
+  describe("Desktop View", () => {
+    beforeEach(() => {
+      (useMediaQuery as jest.Mock).mockReturnValue(false);
+    });
 
-    (useMediaQuery as jest.Mock).mockReturnValue(false);
+    test("renders with side panel open by default", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
 
-    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+      expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
+      expect(getByTestId("side-panel-mock")).toBeInTheDocument();
+      expect(getByTestId("main-panel-mock")).toBeInTheDocument();
 
-    jest
-      .spyOn(authService, "getUsername")
-      .mockImplementation(() => "John");
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".side-margin-simsid-admin")).toBeTruthy();
+      expect(container.querySelector(".body-open-panel-simsid-admin")).toBeTruthy();
+    });
 
-    const { getByTestId } = render(<SIMSIDAdminPageView />);
+    test("toggles side panel visibility when toggle button is clicked", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
 
-    const containerWelcomeMessage = screen.getByTestId('subparent-element');
+      const toggleButton = getByTestId("toggle-button");
+      fireEvent.click(toggleButton);
 
-    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'span' });
-    const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".side-margin-closed-simsid-admin")).toBeTruthy();
+      expect(container.querySelector(".body-panel-simsid-admin")).toBeTruthy();
+    });
 
-    expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
-    expect(getByTestId('notification-test-id')).toBeInTheDocument();
-    expect(strongElement).toBeInTheDocument();
-    expect(containerWelcomeMessage).toHaveTextContent(welcomeMessage);
+    test("closes side panel when close button is clicked", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
+
+      const closeButton = getByTestId("close-button");
+      fireEvent.click(closeButton);
+
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".side-margin-closed-simsid-admin")).toBeTruthy();
+      expect(container.querySelector(".body-panel-simsid-admin")).toBeTruthy();
+    });
+
+    test("toggles panel from main panel component", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
+
+      const mainPanelToggle = getByTestId("main-panel-toggle");
+      fireEvent.click(mainPanelToggle);
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".side-margin-closed-simsid-admin")).toBeTruthy();
+      expect(container.querySelector(".body-panel-simsid-admin")).toBeTruthy();
+    });
   });
 
-  test("renders sims id admin page if authorised, with notification enabled, in mobile view", () => {
+  describe("Mobile View", () => {
+    beforeEach(() => {
+      (useMediaQuery as jest.Mock).mockReturnValue(true);
+    });
 
-    (useMediaQuery as jest.Mock).mockReturnValue(true);
+    test("renders with side panel closed by default", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
 
-    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+      expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
+      expect(getByTestId("main-panel-mock")).toBeInTheDocument();
 
-    jest
-      .spyOn(authService, "getUsername")
-      .mockImplementation(() => "John");
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".side-margin-closed-simsid-admin")).toBeTruthy();
+      expect(container.querySelector(".body-panel-mobile-simsid-admin")).toBeTruthy();
+    });
 
-    const { getByTestId } = render(<SIMSIDAdminPageView />);
-    expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
-    expect(getByTestId('notification-test-id')).toBeInTheDocument();
-  });
+    test("toggles mobile side panel visibility", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
 
-  test("renders welcome message and sims id admin page if authorised, with notification disabled, in desktop view", () => {
-    (useMediaQuery as jest.Mock).mockReturnValue(false);
-    const sessionStorageMock = {
-        getItem: jest.fn((key) => {
-          if (key === 'IS_NOTIFICATION_ENABLED') {
-            return 'false';
-          }
-          return null;
-        }),
-        setItem: jest.fn(),
-        clear: jest.fn(),
-        removeItem: jest.fn(),
-      };
+      const mainPanelToggle = getByTestId("main-panel-toggle");
+      fireEvent.click(mainPanelToggle);
 
-      Object.defineProperty(window, 'sessionStorage', {
-        value: sessionStorageMock,
-        writable: true,
-      });
-    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(getByTestId("side-panel-mock")).toBeInTheDocument();
+      expect(container.querySelector(".body-panel-mobile-open-simsid-admin")).toBeTruthy();
+    });
 
-    jest
-      .spyOn(authService, "getUsername")
-      .mockImplementation(() => "John");
+    test("closes mobile side panel", () => {
+      const { getByTestId } = render(<SIMSIDAdminPageView />);
 
-    const { getByTestId } = render(<SIMSIDAdminPageView />);
+      const mainPanelToggle = getByTestId("main-panel-toggle");
+      fireEvent.click(mainPanelToggle);
 
-    const containerWelcomeMessage = screen.getByTestId('subparent-element');
+      const closeButton = getByTestId("close-button");
+      fireEvent.click(closeButton);
 
-    const strongElement = within(containerWelcomeMessage).getByText('John', { selector: 'span' });
-    const welcomeMessage = 'welcomePage.himsg John, welcomePage.welcomemsg';
-
-    const containerNotificationSection = screen.queryByTestId('notification-test-id');
-
-    expect(getByTestId("SIMSIDAdminPage")).toBeInTheDocument();
-    expect(containerNotificationSection).not.toBeInTheDocument();
-    expect(strongElement).toBeInTheDocument();
-    expect(containerWelcomeMessage).toHaveTextContent(welcomeMessage);
+      const container = getByTestId("SIMSIDAdminPage");
+      expect(container.querySelector(".body-panel-mobile-simsid-admin")).toBeTruthy();
+    });
   });
 });

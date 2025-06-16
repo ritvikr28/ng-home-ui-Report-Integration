@@ -2,10 +2,18 @@ import { render, screen } from "@testing-library/react";
 import SIMSIDAdminMainPanelView from "../SIMSIDAdminMainPanel.view";
 import SIMSIDAdminMainPanel from "../SIMSIDAdminMainPanel.logic";
 import * as stateHelper from "../../../../../shared/utils/state-helper";
+import * as hooks from "../../../../../shared/hooks/useSIMSNextGenLinks";
+
+jest.mock("../../../../../shared/hooks/useSIMSNextGenLinks", () => ({
+  useSIMSNextGenLinks: jest.fn()
+}));
 
 describe("SIMSIDAdminMainPanel", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    jest.clearAllMocks();    
+    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
+      hasConnectedLauncher: true
+    });
   });
 
   const setIsOpen = jest.fn();
@@ -58,6 +66,10 @@ describe("SIMSIDAdminMainPanel", () => {
   });
 
   test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen false", async () => {
+    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
+      hasConnectedLauncher: false
+    });
+
     const { getByTestId } = render(
       <SIMSIDAdminMainPanelView
         isOpen={false}
@@ -91,6 +103,10 @@ describe("SIMSIDAdminMainPanel", () => {
   });
 
   test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen true", async () => {
+    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
+      hasConnectedLauncher: false
+    });
+
     const { getByTestId } = render(
       <SIMSIDAdminMainPanelView
         isOpen

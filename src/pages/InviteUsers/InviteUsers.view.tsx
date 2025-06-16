@@ -177,6 +177,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     if (isDataUpdated) {
       if (source === "Bulk") {
         setSelectedCheckBoxIds([]);
+        setSelectedRowItems([]);
       }
       setLoader(true);
       fetchInviteUserDetails({
