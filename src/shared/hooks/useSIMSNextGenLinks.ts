@@ -9,12 +9,6 @@ export interface SIMSNextGenLink {
   organisationId: string;
 }
 
-declare global {
-  interface Window {
-    simsNextGenLinks?: Array<SIMSNextGenLink>;
-  }
-}
-
 export const useSIMSNextGenLinks = (): {
   isLoading: boolean;
   hasConnectedLauncher: boolean;
@@ -30,10 +24,8 @@ export const useSIMSNextGenLinks = (): {
 
       try {
         const response = await service.get('v1/SIMSConnected/simsnextgenlinks');
-        window.simsNextGenLinks = response.data;
-
-        const apiMenus = window.simsNextGenLinks || [];
-        const launcherInApi = apiMenus.find(menu => menu.code === "SIMSConnectedLauncher");
+        const apiMenus = response.data || [];
+        const launcherInApi = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
 
         if (!launcherInApi) {
           setHasConnectedLauncher(false);

@@ -16,7 +16,6 @@ jest.mock("@essnextgen/ui-flagr", () => ({
 describe("useSIMSNextGenLinks", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    window.simsNextGenLinks = undefined;
   });
 
   it("should initialize with loading state", () => {
@@ -53,7 +52,6 @@ describe("useSIMSNextGenLinks", () => {
       hasConnectedLauncher: true,
       error: false
     });
-    expect(window.simsNextGenLinks).toEqual(mockResponse.data);
     expect(service.get).toHaveBeenCalledWith("v1/SIMSConnected/simsnextgenlinks");
   });
 
@@ -206,13 +204,5 @@ describe("useSIMSNextGenLinks", () => {
     rerender();
 
     expect(service.get).toHaveBeenCalledTimes(1);
-  });
-
-  it("should handle storage events", () => {
-    window.dispatchEvent(new StorageEvent('storage', {
-      key: 'testKey',
-      newValue: JSON.stringify(true),
-      storageArea: window.sessionStorage
-    }));
   });
 }); 
