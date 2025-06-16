@@ -19,7 +19,7 @@ export const SIMSConnectedLauncher: () => JSX.Element = () => {
       updatedBanners.push({ orgId: orgId || "", isClosed: true });
       localStorage.setItem("classViewBannerClosed", JSON.stringify(updatedBanners));
     } catch (error: unknown) {
-      console.error("Failed to update localStorage:", error);
+      console.log("Failed to update localStorage:", error);
     }
   };
 

@@ -101,7 +101,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   );
 
   const { hasConnectedLauncher, isLoading } = useSIMSNextGenLinks();
-  const shouldShowWhatsNew = !isLoading && !hasConnectedLauncher; 
+  const shouldShowWhatsNew = !hasConnectedLauncher; 
 
   return (
     <div>

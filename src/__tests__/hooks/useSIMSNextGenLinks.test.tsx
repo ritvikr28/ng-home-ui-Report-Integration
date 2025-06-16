@@ -166,7 +166,7 @@ describe("useSIMSNextGenLinks", () => {
     const error = new Error("API Error");
     (service.get as jest.Mock).mockRejectedValueOnce(error);
 
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => { });
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
 

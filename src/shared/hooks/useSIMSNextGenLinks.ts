@@ -20,9 +20,9 @@ export const useSIMSNextGenLinks = (): {
   hasConnectedLauncher: boolean;
   error: boolean;
 } => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [hasConnectedLauncher, setHasConnectedLauncher] = useState(false);
-  const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasConnectedLauncher, setHasConnectedLauncher] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchLinks = async () => {
@@ -48,7 +48,7 @@ export const useSIMSNextGenLinks = (): {
         setIsLoading(false);
         setError(false);
       } catch (err) {
-        console.error('[useSIMSNextGenLinks] Error fetching links:', err);
+        console.log('[useSIMSNextGenLinks] Error fetching links:', err);
         setError(true);
         setHasConnectedLauncher(false);
         setIsLoading(false);
