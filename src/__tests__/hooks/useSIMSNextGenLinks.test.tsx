@@ -18,11 +18,10 @@ describe("useSIMSNextGenLinks", () => {
     jest.clearAllMocks();
   });
 
-  it("should initialize with loading state", () => {
+  it("should initialize with default state", () => {
     const { result } = renderHook(() => useSIMSNextGenLinks());
 
     expect(result.current).toEqual({
-      isLoading: true,
       hasConnectedLauncher: false,
       error: false
     });
@@ -48,7 +47,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: true,
       error: false
     });
@@ -74,7 +72,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: false,
       error: false
     });
@@ -99,7 +96,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: false,
       error: false
     });
@@ -124,7 +120,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: false,
       error: false
     });
@@ -150,7 +145,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: false,
       error: false
     });
@@ -171,7 +165,6 @@ describe("useSIMSNextGenLinks", () => {
     await waitForNextUpdate();
 
     expect(result.current).toEqual({
-      isLoading: false,
       hasConnectedLauncher: false,
       error: true
     });

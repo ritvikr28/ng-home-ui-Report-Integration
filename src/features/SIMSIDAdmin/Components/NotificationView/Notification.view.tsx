@@ -6,11 +6,11 @@ import { useSIMSNextGenLinks } from "../../../../shared/hooks/useSIMSNextGenLink
 const NotificationView: React.FC<INotificationProps> = () => {
   const { hasConnectedLauncher } = useSIMSNextGenLinks();
 
-  return hasConnectedLauncher ? (
+  return (hasConnectedLauncher && (
     <div data-testid="notification-test-id">
       <SIMSConnectedLauncher />
     </div>
-  ) : null;
+  )) as React.ReactElement | null;
 };
 
 export default NotificationView;

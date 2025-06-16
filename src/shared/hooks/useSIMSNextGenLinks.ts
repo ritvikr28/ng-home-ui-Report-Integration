@@ -10,7 +10,6 @@ export interface SIMSNextGenLink {
 }
 
 export const useSIMSNextGenLinks = (): {
-  isLoading: boolean;
   hasConnectedLauncher: boolean;
   error: boolean;
 } => {
@@ -50,5 +49,5 @@ export const useSIMSNextGenLinks = (): {
     fetchLinks();
   }, [isLoading]);
 
-  return { isLoading, hasConnectedLauncher, error };
+  return { hasConnectedLauncher, error };
 }; 

@@ -100,12 +100,12 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     "ClassViewNotificationBanner"
   );
 
-  const { hasConnectedLauncher, isLoading } = useSIMSNextGenLinks();
+  const { hasConnectedLauncher } = useSIMSNextGenLinks();
   const shouldShowWhatsNew = !hasConnectedLauncher; 
 
   return (
     <div>
-      {!isLoading && hasConnectedLauncher && (
+      {hasConnectedLauncher && (
         <div data-testid="sims-launcher">
           <SIMSConnectedLauncher />
         </div>
