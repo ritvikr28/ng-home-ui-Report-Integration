@@ -17,6 +17,7 @@ import { envConfig, getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
+import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
 
 const requiredPermissions: Permission[] = [
   {
@@ -134,9 +135,17 @@ const NewHomepageView: React.FC = () => {
         />
       );
     }
+    
+    const { hasConnectedLauncher } = useSIMSNextGenLinks();
+    const shouldShowWhatsNew = !hasConnectedLauncher; 
+
     return <>
-    {isMobileView && ClassViewNotificationBanner && (<WhatsNewBanner />)}
-    <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
+      {(ClassViewNotificationBanner && shouldShowWhatsNew) && (
+        <div data-testid="whats-new-banner">
+          <WhatsNewBanner />
+        </div>
+      )}
+     <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
     </>
   };
 
