@@ -1,8 +1,6 @@
 /* istanbul ignore file */
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import {
-  Grid,
-  GridItem,
   Button,
   ButtonColor,
   IconColor,
@@ -147,6 +145,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   );
 
   useEffect(() => {
+    document.body.classList.add("no-scroll");
+  }, []);
+
+  useEffect(() => {
     setIsSidebarOpen(!isMobileView);
   }, [isMobileView]);
 
@@ -289,10 +291,21 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   };
 
   return (
-    <Grid className="admin-mobile-rwaf92428">
+    <div className="admin-mobile-rwaf92428 admin-console-grid-invite-users">
       {showDialog && <InviteUsersDialog setShowDialog={setShowDialog} />}
 
-      <GridItem className={isSidebarOpen ? "side-width" : "no-side-width"}>
+      <div className="new-side-panel-invite-users">
+        {isMobileView && !isSidebarOpen && (
+          <Button
+            className="base-class"
+            color={ButtonColor.Utility}
+            dataTestId="btn-collapse"
+            iconColor={IconColor.Neutral800}
+            iconName="open-panel--left--filled"
+            onClick={toggleSidebar}
+            size={ButtonSize.Small}
+          />
+        )}
         <LocalisedMenu
           customHeight={100}
           menuHeading="Admin Console"
@@ -303,25 +316,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             value: window.location.href
           }}
         />
-      </GridItem>
-      <GridItem
-        className={isSidebarOpen ? "clc-dms-isopen" : "clc-dms-isclose"}
-      >
-        <div style={{ display: "flex" }}>
-          {!isSidebarOpen && (
-            <Button
-              className="base-class"
-              color={ButtonColor.Utility}
-              dataTestId="btn-collapse"
-              iconColor={IconColor.Neutral800}
-              iconName="open-panel--left--filled"
-              onClick={toggleSidebar}
-              size={ButtonSize.Small}
-            />
-          )}
+      </div>
+
+      <div className="new-main-panel-invite-users">
+        <div className="invite-users-breadcrumb">
           <Breadcrumbs
             breadcrumbActions={breadcrumbActions}
-            className="essui-Breadcrumbs"
             dataTestId="breadcrumb-test-id"
             id="element-id"
             onItemClick={onBreadcrumbClick}
@@ -585,8 +585,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }}
           />
         </div>
-      </GridItem>
-    </Grid>
+      </div>
+    </div>
   );
 };
 
