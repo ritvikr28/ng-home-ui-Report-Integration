@@ -123,23 +123,34 @@
   flex-direction: row-reverse;
 }
 
-.invite-users-table .admin-console-table-wrapper
+.invite-users-table
+  .admin-console-table-wrapper
   #search-autocomplete.with-suggestions
   #suggestions-wrapper {
   display: flex;
 }
 
-.invite-users-table .filter-tool #search-autocomplete.with-suggestions #suggestions-wrapper {
+.invite-users-table
+  .filter-tool
+  #search-autocomplete.with-suggestions
+  #suggestions-wrapper {
   display: block;
   top: 110%;
   z-index: 1;
 }
 
-.invite-users-table .filter-tool #search-autocomplete .icon-container.position-right {
+.invite-users-table
+  .filter-tool
+  #search-autocomplete
+  .icon-container.position-right {
   display: flex;
 }
 
-.invite-users-table .filter-tool #search-autocomplete .icon-container.position-right .essui-loader {
+.invite-users-table
+  .filter-tool
+  #search-autocomplete
+  .icon-container.position-right
+  .essui-loader {
   display: flex;
   margin: 0;
   margin-top: 0.7rem;
@@ -147,4 +158,49 @@
 
 .invite-users-table .filter-tool .essui-validation-text {
   margin-top: 10px;
+}
+
+.new-side-panel-invite-users {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.new-main-panel-invite-users {
+  flex: 1;
+  height: 92vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+}
+
+.invite-users-table {
+  margin: 0 1%;
+}
+
+.admin-console-grid-invite-users {
+  overflow: auto;
+  display: flex;
+  height: 100vh;
+  width: 100%;
+}
+
+.invite-users-table .essui-textinput--medium {
+  height: 40px;
+}
+
+@media screen and (min-width: 1024px) {
+  .new-side-panel-invite-users {
+    height: 100vh;
+    overflow: hidden;
+  }
+}
+
+@media only screen and (min-width: 1024px) {
+  .essui-grid-col--lg-2 {
+    flex-basis: unset !important;
+  }
+}
+
+.invite-users-breadcrumb {
+  margin-left: 9px;
 }
