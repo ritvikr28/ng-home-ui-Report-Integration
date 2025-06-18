@@ -2,8 +2,7 @@ import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {
   Divider,
   Grid,
-  GridItem,
-  useMediaQuery
+  GridItem
 } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
@@ -16,7 +15,6 @@ import SltViewBett from "./SltViewBETT/SltViewBett.view";
 import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
-import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
@@ -91,17 +89,8 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
   };
-  const isMobileView: boolean = useMediaQuery(
-    "(min-width:320px) and (max-width: 1023.9px)"
-  );
-
-  const ClassViewNotificationBanner: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "ClassViewNotificationBanner"
-  );
-
+  
   const { hasConnectedLauncher } = useSIMSNextGenLinks();
-  const shouldShowWhatsNew = !hasConnectedLauncher; 
 
   return (
     <div>
@@ -110,11 +99,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           <SIMSConnectedLauncher />
         </div>
       )}
-      {(!isMobileView && ClassViewNotificationBanner && shouldShowWhatsNew) && (
-        <div data-testid="whats-new-banner">
-          <WhatsNewBanner />
-        </div>
-      )}
+      
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">
