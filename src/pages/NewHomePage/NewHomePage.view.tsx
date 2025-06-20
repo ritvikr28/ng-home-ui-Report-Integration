@@ -122,7 +122,10 @@ const NewHomepageView: React.FC = () => {
   }, []);
 
   const renderContent: () => JSX.Element = () => {
-    /* istanbul ignore next */
+    /* istanbul ignore next */        
+    const { hasConnectedLauncher } = useSIMSNextGenLinks();
+    const shouldShowWhatsNew = !hasConnectedLauncher; 
+
     if (showQuickLink && isPermission) {
       return (
         <QuickLinkLogic
@@ -135,9 +138,6 @@ const NewHomepageView: React.FC = () => {
         />
       );
     }
-    
-    const { hasConnectedLauncher } = useSIMSNextGenLinks();
-    const shouldShowWhatsNew = !hasConnectedLauncher; 
 
     return <>
       {(ClassViewNotificationBanner && shouldShowWhatsNew) && (
