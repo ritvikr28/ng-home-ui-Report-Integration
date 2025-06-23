@@ -153,7 +153,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
       const mockOnError = jest.fn();
       (service.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
 
-      await activateEmailAlert("alert123", true, mockOnSuccess, mockOnError);
+      await activateEmailAlert("alert123", true, mockOnSuccess, mockOnError, "SYNC");
 
       expect(service.post).toHaveBeenCalledWith(
         "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
@@ -161,7 +161,8 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "D"
+          indicator: "D",
+          emailType: "SYNC"
         }
       );
       expect(mockOnSuccess).toHaveBeenCalled();
@@ -173,7 +174,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
       const mockOnError = jest.fn();
       (service.post as jest.Mock).mockResolvedValueOnce({ status: 400 });
 
-      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError);
+      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError,"SSM");
 
       expect(service.post).toHaveBeenCalledWith(
         "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
@@ -181,11 +182,12 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", 
+          indicator: "A",
+          emailType: "SSM"
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
+      expect(mockOnError).toHaveBeenCalledWith("A technical issue at our end has stopped us from activating email alert.");
     });
 
     it("should call onError when API call throws an error", async () => {
@@ -193,7 +195,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
       const mockOnError = jest.fn();
       (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
 
-      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError);
+      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError,"SSM");
 
       expect(service.post).toHaveBeenCalledWith(
         "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
@@ -201,11 +203,12 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", 
+          indicator: "A",
+          emailType: "SSM"
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
+      expect(mockOnError).toHaveBeenCalledWith("A technical issue at our end has stopped us from activating email alert.");
     });
   });
 });
