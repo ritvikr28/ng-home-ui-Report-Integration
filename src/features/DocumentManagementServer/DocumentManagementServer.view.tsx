@@ -4,21 +4,13 @@ import React,{ useState, useEffect } from "react"
 import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import dayjs from "dayjs"
+import { tableDataProps } from "./responseModel"
 
 const DocumentManagementServerView: React.FC = () => {
 
     const { data, loading, error }: { data: any; loading: boolean; error: string | null } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
 
-    const tableData: {
-        id: string;
-        Document: string;
-        Relatedto: string[];
-        Category: string;
-        Addedby: string;
-        "Date added": string;
-        Format: string;
-        Size: string;
-    }[] = data?.data?.length ? data?.data?.map((doc: any) => ({
+    const tableData: tableDataProps[] = (!data?.data?.length || loading || error) ? [] :  data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
         Relatedto: doc?.relatedTo || [],
@@ -27,7 +19,7 @@ const DocumentManagementServerView: React.FC = () => {
         "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
         Format: doc?.format,
         Size: doc?.size,
-    })) : [];
+    }));
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"

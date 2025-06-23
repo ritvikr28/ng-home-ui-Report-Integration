@@ -57,33 +57,35 @@ export const getTableHeadersData: {
     columnWidth: "261px",
     txtTrunctLength: 35,
     anyComponent: (elem: any) => (
-      <div className="relatedto-main">
-        <a href="/pupilprofile">{elem?.length ? elem[0] : ""}</a>
-        <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text="Year / Reg"
-        />
-        {elem?.length > 1 ? <Tooltip
-          dataTestId={`tooltip-eventtime`}
-          content={
-            <div>
-              {
-                elem?.filter((_:any, index:any) => index !== 0)?.map((item: any, index: any) => {
-                  return <div key={index}>{item } | {"Year"} | {"Reg"}</div>
-                })
-              }
-            </div>}
-          align={TooltipAlign.Center}
-          position={TooltipPosition.Bottom}
-        >
-          <div className="tooltip-content">
-            <span> {`+${elem.length - 1}`} </span>
-          </div>
-          
-        </Tooltip> : ""}
-      </div>
+      <>
+        {(!elem || !elem?.length) ? null : (<div className="relatedto-main">
+          <a href="/pupilprofile">{elem[0]}</a>
+          <Tag
+            dataTestId="name"
+            id="name"
+            className="relatedto-tag"
+            text="Year / Reg"
+          />
+          {elem?.length > 1 ? <Tooltip
+            dataTestId={`tooltip-eventtime`}
+            content={
+              <div>
+                {
+                  elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => {
+                    return <div key={index}>{item} | {"Year"} | {"Reg"}</div>
+                  })
+                }
+              </div>}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content">
+              <span> {`+${elem.length - 1}`} </span>
+            </div>
+
+          </Tooltip> : ""}
+        </div>)}
+      </>
     )
   },
   {
@@ -172,9 +174,12 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
+    setData(null);
     const fetchData: () => Promise<void> = async () => {
       const result: DocumentBasicDetailsResponse | null = await fetchDocumentDetails(
-        pageNumber, pageSize
+        { pageNumber, pageSize }
       );
       if (result) {
         setData(result);
@@ -185,7 +190,7 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
     };
 
     fetchData();
-  }, []);
+  }, [pageNumber, pageSize]);
 
   return { data, loading, error };
 };
