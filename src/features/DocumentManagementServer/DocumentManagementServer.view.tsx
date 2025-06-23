@@ -1,11 +1,34 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
-import { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
 import "./style.scss"
+import dayjs from "dayjs"
 
-const DocumentManagementServerView : React.FC= () => {
-    
+const DocumentManagementServerView: React.FC = () => {
+
+    const { data, loading, error }: { data: any; loading: boolean; error: string | null } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
+
+    const tableData: {
+        id: string;
+        Document: string;
+        Relatedto: string[];
+        Category: string;
+        Addedby: string;
+        "Date added": string;
+        Format: string;
+        Size: string;
+    }[] = data?.data?.length ? data?.data?.map((doc: any) => ({
+        id: doc?.fileId,
+        Document: doc?.document,
+        Relatedto: doc?.relatedTo || [],
+        Category: doc?.category || "",
+        Addedby: doc?.addedBy || "",
+        "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+        Format: doc?.format,
+        Size: doc?.size,
+    })) : [];
+
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -190,7 +213,7 @@ const DocumentManagementServerView : React.FC= () => {
                             sidePanelSubTitle=""
                             sidePanelTitle=""
                             subHeadingText=""
-                            tableBodyData={tableBodyData}
+                            tableBodyData={tableData || [] }
                             filterCustumeElem2={<Button
                                 className="filter-btn"
                                 dataTestId="filter-btn"

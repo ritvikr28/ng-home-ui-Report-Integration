@@ -1,0 +1,9 @@
+{ 
+    "PLATFORM_BASEURLS" : [
+        { "env": "dev", "url": "https://dev.platform.sims.co.uk/validation/api/v1" },
+        { "env": "qa", "url": "https://qa.platform.sims.co.uk/validation/api/v1" },
+        { "env": "prod", "url": "https://www.platform.sims.co.uk/validation/api/v1" },
+        { "env": "perf", "url": "https://pre.platform.sims.co.uk/validation/api/v1" }
+    ]
+}
+  

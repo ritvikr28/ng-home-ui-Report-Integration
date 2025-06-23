@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
-import DocumentManagementServerView from "./DocumentManagementServer.view";
+import { Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
+import { fetchDocumentDetails } from "./ApiService";
+import { DocumentBasicDetailsResponse, DocumentManagementServerProps } from "./responseModel";
 
 export const getTableHeadersData: {
   text: string;
@@ -54,15 +56,33 @@ export const getTableHeadersData: {
     headerTxtTrunctLength: 17,
     columnWidth: "261px",
     txtTrunctLength: 35,
-    anyComponent: (e: any) => (
-      <div style={{ display: "flex", gap: "2%" }}>
-        <>{e}</>
+    anyComponent: (elem: any) => (
+      <div className="relatedto-main">
+        <a href="/pupilprofile">{elem?.length ? elem[0] : ""}</a>
         <Tag
           dataTestId="name"
           id="name"
           className="relatedto-tag"
           text="Year / Reg"
         />
+        {elem?.length > 1 ? <Tooltip
+          dataTestId={`tooltip-eventtime`}
+          content={
+            <div>
+              {
+                elem?.filter((_:any, index:any) => index !== 0)?.map((item: any, index: any) => {
+                  return <div key={index}>{item } | {"Year"} | {"Reg"}</div>
+                })
+              }
+            </div>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content">
+            <span> {`+${elem.length - 1}`} </span>
+          </div>
+          
+        </Tooltip> : ""}
       </div>
     )
   },
@@ -116,7 +136,7 @@ export const getTableHeadersData: {
 export const tableBodyData: {
   id: string;
   Document: string;
-  Relatedto: string;
+  Relatedto: string[];
   Category: string;
   Addedby: string;
   "Date added": string;
@@ -126,7 +146,7 @@ export const tableBodyData: {
   {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
     Document: "Name ",
-    Relatedto: "Bayberry View High",
+    Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
     Category: "School",
     Addedby: "Helen Avery",
     "Date added": "01 Jan 2025",
@@ -137,7 +157,7 @@ export const tableBodyData: {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
     Document:
       "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
-    Relatedto: "Araminta Martin",
+    Relatedto: ["Araminta Martin"],
     Category: "Conduct",
     Addedby: "Richard Wilton",
     "Date added": "01 Jan 2025",
@@ -145,10 +165,31 @@ export const tableBodyData: {
     Size: "3KB"
   }
 ];
-const DocumentManagementServer: React.FC = () => (
-  <>
-    <DocumentManagementServerView />
-  </>
-);
+
+const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
+  const [data, setData]: [DocumentBasicDetailsResponse | null, React.Dispatch<React.SetStateAction<DocumentBasicDetailsResponse | null>>] = useState<DocumentBasicDetailsResponse | null>(null);
+  const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData: () => Promise<void> = async () => {
+      const result: DocumentBasicDetailsResponse | null = await fetchDocumentDetails(
+        pageNumber, pageSize
+      );
+      if (result) {
+        setData(result);
+      } else {
+        setError("Failed to fetch data");
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, []);
+
+  return { data, loading, error };
+};
+
+
 
 export default DocumentManagementServer;

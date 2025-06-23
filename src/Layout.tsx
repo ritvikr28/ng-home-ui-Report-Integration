@@ -34,7 +34,7 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
-import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
+import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 
