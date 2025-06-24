@@ -64,7 +64,8 @@ export const activateEmailAlert = async (
   alertId: string,
   emailSubscribed: boolean,
   onSuccess: () => void,
-  onError: (message: string) => void
+  onError: (message: string) => void,
+  emailType: string
 ): Promise<void> => {
   const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
   const orgName: string = schoolData == null ? "" : schoolData.schoolName;
@@ -73,6 +74,7 @@ export const activateEmailAlert = async (
     toEmailId: getUserEmail(),
     orgName,
     indicator: emailSubscribed ? "D" : "A",
+    emailType
   };
 
   try {
@@ -81,14 +83,14 @@ export const activateEmailAlert = async (
       requestBody
     );
 
-    if (response.status === 200) {
+    if (response.status === 200 && response.data?.responseCode === 200) {
       onSuccess();
     } else {
-      onError("A Technical issue at our end has stopped us from action.");
+      onError(`A technical issue at our end has stopped us from ${emailSubscribed ? "deactivating email alert" : "activating email alert"}.`);
     }
   } catch (error) {
     console.error("Error updating email alert:", error);
-    onError("A Technical issue at our end has stopped us from action.");
+    onError(`A technical issue at our end has stopped us from ${emailSubscribed ? "deactivating email alert" : "activating email alert"}.`);
   }
 };
 
@@ -130,7 +132,7 @@ export const systemStatusOverflowMenuOutSideClickHandler:Function = (
   overflowMenuIndex:any,
   setOverflowMenuIndex:any
 ) => {
-  if (overflowMenuIndex) {
+  if (overflowMenuIndex) {  
     const cleanup: (() => void) | undefined = handleCloseMenuOnOutsideClick(
       overflowMenuIndex,
       () => setOverflowMenuIndex("")

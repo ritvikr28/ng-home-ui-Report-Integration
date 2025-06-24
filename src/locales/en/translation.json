@@ -320,7 +320,9 @@
     "Alert":"Alert",
     "EmailAlerts":"Email Alerts",
     "View":"View",
-    "FailedAlert":"Failed to update email alert."
+    "FailedAlertTitleActivate": "Unable to activate email alert",
+    "FailedAlertTitleDeactivate": "Unable to deactivate email alert",
+    "FailedAlertMessage": "A technical issue at our end has stopped us from {{action}}. Please try again later. If the issue persists please get in touch with our support team."
 
   },
   "quickLink": {

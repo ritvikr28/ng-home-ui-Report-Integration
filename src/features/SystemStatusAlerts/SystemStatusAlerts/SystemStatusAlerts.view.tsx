@@ -19,7 +19,9 @@ import {
   NotificationStatus,
   Loader,
   LoaderType,
-  TableStatus
+  TableStatus,
+  Icon,
+  IconColor
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
@@ -77,28 +79,28 @@ const SystemStatusAlertsView: React.FC = () => {
         const apiAlerts: Alert[] = [
           {
             id: "1",
-            status: listenerData.listenerStatus === "Live" ? "Green" : "Red",
+            status: listenerData?.listenerStatus === "Live" ? "Green" : "Red",
             alertName: t("SystemStatus_T.DataSyncAlertName"),
             information:
-              listenerData.listenerStatus === "Live"
+              listenerData?.listenerStatus === "Live"
                 ? t("SystemStatus_T.DataSyncLiveInfo")
                 : t("SystemStatus_T.DataSyncNotLiveInfo"),
-            emailSubscribed: listenerData.eMailAlert,
+            emailSubscribed: listenerData?.eMailAlert,
             latestSSMHostVersion: "",
             currentSSMHostVersion: "",
             isErrorResponse: false,
           },
           {
             id: "2",
-            status: ssmHostData.ssmHostStatus === "Live" ? "Green" : "Red",
+            status: ssmHostData?.ssmHostStatus === "Live" ? "Green" : "Red",
             alertName: t("SystemStatus_T.SSMPackage"),
             information:
-              ssmHostData.ssmHostStatus === "Live"
+              ssmHostData?.ssmHostStatus === "Live"
                 ? t("SystemStatus_T.SSMLiveInfo")
                 : t("SystemStatus_T.SSMNotLiveInfo"),
-            emailSubscribed: ssmHostData.eMailAlert,
-            latestSSMHostVersion: ssmHostData.latestSSMHostVersion,
-            currentSSMHostVersion: ssmHostData.currentSSMHostVersion,
+            emailSubscribed: ssmHostData?.eMailAlert,
+            latestSSMHostVersion: ssmHostData?.latestSSMHostVersion,
+            currentSSMHostVersion: ssmHostData?.currentSSMHostVersion,
             isErrorResponse: false,
           }
         ];
@@ -175,6 +177,9 @@ const SystemStatusAlertsView: React.FC = () => {
   const handleActionClick = (action: string, alert: Alert) => {
     if (action === "Activate Email" || action === "Deactivate Email") {
       const emailSubscribed = action === "Deactivate Email";
+       // Determine emailType based on alert.id
+    const emailType = alert.id === "1" ? "SYNC" : "SSM";
+       setSelectedAlert(alert); 
       setLoading1(true);
       activateEmailAlert(
         alert.id,
@@ -188,7 +193,8 @@ const SystemStatusAlertsView: React.FC = () => {
           setLoading1(false);
           setErrorNote(msg || t("SystemStatus_T.FailedAlert"));
 
-        }
+        },
+        emailType
       );
     } else if (action === "View") {
       setSelectedAlert(alert);
@@ -228,11 +234,24 @@ const SystemStatusAlertsView: React.FC = () => {
       )}
 
       {errorNote && (
-        <Notification
-          status={NotificationStatus.WARNING}
-          title={errorNote}
-          onClickClose={() => setErrorNote(null)}
-        />
+         <Notification
+    status={NotificationStatus.WARNING}
+    title={
+      selectedAlert?.emailSubscribed
+        ? t("SystemStatus_T.FailedAlertTitleDeactivate")
+        : t("SystemStatus_T.FailedAlertTitleActivate")
+    }
+    message={
+      <span
+        dangerouslySetInnerHTML={{
+          __html: t("SystemStatus_T.FailedAlertMessage", {
+            action: selectedAlert?.emailSubscribed ? "unsubscribing to the email alert" : "subscribing to the email alert",
+          }),
+        }}
+      />
+    }
+    onClickClose={() => setErrorNote(null)}
+  />
       )}
 
       {loading1 && (
@@ -269,7 +288,7 @@ const SystemStatusAlertsView: React.FC = () => {
 
       <SidePanel
         dataTestId="side-panel"
-        title={selectedAlert ? selectedAlert.alertName : "Alert Details"}
+        title={selectedAlert ? selectedAlert?.alertName : "Alert Details"}
         isOpen={sidePanelIsOpen}
         onClose={() => setSidePanelOpen(false)}
         showConfirmDialog
@@ -278,7 +297,7 @@ const SystemStatusAlertsView: React.FC = () => {
           <>
             <SidePanelContent>
               <div className="alert-panel-content">
-                {selectedAlert.isErrorResponse ? (
+                {selectedAlert?.isErrorResponse ? (
                   <Notification
                     status={NotificationStatus.WARNING}
                     title={t(
@@ -297,8 +316,9 @@ const SystemStatusAlertsView: React.FC = () => {
                     hideCloseButton
                   />
                 ) : (
-                  <Notification
-                    dataTestId={`notification-${selectedAlert.status.toLowerCase()}`}
+                 
+                  <Notification className="alert-notification-success"
+                     dataTestId={`notification-${selectedAlert.status.toLowerCase()}`}
                     escapeExits
                     id={`notification-${selectedAlert.status.toLowerCase()}-id`}
                     onClickClose={() => setSidePanelOpen(false)}
@@ -310,10 +330,11 @@ const SystemStatusAlertsView: React.FC = () => {
                     title={selectedAlert.information}
                     hideCloseButton
                   />
+                 
                 )}
-                {selectedAlert.status === "Red" && (
+                {selectedAlert?.status === "Red" && (
                   <div className="alert-description">
-                    {selectedAlert.id === "1" &&
+                    {selectedAlert?.id === "1" &&
                       (
                         <>
                           <p>
@@ -340,7 +361,7 @@ const SystemStatusAlertsView: React.FC = () => {
                         </>
                       )}
 
-                    {selectedAlert.id === "2" ?
+                    {selectedAlert?.id === "2" ?
                       (
                         <>
                           <p>
@@ -348,8 +369,8 @@ const SystemStatusAlertsView: React.FC = () => {
                           </p>
                           <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content2")}</p>
                           <ul>
-                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content3")} {selectedAlert.latestSSMHostVersion}</li>
-                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content4")} {selectedAlert.currentSSMHostVersion}</li>
+                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content3")} {selectedAlert?.latestSSMHostVersion}</li>
+                            <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content4")} {selectedAlert?.currentSSMHostVersion}</li>
                           </ul>
                           <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content5")}</p>
                           <ul>
@@ -427,10 +448,10 @@ const TableComponent: React.FC<{
     };
  
     const getEmailSubscriptionText = (alert: Alert): string => {
-      if (alert.isErrorResponse) {
+      if (alert?.isErrorResponse) {
         return "-";
       }
-      return alert.emailSubscribed
+      return alert?.emailSubscribed
         ? t("SystemStatus_T.Yes")
         : t("SystemStatus_T.No");
     };
@@ -472,9 +493,9 @@ const TableComponent: React.FC<{
             const status = getTableStatus(alert.status);
             const statusLabel = getStatusLabel(alert.status);
             return (
-              <TableRow key={alert.id}>
+              <TableRow key={alert?.id}>
                 <TableCell status={status}>{statusLabel}</TableCell>
-                <TableCell>{alert.alertName}</TableCell>
+                <TableCell>{alert?.alertName}</TableCell>
                 <TableCell
                   className={
                     alert.isErrorResponse ? "information-column-error" : ""
@@ -482,30 +503,23 @@ const TableComponent: React.FC<{
                 >
                   {alert.isErrorResponse ? (
                     <div className="warning--alt">
-                      <svg
-                        width="16"
-                        height="16"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M14.8999 13.8C14.8999 13.9 14.6999 14 14.4999 14H1.4999C1.2999 14 1.1999 13.9 1.0999 13.8C0.999902 13.6 0.999902 13.5 1.0999 13.3L7.5999 1.30002C7.6999 1.00002 7.9999 0.900024 8.1999 1.10002C8.2999 1.10002 8.3999 1.20002 8.3999 1.30002L14.8999 13.3C14.9999 13.5 14.9999 13.6 14.8999 13.8ZM8.52412 5.5H7.52412V9H8.52412V5.5ZM7.22412 11.1C7.22412 10.6 7.62412 10.3 8.02412 10.3C8.42412 10.3 8.82412 10.6 8.82412 11.1C8.82412 11.6 8.42412 11.9 8.02412 11.9C7.52412 11.9 7.22412 11.6 7.22412 11.1ZM13.5999 13H2.2999L7.9999 2.50002L13.5999 13Z"
-                          fill="#A86500"
-                        />
-                      </svg>
+                      <Icon
+                    color={IconColor.Warning300}
+                    dataTestId="btn-90"
+                    id="variable-2"
+                    name="warning--alt"
+                    size={16}
+                  />
                       <span> {t("SystemStatus_T.WarningMessage")}</span>
                     </div>
                   ) : (
-                    alert.information
+                    alert?.information
                   )}
                 </TableCell>
                 <TableCell>{getEmailSubscriptionText(alert)}</TableCell>
                 <TableCell>
                   <div className="system-status-overflow-btn-wrapper">
-                    {alert.isErrorResponse ? (
+                    {alert?.isErrorResponse ? (
                       <button
                         type="button"
                         onClick={() => handleActionClick("View", alert)}
