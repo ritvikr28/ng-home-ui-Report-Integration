@@ -179,6 +179,7 @@ const SystemStatusAlertsView: React.FC = () => {
       const emailSubscribed = action === "Deactivate Email";
        // Determine emailType based on alert.id
     const emailType = alert.id === "1" ? "SYNC" : "SSM";
+       setSelectedAlert(alert); 
       setLoading1(true);
       activateEmailAlert(
         alert.id,
@@ -244,7 +245,7 @@ const SystemStatusAlertsView: React.FC = () => {
       <span
         dangerouslySetInnerHTML={{
           __html: t("SystemStatus_T.FailedAlertMessage", {
-            action: selectedAlert?.emailSubscribed ? "unsubscribing an email alert" : "subscribing an email alert",
+            action: selectedAlert?.emailSubscribed ? "unsubscribing to the email alert" : "subscribing to the email alert",
           }),
         }}
       />

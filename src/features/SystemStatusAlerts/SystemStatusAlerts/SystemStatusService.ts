@@ -83,7 +83,7 @@ export const activateEmailAlert = async (
       requestBody
     );
 
-    if (response.status === 200) {
+    if (response.status === 200 && response.data?.responseCode === 200) {
       onSuccess();
     } else {
       onError(`A technical issue at our end has stopped us from ${emailSubscribed ? "deactivating email alert" : "activating email alert"}.`);
