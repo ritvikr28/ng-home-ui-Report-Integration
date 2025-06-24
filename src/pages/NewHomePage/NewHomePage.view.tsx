@@ -121,6 +121,9 @@ const NewHomepageView: React.FC = () => {
     })();
   }, []);
 
+  console.log('UI-Application kit (Home):^1.1.5');
+  console.log('UI-kit(Home):^0.24.0');
+  
   const renderContent: () => JSX.Element = () => {
     /* istanbul ignore next */        
     const { hasConnectedLauncher } = useSIMSNextGenLinks();
