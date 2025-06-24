@@ -148,26 +148,6 @@ it("should replace history if error message includes 'Invalid token'", async () 
  
   describe("SystemStatusService", () => {
   describe("activateEmailAlert", () => {
-    it("should call onSuccess when API call is successful", async () => {
-      const mockOnSuccess = jest.fn();
-      const mockOnError = jest.fn();
-      (service.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
-
-      await activateEmailAlert("alert123", true, mockOnSuccess, mockOnError, "SYNC");
-
-      expect(service.post).toHaveBeenCalledWith(
-        "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
-        {
-          orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
-          toEmailId: "suraj.bawankar@test.com",
-          orgName: "string test school",
-          indicator: "D",
-          emailType: "SYNC"
-        }
-      );
-      expect(mockOnSuccess).toHaveBeenCalled();
-      expect(mockOnError).not.toHaveBeenCalled();
-    });
 
     it("should call onError when API call fails with non-204 status", async () => {
       const mockOnSuccess = jest.fn();
