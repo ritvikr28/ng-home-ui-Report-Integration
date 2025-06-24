@@ -327,4 +327,27 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
     expect(addSpy).not.toHaveBeenCalled();
     expect(cleanup).toBeUndefined();
   });
+  it("should call onSuccess when API call is successful with responseCode 200", async () => {
+  const mockOnSuccess = jest.fn();
+  const mockOnError = jest.fn();
+
+  (service.post as jest.Mock).mockResolvedValueOnce({
+    status: 200,
+    data: {
+      responseCode: 200,
+    },
+  });
+
+  await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError, "SSM");
+
+  expect(mockOnSuccess).toHaveBeenCalled();
+  expect(mockOnError).not.toHaveBeenCalled();
+});
+it("should return a no-op function if activeRow is null", () => {
+  const result = handleCloseMenuOnOutsideClick(null, jest.fn());
+  expect(typeof result).toBe("function");
+  result(); // Ensure no error is thrown
+});
+
+
 });
