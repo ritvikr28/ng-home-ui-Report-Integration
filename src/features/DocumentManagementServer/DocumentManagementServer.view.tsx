@@ -10,7 +10,7 @@ const DocumentManagementServerView: React.FC = () => {
 
     const { data, loading, error }: { data: any; loading: boolean; error: string | null } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
 
-    const tableData: tableDataProps[] = (!data?.data?.length || loading || error) ? [] :  data?.data?.map((doc: any) => ({
+    const tableData: tableDataProps[] = ( loading || error || !data?.data?.length) ? [] :  data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
         Relatedto: doc?.relatedTo || [],

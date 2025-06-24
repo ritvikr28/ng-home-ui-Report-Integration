@@ -25,12 +25,6 @@ export interface DocumentBasicDetails {
   data: SingleDocumentDetail[];
 }
 
-export interface DocumentBasicDetailsResponse {
-  status: number;
-  error: string;
-  payload: DocumentBasicDetails | null;
-}
-
 
 //props
 export interface DocumentManagementServerProps {

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
 import { Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
 import { fetchDocumentDetails } from "./ApiService";
-import { DocumentBasicDetailsResponse, DocumentManagementServerProps } from "./responseModel";
+import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
 
 export const getTableHeadersData: {
   text: string;
@@ -169,7 +169,7 @@ export const tableBodyData: {
 ];
 
 const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
-  const [data, setData]: [DocumentBasicDetailsResponse | null, React.Dispatch<React.SetStateAction<DocumentBasicDetailsResponse | null>>] = useState<DocumentBasicDetailsResponse | null>(null);
+  const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
   const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
 
@@ -178,7 +178,7 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
     setError(null);
     setData(null);
     const fetchData: () => Promise<void> = async () => {
-      const result: DocumentBasicDetailsResponse | null = await fetchDocumentDetails(
+      const result: DocumentBasicDetails | null = await fetchDocumentDetails(
         { pageNumber, pageSize }
       );
       if (result) {
