@@ -229,7 +229,10 @@ const SystemStatusAlertsView: React.FC = () => {
         <Notification
           status={NotificationStatus.SUCCESSTOAST}
           title={successMessage}
+         autoclose
+          escapeExits
           onClickClose={() => setSuccessMessage(null)}
+          onAutoClose={() => setSuccessMessage(null)} 
         />
       )}
 
