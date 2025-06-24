@@ -36,6 +36,9 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
 )  
 };
 
+console.log('UI-Application kit (Home):^1.1.5');
+console.log('UI-kit(Home):^0.24.0');
+
 const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({
   globalVariableNames: [
     "REACT_API_URL",
