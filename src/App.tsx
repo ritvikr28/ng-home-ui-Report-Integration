@@ -28,6 +28,8 @@ const App: (props: ILayoutProps) => JSX.Element = ({
   /* istanbul ignore next */
   const getFeatureFlags: () => Promise<IResponse> = () =>
     service.get('v1/features');
+  console.log('UI-Application kit (Home):^1.1.5');
+  console.log('UI-kit(Home):^0.24.0');
   /* istanbul ignore next */
   const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
     authService.isAuthenticated() ? getFeatureFlags : undefined;
