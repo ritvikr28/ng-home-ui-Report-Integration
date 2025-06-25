@@ -64,19 +64,19 @@ describe("DocumentManagementServer hook", () => {
         jest.clearAllMocks();
     });
 
-    test("should set loading true initially and fetch data", async () => {
+    test("should set hasFetched false initially and fetch data", async () => {
         (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
         const { result, waitForNextUpdate } = renderHook(() =>
             DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
         );
 
-        expect(result.current.loading).toBe(true);
+        expect(result.current.hasFetched).toBe(false);
 
         await waitForNextUpdate();
 
         expect(result.current.data).toEqual(mockData);
-        expect(result.current.loading).toBe(false);
+        expect(result.current.hasFetched).toBe(true);
         expect(result.current.error).toBeNull();
     });
 
@@ -90,7 +90,7 @@ describe("DocumentManagementServer hook", () => {
         await waitForNextUpdate();
 
         expect(result.current.data).toBeNull();
-        expect(result.current.loading).toBe(false);
+        expect(result.current.hasFetched).toBe(true);
         expect(result.current.error).toBe("Failed to fetch data");
     });
 

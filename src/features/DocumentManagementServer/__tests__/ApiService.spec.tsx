@@ -66,13 +66,13 @@ describe("Fetch document details tests", () => {
     afterEach(() => {
         jest.clearAllMocks();
     });
-    test("should set loading true initially", async () => {
+    test("should set hasFetched false initially", async () => {
         jest.spyOn(service, "get").mockResolvedValueOnce(mockAxiosResponse);
         const { result } = renderHook(() =>
             DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
         );
 
-        expect(result.current.loading).toBe(true);
+        expect(result.current.hasFetched).toBe(false);
     });
 
     test("should return data on successful fetch", async () => {
@@ -83,7 +83,7 @@ describe("Fetch document details tests", () => {
 
         await waitForNextUpdate();
 
-        expect(result.current.loading).toBe(false);
+        expect(result.current.hasFetched).toBe(true);
         expect(result.current.data).toEqual(mockAxiosResponse.data);
         expect(result.current.error).toBeNull();
     });
