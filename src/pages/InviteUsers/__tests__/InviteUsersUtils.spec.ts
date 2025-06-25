@@ -714,10 +714,7 @@ describe("handleSendInvite", () => {
     await InviteUsersUtils.handleSendInvite({
       requestBody: [
         {
-          emailId: selectedRowItem.emailId,
-          externalId: selectedRowItem.id,
-          forename: selectedRowItem.forename,
-          surname: selectedRowItem.surname
+          externalId: selectedRowItem.id
         }
       ],
       setLoader,
@@ -729,10 +726,7 @@ describe("handleSendInvite", () => {
     expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
       requestBody: [
         {
-          emailId: "test@example.com",
-          externalId: "1",
-          forename: "Test",
-          surname: "User"
+          externalId: "1"
         }
       ],
       setShowInviteErrBanner
@@ -762,10 +756,7 @@ describe("handleSendInvite", () => {
 
     await InviteUsersUtils.handleSendInvite({
       requestBody: selectedRowItem.map((item) => ({
-        emailId: item.emailId,
-        externalId: item.id,
-        forename: item.forename,
-        surname: item.surname
+        externalId: item.id
       })),
       setLoader,
       setShowInviteErrBanner,
@@ -776,16 +767,10 @@ describe("handleSendInvite", () => {
     expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
       requestBody: [
         {
-          emailId: "test@example.com",
-          externalId: "1",
-          forename: "Test",
-          surname: "User"
+          externalId: "1"
         },
         {
-          emailId: "another@example.com",
-          externalId: "2",
-          forename: "Another",
-          surname: "Person"
+          externalId: "2"
         }
       ],
       setShowInviteErrBanner
@@ -808,10 +793,7 @@ describe("handleSendInvite", () => {
 
     await InviteUsersUtils.handleSendInvite({
       requestBody: selectedRowItem.map((item) => ({
-        emailId: item.emailId,
-        externalId: item.id,
-        forename: item.forename,
-        surname: item.surname
+        externalId: item.id
       })),
       setLoader,
       setShowInviteErrBanner,

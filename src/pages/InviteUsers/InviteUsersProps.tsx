@@ -247,9 +247,6 @@ export interface IPostSendInvitation {
 
 export interface ISendInviteReqBody {
   externalId: string;
-  forename: string;
-  surname: string;
-  emailId: string;
 }
 
 export const BulkInviteErrBanner = ({
