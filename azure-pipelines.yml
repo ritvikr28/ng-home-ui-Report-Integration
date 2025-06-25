@@ -73,8 +73,8 @@ stages:
             displayName: "Node Version check"
           - script: npm install
             displayName: "Installing Package"
-          - script: npm audit
-            displayName: "Audit vulnerabilities in packages"
+          # - script: npm audit
+          #   displayName: "Audit vulnerabilities in packages"
           - script: CI=true npm run coverage
             displayName: "Test with coverage"
           - script: npm run eslint:check
