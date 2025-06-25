@@ -8,6 +8,14 @@ export interface SingleDocumentDetail {
     fileName: string;
     isSelectedForPrepareDownload: boolean;
   };
+  document: string;
+  relatedTo: string[] | null;
+  category: string;
+  addedBy: string;
+  dateAdded: string;
+  format: string;
+  size: string;
+  blobName: string;
 }
 
 export interface DocumentBasicDetails {
@@ -17,15 +25,20 @@ export interface DocumentBasicDetails {
   data: SingleDocumentDetail[];
 }
 
-export interface DocumentBasicDetailsResponse {
-  status: number;
-  error: string;
-  payload: DocumentBasicDetails | null;
-}
-
 
 //props
 export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;
+}
+
+export interface tableDataProps {
+  id: string;
+  Document: string;
+  Relatedto: string[];
+  Category: string;
+  Addedby: string;
+  "Date added": string;
+  Format: string;
+  Size: string;
 }
