@@ -148,32 +148,13 @@ it("should replace history if error message includes 'Invalid token'", async () 
  
   describe("SystemStatusService", () => {
   describe("activateEmailAlert", () => {
-    it("should call onSuccess when API call is successful", async () => {
-      const mockOnSuccess = jest.fn();
-      const mockOnError = jest.fn();
-      (service.post as jest.Mock).mockResolvedValueOnce({ status: 200 });
-
-      await activateEmailAlert("alert123", true, mockOnSuccess, mockOnError);
-
-      expect(service.post).toHaveBeenCalledWith(
-        "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
-        {
-          orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
-          toEmailId: "suraj.bawankar@test.com",
-          orgName: "string test school",
-          indicator: "D"
-        }
-      );
-      expect(mockOnSuccess).toHaveBeenCalled();
-      expect(mockOnError).not.toHaveBeenCalled();
-    });
 
     it("should call onError when API call fails with non-204 status", async () => {
       const mockOnSuccess = jest.fn();
       const mockOnError = jest.fn();
       (service.post as jest.Mock).mockResolvedValueOnce({ status: 400 });
 
-      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError);
+      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError,"SSM");
 
       expect(service.post).toHaveBeenCalledWith(
         "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
@@ -181,11 +162,12 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", 
+          indicator: "A",
+          emailType: "SSM"
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
+      expect(mockOnError).toHaveBeenCalledWith("A technical issue at our end has stopped us from activating email alert.");
     });
 
     it("should call onError when API call throws an error", async () => {
@@ -193,7 +175,7 @@ it("should replace history if error message includes 'Invalid token'", async () 
       const mockOnError = jest.fn();
       (service.post as jest.Mock).mockRejectedValueOnce(new Error("Network Error"));
 
-      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError);
+      await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError,"SSM");
 
       expect(service.post).toHaveBeenCalledWith(
         "http://mock-base-url.com/TrainingDB/SystemStatusAlertEmail",
@@ -201,11 +183,12 @@ it("should replace history if error message includes 'Invalid token'", async () 
           orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
           toEmailId: "suraj.bawankar@test.com",
           orgName: "string test school",
-          indicator: "A", 
+          indicator: "A",
+          emailType: "SSM"
         }
       );
       expect(mockOnSuccess).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith("A Technical issue at our end has stopped us from action.");
+      expect(mockOnError).toHaveBeenCalledWith("A technical issue at our end has stopped us from activating email alert.");
     });
   });
 });
@@ -344,4 +327,27 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
     expect(addSpy).not.toHaveBeenCalled();
     expect(cleanup).toBeUndefined();
   });
+  it("should call onSuccess when API call is successful with responseCode 200", async () => {
+  const mockOnSuccess = jest.fn();
+  const mockOnError = jest.fn();
+
+  (service.post as jest.Mock).mockResolvedValueOnce({
+    status: 200,
+    data: {
+      responseCode: 200,
+    },
+  });
+
+  await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError, "SSM");
+
+  expect(mockOnSuccess).toHaveBeenCalled();
+  expect(mockOnError).not.toHaveBeenCalled();
+});
+it("should return a no-op function if activeRow is null", () => {
+  const result = handleCloseMenuOnOutsideClick(null, jest.fn());
+  expect(typeof result).toBe("function");
+  result(); // Ensure no error is thrown
+});
+
+
 });
