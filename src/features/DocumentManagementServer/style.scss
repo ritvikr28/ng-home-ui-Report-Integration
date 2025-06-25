@@ -85,6 +85,19 @@
   border-right: 1px solid #e0e0e0;
 }
 
+.empty-table{
+  background-color: white;
+}
+.essui-loader {
+    width: 98%;
+    height: auto;
+    background-color: white;
+    border-radius: 10px;
+}
+.essui-loader .essui-loader-spin{
+  margin-top: inherit;
+}
+
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:768px) and (max-width:1023.9px) {
   .essui-grid-col .essui-side-navigation-panel-container-grid-item {

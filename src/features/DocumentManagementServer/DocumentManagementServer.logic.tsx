@@ -168,8 +168,8 @@ export const tableBodyData: {
 
 const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
   const [data, setData]: [DocumentBasicDetailsResponse | null, React.Dispatch<React.SetStateAction<DocumentBasicDetailsResponse | null>>] = useState<DocumentBasicDetailsResponse | null>(null);
-  const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
     const fetchData: () => Promise<void> = async () => {
@@ -181,15 +181,14 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
       } else {
         setError("Failed to fetch data");
       }
-      setLoading(false);
+      setHasFetched(true)
     };
 
     fetchData();
   }, []);
 
-  return { data, loading, error };
+  return { data, error, hasFetched };
 };
-
 
 
 export default DocumentManagementServer;

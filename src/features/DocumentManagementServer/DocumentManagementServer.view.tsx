@@ -1,14 +1,18 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
-import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { getTableHeadersData } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import dayjs from "dayjs"
 
 const DocumentManagementServerView: React.FC = () => {
 
-    const { data, loading, error }: { data: any; loading: boolean; error: string | null } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
-
+    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+/**
+ * Transforms the fetched data into a format suitable for the table.
+ * Each document is mapped to an object with specific properties.
+ */
     const tableData: {
         id: string;
         Document: string;
@@ -42,6 +46,21 @@ const DocumentManagementServerView: React.FC = () => {
     useEffect(() => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        // Simulate async fetch
+        setTimeout(() => {
+            /* If data is fetched successfully, set loading to false.
+            This is where you would typically handle the fetched data.
+            */
+            if (tableData) {
+                setIsLoading(false);
+            }
+        }, 1500);
+    }, []);
+
+
 
     return (<>
         <>
@@ -107,7 +126,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 onItemClick={() => { }}
                             />
                         </div>
-                        <ControlledList
+                        {hasFetched && <ControlledList
                             globalNotificationMsgBannerObject={null}
                             isAddEventBtnShow={false}
                             dataTestId="controlled-list-test-id"
@@ -148,8 +167,9 @@ const DocumentManagementServerView: React.FC = () => {
                                     value: 'Delete'
                                 }
                             ]}
-                            emptyStateMsg="No Severity levels"
+                            emptyStateMsg="Documents will appear here once they are uploaded." 
                             emptybtnTitle="Add Type"
+                            isShowEmptyAddBtn={false}
                             errorActionListItem={[
                                 {
                                     action: 'Secondary Text',
@@ -224,7 +244,7 @@ const DocumentManagementServerView: React.FC = () => {
                             > Filter</Button>
                             }
                             tableFirstColumnWidth="10px"
-                            tableHeadersData={getTableHeadersData}
+                            tableHeadersData={tableData.length > 0 ? getTableHeadersData : []}
                             tableLastColumnWidth="10px"
                             templatePropsConfirmation={
                                 {
@@ -244,7 +264,10 @@ const DocumentManagementServerView: React.FC = () => {
                             isOpenConfirmationDialog={false}
                             isShowOverflowMenuCol={false}
                             isShowFirstElement= {false}
-                        />
+                            isLoaderForFilterandTable={isLoading}
+                            loaderFilterText="Please Wait..."
+                            isShowErrorPage={error ? true : false}
+                        />}
                     </div>
                 </GridItem>
             </Grid>
