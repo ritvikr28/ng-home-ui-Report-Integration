@@ -284,7 +284,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setShowSearchError,
         {
           searchText: e.target.value,
-          selectedStatus: statusFilterRef.current 
+          selectedStatus: statusFilterRef.current
         }
       );
     }
@@ -499,10 +499,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 setShowConfirmDialog(false);
                 const requestBody: ISendInviteReqBody[] = selectedRowItems.map(
                   (item) => ({
-                    emailId: item?.emailId,
-                    externalId: item?.id,
-                    forename: item?.forename,
-                    surname: item?.surname
+                    externalId: item?.id
                   })
                 );
                 handleSendInvite({
