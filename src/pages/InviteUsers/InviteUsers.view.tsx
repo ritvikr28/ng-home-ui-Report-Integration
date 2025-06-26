@@ -25,7 +25,7 @@ import {
   IInviteUserDetails,
   InvitationStatusFilterOptions,
   InviteUserProps,
-  ISendInviteReqBody,
+  IRequestBodyType,
   pageSize
 } from "./InviteUsersProps";
 import "./style.scss";
@@ -497,11 +497,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
-                const requestBody: ISendInviteReqBody[] = selectedRowItems.map(
-                  (item) => ({
-                    externalId: item?.id
-                  })
-                );
+                const requestBody: IRequestBodyType = {
+                  externalId: selectedRowItems.map((item) => item?.id)
+                };
                 handleSendInvite({
                   requestBody,
                   setLoader,
