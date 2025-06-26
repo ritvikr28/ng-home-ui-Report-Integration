@@ -25,7 +25,7 @@ import {
   IInviteUserDetails,
   InvitationStatusFilterOptions,
   InviteUserProps,
-  ISendInviteReqBody,
+  IRequestBodyType,
   pageSize
 } from "./InviteUsersProps";
 import "./style.scss";
@@ -497,11 +497,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
-                const requestBody: ISendInviteReqBody[] = selectedRowItems.map(
-                  (item) => ({
-                    externalId: item?.id
-                  })
-                );
+                const requestBody: IRequestBodyType = {
+                  externalId: selectedRowItems.map((item) => item?.id)
+                };
                 handleSendInvite({
                   requestBody,
                   setLoader,
@@ -518,17 +516,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             toastNotificationAutoclose
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
-            // globalNotificationBannerOnClickClose={(e, index) => {
-            //   if (index === 0) {
-            //     setShowErrorBanner(false);
-            //   }
-            //   if (index === 1) {
-            //     setshowInvitationConflictBanner(false);
-            //   }
-            //   if (index === 2 || index === 3) {
-            //     setShowInviteErrBanner(false);
-            //   }
-            // }}
+            globalNotificationBannerOnClickClose={(e, index) => {
+              if (index === 0) {
+                setShowErrorBanner(false);
+              }
+              if (index === 1) {
+                setshowInvitationConflictBanner(false);
+              }
+              if (index === 2 || index === 3) {
+                setShowInviteErrBanner(false);
+              }
+            }}
             globalNotificationMsgBannerObject={[
               {
                 isShow: !!showErrorBanner,
