@@ -20,6 +20,7 @@ import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickL
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
 import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
+import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 
 const requiredPermissionsforquicklink: Permission[] = [
@@ -310,6 +311,8 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
       })}
   </div>
 );
+  
+const hasInviteUserView: boolean = isOrganisationInVariant("InviteUserView");
 
 const simsIdAdminQuickLink: () => JSX.Element = () => (
   <div className="left-sidepanel-home113">
@@ -325,6 +328,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
       >
         Invite Staff
       </div>
+      {hasInviteUserView && (
       <div
         className="quick-link-panel-item label-css"
         key={2}
@@ -335,6 +339,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
       >
         Invite Users
       </div>
+      )}
     </div>
   </div>
 );
