@@ -69,7 +69,7 @@ const UAM: () => JSX.Element = () => {
     };
   }, [hasData]);
 
-  const homeurl = `${envConfig.HOME_UI_BASEURL}/home/adminconsole`;
+  const homeurl = `${envConfig.HOME_UI_BASEURL}/adminconsole`;
   console.info('envConfig.HOME_UI_BASEURL-------------',envConfig.HOME_UI_BASEURL);
   return (
     <>
@@ -117,7 +117,7 @@ const UAM: () => JSX.Element = () => {
 
                   linkName: "Home",
 
-                  path: `${envConfig.HOME_UI_BASEURL}/home`
+                  path: "/"
                 },
 
                 {
