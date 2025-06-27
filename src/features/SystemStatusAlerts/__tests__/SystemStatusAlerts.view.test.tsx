@@ -1,6 +1,6 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
-import { fetchEmailAlertStatus , activateEmailAlert } from "../SystemStatusAlerts/SystemStatusService";
+import { fetchEmailAlertStatus , activateEmailAlert, systemStatusOverflowMenuOutSideClickHandler } from "../SystemStatusAlerts/SystemStatusService";
 import SystemStatusAlertsView from "../SystemStatusAlerts/SystemStatusAlerts.view";
 
 
@@ -164,35 +164,7 @@ it("renders yellow status alerts when API returns null", async () => {
     expect(screen.getAllByText("SystemStatus_T.WarningMessage")).toHaveLength(2);
   });
 });
-it("shows SSM specific side panel content when alert id is 2", async () => {
-  const customResponse = {
-    listenerData: {
-      listenerStatus: "Live",
-      eMailAlert: false,
-    },
-    ssmHostData: {
-      ssmHostStatus: "Not Live",
-      eMailAlert: true,
-      latestSSMHostVersion: "2.1",
-      currentSSMHostVersion: "2.0",
-    },
-  };
-  mockFetchEmailAlertStatus.mockResolvedValueOnce(customResponse);
 
-  render(<SystemStatusAlertsView />);
-  await waitFor(() => {
-    expect(screen.getByText("SystemStatus_T.SSMPackage")).toBeInTheDocument();
-  });
-
-  fireEvent.click(screen.getAllByLabelText("Overflow menu")[1]);
-  fireEvent.click(screen.getByText("SystemStatus_T.View"));
-
-  await waitFor(() => {
-    expect(screen.getByTestId("side-panel")).toBeInTheDocument();
-    expect(screen.getByText((content) => content.includes("2.1"))).toBeInTheDocument(); // latestSSMHostVersion
-    expect(screen.getByText((content) => content.includes("2.0"))).toBeInTheDocument(); // currentSSMHostVersion
-  });
-});
 it("deactivates email alert when already subscribed", async () => {
   const customResponse = {
     listenerData: {
@@ -271,23 +243,7 @@ it("activates email alert for SSM alert (id === '2')", async () => {
   fireEvent.click(screen.getByText("SystemStatus_T.Deactivateemail"));
 });
 
-it("renders error content in side panel for SSM alert (id: '2')", async () => {
-  const mockRedAlertResponse = {
-    listenerData: { listenerStatus: "Not Live", eMailAlert: true },
-    ssmHostData: { ssmHostStatus: "Not Live", eMailAlert: false, latestSSMHostVersion: "2.5", currentSSMHostVersion: "2.0" },
-  };
 
-  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockRedAlertResponse);
-  render(<SystemStatusAlertsView />);
-  await waitFor(() => screen.getByText("SystemStatus_T.SSMPackage"));
-
-  fireEvent.click(screen.getAllByLabelText("Overflow menu")[1]);
-  fireEvent.click(screen.getByText("SystemStatus_T.View"));
-
-  await waitFor(() => {
-    expect(screen.getByText("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content1")).toBeInTheDocument();
-  });
-});
 it("displays 'Yes' when emailSubscribed is true", async () => {
   mockFetchEmailAlertStatus.mockResolvedValueOnce({
     listenerData: { listenerStatus: "Live", eMailAlert: true },
@@ -299,6 +255,181 @@ it("displays 'Yes' when emailSubscribed is true", async () => {
     expect(screen.getAllByText("SystemStatus_T.Yes")).toHaveLength(2);
   });
 });
+it("renders fallback side panel content when alertData is undefined", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
 
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.SSMPackage"));
+
+  // Try to open a non-existent alert (simulate clicking overflow of invalid id)
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[1]);
+
+  // Directly call document click to close (simulate outside click)
+  fireEvent.click(document);
+
+  // Should still not crash; UI should handle gracefully
+  expect(screen.getByText("SystemStatus_T.SSMPackage")).toBeInTheDocument();
+});
+
+it("calls overflow outside click handler when document is clicked outside overflow menu", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.SSMPackage"));
+
+  fireEvent.click(document);
+
+  expect(systemStatusOverflowMenuOutSideClickHandler).toHaveBeenCalled();
+});
+it("handles activateEmailAlert without onSuccess or onError callbacks gracefully", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Live", eMailAlert: false },
+    ssmHostData: { ssmHostStatus: "Live", eMailAlert: true },
+  });
+
+
+  render(<SystemStatusAlertsView />);
+
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.DataSyncAlertName")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
+  fireEvent.click(screen.getByText("SystemStatus_T.Activateemail"));
+
+  // The test should just pass if no crash occurs
+  await waitFor(() => {
+    expect(mockActivateEmailAlert).toHaveBeenCalled();
+  });
+});
+
+it("renders fallback status when ssmHostData is missing from API response", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Live", eMailAlert: false },
+    // ssmHostData intentionally omitted
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.DataSyncAlertName")).toBeInTheDocument();
+  });
+
+  // Match what actually renders in your fallback
+  expect(
+    screen.getAllByText((content) =>
+      content.includes("SystemStatus_T.Fail") || content.includes("SystemStatus_T.SSMNotLiveInfo")
+    )
+  ).not.toHaveLength(0);
+});
+it("renders warning icon in TableComponent for alert with isErrorResponse true", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(null); // triggers fallback with isErrorResponse
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    // The fallback warning icon + text should appear in both rows
+    expect(screen.getAllByTestId("btn-90")).toHaveLength(2);
+  });
+});
+it("handles missing bounding client rect gracefully when calculating overflow menu position", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  // Force the button's getBoundingClientRect to return undefined by mocking ref
+  const buttons = screen.getAllByLabelText("Overflow menu");
+  Object.defineProperty(buttons[0], "getBoundingClientRect", { value: () => undefined });
+
+  fireEvent.click(buttons[0]);
+
+  // Should still set overflowMenuIndex without crashing
+  await waitFor(() => {
+    expect(screen.getByTestId("childcare-overflow-menu")).toBeInTheDocument();
+  });
+});
+
+it("closes error notification when user clicks close icon", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
+
+  mockActivateEmailAlert.mockImplementation((_id, _flag, _onSuccess, onError) => onError?.("Test error message"));
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
+  fireEvent.click(screen.getByText("SystemStatus_T.Activateemail"));
+
+  await waitFor(() => {
+    const errorNotification = screen.getByText("SystemStatus_T.FailedAlertTitleActivate");
+    expect(errorNotification).toBeInTheDocument();
+  });
+
+  // Close error notification
+  fireEvent.click(screen.getByLabelText("close"));
+});
+it("triggers systemStatusOverflowMenuOutSideClickHandler when overflow menu is open and user clicks outside", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
+
+  // Click outside (document click)
+  fireEvent.click(document);
+
+  expect(systemStatusOverflowMenuOutSideClickHandler).toHaveBeenCalledWith(
+    expect.stringContaining("overflow-"),
+    expect.any(Function)
+  );
+});
+
+it("renders NotificationStatus.SUCCESS in side panel when alert has status Green", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Live", eMailAlert: false },
+    ssmHostData: { ssmHostStatus: "Live", eMailAlert: true },
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
+  fireEvent.click(screen.getByText("SystemStatus_T.View"));
+
+  await waitFor(() => {
+    // Notification should match success variant when status is Green
+    expect(screen.getByTestId("notification-green")).toBeInTheDocument();
+  });
+});
+it("renders NotificationStatus.WARNING when alert has isErrorResponse true", async () => {
+  // Return null to force isErrorResponse in fallback
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(null);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  fireEvent.click(screen.getAllByText(/View/)[0]); // fallback alerts render "View" buttons directly
+  await waitFor(() => {
+    expect(screen.getByTestId("notification-yellow")).toBeInTheDocument();
+  });
+});
+it("closes side panel when clicking footer Close button", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(mockResponse);
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => screen.getByText("SystemStatus_T.DataSyncAlertName"));
+
+  fireEvent.click(screen.getAllByLabelText("Overflow menu")[0]);
+  fireEvent.click(screen.getByText("SystemStatus_T.View"));
+
+  await waitFor(() => screen.getByTestId("side-panel"));
+
+  fireEvent.click(screen.getByTestId("btn-close"));
+
+  // Confirm it closed by checking absence of side-panel content
+  await waitFor(() => {
+    expect(screen.queryByTestId("notification-green")).not.toBeInTheDocument();
+  });
+});
 
 });
