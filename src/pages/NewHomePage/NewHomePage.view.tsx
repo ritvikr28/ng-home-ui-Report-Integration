@@ -18,6 +18,7 @@ import gtmAnalytics from "../../shared/utils/analytics";
 import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
 import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
+import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 
 const requiredPermissions: Permission[] = [
   {
@@ -123,8 +124,8 @@ const NewHomepageView: React.FC = () => {
 
   const renderContent: () => JSX.Element = () => {
     /* istanbul ignore next */        
-    const { hasConnectedLauncher } = useSIMSNextGenLinks();
-    const shouldShowWhatsNew = !hasConnectedLauncher; 
+    const { hasConnectedLauncher, isLoading } = useSIMSNextGenLinks();
+    const shouldShowWhatsNew = !hasConnectedLauncher;
 
     if (showQuickLink && isPermission) {
       return (
@@ -139,12 +140,25 @@ const NewHomepageView: React.FC = () => {
       );
     }
 
+    let banner = null;
+    if (!isLoading) {
+      if (hasConnectedLauncher) {
+        banner = (
+          <div data-testid="sims-launcher">
+            <SIMSConnectedLauncher />
+          </div>
+        );
+      } else if (ClassViewNotificationBanner && shouldShowWhatsNew) {
+        banner = (
+          <div data-testid="whats-new-banner">
+            <WhatsNewBanner />
+          </div>
+        );
+      }
+    }
+
     return <>
-      {(ClassViewNotificationBanner && shouldShowWhatsNew) && (
-        <div data-testid="whats-new-banner">
-          <WhatsNewBanner />
-        </div>
-      )}
+      {banner}
      <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
     </>
   };

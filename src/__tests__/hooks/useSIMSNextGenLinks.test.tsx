@@ -23,7 +23,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: false
+      error: false,
+      isLoading: true
     });
   });
 
@@ -48,7 +49,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: true,
-      error: false
+      error: false,
+      isLoading: false
     });
     expect(service.get).toHaveBeenCalledWith("v1/SIMSConnected/simsnextgenlinks");
   });
@@ -73,7 +75,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: false
+      error: false,
+      isLoading: false
     });
   });
 
@@ -90,6 +93,7 @@ describe("useSIMSNextGenLinks", () => {
     };
 
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
 
     const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
 
@@ -97,7 +101,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: false
+      error: false,
+      isLoading: false
     });
   });
 
@@ -114,6 +119,7 @@ describe("useSIMSNextGenLinks", () => {
     };
 
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
 
     const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
 
@@ -121,7 +127,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: false
+      error: false,
+      isLoading: false
     });
   });
 
@@ -146,7 +153,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: false
+      error: false,
+      isLoading: false
     });
     expect(hasFeaturePermission).toHaveBeenCalledWith(
       "ExcludedSIMSNextGenLinks",
@@ -166,7 +174,8 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(result.current).toEqual({
       hasConnectedLauncher: false,
-      error: true
+      error: true,
+      isLoading: false
     });
     expect(consoleSpy).toHaveBeenCalledWith(
       "[useSIMSNextGenLinks] Error fetching links:",
@@ -189,6 +198,7 @@ describe("useSIMSNextGenLinks", () => {
     };
 
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
 
     const { waitForNextUpdate, rerender } = renderHook(() => useSIMSNextGenLinks());
 
@@ -198,4 +208,4 @@ describe("useSIMSNextGenLinks", () => {
 
     expect(service.get).toHaveBeenCalledTimes(1);
   });
-}); 
+});
