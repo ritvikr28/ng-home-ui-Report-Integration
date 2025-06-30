@@ -241,15 +241,12 @@ export const filterOptions: IFilterOptions[] = [
 ];
 
 export interface IPostSendInvitation {
-  requestBody: ISendInviteReqBody[];
+  requestBody: IRequestBodyType;
   setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export interface ISendInviteReqBody {
-  externalId: string;
-  forename: string;
-  surname: string;
-  emailId: string;
+export interface IRequestBodyType {
+  externalId: string[];
 }
 
 export const BulkInviteErrBanner = ({

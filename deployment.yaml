@@ -49,6 +49,8 @@ spec:
         app: ng-home-ui
         tier: frontend
     spec:
+      nodeSelector:
+        workload: user
       containers:
         - name: ng-home-ui
           image: pazshdpfmconrg.azurecr.io/ng-home-ui:#{Build.BuildId}#

@@ -70,6 +70,7 @@ const UAM: () => JSX.Element = () => {
   }, [hasData]);
 
   const homeurl = `${envConfig.HOME_UI_BASEURL}/adminconsole`;
+  console.info('envConfig.HOME_UI_BASEURL-------------',envConfig.HOME_UI_BASEURL);
   return (
     <>
       <Grid className="admin-mobile-rwaf92428">
@@ -123,7 +124,6 @@ const UAM: () => JSX.Element = () => {
                   active: false,
 
                   linkName: "Admin Console",
-                  isExternalLink: true,
 
                   path: homeurl
                 },
