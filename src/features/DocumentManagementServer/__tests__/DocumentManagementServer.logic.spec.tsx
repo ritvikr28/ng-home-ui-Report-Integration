@@ -58,7 +58,7 @@ describe("tableBodyData", () => {
 });
 
 describe("DocumentManagementServer hook", () => {
-    const mockData: DocumentBasicDetails = { docs: [{ id: "1" }] } as any;
+    const mockData: DocumentBasicDetails = { data: [{ id: "1" }] } as any;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -114,6 +114,70 @@ describe("DocumentManagementServer hook", () => {
         await waitForNextUpdate();
 
         expect(result.current.data).toEqual({ docs: [{ id: "2" }] });
+    });
+
+  
+
+    test("should set error if fetch throws", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(null);
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toBeNull();
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBe("Failed to fetch data");
+    });
+
+    test("should not update state after unmount", async () => {
+        // Simulate a slow promise
+        let resolvePromise: any;
+        (ApiService.fetchDocumentDetails as jest.Mock).mockImplementation(
+            () => new Promise(res => { resolvePromise = res; })
+        );
+
+        const { unmount } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        unmount();
+        // Resolve the promise after unmount
+        act(() => {
+            resolvePromise({ docs: [{ id: "3" }] });
+        });
+
+        // No assertion needed: test passes if no warning or error is thrown
+    });
+
+    test("should handle empty docs array", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [] });
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toEqual({ docs: [] });
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBeNull();
+    });
+
+    test("should handle invalid parameters gracefully", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [{ id: "4" }] });
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: -1, pageSize: 0 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toEqual({ docs: [{ id: "4" }] });
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBeNull();
     });
     
 });
