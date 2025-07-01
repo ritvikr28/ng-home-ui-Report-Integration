@@ -31,18 +31,18 @@ jest.mock('@essnextgen/ui-kit', () => ({
 
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 const mockData = {
-    data: [
-        {
-            fileId: '1',
-            document: 'Doc1',
-            relatedTo: ['Rel1'],
-            category: 'Cat1',
-            addedBy: 'User1',
-            dateAdded: '2024-06-01T00:00:00Z',
-            format: 'pdf',
-            size: '1MB'
-        }
-    ]
+  data: [
+    {
+      fileId: '1',
+      document: 'Doc1',
+      relatedTo: ['Rel1'],
+      category: 'Cat1',
+      addedBy: 'User1',
+      dateAdded: '2024-06-01T00:00:00Z',
+      format: 'pdf',
+      size: '1MB'
+    }
+  ]
 };
 
 describe('DocumentManagementServerView', () => {
@@ -52,19 +52,19 @@ describe('DocumentManagementServerView', () => {
 
 
   test('isOpen is true by default on desktop (isMobileView=false)', () => {
-    useMediaQueries.mockReturnValue(false); 
+    useMediaQueries.mockReturnValue(false);
     render(<DocumentManagementServerView />);
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
   });
 
   test('isOpen is false by default on mobile (isMobileView=true)', () => {
-    useMediaQueries.mockReturnValue(true); 
+    useMediaQueries.mockReturnValue(true);
     render(<DocumentManagementServerView />);
     expect(document.querySelector('.clc-dms-isclose')).toBeInTheDocument();
   });
 
   test('Clicking the button toggles isOpen and class changes', () => {
-    useMediaQueries.mockReturnValue(true); 
+    useMediaQueries.mockReturnValue(true);
     render(<DocumentManagementServerView />);
     expect(document.querySelector('.clc-dms-isclose')).toBeInTheDocument();
     const button = screen.getByTestId('btn-collapse');
@@ -104,9 +104,9 @@ describe('DocumentManagementServerView', () => {
     await waitFor(() => {
       expect(screen.getByText('Documents will appear here once they are uploaded.')).toBeInTheDocument();
     });
-    });
+  });
 
-    test('shows error page when error is present', async () => {
+  test('shows error page when error is present', async () => {
     logic.mockImplementation(() => ({
       data: null,
       error: 'Some error occurred',
@@ -118,25 +118,25 @@ describe('DocumentManagementServerView', () => {
       expect(screen.getByText('Things to try')).toBeInTheDocument();
       expect(screen.getByText('This may be due to one of the reasons below')).toBeInTheDocument();
     });
-    });
+  });
 
-    test('renders table headers when data is present', async () => {
+  test('renders table headers when data is present', async () => {
     logic.mockImplementation(() => ({
-      
+
       error: null,
-      data:  {
-      data: [
-        {
-        fileId: '1',
-        document: 'Doc1',
-        relatedTo: ['Related1'],
-        category: 'Cat1',
-        addedBy: 'User1',
-        dateAdded: '2024-06-01T00:00:00Z',
-        format: 'pdf',
-        size: '1MB',
-        },
-      ],
+      data: {
+        data: [
+          {
+            fileId: '1',
+            document: 'Doc1',
+            relatedTo: ['Related1'],
+            category: 'Cat1',
+            addedBy: 'User1',
+            dateAdded: '2024-06-01T00:00:00Z',
+            format: 'pdf',
+            size: '1MB',
+          },
+        ],
       },
       hasFetched: true,
     }));
@@ -156,12 +156,12 @@ describe('DocumentManagementServerView', () => {
     });
     jest.runAllTimers();
     jest.useRealTimers();
-    });
+  });
 
-    test('renders table row data when documents are present', async () => {
+  test('renders table row data when documents are present', async () => {
     logic.mockImplementation(() => ({
       data: {
-      data: mockData.data
+        data: mockData.data
       },
       error: null,
       hasFetched: true,
@@ -177,39 +177,39 @@ describe('DocumentManagementServerView', () => {
       expect(screen.getByText('Cat1')).toBeInTheDocument();
       expect(screen.getByText('User1')).toBeInTheDocument();
       expect(screen.getByText('01 Jun 2024')).toBeInTheDocument();
-    
-    });
-      jest.runAllTimers();
-      jest.useRealTimers();
-    });
 
-    test('renders breadcrumbs', async () => {
+    });
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+
+  test('renders breadcrumbs', async () => {
     render(<DocumentManagementServerView />);
     await waitFor(() => {
-    expect(screen.getByText('Home')).toBeInTheDocument();
+      expect(screen.getByText('Home')).toBeInTheDocument();
 
-    const homeLinks = screen.getAllByText('Home');
-    expect(homeLinks.length).toBeGreaterThan(0);
-    homeLinks.forEach(link => expect(link).toBeInTheDocument());
+      const homeLinks = screen.getAllByText('Home');
+      expect(homeLinks.length).toBeGreaterThan(0);
+      homeLinks.forEach(link => expect(link).toBeInTheDocument());
 
-    const adminConsoleLinks = screen.getAllByText('Admin console');
-    expect(adminConsoleLinks.length).toBeGreaterThan(0);
-    adminConsoleLinks.forEach(link => expect(link).toBeInTheDocument());
+      const adminConsoleLinks = screen.getAllByText('Admin console');
+      expect(adminConsoleLinks.length).toBeGreaterThan(0);
+      adminConsoleLinks.forEach(link => expect(link).toBeInTheDocument());
 
-    expect(screen.getByText('Document Management Server')).toBeInTheDocument();
-    const documentLinks = screen.getAllByText('Documents');
-    expect(documentLinks.length).toBeGreaterThan(0);
-    documentLinks.forEach(link => expect(link).toBeInTheDocument());
+      expect(screen.getByText('Document Management Server')).toBeInTheDocument();
+      const documentLinks = screen.getAllByText('Documents');
+      expect(documentLinks.length).toBeGreaterThan(0);
+      documentLinks.forEach(link => expect(link).toBeInTheDocument());
     });
-    });
+  });
 
-    test('side navigation toggles open/close', async () => {
-    useMediaQueries.mockReturnValue(true); 
+  test('side navigation toggles open/close', async () => {
+    useMediaQueries.mockReturnValue(true);
     render(<DocumentManagementServerView />);
     expect(document.querySelector('.clc-dms-isclose')).toBeInTheDocument();
     const button = screen.getByTestId('btn-collapse');
     fireEvent.click(button);
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
-    });
+  });
 });
 
