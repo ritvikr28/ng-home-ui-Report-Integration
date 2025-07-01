@@ -25,7 +25,7 @@ import {
   IInviteUserDetails,
   InvitationStatusFilterOptions,
   InviteUserProps,
-  ISendInviteReqBody,
+  IRequestBodyType,
   pageSize
 } from "./InviteUsersProps";
 import "./style.scss";
@@ -284,7 +284,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setShowSearchError,
         {
           searchText: e.target.value,
-          selectedStatus: statusFilterRef.current 
+          selectedStatus: statusFilterRef.current
         }
       );
     }
@@ -497,14 +497,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
-                const requestBody: ISendInviteReqBody[] = selectedRowItems.map(
-                  (item) => ({
-                    emailId: item?.emailId,
-                    externalId: item?.id,
-                    forename: item?.forename,
-                    surname: item?.surname
-                  })
-                );
+                const requestBody: IRequestBodyType = {
+                  externalId: selectedRowItems.map((item) => item?.id)
+                };
                 handleSendInvite({
                   requestBody,
                   setLoader,
