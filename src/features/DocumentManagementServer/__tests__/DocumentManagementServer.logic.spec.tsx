@@ -4,11 +4,15 @@ import DocumentManagementServer from "../DocumentManagementServer.logic";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
 import { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 // Mock fetchDocumentDetails
 jest.mock("../ApiService");
 
 describe("getTableHeadersData", () => {
+    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+    const anyComponent = relatedToColumn?.anyComponent;
+
     test("should be an array and contain expected columns", () => {
         expect(Array.isArray(getTableHeadersData)).toBe(true);
         const expectedColumns = [
@@ -26,10 +30,39 @@ describe("getTableHeadersData", () => {
     });
 
     test("should contain 'Related to' header with anyComponent", () => {
-        const relHeader = getTableHeadersData.find(h => h.text === "Related to");
-        expect(relHeader).toBeDefined();
-        expect(typeof relHeader?.anyComponent).toBe("function");
+        expect(relatedToColumn).toBeDefined();
+        expect(typeof relatedToColumn?.anyComponent).toBe("function");
     });
+    
+
+    test("renders nothing when elem is null", () => {
+    const { container } = render(<>{anyComponent && anyComponent(null)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+    test("renders nothing when elem is empty array", () => {
+        const { container } = render(<>{anyComponent && anyComponent([])}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    test("renders link and Tag when elem has one item", () => {
+        render(<>{anyComponent && anyComponent(['John Doe'])}</>);
+        expect(document.querySelector('.relatedto-main')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+        expect(document.querySelector('.relatedto-tag')).toBeInTheDocument();
+        expect(screen.queryByTestId('tooltip-eventtime')).not.toBeInTheDocument();
+    });
+
+    test("renders Tag with text 'Year / Reg' when elem has one item", () => {
+        const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+        const anyComponent = relatedToColumn?.anyComponent;
+        render(<>{anyComponent && anyComponent(['Test Name'])}</>);
+        const tag = document.querySelector('.relatedto-tag');
+        expect(tag).toBeInTheDocument();
+        expect(tag).toHaveTextContent('Year / Reg');
+    });
+
+
 });
 
 describe("tableBodyData", () => {
@@ -179,5 +212,4 @@ describe("DocumentManagementServer hook", () => {
         expect(result.current.hasFetched).toBe(true);
         expect(result.current.error).toBeNull();
     });
-    
 });

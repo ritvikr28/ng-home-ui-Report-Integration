@@ -58,7 +58,7 @@ export const getTableHeadersData: {
     txtTrunctLength: 35,
     anyComponent: (elem: any) => (
       <>
-        {(!elem || !elem?.length) ? null : (<div className="relatedto-main">
+        {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
           <a href="/pupilprofile">{elem[0]}</a>
           <Tag
             dataTestId="name"

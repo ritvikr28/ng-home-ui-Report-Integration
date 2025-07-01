@@ -1,7 +1,7 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
-import DocumentManagementServer, { getTableHeadersData } from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import dayjs from "dayjs"
 import { tableDataProps } from "./responseModel"
@@ -10,21 +10,19 @@ const DocumentManagementServerView: React.FC = () => {
 
     const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
     const [isLoading, setIsLoading] = useState<boolean>(true);
-/**
- * Transforms the fetched data into a format suitable for the table.
- * Each document is mapped to an object with specific properties.
- */
+
     const tableData: tableDataProps[] = (  error || !data?.data?.length) ? [] :  data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
-        Relatedto: doc?.relatedTo || [],
+        Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
         Category: doc?.category || "",
         Addedby: doc?.addedBy || "",
         "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
         Format: doc?.format,
         Size: doc?.size,
     }));
-
+console.log('tableData:', tableData);
+console.log('data:', data);
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -41,11 +39,7 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         setIsLoading(true);
-        // Simulate async fetch
         setTimeout(() => {
-            /* If data is fetched successfully, set loading to false.
-            This is where you would typically handle the fetched data.
-            */
             if (tableData) {
                 setIsLoading(false);
             }

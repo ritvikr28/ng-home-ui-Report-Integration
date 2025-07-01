@@ -107,6 +107,25 @@ describe("AppRoutes", () => {
     );   
     expect(getAppModulePermissionMock).rejects.toThrow();
   });
+
+test("Should render header when isStandaloneApp is true", async () => {
+  history.push("/");
+  const RenderedDom = renderWithHistory(history, true);
+
+  await waitFor(() => {
+    expect(RenderedDom.getByTestId("header-menu-icon")).toBeInTheDocument();
+  });
+});
+
+test("Should not render header when isStandaloneApp is false", async () => {
+  history.push("/");
+  const RenderedDom = renderWithHistory(history, false);
+
+  await waitFor(() => {
+    expect(RenderedDom.queryByTestId("header-menu-icon")).not.toBeInTheDocument();
+  });
+});
+
 });
 describe("getMenus", () => {
   afterEach(() => {
