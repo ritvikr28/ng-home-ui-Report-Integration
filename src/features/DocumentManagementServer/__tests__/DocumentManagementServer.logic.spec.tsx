@@ -1,11 +1,17 @@
 import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
 import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
 
 jest.mock("../ApiService");
+
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn()
+}));
 
 describe("getTableHeadersData", () => {
     const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
@@ -31,12 +37,15 @@ describe("getTableHeadersData", () => {
         expect(relatedToColumn).toBeDefined();
         expect(typeof relatedToColumn?.anyComponent).toBe("function");
     });
-    
 
+    test("renders nothing when elem is undefined", () => {
+        const { container } = render(<>{anyComponent && anyComponent(undefined)}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
     test("renders nothing when elem is null", () => {
-    const { container } = render(<>{anyComponent && anyComponent(null)}</>);
-    expect(container).toBeEmptyDOMElement();
-  });
+        const { container } = render(<>{anyComponent && anyComponent(null)}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
 
     test("renders nothing when elem is empty array", () => {
         const { container } = render(<>{anyComponent && anyComponent([])}</>);
@@ -58,6 +67,17 @@ describe("getTableHeadersData", () => {
         expect(tag).toHaveTextContent('Year / Reg');
     });
 
+    test('anyComponent renders a div with display flex of Document column', () => {
+        const relatedToColumn = getTableHeadersData.find(h => h.text === 'Document');
+        const anyComponent = relatedToColumn?.anyComponent;
+
+        const { container } = render(<>{anyComponent && anyComponent(['Test Document'])}</>);
+        const flexDiv = container.querySelector('div[style*="display: flex"]');
+        expect(flexDiv).toBeInTheDocument();
+        expect(flexDiv).toHaveStyle('display: flex');
+        expect(container.querySelector('.document-text')).toHaveTextContent('Test Document');
+        expect(container.querySelector('.relatedto-tag')).toBeInTheDocument();
+    });
 
 });
 
@@ -208,4 +228,37 @@ describe("DocumentManagementServer hook", () => {
         expect(result.current.hasFetched).toBe(true);
         expect(result.current.error).toBeNull();
     });
+});
+
+describe("getTableHeadersData 'Related to' column tooltip rendering", () => {
+    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+    const anyComponent = relatedToColumn?.anyComponent;
+
+    test("Tooltip uses correct dataTestId", async () => {
+        render(<>{anyComponent && anyComponent(['X', 'Y'])}</>);
+
+        const tooltipTrigger = screen.getByText('+1');
+        expect(tooltipTrigger).toBeInTheDocument();
+
+        await userEvent.hover(tooltipTrigger);
+
+        const tooltip = await screen.findByTestId('tooltip-eventtime');
+        expect(tooltip).toBeInTheDocument();
+    });
+
+    test("Tooltip content contains all items", async () => {
+        render(<>{anyComponent && anyComponent?.(['A', 'B', 'C'])}</>);
+
+        const trigger = screen.getByText('+2');
+        await userEvent.hover(trigger); 
+
+        const tooltip = await screen.findByTestId('tooltip-eventtime');
+        expect(tooltip).toBeInTheDocument();
+    });
+
+    test("Tooltip shows correct '+N' text for multi-item array", () => {
+        render(<>{anyComponent && anyComponent(['One', 'Two', 'Three', 'Four'])}</>);
+        expect(screen.getByText('+3')).toBeInTheDocument();
+    });
+
 });
