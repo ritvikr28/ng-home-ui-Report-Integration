@@ -8,7 +8,7 @@ import { tableDataProps } from "./responseModel"
 
 const DocumentManagementServerView: React.FC = () => {
 
-    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 10 });
+    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 40 });
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
     const tableData: tableDataProps[] = (  error || !data?.data?.length) ? [] :  data?.data?.map((doc: any) => ({

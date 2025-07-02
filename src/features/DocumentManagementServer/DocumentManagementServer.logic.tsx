@@ -68,10 +68,11 @@ export const getTableHeadersData: {
           />
           {elem?.length > 1 ? <Tooltip
             dataTestId={`tooltip-eventtime`}
+            className="relatedto-tooltip"
             content={
               <div>
                 {
-                  elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => {
+                  elem?.map((item: any, index: number) => {
                     return <div key={index}>{item} | {"Year"} | {"Reg"}</div>
                   })
                 }
