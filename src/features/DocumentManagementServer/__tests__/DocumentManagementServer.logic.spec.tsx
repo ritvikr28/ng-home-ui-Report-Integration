@@ -68,10 +68,10 @@ describe("getTableHeadersData", () => {
     });
 
     test('anyComponent renders a div with display flex of Document column', () => {
-        const relatedToColumn = getTableHeadersData.find(h => h.text === 'Document');
-        const anyComponent = relatedToColumn?.anyComponent;
+        const relatedToColumn1 = getTableHeadersData.find(h => h.text === 'Document');
+        const anyComponentDoc = relatedToColumn1?.anyComponent;
 
-        const { container } = render(<>{anyComponent && anyComponent(['Test Document'])}</>);
+        const { container } = render(<>{anyComponentDoc && anyComponentDoc(['Test Document'])}</>);
         const flexDiv = container.querySelector('div[style*="display: flex"]');
         expect(flexDiv).toBeInTheDocument();
         expect(flexDiv).toHaveStyle('display: flex');
