@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ShowValAs, Tag } from "@essnextgen/ui-kit";
-import { Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag } from "@essnextgen/ui-kit";
 import { fetchDocumentDetails } from "./ApiService";
 import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
 
@@ -66,24 +65,23 @@ export const getTableHeadersData: {
             className="relatedto-tag"
             text="Year / Reg"
           />
-          {elem?.length > 1 ? <Tooltip
-            dataTestId={`tooltip-eventtime`}
+          {elem?.length > 1 ? (<Tooltip
+            dataTestId='tooltip-eventtime'
             content={
-              <div>
-                {
-                  elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => {
-                    return <div key={index}>{item} | {"Year"} | {"Reg"}</div>
-                  })
-                }
-              </div>}
+            <div>
+              {elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => (
+                <div key={index}>{item} | "Year" | "Reg"</div>
+              ))}
+            </div>
+}
             align={TooltipAlign.Center}
             position={TooltipPosition.Bottom}
           >
             <div className="tooltip-content">
-              <span> {`+${elem.length - 1}`} </span>
+              <span>{`+${elem.length - 1}`}</span>
             </div>
 
-          </Tooltip> : ""}
+          </Tooltip>) : ""}
         </div>)}
       </>
     )

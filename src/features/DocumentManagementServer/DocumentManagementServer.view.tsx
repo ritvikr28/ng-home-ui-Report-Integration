@@ -1,9 +1,9 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
+import dayjs from "dayjs"
 import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
-import dayjs from "dayjs"
 import { tableDataProps } from "./responseModel"
 
 const DocumentManagementServerView: React.FC = () => {
@@ -21,8 +21,6 @@ const DocumentManagementServerView: React.FC = () => {
         Format: doc?.format,
         Size: doc?.size,
     }));
-console.log('tableData:', tableData);
-console.log('data:', data);
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -252,7 +250,7 @@ console.log('data:', data);
                             isShowFirstElement= {false}
                             isLoaderForFilterandTable={isLoading}
                             loaderFilterText="Please Wait..."
-                            isShowErrorPage={error ? true : false}
+                            isShowErrorPage={!!error}
                         />}
                     </div>
                 </GridItem>

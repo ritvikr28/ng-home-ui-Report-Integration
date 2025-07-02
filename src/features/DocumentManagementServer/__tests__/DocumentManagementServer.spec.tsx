@@ -1,27 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import DocumentManagementServerView from '../DocumentManagementServer.view';
-import { waitFor } from '@testing-library/react';
-
-
-const logic = require('../DocumentManagementServer.logic').default;
-
-jest.mock('../DocumentManagementServer.logic', () => {
-  const original = jest.requireActual('../DocumentManagementServer.logic');
-  return {
-    __esModule: true,
-    default: jest.fn(() => ({})),
-    getTableHeadersData: [
-      { text: "Document", isShow: true, showValAs: "Text", columnWidth: "267px" },
-      { text: "Category", isShow: true, showValAs: "Text", columnWidth: "144px" },
-      { text: "Added by", isShow: true, showValAs: "Text", columnWidth: "180px" },
-      { text: "Date added", isShow: true, showValAs: "Text", columnWidth: "140px" },
-      { text: "Format", isShow: true, showValAs: "Text", columnWidth: "120px" },
-      { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
-    ]
-  };
-});
 
 jest.mock('@essnextgen/ui-kit', () => ({
   ...jest.requireActual('@essnextgen/ui-kit'),
@@ -30,6 +10,7 @@ jest.mock('@essnextgen/ui-kit', () => ({
 
 
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
+
 const mockData = {
   data: [
     {
@@ -44,6 +25,23 @@ const mockData = {
     }
   ]
 };
+
+const logic = require('../DocumentManagementServer.logic').default;
+
+jest.mock('../DocumentManagementServer.logic', () => ({
+    __esModule: true,
+    default: jest.fn(() => ({})),
+    getTableHeadersData: [
+      { text: "Document", isShow: true, showValAs: "Text", columnWidth: "267px" },
+      { text: "Category", isShow: true, showValAs: "Text", columnWidth: "144px" },
+      { text: "Added by", isShow: true, showValAs: "Text", columnWidth: "180px" },
+      { text: "Date added", isShow: true, showValAs: "Text", columnWidth: "140px" },
+      { text: "Format", isShow: true, showValAs: "Text", columnWidth: "120px" },
+      { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
+    ]
+}));
+
+
 
 describe('DocumentManagementServerView', () => {
   beforeEach(() => {
@@ -135,7 +133,7 @@ describe('DocumentManagementServerView', () => {
             dateAdded: '2024-06-01T00:00:00Z',
             format: 'pdf',
             size: '1MB',
-          },
+          }
         ],
       },
       hasFetched: true,

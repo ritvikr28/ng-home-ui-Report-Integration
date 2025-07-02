@@ -26,7 +26,7 @@ export interface DocumentBasicDetails {
 }
 
 
-//props
+// props
 export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;

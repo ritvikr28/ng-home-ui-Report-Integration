@@ -1,12 +1,10 @@
 import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
-import DocumentManagementServer from "../DocumentManagementServer.logic";
+import { render, screen } from "@testing-library/react";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
-import { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
-import { fireEvent, render, screen } from "@testing-library/react";
+import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
 
-// Mock fetchDocumentDetails
 jest.mock("../ApiService");
 
 describe("getTableHeadersData", () => {
@@ -54,8 +52,6 @@ describe("getTableHeadersData", () => {
     });
 
     test("renders Tag with text 'Year / Reg' when elem has one item", () => {
-        const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
-        const anyComponent = relatedToColumn?.anyComponent;
         render(<>{anyComponent && anyComponent(['Test Name'])}</>);
         const tag = document.querySelector('.relatedto-tag');
         expect(tag).toBeInTheDocument();

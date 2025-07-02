@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
+import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
-import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
 
 export const fetchDocumentDetails: ({pageNumber, pageSize}: DocumentManagementServerProps) => Promise<DocumentBasicDetails | null> = async ({pageNumber, pageSize}:DocumentManagementServerProps) => {
