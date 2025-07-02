@@ -35,15 +35,28 @@ export const getTableHeadersData: {
     txtTrunctLength: 35,
     isColumnSorting: false,
     anyComponent: (e: any) => (
-      <div style={{ display: "flex" }}>
-        <span className="document-text">{e}</span>
-        <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text="Locked"
-        />
-      </div>
+      <>
+        <div style={{ display: "flex" }}>
+          <Tooltip
+            dataTestId={`tooltip-eventtime`}
+            content={
+              <span >{e}</span>}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content document-text">
+              <span > {e} </span>
+            </div>
+
+          </Tooltip>
+          <Tag
+            dataTestId="name"
+            id="name"
+            className="relatedto-tag"
+            text="Locked"
+          />
+        </div>
+      </>
     )
   },
   {
@@ -63,14 +76,14 @@ export const getTableHeadersData: {
             dataTestId="name"
             id="name"
             className="relatedto-tag"
-            text="Year / Reg"
+            text={"Year / Reg"}
           />
           {elem?.length > 1 ? (<Tooltip
             dataTestId='tooltip-eventtime'
             content={
             <div>
-              {elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => (
-                <div key={index}>{item} | "Year" | "Reg"</div>
+              {elem?.map((item: any) => (
+                <div>{item} | "Year" | "Reg"</div>
               ))}
             </div>
 }
@@ -89,11 +102,27 @@ export const getTableHeadersData: {
   {
     text: "Category",
     isShow: true,
-    showValAs: ShowValAs.Text,
+    showValAs: ShowValAs.CustomeComponent,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 20,
     isColumnSorting: false,
-    columnWidth: "144px"
+    columnWidth: "144px",
+    anyComponent: (e: any) => (
+      <>
+        <Tooltip
+          dataTestId={`tooltip-eventtime`}
+          content={
+            <span >{e}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span > {e} </span>
+          </div>
+
+        </Tooltip>
+      </>
+    )
   },
   {
     text: "Added by",
@@ -109,28 +138,60 @@ export const getTableHeadersData: {
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
     isColumnSorting: false
-  },
-  {
-    text: "Format",
-    isShow: true,
-    showValAs: ShowValAs.Text,
-    txtTrunctLength: 12,
-    isColumnSorting: false,
-    isTextTruncate: false,
-    isHeaderTextTruncate: true,
-    headerTxtTrunctLength: 50,
-    columnWidth: "120px"
-  },
+    },
+    {
+      text: "Format",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      txtTrunctLength: 12,
+      isColumnSorting: false,
+      isTextTruncate: false,
+      isHeaderTextTruncate: true,
+      headerTxtTrunctLength: 50,
+      columnWidth: "120px",
+      anyComponent: (e: any) => (
+        <>
+          <Tooltip
+            dataTestId={`tooltip-eventtime`}
+            content={
+              <span >{e}</span>}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content document-text">
+              <span >{e}</span>
+            </div>
+
+          </Tooltip>
+        </>
+      )
+    },
   {
     text: "Size",
     isShow: true,
-    showValAs: ShowValAs.Text,
+    showValAs: ShowValAs.CustomeComponent,
     txtTrunctLength: 12,
     isColumnSorting: false,
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "129px"
+    columnWidth: "129px",
+    anyComponent: (e: any) => (
+      <>
+        <Tooltip
+          dataTestId={`tooltip-eventtime`}
+          content={
+            <span >{e}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span >{e}</span>
+          </div>
+
+        </Tooltip>
+      </>
+    )
   }
 ];
 export const tableBodyData: {
