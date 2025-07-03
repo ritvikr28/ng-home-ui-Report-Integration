@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { service } from "../utils/api-service";
 
@@ -9,45 +8,21 @@ export interface SIMSNextGenLink {
   organisationId: string;
 }
 
-export const useSIMSNextGenLinks = (): {
-  hasConnectedLauncher: boolean;
-  error: boolean;
-} => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [hasConnectedLauncher, setHasConnectedLauncher] = useState<boolean>(false);
-  const [error, setError] = useState<boolean>(false);
+export const fetchLinks: () => Promise<boolean> = async () => {
+  try {
+    const response = await service.get('v1/SIMSConnected/simsnextgenlinks');
+    const apiMenus = response.data || [];
+    const launcherInApi = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
 
-  useEffect(() => {
-    const fetchLinks = async () => {
-      if (!isLoading) return;
+    if (!launcherInApi) {
+      return false;
+    }
 
-      try {
-        const response = await service.get('v1/SIMSConnected/simsnextgenlinks');
-        const apiMenus = response.data || [];
-        const launcherInApi = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
+    const hasValidLink = Boolean(launcherInApi.link && launcherInApi.link.trim());
+    const isExcluded = hasFeaturePermission("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
 
-        if (!launcherInApi) {
-          setHasConnectedLauncher(false);
-          setIsLoading(false);
-          return;
-        }
-
-        const hasValidLink = Boolean(launcherInApi.link && launcherInApi.link.trim());
-        const isExcluded = hasFeaturePermission("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
-
-        setHasConnectedLauncher(hasValidLink && !isExcluded);
-        setIsLoading(false);
-        setError(false);
-      } catch (err) {
-        console.log('[useSIMSNextGenLinks] Error fetching links:', err);
-        setError(true);
-        setHasConnectedLauncher(false);
-        setIsLoading(false);
-      }
-    };
-
-    fetchLinks();
-  }, [isLoading]);
-
-  return { hasConnectedLauncher, error };
-}; 
+    return (hasValidLink && !isExcluded);
+  } catch (err) {
+    return false;
+  }
+};

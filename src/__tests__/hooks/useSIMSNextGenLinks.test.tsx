@@ -1,7 +1,6 @@
-import { renderHook } from "@testing-library/react-hooks";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { fetchLinks } from "../../shared/hooks/useSIMSNextGenLinks";
 import { service } from "../../shared/utils/api-service";
-import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
 
 jest.mock("../../shared/utils/api-service", () => ({
   service: {
@@ -13,22 +12,13 @@ jest.mock("@essnextgen/ui-flagr", () => ({
   hasFeaturePermission: jest.fn()
 }));
 
-describe("useSIMSNextGenLinks", () => {
+describe("fetchLinks", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it("should initialize with default state", () => {
-    const { result } = renderHook(() => useSIMSNextGenLinks());
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: false
-    });
-  });
-
-  it("should handle successful API call with launcher present", async () => {
-    const mockResponse = {
+  it("returns true when launcher is present, has valid link, and not excluded", async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: [
         {
           name: "SIMS Connected Launcher",
@@ -37,24 +27,16 @@ describe("useSIMSNextGenLinks", () => {
           organisationId: "123"
         }
       ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: true,
-      error: false
     });
-    expect(service.get).toHaveBeenCalledWith("v1/SIMSConnected/simsnextgenlinks");
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
+    const result = await fetchLinks();
+    expect(result).toBe(true);
+    expect(service.get).toHaveBeenCalledWith('v1/SIMSConnected/simsnextgenlinks');
+    expect(hasFeaturePermission).toHaveBeenCalledWith("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
   });
 
-  it("should handle successful API call with no launcher present", async () => {
-    const mockResponse = {
+  it("returns false when launcher is not present", async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: [
         {
           name: "Other App",
@@ -63,22 +45,13 @@ describe("useSIMSNextGenLinks", () => {
           organisationId: "123"
         }
       ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: false
     });
+    const result = await fetchLinks();
+    expect(result).toBe(false);
   });
 
-  it("should handle launcher with empty link", async () => {
-    const mockResponse = {
+  it("returns false when launcher has empty link", async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: [
         {
           name: "SIMS Connected Launcher",
@@ -87,22 +60,14 @@ describe("useSIMSNextGenLinks", () => {
           organisationId: "123"
         }
       ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: false
     });
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
+    const result = await fetchLinks();
+    expect(result).toBe(false);
   });
 
-  it("should handle launcher with whitespace-only link", async () => {
-    const mockResponse = {
+  it("returns false when launcher has whitespace-only link", async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: [
         {
           name: "SIMS Connected Launcher",
@@ -111,22 +76,14 @@ describe("useSIMSNextGenLinks", () => {
           organisationId: "123"
         }
       ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: false
     });
+    (hasFeaturePermission as jest.Mock).mockReturnValue(false);
+    const result = await fetchLinks();
+    expect(result).toBe(false);
   });
 
-  it("should handle excluded launcher", async () => {
-    const mockResponse = {
+  it("returns false when launcher is excluded", async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({
       data: [
         {
           name: "SIMS Connected Launcher",
@@ -135,67 +92,15 @@ describe("useSIMSNextGenLinks", () => {
           organisationId: "123"
         }
       ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+    });
     (hasFeaturePermission as jest.Mock).mockReturnValue(true);
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: false
-    });
-    expect(hasFeaturePermission).toHaveBeenCalledWith(
-      "ExcludedSIMSNextGenLinks",
-      "SIMSConnectedLauncher"
-    );
+    const result = await fetchLinks();
+    expect(result).toBe(false);
   });
 
-  it("should handle API error", async () => {
-    const error = new Error("API Error");
-    (service.get as jest.Mock).mockRejectedValueOnce(error);
-
-    const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
-
-    const { result, waitForNextUpdate } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    expect(result.current).toEqual({
-      hasConnectedLauncher: false,
-      error: true
-    });
-    expect(consoleSpy).toHaveBeenCalledWith(
-      "[useSIMSNextGenLinks] Error fetching links:",
-      error
-    );
-
-    consoleSpy.mockRestore();
+  it("returns false on API error", async () => {
+    (service.get as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
+    const result = await fetchLinks();
+    expect(result).toBe(false);
   });
-
-  it("should not refetch if already loaded", async () => {
-    const mockResponse = {
-      data: [
-        {
-          name: "SIMS Connected Launcher",
-          code: "SIMSConnectedLauncher",
-          link: "https://example.com",
-          organisationId: "123"
-        }
-      ]
-    };
-
-    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
-
-    const { waitForNextUpdate, rerender } = renderHook(() => useSIMSNextGenLinks());
-
-    await waitForNextUpdate();
-
-    rerender();
-
-    expect(service.get).toHaveBeenCalledTimes(1);
-  });
-}); 
+});

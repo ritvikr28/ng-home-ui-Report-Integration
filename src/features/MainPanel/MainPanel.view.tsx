@@ -16,8 +16,6 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
-import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
-import { useSIMSNextGenLinks } from "../../shared/hooks/useSIMSNextGenLinks";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -88,18 +86,10 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
-  };
-  
-  const { hasConnectedLauncher } = useSIMSNextGenLinks();
+  }; 
 
   return (
     <div>
-      {hasConnectedLauncher && (
-        <div data-testid="sims-launcher">
-          <SIMSConnectedLauncher />
-        </div>
-      )}
-      
       <Grid className="new-margin-b-container">
         {!isOpen && (
           <GridItem className="c-clear-padding">

@@ -2,15 +2,19 @@ import React from "react";
 import { authService } from "@essnextgen/auth-ui";
 import { render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Redirect } from "react-router-dom";
+import * as flagr from "@essnextgen/ui-flagr";
 import NewHomepageView from "../NewHomePage.view";
 import * as qicklink from "../../../shared/components/QuickLink/Quicklinkresponse";
 import { IQuickLinkApiResponse } from "../../../shared/model/quickLink/responsemodels";
 import QuickLinkLogic from "../../QuickLinks";
+import * as simsNextGenLinks from "../../../shared/hooks/useSIMSNextGenLinks";
+
+jest.mock("../../../shared/components/Notification-menu/SIMSConnectedLauncherBanner", () => () => <div>SIMSConnectedLauncher</div>);
+jest.mock("../../../shared/components/Notification-menu/ClassViewWhatsNewBanner", () => () => <div>WhatsNewBanner</div>);
 
 jest.mock("../../../shared/utils", () => ({
-  envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: "True",
-  },
+  getUserOrganisation: jest.fn(() => "org1"),
+  envConfig: { APPLICATION: "app", IS_NEWHOMEPAGE_ACCESSIBLE: "True" },
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -217,3 +221,37 @@ describe("<NewHomepageView />", () => {
     });
   });
 });
+
+describe("<NewHomepageView /> banner rendering", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(true);
+    jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
+  });
+
+  function mockFetchLinks({ hasConnectedLauncher, loading = false }: { hasConnectedLauncher: boolean, loading?: boolean }) {
+    if (loading) {
+      // Return a Promise that never resolves to simulate loading
+      jest.spyOn(simsNextGenLinks, "fetchLinks").mockImplementation(() => new Promise(() => {}));
+    } else {
+      jest.spyOn(simsNextGenLinks, "fetchLinks").mockResolvedValue(hasConnectedLauncher);
+    }
+  }
+
+  it("shows nothing while loading", () => {
+    mockFetchLinks({ hasConnectedLauncher: false, loading: true });
+    const { queryByText } = render(<NewHomepageView />);
+    expect(queryByText("SIMSConnectedLauncher")).toBeNull();
+    expect(queryByText("WhatsNewBanner")).toBeNull();
+  }); 
+
+  it("shows nothing if both banners are not to be shown (loading)", () => {
+    mockFetchLinks({ hasConnectedLauncher: false, loading: true });
+    jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(false);
+    const { queryByText } = render(<NewHomepageView />);
+    expect(queryByText("WhatsNewBanner")).toBeNull();
+    expect(queryByText("SIMSConnectedLauncher")).toBeNull();
+  });
+});
+
+

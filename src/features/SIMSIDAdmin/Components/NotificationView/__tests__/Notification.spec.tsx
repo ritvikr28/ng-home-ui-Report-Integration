@@ -1,73 +1,45 @@
-import { render, screen } from '@testing-library/react';
-import NotificationView from '../Notification.view';
-import { useSIMSNextGenLinks } from '../../../../../shared/hooks/useSIMSNextGenLinks';
-import SIMSConnectedLauncher from '../../../../../shared/components/Notification-menu/SIMSConnectedLauncherBanner';
+import React from "react";
+import { render, waitFor, screen } from "@testing-library/react";
+import NotificationView from "../Notification.view";
+import * as useSIMSNextGenLinksModule from "../../../../../shared/hooks/useSIMSNextGenLinks";
+import { INotificationProps } from "../NotificationProps";
 
-jest.mock('../../../../../shared/hooks/useSIMSNextGenLinks');
-jest.mock('../../../../../shared/components/Notification-menu/SIMSConnectedLauncherBanner', () => 
-  jest.fn(() => <div data-testid="mock-launcher">Mock Launcher</div>)
-);
+jest.mock("../../../../../shared/components/Notification-menu/SIMSConnectedLauncherBanner", () => () => <div>SIMSConnectedLauncherBanner</div>);
 
-describe('NotificationView', () => {
-  const mockSetDisableNotification = jest.fn();
+describe("NotificationView", () => {
+  const defaultProps: INotificationProps = {
+    setDisableNotification: jest.fn()
+  };
 
-  beforeEach(() => {
+  afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should render SIMSConnectedLauncher when hasConnectedLauncher is true', () => {
-    (useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: true,
-      isLoading: false,
-      error: false
+  it("renders SIMSConnectedLauncherBanner when fetchLinks returns true", async () => {
+    jest.spyOn(useSIMSNextGenLinksModule, "fetchLinks").mockResolvedValueOnce(true);
+    render(<NotificationView {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.getByTestId("notification-test-id")).toBeInTheDocument();
+      expect(screen.getByText("SIMSConnectedLauncherBanner")).toBeInTheDocument();
     });
-
-    render(<NotificationView setDisableNotification={mockSetDisableNotification} />);
-
-    expect(screen.getByTestId('notification-test-id')).toBeInTheDocument();
-    expect(screen.getByTestId('mock-launcher')).toBeInTheDocument();
-    expect(SIMSConnectedLauncher).toHaveBeenCalled();
   });
 
-  it('should not render anything when hasConnectedLauncher is false', () => {
-    (useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: false,
-      isLoading: false,
-      error: false
+  it("does not render SIMSConnectedLauncherBanner when fetchLinks returns false", async () => {
+    jest.spyOn(useSIMSNextGenLinksModule, "fetchLinks").mockResolvedValueOnce(false);
+    render(<NotificationView {...defaultProps} />);
+    await waitFor(() => {
+      expect(screen.queryByTestId("notification-test-id")).toBeNull();
+      expect(screen.queryByText("SIMSConnectedLauncherBanner")).toBeNull();
     });
-
-    render(<NotificationView setDisableNotification={mockSetDisableNotification} />);
-
-    expect(screen.queryByTestId('notification-test-id')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('mock-launcher')).not.toBeInTheDocument();
-    expect(SIMSConnectedLauncher).not.toHaveBeenCalled();
   });
 
-  it('should not render anything when hook is loading', () => {
-    (useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: false,
-      isLoading: true,
-      error: false
+  it("does not render SIMSConnectedLauncherBanner when fetchLinks throws error", async () => {
+    jest.spyOn(useSIMSNextGenLinksModule, "fetchLinks").mockRejectedValueOnce(new Error("fail"));
+    render(<NotificationView {...defaultProps} />);
+    // Wait for useEffect to run
+    await waitFor(() => {
+      expect(screen.queryByTestId("notification-test-id")).toBeNull();
+      expect(screen.queryByText("SIMSConnectedLauncherBanner")).toBeNull();
     });
-
-    render(<NotificationView setDisableNotification={mockSetDisableNotification} />);
-
-    expect(screen.queryByTestId('notification-test-id')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('mock-launcher')).not.toBeInTheDocument();
-    expect(SIMSConnectedLauncher).not.toHaveBeenCalled();
   });
-
-  it('should not render anything when hook has error', () => {
-    (useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: false,
-      isLoading: false,
-      error: true
-    });
-
-    render(<NotificationView setDisableNotification={mockSetDisableNotification} />);
-
-    expect(screen.queryByTestId('notification-test-id')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('mock-launcher')).not.toBeInTheDocument();
-    expect(SIMSConnectedLauncher).not.toHaveBeenCalled();
-  });
-}); 
+});
