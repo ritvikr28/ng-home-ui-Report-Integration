@@ -34,7 +34,7 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import UAM from "./features/AdminConsole/UAM.view";
 import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
-import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.logic";
+import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 
@@ -134,7 +134,6 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     "SystemStatusORG"
   );
 
-  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
@@ -207,7 +206,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {hasSystemStatusPermission || hasSystemStatusOrgPermission  &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
+          {hasSystemStatusPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
           {hasInviteUserView && (
             <ProtectedRoute
               exact

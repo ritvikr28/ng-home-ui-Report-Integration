@@ -1,11 +1,26 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
-import { getTableHeadersData, tableBodyData } from "./DocumentManagementServer.logic"
+import dayjs from "dayjs"
+import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
+import { tableDataProps } from "./responseModel"
 
-const DocumentManagementServerView : React.FC= () => {
-    
+const DocumentManagementServerView: React.FC = () => {
+
+    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 40 });
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    const tableData: tableDataProps[] = (  error || !data?.data?.length) ? [] :  data?.data?.map((doc: any) => ({
+        id: doc?.fileId,
+        Document: doc?.document,
+        Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
+        Category: doc?.category || "",
+        Addedby: doc?.addedBy || "",
+        "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+        Format: doc?.format,
+        Size: doc?.size,
+    }));
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -19,6 +34,17 @@ const DocumentManagementServerView : React.FC= () => {
     useEffect(() => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
+
+    useEffect(() => {
+        setIsLoading(true);
+        setTimeout(() => {
+            if (tableData) {
+                setIsLoading(false);
+            }
+        }, 1500);
+    }, []);
+
+
 
     return (<>
         <>
@@ -84,7 +110,7 @@ const DocumentManagementServerView : React.FC= () => {
                                 onItemClick={() => { }}
                             />
                         </div>
-                        <ControlledList
+                        {hasFetched && <ControlledList
                             globalNotificationMsgBannerObject={null}
                             isAddEventBtnShow={false}
                             dataTestId="controlled-list-test-id"
@@ -125,8 +151,9 @@ const DocumentManagementServerView : React.FC= () => {
                                     value: 'Delete'
                                 }
                             ]}
-                            emptyStateMsg="No Severity levels"
+                            emptyStateMsg="Documents will appear here once they are uploaded." 
                             emptybtnTitle="Add Type"
+                            isShowEmptyAddBtn={false}
                             errorActionListItem={[
                                 {
                                     action: 'Secondary Text',
@@ -190,7 +217,7 @@ const DocumentManagementServerView : React.FC= () => {
                             sidePanelSubTitle=""
                             sidePanelTitle=""
                             subHeadingText=""
-                            tableBodyData={tableBodyData}
+                            tableBodyData={tableData || [] }
                             filterCustumeElem2={<Button
                                 className="filter-btn"
                                 dataTestId="filter-btn"
@@ -201,7 +228,7 @@ const DocumentManagementServerView : React.FC= () => {
                             > Filter</Button>
                             }
                             tableFirstColumnWidth="10px"
-                            tableHeadersData={getTableHeadersData}
+                            tableHeadersData={tableData.length > 0 ? getTableHeadersData : []}
                             tableLastColumnWidth="10px"
                             templatePropsConfirmation={
                                 {
@@ -221,7 +248,10 @@ const DocumentManagementServerView : React.FC= () => {
                             isOpenConfirmationDialog={false}
                             isShowOverflowMenuCol={false}
                             isShowFirstElement= {false}
-                        />
+                            isLoaderForFilterandTable={isLoading}
+                            loaderFilterText="Please Wait..."
+                            isShowErrorPage={!!error}
+                        />}
                     </div>
                 </GridItem>
             </Grid>

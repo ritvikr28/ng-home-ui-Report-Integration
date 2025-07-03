@@ -35,6 +35,29 @@
 // .dropdown {
 //   flex-basis: content;
 // }
+.relatedto-main{
+  display: flex;
+  gap: 2%;
+
+  a{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #2177c2;
+  }
+  
+  .tooltip-content{
+    background: #f7f7f7;
+    border-radius:14px;
+    width: fit-content;
+    padding: 3px 12px 0px 12px;
+    span{
+      font-weight: 600;
+      line-height: 16px;
+      font-size: 14px;
+    }
+  }
+}
 
 .relatedto-tag {
   position: relative;
@@ -60,6 +83,19 @@
 
 .dynamic-table .dms-layout .essui-table__cell {
   border-right: 1px solid #e0e0e0;
+}
+
+.empty-table{
+  background-color: white;
+}
+.essui-loader {
+    width: 98%;
+    height: auto;
+    background-color: white;
+    border-radius: 10px;
+}
+.essui-loader .essui-loader-spin{
+  margin-top: inherit;
 }
 
 // -------------------------768px to 1024px-------------------------------
