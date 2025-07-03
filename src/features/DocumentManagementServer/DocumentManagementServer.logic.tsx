@@ -1,6 +1,7 @@
-import React from "react";
-import { ShowValAs, Tag } from "@essnextgen/ui-kit";
-import DocumentManagementServerView from "./DocumentManagementServer.view";
+import React, { useEffect, useState } from "react";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag } from "@essnextgen/ui-kit";
+import { fetchDocumentDetails } from "./ApiService";
+import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
 
 export const getTableHeadersData: {
   text: string;
@@ -34,15 +35,28 @@ export const getTableHeadersData: {
     txtTrunctLength: 35,
     isColumnSorting: false,
     anyComponent: (e: any) => (
-      <div style={{ display: "flex" }}>
-        <span className="document-text">{e}</span>
-        <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text="Locked"
-        />
-      </div>
+      <>
+        <div style={{ display: "flex" }}>
+          <Tooltip
+            dataTestId= 'tooltip-eventtime'
+            content={
+              <span >{e}</span>}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content document-text">
+              <span > {e} </span>
+            </div>
+
+          </Tooltip>
+          <Tag
+            dataTestId="name"
+            id="name"
+            className="relatedto-tag"
+            text="Locked"
+          />
+        </div>
+      </>
     )
   },
   {
@@ -54,26 +68,61 @@ export const getTableHeadersData: {
     headerTxtTrunctLength: 17,
     columnWidth: "261px",
     txtTrunctLength: 35,
-    anyComponent: (e: any) => (
-      <div style={{ display: "flex", gap: "2%" }}>
-        <>{e}</>
-        <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text="Year / Reg"
-        />
-      </div>
+    anyComponent: (elem: any) => (
+      <>
+        {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
+          <a href="/pupilprofile">{elem[0]}</a>
+          <Tag
+            dataTestId="name"
+            id="name"
+            className="relatedto-tag"
+            text= "Year / Reg"
+          />
+          {elem?.length > 1 ? (<Tooltip
+            dataTestId='tooltip-eventtime'
+            content={
+            <div>
+              {elem?.map((item: any) => (
+                <div>{item} | "Year" | "Reg"</div>
+              ))}
+            </div>
+}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content">
+              <span>{`+${elem.length - 1}`}</span>
+            </div>
+
+          </Tooltip>) : ""}
+        </div>)}
+      </>
     )
   },
   {
     text: "Category",
     isShow: true,
-    showValAs: ShowValAs.Text,
+    showValAs: ShowValAs.CustomeComponent,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 20,
     isColumnSorting: false,
-    columnWidth: "144px"
+    columnWidth: "144px",
+    anyComponent: (e: any) => (
+      <>
+        <Tooltip
+          dataTestId= 'tooltip-eventtime'
+          content={
+            <span >{e}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span > {e} </span>
+          </div>
+
+        </Tooltip>
+      </>
+    )
   },
   {
     text: "Added by",
@@ -89,34 +138,66 @@ export const getTableHeadersData: {
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
     isColumnSorting: false
-  },
-  {
-    text: "Format",
-    isShow: true,
-    showValAs: ShowValAs.Text,
-    txtTrunctLength: 12,
-    isColumnSorting: false,
-    isTextTruncate: false,
-    isHeaderTextTruncate: true,
-    headerTxtTrunctLength: 50,
-    columnWidth: "120px"
-  },
+    },
+    {
+      text: "Format",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      txtTrunctLength: 12,
+      isColumnSorting: false,
+      isTextTruncate: false,
+      isHeaderTextTruncate: true,
+      headerTxtTrunctLength: 50,
+      columnWidth: "120px",
+      anyComponent: (e: any) => (
+        <>
+          <Tooltip
+            dataTestId= 'tooltip-eventtime'
+            content={
+              <span >{e}</span>}
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content document-text">
+              <span >{e}</span>
+            </div>
+
+          </Tooltip>
+        </>
+      )
+    },
   {
     text: "Size",
     isShow: true,
-    showValAs: ShowValAs.Text,
+    showValAs: ShowValAs.CustomeComponent,
     txtTrunctLength: 12,
     isColumnSorting: false,
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "129px"
+    columnWidth: "129px",
+    anyComponent: (e: any) => (
+      <>
+        <Tooltip
+          dataTestId= 'tooltip-eventtime'
+          content={
+            <span >{e}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span >{e}</span>
+          </div>
+
+        </Tooltip>
+      </>
+    )
   }
 ];
 export const tableBodyData: {
   id: string;
   Document: string;
-  Relatedto: string;
+  Relatedto: string[];
   Category: string;
   Addedby: string;
   "Date added": string;
@@ -126,7 +207,7 @@ export const tableBodyData: {
   {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
     Document: "Name ",
-    Relatedto: "Bayberry View High",
+    Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
     Category: "School",
     Addedby: "Helen Avery",
     "Date added": "01 Jan 2025",
@@ -137,7 +218,7 @@ export const tableBodyData: {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
     Document:
       "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
-    Relatedto: "Araminta Martin",
+    Relatedto: ["Araminta Martin"],
     Category: "Conduct",
     Addedby: "Richard Wilton",
     "Date added": "01 Jan 2025",
@@ -145,10 +226,30 @@ export const tableBodyData: {
     Size: "3KB"
   }
 ];
-const DocumentManagementServer: React.FC = () => (
-  <>
-    <DocumentManagementServerView />
-  </>
-);
+
+const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
+  const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
+  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [hasFetched, setHasFetched] = useState(false);
+
+  useEffect(() => {
+    const fetchData: () => Promise<void> = async () => {
+      const result: DocumentBasicDetails | null = await fetchDocumentDetails(
+        { pageNumber, pageSize }
+      );
+      if (result) {
+        setData(result);
+      } else {
+        setError("Failed to fetch data");
+      }
+      setHasFetched(true)
+    };
+
+    fetchData();
+  }, [pageNumber, pageSize]);
+
+  return { data, error, hasFetched };
+};
+
 
 export default DocumentManagementServer;
