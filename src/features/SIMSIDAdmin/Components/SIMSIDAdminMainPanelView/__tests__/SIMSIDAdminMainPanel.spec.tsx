@@ -1,123 +1,134 @@
-import { render, screen } from "@testing-library/react";
-import SIMSIDAdminMainPanelView from "../SIMSIDAdminMainPanel.view";
-import SIMSIDAdminMainPanel from "../SIMSIDAdminMainPanel.logic";
-import * as stateHelper from "../../../../../shared/utils/state-helper";
-import * as hooks from "../../../../../shared/hooks/useSIMSNextGenLinks";
+import { render, screen, fireEvent } from '@testing-library/react';
+import * as stateHelper from '../../../../../shared/utils/state-helper';
+import SIMSIDAdminMainPanelView from '../SIMSIDAdminMainPanel.view';
+import SIMSIDAdminMainPanel from '../SIMSIDAdminMainPanel.logic';
 
-jest.mock("../../../../../shared/hooks/useSIMSNextGenLinks", () => ({
-  useSIMSNextGenLinks: jest.fn()
+// Mocks for child components and hooks
+jest.mock('../../NotificationView/Notification.view', () => ({
+  __esModule: true,
+  default: ({ setDisableNotification }: any) => (
+    <div data-testid="notification-test-id" onClick={() => setDisableNotification(false)}>NotificationView</div>
+  ),
 }));
 
-describe("SIMSIDAdminMainPanel", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();    
-    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: true
-    });
-  });
+jest.mock('../../../../../shared/components/SIMSUpdates/SIMSupdates.view', () => ({
+  __esModule: true,
+  default: ({ isOpen }: any) => <div data-testid="simsupdates-view">SIMSupdatesView {String(isOpen)}</div>,
+}));
 
+jest.mock('../../../../MainPanel/WelcomeUser/WelcomeUser.logic', () => ({
+  __esModule: true,
+  default: ({ isOpen }: any) => <div data-testid="welcome-user">WelcomeUser {String(isOpen)}</div>,
+}));
+
+jest.mock('../../../../../shared/components/CommonElement/FilledButton', () => ({
+  FilledLeftPanelIcon: () => <svg data-testid="filled-left-panel-icon" />,
+}));
+
+// --- SIMSIDAdminMainPanelView tests ---
+describe('SIMSIDAdminMainPanelView', () => {
   const setIsOpen = jest.fn();
+  const setDisableNotification = jest.fn();
 
-  const setNotificationDisable = jest.fn();
-
-  test("renders SIMSIDAdminMainPanel with isOpen true and Notification enabled", async () => {
-    const usePersistantState = jest.spyOn(stateHelper, 'usePersistantState');
-    usePersistantState.mockReturnValue([true, setNotificationDisable]);
-    render(
-      <SIMSIDAdminMainPanel
-        isOpen
-        setIsOpen={setIsOpen}
-      />
-    );
-    
-    expect(screen.queryByTestId("SIMSID-Admin-View")).toBeInTheDocument();
-    expect(screen.queryByTestId("notification-test-id")).toBeInTheDocument();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  test("renders SIMSIDAdminMainPanel with isOpen true and Notification disabled", async () => {
-    const usePersistantState = jest.spyOn(stateHelper, 'usePersistantState');
-    usePersistantState.mockReturnValue([false, setNotificationDisable]);
+  it('renders with isOpen true and notification enabled', () => {
     render(
-      <SIMSIDAdminMainPanel
-        isOpen
+      <SIMSIDAdminMainPanelView
+        isOpen={true}
+        enableNotification={true}
+        setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
       />
     );
-    expect(screen.queryByTestId("SIMSID-Admin-View")).toBeInTheDocument();
+    expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-test-id')).toBeInTheDocument();
+    expect(screen.getByTestId('simsupdates-view')).toBeInTheDocument();
+    expect(screen.getByTestId('welcome-user')).toBeInTheDocument();
+    // Should not render the sidepanel toggle button
+    expect(screen.queryByRole('button', { name: '' })).not.toBeInTheDocument();
+  });
+
+  it('renders with isOpen false and notification enabled', () => {
+    render(
+      <SIMSIDAdminMainPanelView
+        isOpen={false}
+        enableNotification={true}
+        setDisableNotification={setDisableNotification}
+        setIsOpen={setIsOpen}
+      />
+    );
+    expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-test-id')).toBeInTheDocument();
+    expect(screen.getByTestId('simsupdates-view')).toBeInTheDocument();
+    expect(screen.getByTestId('welcome-user')).toBeInTheDocument();
+    // Should render the sidepanel toggle button
+    expect(screen.getByTestId('filled-left-panel-icon')).toBeInTheDocument();
+  });
+
+  it('renders with notification disabled', () => {
+    render(
+      <SIMSIDAdminMainPanelView
+        isOpen={true}
+        enableNotification={false}
+        setDisableNotification={setDisableNotification}
+        setIsOpen={setIsOpen}
+      />
+    );
+    expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
     expect(screen.queryByTestId('notification-test-id')).not.toBeInTheDocument();
+    expect(screen.getByTestId('simsupdates-view')).toBeInTheDocument();
+    expect(screen.getByTestId('welcome-user')).toBeInTheDocument();
   });
 
-  test("renders SIMSIDAdminMainPanelView with Notification enabled with isOpen false", async () => {
-    const { getByTestId, container } = render(
+  it('calls setIsOpen when sidepanel toggle button is clicked', () => {
+    render(
       <SIMSIDAdminMainPanelView
         isOpen={false}
+        enableNotification={true}
+        setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
-        enableNotification
-        setDisableNotification={() => { }}
       />
     );
-    const NotificationTestId = getByTestId('notification-test-id');
-    const NotificationClass = container.querySelector('.notification-simsid');
-    const SidePanelOpenAppendedClass = container.querySelector('.welcome-user-simsid-fixed');
-    expect(getByTestId("SIMSID-Admin-View")).toBeInTheDocument();
-    expect(SidePanelOpenAppendedClass).toBeInTheDocument();
-    expect(NotificationTestId).toBeInTheDocument();
-    expect(NotificationClass).toBeInTheDocument();
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+    expect(setIsOpen).toHaveBeenCalledWith(true);
   });
 
-  test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen false", async () => {
-    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: false
-    });
-
-    const { getByTestId } = render(
+  it('calls setDisableNotification when notification is clicked', () => {
+    render(
       <SIMSIDAdminMainPanelView
-        isOpen={false}
+        isOpen={true}
+        enableNotification={true}
+        setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
-        enableNotification={false}
-        setDisableNotification={() => { }}
       />
     );
+    fireEvent.click(screen.getByTestId('notification-test-id'));
+    expect(setDisableNotification).toHaveBeenCalledWith(false);
+  });
+});
 
-    const NotificationTestId = screen.queryByTestId('notification-test-id');
-    expect(getByTestId("SIMSID-Admin-View")).toBeInTheDocument();
-    expect(NotificationTestId).not.toBeInTheDocument();
+// --- SIMSIDAdminMainPanel (logic) tests ---
+describe('SIMSIDAdminMainPanel', () => {
+  const setIsOpen = jest.fn();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  test("renders SIMSIDAdminMainPanelView with Notification enabled with isOpen true", async () => {
-    const { getByTestId, container } = render(
-      <SIMSIDAdminMainPanelView
-        isOpen
-        setIsOpen={setIsOpen}
-        enableNotification
-        setDisableNotification={() => { }}
-      />
-    );
-    const SidePanelOpenAppendedClass = container.querySelector('.welcome-user-simsid-fixed');
-    const NotificationTestId = getByTestId('notification-test-id');
-    const NotificationClass = container.querySelector('.notification-open-panel');
-    expect(getByTestId("SIMSID-Admin-View")).toBeInTheDocument();
-    expect(SidePanelOpenAppendedClass).not.toBeInTheDocument();
-    expect(NotificationTestId).toBeInTheDocument();
-    expect(NotificationClass).toBeInTheDocument();
+  it('renders SIMSIDAdminMainPanelView with notification enabled', () => {
+    jest.spyOn(stateHelper, 'usePersistantState').mockReturnValue([true, jest.fn()]);
+    render(<SIMSIDAdminMainPanel isOpen={true} setIsOpen={setIsOpen} />);
+    expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
+    expect(screen.getByTestId('notification-test-id')).toBeInTheDocument();
   });
 
-  test("renders SIMSIDAdminMainPanelView with Notification disabled with isOpen true", async () => {
-    (hooks.useSIMSNextGenLinks as jest.Mock).mockReturnValue({
-      hasConnectedLauncher: false
-    });
-
-    const { getByTestId } = render(
-      <SIMSIDAdminMainPanelView
-        isOpen
-        setIsOpen={setIsOpen}
-        enableNotification={false}
-        setDisableNotification={() => { }}
-      />
-    );
-
-    const NotificationTestId = screen.queryByTestId('notification-test-id');
-    expect(getByTestId("SIMSID-Admin-View")).toBeInTheDocument();
-    expect(NotificationTestId).not.toBeInTheDocument();
+  it('renders SIMSIDAdminMainPanelView with notification disabled', () => {
+    jest.spyOn(stateHelper, 'usePersistantState').mockReturnValue([false, jest.fn()]);
+    render(<SIMSIDAdminMainPanel isOpen={false} setIsOpen={setIsOpen} />);
+    expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
+    expect(screen.queryByTestId('notification-test-id')).not.toBeInTheDocument();
   });
 });

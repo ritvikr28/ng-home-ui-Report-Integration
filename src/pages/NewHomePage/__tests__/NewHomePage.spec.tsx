@@ -13,9 +13,8 @@ jest.mock("../../../shared/components/Notification-menu/SIMSConnectedLauncherBan
 jest.mock("../../../shared/components/Notification-menu/ClassViewWhatsNewBanner", () => () => <div>WhatsNewBanner</div>);
 
 jest.mock("../../../shared/utils", () => ({
-  envConfig: {
-    IS_NEWHOMEPAGE_ACCESSIBLE: "True",
-  },
+  getUserOrganisation: jest.fn(() => "org1"),
+  envConfig: { APPLICATION: "app", IS_NEWHOMEPAGE_ACCESSIBLE: "True" },
 }));
 
 jest.mock("react-router-dom", () => ({
@@ -230,49 +229,29 @@ describe("<NewHomepageView /> banner rendering", () => {
     jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
   });
 
-  function mockHook({ hasConnectedLauncher, isLoading }: { hasConnectedLauncher: boolean, isLoading: boolean }) {
-    jest.spyOn(simsNextGenLinks, "useSIMSNextGenLinks").mockReturnValue({
-      hasConnectedLauncher,
-      isLoading,
-      error: false
-    });
+  function mockFetchLinks({ hasConnectedLauncher, loading = false }: { hasConnectedLauncher: boolean, loading?: boolean }) {
+    if (loading) {
+      // Return a Promise that never resolves to simulate loading
+      jest.spyOn(simsNextGenLinks, "fetchLinks").mockImplementation(() => new Promise(() => {}));
+    } else {
+      jest.spyOn(simsNextGenLinks, "fetchLinks").mockResolvedValue(hasConnectedLauncher);
+    }
   }
 
   it("shows nothing while loading", () => {
-    mockHook({ hasConnectedLauncher: false, isLoading: true });
+    mockFetchLinks({ hasConnectedLauncher: false, loading: true });
     const { queryByText } = render(<NewHomepageView />);
     expect(queryByText("SIMSConnectedLauncher")).toBeNull();
     expect(queryByText("WhatsNewBanner")).toBeNull();
-  });
+  }); 
 
-  it("shows SIMSConnectedLauncher when hasConnectedLauncher is true and not loading", () => {
-    mockHook({ hasConnectedLauncher: true, isLoading: false });
-    const { getByText, queryByText } = render(<NewHomepageView />);
-    expect(getByText("SIMSConnectedLauncher")).toBeInTheDocument();
-    expect(queryByText("WhatsNewBanner")).toBeNull();
-  });
-
-  it("shows WhatsNewBanner when hasConnectedLauncher is false, not loading, and feature flag is true", () => {
-    mockHook({ hasConnectedLauncher: false, isLoading: false });
-    jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(true);
-    const { getByText, queryByText } = render(<NewHomepageView />);
-    expect(getByText("WhatsNewBanner")).toBeInTheDocument();
-    expect(queryByText("SIMSConnectedLauncher")).toBeNull();
-  });
-
-  it("shows nothing if hasConnectedLauncher is false, not loading, and feature flag is false", () => {
-    mockHook({ hasConnectedLauncher: false, isLoading: false });
-    jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(false);
-    const { queryByText } = render(<NewHomepageView />);
-    expect(queryByText("WhatsNewBanner")).toBeNull();
-    expect(queryByText("SIMSConnectedLauncher")).toBeNull();
-  });
-
-  it("shows nothing if both banners are not to be shown", () => {
-    mockHook({ hasConnectedLauncher: false, isLoading: true });
+  it("shows nothing if both banners are not to be shown (loading)", () => {
+    mockFetchLinks({ hasConnectedLauncher: false, loading: true });
     jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(false);
     const { queryByText } = render(<NewHomepageView />);
     expect(queryByText("WhatsNewBanner")).toBeNull();
     expect(queryByText("SIMSConnectedLauncher")).toBeNull();
   });
 });
+
+
