@@ -7,8 +7,7 @@ const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
 const logic = require('../DocumentManagementServer.logic').default;
 
-jest.mock('../DocumentManagementServer.logic', () => {
-  return {
+jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
     default: jest.fn(() => ({})),
     getTableHeadersData: [
@@ -19,8 +18,8 @@ jest.mock('../DocumentManagementServer.logic', () => {
       { text: "Format", isShow: true, showValAs: "Text", columnWidth: "120px" },
       { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
     ]
-  };
-});
+
+}));
 
 jest.mock('@essnextgen/ui-kit', () => ({
   ...jest.requireActual('@essnextgen/ui-kit'),

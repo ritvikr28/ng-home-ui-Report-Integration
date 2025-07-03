@@ -38,7 +38,7 @@ export const getTableHeadersData: {
       <>
         <div style={{ display: "flex" }}>
           <Tooltip
-            dataTestId="tooltip-eventtime"
+            dataTestId= 'tooltip-eventtime'
             content={
               <span >{e}</span>}
             align={TooltipAlign.Center}
@@ -76,7 +76,7 @@ export const getTableHeadersData: {
             dataTestId="name"
             id="name"
             className="relatedto-tag"
-            text="Year / Reg"
+            text= "Year / Reg"
           />
           {elem?.length > 1 ? (<Tooltip
             dataTestId='tooltip-eventtime'
@@ -110,7 +110,7 @@ export const getTableHeadersData: {
     anyComponent: (e: any) => (
       <>
         <Tooltip
-          dataTestId="tooltip-eventtime"
+          dataTestId= 'tooltip-eventtime'
           content={
             <span >{e}</span>}
           align={TooltipAlign.Center}
@@ -152,7 +152,7 @@ export const getTableHeadersData: {
       anyComponent: (e: any) => (
         <>
           <Tooltip
-            dataTestId="tooltip-eventtime"
+            dataTestId= 'tooltip-eventtime'
             content={
               <span >{e}</span>}
             align={TooltipAlign.Center}
@@ -179,7 +179,7 @@ export const getTableHeadersData: {
     anyComponent: (e: any) => (
       <>
         <Tooltip
-          dataTestId="tooltip-eventtime"
+          dataTestId= 'tooltip-eventtime'
           content={
             <span >{e}</span>}
           align={TooltipAlign.Center}
