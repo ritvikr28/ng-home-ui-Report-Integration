@@ -18,8 +18,8 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
     React.Dispatch<React.SetStateAction<boolean>>
   ] = React.useState<boolean>(false);
   useEffect(() => {    
-    console.log('UI-Application kit (Home):^1.1.5');
-    console.log('UI-kit(Home):^0.24.0');
+    console.log('UI-Application kit (Home):^1.1.6');
+    console.log('UI-kit(Home):"^0.24.1');
     (async () => {
       try {          
         await initializeVariable(); 
