@@ -311,10 +311,11 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
       })}
   </div>
 );
-  
-const hasInviteUserView: boolean = isOrganisationInVariant("InviteUserView");
 
-const simsIdAdminQuickLink: () => JSX.Element = () => (
+const simsIdAdminQuickLink: () => JSX.Element = () => {
+  const hasInviteUserView: boolean = isOrganisationInVariant("InviteUserView");
+
+  return (
   <div className="left-sidepanel-home113">
     <div className="quick-link-title">Quick Links</div>
     <div className="quick-link-section">
@@ -343,6 +344,8 @@ const simsIdAdminQuickLink: () => JSX.Element = () => (
     </div>
   </div>
 );
+}
+
 //  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
 const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   isPermissionquicklink,
