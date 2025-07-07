@@ -13,15 +13,21 @@ import {
 } from "@essnextgen/ui-kit";
 import "./style.scss";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
-import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
-import { SidePanelProps, QuickLinkSidePanel, QuickLink } from "./SidePanelProps";
+import {
+  UseTranslationResponse,
+  useTranslation
+} from "@essnextgen/ui-intl-kit";
+import {
+  SidePanelProps,
+  QuickLinkSidePanel,
+  QuickLink
+} from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { envConfig } from "../../shared/utils";
 import { IQuickLinkApiResponse } from "../../shared/model/quickLink/responsemodels";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
-
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
@@ -63,12 +69,12 @@ const SidePanel: React.FC<SidePanelProps> = ({
     favorite: boolean,
     name: string
   ): Promise<void> => {
-      try {
-        await handleStarClickAsync(id, favorite, name, setQuickLinkData);
-      } catch (error) {
-        setIsError(true);
-      }
-    };
+    try {
+      await handleStarClickAsync(id, favorite, name, setQuickLinkData);
+    } catch (error) {
+      setIsError(true);
+    }
+  };
 
   return (
     <div className={`side-view-panel ${getSideViewClass(isOpen)}`}>
@@ -95,7 +101,7 @@ const SidePanel: React.FC<SidePanelProps> = ({
 
 const getLoginFullName: (fullName: string | null) => string = (
   fullName: string | null
-): string => (fullName === null ? "" : fullName.split(" ")[0]);
+): string => (fullName === null ? "" : fullName?.split(" ")[0]);
 
 const getSideViewClass: (isOpen: boolean) => string = (
   isOpen: boolean
@@ -112,27 +118,27 @@ const handleStarClickAsync: (
   name: string,
   setQuickLinkData: React.Dispatch<React.SetStateAction<any>>
 ): Promise<void> => {
-    const { status }: { status: number } = await FetchQuickLinkpost(id, favorite);
-    if (status === 200) {
-      const responseapidata:
-        | { response: IQuickLinkApiResponse[]; status: boolean }
-        | null
-        | undefined = await fetchQuickLinkDetails();
-      if (responseapidata != null) {
-        setQuickLinkData(responseapidata.response);
-      }
+  const { status }: { status: number } = await FetchQuickLinkpost(id, favorite);
+  if (status === 200) {
+    const responseapidata:
+      | { response: IQuickLinkApiResponse[]; status: boolean }
+      | null
+      | undefined = await fetchQuickLinkDetails();
+    if (responseapidata != null) {
+      setQuickLinkData(responseapidata.response);
     }
-    /* eslint-disable */
-    let elementType: "empty_star" | "filled_star" = favorite
-      ? "empty_star"
-      : "filled_star";
-    gtmAnalytics.pushEvent({
-      event: "interact_click",
-      elementType,
-      elementTextOrLabel: name,
-      elementLocation: "sidebar"
-    });
-  };
+  }
+  /* eslint-disable */
+  let elementType: "empty_star" | "filled_star" = favorite
+    ? "empty_star"
+    : "filled_star";
+  gtmAnalytics.pushEvent({
+    event: "interact_click",
+    elementType,
+    elementTextOrLabel: name,
+    elementLocation: "sidebar"
+  });
+};
 
 interface RenderSideNavigationPanelProps {
   isMobileView: boolean;
@@ -260,7 +266,6 @@ const renderCloseIcon: (closePanel: () => void) => JSX.Element = (
   </span>
 );
 
-
 interface RenderQuickLinkContentProps {
   loginFullname: string;
   closePanel: () => void;
@@ -300,15 +305,15 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
     {isSIMSIDAdmin
       ? simsIdAdminQuickLink()
       : quickLink({
-        isPermissionquicklink,
-        isError,
-        quicklinkData,
-        handleStarClick,
-        showQuickLinkView,
-        isLoader,
-        togglePanel,
-        isMobileView
-      })}
+          isPermissionquicklink,
+          isError,
+          quicklinkData,
+          handleStarClick,
+          showQuickLinkView,
+          isLoader,
+          togglePanel,
+          isMobileView
+        })}
   </div>
 );
 
@@ -316,35 +321,35 @@ const simsIdAdminQuickLink: () => JSX.Element = () => {
   const hasInviteUserView: boolean = isOrganisationInVariant("InviteUserView");
 
   return (
-  <div className="left-sidepanel-home113">
-    <div className="quick-link-title">Quick Links</div>
-    <div className="quick-link-section">
-      <div
-        className="quick-link-panel-item label-css"
-        key={1}
-        onClick={() => {
-          window.location.href = `${envConfig.INVITE_STAFF_URL}`;
-        }}
-        style={{ cursor: "pointer" }}
-      >
-        Invite Staff
+    <div className="left-sidepanel-home113">
+      <div className="quick-link-title">Quick Links</div>
+      <div className="quick-link-section">
+        <div
+          className="quick-link-panel-item label-css"
+          key={1}
+          onClick={() => {
+            window.location.href = `${envConfig.INVITE_STAFF_URL}`;
+          }}
+          style={{ cursor: "pointer" }}
+        >
+          Invite Staff
+        </div>
+        {hasInviteUserView && (
+          <div
+            className="quick-link-panel-item label-css"
+            key={2}
+            onClick={() => {
+              window.location.href = `${envConfig.INVITE_USERS_URL}`;
+            }}
+            style={{ cursor: "pointer" }}
+          >
+            Invite Users
+          </div>
+        )}
       </div>
-      {hasInviteUserView && (
-      <div
-        className="quick-link-panel-item label-css"
-        key={2}
-        onClick={() => {
-          window.location.href = `${envConfig.INVITE_USERS_URL}`;
-        }}
-        style={{ cursor: "pointer" }}
-      >
-        Invite Users
-      </div>
-      )}
     </div>
-  </div>
-);
-}
+  );
+};
 
 //  const getUsernameTooltip :(loginFullname: any) => JSX.Element= (loginFullname) => (
 const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
@@ -356,120 +361,128 @@ const quickLink: (props: QuickLinkSidePanel) => JSX.Element | null = ({
   isLoader,
   togglePanel,
   isMobileView
-}: QuickLinkSidePanel): JSX.Element | null =>{
+}: QuickLinkSidePanel): JSX.Element | null => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-  return (isPermissionquicklink && (
-    <div className="left-sidepanel-home113">
-      <div className="quick-link-title"> {t("quickLink.headingTitle")}</div>
-      <div className="quick-link-section">
-        {/*
+  return (
+    isPermissionquicklink && (
+      <div className="left-sidepanel-home113">
+        <div className="quick-link-title"> {t("quickLink.headingTitle")}</div>
+        <div className="quick-link-section">
+          {/*
 eslint-disable
 */}
-        {isLoader ? (
-          <div>
-            <Loader
-              dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
-              className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
-              loaderText="Loading..."
-              loaderType={LoaderType.Circular}
-            />
-          </div>
-        ) : (
-          !isError &&
-          quicklinkData && (
-            <>
-              <div
-                className="quick-link-panel-item"
-                onClick={() => {
-                  const classViewLink: string | undefined = (quicklinkData as QuickLink[]).find(
-                    (link: QuickLink) => link.name === t("quickLink.classview")
-                  )?.link;
-                  if (classViewLink) {
-                    window.location.href = classViewLink;
-                    gtmAnalytics.pushEvent({
-                      event: "click",
-                      linkText: "Class View",
-                      linkUrl: classViewLink,
-                      clickType: "link",
-                      clickLocation: "sidebar"
-                    });
-                  }
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                {t("quickLink.classview")}
-              </div>
-
-              {quicklinkData
-                .filter((sidelink: any) => sidelink.name !== t("quickLink.classview"))
-                .slice(0, 6)
-                .map((sidelink: any) => (
-                  <div
-                    className="quick-link-panel-item"
-                    key={sidelink.id}
-                    onClick={() => {
-                      window.location.href = sidelink.link;
+          {isLoader ? (
+            <div>
+              <Loader
+                dataTestId="sidepanel-quicklinkerror-loader-dertfsg11463f"
+                className="loader-wrapper loader-sidepanel-quicklink-dertfsg11463f"
+                loaderText="Loading..."
+                loaderType={LoaderType.Circular}
+              />
+            </div>
+          ) : (
+            !isError &&
+            quicklinkData && (
+              <>
+                <div
+                  className="quick-link-panel-item"
+                  onClick={() => {
+                    const classViewLink: string | undefined = (
+                      quicklinkData as QuickLink[]
+                    ).find(
+                      (link: QuickLink) =>
+                        link.name === t("quickLink.classview")
+                    )?.link;
+                    if (classViewLink) {
+                      window.location.href = classViewLink;
                       gtmAnalytics.pushEvent({
                         event: "click",
-                        linkText: sidelink.name,
-                        linkUrl: sidelink.link,
+                        linkText: "Class View",
+                        linkUrl: classViewLink,
                         clickType: "link",
                         clickLocation: "sidebar"
                       });
-                    }}
-                    style={{ cursor: "pointer" }}
-                  >
-                    {sidelink.name}
-                    <Icon
-                      color={
-                        sidelink.favourite
-                          ? IconColor.Primary500
-                          : IconColor.Neutral800
-                      }
-                      className="icon-margin-dertfsg11463f"
-                      dataTestId={`btn-star${sidelink.id}`}
-                      id="variable-2"
-                      name={sidelink.favourite ? "star--filled" : "star"}
-                      size={16}
-                      onClick={(e) => {
-                        e.stopPropagation(); // Prevent the div click event from being triggered
-                        handleStarClick(
-                          sidelink.id,
-                          !sidelink.favourite,
-                          sidelink.name
-                        );
-                      }}
-                    />
-                  </div>
-                ))}
-            </>
-          )
-        )}
+                    }
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  {t("quickLink.classview")}
+                </div>
 
-        {/*
+                {quicklinkData
+                  .filter(
+                    (sidelink: any) =>
+                      sidelink.name !== t("quickLink.classview")
+                  )
+                  .slice(0, 6)
+                  .map((sidelink: any) => (
+                    <div
+                      className="quick-link-panel-item"
+                      key={sidelink.id}
+                      onClick={() => {
+                        window.location.href = sidelink.link;
+                        gtmAnalytics.pushEvent({
+                          event: "click",
+                          linkText: sidelink.name,
+                          linkUrl: sidelink.link,
+                          clickType: "link",
+                          clickLocation: "sidebar"
+                        });
+                      }}
+                      style={{ cursor: "pointer" }}
+                    >
+                      {sidelink.name}
+                      <Icon
+                        color={
+                          sidelink.favourite
+                            ? IconColor.Primary500
+                            : IconColor.Neutral800
+                        }
+                        className="icon-margin-dertfsg11463f"
+                        dataTestId={`btn-star${sidelink.id}`}
+                        id="variable-2"
+                        name={sidelink.favourite ? "star--filled" : "star"}
+                        size={16}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevent the div click event from being triggered
+                          handleStarClick(
+                            sidelink.id,
+                            !sidelink.favourite,
+                            sidelink.name
+                          );
+                        }}
+                      />
+                    </div>
+                  ))}
+              </>
+            )
+          )}
+
+          {/*
 eslint-disable jsx-a11y/anchor-is-valid,
 no-script-url
 */}
-        <a
-          href="javascript:void(0)"
-          className="see-all-dertfsg11463f"
-          onClick={() => {
-            isMobileView ? togglePanel() : "";
-            showQuickLinkView();
-          }}
-          /* eslint-enable */
-        >
-          {t("quickLink.quicklinkseeall")}
-        </a>
-        {/*
+          <a
+            href="javascript:void(0)"
+            className="see-all-dertfsg11463f"
+            onClick={() => {
+              isMobileView ? togglePanel() : "";
+              showQuickLinkView();
+            }}
+            /* eslint-enable */
+          >
+            {t("quickLink.quicklinkseeall")}
+          </a>
+          {/*
 eslint-enable jsx-a11y/anchor-is-valid,
 no-script-url
 */}
+        </div>
       </div>
-    </div>
-  ));
-}
+    )
+  );
+};
 
 /* eslint-enable */
 export default SidePanel;
