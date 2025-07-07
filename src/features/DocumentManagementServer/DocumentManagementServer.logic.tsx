@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
 import { Tooltip, TooltipAlign, TooltipPosition } from "@essnextgen/ui-kit";
 import { fetchDocumentDetails } from "./ApiService";
-import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
+import {
+  DocumentBasicDetails,
+  DocumentManagementServerProps,
+} from "./responseModel";
 
 export const getTableHeadersData: {
   text: string;
@@ -22,7 +25,7 @@ export const getTableHeadersData: {
     isShow: false,
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
-    columnWidth: "16px"
+    columnWidth: "16px",
   },
   {
     text: "Document",
@@ -45,7 +48,7 @@ export const getTableHeadersData: {
           text="Locked"
         />
       </div>
-    )
+    ),
   },
   {
     text: "Related to",
@@ -58,35 +61,45 @@ export const getTableHeadersData: {
     txtTrunctLength: 35,
     anyComponent: (elem: any) => (
       <>
-        {(!elem || !elem?.length) ? null : (<div className="relatedto-main">
-          <a href="/pupilprofile">{elem[0]}</a>
-          <Tag
-            dataTestId="name"
-            id="name"
-            className="relatedto-tag"
-            text="Year / Reg"
-          />
-          {elem?.length > 1 ? <Tooltip
-            dataTestId={`tooltip-eventtime`}
-            content={
-              <div>
-                {
-                  elem?.filter((_: any, index: number) => index !== 0)?.map((item: any, index: number) => {
-                    return <div key={index}>{item} | {"Year"} | {"Reg"}</div>
-                  })
+        {!elem || !elem?.length ? null : (
+          <div className="relatedto-main">
+            <a href="/pupilprofile">{elem[0]}</a>
+            <Tag
+              dataTestId="name"
+              id="name"
+              className="relatedto-tag"
+              text="Year / Reg"
+            />
+            {elem?.length > 1 ? (
+              <Tooltip
+                dataTestId={`tooltip-eventtime`}
+                content={
+                  <div>
+                    {elem
+                      ?.filter((_: any, index: number) => index !== 0)
+                      ?.map((item: any, index: number) => {
+                        return (
+                          <div key={index}>
+                            {item} | {"Year"} | {"Reg"}
+                          </div>
+                        );
+                      })}
+                  </div>
                 }
-              </div>}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content">
-              <span> {`+${elem.length - 1}`} </span>
-            </div>
-
-          </Tooltip> : ""}
-        </div>)}
+                align={TooltipAlign.Center}
+                position={TooltipPosition.Bottom}
+              >
+                <div className="tooltip-content">
+                  <span> {`+${elem.length - 1}`} </span>
+                </div>
+              </Tooltip>
+            ) : (
+              ""
+            )}
+          </div>
+        )}
       </>
-    )
+    ),
   },
   {
     text: "Category",
@@ -95,14 +108,14 @@ export const getTableHeadersData: {
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 20,
     isColumnSorting: false,
-    columnWidth: "144px"
+    columnWidth: "144px",
   },
   {
     text: "Added by",
     isShow: true,
     showValAs: ShowValAs.Text,
     headerTxtTrunctLength: 50,
-    columnWidth: "180px"
+    columnWidth: "180px",
   },
   {
     text: "Date added",
@@ -110,7 +123,7 @@ export const getTableHeadersData: {
     columnWidth: "140px",
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
-    isColumnSorting: false
+    isColumnSorting: false,
   },
   {
     text: "Format",
@@ -121,7 +134,7 @@ export const getTableHeadersData: {
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "120px"
+    columnWidth: "120px",
   },
   {
     text: "Size",
@@ -132,8 +145,8 @@ export const getTableHeadersData: {
     isTextTruncate: false,
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
-    columnWidth: "129px"
-  }
+    columnWidth: "129px",
+  },
 ];
 export const tableBodyData: {
   id: string;
@@ -153,7 +166,7 @@ export const tableBodyData: {
     Addedby: "Helen Avery",
     "Date added": "01 Jan 2025",
     Format: "pdf",
-    Size: "300 bytes"
+    Size: "300 bytes",
   },
   {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
@@ -164,26 +177,36 @@ export const tableBodyData: {
     Addedby: "Richard Wilton",
     "Date added": "01 Jan 2025",
     Format: "doc",
-    Size: "3KB"
-  }
+    Size: "3KB",
+  },
 ];
 
-const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
-  const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
-  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+const DocumentManagementServer = ({
+  pageNumber,
+  pageSize,
+}: DocumentManagementServerProps) => {
+  const [data, setData]: [
+    DocumentBasicDetails | null,
+    React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>
+  ] = useState<DocumentBasicDetails | null>(null);
+  const [error, setError]: [
+    string | null,
+    React.Dispatch<React.SetStateAction<string | null>>
+  ] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
 
   useEffect(() => {
     const fetchData: () => Promise<void> = async () => {
-      const result: DocumentBasicDetails | null = await fetchDocumentDetails(
-        { pageNumber, pageSize }
-      );
+      const result: DocumentBasicDetails | null = await fetchDocumentDetails({
+        pageNumber,
+        pageSize,
+      });
       if (result) {
         setData(result);
       } else {
         setError("Failed to fetch data");
       }
-      setHasFetched(true)
+      setHasFetched(true);
     };
 
     fetchData();
@@ -191,6 +214,5 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
 
   return { data, error, hasFetched };
 };
-
 
 export default DocumentManagementServer;
