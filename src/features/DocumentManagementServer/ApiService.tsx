@@ -20,3 +20,13 @@ export const fetchDocumentDetails: ({pageNumber, pageSize}: DocumentManagementSe
     return null;
   }
 };
+
+export const fetchDMSSuggestions = async (searchText: string): Promise<any[]> => {
+  const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+  const url = `/validation/api/v1/file/search/autocomplete?AutoCompleteRequest.SearchText=${encodeURIComponent(
+    searchText
+  )}`;
+  const response: AxiosResponse = await service.get(url, baseUrl);
+  const values = response?.data?.payload?.[0]?.values;
+  return Array.isArray(values) ? values : [];
+};

@@ -2,11 +2,12 @@ import { buildApplicationUrl, LocalisedMenu } from "@essnextgen/ui-application-k
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ISearchItemProp, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
-import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import { service } from "../../shared/utils"
 import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
+import { fetchDMSSuggestions } from "./ApiService"
 
 const DocumentManagementServerView: React.FC = () => {
 
@@ -50,60 +51,56 @@ const DocumentManagementServerView: React.FC = () => {
         }, 1500);
     }, []);
 
-    const fetchSuggestions = async (value: string) => {
+      const hasItems: boolean = suggestions.some(
+        (x: Suggestion) => x.values.length > 0
+      );
+
+const fetchSuggestions = async (value: string) => {
   try {
     setIsSearchLoading(true);
     setShowSearchError(false);
 
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const response = await service.get(
-      `/validation/api/v1/file/search/autocomplete?AutoCompleteRequest.SearchText=${encodeURIComponent(
-        value
-      )}`,
-      baseUrl
-    );
+    // 👇 Add placeholder suggestion group to activate loader
+    setSuggestions([{ name: "", values: [] }]);
 
-    const values = response?.data?.payload?.[0]?.values;
+    const result = await fetchDMSSuggestions(value);
 
-    if (!Array.isArray(values)) {
-      setSuggestions([]);
-      return;
-    }
+    // ✅ Simulate 600ms loader even if fast
+    setTimeout(() => {
+      setSuggestions(formatSuggestions(result));
+      setIsSearchLoading(false);
+    }, 600);
 
-    const suggestionList: Suggestion[] = [
-      {
-        name: "",
-        values: values.map((item: any) => ({
-          text: item.fileName,
-          props: {
-            name: item.fileName,
-            id: item.fileId
-          },
-          value: <></>
-        }))
-      }
-    ];
-
-    setSuggestions(suggestionList);
   } catch (err) {
     console.error("Auto-suggest API error:", err);
     setShowSearchError(true);
     setSuggestions([]);
-  } finally {
     setIsSearchLoading(false);
   }
 };
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
 
-    if (value.length >= 2) {
-      fetchSuggestions(value);
-    } else {
+    if (value.length < 2) {
       setSuggestions([]);
+      return;
     }
+
+    // Show loader + placeholder suggestions
+    setIsSearchLoading(true);
+    setSuggestions([{ name: "", values: [] }]);
+
+    debouncedFetchSuggestions(
+      value,
+      setIsSearchLoading,
+      setSuggestions,
+      setShowSearchError
+    );
   };
+  
 const handleSuggestionClick = (item: ISearchItemProp | null) => {
   if (!item) return;
   setSearchTerm(item.name || "");
@@ -270,30 +267,30 @@ const handleSuggestionClick = (item: ISearchItemProp | null) => {
                             primaryButtonTitle=""
                             resultNotFoundMessage=""
                             searchHeadingText="Search by document or related to name"
-searchPlaceholderText="Search..."
-searchValue={searchTerm}
-searchIsLoader={isSearchLoading}
-isSearchHideClearIcon={searchTerm.length === 0}
-onKeyUpLenght={2}
-searchDebouncerTreshold={1000}
-searchSuggestions={suggestions}
-onSearchSuggestionItemClick={handleSuggestionClick}
-searchOnChange={handleSearchChange}
-searchOnCloseHandle={() => {
-  setSearchTerm("");
-  setSuggestions([]);
-}}
-searchValidationText={
-  showSearchError ? "Search unavailable. Please try again later." : undefined
-}
-searchValidationTextLevel={
-  showSearchError ? ValidationTextLevel.Warning : undefined
-}
-onSearchKeyDown={(e: any) => {
-  if (e.key === "Enter") {
-    // call fetchDocumentDetails or reload state
-  }
-}}
+                            searchPlaceholderText="Search..."
+                            searchValue={searchTerm || ""}
+                            searchIsLoader={isSearchLoading}
+                            isSearchHideClearIcon={searchTerm.length === 0}
+                            onKeyUpLenght={2}
+                            searchDebouncerTreshold={100}
+                            searchSuggestions={hasItems ? suggestions : []}
+                            onSearchSuggestionItemClick={handleSuggestionClick}
+                            searchOnChange={handleSearchChange}
+                            searchOnCloseHandle={() => {
+                            setSearchTerm("");
+                            setSuggestions([]);
+                            }}
+                            searchValidationText={
+                            showSearchError ? "Search unavailable. Please try again later." : undefined
+                            }
+                            searchValidationTextLevel={
+                            showSearchError ? ValidationTextLevel.Warning : undefined
+                            }
+                            onSearchKeyDown={(e: any) => {
+                            if (e.key === "Enter") {
+                                // call fetchDocumentDetails or reload state
+                            }
+                            }}
                             secondaryButtonTitle="Cancel"
                             showConfirmDialog
                             sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].

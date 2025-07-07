@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag } from "@essnextgen/ui-kit";
-import { fetchDocumentDetails } from "./ApiService";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
 import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
 
 export const getTableHeadersData: {
@@ -227,6 +227,7 @@ export const tableBodyData: {
   }
 ];
 
+
 const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
   const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
@@ -250,6 +251,52 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
 
   return { data, error, hasFetched };
 };
+
+export const formatSuggestions = (values: any[]): Suggestion[] => {
+  return [
+    {
+      name: "",
+      values: values.map((item: any) => ({
+        text: item.fileName,
+        props: {
+          name: item.fileName,
+          id: item.fileId
+        },
+        value: <></>
+      }))
+    }
+  ];
+};
+
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: Parameters<T>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
+// 📦 Debounced Suggestion Fetcher
+export const debouncedFetchSuggestions = debounce(
+  async (
+    searchText: string,
+    setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    try {
+      const result = await fetchDMSSuggestions(searchText);
+      setSuggestions(formatSuggestions(result));
+    } catch (err) {
+      console.error("Autosuggest error:", err);
+      setShowError(true);
+      setSuggestions([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  },
+  1000
+);
 
 
 export default DocumentManagementServer;
