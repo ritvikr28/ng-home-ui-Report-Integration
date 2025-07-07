@@ -1,15 +1,21 @@
-import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
+import { buildApplicationUrl, LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ISearchItemProp, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
 import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
+import { service } from "../../shared/utils"
+import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
 
 const DocumentManagementServerView: React.FC = () => {
 
     const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: 1, pageSize: 40 });
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
+    const [showSearchError, setShowSearchError] = useState<boolean>(false);
 
     const tableData: tableDataProps[] = (  error || !data?.data?.length) ? [] :  data?.data?.map((doc: any) => ({
         id: doc?.fileId,
@@ -44,6 +50,65 @@ const DocumentManagementServerView: React.FC = () => {
         }, 1500);
     }, []);
 
+    const fetchSuggestions = async (value: string) => {
+  try {
+    setIsSearchLoading(true);
+    setShowSearchError(false);
+
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const response = await service.get(
+      `/validation/api/v1/file/search/autocomplete?AutoCompleteRequest.SearchText=${encodeURIComponent(
+        value
+      )}`,
+      baseUrl
+    );
+
+    const values = response?.data?.payload?.[0]?.values;
+
+    if (!Array.isArray(values)) {
+      setSuggestions([]);
+      return;
+    }
+
+    const suggestionList: Suggestion[] = [
+      {
+        name: "",
+        values: values.map((item: any) => ({
+          text: item.fileName,
+          props: {
+            name: item.fileName,
+            id: item.fileId
+          },
+          value: <></>
+        }))
+      }
+    ];
+
+    setSuggestions(suggestionList);
+  } catch (err) {
+    console.error("Auto-suggest API error:", err);
+    setShowSearchError(true);
+    setSuggestions([]);
+  } finally {
+    setIsSearchLoading(false);
+  }
+};
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value.length >= 2) {
+      fetchSuggestions(value);
+    } else {
+      setSuggestions([]);
+    }
+  };
+const handleSuggestionClick = (item: ISearchItemProp | null) => {
+  if (!item) return;
+  setSearchTerm(item.name || "");
+  // trigger search or data fetch here if needed
+};
 
 
     return (<>
@@ -205,8 +270,30 @@ const DocumentManagementServerView: React.FC = () => {
                             primaryButtonTitle=""
                             resultNotFoundMessage=""
                             searchHeadingText="Search by document or related to name"
-                            searchPlaceholderText="Text"
-                            searchTerm=""
+searchPlaceholderText="Search..."
+searchValue={searchTerm}
+searchIsLoader={isSearchLoading}
+isSearchHideClearIcon={searchTerm.length === 0}
+onKeyUpLenght={2}
+searchDebouncerTreshold={1000}
+searchSuggestions={suggestions}
+onSearchSuggestionItemClick={handleSuggestionClick}
+searchOnChange={handleSearchChange}
+searchOnCloseHandle={() => {
+  setSearchTerm("");
+  setSuggestions([]);
+}}
+searchValidationText={
+  showSearchError ? "Search unavailable. Please try again later." : undefined
+}
+searchValidationTextLevel={
+  showSearchError ? ValidationTextLevel.Warning : undefined
+}
+onSearchKeyDown={(e: any) => {
+  if (e.key === "Enter") {
+    // call fetchDocumentDetails or reload state
+  }
+}}
                             secondaryButtonTitle="Cancel"
                             showConfirmDialog
                             sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
@@ -246,8 +333,8 @@ const DocumentManagementServerView: React.FC = () => {
                             toastNotificationStatus={NotificationStatus.SUCCESS}
                             toastNotificationTitle=""
                             isOpenConfirmationDialog={false}
-                            isShowOverflowMenuCol={false}
-                            isShowFirstElement= {false}
+                            isShowOverflowMenuCol={true}
+                            isShowFirstElement= {true}
                             isLoaderForFilterandTable={isLoading}
                             loaderFilterText="Please Wait..."
                             isShowErrorPage={!!error}
