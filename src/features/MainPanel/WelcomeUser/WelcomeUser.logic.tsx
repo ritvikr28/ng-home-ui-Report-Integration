@@ -20,7 +20,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = () => {
       } catch (error: any) {
         logger.error({
           error: "Error fetching username",
-          code: error.name,
+          code: error.name
         });
         console.error("Error fetching username:", error);
       }
@@ -34,7 +34,7 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = () => {
   }, []);
 
   const userName: string =
-    userFullname === null ? "" : userFullname.split(" ")[0];
+    userFullname === null ? "" : userFullname?.split(" ")[0];
 
   return (
     <WelcomeUserView data-testid="subparent-element" fullName={userName} />
