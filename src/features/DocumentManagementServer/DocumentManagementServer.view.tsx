@@ -267,6 +267,7 @@ if (isSearchTriggered) {
                     ? "Information unavailable"
                     : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
                 }
+                dynamictableIconName={searchError ? "warning--alt" : "information"}
                 isShowSearch={true}
                 searchOnChange={handleSearchChange}
                 onSearchKeyDown={handleSearchEnter}
