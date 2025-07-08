@@ -51,7 +51,7 @@ const DocumentManagementServerView: React.FC = () => {
                 setIsLoading(false);
             }
         }, 1500);
-    }, [data]);
+    }, []);
 
     useEffect(() => {
         if (data && data?.totalRecords) {
@@ -313,7 +313,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!error}
-                                className={"grid_wrapper"}
+                                className="grid_wrapper"
                             />
                         </div>}
                     </div>
