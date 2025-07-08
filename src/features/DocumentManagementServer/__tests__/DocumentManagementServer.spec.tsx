@@ -7,6 +7,7 @@ import DocumentManagementServerView from '../DocumentManagementServer.view';
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
 const logic = require('../DocumentManagementServer.logic').default;
+const { handlePageChange } = require('../DocumentManagementServer.view');
 
 jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
@@ -250,12 +251,9 @@ describe('DocumentManagementServerView', () => {
       .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
       .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
 
-    const DocumentManagementServerView = require('../DocumentManagementServer.view').default;
     render(<DocumentManagementServerView />);
 
     // Find the pagination handler from ControlledList props
-    const controlledList = screen.queryByTestId('controlled-list-test-id');
-    const { handlePageChange } = require('../DocumentManagementServer.view');
     if (handlePageChange) {
       handlePageChange({}, 2);
       expect(setIsLoading).toHaveBeenCalledWith(true);

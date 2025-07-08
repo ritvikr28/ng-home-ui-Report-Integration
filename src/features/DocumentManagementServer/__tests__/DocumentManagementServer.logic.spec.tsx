@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
 import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
+import DocumentManagementServerView from "../DocumentManagementServer.view";
 
 jest.mock("../ApiService");
 
@@ -289,7 +290,6 @@ describe('setTotalPage logic', () => {
         }));
 
         // Re-import after mocks
-        const DocumentManagementServerView = require('../DocumentManagementServer.view').default;
         render(<DocumentManagementServerView />);
 
         // totalPages = Math.ceil(80 / pageSize)
@@ -316,9 +316,9 @@ describe('setTotalPage logic', () => {
     test('should not call setTotalPage if data or data.totalRecords is undefined', () => {
         const setTotalPage = jest.fn();
         const pageSize = 40;
-        let data = { totalRecords: undefined };
+        const data = { totalRecords: undefined };
         if (data && data?.totalRecords) {
-            let totalPages = Math.ceil(data?.totalRecords / pageSize);
+            const totalPages = Math.ceil(data?.totalRecords / pageSize);
             setTotalPage(totalPages);
         }
         expect(setTotalPage).not.toHaveBeenCalled();

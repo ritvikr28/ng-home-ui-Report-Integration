@@ -6,7 +6,7 @@ import DocumentManagementServer, { getTableHeadersData} from "./DocumentManageme
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import gtmAnalytics from "../../shared/utils/analytics"
-import { homeurl, pageSize } from "../../../public/Constants"
+import { homeurl, pageSizeNumber } from "../../../public/Constants"
 
 
 const DocumentManagementServerView: React.FC = () => {
@@ -19,7 +19,7 @@ const DocumentManagementServerView: React.FC = () => {
         setCurrentPage(handlepageCount);
     };
 
-    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSize });
+    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
     const tableData: tableDataProps[] = (error || !data?.data?.length) ? [] : data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
@@ -55,7 +55,7 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (data && data?.totalRecords) {
-            let totalPages = Math.ceil(data.totalRecords / pageSize);
+            const totalPages = Math.ceil(data.totalRecords / pageSizeNumber);
             setTotalPage(totalPages);
         }
     }, [data]);
