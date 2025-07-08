@@ -49,12 +49,6 @@ export const getTableHeadersData: {
             </div>
 
           </Tooltip>
-          <Tag
-            dataTestId="name"
-            id="name"
-            className="relatedto-tag"
-            text="Locked"
-          />
         </div>
       </>
     )

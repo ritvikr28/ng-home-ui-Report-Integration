@@ -5,11 +5,19 @@
 
 .side-width {
   width: 20%;
+  display: flex;
 }
 
 .no-side-width {
   width: unset;
+  display: flex;
+
   //width:0px;
+  button {
+    min-width: 33px;
+    margin-left: 4px;
+    margin: 10px 0px 0 10px;
+  }
 }
 
 .clc-dms-isopen {
@@ -17,7 +25,7 @@
 }
 
 .clc-dms-isclose {
-  width: max-content;
+  width: -webkit-fill-available;;
   overflow-x: auto;
 }
 
@@ -35,6 +43,22 @@
 // .dropdown {
 //   flex-basis: content;
 // }
+
+.grid-wrapper {
+  margin-left: 5px;
+  .dynamic-table {
+    overflow: auto;
+    table th:first-child,
+      table td:first-child {
+        min-width: 82px;
+      }
+    .essui-table__cell {
+      max-width: 150px;
+      min-width: 130px;
+      text-align: left;
+    }
+  }
+}
 .relatedto-main{
   display: flex;
   gap: 2%;
@@ -104,11 +128,14 @@
     width: 264px;
   };
 
-  .dynamic-table {
-    width: max-content;
-    margin: 1px 16px;
-  };
-
+  .grid_wrapper {
+    .essui-table-wrapper{
+      .dynamic-table {
+        width: auto !important;
+        margin: 1px 16px;
+      };
+    }
+  }
   .heading-title .heading-font {
     margin: 1px 16px;
   }
@@ -120,5 +147,33 @@
   .side-width .essui-side-navigation-panel-container-grid-item {
     width: 264px;
   };
-
+  
+  .grid_wrapper {
+    margin-left: 10px !important;
+  }  
 };
+
+// -------------------------360px to 1023.9px-------------------------------
+@media (min-width: 360px) and (max-width:1023.9px) {
+  .grid-wrapper {
+    margin: 0px 10px !important;
+
+    .filter-tool {
+      .filter-btn {
+        margin-left: 12px;
+      }
+    }
+
+    .dynamic-table {
+      .essui-table{
+        border-bottom: 1px solid #e0e0e0;
+      }
+      
+      .table-pagination {
+        nav {
+          display: flex;
+        }
+      }
+    }
+  }
+}
