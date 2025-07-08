@@ -1,13 +1,10 @@
-import { buildApplicationUrl, LocalisedMenu } from "@essnextgen/ui-application-kit"
+import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ISearchItemProp, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
 import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
-import { service } from "../../shared/utils"
-import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
-import { fetchDMSSuggestions } from "./ApiService"
 
 const DocumentManagementServerView: React.FC = () => {
 
@@ -55,31 +52,6 @@ const DocumentManagementServerView: React.FC = () => {
         (x: Suggestion) => x.values.length > 0
       );
 
-const fetchSuggestions = async (value: string) => {
-  try {
-    setIsSearchLoading(true);
-    setShowSearchError(false);
-
-    // 👇 Add placeholder suggestion group to activate loader
-    setSuggestions([{ name: "", values: [] }]);
-
-    const result = await fetchDMSSuggestions(value);
-
-    // ✅ Simulate 600ms loader even if fast
-    setTimeout(() => {
-      setSuggestions(formatSuggestions(result));
-      setIsSearchLoading(false);
-    }, 600);
-
-  } catch (err) {
-    console.error("Auto-suggest API error:", err);
-    setShowSearchError(true);
-    setSuggestions([]);
-    setIsSearchLoading(false);
-  }
-};
-
-
 const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -89,9 +61,8 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       return;
     }
 
-    // Show loader + placeholder suggestions
     setIsSearchLoading(true);
-    setSuggestions([{ name: "", values: [] }]);
+    setSuggestions([]);
 
     debouncedFetchSuggestions(
       value,
@@ -104,7 +75,6 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 const handleSuggestionClick = (item: ISearchItemProp | null) => {
   if (!item) return;
   setSearchTerm(item.name || "");
-  // trigger search or data fetch here if needed
 };
 
 

@@ -276,7 +276,6 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
-// 📦 Debounced Suggestion Fetcher
 export const debouncedFetchSuggestions = debounce(
   async (
     searchText: string,
@@ -285,8 +284,8 @@ export const debouncedFetchSuggestions = debounce(
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
-      const result = await fetchDMSSuggestions(searchText);
-      setSuggestions(formatSuggestions(result));
+      const response = await fetchDMSSuggestions(searchText);
+      setSuggestions(formatSuggestions(response));
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);
