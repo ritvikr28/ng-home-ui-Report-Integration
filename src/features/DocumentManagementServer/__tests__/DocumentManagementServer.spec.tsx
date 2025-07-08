@@ -21,7 +21,7 @@ jest.mock("../DocumentManagementServer.logic", () => ({
       columnWidth: "140px",
     },
     { text: "Format", isShow: true, showValAs: "Text", columnWidth: "120px" },
-    { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" },
+    { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
   ],
 }));
 
@@ -41,7 +41,7 @@ const mockData = {
       dateAdded: "2024-06-01T00:00:00Z",
       format: "pdf",
       size: "1MB",
-    },
+    }
   ],
 };
 
@@ -59,11 +59,11 @@ jest.mock("../DocumentManagementServer.logic", () => ({
       columnWidth: "140px",
     },
     { text: "Format", isShow: true, showValAs: "Text", columnWidth: "120px" },
-    { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" },
+    { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
   ],
 }));
 
-const originalFilter = Array.prototype.filter;
+
 let consoleErrorSpy: jest.SpyInstance | undefined;
 
 describe("DocumentManagementServerView", () => {
@@ -157,7 +157,7 @@ describe("DocumentManagementServerView", () => {
             dateAdded: "2024-06-01T00:00:00Z",
             format: "pdf",
             size: "1MB",
-          },
+          }
         ],
       },
       hasFetched: true,
@@ -248,7 +248,7 @@ describe("DocumentManagementServerView", () => {
             dateAdded: "2024-06-01T00:00:00Z",
             format: "pdf",
             size: "1MB",
-          },
+          }
         ],
       },
       error: null,
@@ -272,7 +272,7 @@ describe("DocumentManagementServerView", () => {
   });
 });
 afterEach(() => {
-  Array.prototype.filter = originalFilter;
+  
 
   if (consoleErrorSpy && typeof consoleErrorSpy.mockRestore === "function") {
     consoleErrorSpy.mockRestore();
@@ -297,7 +297,7 @@ describe("DocumentManagementServerView", () => {
             dateAdded: "2024-06-01T00:00:00Z",
             format: "pdf",
             size: "1MB",
-          },
+          }
         ],
       },
       error: null,

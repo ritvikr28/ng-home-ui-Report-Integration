@@ -12,12 +12,12 @@ import {
   NotificationStatus,
   ShowActionAs,
   ButtonIconPosition,
-  useMediaQuery,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import DocumentManagementServer, {
-  getTableHeadersData,
+  getTableHeadersData
 } from "./DocumentManagementServer.logic";
 import "./style.scss";
 import { tableDataProps } from "./responseModel";
@@ -34,13 +34,11 @@ const DocumentManagementServerView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
   const [filteredDocs, setFilteredDocs] = useState<tableDataProps[]>([]);
-  const [noResults, setNoResults] = useState(false);
+ 
   const [searchError, setSearchError] = useState<boolean>(false);
   const [tableLoading, setTableLoading] = useState(false);
 
-  useEffect(() => {
-    console.log("Search term updated:", searchTerm);
-  }, [searchTerm]);
+ 
 
   const tableData: tableDataProps[] =
     error || !data?.data?.length
@@ -92,7 +90,7 @@ const DocumentManagementServerView: React.FC = () => {
       setSearchError(false);
       setIsSearchTriggered(true);
       setSearchTerm(keyword);
-      setNoResults(false);
+      
 
       setTimeout(() => {
         try {
@@ -101,15 +99,9 @@ const DocumentManagementServerView: React.FC = () => {
           );
 
           setFilteredDocs(filtered);
-
-          if (filtered.length === 0) {
-            setNoResults(true);
-          }
-
           setSearchError(false);
-        } catch (error) {
+        } catch (err) { // <-- changed from 'error' to 'err'
           setFilteredDocs([]);
-          setNoResults(false);
           setSearchError(true);
         } finally {
           setIsLoading(false);
@@ -122,7 +114,7 @@ const DocumentManagementServerView: React.FC = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
     setSearchError(false); // ✅ Hide error banner/message
-    setNoResults(false); // ✅ Hide 'no result' message if user starts typing again
+    // ✅ Hide 'no result' message if user starts typing again
     setIsSearchTriggered(false); // ✅ Optional: Reset result state if you want a fresh search experience
   };
 
@@ -132,7 +124,7 @@ const DocumentManagementServerView: React.FC = () => {
     setSearchInput("");
     setSearchTerm("");
     setSearchError(false);
-    setNoResults(false);
+   
     setIsSearchTriggered(false);
 
     setTimeout(() => {
@@ -141,13 +133,12 @@ const DocumentManagementServerView: React.FC = () => {
     }, 500);
   };
 
-  const tableDataToShow = Array.isArray(
-    isSearchTriggered ? filteredDocs : tableData
-  )
-    ? isSearchTriggered
-      ? filteredDocs
-      : tableData
-    : [];
+let tableDataToShow: tableDataProps[] = [];
+if (isSearchTriggered) {
+  tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
+} else {
+  tableDataToShow = Array.isArray(tableData) ? tableData : [];
+}
 
   return (
     <>
@@ -191,7 +182,7 @@ const DocumentManagementServerView: React.FC = () => {
                     linkName: "Document Management Server",
                     path: "#",
                   },
-                  { active: false, linkName: "Documents", path: "" },
+                  { active: false, linkName: "Documents", path: "" }
                 ]}
                 className="essui-Breadcrumbs"
                 dataTestId="breadcrumb-test-id"
@@ -210,7 +201,7 @@ const DocumentManagementServerView: React.FC = () => {
                 filterDDLOptions={[
                   { id: "1", text: "All", value: "All" },
                   { id: "2", text: "Active", value: "Active" },
-                  { id: "3", text: "Inactive", value: "Inactive" },
+                  { id: "3", text: "Inactive", value: "Inactive" }
                 ]}
                 editSelectedBtnTitle="Actions"
                 editSelectedOptions={[
@@ -222,7 +213,7 @@ const DocumentManagementServerView: React.FC = () => {
                     isShowDivider: true,
                     text: "Delete",
                     value: "Delete",
-                  },
+                  }
                 ]}
                 emptyStateMsg={
                   error || searchError
@@ -250,7 +241,7 @@ const DocumentManagementServerView: React.FC = () => {
                     id: "3",
                     showActionAs: ShowActionAs.Link,
                     title: "Primary Text",
-                  },
+                  }
                 ]}
                 errorPageActionListDescription="Things to try"
                 errorPageReasonListDescription="This may be due to one of the reasons below"
@@ -258,7 +249,7 @@ const DocumentManagementServerView: React.FC = () => {
                 errorReasonListItem={[
                   { id: "1", reason: "Wrong link or address." },
                   { id: "2", reason: "The page may have been removed." },
-                  { id: "3", reason: "Wrong link or address." },
+                  { id: "3", reason: "Wrong link or address." }
                 ]}
                 groupTagsEnabled
                 headingText="Documents"
@@ -333,7 +324,7 @@ const DocumentManagementServerView: React.FC = () => {
                 dynamicTableLoader={tableLoading}
                 isLoaderForFilterandTable={isLoading}
                 loaderFilterText="Please Wait..."
-                isShowErrorPage={error ? true : false}
+                isShowErrorPage={!!error}
               />
             )}
           </div>

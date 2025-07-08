@@ -3,7 +3,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { service } from "../../shared/utils";
 import {
   DocumentBasicDetails,
-  DocumentManagementServerProps,
+  DocumentManagementServerProps
 } from "./responseModel";
 import { PLATFORM_BASEURLS } from "../../ApiConfig.json";
 

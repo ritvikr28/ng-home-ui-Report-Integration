@@ -4,12 +4,12 @@ import {
   TooltipAlign,
   TooltipPosition,
   ShowValAs,
-  Tag,
+  Tag
 } from "@essnextgen/ui-kit";
 import { fetchDocumentDetails } from "./ApiService";
 import {
   DocumentBasicDetails,
-  DocumentManagementServerProps,
+  DocumentManagementServerProps
 } from "./responseModel";
 
 export const getTableHeadersData: {
@@ -200,7 +200,7 @@ export const getTableHeadersData: {
         </Tooltip>
       </>
     ),
-  },
+  }
 ];
 export const tableBodyData: {
   id: string;
@@ -232,7 +232,7 @@ export const tableBodyData: {
     "Date added": "01 Jan 2025",
     Format: "doc",
     Size: "3KB",
-  },
+  }
 ];
 
 const DocumentManagementServer = ({
