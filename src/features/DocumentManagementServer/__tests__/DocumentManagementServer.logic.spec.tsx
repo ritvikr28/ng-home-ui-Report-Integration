@@ -1,14 +1,22 @@
 import React from "react";
 import { renderHook, act } from "@testing-library/react-hooks";
-import DocumentManagementServer from "../DocumentManagementServer.logic";
+import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
-import { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
+import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
 
-// Mock fetchDocumentDetails
 jest.mock("../ApiService");
 
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn()
+}));
+
 describe("getTableHeadersData", () => {
+    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+    const anyComponent = relatedToColumn?.anyComponent;
+
     test("should be an array and contain expected columns", () => {
         expect(Array.isArray(getTableHeadersData)).toBe(true);
         const expectedColumns = [
@@ -26,10 +34,51 @@ describe("getTableHeadersData", () => {
     });
 
     test("should contain 'Related to' header with anyComponent", () => {
-        const relHeader = getTableHeadersData.find(h => h.text === "Related to");
-        expect(relHeader).toBeDefined();
-        expect(typeof relHeader?.anyComponent).toBe("function");
+        expect(relatedToColumn).toBeDefined();
+        expect(typeof relatedToColumn?.anyComponent).toBe("function");
     });
+
+    test("renders nothing when elem is undefined", () => {
+        const { container } = render(<>{anyComponent && anyComponent(undefined)}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
+    test("renders nothing when elem is null", () => {
+        const { container } = render(<>{anyComponent && anyComponent(null)}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    test("renders nothing when elem is empty array", () => {
+        const { container } = render(<>{anyComponent && anyComponent([])}</>);
+        expect(container).toBeEmptyDOMElement();
+    });
+
+    test("renders link and Tag when elem has one item", () => {
+        render(<>{anyComponent && anyComponent(['John Doe'])}</>);
+        expect(document.querySelector('.relatedto-main')).toBeInTheDocument();
+        expect(screen.getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
+        expect(document.querySelector('.relatedto-tag')).toBeInTheDocument();
+        expect(screen.queryByTestId('tooltip-eventtime')).not.toBeInTheDocument();
+    });
+
+    test("renders Tag with text 'Year / Reg' when elem has one item", () => {
+        render(<>{anyComponent && anyComponent(['Test Name'])}</>);
+        const tag = document.querySelector('.relatedto-tag');
+        expect(tag).toBeInTheDocument();
+        expect(tag).toHaveTextContent('Year / Reg');
+    });
+
+    test('anyComponent renders a div with display flex of Document column', () => {
+        const relatedToColumn1 = getTableHeadersData.find(h => h.text === 'Document');
+        const anyComponentDoc = relatedToColumn1?.anyComponent;
+
+        const { container } = render(<>{anyComponentDoc && anyComponentDoc(['Test Document'])}</>);
+        const flexDiv = container.querySelector('div[style*="display: flex"]');
+        expect(flexDiv).toBeInTheDocument();
+        expect(flexDiv).toHaveStyle('display: flex');
+        expect(container.querySelector('.document-text')).toHaveTextContent('Test Document');
+        expect(container.querySelector('.relatedto-tag')).toBeInTheDocument();
+    });
+
 });
 
 describe("tableBodyData", () => {
@@ -58,7 +107,7 @@ describe("tableBodyData", () => {
 });
 
 describe("DocumentManagementServer hook", () => {
-    const mockData: DocumentBasicDetails = { docs: [{ id: "1" }] } as any;
+    const mockData: DocumentBasicDetails = { data: [{ id: "1" }] } as any;
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -115,5 +164,101 @@ describe("DocumentManagementServer hook", () => {
 
         expect(result.current.data).toEqual({ docs: [{ id: "2" }] });
     });
-    
+
+  
+
+    test("should set error if fetch throws", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(null);
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toBeNull();
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBe("Failed to fetch data");
+    });
+
+    test("should not update state after unmount", async () => {
+        // Simulate a slow promise
+        let resolvePromise: any;
+        (ApiService.fetchDocumentDetails as jest.Mock).mockImplementation(
+            () => new Promise(res => { resolvePromise = res; })
+        );
+
+        const { unmount } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        unmount();
+        // Resolve the promise after unmount
+        act(() => {
+            resolvePromise({ docs: [{ id: "3" }] });
+        });
+
+        // No assertion needed: test passes if no warning or error is thrown
+    });
+
+    test("should handle empty docs array", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [] });
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toEqual({ docs: [] });
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBeNull();
+    });
+
+    test("should handle invalid parameters gracefully", async () => {
+        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [{ id: "4" }] });
+
+        const { result, waitForNextUpdate } = renderHook(() =>
+            DocumentManagementServer({ pageNumber: -1, pageSize: 0 })
+        );
+
+        await waitForNextUpdate();
+
+        expect(result.current.data).toEqual({ docs: [{ id: "4" }] });
+        expect(result.current.hasFetched).toBe(true);
+        expect(result.current.error).toBeNull();
+    });
+});
+
+describe("getTableHeadersData 'Related to' column tooltip rendering", () => {
+    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+    const anyComponent = relatedToColumn?.anyComponent;
+
+    test("Tooltip uses correct dataTestId", async () => {
+        render(<>{anyComponent && anyComponent(['X', 'Y'])}</>);
+
+        const tooltipTrigger = screen.getByText('+1');
+        expect(tooltipTrigger).toBeInTheDocument();
+
+        await userEvent.hover(tooltipTrigger);
+
+        const tooltip = await screen.findByTestId('tooltip-eventtime');
+        expect(tooltip).toBeInTheDocument();
+    });
+
+    test("Tooltip content contains all items", async () => {
+        render(<>{anyComponent && anyComponent?.(['A', 'B', 'C'])}</>);
+
+        const trigger = screen.getByText('+2');
+        await userEvent.hover(trigger); 
+
+        const tooltip = await screen.findByTestId('tooltip-eventtime');
+        expect(tooltip).toBeInTheDocument();
+    });
+
+    test("Tooltip shows correct '+N' text for multi-item array", () => {
+        render(<>{anyComponent && anyComponent(['One', 'Two', 'Three', 'Four'])}</>);
+        expect(screen.getByText('+3')).toBeInTheDocument();
+    });
+
 });

@@ -1,12 +1,12 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import { AxiosResponse } from 'axios';
+import { renderHook } from '@testing-library/react-hooks';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
 import { fetchDocumentDetails } from '../ApiService';
-import { AxiosResponse } from 'axios';
 import BreadcrumbWrapper from '../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper';
 import DocumentManagementServer from '../DocumentManagementServer.logic';
-import { renderHook } from '@testing-library/react-hooks';
 
 const documentResponse: SingleDocumentDetail[] = [
     {
@@ -52,7 +52,7 @@ const documentResponse: SingleDocumentDetail[] = [
 const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
     data: {
         pageNumber: 1,
-        pageSize: 20,
+        pageSize: 40,
         totalRecords: 2,
         data: documentResponse
     },
@@ -69,7 +69,7 @@ describe("Fetch document details tests", () => {
     test("should set hasFetched false initially", async () => {
         jest.spyOn(service, "get").mockResolvedValueOnce(mockAxiosResponse);
         const { result } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+            DocumentManagementServer({ pageNumber: 1, pageSize: 40 })
         );
 
         expect(result.current.hasFetched).toBe(false);
@@ -78,7 +78,7 @@ describe("Fetch document details tests", () => {
     test("should return data on successful fetch", async () => {
         jest.spyOn(service, "get").mockResolvedValueOnce(mockAxiosResponse);
         const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
+            DocumentManagementServer({ pageNumber: 1, pageSize: 40 })
         );
 
         await waitForNextUpdate();
@@ -106,14 +106,14 @@ describe("Fetch document details tests", () => {
         };
         (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-        const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 10 });
+        const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
         expect(result).toBeNull();
     });
 
     test("should return null when an error occurs", async () => {
         (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
 
-        const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 10 });
+        const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
 
         expect(result).toBeNull();
     });

@@ -257,7 +257,11 @@
     "Close":"Cau",
     "Alert":"Rhybudd",
     "EmailAlerts":"E-bost Rhybuddion",
-     "View":"Golwg"
+    "View":"Golwg",
+    "FailedAlertTitleActivate": "Methu actifadu rhybudd e-bost",
+    "FailedAlertTitleDeactivate": "Methu dadactifadu rhybudd e-bost",
+    "FailedAlertMessage": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag {{action}}. Rhowch gynnig arall arni yn nes ymlaen. Os yw’r broblem yn parhau, cysylltwch â’n tîm cymorth."
+
   },
   "quickLink": {
     "headingTitle": "Dolenni cyflym",

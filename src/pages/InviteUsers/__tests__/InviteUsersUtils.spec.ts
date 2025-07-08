@@ -2,6 +2,7 @@ import * as InviteUsersUtils from "../InviteUsersUtils";
 import { service } from "../../../shared/utils/api-service";
 import { getValues } from "../InviteUsers.view";
 import { debouncedAutosuggest } from "../InviteUsersUtils";
+import { IRequestBodyType } from "../InviteUsersProps";
 
 jest.mock("../../../shared/utils/api-service", () => ({
   service: {
@@ -703,23 +704,11 @@ describe("handleSendInvite", () => {
     const setLoader = jest.fn();
     const setShowInviteErrBanner = jest.fn();
     const setDataUpdated = jest.fn();
-    const selectedRowItem = {
-      id: "1",
-      emailId: "test@example.com",
-      forename: "Test",
-      surname: "User"
-    };
+    const selectedRowItem: IRequestBodyType = { externalId: ["1"] };
     jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
 
     await InviteUsersUtils.handleSendInvite({
-      requestBody: [
-        {
-          emailId: selectedRowItem.emailId,
-          externalId: selectedRowItem.id,
-          forename: selectedRowItem.forename,
-          surname: selectedRowItem.surname
-        }
-      ],
+      requestBody: selectedRowItem,
       setLoader,
       setShowInviteErrBanner,
       setDataUpdated
@@ -727,14 +716,9 @@ describe("handleSendInvite", () => {
 
     expect(setLoader).toHaveBeenCalledWith(true);
     expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
-      requestBody: [
-        {
-          emailId: "test@example.com",
-          externalId: "1",
-          forename: "Test",
-          surname: "User"
-        }
-      ],
+      requestBody: {
+        externalId: ["1"]
+      },
       setShowInviteErrBanner
     });
     expect(setDataUpdated).toHaveBeenCalledWith(true);
@@ -744,29 +728,10 @@ describe("handleSendInvite", () => {
     const setLoader = jest.fn();
     const setShowInviteErrBanner = jest.fn();
     const setDataUpdated = jest.fn();
-    const selectedRowItem = [
-      {
-        id: "1",
-        emailId: "test@example.com",
-        forename: "Test",
-        surname: "User"
-      },
-      {
-        id: "2",
-        emailId: "another@example.com",
-        forename: "Another",
-        surname: "Person"
-      }
-    ];
     jest.spyOn(InviteUsersUtils, "postSendInvitation").mockResolvedValue({});
 
     await InviteUsersUtils.handleSendInvite({
-      requestBody: selectedRowItem.map((item) => ({
-        emailId: item.emailId,
-        externalId: item.id,
-        forename: item.forename,
-        surname: item.surname
-      })),
+      requestBody: { externalId: ["1"] },
       setLoader,
       setShowInviteErrBanner,
       setDataUpdated
@@ -774,20 +739,9 @@ describe("handleSendInvite", () => {
 
     expect(setLoader).toHaveBeenCalledWith(true);
     expect(InviteUsersUtils.postSendInvitation).toHaveBeenCalledWith({
-      requestBody: [
-        {
-          emailId: "test@example.com",
-          externalId: "1",
-          forename: "Test",
-          surname: "User"
-        },
-        {
-          emailId: "another@example.com",
-          externalId: "2",
-          forename: "Another",
-          surname: "Person"
-        }
-      ],
+      requestBody: {
+        externalId: ["1"]
+      },
       setShowInviteErrBanner
     });
     expect(setDataUpdated).toHaveBeenCalledWith(true);
@@ -797,22 +751,11 @@ describe("handleSendInvite", () => {
     const setLoader = jest.fn();
     const setShowInviteErrBanner = jest.fn();
     const setDataUpdated = jest.fn();
-    const selectedRowItem = [
-      {
-        id: "1",
-        emailId: "test@example.com",
-        forename: "Test",
-        surname: "User"
-      }
-    ];
 
     await InviteUsersUtils.handleSendInvite({
-      requestBody: selectedRowItem.map((item) => ({
-        emailId: item.emailId,
-        externalId: item.id,
-        forename: item.forename,
-        surname: item.surname
-      })),
+      requestBody: {
+        externalId: ["1"]
+      },
       setLoader,
       setShowInviteErrBanner,
       setDataUpdated

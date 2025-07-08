@@ -7,7 +7,7 @@ import {
   InvitationStatusFilterOptions,
   IPaginationOptions,
   IPostSendInvitation,
-  ISendInviteReqBody
+  IRequestBodyType
 } from "./InviteUsersProps";
 import { getValues, NoDataMessage } from "./InviteUsers.view";
 
@@ -56,9 +56,7 @@ export const getUsersData: (
 export const postSendInvitation = async (props: IPostSendInvitation) => {
   try {
     const url = `InviteUser/SendInvitation`;
-    const postReqBody = {
-      inviteUsers: props.requestBody
-    };
+    const postReqBody = props.requestBody;
     const response: any = await service.post(url, postReqBody);
     return response?.data;
   } catch (error) {
@@ -201,7 +199,7 @@ export const handleSendInvite = async ({
   setShowInviteErrBanner,
   setDataUpdated
 }: {
-  requestBody: ISendInviteReqBody[];
+  requestBody: IRequestBodyType;
   setLoader: React.Dispatch<React.SetStateAction<boolean>>;
   setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
   setDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;

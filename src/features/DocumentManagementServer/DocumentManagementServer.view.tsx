@@ -1,5 +1,4 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-
 import {
   Grid,
   GridItem,
@@ -14,15 +13,13 @@ import {
   ShowActionAs,
   ButtonIconPosition,
   useMediaQuery,
-  Icon,
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect } from "react";
+import dayjs from "dayjs";
 import DocumentManagementServer, {
   getTableHeadersData,
 } from "./DocumentManagementServer.logic";
-
 import "./style.scss";
-import dayjs from "dayjs";
 import { tableDataProps } from "./responseModel";
 
 const DocumentManagementServerView: React.FC = () => {

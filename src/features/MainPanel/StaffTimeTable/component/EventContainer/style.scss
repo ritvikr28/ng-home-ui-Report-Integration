@@ -178,4 +178,9 @@
 .new-event-card-box {
   margin-right: 12px;
   margin-bottom: 20px;
+  width: 100%;
+}
+
+.new-event-card-box .essui-event .essui-event--critical {
+  background-color: white
 }

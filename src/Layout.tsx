@@ -120,6 +120,8 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
   "InviteUserView"
 );
 
+  const hasInviteUserOrgView: boolean = isOrganisationInVariant("InviteUserView");
+
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
@@ -134,7 +136,6 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     "SystemStatusORG"
   );
 
-  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
@@ -207,15 +208,13 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {hasSystemStatusPermission || hasSystemStatusOrgPermission  &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
-          {hasInviteUserView && (
-            <ProtectedRoute
-              exact
-              /* istanbul ignore next */
-              path="/inviteusers"
-              render={() => hasInviteUserView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />} 
-            />
-          )}
+          {hasSystemStatusPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
+          <ProtectedRoute
+            exact
+            /* istanbul ignore next */
+            path="/inviteusers"
+            render={() => hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+          />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
