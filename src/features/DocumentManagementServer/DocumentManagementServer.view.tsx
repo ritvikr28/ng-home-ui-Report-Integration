@@ -86,6 +86,7 @@ const DocumentManagementServerView: React.FC = () => {
       }
     }, 1500);
   }, []);
+
   const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
     if (event.key === "Enter") {
       const keyword = searchInput.trim().toLowerCase();
@@ -121,73 +122,6 @@ const DocumentManagementServerView: React.FC = () => {
     }
   };
 
-  // const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-  //   if (event.key === "Enter") {
-  //     const keyword = searchInput.trim().toLowerCase();
-
-  //     // Show loader & reset error
-  //     setTableLoading(true);
-  //     setSearchError(false);
-  //     setIsSearchTriggered(true);
-  //     setSearchTerm(keyword);
-  //     setNoResults(false);
-
-  //     try {
-  //       // Simulate API-based filtering (replace this with your future API call)
-  //       const filtered = tableData.filter((doc) =>
-  //         (doc.Document?.toLowerCase() ?? "").includes(keyword)
-  //       );
-
-  //       // Set filtered results after delay
-  //       setTimeout(() => {
-  //         setFilteredDocs(filtered);
-
-  //         if (filtered.length === 0) {
-  //           setNoResults(true);
-  //         }
-
-  //         setSearchError(false);
-
-  //         setIsLoading(false);
-  //         setTableLoading(false);
-  //       }, 1000);
-  //     } catch (error) {
-  //       // On unexpected error
-  //       setFilteredDocs([]);
-  //       setNoResults(false);
-  //       setSearchError(true);
-
-  //       setIsLoading(false);
-  //       setTableLoading(false);
-  //     }
-  //   }
-  // };
-
-  //   const handleSearchEnter = async (event: React.KeyboardEvent<Element>) => {
-  //   if (event.key === "Enter") {
-  //     const keyword = searchInput.trim().toLowerCase();
-
-  //     // Simulate backend search (replace with your real API call)
-  //     try {
-  //       // Example: await fetchSearchResults(keyword);
-  //       // If success:
-  //       // setFilteredDocs(results);
-  //       // setNoResults(results.length === 0);
-  //       // setSearchError(false);
-
-  //       // Simulate failure for demonstration:
-  //       throw new Error("Backend search failed");
-
-  //     } catch (err) {
-  //       setFilteredDocs([]);
-  //       setNoResults(true);
-  //       setIsSearchTriggered(true);
-  //       setSearchError(true);
-  //     }
-  //     setSearchTerm(keyword);
-  //   }
-  // };
-
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchInput(event.target.value);
     setSearchError(false); // ✅ Hide error banner/message
@@ -209,7 +143,14 @@ const DocumentManagementServerView: React.FC = () => {
       setTableLoading(false);
     }, 500);
   };
-  const tableDataToShow = isSearchTriggered ? filteredDocs : tableData;
+
+  const tableDataToShow = Array.isArray(
+    isSearchTriggered ? filteredDocs : tableData
+  )
+    ? isSearchTriggered
+      ? filteredDocs
+      : tableData
+    : [];
 
   return (
     <>
@@ -264,7 +205,7 @@ const DocumentManagementServerView: React.FC = () => {
             {hasFetched && (
               <ControlledList
                 globalNotificationMsgBannerObject={
-                  searchError ? { title: "Information unavailable…" } : null
+                  searchError ? { title: "Information unavailable" } : null
                 }
                 isAddEventBtnShow={false}
                 isShowEditSelectedBtn={true}
@@ -355,7 +296,7 @@ const DocumentManagementServerView: React.FC = () => {
                 sidePanelSubTitle=""
                 sidePanelTitle=""
                 subHeadingText=""
-                tableBodyData={tableDataToShow || []}
+                tableBodyData={tableDataToShow}
                 filterCustumeElem2={
                   <div className="search-filter-actions-wrapper">
                     <Button
