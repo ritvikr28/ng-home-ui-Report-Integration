@@ -5,7 +5,6 @@ import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
 import DocumentManagementServer, { getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
-import DocumentManagementServerView from "../DocumentManagementServer.view";
 
 jest.mock("../ApiService");
 
