@@ -270,31 +270,6 @@ describe("getTableHeadersData 'Related to' column tooltip rendering", () => {
 
 });
 describe('setTotalPage logic', () => {
-    test('sets totalPage based on data.totalRecords', () => {
-        const setTotalPage = jest.fn();
-        // Mock useState for currentPage, totalPage, isLoading
-        jest.spyOn(React, 'useState')
-            .mockImplementationOnce(() => [1, jest.fn()])
-            .mockImplementationOnce(() => [0, setTotalPage])
-            .mockImplementationOnce(() => [false, jest.fn()]);
-
-        // Mock DocumentManagementServer to return data with totalRecords
-        jest.mock('../DocumentManagementServer.logic', () => ({
-            __esModule: true,
-            default: jest.fn(() => ({
-                data: { totalRecords: 80, data: [{ fileId: '1' }] },
-                error: null,
-                hasFetched: true
-            })),
-            getTableHeadersData: []
-        }));
-
-        // Re-import after mocks
-        render(<DocumentManagementServerView />);
-
-        // totalPages = Math.ceil(80 / pageSize)
-        // expect(setTotalPage).toHaveBeenCalledWith(Math.ceil(80 / 40));
-    });
     test('should set totalPage to correct value when data.totalRecords is a potestive number', () => {
         const setTotalPage = jest.fn();
         const pageSize = 40;
