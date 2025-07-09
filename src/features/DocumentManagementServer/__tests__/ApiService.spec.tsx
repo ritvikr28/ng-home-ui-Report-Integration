@@ -67,7 +67,7 @@ describe("Fetch document details tests", () => {
         jest.clearAllMocks();
     });
     test("should set hasFetched false initially", async () => {
-        jest.spyOn(service, "get").mockResolvedValueOnce(mockAxiosResponse);
+        jest.spyOn(service, "post").mockResolvedValueOnce(mockAxiosResponse);
         const { result } = renderHook(() =>
             DocumentManagementServer({ pageNumber: 1, pageSize: 40 })
         );
@@ -76,7 +76,7 @@ describe("Fetch document details tests", () => {
     });
 
     test("should return data on successful fetch", async () => {
-        jest.spyOn(service, "get").mockResolvedValueOnce(mockAxiosResponse);
+        jest.spyOn(service, "post").mockResolvedValueOnce(mockAxiosResponse);
         const { result, waitForNextUpdate } = renderHook(() =>
             DocumentManagementServer({ pageNumber: 1, pageSize: 40 })
         );
@@ -89,11 +89,11 @@ describe("Fetch document details tests", () => {
     });
 
     test("should return GetDocumentDetails data", async () => {
-        jest.spyOn(service, "get").mockResolvedValue(mockAxiosResponse);
+        jest.spyOn(service, "post").mockResolvedValue(mockAxiosResponse);
         const response: DocumentBasicDetails | null = await fetchDocumentDetails({ pageNumber: 1, pageSize: 10 });
         expect(response).toEqual(mockAxiosResponse?.data);
-        expect(service.get).toHaveBeenCalledTimes(1);
-        expect(service.get).toHaveBeenCalled();
+        expect(service.post).toHaveBeenCalledTimes(1);
+        expect(service.post).toHaveBeenCalled();
     });
     test("should return null when API status is not 200", async () => {
         const mockResponse: Partial<AxiosResponse<DocumentBasicDetails>> = {
@@ -104,14 +104,14 @@ describe("Fetch document details tests", () => {
                 data: documentResponse
             }, status: 404, statusText: 'Not Found', headers: {}, config: {}
         };
-        (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+        jest.spyOn(service, "post").mockResolvedValueOnce(mockResponse as AxiosResponse<DocumentBasicDetails>);
 
         const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
         expect(result).toBeNull();
     });
 
     test("should return null when an error occurs", async () => {
-        (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
+        jest.spyOn(service, "post").mockRejectedValue(new Error("Network Error"));
 
         const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
 

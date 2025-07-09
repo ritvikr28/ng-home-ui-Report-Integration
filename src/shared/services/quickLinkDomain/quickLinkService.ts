@@ -11,12 +11,12 @@ import { envConfig } from "../../utils";
 
 export const FetchQuickLinkData:(role: string) => Promise<{ 
   status: number;
-  response: IQuickLinkApiResponse[] } | null> = async (role: string) => {
+  response: IQuickLinkApiResponse[] } | null> = async () => {
     try {
         const languageCode = navigator.language || navigator.language;
         const userLanguage = languageCode.includes("en") ? "en-US": languageCode;
         const responseData: AxiosResponse<IQuickLinkApiResponse[]> = await service.get(
-          `v1/quicklink?role=${role}&languageCode=${userLanguage}`,
+           `v2/quicklink?languageCode=${userLanguage}`,
           buildApplicationUrl(apiUrls)
         );
         const {status}: { status: number } = responseData;

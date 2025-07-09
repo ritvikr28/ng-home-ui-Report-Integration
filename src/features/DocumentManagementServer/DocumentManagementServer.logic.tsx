@@ -56,12 +56,6 @@ export const getTableHeadersData: {
               <span> {e} </span>
             </div>
           </Tooltip>
-          <Tag
-            dataTestId="name"
-            id="name"
-            className="relatedto-tag"
-            text="Locked"
-          />
         </div>
       </>
     ),

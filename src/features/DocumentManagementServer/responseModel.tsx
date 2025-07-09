@@ -30,6 +30,12 @@ export interface DocumentBasicDetails {
 export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;
+  searchText?: string;
+  categoryId?: string[];
+  fromDate?: string;
+  toDate?: string;
+  sortBy?: string;
+  sortDirection?: string;
 }
 
 export interface tableDataProps {

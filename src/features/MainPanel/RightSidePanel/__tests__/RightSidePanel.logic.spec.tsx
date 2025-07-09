@@ -1,12 +1,14 @@
 import React from "react";
 import { render, waitFor ,screen} from "@testing-library/react";
+import dayjs from 'dayjs';
+import * as uiFlagr from '@essnextgen/ui-flagr';
 import { RightSidePanel } from "../RightSidePanel.logic";
 import * as schoolDomainservices from "../../../../shared/services/schoolDomain/schoolServices";
 import { IRightSidePanelProps } from "../RightSidePanelProps";
 import { IGroupMemberDetailsResponse } from "../../../../shared/model/SchoolDomain/responsemodels";
 import { RightSidePanelView } from "../RightSidePanel.View";
 import { IRightSidePanelViewProps } from "../RightSidePanelViewProps";
-
+import { envConfig } from '../../../../shared/utils';
 
 const mockEventTitleMeetingTTPeriod: IRightSidePanelProps = {
   SchoolEventexternalId: "123",
@@ -186,8 +188,9 @@ export const handleClassViewClick = (params: { ClassPeriodExternalId: any; Event
       ClassPeriodExternalId,
       EventDescription,
       GroupExternalId,
-      ExternalId,
-      envConfig,
+      ExternalId,  
+      // eslint-disable-next-line 
+      envConfig,   
       setClassViewURL
   } = params;
 
@@ -507,7 +510,7 @@ describe("RigthSidePanel", () => {
 });
 describe('handleClassViewClick', () => {
   let setClassViewURL: jest.Mock<any, any>;
-  const envConfig = {
+  const testEnvConfig = { // <-- renamed to avoid shadowing
       SEATING_PLAN_CLASS_VIEW_URL: 'http://example.com'
   };
 
@@ -521,7 +524,7 @@ describe('handleClassViewClick', () => {
           EventDescription: 'EventA',
           GroupExternalId: 'Group1',
           ExternalId: 'Ext1',
-          envConfig,
+          envConfig: testEnvConfig, // <-- use renamed variable
           setClassViewURL
       };
 
@@ -536,7 +539,7 @@ describe('handleClassViewClick', () => {
           EventDescription: 'EventA',
           GroupExternalId: 'Group1',
           ExternalId: 'Ext1',
-          envConfig,
+          envConfig: testEnvConfig, // <-- use renamed variable
           setClassViewURL
       };
 
@@ -563,4 +566,182 @@ describe('handleClassViewClick', () => {
   // });
 
   
+});
+
+describe('formatEventTimeData', () => {
+  const setLoader = jest.fn();
+  const setErrCodeMessage = jest.fn();
+  const setGroupMemberDetailsData = jest.fn();
+  const setPupilDetailErrorCodeMessage = jest.fn();
+  const setPupilSection = jest.fn();
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [false, setLoader])
+      .mockImplementationOnce(() => [false, setErrCodeMessage])
+      .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
+  });
+  it('should format time string for AttendanceSession', () => {
+    const expected = `${mockHealthyEvent.EventPeriodNo} | ${dayjs(mockHealthyEvent.EventStart).format('HH:mm')} - ${dayjs(mockHealthyEvent.EventEnd).format('HH:mm')}`;
+    const { getByTestId } = render(
+      <RightSidePanel
+        {...mockHealthyEvent}
+        EventTypeCode="AttendanceSession"
+      />
+    );
+    expect(getByTestId('time-value').textContent).toBe(expected);
+  });
+  it('should format time string for other event type', () => {
+    const event = { ...mockHealthyEvent, EventTypeCode: 'OtherType' };
+    const expected = `${event.EventPeriodNo} | ${dayjs(event.EventStart).format('HH:mm')} - ${dayjs(event.EventEnd).format('HH:mm')}`;
+    const { getByTestId } = render(
+      <RightSidePanel
+        {...event}
+      />
+    );
+    expect(getByTestId('time-value').textContent).toBe(expected);
+  });
+});
+
+describe('pupilSortLogic', () => {
+  const setLoader = jest.fn();
+  const setErrCodeMessage = jest.fn();
+  const setGroupMemberDetailsData = jest.fn();
+  const setPupilDetailErrorCodeMessage = jest.fn();
+  const setPupilSection = jest.fn();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('should sort pupils by preferredSurname', async () => {
+    const unsortedList = [
+      {
+        ...mockListofGroupExternalId[1],
+        personalInfo: { ...mockListofGroupExternalId[1].personalInfo, preferredSurname: 'Zebra' }
+      },
+      {
+        ...mockListofGroupExternalId[0],
+        personalInfo: { ...mockListofGroupExternalId[0].personalInfo, preferredSurname: 'Alpha' }
+      }
+    ];
+    jest
+      .spyOn(React, 'useState')
+      .mockImplementationOnce(() => [false, setLoader])
+      .mockImplementationOnce(() => [false, setErrCodeMessage])
+      .mockImplementationOnce(() => ["", setPupilDetailErrorCodeMessage])
+      .mockImplementationOnce(() => [[], setGroupMemberDetailsData])
+      .mockImplementationOnce(() => [true, setPupilSection]);
+    jest
+      .spyOn(schoolDomainservices, 'FetchGroupMemberDetailsData')
+      .mockResolvedValue(unsortedList);
+    render(
+      <RightSidePanel
+        {...mockHealthyEvent}
+      />
+    );
+    await waitFor(() => {
+      expect(setGroupMemberDetailsData).toHaveBeenCalledWith([
+        expect.objectContaining({ personalInfo: expect.objectContaining({ preferredSurname: 'Alpha' }) }),
+        expect.objectContaining({ personalInfo: expect.objectContaining({ preferredSurname: 'Zebra' }) })
+      ]);
+    });
+  });
+});
+
+describe('handleClassViewClick (component) - ClassPeriodExternalId branches', () => {
+  beforeEach(() => {
+    envConfig.APPLICATION = 'test-app';
+    envConfig.SEATING_PLAN_CLASS_VIEW_URL = 'http://example.com';
+    jest.spyOn(uiFlagr, 'hasFeaturePermission').mockReturnValue(true);
+  });
+  it('should use ClassPeriodExternalId when it is not null', async () => {
+    const props = {
+      ...mockHealthyEvent,
+      EventTypeCode: 'AttendanceSession',
+      GroupExternalId: 'GroupTest',
+      ClassPeriodExternalId: 'ClassPeriodTest',
+      EventInstanceExternalId: 'InstanceTest',
+      EventDescription: 'DescTest',
+    };
+    const { getByTestId } = render(
+      <RightSidePanel {...props} />
+    );
+    await waitFor(() => {
+      expect(getByTestId('side-panel')).toBeInTheDocument();
+    });
+    const classViewButton = getByTestId('class-view-button');
+    classViewButton.click();
+    expect(classViewButton.getAttribute('href')).toBe(
+      `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/GroupTest/ClassPeriodTest/InstanceTest`
+    );
+  });
+  it('should use EventDescription when ClassPeriodExternalId is null', async () => {
+    const props = {
+      ...mockHealthyEvent,
+      EventTypeCode: 'AttendanceSession',
+      GroupExternalId: 'GroupTest',
+      ClassPeriodExternalId: null,
+      EventInstanceExternalId: 'InstanceTest',
+      EventDescription: 'DescTest',
+    };
+    const { getByTestId } = render(
+      <RightSidePanel {...props} />
+    );
+    await waitFor(() => {
+      expect(getByTestId('side-panel')).toBeInTheDocument();
+    });
+    const classViewButton = getByTestId('class-view-button');
+    classViewButton.click();
+    expect(classViewButton.getAttribute('href')).toBe(
+      `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan/GroupTest/DescTest/InstanceTest`
+    );
+  });
+});
+
+describe('togglePanel prop', () => {
+  it('should call togglePanel with SchoolEventexternalId when close button is clicked', async () => {
+    const togglePanelMock = jest.fn();
+    const props = {
+      ...mockHealthyEvent,
+      togglePanel: togglePanelMock,
+    };
+    const { getByTestId } = render(
+      <RightSidePanel {...props} />
+    );
+    await waitFor(() => {
+      expect(getByTestId('side-panel')).toBeInTheDocument();
+    });
+    const closeButton = getByTestId('close-button');
+    closeButton.click();
+    expect(togglePanelMock).toHaveBeenCalledWith(props.SchoolEventexternalId);
+  });
+});
+describe('handleClassViewClick (component) - null values', () => {
+  beforeEach(() => {
+    envConfig.APPLICATION = 'test-app';
+    envConfig.SEATING_PLAN_CLASS_VIEW_URL = 'http://example.com';
+    jest.spyOn(uiFlagr, 'hasFeaturePermission').mockReturnValue(true);
+  });
+  it('should construct URL with empty segments when all are null', async () => {
+    const props = {
+      ...mockHealthyEvent,
+      EventTypeCode: 'AttendanceSession',
+      GroupExternalId: null,
+      ClassPeriodExternalId: null,
+      EventInstanceExternalId: null,
+      EventDescription: null,
+    } as any;
+    const { getByTestId } = render(
+      <RightSidePanel {...props} />
+    );
+    await waitFor(() => {
+      expect(getByTestId('side-panel')).toBeInTheDocument();
+    });
+    const classViewButton = getByTestId('class-view-button');
+    classViewButton.click();
+    expect(classViewButton.getAttribute('href')).toBe(
+      `${envConfig.SEATING_PLAN_CLASS_VIEW_URL}/classview/select-seating-plan///`
+    );
+  });
 });
