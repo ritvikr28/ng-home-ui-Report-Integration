@@ -147,6 +147,11 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     MatchPermissions.all
   );
 
+  const hasInviteUserPermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.System.Permissions", Operation: "View" }],
+    MatchPermissions.all
+  );
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -213,7 +218,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             exact
             /* istanbul ignore next */
             path="/inviteusers"
-            render={() => hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+            render={() => hasInviteUserPermissions && hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
           />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
