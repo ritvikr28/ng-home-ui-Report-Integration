@@ -1,6 +1,6 @@
 import React, { Suspense, lazy, LazyExoticComponent, FC, useState } from "react";
 import { useDispatch } from "react-redux";
-import { ProtectedRoute, Auth, authService, MatchPermissions } from "@essnextgen/auth-ui";
+import { ProtectedRoute, Auth, authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import {
   Switch,
   Route,
@@ -151,7 +151,21 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     [{ Securable: "NG.System.Permissions", Operation: "View" }],
     MatchPermissions.all
   );
-
+  const requiredSystemStatusViewPermission: Permission[] = [
+    { Securable: "NG.AlertEmails.List", Operation: "View" }
+  ];
+  const requiredSystemStatusUpdatePermission: Permission[] = [
+    { Securable: "NG.AlertEmails.List", Operation: "Update" },
+    { Securable: "NG.AlertEmails.List", Operation: "Write" }
+  ];
+  const canViewSystemStatus = authService.isAuthorised(
+    requiredSystemStatusViewPermission,
+    MatchPermissions.any
+  );
+  const canUpdateSystemStatus = authService.isAuthorised(
+    requiredSystemStatusUpdatePermission,
+    MatchPermissions.any
+  );
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -213,7 +227,17 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-          {hasSystemStatusPermission &&<ProtectedRoute exact path="/systemstatus" component={SystemStatus} />}
+           {hasSystemStatusPermission && (
+            <ProtectedRoute
+              exact
+              path="/systemstatus"
+              render={() =>
+                canViewSystemStatus || canUpdateSystemStatus
+                  ? <SystemStatus />
+                  : <UnAuthorisedAccess />
+              }
+            />
+          )}
           <ProtectedRoute
             exact
             /* istanbul ignore next */
