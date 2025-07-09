@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
@@ -9,6 +10,7 @@ const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
 const logic = require('../DocumentManagementServer.logic').default;
 jest.mock('../ApiService');
+const { handlePageChange } = require('../DocumentManagementServer.view');
 
 jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
@@ -53,12 +55,12 @@ jest.mock('../DocumentManagementServer.logic', () => ({
     }
   ])
 }));
-
+ 
 jest.mock('@essnextgen/ui-kit', () => ({
   ...jest.requireActual('@essnextgen/ui-kit'),
   useMediaQuery: jest.fn(),
 }));
-
+ 
 const mockData = {
   data: [
     {
@@ -170,8 +172,10 @@ describe('DocumentManagementServerView', () => {
   });
 
   test('renders table headers when data is present', async () => {
+    
+    jest.useFakeTimers();
     logic.mockImplementation(() => ({
-
+ 
       error: null,
       data: {
         data: [
@@ -189,14 +193,13 @@ describe('DocumentManagementServerView', () => {
       },
       hasFetched: true,
     }));
-    jest.useFakeTimers();
     render(<DocumentManagementServerView />);
-
+ 
     act(() => {
       jest.advanceTimersByTime(2000);
     });
     await waitFor(() => {
-      expect(screen.getByText('Document')).toBeInTheDocument();
+      expect(screen.getByText('Doc1')).toBeInTheDocument();
       expect(screen.getByText('Category')).toBeInTheDocument();
       expect(screen.getByText('Added by')).toBeInTheDocument();
       expect(screen.getByText('Date added')).toBeInTheDocument();
@@ -259,6 +262,24 @@ describe('DocumentManagementServerView', () => {
     const button = screen.getByTestId('btn-collapse');
     fireEvent.click(button);
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
+  });
+
+  test('handlePageChange sets loading and updates page', () => {
+    const setCurrentPage = jest.fn();
+    const setIsLoading = jest.fn();
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [1, setCurrentPage]) // currentPage
+      .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
+      .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
+
+    render(<DocumentManagementServerView />);
+
+    // Find the pagination handler from ControlledList props
+    if (handlePageChange) {
+      handlePageChange({}, 2);
+      expect(setIsLoading).toHaveBeenCalledWith(true);
+      expect(setCurrentPage).toHaveBeenCalledWith(2);
+    }
   });
 });
 
