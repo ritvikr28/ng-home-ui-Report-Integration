@@ -8,6 +8,7 @@ import { tableDataProps } from "./responseModel"
 import gtmAnalytics from "../../shared/utils/analytics"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
+import { fetchDocumentDetails } from "./ApiService"
 
 
 const DocumentManagementServerView: React.FC = () => {
@@ -18,13 +19,14 @@ const DocumentManagementServerView: React.FC = () => {
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
+    const [data, setData] = useState<any>(null);
 
     const handlePageChange: (event: any, handlepageCount: number) => void = (event: any, handlepageCount: number) => {
         setIsLoading(true);
         setCurrentPage(handlepageCount);
     };
 
-    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
+    const { data: initialData, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
     const tableData: tableDataProps[] = (error || !data?.data?.length) ? [] : data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
@@ -65,6 +67,17 @@ const DocumentManagementServerView: React.FC = () => {
         }
     }, [data]);
 
+    useEffect(() => {
+        if (
+            initialData &&
+            JSON.stringify(initialData) !== JSON.stringify(data)
+        ) {
+            setData(initialData);
+        }
+    }, [initialData]);
+
+
+
   const onBreadcrumbClick = (path: string) => {
     window.location.assign(path);
     gtmAnalytics.pushEvent({
@@ -85,6 +98,8 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 
     if (value.length < 2) {
       setSuggestions([]);
+        setShowSearchError(false);
+        setIsSearchLoading(false);
       return;
     }
 
@@ -99,9 +114,40 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     );
   };
   
-const handleSuggestionClick = (item: ISearchItemProp | null) => {
-  if (!item) return;
-  setSearchTerm(item.name || "");
+const handleSuggestionClick = async (item: ISearchItemProp | null) => {
+   if (!item || !item.name) return;
+   
+    setSearchTerm(item.name);
+   await loadDocumentData(item.name, 1);
+ 
+};
+
+const loadDocumentData = async (searchText = "", page = 1) => {
+  setIsSearchLoading(true);
+  setIsLoading(true);
+
+  try {
+    const result = await fetchDocumentDetails({
+      pageNumber: page,
+      pageSize: pageSizeNumber,
+      searchText,
+    });
+
+    if (result) {
+      setData(result);
+      setCurrentPage(page);
+      setTotalPage(Math.ceil(result.totalRecords / pageSizeNumber));
+      setShowSearchError(false);
+    } else {
+      setShowSearchError(true);
+    }
+  } catch (error) {
+    console.error("Error loading document data:", error);
+    setShowSearchError(true);
+  } finally {
+    setIsSearchLoading(false);
+    setIsLoading(false);
+  }
 };
 
 
@@ -310,9 +356,10 @@ const handleSuggestionClick = (item: ISearchItemProp | null) => {
                                 searchSuggestions={hasItems ? suggestions : []}
                                 onSearchSuggestionItemClick={handleSuggestionClick}
                                 searchOnChange={handleSearchChange}
-                                searchOnCloseHandle={() => {
+                                searchOnCloseHandle={async () => {
                                 setSearchTerm("");
                                 setSuggestions([]);
+                                await loadDocumentData("", 1);
                                 }}
                                 searchValidationText={
                                 showSearchError ? "Search unavailable. Please try again later." : undefined
@@ -320,9 +367,9 @@ const handleSuggestionClick = (item: ISearchItemProp | null) => {
                                 searchValidationTextLevel={
                                 showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
-                                onSearchKeyDown={(e: any) => {
-                                if (e.key === "Enter") {
-                                    // call fetchDocumentDetails or reload state
+                                onSearchKeyDown={async (e: any) => {
+                                 if (e.key === "Enter" && searchTerm.trim() === "") {
+                                    await loadDocumentData("", 1);
                                 }
                                 }}
                                 secondaryButtonTitle="Cancel"
