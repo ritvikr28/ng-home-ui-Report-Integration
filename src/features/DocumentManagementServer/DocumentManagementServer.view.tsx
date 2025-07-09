@@ -7,6 +7,7 @@ import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import gtmAnalytics from "../../shared/utils/analytics"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
+import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 
 
 const DocumentManagementServerView: React.FC = () => {
@@ -24,7 +25,7 @@ const DocumentManagementServerView: React.FC = () => {
         id: doc?.fileId,
         Document: doc?.document,
         Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
-        Category: doc?.category && (doc?.category?.charAt(0).toUpperCase() + doc?.category?.slice(1)) || "",
+        Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
         Addedby: doc?.addedBy || "",
         "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
         Format: doc?.format,
