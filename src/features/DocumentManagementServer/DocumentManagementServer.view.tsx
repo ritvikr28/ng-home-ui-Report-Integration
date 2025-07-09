@@ -74,10 +74,11 @@ const DocumentManagementServerView: React.FC = () => {
       clickType: "link",
       clickLocation: "breadcrumb"
     });
-  };      const hasItems: boolean = suggestions.some(
+  };      
+  
+const hasItems: boolean = suggestions.some(
         (x: Suggestion) => x.values.length > 0
       );
-
 const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchTerm(value);
@@ -298,10 +299,32 @@ const handleSuggestionClick = (item: ISearchItemProp | null) => {
                                 primaryButtonTitle=""
                                 resultNotFoundMessage=""
                                 searchHeadingText="Search by document or related to name"
-                                searchPlaceholderText=""
                                 searchTerm=""
-                                isShowSearch={true}
-                                searchValue=""
+                                isShowSearch
+                                searchPlaceholderText="Search..."
+                                searchValue={searchTerm}
+                                searchIsLoader={isSearchLoading}
+                                isSearchHideClearIcon={searchTerm.length === 0}
+                                onKeyUpLenght={2}
+                                searchDebouncerTreshold={1000}
+                                searchSuggestions={hasItems ? suggestions : []}
+                                onSearchSuggestionItemClick={handleSuggestionClick}
+                                searchOnChange={handleSearchChange}
+                                searchOnCloseHandle={() => {
+                                setSearchTerm("");
+                                setSuggestions([]);
+                                }}
+                                searchValidationText={
+                                showSearchError ? "Search unavailable. Please try again later." : undefined
+                                }
+                                searchValidationTextLevel={
+                                showSearchError ? ValidationTextLevel.Warning : undefined
+                                }
+                                onSearchKeyDown={(e: any) => {
+                                if (e.key === "Enter") {
+                                    // call fetchDocumentDetails or reload state
+                                }
+                                }}
                                 secondaryButtonTitle="Cancel"
                                 showConfirmDialog
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
