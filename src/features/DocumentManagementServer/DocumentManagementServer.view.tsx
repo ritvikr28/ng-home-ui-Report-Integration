@@ -52,7 +52,7 @@ const DocumentManagementServerView: React.FC = () => {
                 setIsLoading(false);
             }
         }, 1500);
-    }, []);
+    }, [currentPage]);
 
     useEffect(() => {
         if (data && data?.totalRecords) {
