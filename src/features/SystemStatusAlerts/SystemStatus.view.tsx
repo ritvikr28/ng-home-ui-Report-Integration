@@ -13,6 +13,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import SystemStatusAlerts from "./SystemStatusAlerts/SystemStatusAlerts.view";
 import { envConfig } from "../../shared/utils";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 const SystemStatus: React.FC = () => {
   const isMobileView: boolean = useMediaQuery(
@@ -31,6 +32,10 @@ const SystemStatus: React.FC = () => {
   useEffect(() => {
     setIsOpen(!isMobileView);
   }, [!isMobileView]);
+
+  useEffect(() => {
+    gtmAnalytics.pushPageViewEvent();
+  }, []);
 
   return (
     <>
