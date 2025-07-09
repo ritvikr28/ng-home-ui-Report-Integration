@@ -128,7 +128,6 @@ describe("Fetch document details tests", () => {
 });
 
 describe("fetchDMSSuggestions", () => {
-    const { fetchDMSSuggestions } = require("../ApiService");
     afterEach(() => {
         jest.clearAllMocks();
     });

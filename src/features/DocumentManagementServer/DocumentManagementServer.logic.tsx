@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
 import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
 
@@ -246,21 +246,19 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
   return { data, error, hasFetched };
 };
 
-export const formatSuggestions = (values: any[]): Suggestion[] => {
-  return [
-    {
-      name: "",
-      values: values.map((item: any) => ({
-        text: item.fileName,
-        props: {
-          name: item.fileName,
-          id: item.fileId
-        },
-        value: <></>
-      }))
-    }
-  ];
-};
+export const formatSuggestions = (values: any[]): Suggestion[] => [
+  {
+    name: "",
+    values: values.map((item: any) => ({
+      text: item.fileName,
+      props: {
+        name: item.fileName,
+        id: item.fileId
+      },
+      value: <></>
+    }))
+  }
+];
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;

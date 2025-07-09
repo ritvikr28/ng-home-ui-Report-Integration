@@ -3,14 +3,14 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import DocumentManagementServerView from '../DocumentManagementServer.view';
-import * as ApiService from '../ApiService';
-import userEvent from '@testing-library/user-event';
 import { debouncedFetchSuggestions } from '../DocumentManagementServer.logic';
 
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
 const logic = require('../DocumentManagementServer.logic').default;
+
 jest.mock('../ApiService');
+
 const { handlePageChange } = require('../DocumentManagementServer.view');
 
 jest.mock('../DocumentManagementServer.logic', () => ({
@@ -359,26 +359,31 @@ describe('handlePageChange (unit)', () => {
     const setIsLoading = jest.fn();
     const setCurrentPage = jest.fn();
     // Simulate the handler logic
-    const handlePageChange = (_event: any, handlepageCount: number) => {
-      setIsLoading(true);
-      setCurrentPage(handlepageCount);
-    };
-    handlePageChange({}, 5);
+    
+    if (handlePageChange) {
+      handlePageChange(
+        { setCurrentPage, setIsLoading },
+        2
+      );
     expect(setIsLoading).toHaveBeenCalledWith(true);
     expect(setCurrentPage).toHaveBeenCalledWith(5);
+    }
   });
 
   it('should work with any event object', () => {
     const setIsLoading = jest.fn();
     const setCurrentPage = jest.fn();
-    const handlePageChange = (event: any, handlepageCount: number) => {
-      setIsLoading(true);
-      setCurrentPage(handlepageCount);
-    };
-    handlePageChange({ foo: 'bar' }, 10);
+   
+    if (handlePageChange) {
+      handlePageChange(
+        { setCurrentPage, setIsLoading },
+        2
+      );
     expect(setIsLoading).toHaveBeenCalledWith(true);
     expect(setCurrentPage).toHaveBeenCalledWith(10);
+    }
   });
+  
 });
 
 

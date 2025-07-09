@@ -2,7 +2,7 @@ import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ISearchItemProp, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
-import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData} from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { debouncedFetchSuggestions, getTableHeadersData} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import gtmAnalytics from "../../shared/utils/analytics"
@@ -97,10 +97,11 @@ const DocumentManagementServerView: React.FC = () => {
   };      
   
 const hasItems: boolean = suggestions.some(
-        (x: Suggestion) => x.values.length > 0
-      );
+    ({ values }: Suggestion) => values.length > 0
+);
+
 const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
+    const { value } = e.target;
     setSearchTerm(value);
 
     if (value.length < 2) {
@@ -150,9 +151,9 @@ const loadDocumentData = async (searchText = "", page = 1) => {
     } else if (isActive) {
       setShowSearchError(true);
     }
-  } catch (error) {
+  } catch (err) {
     if (isActive) {
-      console.error("Error loading document data:", error);
+      console.error("Error loading document data:", err);
       setShowSearchError(true);
     }
   } finally {

@@ -296,9 +296,6 @@ describe("formatSuggestions", () => {
 });
 
 describe("debouncedFetchSuggestions", () => {
-  const setSuggestions = jest.fn();
-  const setIsSearchLoading = jest.fn();
-  const setShowError = jest.fn();
 
   beforeEach(() => {
   jest.useFakeTimers();
