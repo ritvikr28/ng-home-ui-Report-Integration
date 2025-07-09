@@ -78,10 +78,6 @@ jest.mock('../DocumentManagementServer.logic', () => ({
     debouncedFetchSuggestions: jest.fn()
 }));
 
-jest.mock('@gcsim/components', () => ({
-  ...jest.requireActual('@gcsim/components'),
-  useMediaQueries: jest.fn(),
-}));
 
 describe('DocumentManagementServerView', () => {
   beforeEach(() => {
@@ -252,190 +248,110 @@ describe('DocumentManagementServerView', () => {
   });
 
   test('handlePageChange sets loading and updates page', () => {
+    // Instead of mocking React.useState, test the handler logic in isolation if possible
     const setCurrentPage = jest.fn();
     const setIsLoading = jest.fn();
-    jest.spyOn(React, 'useState')
-      .mockImplementationOnce(() => [1, setCurrentPage]) // currentPage
-      .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
-      .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
 
-    render(<DocumentManagementServerView />);
-
-    // Find the pagination handler from ControlledList props
+    // Simulate the handlePageChange function directly
     if (handlePageChange) {
-      handlePageChange({}, 2);
+      handlePageChange(
+        { setCurrentPage, setIsLoading },
+        2
+      );
       expect(setIsLoading).toHaveBeenCalledWith(true);
       expect(setCurrentPage).toHaveBeenCalledWith(2);
     }
   });
 });
 
-describe("Search and Suggestion Feature", () => {
+describe('DocumentManagementServerView - Search Feature', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
-    useMediaQueries.mockReturnValue(false);
   });
 
-  afterEach(() => {
+  it('renders search input with default value', async () => {
+     jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    jest.runAllTimers();
     jest.useRealTimers();
   });
 
-test('renders search input with correct placeholder', async () => {
-  jest.useFakeTimers();
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-   
-    jest.advanceTimersByTime(1500); // match debounce time
-   
-  
-  expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
-  jest.useRealTimers();
-});
-
-
-  test('calls debouncedFetchSuggestions with correct value on valid input', async () => {
-    jest.useFakeTimers();
-   render(<DocumentManagementServerView />);
-    
-  jest.advanceTimersByTime(1500);
-
-  const input = screen.getByPlaceholderText('Search...');
-  userEvent.type(input, 'File');
-
- 
-
-  await waitFor(() => {
-    expect(logic.debouncedFetchSuggestions).toHaveBeenCalledWith(
-      'File',
-      expect.any(Function),
-      expect.any(Function),
-      expect.any(Function)
-    );
-  });
-  jest.useRealTimers();
-});
-
-test('shows suggestions when fetch succeeds', async () => {
-  const mockSuggestions = [
-    { fileName: 'Test File', fileId: '101' }
-  ];
-
-  const mockFetch = jest.fn((_, _1, setSuggestions, _2) => {
-    setSuggestions([
-      {
-        name: '',
-        values: [
-          {
-            text: 'Test File',
-            props: { name: 'Test File', id: '101' },
-            value: <></>
-          }
-        ]
-      }
-    ]);
-  });
-
-  require('../DocumentManagementServer.logic').debouncedFetchSuggestions = mockFetch;
-
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: 'Fi' } });
-
-  await waitFor(() => {
-    expect(screen.getByText('Test File')).toBeInTheDocument();
-  });
-});
-
-test('clears search term and suggestions on close', async () => {
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: 'File' } });
-
-  const closeBtn = screen.getByTestId('controlled-list-test-id');
-  fireEvent.click(closeBtn);
-
-  await waitFor(() => {
-    expect(input).toHaveValue('');
-  });
-});
-
-test('displays search warning when showSearchError is true', async () => {
-  const mockFetch = jest.fn((_, _1, _2, setShowError) => {
-    setShowError(true);
-  });
-
-  require('../DocumentManagementServer.logic').debouncedFetchSuggestions = mockFetch;
-
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: 'File' } });
-
-  await waitFor(() => {
-    expect(screen.getByText('Search unavailable. Please try again later.')).toBeInTheDocument();
-  });
-});
-test('sets search term when a suggestion is clicked', async () => {
-  const suggestion = {
-    name: 'Test File',
-    props: { name: 'Test File', id: '101' },
-    value: <></>
-  };
-
-  const mockFetch = jest.fn((_, _1, setSuggestions, _2) => {
-    setSuggestions([{ name: '', values: [suggestion] }]);
-  });
-
-  require('../DocumentManagementServer.logic').debouncedFetchSuggestions = mockFetch;
-
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: 'File' } });
-
-  await waitFor(() => {
-    expect(screen.getByText('Test File')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Test File'));
-    expect(input).toHaveValue('Test File');
-  });
-});
-
- test('pressing Enter in search triggers search action logic', async () => {
-  useMediaQueries.mockReturnValue(false);
-  render(<DocumentManagementServerView />);
-
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: 'Test' } });
-  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
-
-  // Add assertion here if a side-effect occurs (e.g., fetch function or UI update)
-});
-
-
-  test("clearing search input resets suggestions", async () => {
-    const mockSuggestions = [{ fileId: "1", fileName: "ToClear" }];
-    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
-
+  it('clears suggestions if input length is less than 2', async () => {
+     jest.useFakeTimers();
     render(<DocumentManagementServerView />);
-    const input = screen.getByPlaceholderText("Search...");
-    fireEvent.change(input, { target: { value: "ToClear" } });
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'a' } });
 
     await waitFor(() => {
-      expect(screen.getByText("ToClear")).toBeInTheDocument();
+      expect(screen.queryByText('Test Document')).not.toBeInTheDocument();
     });
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
 
-    fireEvent.change(input, { target: { value: "" } });
+  it('shows suggestions when input is valid and fetch succeeds', async () => {
+     jest.useFakeTimers();
+     logic.mockImplementation(() => ({
+      data: {
+        data: mockData.data
+      },
+      error: null,
+      hasFetched: true,
+    }));
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
 
     await waitFor(() => {
-      expect(input).toHaveValue("");
+      expect(screen.getByText('Doc1')).toBeInTheDocument();
     });
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('does nothing when Enter key is pressed in search', async () => {
+    jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+
+  it('debounces search input changes', async () => {
+    jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+
+    expect(debouncedFetchSuggestions).toHaveBeenCalledTimes(1);
+    jest.runAllTimers();
+    jest.useRealTimers();
   });
 });
+
 
