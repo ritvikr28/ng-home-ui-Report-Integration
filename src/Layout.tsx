@@ -147,10 +147,6 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     MatchPermissions.all
   );
 
-  const hasInviteUserPermissions: boolean = authService.isAuthorised(
-    [{ Securable: "NG.System.Permissions", Operation: "View" }],
-    MatchPermissions.all
-  );
   const requiredSystemStatusViewPermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "View" }
   ];
@@ -242,7 +238,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             exact
             /* istanbul ignore next */
             path="/inviteusers"
-            render={() => hasInviteUserPermissions && hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+            render={() => hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
           />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
