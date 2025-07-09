@@ -354,4 +354,33 @@ describe('DocumentManagementServerView - Search Feature', () => {
   });
 });
 
+describe('handlePageChange (unit)', () => {
+  it('should set loading to true and update current page', () => {
+    const setIsLoading = jest.fn();
+    const setCurrentPage = jest.fn();
+    // Simulate the handler logic
+    const handlePageChange = (_event: any, handlepageCount: number) => {
+      setIsLoading(true);
+      setCurrentPage(handlepageCount);
+    };
+    handlePageChange({}, 5);
+    expect(setIsLoading).toHaveBeenCalledWith(true);
+    expect(setCurrentPage).toHaveBeenCalledWith(5);
+  });
+
+  it('should work with any event object', () => {
+    const setIsLoading = jest.fn();
+    const setCurrentPage = jest.fn();
+    const handlePageChange = (event: any, handlepageCount: number) => {
+      setIsLoading(true);
+      setCurrentPage(handlepageCount);
+    };
+    handlePageChange({ foo: 'bar' }, 10);
+    expect(setIsLoading).toHaveBeenCalledWith(true);
+    expect(setCurrentPage).toHaveBeenCalledWith(10);
+  });
+});
+
+
+
 

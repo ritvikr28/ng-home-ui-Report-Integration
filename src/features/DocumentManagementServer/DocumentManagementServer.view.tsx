@@ -68,12 +68,19 @@ const DocumentManagementServerView: React.FC = () => {
     }, [data]);
 
     useEffect(() => {
+        let mounted = true;
+
         if (
+            mounted &&
             initialData &&
             JSON.stringify(initialData) !== JSON.stringify(data)
         ) {
             setData(initialData);
         }
+
+        return () => {
+            mounted = false;
+        };
     }, [initialData]);
 
 
@@ -123,6 +130,8 @@ const handleSuggestionClick = async (item: ISearchItemProp | null) => {
 };
 
 const loadDocumentData = async (searchText = "", page = 1) => {
+  let isActive = true;
+
   setIsSearchLoading(true);
   setIsLoading(true);
 
@@ -133,22 +142,31 @@ const loadDocumentData = async (searchText = "", page = 1) => {
       searchText,
     });
 
-    if (result) {
+    if (isActive && result) {
       setData(result);
       setCurrentPage(page);
       setTotalPage(Math.ceil(result.totalRecords / pageSizeNumber));
       setShowSearchError(false);
-    } else {
+    } else if (isActive) {
       setShowSearchError(true);
     }
   } catch (error) {
-    console.error("Error loading document data:", error);
-    setShowSearchError(true);
+    if (isActive) {
+      console.error("Error loading document data:", error);
+      setShowSearchError(true);
+    }
   } finally {
-    setIsSearchLoading(false);
-    setIsLoading(false);
+    if (isActive) {
+      setIsSearchLoading(false);
+      setIsLoading(false);
+    }
   }
+
+  return () => {
+    isActive = false;
+  };
 };
+
 
 
     return (<>
