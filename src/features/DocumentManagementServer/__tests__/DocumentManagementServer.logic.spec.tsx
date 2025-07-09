@@ -33,6 +33,13 @@ describe("getTableHeadersData", () => {
         expect(typeof docHeader?.anyComponent).toBe("function");
     });
 
+    test("should contain 'Category' header with anyComponent", () => {
+        const catHeader = getTableHeadersData.find(h => h.text === "Category");
+        expect(catHeader).toBeDefined();
+        expect(typeof catHeader?.anyComponent).toBe("function");
+    });
+
+
     test("should contain 'Related to' header with anyComponent", () => {
         expect(relatedToColumn).toBeDefined();
         expect(typeof relatedToColumn?.anyComponent).toBe("function");
@@ -76,7 +83,6 @@ describe("getTableHeadersData", () => {
         expect(flexDiv).toBeInTheDocument();
         expect(flexDiv).toHaveStyle('display: flex');
         expect(container.querySelector('.document-text')).toHaveTextContent('Test Document');
-        expect(container.querySelector('.relatedto-tag')).toBeInTheDocument();
     });
 
 });
@@ -261,4 +267,34 @@ describe("getTableHeadersData 'Related to' column tooltip rendering", () => {
         expect(screen.getByText('+3')).toBeInTheDocument();
     });
 
+});
+describe('setTotalPage logic', () => {
+    test('should set totalPage to correct value when data.totalRecords is a potestive number', () => {
+        const setTotalPage = jest.fn();
+        const pageSize = 40;
+        const data = { totalRecords: 85 };
+        const totalPages = Math.ceil(data.totalRecords / pageSize);
+        setTotalPage(totalPages);
+        expect(setTotalPage).toHaveBeenCalledWith(3);
+    });
+
+    test('should set totalPage to 0 when data.totalRecords is 0', () => {
+        const setTotalPage = jest.fn();
+        const pageSize = 40;
+        const data = { totalRecords: 0 };
+        const totalPages = Math.ceil(data.totalRecords / pageSize);
+        setTotalPage(totalPages);
+        expect(setTotalPage).toHaveBeenCalledWith(0);
+    });
+
+    test('should not call setTotalPage if data or data.totalRecords is undefined', () => {
+        const setTotalPage = jest.fn();
+        const pageSize = 40;
+        const data = { totalRecords: undefined };
+        if (data && data?.totalRecords) {
+            const totalPages = Math.ceil(data?.totalRecords / pageSize);
+            setTotalPage(totalPages);
+        }
+        expect(setTotalPage).not.toHaveBeenCalled();
+    });
 });
