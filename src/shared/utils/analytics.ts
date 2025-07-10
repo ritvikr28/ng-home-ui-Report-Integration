@@ -35,6 +35,7 @@ const gtmAnalytics: gtmAnalyticsType = {
     window.dataLayer.push({
       event: "page_view",
       pageLocation: document.URL,
+      pagePath: window.location.pathname,
       pageTitle: document.title,
       pageReferrer: document.referrer,
       pageType: "Home"
