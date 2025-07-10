@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 import { renderHook } from '@testing-library/react-hooks';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchDocumentSuggestions } from '../ApiService';
 import BreadcrumbWrapper from '../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper';
 import DocumentManagementServer from '../DocumentManagementServer.logic';
 
@@ -182,6 +182,54 @@ describe("fetchDMSSuggestions", () => {
     });
 });
 
+describe("fetchDocumentSuggestions", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns suggestions array when API returns 200", async () => {
+    const mockSuggestions = [
+      { fileId: "1", fileName: "Doc1" },
+      { fileId: "2", fileName: "Doc2" }
+    ];
+    const mockResponse = {
+      data: mockSuggestions,
+      status: 200,
+      statusText: "OK",
+      headers: {},
+      config: {}
+    };
+    jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchDocumentSuggestions("Doc");
+    expect(result).toEqual(mockSuggestions);
+    expect(service.get).toHaveBeenCalledWith(
+      expect.stringContaining("suggestions?text=Doc"),
+      expect.anything()
+    );
+  });
+
+  it("returns empty array if API status is not 200", async () => {
+    const mockResponse = {
+      data: [{ fileId: "1", fileName: "Doc1" }],
+      status: 404,
+      statusText: "Not Found",
+      headers: {},
+      config: {}
+    };
+    jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchDocumentSuggestions("Doc");
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array if API throws error", async () => {
+    jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Network error"));
+
+    const result = await fetchDocumentSuggestions("Doc");
+    expect(result).toEqual([]);
+  });
+});
 // --- helpers for AxiosResponse mocks ---
 const makeAxiosResponse = (data: any): AxiosResponse => ({
     data,
