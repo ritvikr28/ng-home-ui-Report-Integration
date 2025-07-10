@@ -1,26 +1,28 @@
-import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery } from "@essnextgen/ui-kit"
+import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
-import DocumentManagementServer, { getTableHeadersData} from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { debouncedFetchSuggestions, getTableHeadersData, handlePageChange, handleSuggestionClick, onBreadcrumbClick} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
-import gtmAnalytics from "../../shared/utils/analytics"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-
+import { fetchDocumentDetails } from "./ApiService"
 
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+    const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
+    const [showSearchError, setShowSearchError] = useState<boolean>(false);
+    const [data, setData] = useState<any>(null);
 
-    const handlePageChange: (event: any, handlepageCount: number) => void = (event: any, handlepageCount: number) => {
-        setIsLoading(true);
-        setCurrentPage(handlepageCount);
-    };
+    const onPageChange = (event: any, page: number) =>
+      handlePageChange(event, page, setCurrentPage, setIsLoading);
 
-    const { data, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
+    const { data: initialData, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
     const tableData: tableDataProps[] = (error || !data?.data?.length) ? [] : data?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
@@ -61,16 +63,93 @@ const DocumentManagementServerView: React.FC = () => {
         }
     }, [data]);
 
-  const onBreadcrumbClick = (path: string) => {
-    window.location.assign(path);
-    gtmAnalytics.pushEvent({
-      event: "click",
-      linkText: "Documents",
-      linkUrl: '',
-      clickType: "link",
-      clickLocation: "breadcrumb"
-    });
+    useEffect(() => {
+        let mounted = true;
+
+        if (
+            mounted &&
+            initialData &&
+            JSON.stringify(initialData) !== JSON.stringify(data)
+        ) {
+            setData(initialData);
+        }
+
+        return () => {
+            mounted = false;
+        };
+    }, [initialData]);
+
+
+
+       
+  
+const hasItems: boolean = suggestions?.some(
+    ({ values }: Suggestion) => values?.length > 0
+);
+
+const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    setSearchTerm(value);
+
+    if (value?.length < 3) {
+      setSuggestions([]);
+        setShowSearchError(false);
+        setIsSearchLoading(false);
+      return;
+    }
+
+    setIsSearchLoading(true);
+    setSuggestions([]);
+
+    debouncedFetchSuggestions(
+      value,
+      setIsSearchLoading,
+      setSuggestions,
+      setShowSearchError
+    );
   };
+
+
+const loadDocumentData = async (searchText = "", page = 1) => {
+  let isActive = true;
+
+  setIsSearchLoading(true);
+  setIsLoading(true);      
+
+  try {
+    const result = await fetchDocumentDetails({
+      pageNumber: page,
+      pageSize: pageSizeNumber,
+      searchText,
+    });
+
+    if (isActive && result) {
+      setData(result);
+      setCurrentPage(page);
+      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+      setShowSearchError(false);
+    } else if (isActive) {
+      setShowSearchError(true);
+    }
+  } catch (err) {
+    if (isActive) {
+      console.error("Error loading document data:", err);
+      setShowSearchError(true);
+    }
+  } finally {
+    if (isActive) {
+      setIsSearchLoading(false); 
+      setIsLoading(false);
+    }
+  }
+
+  return () => {
+    isActive = false;
+  };
+
+};
+
+
 
     return (<>
         <>
@@ -260,16 +339,41 @@ const DocumentManagementServerView: React.FC = () => {
                                 paginationCount={totalPage || 0}
                                 paginationDefaultPage={1}
                                 paginationPage={currentPage}
-                                paginationOnChange={handlePageChange}
+                                paginationOnChange={onPageChange}
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
                                 resultNotFoundMessage=""
                                 searchHeadingText="Search by document or related to name"
-                                searchPlaceholderText=""
                                 searchTerm=""
-                                isShowSearch={true}
-                                searchValue=""
+                                isShowSearch
+                                searchPlaceholderText="Search..."
+                                searchValue={searchTerm}
+                                searchIsLoader={isSearchLoading}
+                                isSearchHideClearIcon={searchTerm.length === 0}
+                                onKeyUpLenght={2}
+                                searchDebouncerTreshold={1000}
+                                searchSuggestions={hasItems ? suggestions : []}
+                                onSearchSuggestionItemClick={(item) =>
+                                handleSuggestionClick(item, setSearchTerm, loadDocumentData)
+                                }
+                                searchOnChange={handleSearchChange}
+                                searchOnCloseHandle={async () => {
+                                setSearchTerm("");
+                                setSuggestions([]);
+                                await loadDocumentData("", 1);
+                                }}
+                                searchValidationText={
+                                showSearchError ? "Search unavailable. Please try again later." : undefined
+                                }
+                                searchValidationTextLevel={
+                                showSearchError ? ValidationTextLevel.Warning : undefined
+                                }
+                                onSearchKeyDown={async (e: any) => {
+                                 if (e.key === "Enter" && searchTerm?.trim() === "") {
+                                    await loadDocumentData("", 1);
+                                }
+                                }}
                                 secondaryButtonTitle="Cancel"
                                 showConfirmDialog
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].

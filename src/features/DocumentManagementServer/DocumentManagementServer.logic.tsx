@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag } from "@essnextgen/ui-kit";
-import { fetchDocumentDetails } from "./ApiService";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
 import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 export const getTableHeadersData: {
   text: string;
@@ -221,6 +222,72 @@ export const tableBodyData: {
   }
 ];
 
+export const handlePageChange = (
+  _event: any,
+  page: number,
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  setIsLoading(true);
+  setCurrentPage(page);
+};
+
+// Breadcrumb logic
+export const onBreadcrumbClick = (path: string) => {
+  window.location.assign(path);
+  gtmAnalytics.pushEvent({
+    event: "click",
+    linkText: "Documents",
+    linkUrl: "",
+    clickType: "link",
+    clickLocation: "breadcrumb",
+  });
+};
+
+// Suggestion item click logic
+export const handleSuggestionClick = async (
+  item: ISearchItemProp | null,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+  loadDocumentData: (text: string, page?: number) => void
+) => {
+  if (!item || !item.name) return;
+  setSearchTerm(item.name);
+  await loadDocumentData(item.name, 1);
+};
+
+// Has items check
+export const hasItems = (suggestions: Suggestion[]): boolean =>
+  suggestions?.some(({ values }) => values?.length > 0);
+
+// Search input change logic
+export const handleSearchChange = (
+  e: React.ChangeEvent<HTMLInputElement>,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  const { value } = e.target;
+  setSearchTerm(value);
+
+  if (value?.length < 3) {
+    setSuggestions([]);
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    return;
+  }
+
+  setIsSearchLoading(true);
+  setSuggestions([]);
+
+  debouncedFetchSuggestions(
+    value,
+    setIsSearchLoading,
+    setSuggestions,
+    setShowSearchError
+  );
+};
+
 const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
   const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
@@ -244,6 +311,50 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
 
   return { data, error, hasFetched };
 };
+
+export const formatSuggestions = (values: any[]): Suggestion[] => [
+  {
+    name: "",
+    values: values?.map((item: any) => ({
+      text: item?.fileName,
+      props: {
+        name: item?.fileName,
+        id: item?.fileId
+      },
+      value: <></>
+    }))
+  }
+];
+
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+  return function (this: any, ...args: Parameters<T>) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), wait);
+  };
+}
+
+export const debouncedFetchSuggestions = debounce(
+  async (
+    searchText: string,
+    setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+    setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    try {
+      const response = await fetchDMSSuggestions(searchText);
+      const values = response?.payload?.[0]?.values ?? [];
+      setSuggestions(formatSuggestions(values));
+    } catch (err) {
+      console.error("Autosuggest error:", err);
+      setShowError(true);
+      setSuggestions([]);
+    } finally {
+      setSearchLoading(false);
+    }
+  },
+  1000
+);
 
 
 export default DocumentManagementServer;
