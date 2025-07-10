@@ -249,11 +249,11 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
     name: "",
-    values: values.map((item: any) => ({
-      text: item.fileName,
+    values: values?.map((item: any) => ({
+      text: item?.fileName,
       props: {
-        name: item.fileName,
-        id: item.fileId
+        name: item?.fileName,
+        id: item?.fileId
       },
       value: <></>
     }))

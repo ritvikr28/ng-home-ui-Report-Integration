@@ -96,15 +96,15 @@ const DocumentManagementServerView: React.FC = () => {
     });
   };      
   
-const hasItems: boolean = suggestions.some(
-    ({ values }: Suggestion) => values.length > 0
+const hasItems: boolean = suggestions?.some(
+    ({ values }: Suggestion) => values?.length > 0
 );
 
 const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchTerm(value);
 
-    if (value.length < 2) {
+    if (value?.length < 3) {
       setSuggestions([]);
         setShowSearchError(false);
         setIsSearchLoading(false);
@@ -146,7 +146,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
     if (isActive && result) {
       setData(result);
       setCurrentPage(page);
-      setTotalPage(Math.ceil(result.totalRecords / pageSizeNumber));
+      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
       setShowSearchError(false);
     } else if (isActive) {
       setShowSearchError(true);
@@ -387,7 +387,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
                                 onSearchKeyDown={async (e: any) => {
-                                 if (e.key === "Enter" && searchTerm.trim() === "") {
+                                 if (e.key === "Enter" && searchTerm?.trim() === "") {
                                     await loadDocumentData("", 1);
                                 }
                                 }}
