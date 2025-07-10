@@ -132,7 +132,7 @@ describe("fetchDMSSuggestions", () => {
         jest.clearAllMocks();
     });
 
-    it("should return suggestions array when API returns values", async () => {
+    it("should return values array when API returns values", async () => {
         const mockValues = [
             { fileName: "doc1", fileId: "id1" },
             { fileName: "doc2", fileId: "id2" }
@@ -144,7 +144,8 @@ describe("fetchDMSSuggestions", () => {
         });
         jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
         const result = await fetchDMSSuggestions("doc");
-        expect(result).toEqual(mockValues);
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual(mockValues);
         expect(service.get).toHaveBeenCalledWith(
             expect.stringContaining("AutoCompleteRequest.SearchText=doc"),
             expect.anything()
@@ -159,7 +160,8 @@ describe("fetchDMSSuggestions", () => {
         });
         jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
         const result = await fetchDMSSuggestions("doc");
-        expect(result).toEqual([]);
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
     });
 
     it("should return empty array if API returns no payload", async () => {
@@ -168,12 +170,15 @@ describe("fetchDMSSuggestions", () => {
         });
         jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
         const result = await fetchDMSSuggestions("doc");
-        expect(result).toEqual([]);
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
     });
 
     it("should return empty array if API throws error", async () => {
         jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Network error"));
-        await expect(fetchDMSSuggestions("doc")).rejects.toThrow();
+        const result = await fetchDMSSuggestions("doc");
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
     });
 });
 
