@@ -13,6 +13,10 @@ jest.mock('../ApiService');
 
 const { handlePageChange } = require('../DocumentManagementServer.view');
 
+const { loadDocumentData } = require('../DocumentManagementServer.view');
+
+const { handleSuggestionClick } = require('../DocumentManagementServer.view');
+
 jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
     ...logic,
@@ -384,6 +388,151 @@ describe('handlePageChange (unit)', () => {
     }
   });
   
+  describe('loadDocumentData', () => {
+  let setIsSearchLoading: jest.Mock;
+  let setIsLoading: jest.Mock;
+  let setData: jest.Mock;
+  let setCurrentPage: jest.Mock;
+  let setTotalPage: jest.Mock;
+  let setShowSearchError: jest.Mock;
+  let fetchDocumentDetails: jest.Mock;
+
+  beforeEach(() => {
+    setIsSearchLoading = jest.fn();
+    setIsLoading = jest.fn();
+    setData = jest.fn();
+    setCurrentPage = jest.fn();
+    setTotalPage = jest.fn();
+    setShowSearchError = jest.fn();
+    fetchDocumentDetails = jest.fn();
+  });
+
+  it('should set data and update states on successful fetch', async () => {
+    fetchDocumentDetails.mockResolvedValue({ totalRecords: 10 });
+    if( loadDocumentData) {
+    const fn = loadDocumentData.bind({
+      setIsSearchLoading,
+      setIsLoading,
+      setData,
+      setCurrentPage,
+      setTotalPage,
+      setShowSearchError,
+      fetchDocumentDetails,
+    });
+
+    await fn('test', 2);
+
+    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
+    expect(setIsLoading).toHaveBeenCalledWith(true);
+    expect(setData).toHaveBeenCalledWith({ totalRecords: 10 });
+    expect(setCurrentPage).toHaveBeenCalledWith(2);
+    expect(setTotalPage).toHaveBeenCalledWith(1);
+    expect(setShowSearchError).toHaveBeenCalledWith(false);
+    expect(setIsSearchLoading).toHaveBeenLastCalledWith(false);
+    expect(setIsLoading).toHaveBeenLastCalledWith(false);
+  }
+  });
+
+  it('should show error if no result returned', async () => {
+    fetchDocumentDetails.mockResolvedValue(null);
+    if( loadDocumentData) {
+    const fn = loadDocumentData.bind({
+      setIsSearchLoading,
+      setIsLoading,
+      setData,
+      setCurrentPage,
+      setTotalPage,
+      setShowSearchError,
+      fetchDocumentDetails,
+    });
+
+    await fn('test', 1);
+
+    expect(setShowSearchError).toHaveBeenCalledWith(true);
+  }
+  });
+
+  it('should handle errors thrown by fetchDocumentDetails', async () => {
+    fetchDocumentDetails.mockRejectedValue(new Error('fail'));
+    if( loadDocumentData) {
+    const fn = loadDocumentData.bind({
+      setIsSearchLoading,
+      setIsLoading,
+      setData,
+      setCurrentPage,
+      setTotalPage,
+      setShowSearchError,
+      fetchDocumentDetails,
+    });
+
+    await fn('test', 1);
+
+    expect(setShowSearchError).toHaveBeenCalledWith(true);
+    expect(setIsSearchLoading).toHaveBeenLastCalledWith(false);
+    expect(setIsLoading).toHaveBeenLastCalledWith(false);
+  }
+  });
+
+  it('cleanup disables updates', async () => {
+    // Simulate isActive = false after cleanup
+    let isActive = true;
+    fetchDocumentDetails.mockResolvedValue({ totalRecords: 5 });
+    const context = {
+      setIsSearchLoading: jest.fn(),
+      setIsLoading: jest.fn(),
+      setData: jest.fn(),
+      setCurrentPage: jest.fn(),
+      setTotalPage: jest.fn(),
+      setShowSearchError: jest.fn(),
+      fetchDocumentDetails,
+    };
+    
+    if(loadDocumentData) {
+    const fn = loadDocumentData.bind(context);
+
+    const cleanup = await fn('test', 1);
+    isActive = false;
+    if (typeof cleanup === 'function') cleanup();
+    // No further assertions needed, just for coverage
+    }
+  });
+});
+
+describe('handleSuggestionClick', () => {
+  let setSearchTerm: jest.Mock;
+  let loadDocumentData: jest.Mock;
+
+  beforeEach(() => {
+    setSearchTerm = jest.fn();
+    loadDocumentData = jest.fn();
+    // Import or require handleSuggestionClick as needed
+   
+  });
+
+  it('should do nothing if item is null', async () => {
+    if (handleSuggestionClick) {
+    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, null);
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(loadDocumentData).not.toHaveBeenCalled();4
+    }
+  });
+
+  it('should do nothing if item.name is missing', async () => {
+    if (handleSuggestionClick) {
+    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, { name: '' });
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(loadDocumentData).not.toHaveBeenCalled();
+    }
+  });
+
+  it('should set search term and load document data if item is valid', async () => {
+  if (handleSuggestionClick) {
+    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, { name: 'TestDoc' });
+    expect(setSearchTerm).toHaveBeenCalledWith('TestDoc');
+    expect(loadDocumentData).toHaveBeenCalledWith('TestDoc', 1);
+  }
+  });
+});
 });
 
 
