@@ -2,14 +2,13 @@ import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ISearchItemProp, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
-import DocumentManagementServer, { debouncedFetchSuggestions, getTableHeadersData} from "./DocumentManagementServer.logic"
+import DocumentManagementServer, { debouncedFetchSuggestions, getTableHeadersData, handlePageChange, handleSuggestionClick, onBreadcrumbClick} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import gtmAnalytics from "../../shared/utils/analytics"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
-
 
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
@@ -21,10 +20,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [data, setData] = useState<any>(null);
 
-    const handlePageChange: (event: any, handlepageCount: number) => void = (event: any, handlepageCount: number) => {
-        setIsLoading(true);
-        setCurrentPage(handlepageCount);
-    };
+    const onPageChange = (event: any, page: number) =>
+      handlePageChange(event, page, setCurrentPage, setIsLoading);
 
     const { data: initialData, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
     const tableData: tableDataProps[] = (error || !data?.data?.length) ? [] : data?.data?.map((doc: any) => ({
@@ -85,16 +82,7 @@ const DocumentManagementServerView: React.FC = () => {
 
 
 
-  const onBreadcrumbClick = (path: string) => {
-    window.location.assign(path);
-    gtmAnalytics.pushEvent({
-      event: "click",
-      linkText: "Documents",
-      linkUrl: '',
-      clickType: "link",
-      clickLocation: "breadcrumb"
-    });
-  };      
+       
   
 const hasItems: boolean = suggestions?.some(
     ({ values }: Suggestion) => values?.length > 0
@@ -121,20 +109,13 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setShowSearchError
     );
   };
-  
-const handleSuggestionClick = async (item: ISearchItemProp | null) => {
-   if (!item || !item.name) return;
-   
-    setSearchTerm(item.name);
-   await loadDocumentData(item.name, 1);
- 
-};
+
 
 const loadDocumentData = async (searchText = "", page = 1) => {
   let isActive = true;
 
   setIsSearchLoading(true);
-  setIsLoading(true);
+  setIsLoading(true);      
 
   try {
     const result = await fetchDocumentDetails({
@@ -158,7 +139,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
     }
   } finally {
     if (isActive) {
-      setIsSearchLoading(false);
+      setIsSearchLoading(false); 
       setIsLoading(false);
     }
   }
@@ -166,6 +147,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
   return () => {
     isActive = false;
   };
+
 };
 
 
@@ -358,7 +340,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 paginationCount={totalPage || 0}
                                 paginationDefaultPage={1}
                                 paginationPage={currentPage}
-                                paginationOnChange={handlePageChange}
+                                paginationOnChange={onPageChange}
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
@@ -373,7 +355,9 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={hasItems ? suggestions : []}
-                                onSearchSuggestionItemClick={handleSuggestionClick}
+                                onSearchSuggestionItemClick={(item) =>
+                                handleSuggestionClick(item, setSearchTerm, loadDocumentData)
+                                }
                                 searchOnChange={handleSearchChange}
                                 searchOnCloseHandle={async () => {
                                 setSearchTerm("");

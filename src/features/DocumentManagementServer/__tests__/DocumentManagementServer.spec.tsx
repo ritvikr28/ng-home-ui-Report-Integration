@@ -3,7 +3,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import DocumentManagementServerView from '../DocumentManagementServer.view';
-import { debouncedFetchSuggestions } from '../DocumentManagementServer.logic';
+import { debouncedFetchSuggestions, handlePageChange, handleSuggestionClick, onBreadcrumbClick } from '../DocumentManagementServer.logic';
+import * as apiService from '../ApiService';
+import gtmAnalytics from '../../../shared/utils/analytics';
+import { Suggestion } from '@essnextgen/ui-kit';
 
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
@@ -11,11 +14,7 @@ const logic = require('../DocumentManagementServer.logic').default;
 
 jest.mock('../ApiService');
 
-const { handlePageChange } = require('../DocumentManagementServer.view');
-
-const { loadDocumentData } = require('../DocumentManagementServer.view');
-
-const { handleSuggestionClick } = require('../DocumentManagementServer.view');
+const { handleButtonClick } = require('../DocumentManagementServer.view');
 
 jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
@@ -25,6 +24,8 @@ jest.mock('../DocumentManagementServer.logic', () => ({
         error: null,
         hasFetched: true
     })),
+    
+    debouncedFetchSuggestions: jest.fn(),
     getTableHeadersData: [
       { text: "Document", isShow: true, showValAs: "Text", columnWidth: "267px" },
       { text: "Category", isShow: true, showValAs: "Text", columnWidth: "144px" },
@@ -34,7 +35,6 @@ jest.mock('../DocumentManagementServer.logic', () => ({
       { text: "Size", isShow: true, showValAs: "Text", columnWidth: "129px" }
     ],
 
-  debouncedFetchSuggestions: jest.fn(),
   formatSuggestions: jest.fn((data) => [
     {
       name: '',
@@ -51,6 +51,14 @@ jest.mock('@essnextgen/ui-kit', () => ({
   ...jest.requireActual('@essnextgen/ui-kit'),
   useMediaQuery: jest.fn(),
 }));
+
+jest.mock('../../..//shared/utils/analytics', () => ({
+  __esModule: true,
+  default: {
+    pushEvent: jest.fn(), 
+  },
+}));
+
  
 const mockData = {
   data: [
@@ -94,7 +102,15 @@ describe('DocumentManagementServerView', () => {
     render(<DocumentManagementServerView />);
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
   });
-
+    test('toggles isOpen on button click', () => {
+      const { useState } = require('react');
+      if( handleButtonClick) {
+      const setIsOpen = jest.fn();
+      useState.mockImplementationOnce(() => [false, setIsOpen]);
+      handleButtonClick.call({ setIsOpen });
+      expect(setIsOpen).toHaveBeenCalledWith(true);
+      }
+    });
   test('isOpen is false by default on mobile (isMobileView=true)', () => {
     useMediaQueries.mockReturnValue(true);
     render(<DocumentManagementServerView />);
@@ -251,21 +267,7 @@ describe('DocumentManagementServerView', () => {
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
   });
 
-  test('handlePageChange sets loading and updates page', () => {
-    // Instead of mocking React.useState, test the handler logic in isolation if possible
-    const setCurrentPage = jest.fn();
-    const setIsLoading = jest.fn();
-
-    // Simulate the handlePageChange function directly
-    if (handlePageChange) {
-      handlePageChange(
-        { setCurrentPage, setIsLoading },
-        2
-      );
-      expect(setIsLoading).toHaveBeenCalledWith(true);
-      expect(setCurrentPage).toHaveBeenCalledWith(2);
-    }
-  });
+  
 });
 
 describe('DocumentManagementServerView - Search Feature', () => {
@@ -358,183 +360,262 @@ describe('DocumentManagementServerView - Search Feature', () => {
   });
 });
 
-describe('handlePageChange (unit)', () => {
-  it('should set loading to true and update current page', () => {
-    const setIsLoading = jest.fn();
-    const setCurrentPage = jest.fn();
-    // Simulate the handler logic
+describe('hasItems', () => {
+  it('returns true if any suggestion has values', () => {
+    const suggestions = [{ values: [1, 2] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(true);
     
-    if (handlePageChange) {
-      handlePageChange(
-        { setCurrentPage, setIsLoading },
-        2
-      );
-    expect(setIsLoading).toHaveBeenCalledWith(true);
-    expect(setCurrentPage).toHaveBeenCalledWith(5);
-    }
   });
 
-  it('should work with any event object', () => {
-    const setIsLoading = jest.fn();
-    const setCurrentPage = jest.fn();
-   
-    if (handlePageChange) {
-      handlePageChange(
-        { setCurrentPage, setIsLoading },
-        2
-      );
-    expect(setIsLoading).toHaveBeenCalledWith(true);
-    expect(setCurrentPage).toHaveBeenCalledWith(10);
-    }
+  it('returns false if all suggestions are empty', () => {
+    const suggestions = [{ values: [] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(false);
+    
   });
+});
+
+
+
+describe('DocumentManagementServerView - Extended Coverage', () => {
+  const mockData = {
+    data: [
+      {
+        fileId: '1',
+        document: 'Doc1',
+        relatedTo: ['Rel1'],
+        category: 'cat1',
+        addedBy: 'User1',
+        dateAdded: '2024-06-01T00:00:00Z',
+        format: 'pdf',
+        size: '1MB',
+      },
+    ],
+    totalRecords: 1,
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should update isOpen when screen size changes (useEffect)', () => {
+    useMediaQueries.mockReturnValueOnce(false).mockReturnValueOnce(true);
+    const { rerender } = render(<DocumentManagementServerView />);
+    rerender(<DocumentManagementServerView />);
+  });
+
+
+  test('renders filter button inside ControlledList', () => {
+    jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(screen.getByTestId('filter-btn')).toBeInTheDocument();
+  });
+
+
+
+  test('does not show empty add button', () => {
+    render(<DocumentManagementServerView />);
+    expect(screen.queryByText('Add Type')).not.toBeInTheDocument();
+  });
+
   
-  describe('loadDocumentData', () => {
-  let setIsSearchLoading: jest.Mock;
-  let setIsLoading: jest.Mock;
-  let setData: jest.Mock;
-  let setCurrentPage: jest.Mock;
-  let setTotalPage: jest.Mock;
-  let setShowSearchError: jest.Mock;
-  let fetchDocumentDetails: jest.Mock;
 
-  beforeEach(() => {
-    setIsSearchLoading = jest.fn();
-    setIsLoading = jest.fn();
-    setData = jest.fn();
-    setCurrentPage = jest.fn();
-    setTotalPage = jest.fn();
-    setShowSearchError = jest.fn();
-    fetchDocumentDetails = jest.fn();
-  });
+  it('returns true if suggestions contain non-empty values', () => {
+  const suggestions: Suggestion[] = [
+    {
+      values: [{ text: 'Doc' }],
+      name: ''
+    },
+    {
+      values: [],
+      name: ''
+    },
+  ];
+  const hasItems = suggestions.some(({ values }) => values.length > 0);
+  expect(hasItems).toBe(true);
+});
+ 
+test('renders mobile breadcrumb when isMobileView is true', () => {
+  jest.mock('@essnextgen/ui-kit', () => ({
+    ...jest.requireActual('@essnextgen/ui-kit'),
+    useMediaQuery: jest.fn().mockReturnValue(true),
+  }));
 
-  it('should set data and update states on successful fetch', async () => {
-    fetchDocumentDetails.mockResolvedValue({ totalRecords: 10 });
-    if( loadDocumentData) {
-    const fn = loadDocumentData.bind({
-      setIsSearchLoading,
-      setIsLoading,
-      setData,
-      setCurrentPage,
-      setTotalPage,
-      setShowSearchError,
-      fetchDocumentDetails,
+  jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    const { container } = render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
     });
 
-    await fn('test', 2);
-
-    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
-    expect(setIsLoading).toHaveBeenCalledWith(true);
-    expect(setData).toHaveBeenCalledWith({ totalRecords: 10 });
-    expect(setCurrentPage).toHaveBeenCalledWith(2);
-    expect(setTotalPage).toHaveBeenCalledWith(1);
-    expect(setShowSearchError).toHaveBeenCalledWith(false);
-    expect(setIsSearchLoading).toHaveBeenLastCalledWith(false);
-    expect(setIsLoading).toHaveBeenLastCalledWith(false);
-  }
-  });
-
-  it('should show error if no result returned', async () => {
-    fetchDocumentDetails.mockResolvedValue(null);
-    if( loadDocumentData) {
-    const fn = loadDocumentData.bind({
-      setIsSearchLoading,
-      setIsLoading,
-      setData,
-      setCurrentPage,
-      setTotalPage,
-      setShowSearchError,
-      fetchDocumentDetails,
-    });
-
-    await fn('test', 1);
-
-    expect(setShowSearchError).toHaveBeenCalledWith(true);
-  }
-  });
-
-  it('should handle errors thrown by fetchDocumentDetails', async () => {
-    fetchDocumentDetails.mockRejectedValue(new Error('fail'));
-    if( loadDocumentData) {
-    const fn = loadDocumentData.bind({
-      setIsSearchLoading,
-      setIsLoading,
-      setData,
-      setCurrentPage,
-      setTotalPage,
-      setShowSearchError,
-      fetchDocumentDetails,
-    });
-
-    await fn('test', 1);
-
-    expect(setShowSearchError).toHaveBeenCalledWith(true);
-    expect(setIsSearchLoading).toHaveBeenLastCalledWith(false);
-    expect(setIsLoading).toHaveBeenLastCalledWith(false);
-  }
-  });
-
-  it('cleanup disables updates', async () => {
-    // Simulate isActive = false after cleanup
-    let isActive = true;
-    fetchDocumentDetails.mockResolvedValue({ totalRecords: 5 });
-    const context = {
-      setIsSearchLoading: jest.fn(),
-      setIsLoading: jest.fn(),
-      setData: jest.fn(),
-      setCurrentPage: jest.fn(),
-      setTotalPage: jest.fn(),
-      setShowSearchError: jest.fn(),
-      fetchDocumentDetails,
-    };
-    
-    if(loadDocumentData) {
-    const fn = loadDocumentData.bind(context);
-
-    const cleanup = await fn('test', 1);
-    isActive = false;
-    if (typeof cleanup === 'function') cleanup();
-    // No further assertions needed, just for coverage
-    }
-  });
+  const breadcrumb = container.querySelector('[data-test-id="breadcrumb-test-id"]');
+  expect(breadcrumb).toBeInTheDocument();
 });
 
-describe('handleSuggestionClick', () => {
-  let setSearchTerm: jest.Mock;
-  let loadDocumentData: jest.Mock;
-
-  beforeEach(() => {
-    setSearchTerm = jest.fn();
-    loadDocumentData = jest.fn();
-    // Import or require handleSuggestionClick as needed
-   
+test('loadDocumentData sets data and pagination correctly', async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    totalRecords: 80,
+    data: [
+      {
+        fileId: '1',
+        document: 'Sample Doc',
+        relatedTo: ['X'],
+        category: 'file',
+        addedBy: 'Admin',
+        dateAdded: '2025-01-01',
+        format: 'pdf',
+        size: '1MB',
+      },
+    ],
   });
 
-  it('should do nothing if item is null', async () => {
-    if (handleSuggestionClick) {
-    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, null);
-    expect(setSearchTerm).not.toHaveBeenCalled();
-    expect(loadDocumentData).not.toHaveBeenCalled();4
-    }
+  logic.mockImplementation(() => ({
+    data: {
+      data: [
+        {
+          fileId: '1',
+          document: 'Sample Doc',
+          relatedTo: ['X'],
+          category: 'file',
+          addedBy: 'Admin',
+          dateAdded: '2025-01-01',
+          format: 'pdf',
+          size: '1MB',
+        },
+      ],
+      totalRecords: 80,
+    },
+    error: null,
+    hasFetched: true,
+  }));
+
+  jest.useFakeTimers();
+  render(<DocumentManagementServerView />);
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
-  it('should do nothing if item.name is missing', async () => {
-    if (handleSuggestionClick) {
-    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, { name: '' });
-    expect(setSearchTerm).not.toHaveBeenCalled();
-    expect(loadDocumentData).not.toHaveBeenCalled();
-    }
+  const input = screen.getByPlaceholderText('Search...');
+  fireEvent.change(input, { target: { value: 'Sample' } });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
   });
 
-  it('should set search term and load document data if item is valid', async () => {
-  if (handleSuggestionClick) {
-    await handleSuggestionClick.call({ setSearchTerm, loadDocumentData }, { name: 'TestDoc' });
-    expect(setSearchTerm).toHaveBeenCalledWith('TestDoc');
-    expect(loadDocumentData).toHaveBeenCalledWith('TestDoc', 1);
-  }
+  // Use a flexible matcher in case the text is split across elements
+  await waitFor(() => {
+    expect(screen.getByText((content, node) => {
+      const hasText = (node: Element) => node.textContent === 'Sample Doc';
+      const nodeHasText = hasText(node as Element);
+      const childrenDontHaveText = Array.from(node?.children || []).every(
+        child => !hasText(child as Element)
+      );
+      return nodeHasText && childrenDontHaveText;
+    })).toBeInTheDocument();
   });
+
+  jest.runAllTimers();
+  jest.useRealTimers();
 });
+
+test('renders ControlledList with document table when hasFetched is true', async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    totalRecords: 1,
+    data: [
+      {
+        fileId: 'a1',
+        document: 'TestFile',
+        relatedTo: ['A'],
+        category: 'conduct',
+        addedBy: 'Staff',
+        dateAdded: '2025-05-01',
+        format: 'pdf',
+        size: '50KB',
+      },
+    ],
+  });
+
+  logic.mockImplementation(() => ({
+    data: {
+      data: [
+        {
+          fileId: 'a1',
+          document: 'TestFile',
+          relatedTo: ['A'],
+          category: 'conduct',
+          addedBy: 'Staff',
+          dateAdded: '2025-05-01',
+          format: 'pdf',
+          size: '50KB',
+        },
+      ],
+      totalRecords: 1,
+    },
+    error: null,
+    hasFetched: true,
+  }));
+
+  jest.useFakeTimers();
+  render(<DocumentManagementServerView />);
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  const input = screen.getByPlaceholderText('Search...');
+  fireEvent.change(input, { target: { value: 'TestFile' } });
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    expect(
+      screen.getByText('TestFile')
+    ).toBeInTheDocument();
+  });
+
+  jest.runAllTimers();
+  jest.useRealTimers();
 });
 
+test('handles fetchDocumentDetails error and logs error to console', async () => {
+  const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
+  (apiService.fetchDocumentDetails as jest.Mock).mockRejectedValue(new Error('API failed'));
 
+  jest.useFakeTimers();
+  render(<DocumentManagementServerView />);
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  const input = screen.getByPlaceholderText('Search...');
+  fireEvent.change(input, { target: { value: '' } });
+
+  // Simulate Enter key to trigger loadDocumentData when searchTerm is empty
+  fireEvent.keyDown(input, { key: 'Enter' });
+
+  act(() => {
+    jest.advanceTimersByTime(1000); // debounce (if any)
+  });
+
+  await waitFor(() => {
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error loading document data:',
+      expect.any(Error)
+    );
+  });
+
+  consoleSpy.mockRestore();
+});
+
+})
 

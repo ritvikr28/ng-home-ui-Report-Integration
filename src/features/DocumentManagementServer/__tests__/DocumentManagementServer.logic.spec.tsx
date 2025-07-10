@@ -4,7 +4,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import { DocumentBasicDetails } from "../responseModel";
-import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData, tableBodyData } from "../DocumentManagementServer.logic";
+import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, hasItems, onBreadcrumbClick, tableBodyData } from "../DocumentManagementServer.logic";
 
 
 jest.mock("../ApiService");
@@ -404,4 +404,163 @@ describe('setTotalPage logic', () => {
         }
         expect(setTotalPage).not.toHaveBeenCalled();
     });
+
+    describe('handlePageChange', () => {
+  it('sets loading and updates current page', () => {
+    const mockSetCurrentPage = jest.fn();
+    const mockSetIsLoading = jest.fn();
+    handlePageChange({}, 5, mockSetCurrentPage, mockSetIsLoading);
+    expect(mockSetIsLoading).toHaveBeenCalledWith(true);
+    expect(mockSetCurrentPage).toHaveBeenCalledWith(5);
+  });
+});
+
+describe('onBreadcrumbClick', () => {
+  it('assigns location and triggers GTM event', () => {
+    delete (window as any).location;
+    (window as any).location = { assign: jest.fn() };
+
+    const analytics = require('../../../shared/utils/analytics').default;
+    analytics.pushEvent = jest.fn(); // Mock pushEvent as a jest function
+
+    onBreadcrumbClick('/test-path');
+    expect(window.location.assign).toHaveBeenCalledWith('/test-path');
+    expect(analytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: 'click' }));
+  });
+});
+
+describe('handleSuggestionClick', () => {
+  it('should call setSearchTerm and load data if valid item is passed', async () => {
+    const mockSetSearchTerm = jest.fn();
+    const mockLoadDocumentData = jest.fn();
+    await handleSuggestionClick({ name: 'Doc1' }, mockSetSearchTerm, mockLoadDocumentData);
+    expect(mockSetSearchTerm).toHaveBeenCalledWith('Doc1');
+    expect(mockLoadDocumentData).toHaveBeenCalledWith('Doc1', 1);
+  });
+
+  it('should return early if item is null or name is missing', async () => {
+    const mockSetSearchTerm = jest.fn();
+    const mockLoadDocumentData = jest.fn();
+    await handleSuggestionClick(null, mockSetSearchTerm, mockLoadDocumentData);
+    await handleSuggestionClick({ name: '' }, mockSetSearchTerm, mockLoadDocumentData);
+    expect(mockSetSearchTerm).not.toHaveBeenCalled();
+    expect(mockLoadDocumentData).not.toHaveBeenCalled();
+  });
+});
+
+describe('hasItems', () => {
+  it('returns true if suggestions contain non-empty values', () => {
+    const suggestions = [
+      { values: [{ text: 'Doc' }] },
+      { values: [] },
+    ];
+    expect(hasItems(suggestions as any)).toBe(true);
+  });
+
+  it('returns false if all suggestions are empty', () => {
+    const suggestions = [
+      { values: [] },
+      { values: [] },
+    ];
+    expect(hasItems(suggestions as any)).toBe(false);
+  });
+});
+
+});
+
+describe('handleSearchChange', () => {
+  let setSearchTerm: jest.Mock;
+  let setSuggestions: jest.Mock;
+  let setShowSearchError: jest.Mock;
+  let setIsSearchLoading: jest.Mock;
+
+  beforeEach(() => {
+    setSearchTerm = jest.fn();
+    setSuggestions = jest.fn();
+    setShowSearchError = jest.fn();
+    setIsSearchLoading = jest.fn();
+  });
+
+  it('clears suggestions if input length < 3', () => {
+    const event = { target: { value: 'ab' } } as React.ChangeEvent<HTMLInputElement>;
+
+    handleSearchChange(
+      event,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSearchTerm).toHaveBeenCalledWith('ab');
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setShowSearchError).toHaveBeenCalledWith(false);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  });
+
+  it('triggers debouncedFetchSuggestions if input length >= 3', () => {
+    const event = { target: { value: 'abc' } } as React.ChangeEvent<HTMLInputElement>;
+
+    handleSearchChange(
+      event,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSearchTerm).toHaveBeenCalledWith('abc');
+    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    // Cannot directly assert debouncedFetchSuggestions here without mocking debounce
+  });
+
+  it('handles empty input string', () => {
+    const event = { target: { value: '' } } as React.ChangeEvent<HTMLInputElement>;
+
+    handleSearchChange(
+      event,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSearchTerm).toHaveBeenCalledWith('');
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setShowSearchError).toHaveBeenCalledWith(false);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  });
+
+  it('does not debounce if string is short', () => {
+    const event = { target: { value: 'a' } } as React.ChangeEvent<HTMLInputElement>;
+
+    handleSearchChange(
+      event,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(setShowSearchError).toHaveBeenCalledWith(false);
+  });
+
+  it('works for exactly 3 characters', () => {
+    const event = { target: { value: 'doc' } } as React.ChangeEvent<HTMLInputElement>;
+
+    handleSearchChange(
+      event,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSearchTerm).toHaveBeenCalledWith('doc');
+    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+  });
 });
