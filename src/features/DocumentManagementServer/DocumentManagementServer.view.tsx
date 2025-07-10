@@ -12,12 +12,18 @@ import { fetchDocumentDetails } from "./ApiService"
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);    
+    const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [data, setData] = useState<any>(null);
+    const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
+    const [filteredDocs, setFilteredDocs] = useState<tableDataProps[]>([]);
+    
+    const [searchError, setSearchError] = useState<boolean>(false);
+    const [tableLoading, setTableLoading] = useState(false);
 
     const onPageChange = (event: any, page: number) =>
       handlePageChange(event, page, setCurrentPage, setIsLoading);
@@ -108,6 +114,43 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setShowSearchError
     );
   };
+
+    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+    if (event.key === "Enter") {
+      const keyword = searchTerm.trim().toLowerCase();
+
+      setTableLoading(true);
+      setSearchError(false);
+      setIsSearchTriggered(true);
+      setSearchTerm(keyword);
+      
+
+      setTimeout(() => {
+        try {
+          const filtered = tableData.filter((doc) =>
+            (doc.Document?.toLowerCase() ?? "").includes(keyword)
+          );
+
+          setFilteredDocs(filtered);
+          setSearchError(false);
+        } catch (err) { // <-- changed from 'error' to 'err'
+          setFilteredDocs([]);
+          setSearchError(true);
+          setTableLoading(false);
+        }  finally {
+          setIsLoading(false);
+            setTableLoading(false);
+        }
+      }, 1000);
+    }
+    };
+
+let tableDataToShow: tableDataProps[] = [];
+if (isSearchTriggered) {
+  tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
+} else {
+  tableDataToShow = Array.isArray(tableData) ? tableData : [];
+}
 
 
 const loadDocumentData = async (searchText = "", page = 1) => {
@@ -355,7 +398,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                         : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
                                 }
                                 dynamictableIconName={searchError ? "warning--alt" : "information"}
-                                searchOnChange={handleSearchChange}
+                               
                                 onSearchKeyDown={handleSearchEnter}
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm=""
@@ -382,11 +425,6 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 searchValidationTextLevel={
                                 showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
-                                onSearchKeyDown={async (e: any) => {
-                                 if (e.key === "Enter" && searchTerm?.trim() === "") {
-                                    await loadDocumentData("", 1);
-                                }
-                                }}
                                 secondaryButtonTitle="Cancel"
                                 showConfirmDialog
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].

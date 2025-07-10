@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
-import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchDocumentSuggestions } from "./ApiService";
+import { DocumentBasicDetails,  DocumentManagementServerProps, tableDataProps } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 // === [Table Header Configuration] ===
@@ -262,13 +262,18 @@ export const handleSearchChange = (
   );
 };
 
-const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
+const DocumentManagementServer = ({ pageNumber, pageSize, searchText }: DocumentManagementServerProps) => {
   const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   // === Fetch Document Table Data ===
   useEffect(() => {
+    
     const fetchData = async () => {
       setIsLoading(true);
       try {
@@ -312,7 +317,7 @@ const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementSe
   const loadSuggestions = async (text: string) => {
     try {
       setSuggestionsLoading(true);
-      const result = await fetchDocumentSuggestions(text);
+      const result = await fetchDMSSuggestions(text);
       setSuggestions(result);
     } catch (err) {
       console.error("Suggestion fetch failed:", err);
