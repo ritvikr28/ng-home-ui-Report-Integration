@@ -4,7 +4,6 @@
 }
 
 .side-width {
-  width: 20%;
   display: flex;
 }
 
@@ -50,13 +49,28 @@
     overflow: auto;
     table th:first-child,
       table td:first-child {
-        min-width: 82px;
-      }
+          min-width: 60px;
+        }
+        .essui-table__cell-center {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: auto !important;
+    
+          [data-testid="columnheader"] {
+            width: 25px;
+          }
+    
+          span:first-of-type {
+            width: 25px;
+            display: inline-block;
+          }
+        }
     .essui-table__cell {
       max-width: 150px;
       min-width: 130px;
       text-align: left;
-    }
+      }
   }
 }
 .relatedto-main{
