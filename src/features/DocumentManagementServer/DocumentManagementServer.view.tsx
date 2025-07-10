@@ -1,4 +1,4 @@
-import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React,{ useState, useEffect } from "react"
 import dayjs from "dayjs"
@@ -13,13 +13,19 @@ const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [data, setData] = useState<any>(null);
+    const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
+    const [filteredDocs, setFilteredDocs] = useState<tableDataProps[]>([]);
 
-    const onPageChange = (event: any, page: number) =>
+    const [searchError, setSearchError] = useState<boolean>(false);
+    const [tableLoading, setTableLoading] = useState(false);
+
+  const onPageChange = (event: any, page: number) =>
       handlePageChange(event, page, setCurrentPage, setIsLoading);
 
     const { data: initialData, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
@@ -78,10 +84,7 @@ const DocumentManagementServerView: React.FC = () => {
             mounted = false;
         };
     }, [initialData]);
-
-
-
-       
+  
   
 const hasItems: boolean = suggestions?.some(
     ({ values }: Suggestion) => values?.length > 0
@@ -150,6 +153,40 @@ const loadDocumentData = async (searchText = "", page = 1) => {
 };
 
 
+    const handleSearchClose = () => {
+        setTableLoading(true);
+        setSearchInput("");
+        setSearchTerm("");
+        setSearchError(false);
+        setIsSearchTriggered(false);
+
+        setTimeout(() => {
+            setFilteredDocs(tableData);
+            setTableLoading(false);
+        }, 500);
+    };
+
+    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+        if (event.key === "Enter") {
+            const keyword = searchInput.trim().toLowerCase();
+            setTableLoading(true);
+            setSearchError(false);
+            setSearchTerm(keyword);
+            setSearchInput(keyword);
+            loadDocumentData(keyword, 1)
+            setIsLoading(false);
+            setIsSearchLoading(false);
+            setIsSearchTriggered(false);
+
+        };
+    }
+
+    let tableDataToShow: tableDataProps[] = [];
+    if (isSearchTriggered) {
+        tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
+    } else {
+        tableDataToShow = Array.isArray(tableData) ? tableData : [];
+    }
 
     return (<>
         <>
@@ -247,7 +284,9 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                         }
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
-                                globalNotificationMsgBannerObject={null}
+                                globalNotificationMsgBannerObject={
+                                    searchError ? { title: "Information unavailable" } : null
+                                }
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -287,7 +326,11 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                         value: 'Delete'
                                     }
                                 ]}
-                                emptyStateMsg="Documents will appear here once they are uploaded."
+                                emptyStateMsg={
+                                    error || searchError
+                                        ? "Information unavailable."
+                                        : "Documents will appear here once they are uploaded."
+                                }
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
                                 errorActionListItem={[
@@ -343,9 +386,14 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
-                                resultNotFoundMessage=""
+                                resultNotFoundMessage={
+                                    searchError && tableDataToShow.length === 0
+                                        ? "Information unavailable"
+                                        : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
+                                }
+                                dynamictableIconName={searchError ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
-                                searchTerm=""
+                                searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=""
                                 searchValue={searchTerm}
@@ -358,22 +406,16 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 handleSuggestionClick(item, setSearchTerm, loadDocumentData)
                                 }
                                 searchOnChange={handleSearchChange}
-                                searchOnCloseHandle={async () => {
-                                setSearchTerm("");
-                                setSuggestions([]);
-                                await loadDocumentData("", 1);
-                                }}
                                 searchValidationText={
                                 showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
                                 searchValidationTextLevel={
                                 showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
-                                onSearchKeyDown={async (e: any) => {
-                                 if (e.key === "Enter" && searchTerm?.trim() === "") {
-                                    await loadDocumentData("", 1);
-                                }
-                                }}
+
+                                
+                                onSearchKeyDown={handleSearchEnter}
+                                searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle="Cancel"
                                 showConfirmDialog
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
@@ -384,7 +426,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 sidePanelSubTitle=""
                                 sidePanelTitle=""
                                 subHeadingText=""
-                                tableBodyData={tableData || [] }
+                                tableBodyData={tableDataToShow || [] }
                                 filterCustumeElem2={<Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
@@ -418,6 +460,8 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!error}
+                                isSearchShowLoading={isLoading}
+                                dynamicTableLoader={tableLoading}
                                 className="grid_wrapper"
                             />
                         </div>}
