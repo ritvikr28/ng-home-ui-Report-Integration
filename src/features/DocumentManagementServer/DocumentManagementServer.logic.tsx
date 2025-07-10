@@ -277,7 +277,8 @@ export const debouncedFetchSuggestions = debounce(
   ) => {
     try {
       const response = await fetchDMSSuggestions(searchText);
-      setSuggestions(formatSuggestions(response));
+      const values = response?.payload?.[0]?.values ?? [];
+      setSuggestions(formatSuggestions(values));
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);

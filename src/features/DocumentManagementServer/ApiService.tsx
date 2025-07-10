@@ -42,17 +42,16 @@ export const fetchDocumentDetails = async ({
   }
 };
 
-export const fetchDMSSuggestions = async (searchText: string): Promise<any[]> => {
+export const fetchDMSSuggestions = async (searchText: string): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/search/autocomplete?AutoCompleteRequest.SearchText=${encodeURIComponent(
       searchText
     )}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
-    const values = response?.data?.payload?.[0]?.values;
-    return Array.isArray(values) ? values : [];
+    return response?.data;
   } catch (err) {
     console.error("Error fetching DMS suggestions:", err);
-    return [];
+    return {};
   }
 };
