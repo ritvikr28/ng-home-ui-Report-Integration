@@ -34,7 +34,7 @@ const SystemStatus: React.FC = () => {
   }, [!isMobileView]);
 
   useEffect(() => {
-    gtmAnalytics.pushPageViewEvent();
+    gtmAnalytics.pushPageViewEvent("SystemStatusAlerts");
   }, []);
 
   return (
