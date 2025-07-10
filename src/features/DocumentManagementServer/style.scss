@@ -22,7 +22,7 @@
 
 .clc-dms-isopen {
   width: 80%;
-  padding: 0;
+  padding-left: 0;
 }
 
 .clc-dms-isclose {
@@ -128,15 +128,19 @@
 .empty-table{
   background-color: white;
 }
+.grid-wrapper{
 .essui-loader {
     width: 98%;
     height: auto;
     background-color: white;
     border-radius: 10px;
+    margin-left: 0;
 }
 .essui-loader .essui-loader-spin{
   margin-top: inherit;
 }
+}
+
 
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:768px) and (max-width:1023.9px) {
