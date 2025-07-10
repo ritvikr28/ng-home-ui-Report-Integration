@@ -2,11 +2,12 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
-import DocumentManagementServerView from '../DocumentManagementServer.view';
-import { debouncedFetchSuggestions, handlePageChange, handleSuggestionClick, onBreadcrumbClick } from '../DocumentManagementServer.logic';
-import * as apiService from '../ApiService';
-import gtmAnalytics from '../../../shared/utils/analytics';
 import { Suggestion } from '@essnextgen/ui-kit';
+import DocumentManagementServerView from '../DocumentManagementServer.view';
+import { debouncedFetchSuggestions} from '../DocumentManagementServer.logic';
+import * as apiService from '../ApiService';
+
+const { useState } = require('react');
 
 const useMediaQueries = require('@essnextgen/ui-kit').useMediaQuery;
 
@@ -15,6 +16,7 @@ const logic = require('../DocumentManagementServer.logic').default;
 jest.mock('../ApiService');
 
 const { handleButtonClick } = require('../DocumentManagementServer.view');
+
 
 jest.mock('../DocumentManagementServer.logic', () => ({
     __esModule: true,
@@ -103,7 +105,6 @@ describe('DocumentManagementServerView', () => {
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
   });
     test('toggles isOpen on button click', () => {
-      const { useState } = require('react');
       if( handleButtonClick) {
       const setIsOpen = jest.fn();
       useState.mockImplementationOnce(() => [false, setIsOpen]);
@@ -381,21 +382,6 @@ describe('hasItems', () => {
 
 
 describe('DocumentManagementServerView - Extended Coverage', () => {
-  const mockData = {
-    data: [
-      {
-        fileId: '1',
-        document: 'Doc1',
-        relatedTo: ['Rel1'],
-        category: 'cat1',
-        addedBy: 'User1',
-        dateAdded: '2024-06-01T00:00:00Z',
-        format: 'pdf',
-        size: '1MB',
-      },
-    ],
-    totalRecords: 1,
-  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -436,7 +422,7 @@ describe('DocumentManagementServerView - Extended Coverage', () => {
     {
       values: [],
       name: ''
-    },
+    }
   ];
   const hasItems = suggestions.some(({ values }) => values.length > 0);
   expect(hasItems).toBe(true);
@@ -473,8 +459,8 @@ test('loadDocumentData sets data and pagination correctly', async () => {
         dateAdded: '2025-01-01',
         format: 'pdf',
         size: '1MB',
-      },
-    ],
+      }
+    ]
   });
 
   logic.mockImplementation(() => ({
@@ -489,7 +475,7 @@ test('loadDocumentData sets data and pagination correctly', async () => {
           dateAdded: '2025-01-01',
           format: 'pdf',
           size: '1MB',
-        },
+        }
       ],
       totalRecords: 80,
     },
@@ -514,7 +500,7 @@ test('loadDocumentData sets data and pagination correctly', async () => {
   // Use a flexible matcher in case the text is split across elements
   await waitFor(() => {
     expect(screen.getByText((content, node) => {
-      const hasText = (node: Element) => node.textContent === 'Sample Doc';
+      const hasText = (nodes: Element) => nodes.textContent === 'Sample Doc';
       const nodeHasText = hasText(node as Element);
       const childrenDontHaveText = Array.from(node?.children || []).every(
         child => !hasText(child as Element)
@@ -540,8 +526,8 @@ test('renders ControlledList with document table when hasFetched is true', async
         dateAdded: '2025-05-01',
         format: 'pdf',
         size: '50KB',
-      },
-    ],
+      }
+    ]
   });
 
   logic.mockImplementation(() => ({
@@ -556,7 +542,7 @@ test('renders ControlledList with document table when hasFetched is true', async
           dateAdded: '2025-05-01',
           format: 'pdf',
           size: '50KB',
-        },
+        }
       ],
       totalRecords: 1,
     },

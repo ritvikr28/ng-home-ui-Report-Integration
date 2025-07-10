@@ -7,6 +7,8 @@ import { DocumentBasicDetails } from "../responseModel";
 import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, hasItems, onBreadcrumbClick, tableBodyData } from "../DocumentManagementServer.logic";
 
 
+  const analytics = require('../../../shared/utils/analytics').default;
+
 jest.mock("../ApiService");
 
 jest.mock("@essnextgen/ui-kit", () => ({
@@ -420,7 +422,6 @@ describe('onBreadcrumbClick', () => {
     delete (window as any).location;
     (window as any).location = { assign: jest.fn() };
 
-    const analytics = require('../../../shared/utils/analytics').default;
     analytics.pushEvent = jest.fn(); // Mock pushEvent as a jest function
 
     onBreadcrumbClick('/test-path');
@@ -452,7 +453,7 @@ describe('hasItems', () => {
   it('returns true if suggestions contain non-empty values', () => {
     const suggestions = [
       { values: [{ text: 'Doc' }] },
-      { values: [] },
+      { values: [] }
     ];
     expect(hasItems(suggestions as any)).toBe(true);
   });
@@ -460,7 +461,7 @@ describe('hasItems', () => {
   it('returns false if all suggestions are empty', () => {
     const suggestions = [
       { values: [] },
-      { values: [] },
+      { values: [] }
     ];
     expect(hasItems(suggestions as any)).toBe(false);
   });
