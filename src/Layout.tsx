@@ -122,6 +122,11 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 
   const hasInviteUserOrgView: boolean = isOrganisationInVariant("InviteUserView");
 
+  const hasInviteUserPermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.System.Permissions", Operation: "View" }],
+    MatchPermissions.all
+  );
+
   const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
 
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
@@ -238,7 +243,8 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             exact
             /* istanbul ignore next */
             path="/inviteusers"
-            render={() => hasInviteUserView && hasInviteUserOrgView ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+            render={() => hasInviteUserView && hasInviteUserOrgView &&
+              (isAuthzUserAdmin() || hasInviteUserPermissions) ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
           />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
