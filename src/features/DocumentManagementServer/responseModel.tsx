@@ -1,3 +1,4 @@
+// Represents each row in the document table
 export interface SingleDocumentDetail {
   organizationId: string;
   userId: string;
@@ -17,7 +18,7 @@ export interface SingleDocumentDetail {
   size: string;
   blobName: string;
 }
-
+// Represents the entire API response from getdocumentdetails
 export interface DocumentBasicDetails {
   pageNumber: number;
   pageSize: number;
@@ -47,4 +48,11 @@ export interface tableDataProps {
   "Date added": string;
   Format: string;
   Size: string;
+}
+
+export interface DocumentSuggestion {
+  id: string | number;
+  name: string;
+  value: string;
+  values: string[];
 }
