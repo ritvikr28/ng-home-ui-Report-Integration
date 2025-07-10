@@ -4,14 +4,14 @@ import {
   TooltipAlign,
   TooltipPosition,
   ShowValAs,
-  Tag,
+  Tag
 } from "@essnextgen/ui-kit";
 import { fetchDocumentDetails, fetchDocumentSuggestions } from "./ApiService";
 import {
   DocumentBasicDetails,
   DocumentManagementServerProps,
   DocumentSuggestion,
-  tableDataProps,
+  tableDataProps
 } from "./responseModel";
 
 // === [Table Header Configuration] ===
@@ -152,19 +152,61 @@ export const getTableHeadersData = [
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
     columnWidth: "129px",
-    anyComponent: (e: any) => (
-      <Tooltip
-        content={<span>{e}</span>}
-        align={TooltipAlign.Center}
-        position={TooltipPosition.Bottom}
-      >
-        <div className="tooltip-content document-text">
-          <span>{e}</span>
-        </div>
-      </Tooltip>
-    ),
+ anyComponent: (e: any) => {
+    // Support both string and array input
+    const value = Array.isArray(e) ? e[0] : e;
+    if (!value) return null;
+    return (
+      <div style={{ display: "flex" }}>
+        <Tooltip
+          dataTestId="tooltip-eventtime"
+          content={<span>{value}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span>{value}</span>
+          </div>
+        </Tooltip>
+      </div>
+    );
   },
+  }
 ];
+
+export const tableBodyData: {
+  id: string;
+  Document: string;
+  Relatedto: string[];
+  Category: string;
+  Addedby: string;
+  "Date added": string;
+  Format: string;
+  Size: string;
+}[] = [
+  {
+    id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
+    Document: "Name ",
+    Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
+    Category: "School",
+    Addedby: "Helen Avery",
+    "Date added": "01 Jan 2025",
+    Format: "pdf",
+    Size: "300 bytes",
+  },
+  {
+    id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
+    Document:
+      "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
+    Relatedto: ["Araminta Martin"],
+    Category: "Conduct",
+    Addedby: "Richard Wilton",
+    "Date added": "01 Jan 2025",
+    Format: "doc",
+    Size: "3KB",
+  }
+];
+
 
 // === [Main Logic Hook] ===
 const DocumentManagementServer = ({

@@ -286,7 +286,7 @@ if (isSearchTriggered) {
                                         : "Documents will appear here once they are uploaded."
                                 }
                                 emptybtnTitle="Add Type"
-                                //isShowEmptyAddBtn={false}
+                                isShowEmptyAddBtn={false}
                                 errorActionListItem={[
                                     {
                                         action: 'Secondary Text',
