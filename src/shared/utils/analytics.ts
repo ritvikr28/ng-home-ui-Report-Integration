@@ -9,7 +9,7 @@ declare global {
 
 type gtmAnalyticsType = {
   init: (trackingId: string) => void;
-  pushPageViewEvent: () => void;
+  pushPageViewEvent: (pageType?: string) => void;
   pushLogInEvent: () => void;
   pushEvent: (events: object) => void;
 };
@@ -31,14 +31,13 @@ const gtmAnalytics: gtmAnalyticsType = {
     TagManager.initialize(tagManagerArgs);
   },
 
-  pushPageViewEvent: () => {
+  pushPageViewEvent: (pageType = "Home") => {
     window.dataLayer.push({
       event: "page_view",
       pageLocation: document.URL,
-      pagePath: window.location.pathname,
       pageTitle: document.title,
       pageReferrer: document.referrer,
-      pageType: "Home"
+      pageType
     });
   },
 
