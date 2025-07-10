@@ -4,7 +4,7 @@ import { AxiosResponse } from 'axios';
 import { renderHook } from '@testing-library/react-hooks';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions } from '../ApiService';
 import BreadcrumbWrapper from '../../../shared/components/BreadcrumbWrapper/BreadcrumbWrapper';
 import DocumentManagementServer from '../DocumentManagementServer.logic';
 
@@ -125,4 +125,68 @@ describe("Fetch document details tests", () => {
         fireEvent.click(adminConsoleBreadcrumb);
         expect(handleClick).toHaveBeenCalledTimes(0);
     });
+});
+
+describe("fetchDMSSuggestions", () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it("should return values array when API returns values", async () => {
+        const mockValues = [
+            { fileName: "doc1", fileId: "id1" },
+            { fileName: "doc2", fileId: "id2" }
+        ];
+        const mockResponse = makeAxiosResponse({
+            payload: [
+                { values: mockValues }
+            ]
+        });
+        jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
+        const result = await fetchDMSSuggestions("doc");
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual(mockValues);
+        expect(service.get).toHaveBeenCalledWith(
+            expect.stringContaining("AutoCompleteRequest.SearchText=doc"),
+            expect.anything()
+        );
+    });
+
+    it("should return empty array if API returns no values", async () => {
+        const mockResponse = makeAxiosResponse({
+            payload: [
+                { values: undefined }
+            ]
+        });
+        jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
+        const result = await fetchDMSSuggestions("doc");
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
+    });
+
+    it("should return empty array if API returns no payload", async () => {
+        const mockResponse = makeAxiosResponse({
+            payload: undefined
+        });
+        jest.spyOn(service, "get").mockResolvedValueOnce(mockResponse);
+        const result = await fetchDMSSuggestions("doc");
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
+    });
+
+    it("should return empty array if API throws error", async () => {
+        jest.spyOn(service, "get").mockRejectedValueOnce(new Error("Network error"));
+        const result = await fetchDMSSuggestions("doc");
+        const values = Array.isArray(result?.payload?.[0]?.values) ? result.payload[0].values : [];
+        expect(values).toEqual([]);
+    });
+});
+
+// --- helpers for AxiosResponse mocks ---
+const makeAxiosResponse = (data: any): AxiosResponse => ({
+    data,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {}
 });
