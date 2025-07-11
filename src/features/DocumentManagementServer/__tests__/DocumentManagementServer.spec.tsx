@@ -6,6 +6,7 @@ import { Suggestion } from '@essnextgen/ui-kit';
 import DocumentManagementServerView from '../DocumentManagementServer.view';
 import { debouncedFetchSuggestions, handlePageChange} from '../DocumentManagementServer.logic';
 import * as apiService from '../ApiService';
+import userEvent from '@testing-library/user-event';
 
 const { useState } = require('react');
 
@@ -726,5 +727,73 @@ describe('DocumentManagementServerView - Search Feature', () => {
     });
   })
 
-})
+test('loadDocumentData resets loading states in finally block', async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    totalRecords: 0,
+    data: [],
+  });
+
+  jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+  const input = screen.getByPlaceholderText('Search...');
+  fireEvent.change(input, { target: { value: 'anything' } });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    expect(screen.queryByText('Please Wait...')).not.toBeInTheDocument();
+  });
+  
+
+
+});
+test('handleSearchEnter triggers catch block and updates error state', async () => {
+  // Mock the filter method to throw an error inside the handler
+  const originalFilter = Array.prototype.filter;
+  Array.prototype.filter = jest.fn(() => {
+    console.error('Filter error');
+  });
+
+  // Set up mock state setters
+  const setFilteredDocs = jest.fn();
+  const setSearchError = jest.fn();
+  const setTableLoading = jest.fn();
+
+  // Render the component
+   jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+
+  const input = screen.getByPlaceholderText('Search...');
+  userEvent.clear(input);
+  userEvent.type(input, 'throw'); // Anything >= 3 characters
+
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+  // Wait for the effect to take place
+  await waitFor(() => {
+    expect(setFilteredDocs).toHaveBeenCalledWith([]);
+    expect(setSearchError).toHaveBeenCalledWith(true);
+    expect(setTableLoading).toHaveBeenCalledWith(false);
+  });
+
+  // Restore the original filter
+  Array.prototype.filter = originalFilter;
+});
+
+
+});
+
+
+
+
 
