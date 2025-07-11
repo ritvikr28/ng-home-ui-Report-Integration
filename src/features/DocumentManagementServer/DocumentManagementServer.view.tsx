@@ -115,6 +115,73 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     );
   };
 
+
+const loadDocumentData = async (searchText = "", page = 1) => {
+  let isActive = true;
+
+  setIsSearchLoading(true);
+  setIsLoading(true);      
+
+  try {
+    const result = await fetchDocumentDetails({
+      pageNumber: page,
+      pageSize: pageSizeNumber,
+      searchText,
+    });
+
+    if (isActive && result) {
+      setData(result);
+      setCurrentPage(page);
+      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+      setShowSearchError(false);
+    } else if (isActive) {
+      setShowSearchError(true);
+    }
+  } catch (err) {
+    if (isActive) {
+      console.error("Error loading document data:", err);
+      setShowSearchError(true);
+    }
+  } finally {
+    if (isActive) {
+      setIsSearchLoading(false); 
+      setIsLoading(false);
+    }
+  }
+
+  return () => {
+    isActive = false;
+  };
+
+};
+
+
+
+
+  
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+
+    setSearchInput(event.target.value);
+    setSearchError(false);
+    setIsSearchTriggered(false); 
+  };
+
+  const handleSearchClose = () => {
+    setTableLoading(true);
+
+    setSearchInput("");
+    setSearchTerm("");
+    setSearchError(false);
+   
+    setIsSearchTriggered(false);
+
+    setTimeout(() => {
+      setFilteredDocs(tableData);
+      setTableLoading(false);
+    }, 500);
+  };
+
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
     if (event.key === "Enter") {
       const keyword = searchTerm.trim().toLowerCase();

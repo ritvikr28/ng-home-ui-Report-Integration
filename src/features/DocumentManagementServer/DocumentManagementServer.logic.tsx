@@ -4,8 +4,19 @@ import { fetchDMSSuggestions, fetchDocumentDetails, fetchDocumentSuggestions } f
 import { DocumentBasicDetails,  DocumentManagementServerProps, tableDataProps } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 
-// === [Table Header Configuration] ===
-export const getTableHeadersData = [
+export const getTableHeadersData: {
+  text: string;
+  isShow: boolean;
+  showValAs: ShowValAs;
+  isTextTruncate?: boolean;
+  columnWidth: string;
+  isHeaderTextTruncate?: boolean;
+  headerTxtTrunctLength?: number;
+  isSimpleText?: boolean;
+  txtTrunctLength?: number;
+  isColumnSorting?: boolean;
+  anyComponent?: (e: any) => JSX.Element;
+}[] = [
   {
     text: "Id",
     isShow: false,

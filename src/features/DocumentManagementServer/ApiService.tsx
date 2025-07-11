@@ -67,23 +67,3 @@ export const fetchDMSSuggestions = async (searchText: string): Promise<any> => {
     return {};
   }
 };
-
-export const fetchDocumentSuggestions = async (
-  text: string
-): Promise<DocumentSuggestion[]> => {
-  try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `validation/api/v1/file/suggestions?text=${encodeURIComponent(text)}`; // ✅ Replace with correct endpoint if needed
-
-    const response: AxiosResponse<DocumentSuggestion[]> = await service.get(url, baseUrl);
-
-    if (response?.status === 200) {
-      return response.data;
-    }
-
-    return [];
-  } catch (error) {
-    console.error("Error fetching document suggestions:", error);
-    return [];
-  }
-};
