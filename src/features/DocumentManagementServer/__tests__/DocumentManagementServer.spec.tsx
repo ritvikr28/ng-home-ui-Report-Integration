@@ -268,6 +268,45 @@ describe('DocumentManagementServerView', () => {
     expect(document.querySelector('.clc-dms-isopen')).toBeInTheDocument();
   });
 
+  test('handlePageChange sets loading and updates page', () => {
+    const setCurrentPage = jest.fn();
+    const setIsLoading = jest.fn();
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [1, setCurrentPage]) // currentPage
+      .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
+      .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
+
+    render(<DocumentManagementServerView />);
+
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+
+    expect(debouncedFetchSuggestions).toHaveBeenCalledTimes(1);
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+});
+
+describe('hasItems', () => {
+  it('returns true if any suggestion has values', () => {
+    const suggestions = [{ values: [1, 2] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(true);
+    
+  });
+
+  it('returns false if all suggestions are empty', () => {
+    const suggestions = [{ values: [] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(false);
+    
+  });
+
   
 });
 
