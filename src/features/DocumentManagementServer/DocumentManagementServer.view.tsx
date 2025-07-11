@@ -92,70 +92,7 @@ const DocumentManagementServerView: React.FC = () => {
 const hasItems: boolean = suggestions?.some(
     ({ values }: Suggestion) => values?.length > 0
 );
-
-const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setSearchTerm(value);
-
-    if (value?.length < 3) {
-      setSuggestions([]);
-        setShowSearchError(false);
-        setIsSearchLoading(false);
-      return;
-    }
-
-    setIsSearchLoading(true);
-    setSuggestions([]);
-
-    debouncedFetchSuggestions(
-      value,
-      setIsSearchLoading,
-      setSuggestions,
-      setShowSearchError
-    );
-  };
-
-
-const loadDocumentData = async (searchText = "", page = 1) => {
-  let isActive = true;
-
-  setIsSearchLoading(true);
-  setIsLoading(true);      
-
-  try {
-    const result = await fetchDocumentDetails({
-      pageNumber: page,
-      pageSize: pageSizeNumber,
-      searchText,
-    });
-
-    if (isActive && result) {
-      setData(result);
-      setCurrentPage(page);
-      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
-      setShowSearchError(false);
-    } else if (isActive) {
-      setShowSearchError(true);
-    }
-  } catch (err) {
-    if (isActive) {
-      console.error("Error loading document data:", err);
-      setShowSearchError(true);
-    }
-  } finally {
-    if (isActive) {
-      setIsSearchLoading(false); 
-      setIsLoading(false);
-    }
-  }
-
-  return () => {
-    isActive = false;
-  };
-
-};
-
-
+;
 
 
   

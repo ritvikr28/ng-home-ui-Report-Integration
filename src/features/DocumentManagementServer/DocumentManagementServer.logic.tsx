@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchDocumentSuggestions } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
 import { DocumentBasicDetails,  DocumentManagementServerProps, tableDataProps } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 
@@ -156,7 +156,7 @@ export const getTableHeadersData: {
  anyComponent: (e: any) => {
     // Support both string and array input
     const value = Array.isArray(e) ? e[0] : e;
-    if (!value) return null;
+    if (!value) return <></>;
     return (
       <div style={{ display: "flex" }}>
         <Tooltip
