@@ -411,7 +411,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
                                 isShowSearch
-                                searchPlaceholderText=""
+                                searchPlaceholderText=" "
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
                                 isSearchHideClearIcon={searchTerm.length === 0}
