@@ -251,11 +251,11 @@ export const onBreadcrumbClick = (path: string) => {
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  loadDocumentData: (text: string, page?: number) => void
+  setSearchText: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   if (!item || !item.name) return;
   setSearchTerm(item.name);
-  await loadDocumentData(item.name, 1);
+  setSearchText(item.name);
 };
 
 // Has items check
@@ -273,7 +273,7 @@ export const handleSearchChange = (
   const { value } = e.target;
   setSearchTerm(value);
 
-  if (value?.length < 3) {
+  if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
@@ -308,58 +308,6 @@ export const loadSuggestions = async (
   }
 };
   
-const DocumentManagementServer = ({ pageNumber, pageSize, searchText }: DocumentManagementServerProps) => {
-  const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
-  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
-  const [hasFetched, setHasFetched] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [tableData, setTableData] = useState<any[]>([]);
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
-
-  useEffect(() => {
-    
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const result = await fetchDocumentDetails({
-          pageNumber,
-          pageSize,
-          searchText,
-        });
-
-        if (result) {
-          setData(result);
-          const transformed: tableDataProps[] = result.data.map((doc) => ({
-            id: doc.fileId,
-            Document: doc.document,
-            Relatedto: doc.relatedTo || [],
-            Category: doc.category,
-            Addedby: doc.addedBy,
-            "Date added": new Date(doc.dateAdded).toLocaleDateString(),
-            Format: doc.format,
-            Size: doc.size,
-          }));
-          setTableData(transformed);
-        } else {
-          setError("Failed to fetch data");
-          setTableData([]);
-        }
-      } catch (err) {
-        console.error("Error fetching documents:", err);
-        setError("Something went wrong");
-        setTableData([]);
-      } finally {
-        setIsLoading(false);
-        setHasFetched(true);
-      }
-    };
-
-    fetchData();
-  }, [pageNumber, pageSize]);
-
-  return { data, error, hasFetched };
-};
 
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
@@ -405,5 +353,3 @@ export const debouncedFetchSuggestions = debounce(
   1000
 );
 
-
-export default DocumentManagementServer;
