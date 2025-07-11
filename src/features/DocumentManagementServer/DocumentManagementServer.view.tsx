@@ -91,7 +91,7 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchTerm(value);
 
-    if (value?.length < 3) {
+    if (value?.length < 2) {
       setSuggestions([]);
         setShowSearchError(false);
         setIsSearchLoading(false);
@@ -347,7 +347,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm=""
                                 isShowSearch
-                                searchPlaceholderText="Search..."
+                                searchPlaceholderText=""
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
                                 isSearchHideClearIcon={searchTerm.length === 0}
