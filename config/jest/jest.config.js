@@ -11,12 +11,16 @@ module.exports = {
     "\\.(gif|ttf|eot|svg|jpg|jpeg|png|ico|webp)$":
       "<rootDir>/config/jest/__mocks__/fileMock.js"
   },
-  transformIgnorePatterns: ["node_modules", "dist"],
+  transformIgnorePatterns: [
+    "node_modules/(?!.*(@essnextgen\\/auth-ui|axios))",
+    "dist"
+  ],
   preset: "ts-jest",
   testEnvironment: "jsdom",
   transform: {
     "^.+\\.(ts|tsx)?$": "ts-jest",
-    "^.+\\.(js|jsx)$": "babel-jest"
+    "^.+\\.(js|jsx)$": "babel-jest",
+    "^.+\\.(t|j)sx?$": "ts-jest",
   },
   reporters: [
     "default",
