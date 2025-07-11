@@ -277,34 +277,33 @@ describe('DocumentManagementServerView - Search Feature', () => {
   });
 
   it('renders search input with default value', async () => {
-     jest.useFakeTimers();
+    jest.useFakeTimers();
     render(<DocumentManagementServerView />);
 
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
-    jest.runAllTimers();
-    jest.useRealTimers();
+  expect(screen.getByTestId('search-autocomplete-input')).toBeInTheDocument();
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
+
+ it('clears suggestions if input length is less than 2', async () => {
+  jest.useFakeTimers();
+  render(<DocumentManagementServerView />);
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
+  const input = screen.getByTestId('search-autocomplete-input');
+  fireEvent.change(input, { target: { value: 'a' } });
 
-  it('clears suggestions if input length is less than 2', async () => {
-     jest.useFakeTimers();
-    render(<DocumentManagementServerView />);
-
-    act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-    const input = screen.getByPlaceholderText('Search...');
-    fireEvent.change(input, { target: { value: 'a' } });
-
-    await waitFor(() => {
-      expect(screen.queryByText('Test Document')).not.toBeInTheDocument();
-    });
-    jest.runAllTimers();
-    jest.useRealTimers();
+  await waitFor(() => {
+    expect(screen.queryByText('Test Document')).not.toBeInTheDocument();
   });
-
+  jest.runAllTimers();
+  jest.useRealTimers();
+});
   it('shows suggestions when input is valid and fetch succeeds', async () => {
      jest.useFakeTimers();
      logic.mockImplementation(() => ({
@@ -319,7 +318,7 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText('Search...');
+    const input = screen.getByPlaceholderText(' ');
     fireEvent.change(input, { target: { value: 'doc' } });
 
     await waitFor(() => {
@@ -336,11 +335,11 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText('Search...');
+    const input = screen.getByPlaceholderText(' ');
     fireEvent.change(input, { target: { value: 'doc' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(' ')).toBeInTheDocument();
     jest.runAllTimers();
     jest.useRealTimers();
   });
@@ -352,7 +351,7 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText('Search...');
+    const input = screen.getByPlaceholderText(' ');
     fireEvent.change(input, { target: { value: 'doc' } });
 
     expect(debouncedFetchSuggestions).toHaveBeenCalledTimes(1);
@@ -490,7 +489,7 @@ test('loadDocumentData sets data and pagination correctly', async () => {
     jest.advanceTimersByTime(2000);
   });
 
-  const input = screen.getByPlaceholderText('Search...');
+  const input = screen.getByPlaceholderText(' ');
   fireEvent.change(input, { target: { value: 'Sample' } });
 
   act(() => {
@@ -556,7 +555,7 @@ test('renders ControlledList with document table when hasFetched is true', async
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  const input = screen.getByPlaceholderText('Search...');
+  const input = screen.getByPlaceholderText(' ');
   fireEvent.change(input, { target: { value: 'TestFile' } });
   act(() => {
     jest.advanceTimersByTime(1000);
@@ -583,7 +582,7 @@ test('handles fetchDocumentDetails error and logs error to console', async () =>
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  const input = screen.getByPlaceholderText('Search...');
+  const input = screen.getByPlaceholderText(' ');
   fireEvent.change(input, { target: { value: '' } });
 
   // Simulate Enter key to trigger loadDocumentData when searchTerm is empty
