@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
-import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
+import { DocumentBasicDetails,  DocumentManagementServerProps, tableDataProps } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 export const getTableHeadersData: {
@@ -171,24 +171,28 @@ export const getTableHeadersData: {
     isHeaderTextTruncate: true,
     headerTxtTrunctLength: 50,
     columnWidth: "129px",
-    anyComponent: (e: any) => (
-      <>
+ anyComponent: (e: any) => {
+    // Support both string and array input
+    const value = Array.isArray(e) ? e[0] : e;
+    if (!value) return <></>;
+    return (
+      <div style={{ display: "flex" }}>
         <Tooltip
-          dataTestId= 'tooltip-eventtime'
-          content={
-            <span >{e}</span>}
+          dataTestId="tooltip-eventtime"
+          content={<span>{value}</span>}
           align={TooltipAlign.Center}
           position={TooltipPosition.Bottom}
         >
           <div className="tooltip-content document-text">
-            <span >{e}</span>
+            <span>{value}</span>
           </div>
-
         </Tooltip>
-      </>
-    )
+      </div>
+    );
+  },
   }
 ];
+
 export const tableBodyData: {
   id: string;
   Document: string;
@@ -207,7 +211,7 @@ export const tableBodyData: {
     Addedby: "Helen Avery",
     "Date added": "01 Jan 2025",
     Format: "pdf",
-    Size: "300 bytes"
+    Size: "300 bytes",
   },
   {
     id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
@@ -218,10 +222,9 @@ export const tableBodyData: {
     Addedby: "Richard Wilton",
     "Date added": "01 Jan 2025",
     Format: "doc",
-    Size: "3KB"
+    Size: "3KB",
   }
 ];
-
 export const handlePageChange = (
   _event: any,
   page: number,
@@ -288,22 +291,68 @@ export const handleSearchChange = (
   );
 };
 
-const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
+export const loadSuggestions = async (
+  text: string,
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setSuggestionsLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  try {
+    setSuggestionsLoading(true);
+    const result = await fetchDMSSuggestions(text);
+    setSuggestions(result);
+  } catch (err) {
+    console.error("Suggestion fetch failed:", err);
+    setSuggestions([]);
+  } finally {
+    setSuggestionsLoading(false);
+  }
+};
+  
+const DocumentManagementServer = ({ pageNumber, pageSize, searchText }: DocumentManagementServerProps) => {
   const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
   const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   const [hasFetched, setHasFetched] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [tableData, setTableData] = useState<any[]>([]);
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   useEffect(() => {
-    const fetchData: () => Promise<void> = async () => {
-      const result: DocumentBasicDetails | null = await fetchDocumentDetails(
-        { pageNumber, pageSize }
-      );
-      if (result) {
-        setData(result);
-      } else {
-        setError("Failed to fetch data");
+    
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const result = await fetchDocumentDetails({
+          pageNumber,
+          pageSize,
+          searchText,
+        });
+
+        if (result) {
+          setData(result);
+          const transformed: tableDataProps[] = result.data.map((doc) => ({
+            id: doc.fileId,
+            Document: doc.document,
+            Relatedto: doc.relatedTo || [],
+            Category: doc.category,
+            Addedby: doc.addedBy,
+            "Date added": new Date(doc.dateAdded).toLocaleDateString(),
+            Format: doc.format,
+            Size: doc.size,
+          }));
+          setTableData(transformed);
+        } else {
+          setError("Failed to fetch data");
+          setTableData([]);
+        }
+      } catch (err) {
+        console.error("Error fetching documents:", err);
+        setError("Something went wrong");
+        setTableData([]);
+      } finally {
+        setIsLoading(false);
+        setHasFetched(true);
       }
-      setHasFetched(true)
     };
 
     fetchData();

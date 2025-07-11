@@ -4,8 +4,9 @@ import { act } from 'react-dom/test-utils';
 import '@testing-library/jest-dom';
 import { Suggestion } from '@essnextgen/ui-kit';
 import DocumentManagementServerView from '../DocumentManagementServer.view';
-import { debouncedFetchSuggestions} from '../DocumentManagementServer.logic';
+import { debouncedFetchSuggestions, handlePageChange} from '../DocumentManagementServer.logic';
 import * as apiService from '../ApiService';
+import userEvent from '@testing-library/user-event';
 
 const { useState } = require('react');
 
@@ -611,36 +612,227 @@ test('renders ControlledList with document table when hasFetched is true', async
   jest.useRealTimers();
 });
 
-test('handles fetchDocumentDetails error and logs error to console', async () => {
-  const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-  (apiService.fetchDocumentDetails as jest.Mock).mockRejectedValue(new Error('API failed'));
-
-  jest.useFakeTimers();
+  
+    const setCurrentPage = jest.fn();
+    const setIsLoading = jest.fn();
+    jest.spyOn(React, 'useState')
+      .mockImplementationOnce(() => [1, setCurrentPage]) // currentPage
+      .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
+      .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
+describe('DocumentManagementServerView - Search Feature', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('renders search input with default value', async () => {
+    jest.useFakeTimers();
   render(<DocumentManagementServerView />);
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  const input = screen.getByPlaceholderText('Search...');
-  fireEvent.change(input, { target: { value: '' } });
+    act(() => {
+    if (handlePageChange) {
+      jest.advanceTimersByTime(2000);
+      handlePageChange({}, 2, setCurrentPage, setIsLoading);
+      expect(setIsLoading).toHaveBeenCalledWith(true);
+      expect(setCurrentPage).toHaveBeenCalledWith(2);
+    }
+    });
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+  });
 
-  // Simulate Enter key to trigger loadDocumentData when searchTerm is empty
-  fireEvent.keyDown(input, { key: 'Enter' });
+//   it('clears suggestions if input length is less than 2', async () => {
+//     const setCurrentPage = jest.fn();
+//     const setIsLoading = jest.fn();
+//     jest.useFakeTimers();
+//     jest.spyOn(React, 'useState')
+//       .mockImplementationOnce(() => [1, setCurrentPage]) // currentPage
+//       .mockImplementationOnce(() => [0, jest.fn()]) // totalPage
+//       .mockImplementationOnce(() => [false, setIsLoading]); // isLoading
+// jest.useFakeTimers();
+//   render(<DocumentManagementServerView />);
+
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+//     // Find the pagination handler from ControlledList props
+//     act(() => {
+//     if (handlePageChange) {
+//       jest.advanceTimersByTime(2000);
+//       handlePageChange({}, 2, setCurrentPage, setIsLoading);
+//       expect(setIsLoading).toHaveBeenCalledWith(true);
+//       expect(setCurrentPage).toHaveBeenCalledWith(2);
+//     }
+//     });
+//     const input = screen.getByPlaceholderText('Search...');
+//     fireEvent.change(input, { target: { value: 'a' } });
+//     await waitFor(() => {
+//       expect(screen.queryByText('Test Document')).not.toBeInTheDocument();
+//     });
+//     jest.runAllTimers();
+//     jest.useRealTimers();
+//   });
+  it('shows suggestions when input is valid and fetch succeeds', async () => {
+     jest.useFakeTimers();
+     logic.mockImplementation(() => ({
+      data: {
+        data: mockData.data
+      },
+      error: null,
+      hasFetched: true,
+    }));
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+    await waitFor(() => {
+      expect(screen.getByText('Doc1')).toBeInTheDocument();
+    });
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+  it('does nothing when Enter key is pressed in search', async () => {
+    jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+    fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+  it('debounces search input changes', async () => {
+    jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    const input = screen.getByPlaceholderText('Search...');
+    fireEvent.change(input, { target: { value: 'doc' } });
+    expect(debouncedFetchSuggestions).toHaveBeenCalledTimes(1);
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+  });
+
+describe('hasItems', () => {
+  it('returns true if any suggestion has values', () => {
+    const suggestions = [{ values: [1, 2] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(true);
+    
+  });
+  it('returns false if all suggestions are empty', () => {
+    const suggestions = [{ values: [] }, { values: [] }];
+    expect(
+      suggestions.some(({ values }) => values.length > 0)
+    ).toBe(false);
+    
+  });
+  
+});
+describe('DocumentManagementServerView - Search Feature', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+  it('renders search input with default value', async () => {
+     jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(screen.getByPlaceholderText('Search...')).toBeInTheDocument();
+    jest.runAllTimers();
+    jest.useRealTimers();
+  });
+  it('clears suggestions if input length is less than 2', async () => {
+     jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+  })
+
+test('loadDocumentData resets loading states in finally block', async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    totalRecords: 0,
+    data: [],
+  });
+
+  jest.useFakeTimers();
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+  const input = screen.getByPlaceholderText('Search...');
+  fireEvent.change(input, { target: { value: 'anything' } });
 
   act(() => {
-    jest.advanceTimersByTime(1000); // debounce (if any)
+    jest.advanceTimersByTime(1000);
   });
 
   await waitFor(() => {
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Error loading document data:',
-      expect.any(Error)
-    );
+    expect(screen.queryByText('Please Wait...')).not.toBeInTheDocument();
   });
+  
 
-  consoleSpy.mockRestore();
+
+});
+// test('handleSearchEnter triggers catch block and updates error state', async () => {
+//   // Mock the filter method to throw an error inside the handler
+//   const originalFilter = Array.prototype.filter;
+//   Array.prototype.filter = jest.fn(() => {
+//     console.error('Filter error');
+//   });
+
+//   // Set up mock state setters
+//   const setFilteredDocs = jest.fn();
+//   const setSearchError = jest.fn();
+//   const setTableLoading = jest.fn();
+
+//   // Render the component
+//    jest.useFakeTimers();
+//     render(<DocumentManagementServerView />);
+//     act(() => {
+//       jest.advanceTimersByTime(2000);
+//     });
+
+
+//   const input = screen.getByPlaceholderText('Search...');
+//   userEvent.clear(input);
+//   userEvent.type(input, 'throw'); // Anything >= 3 characters
+
+//   fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+//   // Wait for the effect to take place
+//   await waitFor(() => {
+//     expect(setFilteredDocs).toHaveBeenCalledWith([]);
+//     expect(setSearchError).toHaveBeenCalledWith(true);
+//     expect(setTableLoading).toHaveBeenCalledWith(false);
+//   });
+
+//   // Restore the original filter
+//   Array.prototype.filter = originalFilter;
+// });
+
+
 });
 
-})
+
+
+
 

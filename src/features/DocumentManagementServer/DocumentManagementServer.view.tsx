@@ -13,7 +13,7 @@ import { fetchDocumentDetails } from "./ApiService"
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(true);    
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -91,20 +91,17 @@ const hasItems: boolean = suggestions?.some(
     ({ values }: Suggestion) => values?.length > 0
 );
 
-const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setSearchTerm(value);
-
     if (value?.length < 2) {
       setSuggestions([]);
         setShowSearchError(false);
         setIsSearchLoading(false);
       return;
     }
-
     setIsSearchLoading(true);
     setSuggestions([]);
-
     debouncedFetchSuggestions(
       value,
       setIsSearchLoading,
@@ -112,6 +109,58 @@ const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       setShowSearchError
     );
   };
+
+  const handleSearchClose = () => {
+    setTableLoading(true);
+
+    setSearchInput("");
+    setSearchTerm("");
+    setSearchError(false);
+   
+    setIsSearchTriggered(false);
+
+    setTimeout(() => {
+      setFilteredDocs(tableData);
+      setTableLoading(false);
+    }, 500);
+  };
+
+    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+    if (event.key === "Enter") {
+      const keyword = searchTerm.trim().toLowerCase();
+
+      setTableLoading(true);
+      setSearchError(false);
+      setIsSearchTriggered(true);
+      setSearchTerm(keyword);
+      
+
+      setTimeout(() => {
+        try {
+          const filtered = tableData.filter((doc) =>
+            (doc.Document?.toLowerCase() ?? "").includes(keyword)
+          );
+
+          setFilteredDocs(filtered);
+          setSearchError(false);
+        } catch (err) { // <-- changed from 'error' to 'err'
+          setFilteredDocs([]);
+          setSearchError(true);
+          setTableLoading(false);
+        }  finally {
+          setIsLoading(false);
+            setTableLoading(false);
+        }
+      }, 1000);
+    }
+    };
+
+let tableDataToShow: tableDataProps[] = [];
+if (isSearchTriggered) {
+  tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
+} else {
+  tableDataToShow = Array.isArray(tableData) ? tableData : [];
+}
 
 
 const loadDocumentData = async (searchText = "", page = 1) => {
@@ -154,40 +203,6 @@ const loadDocumentData = async (searchText = "", page = 1) => {
 };
 
 
-    const handleSearchClose = () => {
-        setTableLoading(true);
-        setSearchInput("");
-        setSearchTerm("");
-        setSearchError(false);
-        setIsSearchTriggered(false);
-
-        setTimeout(() => {
-            setFilteredDocs(tableData);
-            setTableLoading(false);
-        }, 500);
-    };
-
-    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-        if (event.key === "Enter") {
-            const keyword = searchInput.trim().toLowerCase();
-            setTableLoading(true);
-            setSearchError(false);
-            setSearchTerm(keyword);
-            setSearchInput(keyword);
-            loadDocumentData(keyword, 1)
-            setIsLoading(false);
-            setIsSearchLoading(false);
-            setIsSearchTriggered(false);
-
-        };
-    }
-
-    let tableDataToShow: tableDataProps[] = [];
-    if (isSearchTriggered) {
-        tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
-    } else {
-        tableDataToShow = Array.isArray(tableData) ? tableData : [];
-    }
 
     return (<>
         <>

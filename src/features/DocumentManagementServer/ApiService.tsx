@@ -1,5 +1,5 @@
-import { AxiosResponse } from "axios";
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
+import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
 import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
