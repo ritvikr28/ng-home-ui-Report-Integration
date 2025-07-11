@@ -318,7 +318,7 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText(' ');
+    const input = screen.getByTestId('search-autocomplete-input');
     fireEvent.change(input, { target: { value: 'doc' } });
 
     await waitFor(() => {
@@ -335,11 +335,11 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText(' ');
+    const input = screen.getByTestId('search-autocomplete-input');
     fireEvent.change(input, { target: { value: 'doc' } });
     fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
 
-    expect(screen.getByPlaceholderText(' ')).toBeInTheDocument();
+    expect(input).toBeInTheDocument();
     jest.runAllTimers();
     jest.useRealTimers();
   });
@@ -351,7 +351,7 @@ describe('DocumentManagementServerView - Search Feature', () => {
     act(() => {
       jest.advanceTimersByTime(2000);
     });
-    const input = screen.getByPlaceholderText(' ');
+    const input = screen.getByTestId('search-autocomplete-input');
     fireEvent.change(input, { target: { value: 'doc' } });
 
     expect(debouncedFetchSuggestions).toHaveBeenCalledTimes(1);
@@ -489,7 +489,7 @@ test('loadDocumentData sets data and pagination correctly', async () => {
     jest.advanceTimersByTime(2000);
   });
 
-  const input = screen.getByPlaceholderText(' ');
+  const input = screen.getByTestId('search-autocomplete-input');
   fireEvent.change(input, { target: { value: 'Sample' } });
 
   act(() => {
@@ -555,7 +555,7 @@ test('renders ControlledList with document table when hasFetched is true', async
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  const input = screen.getByPlaceholderText(' ');
+  const input = screen.getByTestId('search-autocomplete-input');
   fireEvent.change(input, { target: { value: 'TestFile' } });
   act(() => {
     jest.advanceTimersByTime(1000);
@@ -582,7 +582,7 @@ test('handles fetchDocumentDetails error and logs error to console', async () =>
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  const input = screen.getByPlaceholderText(' ');
+  const input = screen.getByTestId('search-autocomplete-input');
   fireEvent.change(input, { target: { value: '' } });
 
   // Simulate Enter key to trigger loadDocumentData when searchTerm is empty
