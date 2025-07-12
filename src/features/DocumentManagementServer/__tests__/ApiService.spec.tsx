@@ -1,4 +1,3 @@
-import { fireEvent, render, screen } from '@testing-library/react'; 
 import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
@@ -24,7 +23,7 @@ const documentResponse: SingleDocumentDetail[] = [
     format: 'png',
     size: '2 KB',
     blobName: 'App_427E150E',
-  },
+  }
 ];
 
 const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
@@ -82,7 +81,7 @@ describe('fetchDMSSuggestions', () => {
 
   const mockValues = [
     { fileName: 'doc1', fileId: 'id1' },
-    { fileName: 'doc2', fileId: 'id2' },
+    { fileName: 'doc2', fileId: 'id2' }
   ];
 
   const makeAxiosResponse = (data: any): AxiosResponse => ({

@@ -1,7 +1,6 @@
 import React from "react";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
 import {
   debouncedFetchSuggestions,
@@ -13,7 +12,7 @@ import {
   hasItems,
   loadSuggestions,
   onBreadcrumbClick,
-  tableBodyData,
+  tableBodyData
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -65,15 +64,13 @@ describe("getTableHeadersData", () => {
   });
 
   test("does not render tooltip when only one related item", () => {
-  const relatedToColumn = getTableHeadersData.find(h => h.text === "Related to");
-  const { container } = render(<>{relatedToColumn?.anyComponent?.(["Only One"])}</>);
+  const relatedToCol = getTableHeadersData.find(h => h.text === "Related to");
+  const { container } = render(<>{relatedToCol?.anyComponent?.(["Only One"])}</>);
   expect(container.querySelector('[data-testid="tooltip-eventtime"]')).not.toBeInTheDocument();
 });
 });
 
 describe("getTableHeadersData column anyComponent rendering", () => {
-  const categoryColumn = getTableHeadersData.find(h => h.text === "Category");
-  const formatColumn = getTableHeadersData.find(h => h.text === "Format");
   const sizeColumn = getTableHeadersData.find(h => h.text === "Size");
    const headers = getTableHeadersData;
 
@@ -90,14 +87,14 @@ describe("getTableHeadersData column anyComponent rendering", () => {
   });
 
   test("Size column renders correctly for string input", () => {
-    const sizeColumn = headers.find(h => h.text === "Size");
-    const { getByText } = render(<>{sizeColumn?.anyComponent?.("2 MB")}</>);
+    const sizeCol = headers.find(h => h.text === "Size");
+    const { getByText } = render(<>{sizeCol?.anyComponent?.("2 MB")}</>);
     expect(getByText("2 MB")).toBeInTheDocument();
   });
 
   test("Size column renders correctly for array input", () => {
-    const sizeColumn = headers.find(h => h.text === "Size");
-    const { getByText } = render(<>{sizeColumn?.anyComponent?.(["2 MB"])}</>);
+    const sizeCols = headers.find(h => h.text === "Size");
+    const { getByText } = render(<>{sizeCols?.anyComponent?.(["2 MB"])}</>);
     expect(getByText("2 MB")).toBeInTheDocument();
   });
 

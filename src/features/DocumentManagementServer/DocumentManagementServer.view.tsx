@@ -1,8 +1,8 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
-import React,{ useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick} from "./DocumentManagementServer.logic"
+import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -21,15 +21,12 @@ const DocumentManagementServerView: React.FC = () => {
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [docData, setDocData] = useState<any>(null);
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
-    const [filteredDocs, setFilteredDocs] = useState<tableDataProps[]>([]);
-
-    const [tableLoading, setTableLoading] = useState(false);
-      const [hasFetched, setHasFetched] = useState(false);
-      const [searchText, setSearchText] = useState<string>("");
+    const [hasFetched, setHasFetched] = useState(false);
+    const [searchText, setSearchText] = useState<string>("");
 
 
-  const onPageChange = (event: any, page: number) =>
-      handlePageChange(event, page, setCurrentPage, setIsLoading);
+    const onPageChange = (event: any, page: number) =>
+        handlePageChange(event, page, setCurrentPage, setIsLoading);
 
     const tableData: tableDataProps[] = (showSearchError || !docData?.data?.length) ? [] : docData?.data?.map((doc: any) => ({
         id: doc?.fileId,
@@ -65,36 +62,36 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         fetchGetDocumentDetails(searchText, currentPage);
-    },[currentPage, searchText]);
-  
-  
-const hasItems: boolean = suggestions?.some(
-    ({ values }: Suggestion) => values?.length > 0
-);
+    }, [currentPage, searchText]);
 
 
-  const fetchGetDocumentDetails = async (searchText: string, page: number) => {
-    setIsLoading(true);
-    try {   
-        const result = await fetchDocumentDetails({
-            pageNumber: page,
-            pageSize: pageSizeNumber,
-            searchText,
-        });
-    
-        if (result) {
-            setDocData(result);
-            setCurrentPage(page);
-            setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
-            setShowSearchError(false);
-        } else {
-            setShowSearchError(true);
-        }
-        setHasFetched(true);
+    const hasItems: boolean = suggestions?.some(
+        ({ values }: Suggestion) => values?.length > 0
+    );
+
+
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
+        setIsLoading(true);
+        try {
+            const result = await fetchDocumentDetails({
+                pageNumber: page,
+                pageSize: pageSizeNumber,
+                searchText: searchTexts,
+            });
+
+            if (result) {
+                setDocData(result);
+                setCurrentPage(page);
+                setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+                setShowSearchError(false);
+            } else {
+                setShowSearchError(true);
+            }
+            setHasFetched(true);
         } catch (err) {
-            console.error("Error fetching document details:", err); 
+            console.error("Error fetching document details:", err);
             setShowSearchError(true);
-        } finally {         
+        } finally {
             setIsSearchLoading(false);
             setIsLoading(false);
         }
@@ -111,7 +108,6 @@ const hasItems: boolean = suggestions?.some(
         setShowSearchError(false);
         setIsSearchLoading(false);
         setSearchText("");
-        setFilteredDocs([]); 
     };
 
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
@@ -122,14 +118,6 @@ const hasItems: boolean = suggestions?.some(
             setIsSearchTriggered(true);
         }
     }
-
-    let tableDataToShow: tableDataProps[] = [];
-    if (isSearchTriggered) {
-        tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
-    } else {
-        tableDataToShow = Array.isArray(tableData) ? tableData : [];
-    }
-    console.log("data===>",  showSearchError, isSearchTriggered, docData?.data );
 
     return (<>
         <>
@@ -157,7 +145,7 @@ const hasItems: boolean = suggestions?.some(
                         }}
                     />
 
-                    {isMobileView &&<Breadcrumbs
+                    {isMobileView && <Breadcrumbs
                         breadcrumbActions={[
                             {
                                 active: false,
@@ -194,19 +182,19 @@ const hasItems: boolean = suggestions?.some(
                         }}
 
                     >
-                       { !isMobileView && <div>
+                        {!isMobileView && <div>
                             <Breadcrumbs
                                 breadcrumbActions={[
                                     {
                                         active: false,
                                         linkName: 'Home',
                                         path: window.location.origin
-                                      },
-                                      {
+                                    },
+                                    {
                                         active: false,
                                         linkName: 'Admin Console',
                                         path: homeurl
-                                      },
+                                    },
                                     {
                                         active: false,
                                         linkName: 'Document Management Server',
@@ -270,9 +258,9 @@ const hasItems: boolean = suggestions?.some(
                                     }
                                 ]}
                                 emptyStateMsg={
-                                         !isSearchTriggered && showSearchError && !searchText
-                                                  ? "Information unavailable."
-                                                 : "Documents will appear here once they are uploaded."
+                                    !isSearchTriggered && showSearchError && !searchText
+                                        ? "Information unavailable."
+                                        : "Documents will appear here once they are uploaded."
                                 }
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -331,7 +319,7 @@ const hasItems: boolean = suggestions?.some(
                                 primaryButtonTitle=""
                                 resultNotFoundMessage={
                                     !isSearchTriggered || !docData?.data?.length || !searchText || showSearchError
-                                         ? "Information unavailable"
+                                        ? "Information unavailable"
                                         : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
                                 }
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
@@ -346,17 +334,17 @@ const hasItems: boolean = suggestions?.some(
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={hasItems ? suggestions : []}
                                 onSearchSuggestionItemClick={(item) =>
-                                handleSuggestionClick(item, setSearchTerm, setSearchText)
+                                    handleSuggestionClick(item, setSearchTerm, setSearchText)
                                 }
-                                searchOnChange={(e:any) => handleSearchChange(e,setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+                                searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
-                                showSearchError ? "Search unavailable. Please try again later." : undefined
+                                    showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
                                 searchValidationTextLevel={
-                                showSearchError ? ValidationTextLevel.Warning : undefined
+                                    showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
 
-                                
+
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle="Cancel"
@@ -369,7 +357,7 @@ const hasItems: boolean = suggestions?.some(
                                 sidePanelSubTitle=""
                                 sidePanelTitle=""
                                 subHeadingText=""
-                                tableBodyData={tableData || [] }
+                                tableBodyData={tableData || []}
                                 filterCustumeElem2={<Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
@@ -389,8 +377,8 @@ const hasItems: boolean = suggestions?.some(
                                         isNotificationanner: false,
                                         notificationStatus: NotificationStatus.SUCCESS,
                                         okText: 'Discard',
-                                        onCancel: (): void => {},
-                                        onConfirm: (): void => {},
+                                        onCancel: (): void => { },
+                                        onConfirm: (): void => { },
                                         template: DialogTemplate.Confirmation
                                     }
                                 }
