@@ -72,7 +72,7 @@ const SystemStatus: React.FC = () => {
           />
         </GridItem>
         <GridItem
-          style={{ marginTop: "24px" }}
+          style={{ marginTop: "24px", minWidth: "75%"  }}
           lg={isOpen ? 9 : 12}
           md={isOpen ? 8 : 8}
           xl={isOpen ? 10 : 12}

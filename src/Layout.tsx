@@ -140,7 +140,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SystemStatusORG"
   );
-
+  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
@@ -228,7 +228,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             />
           <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
           {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-           {hasSystemStatusPermission && (
+           {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
             <ProtectedRoute
               exact
               path="/systemstatus"

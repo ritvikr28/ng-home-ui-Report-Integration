@@ -123,9 +123,13 @@ const hasItems: boolean = suggestions?.some(
         }
     }
 
-    const tableDataToShow: tableDataProps[] =
-      docData?.data && Array.isArray(docData.data) ? tableData : [];
-       console.log("data===>",  showSearchError, isSearchTriggered, docData?.data );
+    let tableDataToShow: tableDataProps[] = [];
+    if (isSearchTriggered) {
+        tableDataToShow = Array.isArray(filteredDocs) ? filteredDocs : [];
+    } else {
+        tableDataToShow = Array.isArray(tableData) ? tableData : [];
+    }
+    console.log("data===>",  showSearchError, isSearchTriggered, docData?.data );
 
     return (<>
         <>
@@ -269,7 +273,7 @@ const hasItems: boolean = suggestions?.some(
                                          !isSearchTriggered && showSearchError && !searchText
                                                   ? "Information unavailable."
                                                  : "Documents will appear here once they are uploaded."
-                                }	
+                                }
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
                                 errorActionListItem={[
@@ -326,15 +330,15 @@ const hasItems: boolean = suggestions?.some(
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
                                 resultNotFoundMessage={
-                                    isSearchTriggered &&!docData?.data?.length && searchText && !showSearchError
-                                         ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
-                                        : undefined
+                                    !isSearchTriggered || !docData?.data?.length || !searchText || showSearchError
+                                         ? "Information unavailable"
+                                        : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
                                 }
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
                                 isShowSearch
-                                searchPlaceholderText="Search..."
+                                searchPlaceholderText=""
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
                                 isSearchHideClearIcon={searchTerm.length === 0}
@@ -365,7 +369,7 @@ const hasItems: boolean = suggestions?.some(
                                 sidePanelSubTitle=""
                                 sidePanelTitle=""
                                 subHeadingText=""
-                                tableBodyData={tableData || []}
+                                tableBodyData={tableData || [] }
                                 filterCustumeElem2={<Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
@@ -376,7 +380,7 @@ const hasItems: boolean = suggestions?.some(
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                               tableHeadersData={getTableHeadersData}
+                                tableHeadersData={tableData.length > 0 ? getTableHeadersData : []}
                                 tableLastColumnWidth="10px"
                                 templatePropsConfirmation={
                                     {
