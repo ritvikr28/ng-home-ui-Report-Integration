@@ -16,6 +16,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
+import { TestingComponent } from "../../TestingComponent";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -86,7 +87,13 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
-  }; 
+  };
+  const hasSignOutFlagEnabled: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SignOutFlag"
+  );
+  console.log("hasSignOutFlagEnabled homepage", hasSignOutFlagEnabled);
+
 
   return (
     <div>
@@ -156,6 +163,8 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       <div className="sims-section-footer c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />
       </div>
+
+      {hasSignOutFlagEnabled && <TestingComponent />}
     </div>
   );
 };
