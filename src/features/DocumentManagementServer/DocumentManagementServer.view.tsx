@@ -23,10 +23,11 @@ const DocumentManagementServerView: React.FC = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [hasFetched, setHasFetched] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
-
+    const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     const onPageChange = (event: any, page: number) =>
-        handlePageChange(event, page, setCurrentPage, setIsLoading);
+        handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
     const tableData: tableDataProps[] = (showSearchError || !docData?.data?.length) ? [] : docData?.data?.map((doc: any) => ({
         id: doc?.fileId,
@@ -61,7 +62,21 @@ const DocumentManagementServerView: React.FC = () => {
     }, [docData]);
 
     useEffect(() => {
+    const fetchInitialData = async () => {
+        setIsLoading(true);
+        const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+        const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
+        await Promise.all([minLoaderTime, dataFetch]);
+        setIsLoading(false);
+        setIsInitialLoad(false);
+    };
+    fetchInitialData();
+}, []);
+
+    useEffect(() => {
+        if (!isInitialLoad) {
         fetchGetDocumentDetails(searchText, currentPage);
+        }
     }, [currentPage, searchText]);
 
 
@@ -71,7 +86,7 @@ const DocumentManagementServerView: React.FC = () => {
 
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
-        setIsLoading(true);
+        setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
@@ -93,7 +108,7 @@ const DocumentManagementServerView: React.FC = () => {
             setShowSearchError(true);
         } finally {
             setIsSearchLoading(false);
-            setIsLoading(false);
+            setIsSearchDataLoading(false);
         }
     }
 
@@ -116,6 +131,7 @@ const DocumentManagementServerView: React.FC = () => {
             setSearchTerm(keyword);
             setSearchText(keyword);
             setIsSearchTriggered(true);
+            setIsSearchDataLoading(true);
         }
     }
 
@@ -392,7 +408,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
                                 isSearchShowLoading={isLoading}
-                                dynamicTableLoader={isLoading}
+                                dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
                             />
                         </div>}

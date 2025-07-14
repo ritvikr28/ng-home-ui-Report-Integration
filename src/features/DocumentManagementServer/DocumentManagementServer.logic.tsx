@@ -228,9 +228,9 @@ export const handlePageChange = (
   _event: any,
   page: number,
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  setIsLoading(true);
+  setIsSearchDataLoading(true);
   setCurrentPage(page);
 };
 
