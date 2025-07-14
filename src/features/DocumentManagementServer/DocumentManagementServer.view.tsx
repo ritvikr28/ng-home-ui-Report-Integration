@@ -112,6 +112,21 @@ const DocumentManagementServerView: React.FC = () => {
         }
     }
 
+const getEmptyStateMsg = () => {
+    if (searchText !== "") return undefined;
+    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+    return "Documents will appear here once they are uploaded.";
+};
+
+const getTableHeaders = () => {
+    if (tableData?.length > 0) {
+        return getTableHeadersData;
+    }
+    if (searchText !== "") {
+        return getTableHeadersData;
+    }
+    return [];
+};
 
 
 
@@ -273,11 +288,7 @@ const DocumentManagementServerView: React.FC = () => {
                                         value: 'Delete'
                                     }
                                 ]}
-                                emptyStateMsg={
-                                    !isSearchTriggered && showSearchError && !searchText
-                                        ? "Information unavailable."
-                                        : "Documents will appear here once they are uploaded."
-                                }
+                                emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
                                 errorActionListItem={[
@@ -384,8 +395,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={(tableData?.length > 0) ? getTableHeadersData : (tableData?.length === 0 && !searchText ? []: getTableHeadersData )}
-                                tableLastColumnWidth="10px"
+                                 tableHeadersData={getTableHeaders()}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',
