@@ -118,12 +118,10 @@ const webpackDevServerSettings = {
 const baseConfig = {
   mode: "development",
   entry: "./src/index.tsx",
-  target: "web",
+  target: ["web"],
   output: {
     path: path.resolve(__dirname, "../../dist"),
-    filename: `[name].[contenthash].js?q=${(Math.random() + 1)
-      .toString(36)
-      .substring(7)}`,
+    filename: "[name].[contenthash].js",
     clean: true,
     assetModuleFilename: "assets/[hash][ext][query]",
     publicPath: "/"
@@ -147,9 +145,5 @@ module.exports = {
   baseConfig,
   webpackBaseRules,
   webpackBasePlugins,
-  webpackDevServerSettings,
-  cache: { 
-    type: 'memory',
-    maxGenerations: 1
-  }
+  webpackDevServerSettings
 };
