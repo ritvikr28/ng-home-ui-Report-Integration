@@ -38,7 +38,7 @@ export const fetchDocumentDetails = async ({
     }
     return null;
   } catch (err: any) {
-    return null;
+    return err.response?.data ;
   }
 };
 

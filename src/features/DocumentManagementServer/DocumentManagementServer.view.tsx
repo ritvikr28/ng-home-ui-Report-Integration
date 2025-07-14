@@ -93,8 +93,8 @@ const DocumentManagementServerView: React.FC = () => {
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
             });
-
-            if (result) {
+            if (result ) {
+                
                 setDocData(result);
                 setCurrentPage(page);
                 setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
@@ -134,7 +134,7 @@ const DocumentManagementServerView: React.FC = () => {
             setIsSearchDataLoading(true);
         }
     }
-
+  
     return (<>
         <>
             <Grid className="dms-layout" style={{ display: 'flex' }}>
@@ -334,9 +334,9 @@ const DocumentManagementServerView: React.FC = () => {
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
                                 resultNotFoundMessage={
-                                    !isSearchTriggered || !docData?.data?.length || !searchText || showSearchError
-                                        ? "Information unavailable"
-                                        : `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
+                                    isSearchTriggered && !docData?.data?.length 
+                                         ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
+                                        : undefined
                                 }
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
@@ -373,7 +373,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 sidePanelSubTitle=""
                                 sidePanelTitle=""
                                 subHeadingText=""
-                                tableBodyData={tableData || []}
+                                tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={<Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
@@ -384,7 +384,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={tableData.length > 0 ? getTableHeadersData : []}
+                                tableHeadersData={(tableData?.length > 0) ? getTableHeadersData : (tableData?.length === 0 && !searchText ? []: getTableHeadersData )}
                                 tableLastColumnWidth="10px"
                                 templatePropsConfirmation={
                                     {
