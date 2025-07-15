@@ -70,7 +70,7 @@ describe('fetchDocumentDetails', () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce(new Error('API failed'));
 
     const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
-    expect(result).toBeNull();
+    expect(result).toBeUndefined();
   });
 });
 
