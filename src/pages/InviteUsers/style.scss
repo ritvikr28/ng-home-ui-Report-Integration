@@ -1,163 +1,9 @@
-/* stylelint-disable */
-.invite-users-table-align .essui-table__cell {
-  border-right: 1px solid #e0e0e0;
-  color: #000;
-  line-height: 24px;
-}
-
-.invite-user-status {
-  font-family: Segoe UI;
-  font-weight: 400;
-  font-size: 16px;
-}
-
-.invite-users-table .dropdown {
-  align-self: normal !important;
-}
-
-@media screen and (min-width: 768px) and (max-width: 1023.9px) {
-  .essui-grid-col .essui-side-navigation-panel-container-grid-item {
-    width: 264px;
-  }
-
-  .invite-users-table .dynamic-table {
-    width: max-content;
-    margin: 1px 1px !important;
-    overflow: auto;
-  }
-
-  .essui-grid-col--md-2 {
-    flex-basis: 0%;
-    max-width: 25%;
-  }
-
-  .essui-dropdown-container {
-    width: 120px;
-  }
-
-  .heading-title .heading-font {
-    margin: 1px 16px;
-  }
-
-  #breadcrumbs-wrapper {
-    margin-top: 7px;
-    margin-left: 11px;
-  }
-
-  .invite-user-dialog-footer .essui-dialog__footer {
-    display: flex;
-    flex-direction: row-reverse;
-  }
-}
-
-@media (min-width: 360px) and (max-width: 767.9px) {
-  .invite-users-table .dropdown {
-    margin-top: 10px;
-    margin-left: 13px;
-  }
-
-  .invite-users-table .dynamic-table {
-    margin: 1px 1px !important;
-    overflow-x: scroll;
-  }
-
-  .invite-users-table .edit-selected-btn {
-    margin-top: 10px;
-  }
-
-  .invite-users-table .essui-dropdown-container {
-    width: 120px;
-  }
-
-  #breadcrumbs-wrapper {
-    margin-top: 7px;
-    margin-left: 11px;
-  }
-
-  .invite-user-dialog-footer .essui-dialog__footer {
-    display: flex;
-    flex-direction: row-reverse;
-  }
-}
-
-@media (min-width: 637px) and (max-width: 767.9px) {
-  .invite-users-table .dropdown {
-    margin: 0;
-  }
-
-  .invite-users-table .edit-selected-btn {
-    margin: 0px;
-  }
-}
-
-@media only screen and (width: 712px) {
-  .invite-user-dialog-footer .essui-dialog__footer {
-    display: flex;
-    flex-direction: row-reverse;
-  }
-}
-
-@media only screen and (width: 753px) {
-  .invite-users-table .edit-selected-btn {
-    margin-top: 0px;
-  }
-
-  .invite-users-table .dropdown {
-    margin-top: 0px;
-    margin-left: 0px;
-  }
-
-  .invite-user-dialog-footer .essui-dialog__footer {
-    display: flex;
-    flex-direction: row-reverse;
-  }
-}
-
-.invite-users-table .filter-tool .edit-selected .essui-overflow-menu {
-  position: relative !important;
-  width: 155px;
-}
-
-.invite-user-dialog-footer .essui-dialog__footer {
-  display: flex;
-  flex-direction: row-reverse;
-}
-
-.invite-users-table
-  .admin-console-table-wrapper
-  #search-autocomplete.with-suggestions
-  #suggestions-wrapper {
-  display: flex;
-}
-
-.invite-users-table
-  .filter-tool
-  #search-autocomplete.with-suggestions
-  #suggestions-wrapper {
-  display: block;
-  top: 110%;
-  z-index: 1;
-}
-
-.invite-users-table
-  .filter-tool
-  #search-autocomplete
-  .icon-container.position-right {
-  display: flex;
-}
-
-.invite-users-table
-  .filter-tool
-  #search-autocomplete
-  .icon-container.position-right
-  .essui-loader {
-  display: flex;
-  margin: 0;
-  margin-top: 0.7rem;
-}
-
 .invite-users-table .filter-tool .essui-validation-text {
   margin-top: 10px;
+}
+
+.invite-users-table {
+  margin-bottom: 16px;
 }
 
 .new-side-panel-invite-users {
@@ -171,10 +17,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: thin;
-}
-
-.invite-users-table {
-  margin: 0 1%;
+  width: 100%;
+  padding: 16px;
 }
 
 .admin-console-grid-invite-users {
@@ -201,6 +45,90 @@
   }
 }
 
-.invite-users-breadcrumb {
-  margin-left: 9px;
+.invite-users-breadcrumb #breadcrumbs-wrapper {
+  margin-bottom: 0 !important;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+
+.sidepanel-toggle-button {
+  width: 40px !important;
+  height: 40px;
+  left: 16px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid #8f8f8f;
+}
+
+.filter-tool-view {
+  background: #fff;
+}
+
+.invite-user-container {
+  margin: 0 !important;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.invite-users-table .essui-table__cell-state-info {
+  position: relative;
+}
+
+.invite-users-table [data-testid="checkbox-data-testid"] {
+  [data-testid="columnheader"] {
+    width: 25px;
+    height: 25px;
+    margin: auto;
+
+    .checkbox {
+      width: 25px;
+    }
+  }
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.invite-users-table .essui-table__cell-center {
+  span {
+    .action-table-cell {
+      width: 25px;
+      display: inline-block;
+
+      .checkbox {
+        width: 25px;
+        height: 25px;
+      }
+    }
+  }
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.invite-users-table .essui-table__cell-center > span:first-of-type {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.invite-users-table .controlled-list-table {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.invite-users-table .table-pagination {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.essui-table__row .essui-table__cell:last-child {
+  padding-right: 33px;
+}
+
+.invite-users-table .filter-tool-view .essui-overflow-menu {
+  width: 100%;
 }
