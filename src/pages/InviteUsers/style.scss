@@ -132,3 +132,21 @@
 .invite-users-table .filter-tool-view .essui-overflow-menu {
   width: 100%;
 }
+
+@media only screen and (max-width: 359px) {
+  .invite-users-table .essui-pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+
+    nav {
+      grid-column-gap: 16px;
+    }
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .invite-users-table .essui-textinput__right-icon {
+    margin-left: -30px;
+  }
+}
