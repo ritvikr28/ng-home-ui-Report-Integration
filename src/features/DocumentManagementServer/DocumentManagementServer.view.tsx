@@ -1,29 +1,35 @@
-import {  LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
-import React,{ useState, useEffect } from "react"
+import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import DocumentManagementServer, { debouncedFetchSuggestions, getTableHeadersData, handlePageChange, handleSuggestionClick, onBreadcrumbClick} from "./DocumentManagementServer.logic"
+import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 
+
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
-    const [data, setData] = useState<any>(null);
+    const [docData, setDocData] = useState<any>(null);
+    const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
+    const [hasFetched, setHasFetched] = useState(false);
+    const [searchText, setSearchText] = useState<string>("");
+    const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
 
     const onPageChange = (event: any, page: number) =>
-      handlePageChange(event, page, setCurrentPage, setIsLoading);
+        handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
-    const { data: initialData, error, hasFetched }: { data: any; error: string | null, hasFetched: boolean } = DocumentManagementServer({ pageNumber: currentPage, pageSize: pageSizeNumber });
-    const tableData: tableDataProps[] = (error || !data?.data?.length) ? [] : data?.data?.map((doc: any) => ({
+    const tableData: tableDataProps[] = (showSearchError || !docData?.data?.length) ? [] : docData?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
         Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
@@ -47,110 +53,103 @@ const DocumentManagementServerView: React.FC = () => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
 
-    useEffect(() => {
-        setIsLoading(true);
-        setTimeout(() => {
-            if (tableData) {
-                setIsLoading(false);
-            }
-        }, 1500);
-    }, [currentPage]);
 
     useEffect(() => {
-        if (data && data?.totalRecords) {
-            const totalPages = Math.ceil(data.totalRecords / pageSizeNumber);
+        if (docData && docData?.totalRecords) {
+            const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
             setTotalPage(totalPages);
         }
-    }, [data]);
+    }, [docData]);
 
     useEffect(() => {
-        let mounted = true;
+    const fetchInitialData = async () => {
+        setIsLoading(true);
+        const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+        const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
+        await Promise.all([minLoaderTime, dataFetch]);
+        setIsLoading(false);
+        setIsInitialLoad(false);
+    };
+    fetchInitialData();
+}, []);
 
-        if (
-            mounted &&
-            initialData &&
-            JSON.stringify(initialData) !== JSON.stringify(data)
-        ) {
-            setData(initialData);
+    useEffect(() => {
+        if (!isInitialLoad) {
+        fetchGetDocumentDetails(searchText, currentPage);
         }
-
-        return () => {
-            mounted = false;
-        };
-    }, [initialData]);
+    }, [currentPage, searchText]);
 
 
-
-       
-  
-const hasItems: boolean = suggestions?.some(
-    ({ values }: Suggestion) => values?.length > 0
-);
-
-const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setSearchTerm(value);
-
-    if (value?.length < 2) {
-      setSuggestions([]);
-        setShowSearchError(false);
-        setIsSearchLoading(false);
-      return;
-    }
-
-    setIsSearchLoading(true);
-    setSuggestions([]);
-
-    debouncedFetchSuggestions(
-      value,
-      setIsSearchLoading,
-      setSuggestions,
-      setShowSearchError
+    const hasItems: boolean = suggestions?.some(
+        ({ values }: Suggestion) => values?.length > 0
     );
-  };
 
 
-const loadDocumentData = async (searchText = "", page = 1) => {
-  let isActive = true;
-
-  setIsSearchLoading(true);
-  setIsLoading(true);      
-
-  try {
-    const result = await fetchDocumentDetails({
-      pageNumber: page,
-      pageSize: pageSizeNumber,
-      searchText,
-    });
-
-    if (isActive && result) {
-      setData(result);
-      setCurrentPage(page);
-      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
-      setShowSearchError(false);
-    } else if (isActive) {
-      setShowSearchError(true);
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
+        setIsSearchDataLoading(true);
+        try {
+            const result = await fetchDocumentDetails({
+                pageNumber: page,
+                pageSize: pageSizeNumber,
+                searchText: searchTexts,
+            });
+            if (result ) {
+                
+                setDocData(result);
+                setCurrentPage(page);
+                setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+                setShowSearchError(false);
+            } else {
+                setShowSearchError(true);
+            }
+            setHasFetched(true);
+        } catch (err) {
+            console.error("Error fetching document details:", err);
+            setShowSearchError(true);
+        } finally {
+            setIsSearchLoading(false);
+            setIsSearchDataLoading(false);
+        }
     }
-  } catch (err) {
-    if (isActive) {
-      console.error("Error loading document data:", err);
-      setShowSearchError(true);
-    }
-  } finally {
-    if (isActive) {
-      setIsSearchLoading(false); 
-      setIsLoading(false);
-    }
-  }
 
-  return () => {
-    isActive = false;
-  };
+const getEmptyStateMsg = () => {
+    if (searchText !== "") return undefined;
+    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+    return "Documents will appear here once they are uploaded.";
+};
 
+const getTableHeaders = () => {
+    if (tableData?.length > 0) {
+        return getTableHeadersData;
+    }
+    if (searchText !== "") {
+        return getTableHeadersData;
+    }
+    return [];
 };
 
 
 
+    const handleSearchClose = () => {
+        setSearchInput("");
+        setSearchTerm("");
+        setIsSearchTriggered(false);
+        setCurrentPage(1);
+        setShowSearchError(false);
+        setIsSearchLoading(false);
+        setSearchText("");
+    };
+
+    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+        if (event.key === "Enter") {
+            const keyword = searchTerm?.trim()?.toLowerCase();
+            setSearchTerm(keyword);
+            setSearchText(keyword);
+            setIsSearchTriggered(true);
+            setIsSearchDataLoading(true);
+        }
+    }
+  
     return (<>
         <>
             <Grid className="dms-layout" style={{ display: 'flex' }}>
@@ -177,7 +176,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                         }}
                     />
 
-                    {isMobileView &&<Breadcrumbs
+                    {isMobileView && <Breadcrumbs
                         breadcrumbActions={[
                             {
                                 active: false,
@@ -214,19 +213,19 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                         }}
 
                     >
-                       { !isMobileView && <div>
+                        {!isMobileView && <div>
                             <Breadcrumbs
                                 breadcrumbActions={[
                                     {
                                         active: false,
                                         linkName: 'Home',
                                         path: window.location.origin
-                                      },
-                                      {
+                                    },
+                                    {
                                         active: false,
                                         linkName: 'Admin Console',
                                         path: homeurl
-                                      },
+                                    },
                                     {
                                         active: false,
                                         linkName: 'Document Management Server',
@@ -247,7 +246,9 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                         }
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
-                                globalNotificationMsgBannerObject={null}
+                                globalNotificationMsgBannerObject={
+                                    showSearchError && !isSearchTriggered ? { title: "Information unavailable" } : null
+                                }
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -287,7 +288,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                         value: 'Delete'
                                     }
                                 ]}
-                                emptyStateMsg="Documents will appear here once they are uploaded."
+                                emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
                                 errorActionListItem={[
@@ -343,9 +344,14 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
-                                resultNotFoundMessage=""
+                                resultNotFoundMessage={
+                                    isSearchTriggered && !docData?.data?.length 
+                                         ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
+                                        : undefined
+                                }
+                                dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
-                                searchTerm=""
+                                searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=" "
                                 searchValue={searchTerm}
@@ -355,25 +361,19 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={hasItems ? suggestions : []}
                                 onSearchSuggestionItemClick={(item) =>
-                                handleSuggestionClick(item, setSearchTerm, loadDocumentData)
+                                    handleSuggestionClick(item, setSearchTerm, setSearchText)
                                 }
-                                searchOnChange={handleSearchChange}
-                                searchOnCloseHandle={async () => {
-                                setSearchTerm("");
-                                setSuggestions([]);
-                                await loadDocumentData("", 1);
-                                }}
+                                searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
-                                showSearchError ? "Search unavailable. Please try again later." : undefined
+                                    showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
                                 searchValidationTextLevel={
-                                showSearchError ? ValidationTextLevel.Warning : undefined
+                                    showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
-                                onSearchKeyDown={async (e: any) => {
-                                 if (e.key === "Enter" && searchTerm?.trim() === "") {
-                                    await loadDocumentData("", 1);
-                                }
-                                }}
+
+
+                                onSearchKeyDown={handleSearchEnter}
+                                searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle="Cancel"
                                 showConfirmDialog
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
@@ -384,7 +384,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 sidePanelSubTitle=""
                                 sidePanelTitle=""
                                 subHeadingText=""
-                                tableBodyData={tableData || [] }
+                                tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={<Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
@@ -395,8 +395,7 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={tableData.length > 0 ? getTableHeadersData : []}
-                                tableLastColumnWidth="10px"
+                                 tableHeadersData={getTableHeaders()}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',
@@ -404,8 +403,8 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                         isNotificationanner: false,
                                         notificationStatus: NotificationStatus.SUCCESS,
                                         okText: 'Discard',
-                                        onCancel: (): void => {},
-                                        onConfirm: (): void => {},
+                                        onCancel: (): void => { },
+                                        onConfirm: (): void => { },
                                         template: DialogTemplate.Confirmation
                                     }
                                 }
@@ -417,7 +416,9 @@ const loadDocumentData = async (searchText = "", page = 1) => {
                                 isShowFirstElement={true}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
-                                isShowErrorPage={!!error}
+                                isShowErrorPage={!!showSearchError}
+                                isSearchShowLoading={isLoading}
+                                dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
                             />
                         </div>}

@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails } from "./ApiService";
-import { DocumentBasicDetails,  DocumentManagementServerProps } from "./responseModel";
+import { fetchDMSSuggestions } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 export const getTableHeadersData: {
@@ -17,29 +16,95 @@ export const getTableHeadersData: {
   isColumnSorting?: boolean;
   anyComponent?: (e: any) => JSX.Element;
 }[] = [
-  {
-    text: "Id",
-    isShow: false,
-    showValAs: ShowValAs.Text,
-    isTextTruncate: false,
-    columnWidth: "16px"
-  },
-  {
-    text: "Document",
-    isShow: true,
-    showValAs: ShowValAs.CustomeComponent,
-    isTextTruncate: false,
-    isHeaderTextTruncate: true,
-    columnWidth: "267px",
-    headerTxtTrunctLength: 50,
-    isSimpleText: true,
-    txtTrunctLength: 35,
-    isColumnSorting: false,
-    anyComponent: (e: any) => (
-      <>
-        <div style={{ display: "flex" }}>
+    {
+      text: "Id",
+      isShow: false,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      columnWidth: "16px"
+    },
+    {
+      text: "Document",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      isTextTruncate: false,
+      isHeaderTextTruncate: true,
+      columnWidth: "267px",
+      headerTxtTrunctLength: 50,
+      isSimpleText: true,
+      txtTrunctLength: 35,
+      isColumnSorting: false,
+      anyComponent: (e: any) => (
+        <>
+          <div style={{ display: "flex" }}>
+            <Tooltip
+              dataTestId='tooltip-eventtime'
+              content={
+                <span >{e}</span>}
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <div className="tooltip-content document-text">
+                <span > {e} </span>
+              </div>
+
+            </Tooltip>
+          </div>
+        </>
+      )
+    },
+    {
+      text: "Related to",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      isTextTruncate: true,
+      isHeaderTextTruncate: true,
+      headerTxtTrunctLength: 17,
+      columnWidth: "261px",
+      txtTrunctLength: 35,
+      anyComponent: (elem: any) => (
+        <>
+          {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
+            <a href="/pupilprofile">{elem[0]}</a>
+            <Tag
+              dataTestId="name"
+              id="name"
+              className="relatedto-tag"
+              text="Year / Reg"
+            />
+            {elem?.length > 1 ? (<Tooltip
+              dataTestId='tooltip-eventtime'
+              content={
+                <div>
+                  {elem?.map((item: any) => (
+                    <div>{item} | "Year" | "Reg"</div>
+                  ))}
+                </div>
+              }
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <div className="tooltip-content">
+                <span>{`+${elem.length - 1}`}</span>
+              </div>
+
+            </Tooltip>) : ""}
+          </div>)}
+        </>
+      )
+    },
+    {
+      text: "Category",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      isHeaderTextTruncate: true,
+      headerTxtTrunctLength: 20,
+      isColumnSorting: false,
+      columnWidth: "144px",
+      anyComponent: (e: any) => (
+        <>
           <Tooltip
-            dataTestId= 'tooltip-eventtime'
+            dataTestId='tooltip-eventtime'
             content={
               <span >{e}</span>}
             align={TooltipAlign.Center}
@@ -50,89 +115,23 @@ export const getTableHeadersData: {
             </div>
 
           </Tooltip>
-        </div>
-      </>
-    )
-  },
-  {
-    text: "Related to",
-    isShow: true,
-    showValAs: ShowValAs.CustomeComponent,
-    isTextTruncate: true,
-    isHeaderTextTruncate: true,
-    headerTxtTrunctLength: 17,
-    columnWidth: "261px",
-    txtTrunctLength: 35,
-    anyComponent: (elem: any) => (
-      <>
-        {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
-          <a href="/pupilprofile">{elem[0]}</a>
-          <Tag
-            dataTestId="name"
-            id="name"
-            className="relatedto-tag"
-            text= "Year / Reg"
-          />
-          {elem?.length > 1 ? (<Tooltip
-            dataTestId='tooltip-eventtime'
-            content={
-            <div>
-              {elem?.map((item: any) => (
-                <div>{item} | "Year" | "Reg"</div>
-              ))}
-            </div>
-}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content">
-              <span>{`+${elem.length - 1}`}</span>
-            </div>
-
-          </Tooltip>) : ""}
-        </div>)}
-      </>
-    )
-  },
-  {
-    text: "Category",
-    isShow: true,
-    showValAs: ShowValAs.CustomeComponent,
-    isHeaderTextTruncate: true,
-    headerTxtTrunctLength: 20,
-    isColumnSorting: false,
-    columnWidth: "144px",
-    anyComponent: (e: any) => (
-      <>
-        <Tooltip
-          dataTestId= 'tooltip-eventtime'
-          content={
-            <span >{e}</span>}
-          align={TooltipAlign.Center}
-          position={TooltipPosition.Bottom}
-        >
-          <div className="tooltip-content document-text">
-            <span > {e} </span>
-          </div>
-
-        </Tooltip>
-      </>
-    )
-  },
-  {
-    text: "Added by",
-    isShow: true,
-    showValAs: ShowValAs.Text,
-    headerTxtTrunctLength: 50,
-    columnWidth: "180px"
-  },
-  {
-    text: "Date added",
-    isShow: true,
-    columnWidth: "140px",
-    showValAs: ShowValAs.Text,
-    isTextTruncate: false,
-    isColumnSorting: false
+        </>
+      )
+    },
+    {
+      text: "Added by",
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      headerTxtTrunctLength: 50,
+      columnWidth: "180px"
+    },
+    {
+      text: "Date added",
+      isShow: true,
+      columnWidth: "140px",
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isColumnSorting: false
     },
     {
       text: "Format",
@@ -147,7 +146,7 @@ export const getTableHeadersData: {
       anyComponent: (e: any) => (
         <>
           <Tooltip
-            dataTestId= 'tooltip-eventtime'
+            dataTestId='tooltip-eventtime'
             content={
               <span >{e}</span>}
             align={TooltipAlign.Center}
@@ -161,34 +160,38 @@ export const getTableHeadersData: {
         </>
       )
     },
-  {
-    text: "Size",
-    isShow: true,
-    showValAs: ShowValAs.CustomeComponent,
-    txtTrunctLength: 12,
-    isColumnSorting: false,
-    isTextTruncate: false,
-    isHeaderTextTruncate: true,
-    headerTxtTrunctLength: 50,
-    columnWidth: "129px",
-    anyComponent: (e: any) => (
-      <>
-        <Tooltip
-          dataTestId= 'tooltip-eventtime'
-          content={
-            <span >{e}</span>}
-          align={TooltipAlign.Center}
-          position={TooltipPosition.Bottom}
-        >
-          <div className="tooltip-content document-text">
-            <span >{e}</span>
+    {
+      text: "Size",
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      txtTrunctLength: 12,
+      isColumnSorting: false,
+      isTextTruncate: false,
+      isHeaderTextTruncate: true,
+      headerTxtTrunctLength: 50,
+      columnWidth: "129px",
+      anyComponent: (e: any) => {
+        // Support both string and array input
+        const value = Array.isArray(e) ? e[0] : e;
+        if (!value) return <></>;
+        return (
+          <div style={{ display: "flex" }}>
+            <Tooltip
+              dataTestId="tooltip-eventtime"
+              content={<span>{value}</span>}
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <div className="tooltip-content document-text">
+                <span>{value}</span>
+              </div>
+            </Tooltip>
           </div>
+        );
+      },
+    }
+  ];
 
-        </Tooltip>
-      </>
-    )
-  }
-];
 export const tableBodyData: {
   id: string;
   Document: string;
@@ -199,36 +202,35 @@ export const tableBodyData: {
   Format: string;
   Size: string;
 }[] = [
-  {
-    id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-    Document: "Name ",
-    Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
-    Category: "School",
-    Addedby: "Helen Avery",
-    "Date added": "01 Jan 2025",
-    Format: "pdf",
-    Size: "300 bytes"
-  },
-  {
-    id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-    Document:
-      "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
-    Relatedto: ["Araminta Martin"],
-    Category: "Conduct",
-    Addedby: "Richard Wilton",
-    "Date added": "01 Jan 2025",
-    Format: "doc",
-    Size: "3KB"
-  }
-];
-
+    {
+      id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
+      Document: "Name ",
+      Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
+      Category: "School",
+      Addedby: "Helen Avery",
+      "Date added": "01 Jan 2025",
+      Format: "pdf",
+      Size: "300 bytes",
+    },
+    {
+      id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
+      Document:
+        "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
+      Relatedto: ["Araminta Martin"],
+      Category: "Conduct",
+      Addedby: "Richard Wilton",
+      "Date added": "01 Jan 2025",
+      Format: "doc",
+      Size: "3KB",
+    }
+  ];
 export const handlePageChange = (
   _event: any,
   page: number,
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  setIsLoading(true);
+  setIsSearchDataLoading(true);
   setCurrentPage(page);
 };
 
@@ -240,7 +242,7 @@ export const onBreadcrumbClick = (path: string) => {
     linkText: "Documents",
     linkUrl: "",
     clickType: "link",
-    clickLocation: "breadcrumb",
+    clickLocation: "breadcrumb"
   });
 };
 
@@ -248,11 +250,11 @@ export const onBreadcrumbClick = (path: string) => {
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  loadDocumentData: (text: string, page?: number) => void
+  setSearchText: React.Dispatch<React.SetStateAction<string>>
 ) => {
   if (!item || !item.name) return;
   setSearchTerm(item.name);
-  await loadDocumentData(item.name, 1);
+  setSearchText(item.name);
 };
 
 // Has items check
@@ -270,7 +272,7 @@ export const handleSearchChange = (
   const { value } = e.target;
   setSearchTerm(value);
 
-  if (value?.length < 3) {
+  if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
@@ -288,29 +290,23 @@ export const handleSearchChange = (
   );
 };
 
-const DocumentManagementServer = ({ pageNumber, pageSize }: DocumentManagementServerProps) => {
-  const [data, setData]: [DocumentBasicDetails | null, React.Dispatch<React.SetStateAction<DocumentBasicDetails | null>>] = useState<DocumentBasicDetails | null>(null);
-  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
-  const [hasFetched, setHasFetched] = useState(false);
-
-  useEffect(() => {
-    const fetchData: () => Promise<void> = async () => {
-      const result: DocumentBasicDetails | null = await fetchDocumentDetails(
-        { pageNumber, pageSize }
-      );
-      if (result) {
-        setData(result);
-      } else {
-        setError("Failed to fetch data");
-      }
-      setHasFetched(true)
-    };
-
-    fetchData();
-  }, [pageNumber, pageSize]);
-
-  return { data, error, hasFetched };
+export const loadSuggestions = async (
+  text: string,
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setSuggestionsLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  try {
+    setSuggestionsLoading(true);
+    const result = await fetchDMSSuggestions(text);
+    setSuggestions(result);
+  } catch (err) {
+    console.error("Suggestion fetch failed:", err);
+    setSuggestions([]);
+  } finally {
+    setSuggestionsLoading(false);
+  }
 };
+
 
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
@@ -356,5 +352,3 @@ export const debouncedFetchSuggestions = debounce(
   1000
 );
 
-
-export default DocumentManagementServer;

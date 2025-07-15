@@ -1,5 +1,5 @@
-import { AxiosResponse } from "axios";
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
+import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
 import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
@@ -17,7 +17,7 @@ export const fetchDocumentDetails = async ({
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
- 
+
     const payload = {
       documentsRequest: {
         pageNumber,
@@ -30,7 +30,7 @@ export const fetchDocumentDetails = async ({
         sortDirection,
       },
     };
- 
+
     const responseData: AxiosResponse<DocumentBasicDetails> =
       await service.post(url, payload, { baseURL: baseUrl });
     if (responseData?.status === 200) {
@@ -38,7 +38,7 @@ export const fetchDocumentDetails = async ({
     }
     return null;
   } catch (err: any) {
-    return null;
+    return err?.response?.data ;
   }
 };
 

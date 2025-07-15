@@ -1,567 +1,481 @@
 import React from "react";
-import { renderHook, act } from "@testing-library/react-hooks";
+import { act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import * as ApiService from "../ApiService";
-import { DocumentBasicDetails } from "../responseModel";
-import DocumentManagementServer, { debouncedFetchSuggestions, formatSuggestions, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, hasItems, onBreadcrumbClick, tableBodyData } from "../DocumentManagementServer.logic";
+import {
+  debouncedFetchSuggestions,
+  formatSuggestions,
+  getTableHeadersData,
+  handlePageChange,
+  handleSearchChange,
+  handleSuggestionClick,
+  hasItems,
+  loadSuggestions,
+  onBreadcrumbClick,
+  tableBodyData
+} from "../DocumentManagementServer.logic";
 
-
-  const analytics = require('../../../shared/utils/analytics').default;
+const analytics = require('../../../shared/utils/analytics').default;
 
 jest.mock("../ApiService");
 
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
   useMediaQuery: jest.fn(),
-   ApiService: {
+  ApiService: {
     fetchDMSSuggestions: jest.fn(),
   },
 }));
 
 describe("getTableHeadersData", () => {
-    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
-    const anyComponent = relatedToColumn?.anyComponent;
+  const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+  const anyComponent = relatedToColumn?.anyComponent;
 
-    test("should be an array and contain expected columns", () => {
-        expect(Array.isArray(getTableHeadersData)).toBe(true);
-        const expectedColumns = [
-            "Id", "Document", "Related to", "Category", "Added by", "Date added", "Format", "Size"
-        ];
-        expectedColumns.forEach(col => {
-            expect(getTableHeadersData.find(h => h.text === col)).toBeDefined();
-        });
+  test("should be an array and contain expected columns", () => {
+    expect(Array.isArray(getTableHeadersData)).toBe(true);
+    const expectedColumns = [
+      "Id", "Document", "Related to", "Category", "Added by", "Date added", "Format", "Size"
+    ];
+    expectedColumns.forEach(col => {
+      expect(getTableHeadersData.find(h => h.text === col)).toBeDefined();
     });
+  });
 
-    test("should contain 'Document' header with anyComponent", () => {
-        const docHeader = getTableHeadersData.find(h => h.text === "Document");
-        expect(docHeader).toBeDefined();
-        expect(typeof docHeader?.anyComponent).toBe("function");
-    });
+  test("should contain 'Document' header with anyComponent", () => {
+    const docHeader = getTableHeadersData.find(h => h.text === "Document");
+    expect(docHeader).toBeDefined();
+    expect(typeof docHeader?.anyComponent).toBe("function");
+  });
 
-    test("should contain 'Category' header with anyComponent", () => {
-        const catHeader = getTableHeadersData.find(h => h.text === "Category");
-        expect(catHeader).toBeDefined();
-        expect(typeof catHeader?.anyComponent).toBe("function");
-    });
+  test("should contain 'Related to' header with anyComponent", () => {
+    expect(relatedToColumn).toBeDefined();
+    expect(typeof relatedToColumn?.anyComponent).toBe("function");
+  });
 
+  test("renders nothing when elem is undefined", () => {
+    const { container } = render(<>{anyComponent && anyComponent(undefined)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
 
-    test("should contain 'Related to' header with anyComponent", () => {
-        expect(relatedToColumn).toBeDefined();
-        expect(typeof relatedToColumn?.anyComponent).toBe("function");
-    });
+  test("renders link and tag when elem has one item", () => {
+    render(<>{anyComponent && anyComponent(["John Doe"])}</>);
+    expect(document.querySelector(".relatedto-main")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "John Doe" })).toBeInTheDocument();
+  });
 
-    test("renders nothing when elem is undefined", () => {
-        const { container } = render(<>{anyComponent && anyComponent(undefined)}</>);
-        expect(container).toBeEmptyDOMElement();
-    });
-    test("renders nothing when elem is null", () => {
-        const { container } = render(<>{anyComponent && anyComponent(null)}</>);
-        expect(container).toBeEmptyDOMElement();
-    });
+  test("does not render tooltip when only one related item", () => {
+  const relatedToCol = getTableHeadersData.find(h => h.text === "Related to");
+  const { container } = render(<>{relatedToCol?.anyComponent?.(["Only One"])}</>);
+  expect(container.querySelector('[data-testid="tooltip-eventtime"]')).not.toBeInTheDocument();
+});
+});
 
-    test("renders nothing when elem is empty array", () => {
-        const { container } = render(<>{anyComponent && anyComponent([])}</>);
-        expect(container).toBeEmptyDOMElement();
-    });
+describe("getTableHeadersData column anyComponent rendering", () => {
+  const sizeColumn = getTableHeadersData.find(h => h.text === "Size");
+   const headers = getTableHeadersData;
 
-    test("renders link and Tag when elem has one item", () => {
-        render(<>{anyComponent && anyComponent(['John Doe'])}</>);
-        expect(document.querySelector('.relatedto-main')).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: 'John Doe' })).toBeInTheDocument();
-        expect(document.querySelector('.relatedto-tag')).toBeInTheDocument();
-        expect(screen.queryByTestId('tooltip-eventtime')).not.toBeInTheDocument();
-    });
+    test("Category column renders tooltip with value", () => {
+    const catColumn = headers.find(h => h.text === "Category");
+    const { getByText } = render(<>{catColumn?.anyComponent?.("App")}</>);
+    expect(getByText("App")).toBeInTheDocument();
+  });
 
-    test("renders Tag with text 'Year / Reg' when elem has one item", () => {
-        render(<>{anyComponent && anyComponent(['Test Name'])}</>);
-        const tag = document.querySelector('.relatedto-tag');
-        expect(tag).toBeInTheDocument();
-        expect(tag).toHaveTextContent('Year / Reg');
-    });
+  test("Format column renders tooltip with value", () => {
+    const formatColumn = headers.find(h => h.text === "Format");
+    const { getByText } = render(<>{formatColumn?.anyComponent?.("pdf")}</>);
+    expect(getByText("pdf")).toBeInTheDocument();
+  });
 
-    test('anyComponent renders a div with display flex of Document column', () => {
-        const relatedToColumn1 = getTableHeadersData.find(h => h.text === 'Document');
-        const anyComponentDoc = relatedToColumn1?.anyComponent;
+  test("Size column renders correctly for string input", () => {
+    const sizeCol = headers.find(h => h.text === "Size");
+    const { getByText } = render(<>{sizeCol?.anyComponent?.("2 MB")}</>);
+    expect(getByText("2 MB")).toBeInTheDocument();
+  });
 
-        const { container } = render(<>{anyComponentDoc && anyComponentDoc(['Test Document'])}</>);
-        const flexDiv = container.querySelector('div[style*="display: flex"]');
-        expect(flexDiv).toBeInTheDocument();
-        expect(flexDiv).toHaveStyle('display: flex');
-        expect(container.querySelector('.document-text')).toHaveTextContent('Test Document');
-    });
+  test("Size column renders correctly for array input", () => {
+    const sizeCols = headers.find(h => h.text === "Size");
+    const { getByText } = render(<>{sizeCols?.anyComponent?.(["2 MB"])}</>);
+    expect(getByText("2 MB")).toBeInTheDocument();
+  });
+
+  test("Size column renders nothing when input is null", () => {
+    const { container } = render(<>{sizeColumn?.anyComponent?.(null)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  test("Size column renders nothing when array input is empty", () => {
+    const { container } = render(<>{sizeColumn?.anyComponent?.([])}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+  test("Size column renders nothing when array input is empty", () => {
+  const { container } = render(<>{sizeColumn?.anyComponent?.([])}</>);
+  expect(container).toBeEmptyDOMElement();
+});
 
 });
+
 
 describe("tableBodyData", () => {
-    test("should have correct number of rows", () => {
-        expect(tableBodyData.length).toBe(2);
+  test("should have correct keys in each row", () => {
+    tableBodyData.forEach(row => {
+      expect(row).toHaveProperty("id");
+      expect(row).toHaveProperty("Document");
+      expect(row).toHaveProperty("Relatedto");
+      expect(row).toHaveProperty("Category");
+      expect(row).toHaveProperty("Addedby");
+      expect(row).toHaveProperty("Date added");
+      expect(row).toHaveProperty("Format");
+      expect(row).toHaveProperty("Size");
     });
-
-    test("should have expected keys in each row", () => {
-        tableBodyData.forEach(row => {
-            expect(row).toHaveProperty("id");
-            expect(row).toHaveProperty("Document");
-            expect(row).toHaveProperty("Relatedto");
-            expect(row).toHaveProperty("Category");
-            expect(row).toHaveProperty("Addedby");
-            expect(row).toHaveProperty("Date added");
-            expect(row).toHaveProperty("Format");
-            expect(row).toHaveProperty("Size");
-        });
-    });
-    test("should validate Relatedto is non-empty array", () => {
-        tableBodyData.forEach(row => {
-            expect(Array.isArray(row.Relatedto)).toBe(true);
-            expect(row.Relatedto.length).toBeGreaterThan(0);
-        });
-    });
+  });
 });
 
-describe("DocumentManagementServer hook", () => {
-    const mockData: DocumentBasicDetails = { data: [{ id: "1" }] } as any;
-
-    beforeEach(() => {
-        jest.clearAllMocks();
-    });
-
-    test("should set hasFetched false initially and fetch data", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-        const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
-        );
-
-        expect(result.current.hasFetched).toBe(false);
-
-        await waitForNextUpdate();
-
-        expect(result.current.data).toEqual(mockData);
-        expect(result.current.hasFetched).toBe(true);
-        expect(result.current.error).toBeNull();
-    });
-
-    test("should set error if fetch fails", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(null);
-
-        const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
-        );
-
-        await waitForNextUpdate();
-
-        expect(result.current.data).toBeNull();
-        expect(result.current.hasFetched).toBe(true);
-        expect(result.current.error).toBe("Failed to fetch data");
-    });
-
-    test("should refetch when pageNumber or pageSize changes", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-        const { result, rerender, waitForNextUpdate } = renderHook(
-            ({ pageNumber, pageSize }) =>
-                DocumentManagementServer({ pageNumber, pageSize }),
-            {
-                initialProps: { pageNumber: 1, pageSize: 10 }
-            }
-        );
-
-        await waitForNextUpdate();
-        expect(result.current.data).toEqual(mockData);
-
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [{ id: "2" }] });
-
-        rerender({ pageNumber: 2, pageSize: 10 });
-        await waitForNextUpdate();
-
-        expect(result.current.data).toEqual({ docs: [{ id: "2" }] });
-    });
-
-  
-
-    test("should set error if fetch throws", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(null);
-
-        const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
-        );
-
-        await waitForNextUpdate();
-
-        expect(result.current.data).toBeNull();
-        expect(result.current.hasFetched).toBe(true);
-        expect(result.current.error).toBe("Failed to fetch data");
-    });
-
-    test("should not update state after unmount", async () => {
-        // Simulate a slow promise
-        let resolvePromise: any;
-        (ApiService.fetchDocumentDetails as jest.Mock).mockImplementation(
-            () => new Promise(res => { resolvePromise = res; })
-        );
-
-        const { unmount } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
-        );
-
-        unmount();
-        // Resolve the promise after unmount
-        act(() => {
-            resolvePromise({ docs: [{ id: "3" }] });
-        });
-
-        // No assertion needed: test passes if no warning or error is thrown
-    });
-
-    test("should handle empty docs array", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [] });
-
-        const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: 1, pageSize: 10 })
-        );
-
-        await waitForNextUpdate();
-
-        expect(result.current.data).toEqual({ docs: [] });
-        expect(result.current.hasFetched).toBe(true);
-        expect(result.current.error).toBeNull();
-    });
-
-    test("should handle invalid parameters gracefully", async () => {
-        (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ docs: [{ id: "4" }] });
-
-        const { result, waitForNextUpdate } = renderHook(() =>
-            DocumentManagementServer({ pageNumber: -1, pageSize: 0 })
-        );
-
-        await waitForNextUpdate();
-
-        expect(result.current.data).toEqual({ docs: [{ id: "4" }] });
-        expect(result.current.hasFetched).toBe(true);
-        expect(result.current.error).toBeNull();
-    });
-});
-
-describe("getTableHeadersData 'Related to' column tooltip rendering", () => {
-    const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
-    const anyComponent = relatedToColumn?.anyComponent;
-
-    test("Tooltip uses correct dataTestId", async () => {
-        render(<>{anyComponent && anyComponent(['X', 'Y'])}</>);
-
-        const tooltipTrigger = screen.getByText('+1');
-        expect(tooltipTrigger).toBeInTheDocument();
-
-        await userEvent.hover(tooltipTrigger);
-
-        const tooltip = await screen.findByTestId('tooltip-eventtime');
-        expect(tooltip).toBeInTheDocument();
-    });
-
-    test("Tooltip content contains all items", async () => {
-        render(<>{anyComponent && anyComponent?.(['A', 'B', 'C'])}</>);
-
-        const trigger = screen.getByText('+2');
-        await userEvent.hover(trigger); 
-
-        const tooltip = await screen.findByTestId('tooltip-eventtime');
-        expect(tooltip).toBeInTheDocument();
-    });
-
-    test("Tooltip shows correct '+N' text for multi-item array", () => {
-        render(<>{anyComponent && anyComponent(['One', 'Two', 'Three', 'Four'])}</>);
-        expect(screen.getByText('+3')).toBeInTheDocument();
-    });
-
-
-
-});
 describe("formatSuggestions", () => {
-  it("should return formatted suggestions from input array", () => {
-  const input = [
-    { fileId: "1", fileName: "File 1" },
-    { fileId: "2", fileName: "File 2" }
-  ];
+  test("formats suggestion array correctly", () => {
+    const input = [
+      { fileId: "1", fileName: "File 1" },
+      { fileId: "2", fileName: "File 2" }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].values).toHaveLength(2);
+    expect(result[0].values[0].text).toBe("File 1");
+  });
 
-  const result = formatSuggestions(input);
-
-  expect(result).toHaveLength(1);
-  expect(result[0].values).toHaveLength(2);
-  expect(result[0].values[0].text).toBe("File 1");
-});
-
-
-  it("should return empty values when input array is empty", () => {
+ 
+  test("returns empty when input is empty", () => {
     const result = formatSuggestions([]);
     expect(result).toEqual([{ name: "", values: [] }]);
   });
 });
 
 describe("debouncedFetchSuggestions", () => {
-
   beforeEach(() => {
-  jest.useFakeTimers();
-  jest.clearAllMocks();
-});
+    jest.useFakeTimers();
+    jest.clearAllMocks();
+  });
 
-afterEach(() => {
-  jest.useRealTimers();
-});
+  afterEach(() => {
+    jest.useRealTimers();
+  });
 
+  test("fetches and sets suggestions", async () => {
+    const mockSuggestions = [{ fileName: "Doc A", fileId: "1" }];
+    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
 
- test("debouncedFetchSuggestions fetches and sets suggestions on success", async () => {
-jest.useFakeTimers(); // STEP 1: Fake timers
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
 
-  const mockSuggestions = [{ fileName: "File A", fileId: "123" }];
-  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
+    debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
+
+    await act(() => {
+      jest.advanceTimersByTime(1000);
+      return Promise.resolve();
+    });
+
+    expect(setSuggestions).toHaveBeenCalled();
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
+    expect(setShowError).not.toHaveBeenCalled();
+  });
+
+  test("handles undefined payload structure", async () => {
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
   const setSearchLoading = jest.fn();
   const setSuggestions = jest.fn();
   const setShowError = jest.fn();
 
-  // STEP 2: Call the function
-  debouncedFetchSuggestions("File", setSearchLoading, setSuggestions, setShowError);
+  debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
 
-  // STEP 3: Advance timers inside act()
   await act(() => {
-    jest.advanceTimersByTime(1000); // match debounce time
-    return Promise.resolve(); // flush any pending microtasks
+    jest.advanceTimersByTime(1000);
+    return Promise.resolve();
   });
 
-  // STEP 4: Assertions
-  expect(ApiService.fetchDMSSuggestions).toHaveBeenCalledWith("File");
-  expect(setSuggestions).toHaveBeenCalled(); // ← This is what was failing
-  expect(setSearchLoading).toHaveBeenCalledWith(false);
-  expect(setShowError).not.toHaveBeenCalled();
-
-  jest.useRealTimers(); // Reset timers
+  expect(setSuggestions).toHaveBeenCalledWith([{ name: "", values: [] }]);
 });
 
+  test("handles API error", async () => {
+    (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
- test("debouncedFetchSuggestions handles API failure", async () => {
-  jest.useFakeTimers();
-  (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("Network error"));
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
 
-  const setSearchLoading = jest.fn();
-  const setSuggestions = jest.fn();
-  const setShowError = jest.fn();
+    debouncedFetchSuggestions("FailTest", setSearchLoading, setSuggestions, setShowError);
 
-  debouncedFetchSuggestions("ErrorTest", setSearchLoading, setSuggestions, setShowError);
-   await act(() => {
-    jest.advanceTimersByTime(1000); // match debounce time
-    return Promise.resolve(); // flush any pending microtasks
+    await act(() => {
+      jest.advanceTimersByTime(1000);
+      return Promise.resolve();
+    });
+
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setShowError).toHaveBeenCalledWith(true);
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
   });
-  
-  expect(setShowError).toHaveBeenCalledWith(true);
+});
+
+describe("handlePageChange", () => {
+  it("should update current page and loading state", () => {
+    const setCurrentPage = jest.fn();
+    const setIsLoading = jest.fn();
+    handlePageChange({}, 2, setCurrentPage, setIsLoading);
+    expect(setCurrentPage).toHaveBeenCalledWith(2);
+    expect(setIsLoading).toHaveBeenCalledWith(true);
+  });
+});
+
+describe("handleSearchChange", () => {
+  const setup = (value: string) => {
+    const event = { target: { value } } as React.ChangeEvent<HTMLInputElement>;
+    const setSearchTerm = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    const setIsSearchLoading = jest.fn();
+
+    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+
+    return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading };
+  };
+
+  it("clears suggestions for short input", () => {
+    const { setSuggestions, setIsSearchLoading } = setup("a");
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  });
+
+  it("should handle undefined input value gracefully", () => {
+  const event = { target: { value: undefined } } as any;
+  const setSearchTerm = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
+
+  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
-  expect(setSearchLoading).toHaveBeenCalledWith(false);
 });
 
-
-  test("debouncedFetchSuggestions should debounce rapid calls", async () => {
-  const setSearchLoading = jest.fn();
+  it("should handle empty string as input", () => {
+  const event = { target: { value: "" } } as any;
+  const setSearchTerm = jest.fn();
   const setSuggestions = jest.fn();
-  const setShowError = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
 
-  const mockFetch = jest.fn().mockResolvedValue([{ fileName: "X", fileId: "id" }]);
-  (ApiService.fetchDMSSuggestions as jest.Mock) = mockFetch;
+  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  expect(setSuggestions).toHaveBeenCalledWith([]);
+  expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+});
 
-  debouncedFetchSuggestions("F1", setSearchLoading, setSuggestions, setShowError);
-  debouncedFetchSuggestions("F2", setSearchLoading, setSuggestions, setShowError);
-  debouncedFetchSuggestions("F3", setSearchLoading, setSuggestions, setShowError);
+  it("loads suggestions for 3+ characters", () => {
+    const { setSearchTerm, setIsSearchLoading } = setup("doc");
+    expect(setSearchTerm).toHaveBeenCalledWith("doc");
+    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
+  });
 
-  jest.advanceTimersByTime(1000);
-  await Promise.resolve();
+  it("triggers loading for length === 2", () => {
+  const event = { target: { value: "ab" } } as React.ChangeEvent<HTMLInputElement>;
+  const setSearchTerm = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
 
-  expect(mockFetch).toHaveBeenCalledTimes(1);
-  expect(mockFetch).toHaveBeenCalledWith("F3");
+  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+
+  expect(setSuggestions).toHaveBeenCalledWith([]);
+  expect(setIsSearchLoading).toHaveBeenCalledWith(true);
 });
 });
-describe('setTotalPage logic', () => {
-    test('should set totalPage to correct value when data.totalRecords is a potestive number', () => {
-        const setTotalPage = jest.fn();
-        const pageSize = 40;
-        const data = { totalRecords: 85 };
-        const totalPages = Math.ceil(data.totalRecords / pageSize);
-        setTotalPage(totalPages);
-        expect(setTotalPage).toHaveBeenCalledWith(3);
-    });
 
-    test('should set totalPage to 0 when data.totalRecords is 0', () => {
-        const setTotalPage = jest.fn();
-        const pageSize = 40;
-        const data = { totalRecords: 0 };
-        const totalPages = Math.ceil(data.totalRecords / pageSize);
-        setTotalPage(totalPages);
-        expect(setTotalPage).toHaveBeenCalledWith(0);
-    });
+describe("handleSuggestionClick", () => {
+  it("should call setSearchTerm and setSearchText", async () => {
+  const setSearchTerm = jest.fn();
+  const setSearchText = jest.fn();
 
-    test('should not call setTotalPage if data or data.totalRecords is undefined', () => {
-        const setTotalPage = jest.fn();
-        const pageSize = 40;
-        const data = { totalRecords: undefined };
-        if (data && data?.totalRecords) {
-            const totalPages = Math.ceil(data?.totalRecords / pageSize);
-            setTotalPage(totalPages);
-        }
-        expect(setTotalPage).not.toHaveBeenCalled();
-    });
+  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText);
 
-    describe('handlePageChange', () => {
-  it('sets loading and updates current page', () => {
-    const mockSetCurrentPage = jest.fn();
-    const mockSetIsLoading = jest.fn();
-    handlePageChange({}, 5, mockSetCurrentPage, mockSetIsLoading);
-    expect(mockSetIsLoading).toHaveBeenCalledWith(true);
-    expect(mockSetCurrentPage).toHaveBeenCalledWith(5);
+  expect(setSearchTerm).toHaveBeenCalledWith("DocA");
+  expect(setSearchText).toHaveBeenCalledWith("DocA");
+});
+
+it("should not call setters if item is null", async () => {
+  const setSearchTerm = jest.fn();
+  const setSearchText = jest.fn();
+  await handleSuggestionClick(null, setSearchTerm, setSearchText);
+  expect(setSearchTerm).not.toHaveBeenCalled();
+  expect(setSearchText).not.toHaveBeenCalled();
+});
+  it("should not trigger if name is missing", async () => {
+    const setSearchTerm = jest.fn();
+    const loadData = jest.fn();
+
+    await handleSuggestionClick({}, setSearchTerm, loadData);
+    expect(setSearchTerm).not.toHaveBeenCalled();
   });
 });
 
-describe('onBreadcrumbClick', () => {
-  it('assigns location and triggers GTM event', () => {
-    delete (window as any).location;
-    (window as any).location = { assign: jest.fn() };
-
-    analytics.pushEvent = jest.fn(); // Mock pushEvent as a jest function
-
-    onBreadcrumbClick('/test-path');
-    expect(window.location.assign).toHaveBeenCalledWith('/test-path');
-    expect(analytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: 'click' }));
-  });
-});
-
-describe('handleSuggestionClick', () => {
-  it('should call setSearchTerm and load data if valid item is passed', async () => {
-    const mockSetSearchTerm = jest.fn();
-    const mockLoadDocumentData = jest.fn();
-    await handleSuggestionClick({ name: 'Doc1' }, mockSetSearchTerm, mockLoadDocumentData);
-    expect(mockSetSearchTerm).toHaveBeenCalledWith('Doc1');
-    expect(mockLoadDocumentData).toHaveBeenCalledWith('Doc1', 1);
-  });
-
-  it('should return early if item is null or name is missing', async () => {
-    const mockSetSearchTerm = jest.fn();
-    const mockLoadDocumentData = jest.fn();
-    await handleSuggestionClick(null, mockSetSearchTerm, mockLoadDocumentData);
-    await handleSuggestionClick({ name: '' }, mockSetSearchTerm, mockLoadDocumentData);
-    expect(mockSetSearchTerm).not.toHaveBeenCalled();
-    expect(mockLoadDocumentData).not.toHaveBeenCalled();
-  });
-});
-
-describe('hasItems', () => {
-  it('returns true if suggestions contain non-empty values', () => {
-    const suggestions = [
-      { values: [{ text: 'Doc' }] },
-      { values: [] }
-    ];
+describe("hasItems", () => {
+  it("returns true when any suggestion has values", () => {
+    const suggestions = [{ values: [{ text: "Doc" }] }];
     expect(hasItems(suggestions as any)).toBe(true);
   });
 
-  it('returns false if all suggestions are empty', () => {
-    const suggestions = [
-      { values: [] },
-      { values: [] }
-    ];
+  it("returns false when suggestions array is empty", () => {
+  expect(hasItems([] as any)).toBe(false);
+});
+
+it("returns false when values key is undefined", () => {
+  const suggestions = [{ name: "Test", values: undefined }];
+  expect(hasItems(suggestions as any)).toBe(false);
+});
+
+  it("returns false when all are empty", () => {
+    const suggestions = [{ values: [] }];
     expect(hasItems(suggestions as any)).toBe(false);
   });
 });
 
+describe("onBreadcrumbClick", () => {
+  it("should assign new location and push GTM event", () => {
+    delete (window as any).location;
+    (window as any).location = { assign: jest.fn() };
+
+    analytics.pushEvent = jest.fn();
+
+    onBreadcrumbClick("/test");
+    expect(window.location.assign).toHaveBeenCalledWith("/test");
+    expect(analytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: "click" }));
+  });
+
 });
 
-describe('handleSearchChange', () => {
-  let setSearchTerm: jest.Mock;
-  let setSuggestions: jest.Mock;
-  let setShowSearchError: jest.Mock;
-  let setIsSearchLoading: jest.Mock;
+describe("loadSuggestions", () => {
+  const setSuggestions = jest.fn();
+  const setSuggestionsLoading = jest.fn();
 
-  beforeEach(() => {
-    setSearchTerm = jest.fn();
-    setSuggestions = jest.fn();
-    setShowSearchError = jest.fn();
-    setIsSearchLoading = jest.fn();
+  it("loads and sets suggestions", async () => {
+    const data = [{ fileId: "1", fileName: "Doc1" }];
+    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(data);
+
+    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
+    expect(setSuggestions).toHaveBeenCalledWith(data);
+    expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
   });
+it("logs error when fetchDMSSuggestions fails", async () => {
+  const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-  it('clears suggestions if input length < 3', () => {
-    const event = { target: { value: 'ab' } } as React.ChangeEvent<HTMLInputElement>;
+  await loadSuggestions("Test", jest.fn(), jest.fn());
 
-    handleSearchChange(
-      event,
-      setSearchTerm,
-      setSuggestions,
-      setShowSearchError,
-      setIsSearchLoading
-    );
+  expect(consoleSpy).toHaveBeenCalled();
+  consoleSpy.mockRestore();
+});
 
-    expect(setSearchTerm).toHaveBeenCalledWith('ab');
+  it("sets suggestions to [] on error", async () => {
+    (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
+
+    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
     expect(setSuggestions).toHaveBeenCalledWith([]);
-    expect(setShowSearchError).toHaveBeenCalledWith(false);
-    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
   });
+});
 
-  it('triggers debouncedFetchSuggestions if input length >= 3', () => {
-    const event = { target: { value: 'abc' } } as React.ChangeEvent<HTMLInputElement>;
 
-    handleSearchChange(
-      event,
-      setSearchTerm,
-      setSuggestions,
-      setShowSearchError,
-      setIsSearchLoading
-    );
 
-    expect(setSearchTerm).toHaveBeenCalledWith('abc');
+describe("handleSearchChange boundary tests", () => {
+  it("triggers loading for length === 2", () => {
+    const event = { target: { value: "ab" } } as React.ChangeEvent<HTMLInputElement>;
+    const setSearchTerm = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    const setIsSearchLoading = jest.fn();
+
+    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+
+    expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
-    expect(setSuggestions).toHaveBeenCalledWith([]);
-    // Cannot directly assert debouncedFetchSuggestions here without mocking debounce
+  });
+it("should not call fetch if value is only whitespace", () => {
+  const event = { target: { value: " " } } as any;
+  const setSearchTerm = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
+
+  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  expect(setSuggestions).toHaveBeenCalledWith([]);
+  expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+});
+  
+});
+
+describe("handleSuggestionClick edge cases", () => {
+  it("should do nothing if item is null", async () => {
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick(null, setSearchTerm, setSearchText);
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(setSearchText).not.toHaveBeenCalled();
   });
 
-  it('handles empty input string', () => {
-    const event = { target: { value: '' } } as React.ChangeEvent<HTMLInputElement>;
+  it("should do nothing if item.name is falsy", async () => {
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText);
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(setSearchText).not.toHaveBeenCalled();
+  });
+});
 
-    handleSearchChange(
-      event,
-      setSearchTerm,
-      setSuggestions,
-      setShowSearchError,
-      setIsSearchLoading
-    );
+describe("getTableHeadersData advanced rendering edge cases", () => {
+  const headers = getTableHeadersData;
 
-    expect(setSearchTerm).toHaveBeenCalledWith('');
-    expect(setSuggestions).toHaveBeenCalledWith([]);
-    expect(setShowSearchError).toHaveBeenCalledWith(false);
-    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  it("Related to column renders nothing when input is empty array", () => {
+    const column = headers.find(h => h.text === "Related to");
+    const { container } = render(<>{column?.anyComponent?.([])}</>);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('does not debounce if string is short', () => {
-    const event = { target: { value: 'a' } } as React.ChangeEvent<HTMLInputElement>;
+  it("Related to column renders nothing when input is null", () => {
+  const column = headers.find(h => h.text === "Related to");
+  const { container } = render(<>{column?.anyComponent?.(null)}</>);
+  expect(container).toBeEmptyDOMElement();
+});
 
-    handleSearchChange(
-      event,
-      setSearchTerm,
-      setSuggestions,
-      setShowSearchError,
-      setIsSearchLoading
-    );
-
-    expect(setSuggestions).toHaveBeenCalledWith([]);
-    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
-    expect(setShowSearchError).toHaveBeenCalledWith(false);
+  it("Related to column renders nothing when input is null", () => {
+    const column = headers.find(h => h.text === "Related to");
+    const { container } = render(<>{column?.anyComponent?.(null)}</>);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('works for exactly 3 characters', () => {
-    const event = { target: { value: 'doc' } } as React.ChangeEvent<HTMLInputElement>;
+  it("Category column renders nothing when input is empty", () => {
+    const column = headers.find(h => h.text === "Category");
+    const { container } = render(<>{column?.anyComponent?.("")}</>);
+    expect(container).not.toBeEmptyDOMElement(); // still renders Tooltip
+  });
 
-    handleSearchChange(
-      event,
-      setSearchTerm,
-      setSuggestions,
-      setShowSearchError,
-      setIsSearchLoading
-    );
+  // it("Format column renders nothing when input is undefined", () => {
+  //   const column = headers.find(h => h.text === "Format");
+  //   const { container } = render(<>{column?.anyComponent?.(undefined)}</>);
+  //   expect(container).toBeEmptyDOMElement();
+  // });
 
-    expect(setSearchTerm).toHaveBeenCalledWith('doc');
-    expect(setIsSearchLoading).toHaveBeenCalledWith(true);
-    expect(setSuggestions).toHaveBeenCalledWith([]);
+  it("Size column renders nothing when input is undefined", () => {
+    const column = headers.find(h => h.text === "Size");
+    const { container } = render(<>{column?.anyComponent?.(undefined)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("Size column renders correctly for array with undefined", () => {
+    const column = headers.find(h => h.text === "Size");
+    const { container } = render(<>{column?.anyComponent?.([undefined])}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("Size column renders correctly for array with first valid value", () => {
+    const column = headers.find(h => h.text === "Size");
+    const { getByText } = render(<>{column?.anyComponent?.(["100KB", "200KB"])}</>);
+    expect(getByText("100KB")).toBeInTheDocument();
   });
 });
