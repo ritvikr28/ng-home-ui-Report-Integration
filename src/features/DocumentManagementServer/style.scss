@@ -1,7 +1,7 @@
 /* stylelint-disable */
-#breadcrumbs-wrapper {
-  margin-top: 16px;
-}
+// #breadcrumbs-wrapper {
+//   margin-top: 16px;
+// }
 
 .side-width {
   display: flex;
@@ -35,9 +35,9 @@
   height: 100%;
 }
 
-.dropdown {
-  align-self: end !important;
-}
+// .dropdown {
+//   align-self: end !important;
+// }
 
 //Please do not overrride the existing classes directly
 // .essui-grid-col--lg-2,
@@ -58,11 +58,11 @@
           align-items: center;
           justify-content: center;
           width: auto !important;
-    
+
           [data-testid="columnheader"] {
             width: 25px;
           }
-    
+
           span:first-of-type {
             width: 25px;
             display: inline-block;
@@ -85,7 +85,7 @@
     text-overflow: ellipsis;
     color: #2177c2;
   }
-  
+
   .tooltip-content{
     background: #f7f7f7;
     border-radius:14px;
@@ -115,15 +115,15 @@
   height: 40px;
 }
 
-.edit-selected-btn {
-  // width: 119px;
-  height: 40px;
+// .edit-selected-btn {
+//   // width: 119px;
+//   height: 40px;
 
-}
+// }
 
-.dynamic-table .dms-layout .essui-table__cell {
-  border-right: 1px solid #e0e0e0;
-}
+// .dynamic-table .dms-layout .essui-table__cell {
+//   border-right: 1px solid #e0e0e0;
+// }
 
 .empty-table{
   background-color: white;
@@ -148,7 +148,7 @@
   padding: 0px 5px;
 }
 
- .grid-wrapper .loader-search .essui-loader .essui-loader-text{
+.loader-search .essui-loader .essui-loader-text{
   display: none;
 }
 
@@ -186,7 +186,7 @@ text-align: left;
   .side-width .essui-side-navigation-panel-container-grid-item {
     width: 264px;
   };
-  
+
   .grid_wrapper {
     margin-left: 10px !important;
   }  
@@ -203,16 +203,16 @@ text-align: left;
       }
     }
 
-    .dynamic-table {
-      .essui-table{
-        border-bottom: 1px solid #e0e0e0;
-      }
-      
-      .table-pagination {
-        nav {
-          display: flex;
-        }
-      }
-    }
+    // .dynamic-table {
+    //   .essui-table{
+    //     border-bottom: 1px solid #e0e0e0;
+    //   }
+
+    //   .table-pagination {
+    //     nav {
+    //       display: flex;
+    //     }
+    //   }
+    // }
   }
 }

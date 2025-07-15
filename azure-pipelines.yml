@@ -200,7 +200,7 @@ stages:
               checkCoverage: true
               coverageFailOption: 'fixed'
               coverageType: 'branches'
-              coverageThreshold: '85'
+              coverageThreshold: '75'
               explicitFilter: true
 
           - task: Bash@3

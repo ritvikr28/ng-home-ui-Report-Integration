@@ -13,7 +13,9 @@ import {
   ValidationTextLevel,
   Suggestion,
   ISearchItemProp,
-  ISelectedItem
+  ISelectedItem,
+  TableRowType,
+  ResponseCode
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -55,11 +57,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     showInvitationConflictBanner,
     setshowInvitationConflictBanner,
     isSearchLoader,
-    setSearchLoader
+    setSearchLoader,
   } = props;
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
+  const smallScreen:boolean = useMediaQuery(
+    "(min-width:320px) and (max-width: 767px)"
+  ); 
+
+
   const [isSidebarOpen, setIsSidebarOpen]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -121,8 +128,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     searchText: "",
     selectedStatus: {
       text: InvitationStatusFilterOptions.NotInvited,
-      value: "Not invited"
-    }
+      value: "Not invited",
+    },
   });
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
     string,
@@ -130,13 +137,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   ] = useState<string>(NoDataMessage.noDataToDisplay);
   const statusFilterRef = useRef<ISelectedItem>({
     text: InvitationStatusFilterOptions.NotInvited,
-    value: "Not invited"
+    value: "Not invited",
   });
 
   useEffect(() => {
     setSearchAndStatusFilter((prev) => ({
       ...prev,
-      selectedStatus: statusFilterRef?.current as ISelectedItem
+      selectedStatus: statusFilterRef?.current as ISelectedItem,
     }));
   }, [statusFilterRef?.current]);
 
@@ -163,7 +170,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
-      setNoDataTextToDisplay
+      setNoDataTextToDisplay,
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
@@ -190,7 +197,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         searchAndStatusFilter,
         setTotalPage,
         setShowErrorBanner,
-        setshowInvitationConflictBanner
+        setshowInvitationConflictBanner,
       }).then((res) => {
         setLoader(false);
         setUsersTableData(res);
@@ -210,7 +217,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setSearchAndStatusFilter((prev) => ({
       ...prev,
       searchText: "",
-      selectedStatus: searchAndStatusFilter.selectedStatus
+      selectedStatus: searchAndStatusFilter.selectedStatus,
     }));
     setSearchLoader(false);
     setLoader(true);
@@ -221,12 +228,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       sortDirection,
       searchAndStatusFilter: {
         searchText: "",
-        selectedStatus: searchAndStatusFilter.selectedStatus
+        selectedStatus: searchAndStatusFilter.selectedStatus,
       },
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
-      setNoDataTextToDisplay
+      setNoDataTextToDisplay,
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
@@ -237,7 +244,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     handleSelectedUserData({
       selectedCheckBoxIds,
       usersTableData,
-      setUsersTableData
+      setUsersTableData,
     });
   }, [selectedCheckBoxIds]);
 
@@ -246,7 +253,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       event: "click",
       action: "Sidebar Toggled",
       category: "Navigation",
-      label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened"
+      label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened",
     });
     setIsSidebarOpen((prev: boolean): boolean => !prev);
   };
@@ -256,7 +263,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       event: "click",
       action: "Sidebar Closed",
       category: "Navigation",
-      label: "Admin Console Sidebar"
+      label: "Admin Console Sidebar",
     });
     setIsSidebarOpen(false);
   };
@@ -268,9 +275,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       linkText: "View Invite users",
       linkUrl: `${envConfig.INVITE_STAFF_URL}`,
       clickType: "link",
-      clickLocation: "breadcrumb"
+      clickLocation: "breadcrumb",
     });
   };
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.value?.length === 0) {
       handleClearSearch();
@@ -284,18 +292,40 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setShowSearchError,
         {
           searchText: e.target.value,
-          selectedStatus: statusFilterRef.current
+          selectedStatus: statusFilterRef.current,
         }
       );
     }
   };
 
+  const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
+    useState(breadcrumbActions);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 1024) {
+        // md and below
+        if (breadcrumbActions.length > 1) {
+          setVisibleBreadcrumbs(breadcrumbActions.slice(-2, -1));
+        } else {
+          setVisibleBreadcrumbs(breadcrumbActions);
+        }
+      } else {
+        setVisibleBreadcrumbs(breadcrumbActions);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [breadcrumbActions]);
+
+
   return (
-    <div className="admin-mobile-rwaf92428 admin-console-grid-invite-users">
+        <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users">
       {showDialog && <InviteUsersDialog setShowDialog={setShowDialog} />}
 
       <div className="new-side-panel-invite-users">
-        {isMobileView && !isSidebarOpen && (
+        {/* {isMobileView && !isSidebarOpen && (
           <Button
             className="base-class"
             color={ButtonColor.Utility}
@@ -305,7 +335,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             onClick={toggleSidebar}
             size={ButtonSize.Small}
           />
-        )}
+        )} */}
         <LocalisedMenu
           customHeight={100}
           menuHeading="Admin Console"
@@ -313,19 +343,32 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
             text: "Invite Users",
-            value: window.location.href
+            value: window.location.href,
           }}
         />
       </div>
 
       <div className="new-main-panel-invite-users">
-        <div className="invite-users-breadcrumb">
-          <Breadcrumbs
-            breadcrumbActions={breadcrumbActions}
-            dataTestId="breadcrumb-test-id"
-            id="element-id"
-            onItemClick={onBreadcrumbClick}
-          />
+        <div className="flex-row">
+          {isMobileView && !isSidebarOpen && (
+            <Button
+              className="sidepanel-toggle-button"
+              color={ButtonColor.Utility}
+              dataTestId="btn-collapse"
+              iconColor={IconColor.Neutral800}
+              iconName="open-panel--left--filled"
+              onClick={toggleSidebar}
+              size={ButtonSize.Small}
+            />
+          )}
+          <div className="invite-users-breadcrumb">
+            <Breadcrumbs
+              breadcrumbActions={visibleBreadcrumbs}
+              dataTestId="breadcrumb-test-id"
+              id="element-id"
+              onItemClick={onBreadcrumbClick}
+            />
+          </div>
         </div>
         <div className="invite-users-table">
           <ControlledList
@@ -333,7 +376,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             dataTestId="invite-list-test-id"
             isShowFirstElement
             isBreadCrumbEnable={false}
-            resultNotFoundMessage={noDataTextToDisplay}
+            isMobileViewBreadcrumb
+            isShowFourthElement={false}
             dynamictableIconName={
               showErrorBanner ? "warning--alt" : "information"
             }
@@ -382,10 +426,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               }
             }}
             dynamictableNoMsgColor={ValidationTextLevel.Warning}
-            isShowdynamictableNoMsg={showErrorBanner}
+            isShowdynamictableNoMsg={showErrorBanner || usersTableData.length === 0}
             isAddEventBtnShow={false}
             dynamicTableLoader={isLoader}
             filterDDLOptions={filterOptions}
+            isIconRightAligned
             editSelectedBtnTitle="Edit selected"
             headingText="Invite Users"
             subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
@@ -396,7 +441,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               statusFilterRef.current = selectedItem;
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
-                selectedStatus: selectedItem
+                selectedStatus: selectedItem,
               }));
               setCurrentPage(1);
             }}
@@ -405,18 +450,20 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
                 text: InvitationStatusFilterOptions.NotInvited,
-                value: "Not invited"
+                value: "Not invited",
               }
             }
             filterDDLdisabled={false}
             isOnCloseSidepnl
-            isPagination
+            isPagination={totalPage>1  && usersTableData.length !==0}
+            lastColContentAlign="center"
             paginationCount={totalPage}
             paginationOnChange={handlePageChange}
             paginationPage={currentPage}
             paginationMinCountToHideNextPreviousBtn={0}
             searchHeadingText="Search user"
             searchPlaceholderText="Search by name"
+            firstColHeaderAlign="center"
             searchIsLoader={isSearchLoader}
             isSearchHideClearIcon={
               searchAndStatusFilter?.searchText.length === 0
@@ -438,7 +485,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               if (e.key === "Enter") {
                 setSearchAndStatusFilter((prev: any) => ({
                   ...prev,
-                  searchText: searchTerm
+                  searchText: searchTerm,
                 }));
                 setCurrentPage(1);
               }
@@ -448,7 +495,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setSearchTerm(item?.name || "");
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
-                searchText: item?.name || ""
+                searchText: item?.name || "",
               }));
             }}
             searchOnCloseHandle={() => {
@@ -456,8 +503,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }}
             searchSuggestions={hasItems ? searchSuggestions : []}
             searchTerm=""
+            isTruncateInputText
+            emptyRowType={TableRowType.Info}
+            emptyRowResponseCode={ResponseCode.Info}
+            emptyRowResponseMessage={noDataTextToDisplay}
             secondaryButtonTitle="Cancel"
             showConfirmDialog
+            ellipsisAfterBoundaryOnly={smallScreen}
             tableBodyData={usersTableData || []}
             isShowEditSelectedBtn
             isShowSearch
@@ -498,16 +550,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
                 const requestBody: IRequestBodyType = {
-                  externalId: selectedRowItems.map((item) => item?.id)
+                  externalId: selectedRowItems.map((item) => item?.id),
                 };
                 handleSendInvite({
                   requestBody,
                   setLoader,
                   setShowInviteErrBanner,
-                  setDataUpdated
+                  setDataUpdated,
                 });
               },
-              template: DialogTemplate.Confirmation
+              template: DialogTemplate.Confirmation,
             }}
             titleConfirmation="Invite user?"
             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
@@ -534,7 +586,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 title: "Information unavailable",
                 message:
                   "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInvitationConflictBanner,
@@ -542,7 +594,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 title: "Invitation conflict",
                 message:
                   "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source !== "Bulk",
@@ -550,14 +602,14 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 title: "Unable to save",
                 message:
                   "A technical issue at our end has stopped us from saving the changes. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time.",
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
                 title: "Unable to invite",
                 message: BulkInviteErrBanner({ selectedRowItems }),
-                autoclose: true
+                autoclose: true,
               }
             ]}
             onClickOverflowItem={(e: any, selectedRow: any) => {
@@ -571,7 +623,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               handleCheckBoxSelection({
                 id,
                 selectedCheckBoxIds,
-                setSelectedCheckBoxIds
+                setSelectedCheckBoxIds,
               });
             }}
             isClearSelectedCheckbox={selectedCheckBoxIds.length === 0}
@@ -588,7 +640,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
 export const NoDataMessage = {
   noDataOnSearch: (keyword: string) =>
     `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
-  noDataToDisplay: "No data to display"
+  noDataToDisplay: "No data to display",
 };
 
 export const getValues = (
@@ -610,7 +662,7 @@ export const getValues = (
       text: `${record?.forename} ${record?.surname} `,
       props: {
         externalId: record?.externalId,
-        name: `${record?.forename} ${record?.surname}`
+        name: `${record?.forename} ${record?.surname}`,
       },
-      value: <></>
+      value: <></>,
     }));
