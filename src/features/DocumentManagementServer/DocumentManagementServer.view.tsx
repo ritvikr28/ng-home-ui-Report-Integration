@@ -142,7 +142,7 @@ const getTableHeaders = () => {
 
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
         if (event.key === "Enter") {
-            const keyword = searchTerm.trim().toLowerCase();
+            const keyword = searchTerm?.trim()?.toLowerCase();
             setSearchTerm(keyword);
             setSearchText(keyword);
             setIsSearchTriggered(true);
