@@ -194,6 +194,15 @@ stages:
               explicitFilter: true
               treat0of0as100: true
 
+          - task: BuildQualityChecks@8
+            displayName: Quality check for branches
+            inputs:
+              checkCoverage: true
+              coverageFailOption: 'fixed'
+              coverageType: 'branches'
+              coverageThreshold: '85'
+              explicitFilter: true
+
           - task: Bash@3
             displayName: 'Build image'
             inputs:
