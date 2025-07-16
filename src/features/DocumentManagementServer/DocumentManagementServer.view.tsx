@@ -25,6 +25,7 @@ const DocumentManagementServerView: React.FC = () => {
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -43,7 +44,7 @@ const DocumentManagementServerView: React.FC = () => {
         "(min-width:320px) and (max-width: 1023.9px)"
     );
 
-    const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
+    const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -75,8 +76,9 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (!isInitialLoad) {
-        fetchGetDocumentDetails(searchText, currentPage);
+            fetchGetDocumentDetails(searchText, currentPage);
         }
+        setIsSearchTriggered(false)
     }, [currentPage, searchText]);
 
 
@@ -93,47 +95,50 @@ const DocumentManagementServerView: React.FC = () => {
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
             });
-            if (result ) {
-                
+            if (result && result?.statusCode === 200) {
                 setDocData(result);
                 setCurrentPage(page);
                 setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
                 setShowSearchError(false);
-            } else {
+            } else if (result && result?.status === 400) {
+                setShowErrorBanner(true);
+            }
+            else {
                 setShowSearchError(true);
             }
             setHasFetched(true);
         } catch (err) {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
-        } finally {
+        } 
+        // finally {
             setIsSearchLoading(false);
             setIsSearchDataLoading(false);
+        // }
+    }
+
+    const getEmptyStateMsg = () => {
+        if (searchText !== "") return undefined;
+        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+        return "Documents will appear here once they are uploaded.";
+    };
+
+    const getTableHeaders = () => {
+        if (tableData?.length > 0 || showErrorBanner) {
+            return getTableHeadersData;
         }
-    }
-
-const getEmptyStateMsg = () => {
-    if (searchText !== "") return undefined;
-    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-    return "Documents will appear here once they are uploaded.";
-};
-
-const getTableHeaders = () => {
-    if (tableData?.length > 0) {
-        return getTableHeadersData;
-    }
-    if (searchText !== "") {
-        return getTableHeadersData;
-    }
-    return [];
-};
+        if (isSearchTriggered || searchText || docData) {
+            return getTableHeadersData;
+        }
+        return [];
+    };
 
 
 
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
-        setIsSearchTriggered(false);
+        setIsSearchTriggered(true);
         setCurrentPage(1);
         setShowSearchError(false);
         setIsSearchLoading(false);
@@ -149,7 +154,23 @@ const getTableHeaders = () => {
             setIsSearchDataLoading(true);
         }
     }
-  
+
+    const NotificationMsgBannerObject = [
+        {
+            isShow: showErrorBanner,
+            variant: "warning",
+            title: "Information unavailable",
+            message:
+                "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+            autoclose: true
+        },
+    ]
+
+    const resultNotFoundMSG = searchText && !docData?.data?.length
+        ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
+        : showErrorBanner ? "Information unavailable" : undefined
+
+
     return (<>
         <>
             <Grid className="dms-layout" style={{ display: 'flex' }}>
@@ -174,9 +195,9 @@ const getTableHeaders = () => {
                             text: "Documents",
                             value: `${window.location.origin}/documents`
                         }}
-                    />
+                    /> 
 
-                    {isMobileView && <Breadcrumbs
+                     {isMobileView && <Breadcrumbs
                         breadcrumbActions={[
                             {
                                 active: false,
@@ -203,7 +224,7 @@ const getTableHeaders = () => {
                         dataTestId="breadcrumb-test-id"
                         id="element-id"
                         onItemClick={onBreadcrumbClick}
-                    />}
+                    />} 
                 </GridItem>
                 <GridItem className={isOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
                     <div
@@ -246,9 +267,8 @@ const getTableHeaders = () => {
                         }
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
-                                globalNotificationMsgBannerObject={
-                                    showSearchError && !isSearchTriggered ? { title: "Information unavailable" } : null
-                                }
+                                globalNotificationMsgBannerObject={NotificationMsgBannerObject}
+                                isShowHeading={showErrorBanner}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -344,11 +364,9 @@ const getTableHeaders = () => {
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
-                                resultNotFoundMessage={
-                                    isSearchTriggered && !docData?.data?.length 
-                                         ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
-                                        : undefined
-                                }
+                                resultNotFoundMessage={resultNotFoundMSG}
+                                dynamictableNoMsgColor={ValidationTextLevel.Warning}
+                                isShowdynamictableNoMsg={showErrorBanner}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
@@ -395,7 +413,7 @@ const getTableHeaders = () => {
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                                 tableHeadersData={getTableHeaders()}
+                                tableHeadersData={getTableHeaders()}                                 
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',
