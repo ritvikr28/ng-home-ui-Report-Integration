@@ -377,6 +377,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isShowFirstElement
             isBreadCrumbEnable={false}
             isMessageCenterAligned={false}
+            isShowAutoSuggest
             isMobileViewBreadcrumb
             isShowFourthElement={false}
             dynamictableIconName={
