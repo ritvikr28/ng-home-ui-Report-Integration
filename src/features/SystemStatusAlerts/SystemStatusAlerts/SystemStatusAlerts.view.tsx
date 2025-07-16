@@ -320,7 +320,7 @@ const SystemStatusAlertsView: React.FC = () => {
               overflowMenuRef={overflowMenuRef}
               handleActionClick={handleActionClick}
               t={t}
-            // canUpdateSystemStatus={canUpdateSystemStatus}
+            
             />
           );
         } else {
@@ -455,7 +455,7 @@ const TableComponent: React.FC<{
   handleActionClick: (action: string, alert: Alert) => void;
 
   t: (key: string) => string;
-  // canUpdateSystemStatus: boolean;
+  
 }> = ({
   alerts,
   overflowMenuIndex,
@@ -463,7 +463,7 @@ const TableComponent: React.FC<{
   overflowMenuRef,
   handleActionClick,
   t
-  // canUpdateSystemStatus
+  
 }) => {
     const systemStatusOverFlowBtnRef = useRef<(HTMLButtonElement | null)[]>([]);
     const [systemStatusOverflowPosition, setSystemStatusOverflowPosition] = useState<{
@@ -511,7 +511,7 @@ const TableComponent: React.FC<{
 
     return (
       <TableWrapper className="system-status-table-wrapper">
-        <Table isStatus className="status-table">
+        <Table className="status-table">
           <TableHead>
             <TableRow>
               <TableCell header className="status-table-cell">

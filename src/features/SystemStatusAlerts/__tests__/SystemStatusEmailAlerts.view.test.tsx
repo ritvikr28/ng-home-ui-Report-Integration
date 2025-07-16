@@ -210,4 +210,89 @@ it("opens side panel after clicking View from overflow", async () => {
       expect(screen.getByText("SystemStatus_T.Changessaved")).toBeInTheDocument();
     });
   });
+it("renders correct status label for Yellow and Connection error", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Connection error", eMailAlert: true },
+    ssmHostData: { ssmHostStatus: "Unknown", eMailAlert: true },
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.WarningMessage")).toBeInTheDocument(); // Connection error
+    expect(screen.getByText("SystemStatus_T.Fail")).toBeInTheDocument(); // Default for unknown
+  });
 });
+it("renders correct Yes/No label for email alert subscription", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Live", eMailAlert: true },
+    ssmHostData: { ssmHostStatus: "Live", eMailAlert: false },
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.Yes")).toBeInTheDocument();
+    expect(screen.getByText("SystemStatus_T.No")).toBeInTheDocument();
+  });
+});
+it("shows warning notification when status is Connection error in side panel", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Connection error", eMailAlert: false },
+    ssmHostData: null,
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.DataSyncAlertName")).toBeInTheDocument();
+  });
+
+  const viewBtn = screen.getByText("SystemStatus_T.View");
+  fireEvent.click(viewBtn);
+
+  await waitFor(() => {
+    expect(screen.getByTestId("notification-connection error")).toBeInTheDocument();
+  });
+});
+it("renders View button directly when user lacks permission or status is error", async () => {
+  (authService.isAuthorised as jest.Mock).mockReturnValue(false);
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Connection error", eMailAlert: false },
+    ssmHostData: null,
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getByText("SystemStatus_T.View")).toBeInTheDocument();
+  });
+});
+it("renders '-' for emailSubscribed when status is Connection error", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce({
+    listenerData: { listenerStatus: "Connection error" }, // no emailSubscribed
+    ssmHostData: null,
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getAllByText("-").length).toBeGreaterThan(0);
+  });
+});
+it("sets fallback Yellow alerts when fetchEmailAlertStatus throws error", async () => {
+  mockFetchEmailAlertStatus.mockImplementationOnce(() => {
+    throw new Error("Simulated error");
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getAllByText("SystemStatus_T.WarningMessage").length).toBeGreaterThan(0);
+  });
+});
+it("sets fallback Yellow alerts when fetchEmailAlertStatus returns undefined", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(undefined); // Simulates no response
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getAllByText("SystemStatus_T.WarningMessage").length).toBeGreaterThan(0);
+  });
+});
+
+});
+
