@@ -148,11 +148,15 @@ const DocumentManagementServerView: React.FC = () => {
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
         if (event.key === "Enter") {
             const keyword = searchTerm?.trim()?.toLowerCase();
+            if(keyword !== searchText) {
             setSearchTerm(keyword);
             setSearchText(keyword);
             setIsSearchTriggered(true);
             setIsSearchDataLoading(true);
         }
+        setIsSearchLoading(false);
+        // setSuggestions([]);
+    }
     }
 
     const NotificationMsgBannerObject = [
@@ -268,7 +272,8 @@ const DocumentManagementServerView: React.FC = () => {
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
-                                isShowHeading={showErrorBanner}
+                                isShowSubHeading={false}
+                                isShowHeading={true}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[

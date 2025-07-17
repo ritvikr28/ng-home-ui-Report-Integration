@@ -32,6 +32,8 @@ const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
     pageSize: 40,
     totalRecords: 1,
     data: documentResponse,
+    status: 200,
+    statusCode: 200
   },
   status: 200,
   statusText: 'OK',
