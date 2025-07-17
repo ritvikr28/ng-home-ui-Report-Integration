@@ -44,7 +44,7 @@ export const getTableHeadersData: {
               align={TooltipAlign.Center}
               position={TooltipPosition.Bottom}
             >
-              <div className="tooltip-content document-text">
+              <div className="tooltip-content document-text document-column">
                 <span > {e} </span>
               </div>
 

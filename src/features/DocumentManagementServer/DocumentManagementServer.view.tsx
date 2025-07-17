@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -9,6 +9,29 @@ import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 
+
+export const breadcrumbActionsList = [
+    {
+        active: false,
+        linkName: 'Home',
+        path: window.location.origin
+    },
+    {
+        active: false,
+        linkName: 'Admin Console',
+        path: homeurl
+    },
+    {
+        active: false,
+        linkName: 'Document Management Server',
+        path: '#'
+    },
+    {
+        active: false,
+        linkName: 'Documents',
+        path: ''
+    }
+]
 
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
@@ -26,6 +49,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
+        useState(breadcrumbActionsList);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -46,6 +71,10 @@ const DocumentManagementServerView: React.FC = () => {
 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+    }, []);
+
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
@@ -63,16 +92,16 @@ const DocumentManagementServerView: React.FC = () => {
     }, [docData]);
 
     useEffect(() => {
-    const fetchInitialData = async () => {
-        setIsLoading(true);
-        const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
-        await Promise.all([minLoaderTime, dataFetch]);
-        setIsLoading(false);
-        setIsInitialLoad(false);
-    };
-    fetchInitialData();
-}, []);
+        const fetchInitialData = async () => {
+            setIsLoading(true);
+            const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+            const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
+            await Promise.all([minLoaderTime, dataFetch]);
+            setIsLoading(false);
+            setIsInitialLoad(false);
+        };
+        fetchInitialData();
+    }, []);
 
     useEffect(() => {
         if (!isInitialLoad) {
@@ -110,10 +139,10 @@ const DocumentManagementServerView: React.FC = () => {
         } catch (err) {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
-        } 
+        }
         // finally {
-            setIsSearchLoading(false);
-            setIsSearchDataLoading(false);
+        setIsSearchLoading(false);
+        setIsSearchDataLoading(false);
         // }
     }
 
@@ -158,6 +187,25 @@ const DocumentManagementServerView: React.FC = () => {
         // setSuggestions([]);
     }
     }
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                // md and below
+                if (breadcrumbActionsList.length > 1) {
+                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-2, -1));
+                } else {
+                    setVisibleBreadcrumbs(breadcrumbActionsList);
+                }
+            } else {
+                setVisibleBreadcrumbs(breadcrumbActionsList);
+            }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [breadcrumbActionsList]);
+
+
 
     const NotificationMsgBannerObject = [
         {
@@ -167,12 +215,17 @@ const DocumentManagementServerView: React.FC = () => {
             message:
                 "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
             autoclose: true
-        },
+        }
     ]
 
-    const resultNotFoundMSG = searchText && !docData?.data?.length
-        ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
-        : showErrorBanner ? "Information unavailable" : undefined
+    let resultNotFoundMSG: string | undefined;
+    if (searchText && !docData.data?.length) {
+        resultNotFoundMSG = `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+    } else if (showErrorBanner) {
+        resultNotFoundMSG = "Information unavailable";
+    } else {
+        resultNotFoundMSG = undefined;
+    }
 
 
     return (<>
@@ -190,7 +243,7 @@ const DocumentManagementServerView: React.FC = () => {
                             size={ButtonSize.Small}
                         />
                     )}
-                    <LocalisedMenu
+                    {/* <LocalisedMenu
                         customHeight={100}
                         menuHeading="Admin console"
                         onCloseSideNavigationPanel={() => setIsOpen(false)}
@@ -199,36 +252,25 @@ const DocumentManagementServerView: React.FC = () => {
                             text: "Documents",
                             value: `${window.location.origin}/documents`
                         }}
-                    /> 
+                    />  */}
+                    <LocalisedMenu
+                        customHeight={100}
+                        menuHeading="Admin Console"
+                        onCloseSideNavigationPanel={() => setIsOpen(false)}
+                        isOpenSideNavigation={isOpen}
+                        defaultSelectedMenu={{
+                            text: "Invite Users",
+                            value: window.location.href,
+                        }}
+                    />
 
-                     {isMobileView && <Breadcrumbs
-                        breadcrumbActions={[
-                            {
-                                active: false,
-                                linkName: 'Home',
-                                path: window.location.origin
-                            },
-                            {
-                                active: false,
-                                linkName: 'Admin Console',
-                                path: homeurl
-                            },
-                            {
-                                active: false,
-                                linkName: 'Document Management Server',
-                                path: '#'
-                            },
-                            {
-                                active: false,
-                                linkName: 'Documents',
-                                path: ''
-                            }
-                        ]}
+                    {isMobileView && <Breadcrumbs
+                        breadcrumbActions={visibleBreadcrumbs}
                         className="essui-Breadcrumbs"
                         dataTestId="breadcrumb-test-id"
                         id="element-id"
                         onItemClick={onBreadcrumbClick}
-                    />} 
+                    />}
                 </GridItem>
                 <GridItem className={isOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
                     <div
@@ -240,28 +282,7 @@ const DocumentManagementServerView: React.FC = () => {
                     >
                         {!isMobileView && <div>
                             <Breadcrumbs
-                                breadcrumbActions={[
-                                    {
-                                        active: false,
-                                        linkName: 'Home',
-                                        path: window.location.origin
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Admin Console',
-                                        path: homeurl
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Document Management Server',
-                                        path: '#'
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Documents',
-                                        path: ''
-                                    }
-                                ]}
+                                breadcrumbActions={visibleBreadcrumbs}
                                 className="essui-Breadcrumbs"
                                 dataTestId="breadcrumb-test-id"
                                 id="element-id"
@@ -271,9 +292,10 @@ const DocumentManagementServerView: React.FC = () => {
                         }
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
+                                isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
-                                isShowSubHeading={false}
                                 isShowHeading={true}
+                                isShowSubHeading={false}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -369,9 +391,11 @@ const DocumentManagementServerView: React.FC = () => {
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
-                                resultNotFoundMessage={resultNotFoundMSG}
-                                dynamictableNoMsgColor={ValidationTextLevel.Warning}
-                                isShowdynamictableNoMsg={showErrorBanner}
+                                emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
+                                emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
+                                emptyRowResponseMessage={resultNotFoundMSG}
+                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner)}
+                                isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
@@ -418,7 +442,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 > Filter</Button>
                                 }
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={getTableHeaders()}                                 
+                                tableHeadersData={getTableHeaders()}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',
@@ -437,6 +461,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 isOpenConfirmationDialog={false}
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement={true}
+                                isShowAutoSuggest={true}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
