@@ -165,4 +165,41 @@ it("renders NotificationStatus.WARNING when alert has isErrorResponse true", asy
     expect(screen.getByTestId("notification-yellow")).toBeInTheDocument();
   });
 });
+ it("shows loading spinner while fetching data", async () => {
+  let resolvePromise: any;
+  mockFetchEmailAlertStatus.mockImplementation(
+    () =>
+      new Promise((resolve) => {
+        resolvePromise = resolve;
+      })
+  );
+  render(<SystemStatusAlertsView />);
+  expect(screen.getByText("Loading...")).toBeInTheDocument();
+  resolvePromise({
+    listenerData: { listenerStatus: "Live", eMailAlert: false },
+    ssmHostData: { ssmHostStatus: "Live", eMailAlert: true },
+  });
+  await waitFor(() => {
+    expect(screen.getAllByText("SystemStatus_T.Live").length).toBe(2);
+  });
+});
+it("sets Yellow alerts when API response is undefined", async () => {
+  mockFetchEmailAlertStatus.mockResolvedValueOnce(undefined); // response = undefined
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getAllByText("SystemStatus_T.NoData").length).toBeGreaterThan(0); // From fallback alerts
+  });
+});
+
+it("displays fallback alerts when API throws error", async () => {
+  mockFetchEmailAlertStatus.mockImplementationOnce(() => {
+    throw new Error("Network error");
+  });
+
+  render(<SystemStatusAlertsView />);
+  await waitFor(() => {
+    expect(screen.getAllByText("SystemStatus_T.WarningMessage").length).toBeGreaterThan(0);
+  });
+});
 });
