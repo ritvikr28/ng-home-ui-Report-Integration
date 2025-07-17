@@ -67,7 +67,7 @@ const DMSFilterDialog = ({
             <DropdownItem
               key={category}
               data={category}
-              text={category}
+              text={category.charAt(0).toUpperCase() + category.slice(1)}
               value={category}
               isSelected={selectedCategories.some((item) => item.data === category)}
             />
