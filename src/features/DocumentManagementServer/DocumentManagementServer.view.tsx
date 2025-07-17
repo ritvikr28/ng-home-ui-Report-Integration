@@ -8,6 +8,7 @@ import { tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
+import DMSFilterDialog from "../../shared/components/Filter/Filter"
 
 
 const DocumentManagementServerView: React.FC = () => {
@@ -25,6 +26,9 @@ const DocumentManagementServerView: React.FC = () => {
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
+    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+    const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -353,6 +357,7 @@ const getTableHeaders = () => {
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
                                 isShowSearch
+                                isShowAutoSuggest={true}
                                 searchPlaceholderText=" "
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
@@ -385,14 +390,27 @@ const getTableHeaders = () => {
                                 sidePanelTitle=""
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
-                                filterCustumeElem2={<Button
+                                filterCustumeElem2={
+                                <>
+                                <Button
                                     className="filter-btn"
                                     dataTestId="filter-btn"
                                     color={ButtonColor.Utility}
                                     size={ButtonSize.Small}
                                     iconPosition={ButtonIconPosition.Right}
                                     iconName="filter"
+                                    onClick={() => setIsFilterDialogOpen(true)}
                                 > Filter</Button>
+                                
+                                <DMSFilterDialog
+                                    isOpen={isFilterDialogOpen}
+                                    title="Filter Documents"
+                                    availableCategories={docData?.data?.map((doc: { category: any }) => doc.category).filter(Boolean) ?? []}
+                                    availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
+                                    onClose={() => setIsFilterDialogOpen(false)}
+                                    onApplyFilter={() => {}}
+                                    />
+                                </>
                                 }
                                 tableFirstColumnWidth="10px"
                                  tableHeadersData={getTableHeaders()}
