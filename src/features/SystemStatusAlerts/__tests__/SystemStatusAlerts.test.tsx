@@ -5,6 +5,14 @@ import SystemStatusAlerts from "../SystemStatusAlerts/SystemStatusAlerts";
 jest.mock("@essnextgen/ui-intl-kit", () => ({
   useTranslation: jest.fn(),
 }));
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    isAuthorised: jest.fn(() => false),
+  },
+  MatchPermissions: {
+    any: "any", // ← mock value (doesn't matter what)
+  },
+}));
 
 jest.mock("@essnextgen/ui-kit", () => ({
   HeadingSubHeading: ({ headingText, subHeadingText }: any) => (
