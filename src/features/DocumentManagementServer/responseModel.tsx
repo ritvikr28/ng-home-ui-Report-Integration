@@ -24,6 +24,8 @@ export interface DocumentBasicDetails {
   pageSize: number;
   totalRecords: number;
   data: SingleDocumentDetail[];
+  status: number;
+  statusCode: number;
 }
 
 
