@@ -14,12 +14,13 @@ import {
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { useState } from "react";
 import "./style.scss";
+import { Category } from "../../../features/DocumentManagementServer/responseModel";
 
 interface DMSFilterDialogProps {
   dataTestId?: string;
   title: string;
   isOpen: boolean;
-  availableCategories: string[];
+  availableCategories: Category[];
   availableFormats: string[];
   onClose: () => void;
   onApplyFilter: (filters: { categories: string[]; formats: string[] }) => void;
@@ -72,17 +73,19 @@ const DMSFilterDialog = ({
           }
           selectedItems={selectedCategories}
         >
-  {availableCategories.map((category) => (
-    <DropdownItem
-      key={category}
-      data={category}
-      id={`${dataTestId}-category-${category}`}
-      text={category.charAt(0).toUpperCase() + category.slice(1)}
-      value={category}
-      isSelected={selectedCategories.some((item) => item.data === category)}
-    />
-  ))}
-</Dropdown>
+      {availableCategories.map((category) => (
+        <DropdownItem
+          key={category.registrationId}
+          data={category}
+          id={category.application}
+          text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+          value={category.application}
+          isSelected={selectedCategories.some((item) => item.data === category.application)}
+        >
+          {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+        </DropdownItem>
+      ))}
+  </Dropdown>
       
       <div className="dms-filter-dialog-date">
         <FormLabel>

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { tableDataProps } from "./responseModel"
+import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
@@ -55,7 +55,7 @@ const DocumentManagementServerView: React.FC = () => {
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
-    const [availableCategories, setAvailableCategories] = useState<string[]>([]);
+    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -101,13 +101,15 @@ const DocumentManagementServerView: React.FC = () => {
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
         const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
         // Fetch categories
-        const categoriesFetch = fetchCategory().then(setAvailableCategories);
-        await Promise.all([minLoaderTime, dataFetch, categoriesFetch]);
+        
+        await Promise.all([minLoaderTime, dataFetch]);
         setIsLoading(false);
         setIsInitialLoad(false);
     };
     fetchInitialData();
 }, []);
+
+
 
     useEffect(() => {
         if (!isInitialLoad) {
@@ -448,7 +450,9 @@ const DocumentManagementServerView: React.FC = () => {
                                     size={ButtonSize.Small}
                                     iconPosition={ButtonIconPosition.Right}
                                     iconName="filter"
-                                    onClick={() => setIsFilterDialogOpen(true)}
+                                    onClick={() => {setIsFilterDialogOpen(true)
+                                       fetchCategory().then(setAvailableCategories);
+                                    }}
                                 > Filter</Button>
                                 
                                     <DMSFilterDialog

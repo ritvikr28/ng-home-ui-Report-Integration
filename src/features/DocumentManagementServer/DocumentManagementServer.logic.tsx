@@ -307,12 +307,10 @@ export const loadSuggestions = async (
   }
 };
 
-export const fetchCategory = async (): Promise<string[]> => {
+export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
-   const applications = response.map((item: any) => item.application) ?? [];
-    console.log("Mapped applications:", applications);
-    return applications;
+    return response ?? [];
   } catch (err) {
     console.error("Error fetching categories:", err);
     return [];

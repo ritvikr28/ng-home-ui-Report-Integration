@@ -58,3 +58,11 @@ export interface DocumentSuggestion {
   value: string;
   values: string[];
 }
+
+export interface Category{
+  registrationId: number;
+  application: string;
+  section: string;
+  maxFileCount: number;
+  maxLinkCount: number;
+};
