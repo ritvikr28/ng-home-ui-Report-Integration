@@ -51,6 +51,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
+    const [isSearchTrue, setIsSearchTrue] = useState(false); 
+    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -123,6 +125,7 @@ const DocumentManagementServerView: React.FC = () => {
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
+                isSearchTextExactMatch: isSearchTrue
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -163,7 +166,6 @@ const DocumentManagementServerView: React.FC = () => {
     };
 
 
-
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
@@ -182,8 +184,10 @@ const DocumentManagementServerView: React.FC = () => {
             setSearchText(keyword);
             setIsSearchTriggered(true);
             setIsSearchDataLoading(true);
+            setIsSearchTrue(false);
         }
         setIsSearchLoading(false);
+        setIsShowAutoSuggest(false); 
         // setSuggestions([]);
     }
     }
@@ -407,9 +411,10 @@ const DocumentManagementServerView: React.FC = () => {
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={hasItems ? suggestions : []}
-                                onSearchSuggestionItemClick={(item) =>
+                                onSearchSuggestionItemClick={(item) =>{
+                                    setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
-                                }
+                                }}
                                 searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
@@ -461,7 +466,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 isOpenConfirmationDialog={false}
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement={true}
-                                isShowAutoSuggest={true}
+                                isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}

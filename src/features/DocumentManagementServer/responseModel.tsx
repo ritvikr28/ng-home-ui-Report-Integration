@@ -39,6 +39,7 @@ export interface DocumentManagementServerProps {
   toDate?: string;
   sortBy?: string;
   sortDirection?: string;
+  isSearchTextExactMatch?: boolean;
 }
 
 export interface tableDataProps {

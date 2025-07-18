@@ -13,6 +13,7 @@ export const fetchDocumentDetails = async ({
   toDate = '',
   sortBy = 'DateAdded',
   sortDirection = 'Desc',
+  isSearchTextExactMatch = false,
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
@@ -28,6 +29,7 @@ export const fetchDocumentDetails = async ({
         toDate,
         sortBy,
         sortDirection,
+        isSearchTextExactMatch
       },
     };
 
