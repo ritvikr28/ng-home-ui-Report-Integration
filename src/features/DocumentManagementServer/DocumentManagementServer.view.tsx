@@ -2,7 +2,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -29,6 +29,7 @@ const DocumentManagementServerView: React.FC = () => {
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+    const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -64,13 +65,14 @@ const DocumentManagementServerView: React.FC = () => {
             setTotalPage(totalPages);
         }
     }, [docData]);
-
     useEffect(() => {
     const fetchInitialData = async () => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
         const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
-        await Promise.all([minLoaderTime, dataFetch]);
+        // Fetch categories
+        const categoriesFetch = fetchCategory().then(setAvailableCategories);
+        await Promise.all([minLoaderTime, dataFetch, categoriesFetch]);
         setIsLoading(false);
         setIsInitialLoad(false);
     };
@@ -402,10 +404,10 @@ const getTableHeaders = () => {
                                     onClick={() => setIsFilterDialogOpen(true)}
                                 > Filter</Button>
                                 
-                                <DMSFilterDialog
+                                    <DMSFilterDialog
+                                    availableCategories={availableCategories}
                                     isOpen={isFilterDialogOpen}
                                     title="Filter Documents"
-                                    availableCategories={docData?.data?.map((doc: { category: any }) => doc.category).filter(Boolean) ?? []}
                                     availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
                                     onClose={() => setIsFilterDialogOpen(false)}
                                     onApplyFilter={() => {}}

@@ -60,19 +60,29 @@ const DMSFilterDialog = ({
         <Dropdown
           dataTestId={`${dataTestId}-categories`}
           multiSelect
-          onSelectMultiple={(_, items) => setSelectedCategories(items)}
+          onSelectMultiple={(_, items) =>
+            setSelectedCategories(
+              items.map(item => ({
+                ...item,
+                text: item.text || (typeof item.data === "string"
+                  ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+                  : "")
+              }))
+            )
+          }
           selectedItems={selectedCategories}
         >
-          {availableCategories.map((category) => (
-            <DropdownItem
-              key={category}
-              data={category}
-              text={category.charAt(0).toUpperCase() + category.slice(1)}
-              value={category}
-              isSelected={selectedCategories.some((item) => item.data === category)}
-            />
-          ))}
-        </Dropdown>
+  {availableCategories.map((category) => (
+    <DropdownItem
+      key={category}
+      data={category}
+      id={`${dataTestId}-category-${category}`}
+      text={category.charAt(0).toUpperCase() + category.slice(1)}
+      value={category}
+      isSelected={selectedCategories.some((item) => item.data === category)}
+    />
+  ))}
+</Dropdown>
       
       <div className="dms-filter-dialog-date">
         <FormLabel>

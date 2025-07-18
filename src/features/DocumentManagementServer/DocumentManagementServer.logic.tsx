@@ -1,6 +1,6 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 export const getTableHeadersData: {
@@ -307,6 +307,17 @@ export const loadSuggestions = async (
   }
 };
 
+export const fetchCategory = async (): Promise<string[]> => {
+  try {
+    const response = await fetchFilterCategory();
+   const applications = response.map((item: any) => item.application) ?? [];
+    console.log("Mapped applications:", applications);
+    return applications;
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    return [];
+  }
+}
 
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {

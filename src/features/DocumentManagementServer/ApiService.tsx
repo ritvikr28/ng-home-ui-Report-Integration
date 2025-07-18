@@ -55,3 +55,15 @@ export const fetchDMSSuggestions = async (searchText: string): Promise<any> => {
     return {};
   }
 };
+
+export const fetchFilterCategory = async (): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/applicationregistration`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response?.data;
+  } catch (err) {
+    console.error("Error fetching DMS suggestions:", err);
+    return {};
+  }
+};
