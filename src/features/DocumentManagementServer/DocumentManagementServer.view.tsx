@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -10,6 +10,29 @@ import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 import DMSFilterDialog from "../../shared/components/Filter/Filter"
 
+
+export const breadcrumbActionsList = [
+    {
+        active: false,
+        linkName: 'Home',
+        path: window.location.origin
+    },
+    {
+        active: false,
+        linkName: 'Admin Console',
+        path: homeurl
+    },
+    {
+        active: false,
+        linkName: 'Document Management Server',
+        path: '#'
+    },
+    {
+        active: false,
+        linkName: 'Documents',
+        path: ''
+    }
+]
 
 const DocumentManagementServerView: React.FC = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
@@ -29,6 +52,9 @@ const DocumentManagementServerView: React.FC = () => {
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
     const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+    const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
+        useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<string[]>([]);
 
     const onPageChange = (event: any, page: number) =>
@@ -48,7 +74,11 @@ const DocumentManagementServerView: React.FC = () => {
         "(min-width:320px) and (max-width: 1023.9px)"
     );
 
-    const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
+    const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+    }, []);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -81,8 +111,9 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (!isInitialLoad) {
-        fetchGetDocumentDetails(searchText, currentPage);
+            fetchGetDocumentDetails(searchText, currentPage);
         }
+        setIsSearchTriggered(false)
     }, [currentPage, searchText]);
 
 
@@ -99,47 +130,50 @@ const DocumentManagementServerView: React.FC = () => {
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
             });
-            if (result ) {
-                
+            if (result && result?.statusCode === 200) {
                 setDocData(result);
                 setCurrentPage(page);
                 setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
                 setShowSearchError(false);
-            } else {
+            } else if (result && result?.status === 400) {
+                setShowErrorBanner(true);
+            }
+            else {
                 setShowSearchError(true);
             }
             setHasFetched(true);
         } catch (err) {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
-        } finally {
-            setIsSearchLoading(false);
-            setIsSearchDataLoading(false);
         }
+        // finally {
+        setIsSearchLoading(false);
+        setIsSearchDataLoading(false);
+        // }
     }
 
-const getEmptyStateMsg = () => {
-    if (searchText !== "") return undefined;
-    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-    return "Documents will appear here once they are uploaded.";
-};
+    const getEmptyStateMsg = () => {
+        if (searchText !== "") return undefined;
+        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+        return "Documents will appear here once they are uploaded.";
+    };
 
-const getTableHeaders = () => {
-    if (tableData?.length > 0) {
-        return getTableHeadersData;
-    }
-    if (searchText !== "") {
-        return getTableHeadersData;
-    }
-    return [];
-};
+    const getTableHeaders = () => {
+        if (tableData?.length > 0 || showErrorBanner) {
+            return getTableHeadersData;
+        }
+        if (isSearchTriggered || searchText || docData) {
+            return getTableHeadersData;
+        }
+        return [];
+    };
 
 
 
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
-        setIsSearchTriggered(false);
+        setIsSearchTriggered(true);
         setCurrentPage(1);
         setShowSearchError(false);
         setIsSearchLoading(false);
@@ -149,13 +183,57 @@ const getTableHeaders = () => {
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
         if (event.key === "Enter") {
             const keyword = searchTerm?.trim()?.toLowerCase();
+            if(keyword !== searchText) {
             setSearchTerm(keyword);
             setSearchText(keyword);
             setIsSearchTriggered(true);
             setIsSearchDataLoading(true);
         }
+        setIsSearchLoading(false);
+        // setSuggestions([]);
     }
-  
+    }
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                // md and below
+                if (breadcrumbActionsList.length > 1) {
+                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-2, -1));
+                } else {
+                    setVisibleBreadcrumbs(breadcrumbActionsList);
+                }
+            } else {
+                setVisibleBreadcrumbs(breadcrumbActionsList);
+            }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [breadcrumbActionsList]);
+
+
+
+    const NotificationMsgBannerObject = [
+        {
+            isShow: showErrorBanner,
+            variant: "warning",
+            title: "Information unavailable",
+            message:
+                "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+            autoclose: true
+        }
+    ]
+
+    let resultNotFoundMSG: string | undefined;
+    if (searchText && !docData.data?.length) {
+        resultNotFoundMSG = `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+    } else if (showErrorBanner) {
+        resultNotFoundMSG = "Information unavailable";
+    } else {
+        resultNotFoundMSG = undefined;
+    }
+
+
     return (<>
         <>
             <Grid className="dms-layout" style={{ display: 'flex' }}>
@@ -171,7 +249,7 @@ const getTableHeaders = () => {
                             size={ButtonSize.Small}
                         />
                     )}
-                    <LocalisedMenu
+                    {/* <LocalisedMenu
                         customHeight={100}
                         menuHeading="Admin console"
                         onCloseSideNavigationPanel={() => setIsOpen(false)}
@@ -180,31 +258,20 @@ const getTableHeaders = () => {
                             text: "Documents",
                             value: `${window.location.origin}/documents`
                         }}
+                    />  */}
+                    <LocalisedMenu
+                        customHeight={100}
+                        menuHeading="Admin Console"
+                        onCloseSideNavigationPanel={() => setIsOpen(false)}
+                        isOpenSideNavigation={isOpen}
+                        defaultSelectedMenu={{
+                            text: "Invite Users",
+                            value: window.location.href,
+                        }}
                     />
 
                     {isMobileView && <Breadcrumbs
-                        breadcrumbActions={[
-                            {
-                                active: false,
-                                linkName: 'Home',
-                                path: window.location.origin
-                            },
-                            {
-                                active: false,
-                                linkName: 'Admin Console',
-                                path: homeurl
-                            },
-                            {
-                                active: false,
-                                linkName: 'Document Management Server',
-                                path: '#'
-                            },
-                            {
-                                active: false,
-                                linkName: 'Documents',
-                                path: ''
-                            }
-                        ]}
+                        breadcrumbActions={visibleBreadcrumbs}
                         className="essui-Breadcrumbs"
                         dataTestId="breadcrumb-test-id"
                         id="element-id"
@@ -221,28 +288,7 @@ const getTableHeaders = () => {
                     >
                         {!isMobileView && <div>
                             <Breadcrumbs
-                                breadcrumbActions={[
-                                    {
-                                        active: false,
-                                        linkName: 'Home',
-                                        path: window.location.origin
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Admin Console',
-                                        path: homeurl
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Document Management Server',
-                                        path: '#'
-                                    },
-                                    {
-                                        active: false,
-                                        linkName: 'Documents',
-                                        path: ''
-                                    }
-                                ]}
+                                breadcrumbActions={visibleBreadcrumbs}
                                 className="essui-Breadcrumbs"
                                 dataTestId="breadcrumb-test-id"
                                 id="element-id"
@@ -252,9 +298,10 @@ const getTableHeaders = () => {
                         }
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
-                                globalNotificationMsgBannerObject={
-                                    showSearchError && !isSearchTriggered ? { title: "Information unavailable" } : null
-                                }
+                                isMobileViewBreadcrumb
+                                globalNotificationMsgBannerObject={NotificationMsgBannerObject}
+                                isShowHeading={true}
+                                isShowSubHeading={false}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -350,11 +397,11 @@ const getTableHeaders = () => {
                                 isPagination={true}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
-                                resultNotFoundMessage={
-                                    isSearchTriggered && !docData?.data?.length 
-                                         ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`
-                                        : undefined
-                                }
+                                emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
+                                emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
+                                emptyRowResponseMessage={resultNotFoundMSG}
+                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner)}
+                                isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
@@ -415,7 +462,7 @@ const getTableHeaders = () => {
                                 </>
                                 }
                                 tableFirstColumnWidth="10px"
-                                 tableHeadersData={getTableHeaders()}
+                                tableHeadersData={getTableHeaders()}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',

@@ -36,7 +36,7 @@ export const fetchDocumentDetails = async ({
     if (responseData?.status === 200) {
       return responseData?.data;
     }
-    return null;
+     return null;
   } catch (err: any) {
     return err?.response?.data ;
   }
