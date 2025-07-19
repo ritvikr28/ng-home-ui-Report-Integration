@@ -49,6 +49,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+    const [sortBy, setSortBy] = useState<string>("DateAdded");
+    const [sortDirection, setSortDirection] = useState<"Asc" | "Desc">("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [isSearchTrue, setIsSearchTrue] = useState(false); 
@@ -107,10 +109,10 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (!isInitialLoad) {
-            fetchGetDocumentDetails(searchText, currentPage);
+            fetchGetDocumentDetails(searchText, currentPage, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText]);
+    }, [currentPage, searchText, sortBy, sortDirection]);
 
 
     const hasItems: boolean = suggestions?.some(
@@ -118,14 +120,16 @@ const DocumentManagementServerView: React.FC = () => {
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, sortByCol: string = sortBy, sortOrder: "Asc" | "Desc" = sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
-                isSearchTextExactMatch: isSearchTrue
+                isSearchTextExactMatch: isSearchTrue,
+                sortBy: sortByCol,
+                sortDirection : sortOrder,
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -148,6 +152,43 @@ const DocumentManagementServerView: React.FC = () => {
         setIsSearchDataLoading(false);
         // }
     }
+
+   const handleSorting = (columnName: string) => {
+  let apiColumnName = columnName;
+  switch (columnName) {
+    case "Date added":
+      apiColumnName = "DateAdded";
+      break;
+    case "Document":
+      apiColumnName = "Document";
+      break;
+    case "Format":
+      apiColumnName = "Format";
+      break;
+      case "Size":
+      apiColumnName = "Size";
+      break;
+    // // Add more cases as needed
+    default:
+    //   apiColumnName = columnName;
+    //   break;
+    return;
+  }
+
+  let newDirection: "Asc" | "Desc" = "Asc";
+  if (sortBy === apiColumnName) {
+    newDirection = sortDirection === "Asc" ? "Desc" : "Asc";
+  }
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+//   fetchDocumentDetails({
+//     pageNumber: currentPage,
+//     pageSize: pageSizeNumber,
+//     searchText,
+//     sortBy: apiColumnName,
+//     sortDirection: newDirection,
+//   });
+};
 
     const getEmptyStateMsg = () => {
         if (searchText !== "") return undefined;
@@ -300,6 +341,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading={true}
                                 isShowSubHeading={false}
+                                isSorting={false}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -448,6 +490,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
+                              sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',
