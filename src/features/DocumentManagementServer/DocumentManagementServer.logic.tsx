@@ -65,7 +65,7 @@ export const getTableHeadersData: {
       headerTxtTrunctLength: 17,
       columnWidth: "261px",
       txtTrunctLength: 35,
-      // isColumnSorting: false,
+      isColumnSorting: false,
       anyComponent: (elem: any) => (
         <>
           {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">

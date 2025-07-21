@@ -3,8 +3,9 @@
 
 .side-width {
   padding: 0;
-  
+
 }
+
 .dms-layout {
   margin: 0;
 
@@ -57,8 +58,10 @@
   .heading-title {
     margin-bottom: 20px;
   }
+
   .dynamic-table {
     overflow-x: auto;
+
     table td:first-child,
     table th:first-child {
       text-align: center;
@@ -66,11 +69,16 @@
     }
 
     .essui-table__cell {
-      min-width: 130px;
+      min-width: 138px;
       text-align: left;
     }
   }
 }
+
+// .grid-wrapper .dynamic-table .essui-table__cell {
+//   min-width: 138px;
+//   text-align: left;
+// }
 
 .relatedto-main {
   display: flex;
@@ -108,7 +116,7 @@
   text-overflow: ellipsis;
 }
 
-.document-column{
+.document-column {
   padding-right: 5px;
 }
 
@@ -147,41 +155,49 @@
   }
 }
 
-.dms-layout .essui-side-navigation-panel{
+.dms-layout .essui-side-navigation-panel {
   height: 100%;
 }
+
 .dms-layout .side-width .essui-side-navigation-panel-container-grid-item {
-    width: 264px;
-    height: 91vh !important;
-  };
+  width: 264px;
+  height: 91vh !important;
+}
+
+;
 
 
 
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:360px) and (max-width:599.9px) {
   .grid-wrapper {
-      #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box ul li.no-icon {
-        padding-left: 4px !important
-      }
+    #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box ul li.no-icon {
+      padding-left: 4px !important
     }
+  }
 }
 
 // --------------------------390px to 767px-----------------
 @media (min-width: 390px) and (max-width: 767.9px) {
   .side-width .essui-side-navigation-panel-container-grid-item {
     width: 264px;
-  };
-};
+  }
+
+  ;
+}
+
+;
 
 // -------------------------360px to 1023.9px-------------------------------
 @media (min-width: 360px) and (max-width:1023.9px) {
-.dms-layout {
+  .dms-layout {
     padding: 10px;
   }
-.grid-wrapper {
-  .filter-tool-view .filter-btn {
-    width: 94%;
+
+  .grid-wrapper {
+    .filter-tool-view .filter-btn {
+      width: 94%;
+    }
   }
-}
 
 }
