@@ -15,6 +15,7 @@ import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { useState } from "react";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
+import dayjs from "dayjs";
 
 interface DMSFilterDialogProps {
   dataTestId?: string;
@@ -23,7 +24,7 @@ interface DMSFilterDialogProps {
   availableCategories: Category[];
   availableFormats: string[];
   onClose: () => void;
-  onApplyFilter: (filters: { categories: string[]; formats: string[] }) => void;
+  onApplyFilter: (filters: { categories: string[]; formats: string[]; fromDate: string; toDate: string }) => void;
 }
 
 const DMSFilterDialog = ({
@@ -38,14 +39,44 @@ const DMSFilterDialog = ({
   const { t } = useTranslation();
   const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
   const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
+  const [fromDay, setFromDay] = useState<string>("");
+  const [fromMonth, setFromMonth] = useState<string>("");
+  const [fromYear, setFromYear] = useState<string>("");
+  const [toDay, setToDay] = useState<string>("");
+  const [toMonth, setToMonth] = useState<string>("");
+  const [toYear, setToYear] = useState<string>("");
+  const [validationError, setValidationError] = useState<string>("");
 
-  const handleApply = () => {
-    onApplyFilter({
-      categories: selectedCategories.map((item) => item.data),
-      formats: selectedFormats.map((item) => item.data)
-    });
-    onClose();
-  };
+
+const handleApply = () => {
+  setValidationError(""); // Reset error
+
+  const fromDate = fromDay && fromMonth && fromYear ? `${fromYear}-${fromMonth.padStart(2, "0")}-${fromDay.padStart(2, "0")}` : "";
+  const toDate = toDay && toMonth && toYear ? `${toYear}-${toMonth.padStart(2, "0")}-${toDay.padStart(2, "0")}` : "";
+
+  if (toDate && !fromDate) {
+    setValidationError("Please select a From date before selecting a To date.");
+    return;
+  }
+
+  if (fromDate && dayjs(fromDate).isAfter(dayjs(), "day")) {
+    setValidationError("From date cannot be after today.");
+    return;
+  }
+
+  if (fromDate && toDate && dayjs(toDate).isBefore(dayjs(fromDate), "day")) {
+    setValidationError("To date cannot be before From date.");
+    return;
+  }
+
+  onApplyFilter({
+    categories: selectedCategories.map((item) => item.data),
+    formats: selectedFormats.map((item) => item.data),
+    fromDate,
+    toDate
+  });
+  onClose();
+};
 
   return (
     <Dialog
@@ -91,18 +122,43 @@ const DMSFilterDialog = ({
         <FormLabel>
           {t("Date Added")}
         </FormLabel>
+        
         <div className="dms-filter-dialog-date-inputs">
           <DateInput
             dataTestId={`${dataTestId}-date-added`}
             helpText="From"
             showDatePicker
-          />
+            day={fromDay ? parseInt(fromDay) : undefined}
+            month={fromMonth ? parseInt(fromMonth) : undefined}
+            year={fromYear ? parseInt(fromYear) : undefined}
+            onChange={(day, month, year) => {
+              setFromDay(day?.toString() ?? "");
+              setFromMonth(month?.toString() ?? "");
+              setFromYear(year?.toString() ?? "");
+            }}
+           />
 
           <DateInput
             dataTestId={`${dataTestId}-date-added`}
             helpText="To"
             showDatePicker
+            day={toDay ? parseInt(toDay) : undefined}
+            month={toMonth ? parseInt(toMonth) : undefined}
+            year={toYear ? parseInt(toYear) : undefined}
+            onChange={(day, month, year) => {
+              setToDay(day?.toString() ?? "");
+              setToMonth(month?.toString() ?? "");
+              setToYear(year?.toString() ?? "");
+            }}
           />
+          
+        </div>
+        <div>
+          {validationError && (
+            <div className="dms-filter-dialog-error" style={{ color: "red", marginBottom: "8px" }}>
+              {validationError}
+            </div>
+          )}
         </div>
       </div>
           
@@ -112,6 +168,12 @@ const DMSFilterDialog = ({
             onClick={() => {
               setSelectedCategories([]);
               setSelectedFormats([]);
+              setFromDay("");
+              setFromMonth("");
+              setFromYear("");
+              setToDay("");
+              setToMonth("");
+              setToYear("");
           }}
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
