@@ -9,7 +9,8 @@ import {
   DropdownItem,
   ISelectedItem,
   DateInput,
-  ButtonSize
+  ButtonSize,
+  ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { useState } from "react";
@@ -46,28 +47,39 @@ const DMSFilterDialog = ({
   const [toMonth, setToMonth] = useState<string>("");
   const [toYear, setToYear] = useState<string>("");
   const [validationError, setValidationError] = useState<string>("");
+  const [fromDateError, setFromDateError] = useState<string>("");
+const [toDateError, setToDateError] = useState<string>("");
+const [isDateError, setIsDateError] = useState(false);
 
 
 const handleApply = () => {
-  setValidationError(""); // Reset error
+  setValidationError("");
+  setIsDateError(false);
 
   const fromDate = fromDay && fromMonth && fromYear ? `${fromYear}-${fromMonth.padStart(2, "0")}-${fromDay.padStart(2, "0")}` : "";
   const toDate = toDay && toMonth && toYear ? `${toYear}-${toMonth.padStart(2, "0")}-${toDay.padStart(2, "0")}` : "";
 
   if (toDate && !fromDate) {
-    setValidationError("Please select a From date before selecting a To date.");
+    setFromDateError("Please select a From date before selecting a To date.");
+    setToDateError("");
+    setIsDateError(true);
     return;
   }
-
   if (fromDate && dayjs(fromDate).isAfter(dayjs(), "day")) {
-    setValidationError("From date cannot be after today.");
+    setFromDateError("From date cannot be after today.");
+    setToDateError("");
+    setIsDateError(true);
     return;
   }
-
   if (fromDate && toDate && dayjs(toDate).isBefore(dayjs(fromDate), "day")) {
-    setValidationError("To date cannot be before From date.");
+    setToDateError("To date cannot be before From date.");
+    setFromDateError("");
+    setIsDateError(true);
     return;
   }
+  setFromDateError("");
+  setToDateError("");
+  setIsDateError(false);
 
   onApplyFilter({
     categories: selectedCategories.map((item) => item.data),
@@ -124,41 +136,59 @@ const handleApply = () => {
         </FormLabel>
         
         <div className="dms-filter-dialog-date-inputs">
-          <DateInput
-            dataTestId={`${dataTestId}-date-added`}
-            helpText="From"
-            showDatePicker
-            day={fromDay ? parseInt(fromDay) : undefined}
-            month={fromMonth ? parseInt(fromMonth) : undefined}
-            year={fromYear ? parseInt(fromYear) : undefined}
-            onChange={(day, month, year) => {
-              setFromDay(day?.toString() ?? "");
-              setFromMonth(month?.toString() ?? "");
-              setFromYear(year?.toString() ?? "");
-            }}
-           />
+          <div className="dms-filter-dialog-fromdate-input">
+            <DateInput
+              dataTestId={`${dataTestId}-date-added`}
+              helpText="From"
+              showDatePicker
+              day={fromDay ? parseInt(fromDay) : undefined}
+              month={fromMonth ? parseInt(fromMonth) : undefined}
+              year={fromYear ? parseInt(fromYear) : undefined}
+              onChange={(day, month, year) => {
+                setFromDay(day?.toString() ?? "");
+                setFromMonth(month?.toString() ?? "");
+                setFromYear(year?.toString() ?? "");
+                if (!day && !month && !year) {
+                  setFromDateError("");
+                  setIsDateError(false);
+                }
+              }}
+              invalidDateErrorMessage={fromDateError}
+              validationText={fromDateError}
+              validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
+            />
+          </div>
 
-          <DateInput
-            dataTestId={`${dataTestId}-date-added`}
-            helpText="To"
-            showDatePicker
-            day={toDay ? parseInt(toDay) : undefined}
-            month={toMonth ? parseInt(toMonth) : undefined}
-            year={toYear ? parseInt(toYear) : undefined}
-            onChange={(day, month, year) => {
-              setToDay(day?.toString() ?? "");
-              setToMonth(month?.toString() ?? "");
-              setToYear(year?.toString() ?? "");
-            }}
-          />
-          
+          <div className="dms-filter-dialog-todate-input">
+           <DateInput
+              dataTestId={`${dataTestId}-date-added`}
+              helpText="To"
+              showDatePicker
+              day={toDay ? parseInt(toDay) : undefined}
+              month={toMonth ? parseInt(toMonth) : undefined}
+              year={toYear ? parseInt(toYear) : undefined}
+              onChange={(day, month, year) => {
+                setToDay(day?.toString() ?? "");
+                setToMonth(month?.toString() ?? "");
+                setToYear(year?.toString() ?? "");
+                if (!day && !month && !year) {
+                  setToDateError("");
+                  setIsDateError(false);
+                }
+              }}
+              invalidDateErrorMessage={toDateError}
+              validationText={toDateError}
+              validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
+            />
+          </div>
+      
         </div>
         <div>
-          {validationError && (
-            <div className="dms-filter-dialog-error" style={{ color: "red", marginBottom: "8px" }}>
-              {validationError}
-            </div>
-          )}
+                      {/* {validationError && (
+    <div className="dms-filter-dialog-error" style={{ color: "#d9372b", marginTop: "4px", fontSize: "15px" }}>
+      {validationError}
+    </div>
+  )}     */}
         </div>
       </div>
           
@@ -174,6 +204,10 @@ const handleApply = () => {
               setToDay("");
               setToMonth("");
               setToYear("");
+              setFromDateError("");     
+              setToDateError("");       
+              setValidationError(""); 
+              setIsDateError(false);
           }}
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
