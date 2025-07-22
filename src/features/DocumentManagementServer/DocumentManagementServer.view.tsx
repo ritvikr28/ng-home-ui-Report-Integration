@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, SelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -260,7 +260,7 @@ const DocumentManagementServerView: React.FC = () => {
         }
     };
 
-    const filterTagOnClickClose = (e, text, closeObj) => {
+    const filterTagOnClickClose = (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: SelectedItem) => {
         let arr = categoryArr?.filter(item => item?.closeObj?.id !== closeObj?.id);
     }
 

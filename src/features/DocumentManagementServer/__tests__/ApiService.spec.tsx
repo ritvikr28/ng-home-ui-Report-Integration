@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -40,6 +40,7 @@ const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
   headers: {},
   config: {},
 };
+
 
 describe('fetchDocumentDetails', () => {
   afterEach(() => {
@@ -146,5 +147,43 @@ describe('fetchDMSSuggestions', () => {
       : [];
 
     expect(values).toEqual([]);
+  });
+});
+
+describe('fetchFilterCategory', () => {
+  const mockBaseUrl = 'http://mock-base-url';
+  const mockUrl = '/validation/api/v1/applicationregistration';
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('should return data when API call is successful', async () => {
+    const mockData = { foo: 'bar' };
+    (service.get as jest.Mock).mockResolvedValueOnce({ data: mockData });
+
+    const result = await fetchFilterCategory();
+    expect(result).toEqual(mockData);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.anything());
+  });
+
+  test('should return empty object and log error on failure', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    (service.get as jest.Mock).mockRejectedValueOnce(new Error('API error'));
+
+    const result = await fetchFilterCategory();
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching DMS suggestions:',
+      expect.any(Error)
+    );
+    consoleSpy.mockRestore();
+  });
+
+  test('should return undefined if response is undefined', async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce(undefined);
+
+    const result = await fetchFilterCategory();
+    expect(result).toBeUndefined();
   });
 });

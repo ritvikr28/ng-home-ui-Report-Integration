@@ -1,7 +1,5 @@
 import {
   Dialog,
-  DialogContent,
-  DialogFooter,
   Button,
   ButtonColor,
   FormLabel,
@@ -13,7 +11,7 @@ import {
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 import dayjs from "dayjs";
@@ -62,70 +60,108 @@ const DMSFilterDialog = ({
   const [toDay, setToDay] = useState<string>("");
   const [toMonth, setToMonth] = useState<string>("");
   const [toYear, setToYear] = useState<string>("");
-  const [validationError, setValidationError] = useState<string>("");
   const [fromDateError, setFromDateError] = useState<string>("");
-const [toDateError, setToDateError] = useState<string>("");
+  const [toDateError, setToDateError] = useState<string>("");
+  const [fromDate, setFromDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
+  const [toDate, setToDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
 
+const getDateString = (date: { day: string; month: string; year: string }) =>
+  date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
+
+const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
+  setDate({ day: "", month: "", year: "" });
+};
+
+const clearAll = useCallback(() => {
+  setSelectedCategories([]);
+  resetDateState(setFromDate);
+  resetDateState(setToDate);
+  setFromDateError("");
+  setToDateError("");
+  setIsDateError(false);
+  setSelectedDateRange({ fromDate: "", toDate: "" });
+}, [setSelectedCategories, setIsDateError, setSelectedDateRange]);
+
+  // Populate date fields from selectedDateRange when dialog opens
   useEffect(() => {
-    if (isFilterDialogOpen) {
-      const selectedFromDate = fromDay && fromMonth && fromYear ? `${fromYear}-${fromMonth.padStart(2, "0")}-${fromDay.padStart(2, "0")}` : "";
-      const selectedToDate = toDay && toMonth && toYear ? `${toYear}-${toMonth.padStart(2, "0")}-${toDay.padStart(2, "0")}` : "";
-      setSelectedDateRange({fromDate: selectedFromDate, toDate: selectedToDate})
-      if (selectedToDate && !selectedFromDate) {
-        setFromDateError("Please select a From date before selecting a To date.");
-        setToDateError("");
-        setIsDateError(true);
-        return;
-      }
-      else if (selectedFromDate && dayjs(selectedFromDate).isAfter(dayjs(), "day")) {
-        setFromDateError("From date cannot be after today.");
-        setToDateError("");
-        setIsDateError(true);
-        return;
-      }
-      else if (selectedFromDate && selectedToDate && dayjs(selectedToDate).isBefore(dayjs(selectedFromDate), "day")) {
-        setToDateError("To date cannot be before From date.");
-        setFromDateError("");
-        setIsDateError(true);
-        return;
-      } else {
-        setFromDateError("");
-        setToDateError("");
+    if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
+      const [year, month, day] = selectedDateRange.toDate.split("-");
+      setToDay(day);
+      setToMonth(month);
+      setToYear(year);
+    }
+    if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
+      const [year, month, day] = selectedDateRange.fromDate.split("-");
+      setFromDay(day);
+      setFromMonth(month);
+      setFromYear(year);
+    }
+  }, [isFilterDialogOpen, selectedDateRange]);
+
+  // Handlers for date input changes
+     const handleDateChange = (
+      setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
+      setError: React.Dispatch<React.SetStateAction<string>>,
+      day: string | number,
+      month: string | number,
+      year: string | number,
+      otherDate: { day: string; month: string; year: string },
+      isFrom: boolean
+    ) => {
+      const newDate = {
+        day: day?.toString() ?? "",
+        month: month?.toString() ?? "",
+        year: year?.toString() ?? "",
+      };
+      setDate(newDate);
+
+      // Build date strings
+      const thisDateStr = getDateString(newDate);
+      const otherDateStr = getDateString(otherDate);
+
+      // Validation logic
+      if (!newDate.day && !newDate.month && !newDate.year) {
+        setError("");
         setIsDateError(false);
+        return;
       }
-    }
-  }, [isFilterDialogOpen, fromYear, toYear, toDay, toMonth, fromDay, fromMonth])
 
-  useEffect(() => {
-    if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid() && isFilterDialogOpen) {
-      let date = selectedDateRange?.toDate.split("-")
-      setToDay(date[2]);
-      setToMonth(date[1]);
-      setToYear(date[0]);
-    }
-    if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid() && isFilterDialogOpen) {
-      let date = selectedDateRange?.fromDate.split("-")
-
-      setFromDay(date[2]);
-      setFromMonth(date[1]);
-      setFromYear(date[0]);
-    }
-  }, [isFilterDialogOpen, selectedDateRange])
-
-  const clearAll = () => {
-    setSelectedCategories([]);
-    setFromDay("");
-    setFromMonth("");
-    setFromYear("");
-    setToDay("");
-    setToMonth("");
-    setToYear("");
-    setFromDateError("");
-    setToDateError("");
-    setValidationError("");
-    setIsDateError(false);
-    setSelectedDateRange({ fromDate: "", toDate: "" })
-  }
+      if (isFrom) {
+        // From date validations
+        if (otherDateStr && !thisDateStr) {
+          setError("Please select a From date before selecting a To date.");
+          setIsDateError(true);
+          return;
+        }
+        if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
+          setError("From date cannot be after today.");
+          setIsDateError(true);
+          return;
+        }
+        if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
+          setError("");
+          setToDateError("To date cannot be before From date.");
+          setIsDateError(true);
+          return;
+        }
+      } else {
+        // To date validations
+        if (thisDateStr && !otherDateStr) {
+          setError("Please select a From date before selecting a To date.");
+          setIsDateError(true);
+          return;
+        }
+        if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
+          setError("To date cannot be before From date.");
+          setIsDateError(true);
+          return;
+        }
+      }
+      
+        setError("");
+        setFromDateError("");
+        setIsDateError(false);
+    };
 
   return (
     <Dialog
@@ -135,99 +171,79 @@ const [toDateError, setToDateError] = useState<string>("");
       onClose={onClose}
       title={title}
     >
-        <FormLabel>
-          {t("Category")}
-        </FormLabel>
-        <Dropdown
-          dataTestId={`${dataTestId}-categories`}
-          isFixedMultiSelect
-          multiSelect
-          onSelectMultiple={(_, items) =>
-            setSelectedCategories(
-              items.map(item => ({
-                ...item,
-                text: item.text || (typeof item.data === "string"
-                  ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
-                  : "")
-              }))
-            )
-          }
-          selectedItems={selectedCategories}
-        >
-          {availableCategories
-            .slice() 
-            .sort((a, b) => a.application.localeCompare(b.application))
-            .map((category) => (
-              <DropdownItem
-                key={category.registrationId}
-                data={category}
-                id={category.application}
-                text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-                value={category.application}
-                isSelected={selectedCategories.some((item) => item.data === category.application)}
-              >
-                {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-              </DropdownItem>
-            ))}
-        </Dropdown>
-      
+      <FormLabel>{t("Category")}</FormLabel>
+      <Dropdown
+        dataTestId={`${dataTestId}-categories`}
+        isFixedMultiSelect
+        multiSelect
+        onSelectMultiple={(_, items) =>
+          setSelectedCategories(
+            items.map(item => ({
+              ...item,
+              text: item.text || (typeof item.data === "string"
+                ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+                : "")
+            }))
+          )
+        }
+        selectedItems={selectedCategories}
+      >
+        {availableCategories
+          .slice()
+          .sort((a, b) => a.application.localeCompare(b.application))
+          .map((category) => (
+            <DropdownItem
+              key={category.registrationId}
+              data={category}
+              id={category.application}
+              text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+              value={category.application}
+              isSelected={selectedCategories.some((item) => item.data === category.application)}
+            >
+              {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+            </DropdownItem>
+          ))}
+      </Dropdown>
+
       <div className="dms-filter-dialog-date">
-        <FormLabel>
-          {t("Date Added")}
-        </FormLabel>
-        
+        <FormLabel>{t("Date Added")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
               dataTestId={`${dataTestId}-date-added`}
               helpText="From"
               showDatePicker
-              day={fromDay ? parseInt(fromDay) : undefined}
-              month={fromMonth ? parseInt(fromMonth) : undefined}
-              year={fromYear ? parseInt(fromYear) : undefined}
-              onChange={(day, month, year) => {
-                setFromDay(day?.toString() ?? "");
-                setFromMonth(month?.toString() ?? "");
-                setFromYear(year?.toString() ?? "");
-                if (!day && !month && !year) {
-                  setFromDateError("");
-                  setIsDateError(false);
+               day={fromDate.day ? parseInt(fromDate.day) : undefined}
+              month={fromDate.month ? parseInt(fromDate.month) : undefined}
+              year={fromDate.year ? parseInt(fromDate.year) : undefined}
+                onChange={(day, month, year) =>
+                  handleDateChange(setFromDate, setFromDateError, day, month, year, toDate, true)
                 }
-              }}
               invalidDateErrorMessage={fromDateError}
               validationText={fromDateError}
               validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
             />
           </div>
-
           <div className="dms-filter-dialog-todate-input">
-           <DateInput
+            <DateInput
               dataTestId={`${dataTestId}-date-added`}
               helpText="To"
               showDatePicker
-              day={toDay ? parseInt(toDay) : undefined}
-              month={toMonth ? parseInt(toMonth) : undefined}
-              year={toYear ? parseInt(toYear) : undefined}
-              onChange={(day, month, year) => {
-                setToDay(day?.toString() ?? "");
-                setToMonth(month?.toString() ?? "");
-                setToYear(year?.toString() ?? "");
-                if (!day && !month && !year) {
-                  setToDateError("");
-                  setIsDateError(false);
+               day={toDate.day ? parseInt(toDate.day) : undefined}
+              month={toDate.month ? parseInt(toDate.month) : undefined}
+              year={toDate.year ? parseInt(toDate.year) : undefined}
+               onChange={(day, month, year) =>
+                  handleDateChange(setToDate, setToDateError, day, month, year, fromDate, false)
                 }
-              }}
               invalidDateErrorMessage={toDateError}
               validationText={toDateError}
               validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
             />
           </div>
-      
         </div>
-        
       </div>
-          
-        <div className="dms-filter-dialog-buttons">
+
+      <div className="dms-filter-dialog-buttons">
         <Button
           dataTestId={`${dataTestId}-clear-btn`}
           onClick={clearAll}
@@ -244,7 +260,7 @@ const [toDateError, setToDateError] = useState<string>("");
         >
           {t("Apply Filters")}
         </Button>
-        </div>
+      </div>
     </Dialog>
   );
 };
