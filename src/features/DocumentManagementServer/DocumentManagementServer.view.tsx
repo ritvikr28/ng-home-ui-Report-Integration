@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, SelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -56,13 +56,11 @@ const DocumentManagementServerView: React.FC = () => {
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
-    const [isFilterTagShow, setIsFilterTagShow] = useState<boolean>(false)
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     
-
-    let categoryArr = selectedFormats?.map((cat:any, idx) => ({
+    const categoryArr = selectedFormats?.map((cat:any) => ({
         text: cat?.text, categoryName: cat?.value, closeObj: {
             name: cat?.text,
             id: cat?.data?.registrationId
@@ -111,7 +109,7 @@ const DocumentManagementServerView: React.FC = () => {
     const fetchInitialData = async () => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
+        const dataFetch = fetchGetDocumentDetails(searchText, currentPage, []);
         // Fetch categories
         
         await Promise.all([minLoaderTime, dataFetch]);
@@ -125,10 +123,14 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (!isInitialLoad) {
-            fetchGetDocumentDetails(searchText, currentPage);
+            const allRegistrationIds = selectedFormats?.flatMap(item => {
+                const regId = item?.data?.registrationId;
+                return regId ? (Array.isArray(regId) ? regId : [regId]) : [];
+            }) || [];
+            fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats]);
 
 
     const hasItems: boolean = suggestions?.some(
@@ -136,7 +138,7 @@ const DocumentManagementServerView: React.FC = () => {
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[]) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
@@ -144,7 +146,8 @@ const DocumentManagementServerView: React.FC = () => {
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
                 fromDate: dateRange?.fromDate,
-                toDate: dateRange?.toDate
+                toDate: dateRange?.toDate,
+                categoryId: categories || []
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -253,20 +256,29 @@ const DocumentManagementServerView: React.FC = () => {
         if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
             setIsDateError(true);
         } else {
-            setIsFilterTagShow(true)
             setSelectedFormats(selectedCategories)
             setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
             setIsFilterDialogOpen(false);
         }
     };
 
-    const filterTagOnClickClose = (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: SelectedItem) => {
-        let arr = categoryArr?.filter(item => item?.closeObj?.id !== closeObj?.id);
-    }
 
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true)
-        fetchCategory().then(setAvailableCategories);
+        fetchCategory()
+            .then((res) => {
+                res = Object.values(
+                    res?.reduce((acc: any, curr: any) => {
+                        if (!acc[curr.application]) {
+                            acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
+                        }
+                        acc[curr.application].registrationId.push(curr.registrationId);
+                        acc[curr.application].section.push(curr.section);
+                        return acc;
+                    }, {})
+                );
+            setAvailableCategories(res)
+        });
         selectedFormats && setSelectedCategories(selectedFormats)
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" })
     }
@@ -482,13 +494,10 @@ const DocumentManagementServerView: React.FC = () => {
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title="Filter Documents"
-                                            availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
                                             handleApply={handleApply}
-                                            selectedFormats={selectedFormats}
-                                            setIsFilterDialogOpen={setIsFilterDialogOpen}
                                             isFilterDialogOpen={isFilterDialogOpen}
                                             setIsDateError={setIsDateError}
                                             isDateError={isDateError}
@@ -525,7 +534,6 @@ const DocumentManagementServerView: React.FC = () => {
                                 className="grid_wrapper"
                                 searchTagList = {selectedFormats?.length > 0 ? categoryArr : []}
                                 onOverflowTagClose ={()=>{}}
-                                searchOnClickClose={(e, text, closeObj) => filterTagOnClickClose(e,text, closeObj)}
                             />
                         </div>}
                     </div>
