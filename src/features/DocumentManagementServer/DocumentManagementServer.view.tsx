@@ -458,7 +458,7 @@ const DocumentManagementServerView: React.FC = () => {
                                     <DMSFilterDialog
                                     availableCategories={availableCategories}
                                     isOpen={isFilterDialogOpen}
-                                    title="Filter Documents"
+                                    title="Filter By"
                                     availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
                                     onClose={() => setIsFilterDialogOpen(false)}
                                     onApplyFilter={() => {}}

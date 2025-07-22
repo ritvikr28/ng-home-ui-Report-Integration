@@ -103,6 +103,7 @@ const handleApply = () => {
         </FormLabel>
         <Dropdown
           dataTestId={`${dataTestId}-categories`}
+          isFixedMultiSelect
           multiSelect
           onSelectMultiple={(_, items) =>
             setSelectedCategories(
@@ -116,19 +117,22 @@ const handleApply = () => {
           }
           selectedItems={selectedCategories}
         >
-      {availableCategories.map((category) => (
-        <DropdownItem
-          key={category.registrationId}
-          data={category}
-          id={category.application}
-          text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-          value={category.application}
-          isSelected={selectedCategories.some((item) => item.data === category.application)}
-        >
-          {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-        </DropdownItem>
-      ))}
-  </Dropdown>
+          {availableCategories
+            .slice() 
+            .sort((a, b) => a.application.localeCompare(b.application))
+            .map((category) => (
+              <DropdownItem
+                key={category.registrationId}
+                data={category}
+                id={category.application}
+                text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+                value={category.application}
+                isSelected={selectedCategories.some((item) => item.data === category.application)}
+              >
+                {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+              </DropdownItem>
+            ))}
+        </Dropdown>
       
       <div className="dms-filter-dialog-date">
         <FormLabel>
@@ -183,13 +187,7 @@ const handleApply = () => {
           </div>
       
         </div>
-        <div>
-                      {/* {validationError && (
-    <div className="dms-filter-dialog-error" style={{ color: "#d9372b", marginTop: "4px", fontSize: "15px" }}>
-      {validationError}
-    </div>
-  )}     */}
-        </div>
+        
       </div>
           
         <div className="dms-filter-dialog-buttons">
