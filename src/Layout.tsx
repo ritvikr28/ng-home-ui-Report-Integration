@@ -1,4 +1,4 @@
-import React, { Suspense, lazy, LazyExoticComponent, FC, useState } from "react";
+import React, { Suspense, lazy, LazyExoticComponent, FC, useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { ProtectedRoute, Auth, authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import {
@@ -45,6 +45,13 @@ const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
+}
+
+declare global {
+  interface Window {
+    userpilot: any;
+    sharedStorage: any;
+  }
 }
 
 export const getMenus: (
@@ -167,6 +174,58 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
+
+  const hasUserPilotPermissions: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SignOutFlag"
+  );
+  
+  if (window.userpilot && typeof window.userpilot.track === "function") {
+    window.userpilot.track("Event Name");
+    console.log("window.userpilot.track", window.userpilot.track);
+
+    window.userpilot.track("Testing UserPilot from Home UI");
+    console.log("window.userpilot.track", window.userpilot.track);
+  }
+
+  useEffect(() => {
+    const orgId: string = authService.getOrgId() ?? '';
+    document.cookie = `OrgIdToBeShared=${orgId}`;
+    console.log("OrgIdToBeShared cookie set:", orgId);
+}, []);
+
+  useEffect(() => {
+    const user = {
+      userId: authService.getUserId(),
+      name: authService.getUsername(),
+      email: authService.getEmailId(),
+      createdDate: new Date().toISOString(),
+      orgId: authService.getOrgId()
+    }
+    if (
+      hasUserPilotPermissions &&
+      window.userpilot &&
+      typeof window.userpilot.identify === "function"
+    ) {
+      window.userpilot.identify(
+        user.userId,
+        {
+          name: user.name,
+          email: user.email,
+          created_at: user.createdDate,
+          company: {
+            id: user.orgId,
+            name: "SIMS Next Gen",
+            industry: "Technology",
+            plan: "Free",
+          },
+          projectId: "SIMS NEXT GEN",
+          trialEnds: '2025-07-22'
+        })
+    console.log("UserPilot Idetify", window.userpilot);
+  }
+}, []); 
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
