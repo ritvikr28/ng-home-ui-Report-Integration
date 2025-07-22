@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -49,13 +49,25 @@ const DocumentManagementServerView: React.FC = () => {
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
-    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false);
-    const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-    const [selectedFormats, setSelectedFormats] = useState<string[]>([]);
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+    const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
+    const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+    const [isFilterTagShow, setIsFilterTagShow] = useState<boolean>(false)
+    const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
+    const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
+    const [isDateError, setIsDateError] = useState(false);
+    
+
+    let categoryArr = selectedFormats?.map((cat:any, idx) => ({
+        text: cat?.text, categoryName: cat?.value, closeObj: {
+            name: cat?.text,
+            id: cat?.data?.registrationId
+        }
+    }))
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -116,7 +128,7 @@ const DocumentManagementServerView: React.FC = () => {
             fetchGetDocumentDetails(searchText, currentPage);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate]);
 
 
     const hasItems: boolean = suggestions?.some(
@@ -131,6 +143,8 @@ const DocumentManagementServerView: React.FC = () => {
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
+                fromDate: dateRange?.fromDate,
+                toDate: dateRange?.toDate
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -235,6 +249,27 @@ const DocumentManagementServerView: React.FC = () => {
         resultNotFoundMSG = undefined;
     }
 
+    const handleApply = () => {
+        if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
+            setIsDateError(true);
+        } else {
+            setIsFilterTagShow(true)
+            setSelectedFormats(selectedCategories)
+            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+            setIsFilterDialogOpen(false);
+        }
+    };
+
+    const filterTagOnClickClose = (e, text, closeObj) => {
+        let arr = categoryArr?.filter(item => item?.closeObj?.id !== closeObj?.id);
+    }
+
+    const handleFilterOnClick = () => {
+        setIsFilterDialogOpen(true)
+        fetchCategory().then(setAvailableCategories);
+        selectedFormats && setSelectedCategories(selectedFormats)
+        setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" })
+    }
 
     return (<>
         <>
@@ -251,16 +286,6 @@ const DocumentManagementServerView: React.FC = () => {
                             size={ButtonSize.Small}
                         />
                     )}
-                    {/* <LocalisedMenu
-                        customHeight={100}
-                        menuHeading="Admin console"
-                        onCloseSideNavigationPanel={() => setIsOpen(false)}
-                        isOpenSideNavigation={isOpen}
-                        defaultSelectedMenu={{
-                            text: "Documents",
-                            value: `${window.location.origin}/documents`
-                        }}
-                    />  */}
                     <LocalisedMenu
                         customHeight={100}
                         menuHeading="Admin Console"
@@ -442,28 +467,35 @@ const DocumentManagementServerView: React.FC = () => {
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
-                                <>
-                                <Button
-                                    className="filter-btn"
-                                    dataTestId="filter-btn"
-                                    color={ButtonColor.Utility}
-                                    size={ButtonSize.Small}
-                                    iconPosition={ButtonIconPosition.Right}
-                                    iconName="filter"
-                                    onClick={() => {setIsFilterDialogOpen(true)
-                                       fetchCategory().then(setAvailableCategories);
-                                    }}
-                                > Filter</Button>
-                                
-                                    <DMSFilterDialog
-                                    availableCategories={availableCategories}
-                                    isOpen={isFilterDialogOpen}
-                                    title="Filter Documents"
-                                    availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
-                                    onClose={() => setIsFilterDialogOpen(false)}
-                                    onApplyFilter={() => {}}
-                                    />
-                                </>
+                                    <>
+                                        <Button
+                                            className="filter-btn"
+                                            dataTestId="filter-btn"
+                                            color={ButtonColor.Utility}
+                                            size={ButtonSize.Small}
+                                            iconPosition={ButtonIconPosition.Right}
+                                            iconName="filter"
+                                            onClick={handleFilterOnClick}
+                                        > Filter</Button>
+
+                                        <DMSFilterDialog
+                                            availableCategories={availableCategories}
+                                            isOpen={isFilterDialogOpen}
+                                            title="Filter Documents"
+                                            availableFormats={docData?.data?.map((doc: { format: any }) => doc.format).filter(Boolean) ?? []}
+                                            onClose={() => setIsFilterDialogOpen(false)}
+                                            setSelectedCategories={setSelectedCategories}
+                                            selectedCategories={selectedCategories}
+                                            handleApply={handleApply}
+                                            selectedFormats={selectedFormats}
+                                            setIsFilterDialogOpen={setIsFilterDialogOpen}
+                                            isFilterDialogOpen={isFilterDialogOpen}
+                                            setIsDateError={setIsDateError}
+                                            isDateError={isDateError}
+                                            setSelectedDateRange={setSelectedDateRange}
+                                            selectedDateRange={selectedDateRange}
+                                        />
+                                    </>
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
@@ -491,6 +523,9 @@ const DocumentManagementServerView: React.FC = () => {
                                 isSearchShowLoading={isLoading}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
+                                searchTagList = {selectedFormats?.length > 0 ? categoryArr : []}
+                                onOverflowTagClose ={()=>{}}
+                                searchOnClickClose={(e, text, closeObj) => filterTagOnClickClose(e,text, closeObj)}
                             />
                         </div>}
                     </div>

@@ -13,7 +13,7 @@ import {
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 import dayjs from "dayjs";
@@ -25,7 +25,16 @@ interface DMSFilterDialogProps {
   availableCategories: Category[];
   availableFormats: string[];
   onClose: () => void;
-  onApplyFilter: (filters: { categories: string[]; formats: string[]; fromDate: string; toDate: string }) => void;
+  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+  selectedCategories: ISelectedItem[];
+  handleApply: () => void;
+  selectedFormats: ISelectedItem[];
+  setIsFilterDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isFilterDialogOpen: boolean;
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
+  isDateError: boolean;
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string, toDate: string }>>
+  selectedDateRange: { fromDate: string, toDate: string }
 }
 
 const DMSFilterDialog = ({
@@ -35,11 +44,18 @@ const DMSFilterDialog = ({
   availableCategories,
   availableFormats,
   onClose,
-  onApplyFilter
+  setSelectedCategories,
+  selectedCategories,
+  handleApply,
+  selectedFormats,
+  setIsFilterDialogOpen,
+  isFilterDialogOpen,
+  setIsDateError,
+  isDateError,
+  setSelectedDateRange,
+  selectedDateRange
 }: DMSFilterDialogProps) => {
   const { t } = useTranslation();
-  const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
-  const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
   const [fromDay, setFromDay] = useState<string>("");
   const [fromMonth, setFromMonth] = useState<string>("");
   const [fromYear, setFromYear] = useState<string>("");
@@ -49,46 +65,67 @@ const DMSFilterDialog = ({
   const [validationError, setValidationError] = useState<string>("");
   const [fromDateError, setFromDateError] = useState<string>("");
 const [toDateError, setToDateError] = useState<string>("");
-const [isDateError, setIsDateError] = useState(false);
 
+  useEffect(() => {
+    if (isFilterDialogOpen) {
+      const selectedFromDate = fromDay && fromMonth && fromYear ? `${fromYear}-${fromMonth.padStart(2, "0")}-${fromDay.padStart(2, "0")}` : "";
+      const selectedToDate = toDay && toMonth && toYear ? `${toYear}-${toMonth.padStart(2, "0")}-${toDay.padStart(2, "0")}` : "";
+      setSelectedDateRange({fromDate: selectedFromDate, toDate: selectedToDate})
+      if (selectedToDate && !selectedFromDate) {
+        setFromDateError("Please select a From date before selecting a To date.");
+        setToDateError("");
+        setIsDateError(true);
+        return;
+      }
+      else if (selectedFromDate && dayjs(selectedFromDate).isAfter(dayjs(), "day")) {
+        setFromDateError("From date cannot be after today.");
+        setToDateError("");
+        setIsDateError(true);
+        return;
+      }
+      else if (selectedFromDate && selectedToDate && dayjs(selectedToDate).isBefore(dayjs(selectedFromDate), "day")) {
+        setToDateError("To date cannot be before From date.");
+        setFromDateError("");
+        setIsDateError(true);
+        return;
+      } else {
+        setFromDateError("");
+        setToDateError("");
+        setIsDateError(false);
+      }
+    }
+  }, [isFilterDialogOpen, fromYear, toYear, toDay, toMonth, fromDay, fromMonth])
 
-const handleApply = () => {
-  setValidationError("");
-  setIsDateError(false);
+  useEffect(() => {
+    if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid() && isFilterDialogOpen) {
+      let date = selectedDateRange?.toDate.split("-")
+      setToDay(date[2]);
+      setToMonth(date[1]);
+      setToYear(date[0]);
+    }
+    if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid() && isFilterDialogOpen) {
+      let date = selectedDateRange?.fromDate.split("-")
 
-  const fromDate = fromDay && fromMonth && fromYear ? `${fromYear}-${fromMonth.padStart(2, "0")}-${fromDay.padStart(2, "0")}` : "";
-  const toDate = toDay && toMonth && toYear ? `${toYear}-${toMonth.padStart(2, "0")}-${toDay.padStart(2, "0")}` : "";
+      setFromDay(date[2]);
+      setFromMonth(date[1]);
+      setFromYear(date[0]);
+    }
+  }, [isFilterDialogOpen, selectedDateRange])
 
-  if (toDate && !fromDate) {
-    setFromDateError("Please select a From date before selecting a To date.");
-    setToDateError("");
-    setIsDateError(true);
-    return;
-  }
-  if (fromDate && dayjs(fromDate).isAfter(dayjs(), "day")) {
-    setFromDateError("From date cannot be after today.");
-    setToDateError("");
-    setIsDateError(true);
-    return;
-  }
-  if (fromDate && toDate && dayjs(toDate).isBefore(dayjs(fromDate), "day")) {
-    setToDateError("To date cannot be before From date.");
+  const clearAll = () => {
+    setSelectedCategories([]);
+    setFromDay("");
+    setFromMonth("");
+    setFromYear("");
+    setToDay("");
+    setToMonth("");
+    setToYear("");
     setFromDateError("");
-    setIsDateError(true);
-    return;
+    setToDateError("");
+    setValidationError("");
+    setIsDateError(false);
+    setSelectedDateRange({ fromDate: "", toDate: "" })
   }
-  setFromDateError("");
-  setToDateError("");
-  setIsDateError(false);
-
-  onApplyFilter({
-    categories: selectedCategories.map((item) => item.data),
-    formats: selectedFormats.map((item) => item.data),
-    fromDate,
-    toDate
-  });
-  onClose();
-};
 
   return (
     <Dialog
@@ -116,7 +153,7 @@ const handleApply = () => {
           }
           selectedItems={selectedCategories}
         >
-      {availableCategories.map((category) => (
+      {availableCategories?.map((category) => (
         <DropdownItem
           key={category.registrationId}
           data={category}
@@ -193,22 +230,9 @@ const handleApply = () => {
       </div>
           
         <div className="dms-filter-dialog-buttons">
-          <Button
-            dataTestId={`${dataTestId}-clear-btn`}
-            onClick={() => {
-              setSelectedCategories([]);
-              setSelectedFormats([]);
-              setFromDay("");
-              setFromMonth("");
-              setFromYear("");
-              setToDay("");
-              setToMonth("");
-              setToYear("");
-              setFromDateError("");     
-              setToDateError("");       
-              setValidationError(""); 
-              setIsDateError(false);
-          }}
+        <Button
+          dataTestId={`${dataTestId}-clear-btn`}
+          onClick={clearAll}
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
         >
