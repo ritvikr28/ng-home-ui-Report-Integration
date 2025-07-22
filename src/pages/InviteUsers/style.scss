@@ -161,3 +161,25 @@
     padding: 8px 12px;
   }
 }
+
+@media (max-width: 600px) and (pointer: fine) and (hover: hover) {
+  .invite-user-container .essui-dialog {
+    max-height: 100vh !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .invite-user-container .essui-dialog__footer {
+    margin: 0 !important;
+  }
+
+  .invite-user-container .essui-header {
+    margin-top: 0 !important;
+    margin-bottom: 8px;
+  }
+}
+
+@media (min-device-width: 320px) and (max-device-width: 599px) {
+  .dropdown {
+    max-width: 42% !important;
+  }
+}
