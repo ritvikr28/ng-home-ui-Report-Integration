@@ -162,7 +162,7 @@
   }
 }
 
-@media (max-width: 600px) and (pointer: fine) and (hover: hover) {
+@media (max-width: 700px) and (pointer: fine) and (hover: hover) {
   .invite-user-container .essui-dialog {
     max-height: 100vh !important;
   }
@@ -182,4 +182,12 @@
   .dropdown {
     max-width: 42% !important;
   }
+}
+
+.invite-user-container .essui-side-navigation-panel-container-grid-item {
+  padding-bottom: 58px !important;
+}
+
+.invite-user-container #localised-menu-id #side-navigation-panel-container {
+  margin-bottom: 24px !important;
 }
