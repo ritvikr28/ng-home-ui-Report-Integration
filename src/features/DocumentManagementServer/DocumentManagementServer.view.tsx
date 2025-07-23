@@ -49,6 +49,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+    const [sortBy, setSortBy] = useState<string>("DateAdded");
+    const [sortDirection, setSortDirection] = useState<"Asc" | "Desc">("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [isSearchTrue, setIsSearchTrue] = useState(false); 
@@ -107,25 +109,29 @@ const DocumentManagementServerView: React.FC = () => {
 
     useEffect(() => {
         if (!isInitialLoad) {
-            fetchGetDocumentDetails(searchText, currentPage);
+            fetchGetDocumentDetails(searchText, currentPage, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText]);
+    }, [currentPage, searchText, sortBy, sortDirection]);
 
+
+    
 
     const hasItems: boolean = suggestions?.some(
         ({ values }: Suggestion) => values?.length > 0
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
-                isSearchTextExactMatch: isSearchTrue
+                isSearchTextExactMatch: isSearchTrue,
+                sortBy: sortByCol,
+                sortDirection : sortOrder,
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -143,11 +149,40 @@ const DocumentManagementServerView: React.FC = () => {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
         }
-        // finally {
+     
         setIsSearchLoading(false);
         setIsSearchDataLoading(false);
-        // }
+        
     }
+
+   const handleSorting = (columnName: string) => {
+  let apiColumnName = columnName;
+  switch (columnName) {
+    case "Date added":
+      apiColumnName = "DateAdded";
+      break;
+    case "Document":
+      apiColumnName = "Document";
+      break;
+    case "Format":
+      apiColumnName = "Format";
+      break;
+      case "Size":
+      apiColumnName = "Size";
+      break;
+    
+    default:
+        
+    return;
+  }
+  let newDirection: "Asc" | "Desc" = "Desc";
+if (sortBy === apiColumnName) {
+  newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+}
+
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+};
 
     const getEmptyStateMsg = () => {
         if (searchText !== "") return undefined;
@@ -164,7 +199,6 @@ const DocumentManagementServerView: React.FC = () => {
         }
         return [];
     };
-
 
     const handleSearchClose = () => {
         setSearchInput("");
@@ -230,7 +264,6 @@ const DocumentManagementServerView: React.FC = () => {
     } else {
         resultNotFoundMSG = undefined;
     }
-
 
     return (<>
         <>
@@ -300,6 +333,10 @@ const DocumentManagementServerView: React.FC = () => {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading={true}
                                 isShowSubHeading={false}
+                                isSorting={false}
+                                sortByDefault={false}
+                                sortAscFirst={false}
+                                
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -448,6 +485,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
+                              sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',

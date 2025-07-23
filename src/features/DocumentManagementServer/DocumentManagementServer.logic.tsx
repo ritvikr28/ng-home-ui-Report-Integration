@@ -14,6 +14,9 @@ export const getTableHeadersData: {
   isSimpleText?: boolean;
   txtTrunctLength?: number;
   isColumnSorting?: boolean;
+  
+  isColumnSortByDefault?: boolean;
+  sortDirection?: "Asc" | "Desc";
   anyComponent?: (e: any) => JSX.Element;
 }[] = [
     {
@@ -33,7 +36,9 @@ export const getTableHeadersData: {
       headerTxtTrunctLength: 50,
       isSimpleText: true,
       txtTrunctLength: 35,
-      isColumnSorting: false,
+      isColumnSorting: true,
+      
+     
       anyComponent: (e: any) => (
         <>
           <div style={{ display: "flex" }}>
@@ -58,10 +63,11 @@ export const getTableHeadersData: {
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: true,
-      isHeaderTextTruncate: true,
+      isHeaderTextTruncate: false,
       headerTxtTrunctLength: 17,
       columnWidth: "261px",
       txtTrunctLength: 35,
+      isColumnSorting: true,
       anyComponent: (elem: any) => (
         <>
           {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
@@ -99,7 +105,8 @@ export const getTableHeadersData: {
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
-      isColumnSorting: false,
+      
+      isColumnSorting: true,
       columnWidth: "144px",
       anyComponent: (e: any) => (
         <>
@@ -123,7 +130,8 @@ export const getTableHeadersData: {
       isShow: true,
       showValAs: ShowValAs.Text,
       headerTxtTrunctLength: 50,
-      columnWidth: "180px"
+      columnWidth: "180px",
+      isColumnSorting: true,
     },
     {
       text: "Date added",
@@ -131,17 +139,21 @@ export const getTableHeadersData: {
       columnWidth: "140px",
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
-      isColumnSorting: false
+      isColumnSorting: true,
+      isColumnSortByDefault: true,
+      // // isSorted: true,
+      // sortDirection: "Desc",
     },
     {
       text: "Format",
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
-      isColumnSorting: false,
+      isColumnSorting: true,
       isTextTruncate: false,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 50,
+     
       columnWidth: "120px",
       anyComponent: (e: any) => (
         <>
@@ -165,7 +177,7 @@ export const getTableHeadersData: {
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
-      isColumnSorting: false,
+      isColumnSorting: true,
       isTextTruncate: false,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 50,
@@ -177,7 +189,7 @@ export const getTableHeadersData: {
         return (
           <div style={{ display: "flex" }}>
             <Tooltip
-              dataTestId="tooltip-eventtime"
+                dataTestId="tooltip-eventtime"
               content={<span>{value}</span>}
               align={TooltipAlign.Center}
               position={TooltipPosition.Bottom}
