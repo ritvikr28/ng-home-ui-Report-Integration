@@ -186,3 +186,42 @@ describe('fetchFilterCategory', () => {
     expect(result).toBeUndefined();
   });
 });
+
+describe('fetchFilterCategory', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const mockUrl = '/validation/api/v1/applicationregistration';
+
+  test('should return data when API call is successful', async () => {
+    const mockData = { foo: 'bar' };
+
+    const mockResponse: AxiosResponse = {
+      data: mockData,
+      status: 200,
+      statusText: 'OK',
+      headers: {},
+      config: {},
+    };
+    jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchFilterCategory();
+
+    expect(result).toEqual(mockData);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, 'https://dev.platform.sims.co.uk');
+  });
+
+  test('should return empty object and log error on failure', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('API error'));
+
+    const result = await fetchFilterCategory();
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching DMS suggestions:',
+      expect.any(Error)
+    );
+    consoleSpy.mockRestore();
+  });
+});

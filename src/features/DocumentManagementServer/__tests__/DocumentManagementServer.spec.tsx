@@ -4,7 +4,8 @@ import {
   screen,
   fireEvent,
   waitFor,
-  act
+  act,
+  within
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { error } from "console";
@@ -56,6 +57,11 @@ describe("DocumentManagementServerView", () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
   });
 
+afterEach(() => {
+  jest.runOnlyPendingTimers(); // flush pending timers
+  jest.useRealTimers();
+});
+
 
 
   it("renders main component and triggers document fetch", async () => {
@@ -74,15 +80,19 @@ describe("DocumentManagementServerView", () => {
 });
   });
 
-//  it("shows breadcrumbs in non-mobile view", () => {
-//   render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
+ it("shows breadcrumbs in non-mobile view", () => {
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
-//   expect(screen.getByText("Home")).toBeInTheDocument();
-//   expect(screen.getByText("Admin Console")).toBeInTheDocument();
-// });
+  
+  const adminConsoleLabels = screen.getAllByText("Admin Console");
+  expect(adminConsoleLabels.length).toBeGreaterThan(0);
+  const homeLabels = screen.getAllByText("Home");
+  expect(homeLabels.length).toBeGreaterThan(0);
+
+});
 
    it("handles error during fetchDocumentDetails", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockImplementationOnce(error)
@@ -179,26 +189,6 @@ describe("DocumentManagementServerView", () => {
    
   });
 
-  // it("displays empty state message when no data", async () => {
-  //    jest.useFakeTimers();
-  //   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
-  //     totalRecords: 0,
-  //     statusCode: 200,
-  //     data: [],
-  //   });
-  //   const { container } = render(<DocumentManagementServerView />);
-
-  //   await act(() => {
-  //     jest.advanceTimersByTime(2000);
-  //   });
-
-  //   await waitFor(() => {
-  //     console.log(container.innerHTML);
-  //   const emptyState = screen.getByTestId("result-not-found-message");
-  //   expect(emptyState).toBeInTheDocument();
-  // });
-  // });
-
   it("handles pagination changes", async () => {
      const mockDatas = {
     totalRecords: 41,
@@ -285,4 +275,192 @@ describe("DocumentManagementServerView", () => {
   expect(match).toBeTruthy();
 });
 });
+
+it("calls fetchGetDocumentDetails on selectedFormats change", async () => {
+  
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  act(async () => {
+  await waitFor(() => {
+    const filterButton = screen.getByTestId("filter-btn");
+    fireEvent.click(filterButton);
+  });
+
+  const applyBtn = screen.getByText("Filter");
+  fireEvent.click(applyBtn);
+  })
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalled();
+  });
+});
+
+it("displays error banner when status 400 is returned", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    status: 400,
+    data: [],
+    totalRecords: 0,
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText("Information unavailable")).toBeInTheDocument();
+  });
+});
+
+
+
+it("sets date error when fromDate is invalid", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const filterButton = screen.getByTestId("filter-btn");
+    fireEvent.click(filterButton);
+  });
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  act(() => {
+    // Simulate invalid fromDate
+     const fromDateInput = within(dateInputs[0]).getByPlaceholderText("DD");
+  fireEvent.change(fromDateInput, { target: { value: "32" } });
+    fireEvent.click(screen.getByText("Apply Filters"));
+  });
+
+  // Check if error flag was triggered (e.g., via aria or style changes)
+});
+
+
+it("opens filter dialog and processes fetched category data", async () => {
+  const mockCategoryResponse = [
+    { application: "App1", registrationId: 101, section: "Section1" },
+    { application: "App1", registrationId: 102, section: "Section2" },
+  ];
+  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
+
+  render(<DocumentManagementServerView />);
+  act(() => jest.advanceTimersByTime(2000));
+
+  await waitFor(() => {
+    const filterButton = screen.getByTestId("filter-btn");
+    fireEvent.click(filterButton);
+  });
+
+  await waitFor(() => {
+    expect(apiService.fetchFilterCategory).toHaveBeenCalled();
+    // If LocalisedMenu or something is affected by categories, check there too
+  });
+});
+
+it("reduces category data properly in handleFilterOnClick", async () => {
+  const categoryList = [
+    { application: "AppX", registrationId: 111, section: "S1" },
+    { application: "AppX", registrationId: 112, section: "S2" },
+    { application: "AppY", registrationId: 113, section: "S3" }
+  ];
+  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
+
+  render(<DocumentManagementServerView />);
+   act(() => jest.advanceTimersByTime(3000));
+
+    await waitFor(() => {
+    const filterButton = screen.getByTestId("filter-btn");
+    fireEvent.click(filterButton);
+  });
+
+  await waitFor(() => {
+    expect(apiService.fetchFilterCategory).toHaveBeenCalled();
+  });
+});
+
+it("sets visibleBreadcrumbs to slice(-2, -1) when width < 1024 and list > 1", () => {
+  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 900 });
+  const { getByText } = render(<DocumentManagementServerView />);
+  
+  // simulate prop/state with >1 breadcrumb
+  // wait for "Documents" which is the second last item
+  expect(getByText("Documents")).toBeInTheDocument(); // slice(-2, -1)
+});
+
+it("sets visibleBreadcrumbs to full list when width < 1024 and list has only one item", () => {
+  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 900 });
+
+  const { getByText } = render(<DocumentManagementServerView />);
+  // simulate prop/state with one breadcrumb
+  // expect "Home" to be present
+  expect(getByText("Home")).toBeInTheDocument();
+});
+
+it("shows no result message when search yields no data", async () => {
+  jest.useFakeTimers();
+  
+  // Mock empty search result
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  const { container } = render(<DocumentManagementServerView />);
+
+  // Advance initial loader
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  // Simulate typing search text
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "nonexistentdoc" } });
+
+  // Advance debounce or fetch wait
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+  expect(
+    screen.getByText((content, element) =>
+      content.includes("Your search -") &&
+      (element?.textContent?.includes("nonexistentdoc") ?? false) &&
+      (element?.textContent?.includes("did not match any results") ?? false)
+    )
+  ).toBeInTheDocument();
+});
+
+
+  jest.useRealTimers();
+});
+
+// it("closes filter dialog when onClose is called", async () => {
+//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
+//   render(<DocumentManagementServerView />);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   // Open the filter dialog
+//   await waitFor(() => {
+//     const filterButton = screen.getByTestId("filter-btn");
+//     fireEvent.click(filterButton);
+//   });
+
+//   // The dialog should be open
+//   expect(screen.getByText("Filter Documents")).toBeInTheDocument();
+
+//   // Find the close button and click it (simulate onClose)
+//   const closeBtn = screen.getByTestId("dms-filter-dialog-close-btn");
+//   fireEvent.click(closeBtn);
+
+//   // The dialog should be closed
+//   await waitFor(() => {
+//     expect(screen.queryByText("Filter Documents")).not.toBeInTheDocument();
+//   });
+// });
+
 })

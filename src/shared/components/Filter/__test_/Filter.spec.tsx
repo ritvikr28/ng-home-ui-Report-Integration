@@ -1,7 +1,8 @@
 import React from "react";
-import { render, fireEvent, screen, waitFor } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
 import DMSFilterDialog from "../Filter";
+import dayjs from "dayjs";
 
 const mockHandleApply = jest.fn();
 const mockOnClose = jest.fn();
@@ -171,4 +172,125 @@ describe("DMSFilterDialog", () => {
 
     expect(mockSetIsDateError).toHaveBeenCalledWith(false);
   });
+
+   it("populates fromDate and toDate when selectedDateRange is valid and dialog opens", () => {
+    const mockSetSelectedCategories = jest.fn();
+    const mockOnClose = jest.fn();
+    const mockHandleApply = jest.fn();
+    const mockSetIsDateError = jest.fn();
+    const mockSetSelectedDateRange = jest.fn();
+
+    const selectedDateRange = {
+      fromDate: "2022-05-10",
+      toDate: "2022-05-15"
+    };
+
+    renderComponent({
+      selectedDateRange,
+      setSelectedCategories: mockSetSelectedCategories,
+      onClose: mockOnClose,
+      handleApply: mockHandleApply,
+      setIsDateError: mockSetIsDateError,
+      setSelectedDateRange: mockSetSelectedDateRange
+    });
+
+    // Wait for fields to be populated based on the selectedDateRange
+    const dateInputs = screen.getAllByTestId('dms-filter-dialog-date-added');
+    expect(within(dateInputs[0]).getByPlaceholderText('DD')).toHaveValue('10');
+    expect(within(dateInputs[0]).getByPlaceholderText('MM')).toHaveValue('5');
+    expect(within(dateInputs[0]).getByPlaceholderText('YYYY')).toHaveValue('2022');
+
+    expect(within(dateInputs[1]).getByPlaceholderText('DD')).toHaveValue('15');
+    expect(within(dateInputs[1]).getByPlaceholderText('MM')).toHaveValue('5');
+    expect(within(dateInputs[1]).getByPlaceholderText('YYYY')).toHaveValue('2022');
+
+  });
+
+  test("shows error when To Date is selected but From Date is missing", async () => {
+  render(<DMSFilterDialog {...defaultProps} />);
+
+  const toDateDay = screen.getAllByLabelText("Day")[1]; // second date input
+  fireEvent.change(toDateDay, { target: { value: "15" } });
+  const toDateMonth = screen.getAllByLabelText("Month")[1];
+  fireEvent.change(toDateMonth, { target: { value: "5" } });
+  const toDateYear = screen.getAllByLabelText("Year")[1];
+  fireEvent.change(toDateYear, { target: { value: "2023" } });
+
+  const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
+  fireEvent.click(applyButton);
+
+  expect(await screen.findByText("Please select a From date before selecting a To date.")).toBeInTheDocument();
+});
+
+
+test("shows error when From Date is in the future", async () => {
+  render(<DMSFilterDialog {...defaultProps} />);
+
+  const futureDate = dayjs().add(1, "day");
+  fireEvent.change(screen.getAllByLabelText("Day")[0], {
+    target: { value: futureDate.date().toString() },
+  });
+  fireEvent.change(screen.getAllByLabelText("Month")[0], {
+    target: { value: (futureDate.month() + 1).toString() },
+  });
+  fireEvent.change(screen.getAllByLabelText("Year")[0], {
+    target: { value: futureDate.year().toString() },
+  });
+
+  const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
+  fireEvent.click(applyButton);
+
+  expect(await screen.findByText("From date cannot be after today.")).toBeInTheDocument();
+});
+
+test("shows error when To Date is before From Date", async () => {
+  render(<DMSFilterDialog {...defaultProps} />);
+
+  // From: 2023-05-10
+  fireEvent.change(screen.getAllByLabelText("Day")[0], { target: { value: "10" } });
+  fireEvent.change(screen.getAllByLabelText("Month")[0], { target: { value: "5" } });
+  fireEvent.change(screen.getAllByLabelText("Year")[0], { target: { value: "2023" } });
+
+  // To: 2023-05-09 (before From)
+  fireEvent.change(screen.getAllByLabelText("Day")[1], { target: { value: "9" } });
+  fireEvent.change(screen.getAllByLabelText("Month")[1], { target: { value: "5" } });
+  fireEvent.change(screen.getAllByLabelText("Year")[1], { target: { value: "2023" } });
+
+  const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
+  fireEvent.click(applyButton);
+
+  expect(await screen.findByText("To date cannot be before From date.")).toBeInTheDocument();
+});
+
+test("shows error when To date is selected but From date is not", async () => {
+  render(<DMSFilterDialog {...defaultProps} />);
+
+  // Only fill To Date (second input group)
+  fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "15" } });
+  fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
+  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2022" } });
+
+  // Click Apply
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  // Assertion for the error message
+  expect(await screen.findByText("Please select a From date before selecting a To date.")).toBeInTheDocument();
+});
+
+test("shows error when To date is before From date", async () => {
+  render(<DMSFilterDialog {...defaultProps} />);
+
+  fireEvent.change(screen.getAllByPlaceholderText("DD")[0], { target: { value: "10" } });
+  fireEvent.change(screen.getAllByPlaceholderText("MM")[0], { target: { value: "05" } });
+  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[0], { target: { value: "2023" } });
+
+  fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "09" } });
+  fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
+  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2023" } });
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  expect(await screen.findByText("To date cannot be before From date.")).toBeInTheDocument();
+});
+
 });
