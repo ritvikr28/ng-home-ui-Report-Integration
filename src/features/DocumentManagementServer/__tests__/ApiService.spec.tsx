@@ -151,7 +151,6 @@ describe('fetchDMSSuggestions', () => {
 });
 
 describe('fetchFilterCategory', () => {
-  const mockBaseUrl = 'http://mock-base-url';
   const mockUrl = '/validation/api/v1/applicationregistration';
 
   beforeEach(() => {

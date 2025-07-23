@@ -11,23 +11,20 @@ import {
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
-import dayjs from "dayjs";
 
 interface DMSFilterDialogProps {
   dataTestId?: string;
   title: string;
   isOpen: boolean;
   availableCategories: Category[];
-  availableFormats: string[];
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
   handleApply: () => void;
-  selectedFormats: ISelectedItem[];
-  setIsFilterDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
@@ -51,12 +48,6 @@ const DMSFilterDialog = ({
   selectedDateRange
 }: DMSFilterDialogProps) => {
   const { t } = useTranslation();
-  const [fromDay, setFromDay] = useState<string>("");
-  const [fromMonth, setFromMonth] = useState<string>("");
-  const [fromYear, setFromYear] = useState<string>("");
-  const [toDay, setToDay] = useState<string>("");
-  const [toMonth, setToMonth] = useState<string>("");
-  const [toYear, setToYear] = useState<string>("");
   const [fromDateError, setFromDateError] = useState<string>("");
   const [toDateError, setToDateError] = useState<string>("");
   const [fromDate, setFromDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
@@ -69,7 +60,7 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
-const clearAll = useCallback(() => {
+const clearAll = () => {
   setSelectedCategories([]);
   resetDateState(setFromDate);
   resetDateState(setToDate);
@@ -77,22 +68,45 @@ const clearAll = useCallback(() => {
   setToDateError("");
   setIsDateError(false);
   setSelectedDateRange({ fromDate: "", toDate: "" });
-}, [setSelectedCategories, setIsDateError, setSelectedDateRange]);
-
+  setFromDate({ day: "", month: "", year: "" })
+  setToDate({ day: "", month: "", year: "" })
+};
   // Populate date fields from selectedDateRange when dialog opens
   useEffect(() => {
     if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
-      setToDate({ day, month, year });
-    }
-    else {
-      setToDate({ day: "", month: "", year: "" });
+      setToDate({ day: day, month: month, year: year })
     }
     if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.fromDate.split("-");
-      
+      setFromDate({ day: day, month: month, year: year })
     }
   }, [isFilterDialogOpen, selectedDateRange]);
+
+ useEffect(() => {
+  if (selectedDateRange?.fromDate || selectedDateRange?.toDate) {
+    const from = dayjs(selectedDateRange.fromDate).format("DD MMM YYYY");
+    const to = selectedDateRange.toDate && dayjs(selectedDateRange.toDate).format("DD MMM YYYY");
+    const dateString = `${from} ${(to ? 'to ' : '-' )+ to}`;
+
+    const dateVal = {
+      text: dateString,
+      data: { type: "dateRange" },
+      value: dateString,
+    };
+
+    setSelectedCategories((prev) => {
+      const index = prev.findIndex(item => item.data?.type === "dateRange");
+      if (index === -1) {
+        // First time: just add it
+        return [...prev, dateVal];
+      }
+      const updated = [...prev];
+      updated[index] = dateVal;
+      return updated;
+    });
+  }
+}, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
 
   // Handlers for date input changes
      const handleDateChange = (
@@ -151,14 +165,16 @@ const clearAll = useCallback(() => {
           setError("To date cannot be before From date.");
           setIsDateError(true);
           return;
-        }
-      }
-      
-        setError("");
-        setFromDateError("");
+         }
+       }
+       const fromDateValue = isFrom ? thisDateStr : otherDateStr
+       const toDateValue = !isFrom ? thisDateStr : otherDateStr
+       setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue })
+       setError("");
+       setFromDateError("");
         setIsDateError(false);
-    };
-
+      };
+    
   return (
     <Dialog
       isOpen={isOpen}
@@ -166,7 +182,7 @@ const clearAll = useCallback(() => {
       escapeExits
       onClose={onClose}
       title={title}
-    >
+    >     
       <FormLabel>{t("Category")}</FormLabel>
       <Dropdown
         dataTestId={`${dataTestId}-categories`}
@@ -189,7 +205,7 @@ const clearAll = useCallback(() => {
           .sort((a, b) => a.application.localeCompare(b.application))
           .map((category) => (
             <DropdownItem
-              key={category.registrationId}
+              key={category.application}
               data={category}
               id={category.application}
               text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
@@ -221,7 +237,7 @@ const clearAll = useCallback(() => {
             />
           </div>
           <div className="dms-filter-dialog-todate-input">
-            <DateInput
+           <DateInput
               dataTestId={`${dataTestId}-date-added`}
               helpText="To"
               showDatePicker
@@ -238,8 +254,8 @@ const clearAll = useCallback(() => {
           </div>
         </div>
       </div>
-
-      <div className="dms-filter-dialog-buttons">
+          
+        <div className="dms-filter-dialog-buttons">
         <Button
           dataTestId={`${dataTestId}-clear-btn`}
           onClick={clearAll}
@@ -256,7 +272,7 @@ const clearAll = useCallback(() => {
         >
           {t("Apply Filters")}
         </Button>
-      </div>
+        </div>
     </Dialog>
   );
 };

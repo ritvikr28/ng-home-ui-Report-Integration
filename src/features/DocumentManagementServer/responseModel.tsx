@@ -34,7 +34,7 @@ export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;
   searchText?: string;
-  categoryId?: string[];
+  categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   sortBy?: string;
@@ -60,9 +60,7 @@ export interface DocumentSuggestion {
 }
 
 export interface Category{
-  registrationId: number;
+  registrationId: number[];
   application: string;
-  section: string;
-  maxFileCount: number;
-  maxLinkCount: number;
+  section: string[];
 };
