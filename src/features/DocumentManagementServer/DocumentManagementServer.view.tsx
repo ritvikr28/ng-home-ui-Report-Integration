@@ -172,8 +172,7 @@ const DocumentManagementServerView: React.FC = () => {
       break;
     // // Add more cases as needed
     default:
-    //   apiColumnName = columnName;
-    //   break;
+   
     return;
   }
   let newDirection: "Asc" | "Desc" = "Desc";
@@ -183,13 +182,6 @@ if (sortBy === apiColumnName) {
 
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
-//   fetchDocumentDetails({
-//     pageNumber: currentPage,
-//     pageSize: pageSizeNumber,
-//     searchText,
-//     sortBy: apiColumnName,
-//     sortDirection: newDirection,
-//   });
 };
 
     const getEmptyStateMsg = () => {

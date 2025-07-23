@@ -214,7 +214,7 @@ it("shows error banner when showErrorBanner is true", async () => {
   // });
   // });
 it("handles sorting for Document column and ignores non-sortable columns", async () => {
-  const mockDatass = {
+  const mockDatas1 = {
     totalRecords: 2,
     statusCode: 200,
     data: [
@@ -241,7 +241,7 @@ it("handles sorting for Document column and ignores non-sortable columns", async
     ],
   };
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatass);
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
 
   render(<DocumentManagementServerView />);
   act(() => {
