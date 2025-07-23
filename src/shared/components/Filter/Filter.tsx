@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 
-interface DMSFilterDialogProps {
+interface FilterDialogProps {
   dataTestId?: string;
   title: string;
   isOpen: boolean;
@@ -32,7 +32,7 @@ interface DMSFilterDialogProps {
   selectedDateRange: { fromDate: string, toDate: string }
 }
 
-const DMSFilterDialog = ({
+const FilterDialog = ({
   dataTestId = "dms-filter-dialog",
   title,
   isOpen,
@@ -46,7 +46,7 @@ const DMSFilterDialog = ({
   isDateError,
   setSelectedDateRange,
   selectedDateRange
-}: DMSFilterDialogProps) => {
+}: FilterDialogProps) => {
   const { t } = useTranslation();
   const [fromDateError, setFromDateError] = useState<string>("");
   const [toDateError, setToDateError] = useState<string>("");
@@ -76,11 +76,11 @@ const clearAll = () => {
   useEffect(() => {
     if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
-      setToDate({ day: day, month: month, year: year })
+      setToDate({ day, month, year })
     }
     if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.fromDate.split("-");
-      setFromDate({ day: day, month: month, year: year })
+      setFromDate({ day, month, year })
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
@@ -216,9 +216,9 @@ const clearAll = () => {
               dataTestId={`${dataTestId}-date-added`}
               helpText="From"
               showDatePicker
-               day={fromDate.day ? parseInt(fromDate.day) : undefined}
-              month={fromDate.month ? parseInt(fromDate.month) : undefined}
-              year={fromDate.year ? parseInt(fromDate.year) : undefined}
+               day={fromDate.day ? parseInt(fromDate.day, 10) : undefined}
+              month={fromDate.month ? parseInt(fromDate.month, 10) : undefined}
+              year={fromDate.year ? parseInt(fromDate.year, 10) : undefined}
                 onChange={(day, month, year) =>
                   handleDateChange(setFromDate, setFromDateError, day, month, year, toDate, true)
                 }
@@ -232,9 +232,9 @@ const clearAll = () => {
               dataTestId={`${dataTestId}-date-added`}
               helpText="To"
               showDatePicker
-               day={toDate.day ? parseInt(toDate.day) : undefined}
-              month={toDate.month ? parseInt(toDate.month) : undefined}
-              year={toDate.year ? parseInt(toDate.year) : undefined}
+               day={toDate.day ? parseInt(toDate.day, 10) : undefined}
+              month={toDate.month ? parseInt(toDate.month, 10) : undefined}
+              year={toDate.year ? parseInt(toDate.year, 10) : undefined}
                onChange={(day, month, year) =>
                   handleDateChange(setToDate, setToDateError, day, month, year, fromDate, false)
                 }
@@ -267,5 +267,8 @@ const clearAll = () => {
     </Dialog>
   );
 };
+FilterDialog.defaultProps = {
+  dataTestId: "dms-filter-dialog"
+};
 
-export default DMSFilterDialog;
+export default FilterDialog;

@@ -1,8 +1,8 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import dayjs from "dayjs";
 
 export const getTableHeadersData: {
   text: string;
@@ -330,22 +330,26 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     },
   })) || [];
 
-export const getDateTag = (dateRange: { fromDate: string; toDate: string }) =>
-  dateRange.fromDate || dateRange.toDate
-    ? [
-        {
-          text: `${dateRange.fromDate
-            ? dayjs(dateRange.fromDate).format("DD MMM YYYY")
-            : ""}${dateRange.toDate
-            ? " to " + dayjs(dateRange.toDate).format("DD MMM YYYY")
-            : dateRange.fromDate
-            ? " to -"
-            : ""}`,
-          categoryName: "Date",
-          closeObj: { name: "Date", id: "dateRange" },
-        },
-      ]
-    : [];
+  export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
+  if (!dateRange.fromDate && !dateRange.toDate) return [];
+
+  let text = "";
+  if (dateRange.fromDate && dateRange.toDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  } else if (dateRange.fromDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to -`;
+  } else if (dateRange.toDate) {
+    text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  }
+
+  return [
+    {
+      text,
+      categoryName: "Date",
+      closeObj: { name: "Date", id: "dateRange" },
+    }
+  ];
+};
 
 export const fetchCategory = async (): Promise<any[]> => {
   try {

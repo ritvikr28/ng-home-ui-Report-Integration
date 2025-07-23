@@ -8,7 +8,7 @@ import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
-import DMSFilterDialog from "../../shared/components/Filter/Filter"
+import FilterDialog from "../../shared/components/Filter/Filter"
 
 
 export const breadcrumbActionsList = [
@@ -130,7 +130,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         if (!isInitialLoad) {
             const allRegistrationIds = selectedFormats?.flatMap(item => {
                 const regId = item?.data?.registrationId;
-                return regId ? (Array.isArray(regId) ? regId : [regId]) : [];
+                if (Array.isArray(regId)) {
+                    return regId;
+                }
+                if (regId) {
+                    return [regId];
+                }
+                return [];
             }) || [];
             fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds);
         }
@@ -267,11 +273,11 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
     };
 
-    const handleFilterOnClick = () => {
-        setIsFilterDialogOpen(true)
+   const handleFilterOnClick = () => {
+        setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
-                res = Object.values(
+                const categories = Object.values(
                     res?.reduce((acc: any, curr: any) => {
                         if (!acc[curr.application]) {
                             acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
@@ -280,12 +286,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                         acc[curr.application].section.push(curr.section);
                         return acc;
                     }, {})
-                );
-            setAvailableCategories(res)
-        });
-        selectedFormats && setSelectedCategories(selectedFormats)
-        setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" })
+                ) as Category[];
+                setAvailableCategories(categories);
+            });
+        if (selectedFormats) {
+            setSelectedCategories(selectedFormats);
+        }
+        setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
+
 
     return (<>
         <>
@@ -494,7 +503,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                             onClick={handleFilterOnClick}
                                         > Filter</Button>
 
-                                        <DMSFilterDialog
+                                        <FilterDialog
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title="Filter Documents"

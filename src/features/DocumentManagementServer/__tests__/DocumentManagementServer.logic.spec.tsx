@@ -509,7 +509,7 @@ describe('getVisibleTagsWithSummary', () => {
       { text: 'B' },
       { text: 'C' },
       { text: 'D' },
-      { text: 'E' },
+      { text: 'E' }
     ];
 
     const result = getVisibleTagsWithSummary(tags, 3);
@@ -626,7 +626,7 @@ describe('getDateTag', () => {
 
     expect(result).toEqual([
       {
-        text: ' to 10 Jan 2024',
+        text: '- to 10 Jan 2024',
         categoryName: 'Date',
         closeObj: { name: 'Date', id: 'dateRange' }
       }

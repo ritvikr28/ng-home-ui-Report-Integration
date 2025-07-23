@@ -57,13 +57,6 @@ describe("DocumentManagementServerView", () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
   });
 
-afterEach(() => {
-  jest.runOnlyPendingTimers(); // flush pending timers
-  jest.useRealTimers();
-});
-
-
-
   it("renders main component and triggers document fetch", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
     render(<DocumentManagementServerView />);
@@ -344,7 +337,7 @@ it("sets date error when fromDate is invalid", async () => {
 it("opens filter dialog and processes fetched category data", async () => {
   const mockCategoryResponse = [
     { application: "App1", registrationId: 101, section: "Section1" },
-    { application: "App1", registrationId: 102, section: "Section2" },
+    { application: "App1", registrationId: 102, section: "Section2" }
   ];
   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
 
@@ -407,7 +400,7 @@ it("shows no result message when search yields no data", async () => {
   // Mock empty search result
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  const { container } = render(<DocumentManagementServerView />);
+ render(<DocumentManagementServerView />);
 
   // Advance initial loader
   act(() => {
@@ -432,35 +425,7 @@ it("shows no result message when search yields no data", async () => {
     )
   ).toBeInTheDocument();
 });
-
-
   jest.useRealTimers();
 });
-
-// it("closes filter dialog when onClose is called", async () => {
-//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
-//   render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   // Open the filter dialog
-//   await waitFor(() => {
-//     const filterButton = screen.getByTestId("filter-btn");
-//     fireEvent.click(filterButton);
-//   });
-
-//   // The dialog should be open
-//   expect(screen.getByText("Filter Documents")).toBeInTheDocument();
-
-//   // Find the close button and click it (simulate onClose)
-//   const closeBtn = screen.getByTestId("dms-filter-dialog-close-btn");
-//   fireEvent.click(closeBtn);
-
-//   // The dialog should be closed
-//   await waitFor(() => {
-//     expect(screen.queryByText("Filter Documents")).not.toBeInTheDocument();
-//   });
-// });
 
 })

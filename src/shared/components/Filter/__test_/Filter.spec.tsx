@@ -1,8 +1,9 @@
 import React from "react";
 import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
-import { Category } from "../../../../features/DocumentManagementServer/responseModel";
-import DMSFilterDialog from "../Filter";
 import dayjs from "dayjs";
+import { Category } from "../../../../features/DocumentManagementServer/responseModel";
+import FilterDialog from "../Filter";
+
 
 const mockHandleApply = jest.fn();
 const mockOnClose = jest.fn();
@@ -39,6 +40,7 @@ jest.mock("@essnextgen/ui-kit", () => {
     ...originalModule,
     Dropdown: ({ onSelectMultiple, dataTestId }: any) => (
       <button
+      type="button" 
         data-testid={dataTestId}
         onClick={() => onSelectMultiple(null, [{ data: "send", text: "Send" }])}
       >
@@ -49,7 +51,7 @@ jest.mock("@essnextgen/ui-kit", () => {
 });
 
 const renderComponent = (props = {}) =>
-  render(<DMSFilterDialog {...defaultProps} {...props} />);
+  render(<FilterDialog {...defaultProps} {...props} />);
 
 const setDateInput = (container: HTMLElement, day: string, month: string, year: string) => {
   fireEvent.change(container.querySelector('input[aria-label="Day"]')!, { target: { value: day } });
@@ -57,7 +59,7 @@ const setDateInput = (container: HTMLElement, day: string, month: string, year: 
   fireEvent.change(container.querySelector('input[aria-label="Year"]')!, { target: { value: year } });
 };
 
-describe("DMSFilterDialog", () => {
+describe("FilterDialog", () => {
   beforeEach(() => jest.clearAllMocks());
 
   it("renders with all form elements", () => {
@@ -174,11 +176,6 @@ describe("DMSFilterDialog", () => {
   });
 
    it("populates fromDate and toDate when selectedDateRange is valid and dialog opens", () => {
-    const mockSetSelectedCategories = jest.fn();
-    const mockOnClose = jest.fn();
-    const mockHandleApply = jest.fn();
-    const mockSetIsDateError = jest.fn();
-    const mockSetSelectedDateRange = jest.fn();
 
     const selectedDateRange = {
       fromDate: "2022-05-10",
@@ -207,7 +204,7 @@ describe("DMSFilterDialog", () => {
   });
 
   test("shows error when To Date is selected but From Date is missing", async () => {
-  render(<DMSFilterDialog {...defaultProps} />);
+  render(<FilterDialog {...defaultProps} />);
 
   const toDateDay = screen.getAllByLabelText("Day")[1]; // second date input
   fireEvent.change(toDateDay, { target: { value: "15" } });
@@ -224,7 +221,7 @@ describe("DMSFilterDialog", () => {
 
 
 test("shows error when From Date is in the future", async () => {
-  render(<DMSFilterDialog {...defaultProps} />);
+  render(<FilterDialog {...defaultProps} />);
 
   const futureDate = dayjs().add(1, "day");
   fireEvent.change(screen.getAllByLabelText("Day")[0], {
@@ -244,7 +241,7 @@ test("shows error when From Date is in the future", async () => {
 });
 
 test("shows error when To Date is before From Date", async () => {
-  render(<DMSFilterDialog {...defaultProps} />);
+  render(<FilterDialog {...defaultProps} />);
 
   // From: 2023-05-10
   fireEvent.change(screen.getAllByLabelText("Day")[0], { target: { value: "10" } });
@@ -263,7 +260,7 @@ test("shows error when To Date is before From Date", async () => {
 });
 
 test("shows error when To date is selected but From date is not", async () => {
-  render(<DMSFilterDialog {...defaultProps} />);
+  render(<FilterDialog {...defaultProps} />);
 
   // Only fill To Date (second input group)
   fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "15" } });
@@ -278,7 +275,7 @@ test("shows error when To date is selected but From date is not", async () => {
 });
 
 test("shows error when To date is before From date", async () => {
-  render(<DMSFilterDialog {...defaultProps} />);
+  render(<FilterDialog {...defaultProps} />);
 
   fireEvent.change(screen.getAllByPlaceholderText("DD")[0], { target: { value: "10" } });
   fireEvent.change(screen.getAllByPlaceholderText("MM")[0], { target: { value: "05" } });
