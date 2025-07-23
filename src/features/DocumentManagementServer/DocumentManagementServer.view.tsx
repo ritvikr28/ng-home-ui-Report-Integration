@@ -170,7 +170,7 @@ const DocumentManagementServerView: React.FC = () => {
       case "Size":
       apiColumnName = "Size";
       break;
-    // // Add more cases as needed
+    
     default:
    
     return;

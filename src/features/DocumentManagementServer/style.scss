@@ -49,36 +49,34 @@
 }
 
 
-
-.grid-wrapper {
-  .filter-tool-view .filter-btn {
-    margin-right: 8px;
-  }
-
-  .heading-title {
-    margin-bottom: 20px;
-  }
-
-  .dynamic-table {
-    overflow-x: auto;
-
-    table td:first-child,
-    table th:first-child {
-      text-align: center;
-      min-width: 82px;
+.dms-layout {
+  .grid-wrapper {
+    .filter-tool-view .filter-btn {
+      margin-right: 8px;
     }
 
-    .essui-table__cell {
-      min-width: 138px;
-      text-align: left;
+    .heading-title {
+      margin-bottom: 20px;
+    }
+
+    .dynamic-table {
+      overflow-x: auto;
+
+      table td:first-child,
+      table th:first-child {
+        text-align: center;
+        min-width: 82px;
+      }
+
+      .essui-table__cell {
+        min-width: 138px;
+        text-align: left;
+      }
     }
   }
 }
 
-// .grid-wrapper .dynamic-table .essui-table__cell {
-//   min-width: 138px;
-//   text-align: left;
-// }
+
 
 .relatedto-main {
   display: flex;
