@@ -14,8 +14,9 @@ export const getTableHeadersData: {
   isSimpleText?: boolean;
   txtTrunctLength?: number;
   isColumnSorting?: boolean;
-  isSorted?: boolean;
-  sortDirection?: "Asc" | "desc";
+  // isSorted?: boolean;
+  isColumnSortByDefault?: boolean;
+  sortDirection?: "Asc" | "Desc";
   anyComponent?: (e: any) => JSX.Element;
 }[] = [
     {
@@ -36,6 +37,7 @@ export const getTableHeadersData: {
       isSimpleText: true,
       txtTrunctLength: 35,
       isColumnSorting: true,
+      
      
       anyComponent: (e: any) => (
         <>
@@ -65,7 +67,7 @@ export const getTableHeadersData: {
       headerTxtTrunctLength: 17,
       columnWidth: "261px",
       txtTrunctLength: 35,
-      isColumnSorting: false,
+      isColumnSorting: true,
       anyComponent: (elem: any) => (
         <>
           {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
@@ -129,7 +131,7 @@ export const getTableHeadersData: {
       showValAs: ShowValAs.Text,
       headerTxtTrunctLength: 50,
       columnWidth: "180px",
-      isColumnSorting: false,
+      isColumnSorting: true,
     },
     {
       text: "Date added",
@@ -137,7 +139,10 @@ export const getTableHeadersData: {
       columnWidth: "140px",
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
-      isColumnSorting: true
+      isColumnSorting: true,
+      isColumnSortByDefault: true,
+      // // isSorted: true,
+      // sortDirection: "Desc",
     },
     {
       text: "Format",

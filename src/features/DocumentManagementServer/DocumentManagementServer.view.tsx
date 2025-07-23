@@ -115,12 +115,14 @@ const DocumentManagementServerView: React.FC = () => {
     }, [currentPage, searchText, sortBy, sortDirection]);
 
 
+    
+
     const hasItems: boolean = suggestions?.some(
         ({ values }: Suggestion) => values?.length > 0
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, sortByCol: string = sortBy, sortOrder: "Asc" | "Desc" = sortDirection) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
@@ -174,11 +176,11 @@ const DocumentManagementServerView: React.FC = () => {
     //   break;
     return;
   }
+  let newDirection: "Asc" | "Desc" = "Desc";
+if (sortBy === apiColumnName) {
+  newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+}
 
-  let newDirection: "Asc" | "Desc" = "Asc";
-  if (sortBy === apiColumnName) {
-    newDirection = sortDirection === "Asc" ? "Desc" : "Asc";
-  }
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
 //   fetchDocumentDetails({
@@ -205,7 +207,6 @@ const DocumentManagementServerView: React.FC = () => {
         }
         return [];
     };
-
 
     const handleSearchClose = () => {
         setSearchInput("");
@@ -271,6 +272,10 @@ const DocumentManagementServerView: React.FC = () => {
     } else {
         resultNotFoundMSG = undefined;
     }
+console.log("sortBy:", sortBy);
+console.log("sortDirection:", sortDirection);
+
+
 
 
     return (<>
@@ -342,6 +347,9 @@ const DocumentManagementServerView: React.FC = () => {
                                 isShowHeading={true}
                                 isShowSubHeading={false}
                                 isSorting={false}
+                                sortByDefault={false}
+                                sortAscFirst={false}
+                                
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
