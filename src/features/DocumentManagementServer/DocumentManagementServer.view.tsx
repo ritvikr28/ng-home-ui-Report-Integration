@@ -149,10 +149,10 @@ const DocumentManagementServerView: React.FC = () => {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
         }
-        // finally {
+     
         setIsSearchLoading(false);
         setIsSearchDataLoading(false);
-        // }
+        
     }
 
    const handleSorting = (columnName: string) => {
@@ -264,11 +264,6 @@ if (sortBy === apiColumnName) {
     } else {
         resultNotFoundMSG = undefined;
     }
-console.log("sortBy:", sortBy);
-console.log("sortDirection:", sortDirection);
-
-
-
 
     return (<>
         <>
