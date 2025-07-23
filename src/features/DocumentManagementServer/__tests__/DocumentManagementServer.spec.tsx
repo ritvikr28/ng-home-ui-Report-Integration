@@ -12,6 +12,7 @@ import { error } from "console";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
+import userEvent from "@testing-library/user-event";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
@@ -50,12 +51,19 @@ jest.mock("../ApiService");
     ],
   };
 
+
 describe("DocumentManagementServerView", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.useFakeTimers();
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
   });
+  beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
 
   it("renders main component and triggers document fetch", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
@@ -179,7 +187,6 @@ describe("DocumentManagementServerView", () => {
     expect((searchInput as HTMLInputElement).value).toBe("");
     }
     );
-   
   });
 
   it("handles pagination changes", async () => {
@@ -331,6 +338,7 @@ it("sets date error when fromDate is invalid", async () => {
   });
 
   // Check if error flag was triggered (e.g., via aria or style changes)
+
 });
 
 
@@ -395,8 +403,6 @@ it("sets visibleBreadcrumbs to full list when width < 1024 and list has only one
 });
 
 it("shows no result message when search yields no data", async () => {
-  jest.useFakeTimers();
-  
   // Mock empty search result
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
@@ -425,7 +431,142 @@ it("shows no result message when search yields no data", async () => {
     )
   ).toBeInTheDocument();
 });
-  jest.useRealTimers();
 });
+
+it("shows date error when toDate is before fromDate", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  const filterButton = await screen.findByTestId("filter-btn");
+  fireEvent.click(filterButton);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+   const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+  const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
+  const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
+
+  fireEvent.change(fromDay, { target: { value: "10" } });
+  fireEvent.change(fromMonth, { target: { value: "05" } });
+  fireEvent.change(fromYear, { target: { value: "2025" } });
+
+  // To Date: 09 May 2025 (invalid)
+  const toDay = within(dateInputs[1]).getByPlaceholderText("DD");
+  const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
+  const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
+
+  fireEvent.change(toDay, { target: { value: "09" } });
+  fireEvent.change(toMonth, { target: { value: "05" } });
+  fireEvent.change(toYear, { target: { value: "2025" } });
+  // Wait for dialog title to confirm it’s still open due to validation error
+  const errorText = await screen.findByText(/to date cannot be before from date/i);
+  expect(errorText).toBeInTheDocument();
+});
+
+
+it("trigger search even if searchTerm equals searchText", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "duplicate" } });
+
+  fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+
+  // Re-enter the same term again
+  fireEvent.change(searchInput, { target: { value: "duplicate" } });
+  fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+
+  // Expect it doesn't trigger new search again
+  // (we assume no new API call should be made)
+  expect(apiService.fetchDocumentDetails).toHaveBeenCalledTimes(2);
+});
+
+it("renders table headers even if no table data exists", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText("Documents")).toBeInTheDocument();
+  });
+});
+
+it("handles suggestion fetch error gracefully", async () => {
+
+  const mockSetLoading = jest.fn();
+  const mockSetSuggestions = jest.fn();
+  const mockSetError = jest.fn();
+
+  // Mock fetchDMSSuggestions to throw
+  jest
+    .spyOn(require("../ApiService"), "fetchDMSSuggestions")
+    .mockRejectedValueOnce(new Error("fail"));
+
+  const { debouncedFetchSuggestions } = require("../DocumentManagementServer.logic");
+
+  // Call the debounced function
+  debouncedFetchSuggestions("fail", mockSetLoading, mockSetSuggestions, mockSetError);
+
+  // Fast-forward time to trigger the debounce
+  await act(async () => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  // Assert that the error handler was called
+  expect(mockSetError).toHaveBeenCalledWith(true);
+  expect(mockSetSuggestions).toHaveBeenCalledWith([]);
+
+});
+
+// it("calls fetchDocumentDetails with registrationId as array", async () => {
+//   const mockCategoryResponse = [
+//     { application: "App1", registrationId: 1, section: "Section1" },
+//     { application: "App2", registrationId: 2, section: "Section2" }
+//   ];
+
+//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
+
+//   render(<DocumentManagementServerView />);
+//   act(() => jest.advanceTimersByTime(2000));
+
+//   const user = userEvent;
+//   // Open filter dialog
+//   await user.click(await screen.findByTestId("filter-btn"));
+
+//   // Open the category dropdown
+//   await user.click(await screen.findByTestId("text-input-dms-filter-dialog-categories-icon-btn"));
+
+//   // Wait for category options to appear in the DOM
+//   const app1Checkbox = await screen.findByLabelText("App1");
+//   const app2Checkbox = await screen.findByLabelText("App2");
+
+//   await user.click(app1Checkbox); // Select App1
+//   await user.click(app2Checkbox); // Select App2
+
+//   // Apply filters
+//   await user.click(await screen.findByTestId("dms-filter-dialog-apply-btn"));
+
+
+
+//   await waitFor(() => {
+//     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+//       expect.objectContaining({
+//         categoryId: [1, 2],
+//       })
+//     );
+//   });
+// });
 
 })

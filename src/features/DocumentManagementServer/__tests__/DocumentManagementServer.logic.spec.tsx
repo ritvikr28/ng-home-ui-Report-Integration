@@ -8,6 +8,7 @@ import {
   formatSuggestions,
   getCategoryArr,
   getDateTag,
+  getResultNotFoundMsg,
   getTableHeadersData,
   getVisibleTagsWithSummary,
   handlePageChange,
@@ -665,5 +666,29 @@ describe('fetchCategory', () => {
 
     const result = await fetchCategory();
     expect(result).toEqual([]);
+  });
+});
+
+describe('getResultNotFoundMsg', () => {
+  it('returns not found message when searchText is provided and docData has no results', () => {
+    const result = getResultNotFoundMsg('test', { data: [] }, 'test', false);
+    expect(result).toBe(
+      'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
+    );
+  });
+
+  it('returns "Information unavailable" when showErrorBanner is true', () => {
+    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
+    expect(result).toBe('Information unavailable');
+  });
+
+  it('returns undefined when there is data and no error', () => {
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false);
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when searchText is empty and no error banner', () => {
+    const result = getResultNotFoundMsg('', { data: [] }, '', false);
+    expect(result).toBeUndefined();
   });
 });
