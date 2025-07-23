@@ -53,6 +53,8 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+    const [sortBy, setSortBy] = useState<string>("DateAdded");
+    const [sortDirection, setSortDirection] = useState<"Asc" | "Desc">("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
@@ -140,18 +142,20 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                 }
                 return [];
             }) || [];
-            fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds);
+            fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection]);
 
+
+    
 
     const hasItems: boolean = suggestions?.some(
         ({ values }: Suggestion) => values?.length > 0
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[]) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
@@ -161,7 +165,9 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                 fromDate: dateRange?.fromDate,
                 toDate: dateRange?.toDate,
                 categoryId: categories || [],
-                isSearchTextExactMatch: isSearchTrue
+                isSearchTextExactMatch: isSearchTrue,
+                sortBy: sortByCol,
+                sortDirection : sortOrder,
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -179,11 +185,40 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
         }
-        // finally {
+     
         setIsSearchLoading(false);
         setIsSearchDataLoading(false);
-        // }
+        
     }
+
+   const handleSorting = (columnName: string) => {
+  let apiColumnName = columnName;
+  switch (columnName) {
+    case "Date added":
+      apiColumnName = "DateAdded";
+      break;
+    case "Document":
+      apiColumnName = "Document";
+      break;
+    case "Format":
+      apiColumnName = "Format";
+      break;
+      case "Size":
+      apiColumnName = "Size";
+      break;
+    
+    default:
+        
+    return;
+  }
+  let newDirection: "Asc" | "Desc" = "Desc";
+if (sortBy === apiColumnName) {
+  newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+}
+
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+};
 
     const getEmptyStateMsg = () => {
         if (searchText !== "") return undefined;
@@ -200,7 +235,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         return [];
     };
-
 
     const handleSearchClose = () => {
         setSearchInput("");
@@ -258,7 +292,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
     ]
 
-    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
     const handleApply = () => {
         if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
@@ -291,7 +325,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
-
 
     return (<>
         <>
@@ -351,6 +384,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading={true}
                                 isShowSubHeading={false}
+                                isSorting={false}
+                                sortByDefault={false}
+                                sortAscFirst={false}
+                                
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -518,6 +555,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
+                              sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
                                         cancelText: 'Cancel',

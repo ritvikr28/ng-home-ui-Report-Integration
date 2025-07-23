@@ -63,7 +63,22 @@ describe("DocumentManagementServerView", () => {
 
 afterAll(() => {
   jest.useRealTimers();
+});it("shows error banner when showErrorBanner is true", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValueOnce({
+    statusCode: 400,
+    data: [],
+    totalRecords: 0
+  });
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  await waitFor(() => {
+    expect(screen.getByText(/Summary of issue/i)).toBeInTheDocument();
+  });
 });
+
+
 
   it("renders main component and triggers document fetch", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
@@ -188,6 +203,143 @@ afterAll(() => {
     }
     );
   });
+it("handles sorting for Document column and ignores non-sortable columns", async () => {
+  const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  // Wait for table to appear
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument(); // Confirm table rendered
+  });
+
+    (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  const documentHeaderDiv = screen.getAllByTestId("columnheader")
+  .find(div => div.textContent?.includes("Document"));
+   fireEvent.click(documentHeaderDiv!);
+
+  act(() => {
+  jest.advanceTimersByTime(1000);
+});
+
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+      
+      expect.objectContaining({ sortBy: "Document" })
+    );
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  // ✅ Target the non-sortable "Added by" column
+  const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
+  fireEvent.click(addedByHeader);
+
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
+
+it("handles sorting for Date added column", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  const dateAddedHeaderDiv = screen.getAllByTestId("columnheader")
+    .find(div => div.textContent?.includes("Date added"));
+  fireEvent.click(dateAddedHeaderDiv!);
+
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+      expect.objectContaining({ sortBy: "DateAdded" })
+    );
+  });
+});
+
+it("handles sorting for Format column", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  const formatHeaderDiv = screen.getAllByTestId("columnheader")
+    .find(div => div.textContent?.includes("Format"));
+  fireEvent.click(formatHeaderDiv!);
+
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+      expect.objectContaining({ sortBy: "Format" })
+    );
+  });
+});
+
+it("handles sorting for Size column", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  const sizeHeaderDiv = screen.getAllByTestId("columnheader")
+    .find(div => div.textContent?.includes("Size"));
+  fireEvent.click(sizeHeaderDiv!);
+
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+      expect.objectContaining({ sortBy: "Size" })
+    );
+  });
+});
+
 
   it("handles pagination changes", async () => {
      const mockDatas = {
