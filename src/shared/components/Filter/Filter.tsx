@@ -52,6 +52,7 @@ const DMSFilterDialog = ({
   const [toDateError, setToDateError] = useState<string>("");
   const [fromDate, setFromDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
   const [toDate, setToDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
+  const [wasApplied, setWasApplied] = useState(false);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -83,30 +84,19 @@ const clearAll = () => {
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
- useEffect(() => {
-  if (selectedDateRange?.fromDate || selectedDateRange?.toDate) {
-    const from = dayjs(selectedDateRange.fromDate).format("DD MMM YYYY");
-    const to = selectedDateRange.toDate && dayjs(selectedDateRange.toDate).format("DD MMM YYYY");
-    const dateString = `${from} ${(to ? 'to ' : '-' )+ to}`;
-
-    const dateVal = {
-      text: dateString,
-      data: { type: "dateRange" },
-      value: dateString,
-    };
-
-    setSelectedCategories((prev) => {
-      const index = prev.findIndex(item => item.data?.type === "dateRange");
-      if (index === -1) {
-        // First time: just add it
-        return [...prev, dateVal];
-      }
-      const updated = [...prev];
-      updated[index] = dateVal;
-      return updated;
-    });
+  useEffect(() => {
+  if (!isOpen && !wasApplied) {
+    setFromDate({ day: "", month: "", year: "" });
+    setToDate({ day: "", month: "", year: "" });
+    setSelectedDateRange({ fromDate: "", toDate: "" });
+    setFromDateError("");
+    setToDateError("");
+    setIsDateError(false);
   }
-}, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
+  if (!isOpen) {
+    setWasApplied(false); // Reset for next open
+  }
+}, [isOpen]);
 
   // Handlers for date input changes
      const handleDateChange = (
@@ -138,11 +128,7 @@ const clearAll = () => {
 
       if (isFrom) {
         // From date validations
-        if (otherDateStr && !thisDateStr) {
-          setError("Please select a From date before selecting a To date.");
-          setIsDateError(true);
-          return;
-        }
+        
         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
           setError("From date cannot be after today.");
           setIsDateError(true);
@@ -173,6 +159,11 @@ const clearAll = () => {
        setError("");
        setFromDateError("");
         setIsDateError(false);
+      };
+
+      const handleApplyWrapper = () => {
+        setWasApplied(true);
+        handleApply();
       };
     
   return (
@@ -266,7 +257,7 @@ const clearAll = () => {
         </Button>
         <Button
           dataTestId={`${dataTestId}-apply-btn`}
-          onClick={handleApply}
+          onClick={handleApplyWrapper}
           color={ButtonColor.Primary}
           size={ButtonSize.Small}
         >

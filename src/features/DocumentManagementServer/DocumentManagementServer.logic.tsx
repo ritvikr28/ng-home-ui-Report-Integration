@@ -2,6 +2,7 @@ import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
+import dayjs from "dayjs";
 
 export const getTableHeadersData: {
   text: string;
@@ -306,6 +307,45 @@ export const loadSuggestions = async (
     setSuggestionsLoading(false);
   }
 };
+
+export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
+  if (tags.length <= maxVisible) return tags;
+  const visibleTags = tags.slice(0, maxVisible);
+  const remainingCount = tags.length - maxVisible;
+  visibleTags.push({
+    text: `+${remainingCount}`,
+    categoryName: "Summary",
+    closeObj: null
+  });
+  return visibleTags;
+};
+
+export const getCategoryArr = (selectedFormats: any[]) =>
+  selectedFormats?.map((cat: any) => ({
+    text: cat?.text,
+    categoryName: cat?.value,
+    closeObj: {
+      name: cat?.text,
+      id: cat?.data?.registrationId,
+    },
+  })) || [];
+
+export const getDateTag = (dateRange: { fromDate: string; toDate: string }) =>
+  dateRange.fromDate || dateRange.toDate
+    ? [
+        {
+          text: `${dateRange.fromDate
+            ? dayjs(dateRange.fromDate).format("DD MMM YYYY")
+            : ""}${dateRange.toDate
+            ? " to " + dayjs(dateRange.toDate).format("DD MMM YYYY")
+            : dateRange.fromDate
+            ? " to -"
+            : ""}`,
+          categoryName: "Date",
+          closeObj: { name: "Date", id: "dateRange" },
+        },
+      ]
+    : [];
 
 export const fetchCategory = async (): Promise<any[]> => {
   try {

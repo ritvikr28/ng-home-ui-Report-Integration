@@ -2,7 +2,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { fetchCategory, getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getCategoryArr, getDateTag, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -60,12 +60,17 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     
-    const categoryArr = selectedFormats?.map((cat:any) => ({
-        text: cat?.text, categoryName: cat?.value, closeObj: {
-            name: cat?.text,
-            id: cat?.data?.registrationId
-        }
-    }))
+const categoryArr = getCategoryArr(selectedFormats);
+const dateTag = getDateTag(dateRange);
+
+
+const searchTagListRaw = [
+  ...categoryArr,
+  ...dateTag
+];
+
+const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -261,7 +266,6 @@ const DocumentManagementServerView: React.FC = () => {
             setIsFilterDialogOpen(false);
         }
     };
-
 
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true)
@@ -532,7 +536,7 @@ const DocumentManagementServerView: React.FC = () => {
                                 isSearchShowLoading={isLoading}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
-                                searchTagList = {selectedFormats?.length > 0 ? categoryArr : []}
+                                searchTagList = { searchTagList}
                                 onOverflowTagClose ={()=>{}}
                             />
                         </div>}
