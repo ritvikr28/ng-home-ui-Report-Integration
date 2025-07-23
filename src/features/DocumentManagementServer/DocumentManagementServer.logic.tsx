@@ -361,6 +361,20 @@ export const fetchCategory = async (): Promise<any[]> => {
   }
 }
 
+export const getResultNotFoundMsg = (
+  searchText: string,
+  docData: any,
+  searchTerm: string,
+  showErrorBanner: boolean
+): string | undefined => {
+  if (searchText && !docData?.data?.length) {
+    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+  } else if (showErrorBanner) {
+    return "Information unavailable";
+  }
+  return undefined;
+};
+
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
     name: "",
