@@ -71,6 +71,8 @@ const searchTagListRaw = [
 
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
+    const [isSearchTrue, setIsSearchTrue] = useState(false); 
+    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -158,7 +160,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                 searchText: searchTexts,
                 fromDate: dateRange?.fromDate,
                 toDate: dateRange?.toDate,
-                categoryId: categories || []
+                categoryId: categories || [],
+                isSearchTextExactMatch: isSearchTrue
             });
             if (result && result?.statusCode === 200) {
                 setDocData(result);
@@ -199,7 +202,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     };
 
 
-
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
@@ -218,8 +220,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             setSearchText(keyword);
             setIsSearchTriggered(true);
             setIsSearchDataLoading(true);
+            setIsSearchTrue(false);
         }
         setIsSearchLoading(false);
+        setIsShowAutoSuggest(false); 
         // setSuggestions([]);
     }
     }
@@ -458,7 +462,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 searchHeadingText="Search by document or related to name"
                                 searchTerm={searchInput}
                                 isShowSearch
-                                isShowAutoSuggest={true}
                                 searchPlaceholderText=" "
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
@@ -466,9 +469,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={hasItems ? suggestions : []}
-                                onSearchSuggestionItemClick={(item) =>
+                                onSearchSuggestionItemClick={(item) =>{
+                                    setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
-                                }
+                                }}
                                 searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
@@ -539,6 +543,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 isOpenConfirmationDialog={false}
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement={true}
+                                isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
