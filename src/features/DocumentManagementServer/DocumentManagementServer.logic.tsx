@@ -14,7 +14,7 @@ export const getTableHeadersData: {
   isSimpleText?: boolean;
   txtTrunctLength?: number;
   isColumnSorting?: boolean;
-  // isSorted?: boolean;
+  
   isColumnSortByDefault?: boolean;
   sortDirection?: "Asc" | "Desc";
   anyComponent?: (e: any) => JSX.Element;

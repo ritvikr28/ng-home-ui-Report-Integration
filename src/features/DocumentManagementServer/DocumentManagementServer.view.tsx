@@ -172,7 +172,7 @@ const DocumentManagementServerView: React.FC = () => {
       break;
     
     default:
-   
+        
     return;
   }
   let newDirection: "Asc" | "Desc" = "Desc";

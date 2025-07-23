@@ -351,18 +351,6 @@ it("handles sorting for Size column", async () => {
 });
 
 
-// it("does not sort for non-sortable columns", async () => {
-//   render(<DocumentManagementServerView />);
-//   act(() => { jest.advanceTimersByTime(2000); });
-//   const addedByHeader = screen.getByText("Added by");
-//   fireEvent.click(addedByHeader);
-//   // Should not call fetchDocumentDetails with sortBy "Added by"
-//   expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-//     expect.objectContaining({ sortBy: "Added by" })
-//   );
-// });
-
-
   it("handles pagination changes", async () => {
      const mockDatas = {
     totalRecords: 41,
