@@ -40,13 +40,10 @@ const DMSFilterDialog = ({
   title,
   isOpen,
   availableCategories,
-  availableFormats,
   onClose,
   setSelectedCategories,
   selectedCategories,
   handleApply,
-  selectedFormats,
-  setIsFilterDialogOpen,
   isFilterDialogOpen,
   setIsDateError,
   isDateError,
@@ -86,15 +83,14 @@ const clearAll = useCallback(() => {
   useEffect(() => {
     if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
-      setToDay(day);
-      setToMonth(month);
-      setToYear(year);
+      setToDate({ day, month, year });
+    }
+    else {
+      setToDate({ day: "", month: "", year: "" });
     }
     if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.fromDate.split("-");
-      setFromDay(day);
-      setFromMonth(month);
-      setFromYear(year);
+      
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
