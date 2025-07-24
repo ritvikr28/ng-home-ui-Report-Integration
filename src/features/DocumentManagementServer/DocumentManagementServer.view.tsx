@@ -62,6 +62,7 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     
+    
 const categoryArr = getCategoryArr(selectedFormats);
 const dateTag = getDateTag(dateRange);
 
@@ -531,7 +532,7 @@ if (sortBy === apiColumnName) {
                                         <FilterDialog
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
-                                            title="Filter Documents"
+                                            title="Filter by"
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}

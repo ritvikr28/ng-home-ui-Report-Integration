@@ -84,6 +84,31 @@ const clearAll = () => {
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
+   useEffect(() => {
+  if (selectedDateRange?.fromDate || selectedDateRange?.toDate) {
+    const from = dayjs(selectedDateRange.fromDate).format("DD MMM YYYY");
+    const to = selectedDateRange.toDate && dayjs(selectedDateRange.toDate).format("DD MMM YYYY");
+    const dateString = `${from} ${(to ? 'to ' : '-' )+ to}`;
+ 
+    const dateVal = {
+      text: dateString,
+      data: { type: "dateRange" },
+      value: dateString,
+    };
+ 
+    setSelectedCategories((prev) => {
+      const index = prev.findIndex(item => item.data?.type === "dateRange");
+      if (index === -1) {
+        // First time: just add it
+        return [...prev, dateVal];
+      }
+      const updated = [...prev];
+      updated[index] = dateVal;
+      return updated;
+    });
+  }
+}, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
+
   useEffect(() => {
   if (!isOpen && !wasApplied) {
     setFromDate({ day: "", month: "", year: "" });
@@ -130,7 +155,7 @@ const clearAll = () => {
         // From date validations
         
         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-          setError("From date cannot be after today.");
+          setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
           setIsDateError(true);
           return;
         }
@@ -143,7 +168,7 @@ const clearAll = () => {
       } else {
         // To date validations
         if (thisDateStr && !otherDateStr) {
-          setError("Please select a From date before selecting a To date.");
+          setError("From date is required");
           setIsDateError(true);
           return;
         }
@@ -179,17 +204,34 @@ const clearAll = () => {
         dataTestId={`${dataTestId}-categories`}
         isFixedMultiSelect
         multiSelect
-        onSelectMultiple={(_, items) =>
-          setSelectedCategories(
-            items.map(item => ({
-              ...item,
-              text: item.text || (typeof item.data === "string"
-                ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
-                : "")
-            }))
-          )
-        }
-        selectedItems={selectedCategories}
+       onSelectMultiple={(_, items) => {
+  setSelectedCategories(prev => {
+    // Find the dateRange item and its previous index
+    const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
+    const dateRangeItem = prev[dateRangeIndex];
+
+    // Remove any dateRange item from newItems
+    const newItems = items.filter(item => item.data?.type !== "dateRange")
+      .map(item => ({
+        ...item,
+        text: item.text || (typeof item.data === "string"
+          ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+          : "")
+      }));
+
+    // Insert dateRange item at its previous index, or at the end if out of bounds
+    if (dateRangeItem) {
+      const safeDateRangeItem = {
+        ...dateRangeItem,
+        text: dateRangeItem.text ?? ""
+      };
+      const insertIndex = Math.min(dateRangeIndex, newItems.length);
+      newItems.splice(insertIndex, 0, safeDateRangeItem);
+    }
+    return newItems;
+  });
+}}
+  selectedItems={selectedCategories.filter(item => item.data?.type !== "dateRange")}
       >
         {availableCategories
           .slice()
