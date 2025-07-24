@@ -12,6 +12,7 @@ import { error } from "console";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
+import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
@@ -665,10 +666,9 @@ it("handles suggestion fetch error gracefully", async () => {
 
   // Mock fetchDMSSuggestions to throw
   jest
-    .spyOn(require("../ApiService"), "fetchDMSSuggestions")
+    .spyOn(apiService, "fetchDMSSuggestions")
     .mockRejectedValueOnce(new Error("fail"));
 
-  const { debouncedFetchSuggestions } = require("../DocumentManagementServer.logic");
 
   // Call the debounced function
   debouncedFetchSuggestions("fail", mockSetLoading, mockSetSuggestions, mockSetError);

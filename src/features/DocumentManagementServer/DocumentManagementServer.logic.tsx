@@ -381,15 +381,15 @@ export const getResultNotFoundMsg = (
 ): string | undefined => {
   if (searchText && !docData?.data?.length) {
     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-  } else if (showErrorBanner) {
+  }if (showErrorBanner) {
     return "Information unavailable";
   }
   return undefined;
 };
 
 
-export const getAllRegistrationIds = (selectedFormats: any[]): any[] => {
-    return selectedFormats?.flatMap(item => {
+export const getAllRegistrationIds = (selectedFormats: any[]): any[] => 
+     selectedFormats?.flatMap(item => {
         const regId = item?.data?.registrationId;
         if (Array.isArray(regId)) {
             return regId;
@@ -399,7 +399,6 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] => {
         }
         return [];
     }) || [];
-};
 
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
