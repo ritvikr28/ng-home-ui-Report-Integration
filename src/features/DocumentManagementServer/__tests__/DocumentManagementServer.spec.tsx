@@ -399,9 +399,9 @@ it("handles sorting for Size column", async () => {
     fireEvent.change(input, { target: { value: "xyz" } });
     }
     );
-    act(() => {
-      jest.advanceTimersByTime(3000);
-    });
+   act(() => {
+  jest.advanceTimersByTime(3000);
+});
    await waitFor(() => {
   const match = [...document.body.querySelectorAll("*")].find(
     (node) =>
@@ -509,7 +509,9 @@ it("reduces category data properly in handleFilterOnClick", async () => {
   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
 
   render(<DocumentManagementServerView />);
-   act(() => jest.advanceTimersByTime(3000));
+   act(() => {
+  jest.advanceTimersByTime(3000);
+});
 
     await waitFor(() => {
     const filterButton = screen.getByTestId("filter-btn");
