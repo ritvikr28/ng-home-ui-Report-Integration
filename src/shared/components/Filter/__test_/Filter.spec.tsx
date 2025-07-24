@@ -101,7 +101,7 @@ describe("FilterDialog", () => {
     setDateInput(dateInputs[1], "12", "05", "2022");
 
     await waitFor(() => {
-      expect(screen.getByText("Please select a From date before selecting a To date.")).toBeInTheDocument();
+      expect(screen.getByText("From date is required")).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -114,7 +114,7 @@ describe("FilterDialog", () => {
     setDateInput(dateInputs[0], "01", "01", `${nextYear}`);
 
     await waitFor(() => {
-      expect(screen.getByText("From date cannot be after today.")).toBeInTheDocument();
+      expect(screen.getByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -216,7 +216,7 @@ describe("FilterDialog", () => {
   const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
   fireEvent.click(applyButton);
 
-  expect(await screen.findByText("Please select a From date before selecting a To date.")).toBeInTheDocument();
+  expect(await screen.findByText("From date is required")).toBeInTheDocument();
 });
 
 
@@ -237,7 +237,7 @@ test("shows error when From Date is in the future", async () => {
   const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
   fireEvent.click(applyButton);
 
-  expect(await screen.findByText("From date cannot be after today.")).toBeInTheDocument();
+  expect(await screen.findByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
 });
 
 test("shows error when To Date is before From Date", async () => {
@@ -271,7 +271,7 @@ test("shows error when To date is selected but From date is not", async () => {
   fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
   // Assertion for the error message
-  expect(await screen.findByText("Please select a From date before selecting a To date.")).toBeInTheDocument();
+  expect(await screen.findByText("From date is required")).toBeInTheDocument();
 });
 
 test("shows error when To date is before From date", async () => {
@@ -289,5 +289,146 @@ test("shows error when To date is before From date", async () => {
 
   expect(await screen.findByText("To date cannot be before From date.")).toBeInTheDocument();
 });
+
+it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
+  const prevCategories = [
+    { data: "send", text: "Send" },
+    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
+    { data: "pupils", text: "Pupils" }
+  ];
+
+  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+    const newItems = updater(prevCategories);
+    // Expect dateRange to be inserted after "send" if "send" is still present
+    expect(newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(1);
+  });
+
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={prevCategories}
+      setSelectedCategories={mockSetSelectedCategoriesWithCheck}
+    />
+  );
+
+  // Trigger dropdown selection (mock selects "send")
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+});
+
+it("shows error when From date is after To date", async () => {
+  renderComponent();
+
+  // Set To date first: 2022-05-10
+  const toDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[1];
+  fireEvent.change(within(toDateInputs).getByPlaceholderText("DD"), { target: { value: "10" } });
+  fireEvent.change(within(toDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(toDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
+
+  // Then set From date to a later date: 2022-05-12
+  const fromDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[0];
+  fireEvent.change(within(fromDateInputs).getByPlaceholderText("DD"), { target: { value: "12" } });
+  fireEvent.change(within(fromDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(fromDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
+
+  // Assertion: error message triggered by From date being after To date
+  await waitFor(() => {
+    expect(screen.getByText("To date cannot be before From date.")).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  });
+});
+
+it("adds dateRange to selectedCategories if it doesn't exist", () => {
+  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+    const result = updater([]);
+    expect(result).toEqual([
+      expect.objectContaining({
+        data: { type: "dateRange" },
+        text: expect.stringContaining("10 May 2022"),
+        value: expect.any(String)
+      })
+    ]);
+  });
+
+  renderComponent({
+    selectedCategories: [],
+    selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
+    setSelectedCategories: mockSetSelectedCategoriesWithCheck
+  });
+
+  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+});
+
+it("updates existing dateRange in selectedCategories if it exists", () => {
+  const previous = [
+    { data: "send", text: "Send" },
+    { data: { type: "dateRange" }, text: "Old Range", value: "Old Range" }
+  ];
+
+  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+    const result = updater(previous);
+    expect(result[1]).toEqual(
+      expect.objectContaining({
+        data: { type: "dateRange" },
+        text: expect.stringContaining("10 May 2022"),
+        value: expect.any(String)
+      })
+    );
+  });
+
+  renderComponent({
+    selectedCategories: previous,
+    selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
+    setSelectedCategories: mockSetSelectedCategoriesWithCheck
+  });
+
+  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+});
+
+it("calculates insertIndex from matching prevBeforeDate items when dateRange is in middle", () => {
+  const prev = [
+    { data: "send", text: "Send" },
+    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
+    { data: "pupils", text: "Pupils" }
+  ];
+
+  const mockSetSelectedCategories2 = jest.fn((updater) => {
+    const newItems = updater(prev);
+    const dateRangeIndex = newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange");
+    expect(dateRangeIndex).toBe(1); // after "send"
+  });
+
+  renderComponent({
+    selectedCategories: prev,
+    setSelectedCategories: mockSetSelectedCategories2
+  });
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  expect(mockSetSelectedCategories2).toHaveBeenCalled();
+});
+
+it("sets insertIndex to 0 when dateRangeItem is first in the list", () => {
+  const prev = [
+    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
+    { data: "send", text: "Send" }
+  ];
+
+  const mockSetSelectedCategories1 = jest.fn((updater) => {
+    const result = updater(prev);
+    // Assert that dateRange is inserted at index 0
+    expect(result[0].data?.type).toBe("dateRange");
+  });
+
+  renderComponent({
+    selectedCategories: prev,
+    setSelectedCategories: mockSetSelectedCategories1
+  });
+
+  // Mock dropdown click triggers `onSelectMultiple` with `send` only
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+
+  expect(mockSetSelectedCategories1).toHaveBeenCalled();
+});
+
 
 });
