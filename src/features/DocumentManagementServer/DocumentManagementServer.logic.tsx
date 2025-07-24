@@ -387,6 +387,20 @@ export const getResultNotFoundMsg = (
   return undefined;
 };
 
+
+export const getAllRegistrationIds = (selectedFormats: any[]): any[] => {
+    return selectedFormats?.flatMap(item => {
+        const regId = item?.data?.registrationId;
+        if (Array.isArray(regId)) {
+            return regId;
+        }
+        if (regId) {
+            return [regId];
+        }
+        return [];
+    }) || [];
+};
+
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {
     name: "",

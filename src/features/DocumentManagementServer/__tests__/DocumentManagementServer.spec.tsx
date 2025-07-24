@@ -12,7 +12,6 @@ import { error } from "console";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
-import userEvent from "@testing-library/user-event";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
@@ -51,19 +50,22 @@ jest.mock("../ApiService");
     ],
   };
 
+beforeAll(() => {
+  jest.useFakeTimers();
+});
+
+afterAll(() => {
+  jest.useRealTimers();
+});
+
 
 describe("DocumentManagementServerView", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
   });
-  beforeAll(() => {
-  jest.useFakeTimers();
-});
-
-afterAll(() => {
-  jest.useRealTimers();
-});it("shows error banner when showErrorBanner is true", async () => {
+ 
+it("shows error banner when showErrorBanner is true", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValueOnce({
     statusCode: 400,
     data: [],
@@ -681,44 +683,5 @@ it("handles suggestion fetch error gracefully", async () => {
   expect(mockSetSuggestions).toHaveBeenCalledWith([]);
 
 });
-
-// it("calls fetchDocumentDetails with registrationId as array", async () => {
-//   const mockCategoryResponse = [
-//     { application: "App1", registrationId: 1, section: "Section1" },
-//     { application: "App2", registrationId: 2, section: "Section2" }
-//   ];
-
-//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
-
-//   render(<DocumentManagementServerView />);
-//   act(() => jest.advanceTimersByTime(2000));
-
-//   const user = userEvent;
-//   // Open filter dialog
-//   await user.click(await screen.findByTestId("filter-btn"));
-
-//   // Open the category dropdown
-//   await user.click(await screen.findByTestId("text-input-dms-filter-dialog-categories-icon-btn"));
-
-//   // Wait for category options to appear in the DOM
-//   const app1Checkbox = await screen.findByLabelText("App1");
-//   const app2Checkbox = await screen.findByLabelText("App2");
-
-//   await user.click(app1Checkbox); // Select App1
-//   await user.click(app2Checkbox); // Select App2
-
-//   // Apply filters
-//   await user.click(await screen.findByTestId("dms-filter-dialog-apply-btn"));
-
-
-
-//   await waitFor(() => {
-//     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
-//       expect.objectContaining({
-//         categoryId: [1, 2],
-//       })
-//     );
-//   });
-// });
 
 })

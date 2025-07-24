@@ -2,7 +2,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { fetchCategory, getCategoryArr, getDateTag, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getDateTag, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -132,16 +132,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     useEffect(() => {
         if (!isInitialLoad) {
-            const allRegistrationIds = selectedFormats?.flatMap(item => {
-                const regId = item?.data?.registrationId;
-                if (Array.isArray(regId)) {
-                    return regId;
-                }
-                if (regId) {
-                    return [regId];
-                }
-                return [];
-            }) || [];
+            const allRegistrationIds = getAllRegistrationIds(selectedFormats);
             fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)

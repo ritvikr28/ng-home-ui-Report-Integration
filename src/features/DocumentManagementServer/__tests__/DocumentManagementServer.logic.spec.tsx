@@ -6,6 +6,7 @@ import {
   debouncedFetchSuggestions,
   fetchCategory,
   formatSuggestions,
+  getAllRegistrationIds,
   getCategoryArr,
   getDateTag,
   getResultNotFoundMsg,
@@ -692,3 +693,102 @@ describe('getResultNotFoundMsg', () => {
     expect(result).toBeUndefined();
   });
 });
+
+describe("getAllRegistrationIds", () => {
+  it("returns empty array for empty input", () => {
+    expect(getAllRegistrationIds([])).toEqual([]);
+  });
+
+  it("returns empty array when input is undefined", () => {
+    expect(getAllRegistrationIds(undefined as any)).toEqual([]);
+  });
+
+  it("returns array of registrationIds when all are single values", () => {
+    const input = [
+      { data: { registrationId: "id1" } },
+      { data: { registrationId: "id2" } },
+      { data: { registrationId: "id3" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
+  });
+
+  it("returns array of registrationIds when some are arrays", () => {
+    const input = [
+      { data: { registrationId: ["id1", "id2"] } },
+      { data: { registrationId: "id3" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
+  });
+
+  it("skips items with no registrationId", () => {
+    const input = [
+      { data: {} },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("returns empty array when all items have no registrationId", () => {
+    const input = [
+      { data: {} },
+      { data: {} }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual([]);
+  });
+
+  it("handles mixed array and single registrationIds", () => {
+    const input = [
+      { data: { registrationId: ["id1", "id2"] } },
+      { data: { registrationId: "id3" } },
+      { data: { registrationId: ["id4"] } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3", "id4"]);
+  });
+
+  it("handles null registrationId", () => {
+    const input = [
+      { data: { registrationId: null } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles undefined registrationId", () => {
+    const input = [
+      { data: { registrationId: undefined } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles missing data property", () => {
+    const input = [
+      {},
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles item with registrationId as empty array", () => {
+    const input = [
+      { data: { registrationId: [] } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles item with registrationId as array with null/undefined", () => {
+    const input = [
+      { data: { registrationId: [null, undefined, "id1"] } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual([null, undefined, "id1"]);
+  });
+
+  it("handles 100 items with single registrationId", () => {
+    const input = Array.from({ length: 100 }, (_, i) => ({
+      data: { registrationId: `id${i + 1}` }
+    }));
+    const expected = Array.from({ length: 100 }, (_, i) => `id${i + 1}`);
+    expect(getAllRegistrationIds(input)).toEqual(expected);
+  });
+})
