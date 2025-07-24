@@ -4,8 +4,14 @@ import { render, screen } from "@testing-library/react";
 import * as ApiService from "../ApiService";
 import {
   debouncedFetchSuggestions,
+  fetchCategory,
   formatSuggestions,
+  getAllRegistrationIds,
+  getCategoryArr,
+  getDateTag,
+  getResultNotFoundMsg,
   getTableHeadersData,
+  getVisibleTagsWithSummary,
   handlePageChange,
   handleSearchChange,
   handleSuggestionClick,
@@ -479,3 +485,310 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     expect(getByText("100KB")).toBeInTheDocument();
   });
 });
+
+
+describe('getVisibleTagsWithSummary', () => {
+  it('returns tags as-is when length <= maxVisible (default)', () => {
+    const tags = [
+      { text: 'A' },
+      { text: 'B' },
+      { text: 'C' }
+    ];
+
+    const result = getVisibleTagsWithSummary(tags);
+    expect(result).toEqual(tags);
+  });
+
+  it('returns tags as-is when length <= maxVisible (custom)', () => {
+    const tags = [{ text: 'OnlyOne' }];
+    const result = getVisibleTagsWithSummary(tags, 5);
+    expect(result).toEqual(tags);
+  });
+
+  it('adds summary when length > maxVisible', () => {
+    const tags = [
+      { text: 'A' },
+      { text: 'B' },
+      { text: 'C' },
+      { text: 'D' },
+      { text: 'E' }
+    ];
+
+    const result = getVisibleTagsWithSummary(tags, 3);
+
+    expect(result.length).toBe(4); // 3 visible + 1 summary
+    expect(result[3]).toEqual({
+      text: '+2',
+      categoryName: 'Summary',
+      closeObj: null
+    });
+  });
+
+  it('adds summary correctly for many extra items', () => {
+    const tags = Array.from({ length: 10 }, (_, i) => ({ text: `Tag ${i + 1}` }));
+
+    const result = getVisibleTagsWithSummary(tags, 5);
+
+    expect(result.length).toBe(6); // 5 + summary
+    expect(result[5]).toEqual({
+      text: '+5',
+      categoryName: 'Summary',
+      closeObj: null
+    });
+  });
+});
+
+describe('getCategoryArr', () => {
+  it('returns mapped category array when all fields exist', () => {
+    const input = [
+      {
+        text: 'PDF',
+        value: 'pdf',
+        data: {
+          registrationId: 'reg123'
+        }
+      }
+    ];
+
+    const result = getCategoryArr(input);
+
+    expect(result).toEqual([
+      {
+        text: 'PDF',
+        categoryName: 'pdf',
+        closeObj: {
+          name: 'PDF',
+          id: 'reg123'
+        }
+      }
+    ]);
+  });
+
+  it('handles missing data or registrationId gracefully', () => {
+    const input = [
+      {
+        text: 'Word',
+        value: 'doc',
+        data: {}
+      }
+    ];
+
+    const result = getCategoryArr(input);
+
+    expect(result).toEqual([
+      {
+        text: 'Word',
+        categoryName: 'doc',
+        closeObj: {
+          name: 'Word',
+          id: undefined
+        }
+      }
+    ]);
+  });
+
+  it('returns empty array for empty input', () => {
+    const result = getCategoryArr([]);
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty array when input is undefined', () => {
+    const result = getCategoryArr(undefined as any);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getDateTag', () => {
+  it('returns formatted tag when both fromDate and toDate are present', () => {
+    const result = getDateTag({ fromDate: '2024-01-01', toDate: '2024-01-10' });
+
+    expect(result).toEqual([
+      {
+        text: `01 Jan 2024 to 10 Jan 2024`,
+        categoryName: 'Date',
+        closeObj: { name: 'Date', id: 'dateRange' }
+      }
+    ]);
+  });
+
+  it('returns formatted tag when only fromDate is present', () => {
+    const result = getDateTag({ fromDate: '2024-01-01', toDate: '' });
+
+    expect(result).toEqual([
+      {
+        text: '01 Jan 2024 to -',
+        categoryName: 'Date',
+        closeObj: { name: 'Date', id: 'dateRange' }
+      }
+    ]);
+  });
+
+  it('returns formatted tag when only toDate is present', () => {
+    const result = getDateTag({ fromDate: '', toDate: '2024-01-10' });
+
+    expect(result).toEqual([
+      {
+        text: '- to 10 Jan 2024',
+        categoryName: 'Date',
+        closeObj: { name: 'Date', id: 'dateRange' }
+      }
+    ]);
+  });
+
+  it('returns empty array when both dates are missing', () => {
+    const result = getDateTag({ fromDate: '', toDate: '' });
+
+    expect(result).toEqual([]);
+  });
+});
+
+describe('fetchCategory', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns data when API resolves with a valid response', async () => {
+    const mockData = [{ id: 1, name: 'Test Category' }];
+    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
+
+    const result = await fetchCategory();
+    expect(result).toEqual(mockData);
+  });
+
+  it('returns empty array when API resolves with null', async () => {
+    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(null);
+
+    const result = await fetchCategory();
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty array when API throws an error', async () => {
+    (ApiService.fetchFilterCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
+
+    const result = await fetchCategory();
+    expect(result).toEqual([]);
+  });
+});
+
+describe('getResultNotFoundMsg', () => {
+  it('returns not found message when searchText is provided and docData has no results', () => {
+    const result = getResultNotFoundMsg('test', { data: [] }, 'test', false);
+    expect(result).toBe(
+      'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
+    );
+  });
+
+  it('returns "Information unavailable" when showErrorBanner is true', () => {
+    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
+    expect(result).toBe('Information unavailable');
+  });
+
+  it('returns undefined when there is data and no error', () => {
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false);
+    expect(result).toBeUndefined();
+  });
+
+  it('returns undefined when searchText is empty and no error banner', () => {
+    const result = getResultNotFoundMsg('', { data: [] }, '', false);
+    expect(result).toBeUndefined();
+  });
+});
+
+describe("getAllRegistrationIds", () => {
+  it("returns empty array for empty input", () => {
+    expect(getAllRegistrationIds([])).toEqual([]);
+  });
+
+  it("returns empty array when input is undefined", () => {
+    expect(getAllRegistrationIds(undefined as any)).toEqual([]);
+  });
+
+  it("returns array of registrationIds when all are single values", () => {
+    const input = [
+      { data: { registrationId: "id1" } },
+      { data: { registrationId: "id2" } },
+      { data: { registrationId: "id3" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
+  });
+
+  it("returns array of registrationIds when some are arrays", () => {
+    const input = [
+      { data: { registrationId: ["id1", "id2"] } },
+      { data: { registrationId: "id3" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
+  });
+
+  it("skips items with no registrationId", () => {
+    const input = [
+      { data: {} },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("returns empty array when all items have no registrationId", () => {
+    const input = [
+      { data: {} },
+      { data: {} }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual([]);
+  });
+
+  it("handles mixed array and single registrationIds", () => {
+    const input = [
+      { data: { registrationId: ["id1", "id2"] } },
+      { data: { registrationId: "id3" } },
+      { data: { registrationId: ["id4"] } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3", "id4"]);
+  });
+
+  it("handles null registrationId", () => {
+    const input = [
+      { data: { registrationId: null } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles undefined registrationId", () => {
+    const input = [
+      { data: { registrationId: undefined } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles missing data property", () => {
+    const input = [
+      {},
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles item with registrationId as empty array", () => {
+    const input = [
+      { data: { registrationId: [] } },
+      { data: { registrationId: "id1" } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual(["id1"]);
+  });
+
+  it("handles item with registrationId as array with null/undefined", () => {
+    const input = [
+      { data: { registrationId: [null, undefined, "id1"] } }
+    ];
+    expect(getAllRegistrationIds(input)).toEqual([null, undefined, "id1"]);
+  });
+
+  it("handles 100 items with single registrationId", () => {
+    const input = Array.from({ length: 100 }, (_, i) => ({
+      data: { registrationId: `id${i + 1}` }
+    }));
+    const expected = Array.from({ length: 100 }, (_, i) => `id${i + 1}`);
+    expect(getAllRegistrationIds(input)).toEqual(expected);
+  });
+})

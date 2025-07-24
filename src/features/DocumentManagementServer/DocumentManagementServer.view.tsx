@@ -1,13 +1,14 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { getTableHeadersData, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { tableDataProps } from "./responseModel"
+import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
+import FilterDialog from "../../shared/components/Filter/Filter"
 
 
 export const breadcrumbActionsList = [
@@ -48,11 +49,29 @@ const DocumentManagementServerView: React.FC = () => {
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+    const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
+    const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<"Asc" | "Desc">("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
+    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+    const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
+    const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
+    const [isDateError, setIsDateError] = useState(false);
+    
+    
+const categoryArr = getCategoryArr(selectedFormats);
+
+
+const searchTagListRaw = [
+  ...categoryArr
+];
+
+const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+
     const [isSearchTrue, setIsSearchTrue] = useState(false); 
     const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
 
@@ -94,25 +113,29 @@ const DocumentManagementServerView: React.FC = () => {
             setTotalPage(totalPages);
         }
     }, [docData]);
-
     useEffect(() => {
-        const fetchInitialData = async () => {
-            setIsLoading(true);
-            const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-            const dataFetch = fetchGetDocumentDetails(searchText, currentPage);
-            await Promise.all([minLoaderTime, dataFetch]);
-            setIsLoading(false);
-            setIsInitialLoad(false);
-        };
-        fetchInitialData();
-    }, []);
+    const fetchInitialData = async () => {
+        setIsLoading(true);
+        const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+        const dataFetch = fetchGetDocumentDetails(searchText, currentPage, []);
+        // Fetch categories
+        
+        await Promise.all([minLoaderTime, dataFetch]);
+        setIsLoading(false);
+        setIsInitialLoad(false);
+    };
+    fetchInitialData();
+}, []);
+
+
 
     useEffect(() => {
         if (!isInitialLoad) {
-            fetchGetDocumentDetails(searchText, currentPage, sortBy, sortDirection);
+            const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+            fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText, sortBy, sortDirection]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection]);
 
 
     
@@ -122,13 +145,16 @@ const DocumentManagementServerView: React.FC = () => {
     );
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, sortByCol: string = sortBy, sortOrder= sortDirection) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
+                fromDate: dateRange?.fromDate,
+                toDate: dateRange?.toDate,
+                categoryId: categories || [],
                 isSearchTextExactMatch: isSearchTrue,
                 sortBy: sortByCol,
                 sortDirection : sortOrder,
@@ -256,13 +282,38 @@ if (sortBy === apiColumnName) {
         }
     ]
 
-    let resultNotFoundMSG: string | undefined;
-    if (searchText && !docData.data?.length) {
-        resultNotFoundMSG = `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-    } else if (showErrorBanner) {
-        resultNotFoundMSG = "Information unavailable";
-    } else {
-        resultNotFoundMSG = undefined;
+     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+
+    const handleApply = () => {
+        if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
+            setIsDateError(true);
+        } else {
+            setSelectedFormats(selectedCategories)
+            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+            setIsFilterDialogOpen(false);
+        }
+    };
+
+   const handleFilterOnClick = () => {
+        setIsFilterDialogOpen(true);
+        fetchCategory()
+            .then((res) => {
+                const categories = Object.values(
+                    res?.reduce((acc: any, curr: any) => {
+                        if (!acc[curr.application]) {
+                            acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
+                        }
+                        acc[curr.application].registrationId.push(curr.registrationId);
+                        acc[curr.application].section.push(curr.section);
+                        return acc;
+                    }, {})
+                ) as Category[];
+                setAvailableCategories(categories);
+            });
+        if (selectedFormats) {
+            setSelectedCategories(selectedFormats);
+        }
+        setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
 
     return (<>
@@ -280,16 +331,6 @@ if (sortBy === apiColumnName) {
                             size={ButtonSize.Small}
                         />
                     )}
-                    {/* <LocalisedMenu
-                        customHeight={100}
-                        menuHeading="Admin console"
-                        onCloseSideNavigationPanel={() => setIsOpen(false)}
-                        isOpenSideNavigation={isOpen}
-                        defaultSelectedMenu={{
-                            text: "Documents",
-                            value: `${window.location.origin}/documents`
-                        }}
-                    />  */}
                     <LocalisedMenu
                         customHeight={100}
                         menuHeading="Admin Console"
@@ -474,14 +515,33 @@ if (sortBy === apiColumnName) {
                                 sidePanelTitle=""
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
-                                filterCustumeElem2={<Button
-                                    className="filter-btn"
-                                    dataTestId="filter-btn"
-                                    color={ButtonColor.Utility}
-                                    size={ButtonSize.Small}
-                                    iconPosition={ButtonIconPosition.Right}
-                                    iconName="filter"
-                                > Filter</Button>
+                                filterCustumeElem2={
+                                    <>
+                                        <Button
+                                            className="filter-btn"
+                                            dataTestId="filter-btn"
+                                            color={ButtonColor.Utility}
+                                            size={ButtonSize.Small}
+                                            iconPosition={ButtonIconPosition.Right}
+                                            iconName="filter"
+                                            onClick={handleFilterOnClick}
+                                        > Filter</Button>
+
+                                        <FilterDialog
+                                            availableCategories={availableCategories}
+                                            isOpen={isFilterDialogOpen}
+                                            title="Filter by"
+                                            onClose={() => setIsFilterDialogOpen(false)}
+                                            setSelectedCategories={setSelectedCategories}
+                                            selectedCategories={selectedCategories}
+                                            handleApply={handleApply}
+                                            isFilterDialogOpen={isFilterDialogOpen}
+                                            setIsDateError={setIsDateError}
+                                            isDateError={isDateError}
+                                            setSelectedDateRange={setSelectedDateRange}
+                                            selectedDateRange={selectedDateRange}
+                                        />
+                                    </>
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
@@ -511,6 +571,8 @@ if (sortBy === apiColumnName) {
                                 isSearchShowLoading={isLoading}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
+                                searchTagList = { searchTagList}
+                                onOverflowTagClose ={()=>{}}
                             />
                         </div>}
                     </div>

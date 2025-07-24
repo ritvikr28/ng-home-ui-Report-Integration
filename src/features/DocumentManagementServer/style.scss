@@ -53,6 +53,7 @@
   .grid-wrapper {
     .filter-tool-view .filter-btn {
       margin-right: 8px;
+      margin-top: 24px;
     }
 
     .heading-title {
@@ -160,9 +161,7 @@
 .dms-layout .side-width .essui-side-navigation-panel-container-grid-item {
   width: 264px;
   height: 91vh !important;
-}
-
-;
+};
 
 
 
@@ -181,7 +180,12 @@
     width: 264px;
   }
 
-  ;
+
+  .dms-layout {
+    .filter-tool-view .essui-grid-col {
+      margin-top: auto !important;
+    }
+  }
 }
 
 ;

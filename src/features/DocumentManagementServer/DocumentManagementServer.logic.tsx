@@ -1,6 +1,7 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions } from "./ApiService";
+import dayjs from "dayjs";
+import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 
 export const getTableHeadersData: {
@@ -319,6 +320,85 @@ export const loadSuggestions = async (
   }
 };
 
+export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
+  if (tags.length <= maxVisible) return tags;
+  const visibleTags = tags.slice(0, maxVisible);
+  const remainingCount = tags.length - maxVisible;
+  visibleTags.push({
+    text: `+${remainingCount}`,
+    categoryName: "Summary",
+    closeObj: null
+  });
+  return visibleTags;
+};
+
+export const getCategoryArr = (selectedFormats: any[]) =>
+  selectedFormats?.map((cat: any) => ({
+    text: cat?.text,
+    categoryName: cat?.value,
+    closeObj: {
+      name: cat?.text,
+      id: cat?.data?.registrationId,
+    },
+  })) || [];
+
+  export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
+  if (!dateRange.fromDate && !dateRange.toDate) return [];
+
+  let text = "";
+  if (dateRange.fromDate && dateRange.toDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  } else if (dateRange.fromDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to -`;
+  } else if (dateRange.toDate) {
+    text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  }
+
+  return [
+    {
+      text,
+      categoryName: "Date",
+      closeObj: { name: "Date", id: "dateRange" },
+    }
+  ];
+};
+
+export const fetchCategory = async (): Promise<any[]> => {
+  try {
+    const response = await fetchFilterCategory();
+    return response ?? [];
+  } catch (err) {
+    console.error("Error fetching categories:", err);
+    return [];
+  }
+}
+
+export const getResultNotFoundMsg = (
+  searchText: string,
+  docData: any,
+  searchTerm: string,
+  showErrorBanner: boolean
+): string | undefined => {
+  if (searchText && !docData?.data?.length) {
+    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+  }if (showErrorBanner) {
+    return "Information unavailable";
+  }
+  return undefined;
+};
+
+
+export const getAllRegistrationIds = (selectedFormats: any[]): any[] => 
+     selectedFormats?.flatMap(item => {
+        const regId = item?.data?.registrationId;
+        if (Array.isArray(regId)) {
+            return regId;
+        }
+        if (regId) {
+            return [regId];
+        }
+        return [];
+    }) || [];
 
 export const formatSuggestions = (values: any[]): Suggestion[] => [
   {

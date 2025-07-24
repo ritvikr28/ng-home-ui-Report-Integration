@@ -34,7 +34,7 @@ export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;
   searchText?: string;
-  categoryId?: string[];
+  categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   sortBy?: string;
@@ -59,3 +59,9 @@ export interface DocumentSuggestion {
   value: string;
   values: string[];
 }
+
+export interface Category{
+  registrationId: number[];
+  application: string;
+  section: string[];
+};

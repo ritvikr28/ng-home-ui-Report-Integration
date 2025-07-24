@@ -1,0 +1,62 @@
+/* stylelint-disable */
+.dms-filter-dialog-buttons {
+    width: -webkit-fill-available;
+    display: flex;
+    justify-content: end;
+    margin: 30px;
+
+    .essui-button--secondary{
+        margin-right: 10px;
+    }
+}
+
+.dms-filter-dialog-date {
+  margin: 30px 0 0 0;
+
+  .dms-filter-dialog-date-inputs {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+
+    .dms-filter-dialog-fromdate-input,
+    .dms-filter-dialog-todate-input {
+      width: 48%;
+      margin: 0;
+    }
+    .dms-filter-dialog-todate-input {
+      margin-left: 10%;
+    }
+  }
+
+  .essui-date-input-container {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .essui-help-text {
+    font-weight: bold;
+  }
+
+  .essui-validation-text {
+    width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .dms-filter-dialog-date {
+    .dms-filter-dialog-date-inputs {
+      flex-direction: column;
+      gap: 16px;
+
+      .dms-filter-dialog-fromdate-input,
+      .dms-filter-dialog-todate-input {
+        width: 100%;
+        margin: 0;
+      }
+    }
+    .essui-date-input-container {
+      width: 100%;
+      margin-right: 0;
+    }
+  }
+}
