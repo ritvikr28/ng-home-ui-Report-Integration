@@ -64,12 +64,10 @@ const DocumentManagementServerView: React.FC = () => {
     
     
 const categoryArr = getCategoryArr(selectedFormats);
-const dateTag = getDateTag(dateRange);
 
 
 const searchTagListRaw = [
-  ...categoryArr,
-  ...dateTag
+  ...categoryArr
 ];
 
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);

@@ -204,13 +204,13 @@ const clearAll = () => {
         dataTestId={`${dataTestId}-categories`}
         isFixedMultiSelect
         multiSelect
-       onSelectMultiple={(_, items) => {
+      onSelectMultiple={(_, items) => {
   setSelectedCategories(prev => {
-    // Find the dateRange item and its previous index
+    // Find the previous index of dateRange
     const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
     const dateRangeItem = prev[dateRangeIndex];
 
-    // Remove any dateRange item from newItems
+    // Remove dateRange from new selection
     const newItems = items.filter(item => item.data?.type !== "dateRange")
       .map(item => ({
         ...item,
@@ -219,13 +219,23 @@ const clearAll = () => {
           : "")
       }));
 
-    // Insert dateRange item at its previous index, or at the end if out of bounds
+    // Calculate new index for dateRange: count how many items from prev before dateRange are still in newItems
+    let insertIndex = newItems.length;
+    if (dateRangeItem && dateRangeIndex > 0) {
+      const prevBeforeDate = prev.slice(0, dateRangeIndex).map(i => i.data);
+      insertIndex = newItems.findIndex(i => !prevBeforeDate.includes(i.data));
+      if (insertIndex === -1) insertIndex = newItems.length;
+      else insertIndex = newItems.filter(i => prevBeforeDate.includes(i.data)).length;
+    } else if (dateRangeItem) {
+      insertIndex = 0;
+    }
+
+    // Insert dateRange at calculated index
     if (dateRangeItem) {
       const safeDateRangeItem = {
         ...dateRangeItem,
         text: dateRangeItem.text ?? ""
       };
-      const insertIndex = Math.min(dateRangeIndex, newItems.length);
       newItems.splice(insertIndex, 0, safeDateRangeItem);
     }
     return newItems;

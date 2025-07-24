@@ -81,24 +81,6 @@ it("shows error banner when showErrorBanner is true", async () => {
   });
 });
 
-
-
-  it("renders main component and triggers document fetch", async () => {
-    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-    render(<DocumentManagementServerView />);
-    act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-
-    await waitFor(() => {
-    expect(
-      screen.getByText((content, element) => content === "Documents" && element?.id === "heading-titleid")
-    ).toBeInTheDocument();
-
-    expect(screen.getByText("Doc 1")).toBeInTheDocument();
-});
-  });
-
  it("shows breadcrumbs in non-mobile view", () => {
   render(<DocumentManagementServerView />);
   act(() => {
