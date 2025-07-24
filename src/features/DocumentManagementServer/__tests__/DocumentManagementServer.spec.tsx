@@ -487,7 +487,9 @@ it("opens filter dialog and processes fetched category data", async () => {
   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
 
   render(<DocumentManagementServerView />);
-  act(() => jest.advanceTimersByTime(2000));
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
   await waitFor(() => {
     const filterButton = screen.getByTestId("filter-btn");
