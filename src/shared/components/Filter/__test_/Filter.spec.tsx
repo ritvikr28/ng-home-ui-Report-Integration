@@ -67,7 +67,7 @@ describe("FilterDialog", () => {
     expect(screen.getByText("Category")).toBeInTheDocument();
     expect(screen.getByText("Date Added")).toBeInTheDocument();
     expect(screen.getByText("Clear All")).toBeInTheDocument();
-    expect(screen.getByText("Apply Filters")).toBeInTheDocument();
+    expect(screen.getByText("Apply")).toBeInTheDocument();
   });
 
   it("selects a category via dropdown", () => {
@@ -76,7 +76,7 @@ describe("FilterDialog", () => {
     expect(mockSetSelectedCategories).toHaveBeenCalled();
   });
 
-  it("applies filters when Apply Filters button is clicked", () => {
+  it("applies filters when Apply button is clicked", () => {
     renderComponent();
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
     expect(mockHandleApply).toHaveBeenCalled();
