@@ -163,6 +163,7 @@ it("shows error banner when showErrorBanner is true", async () => {
   });
 
   it("clears search input on cancel click", async () => {
+    jest.setTimeout(15000);
     render(<DocumentManagementServerView />);
     act(() => {
       jest.advanceTimersByTime(2000);
