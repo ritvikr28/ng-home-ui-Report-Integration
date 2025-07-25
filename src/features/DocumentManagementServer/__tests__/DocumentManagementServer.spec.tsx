@@ -483,7 +483,7 @@ it("sets date error when fromDate is invalid", async () => {
     // Simulate invalid fromDate
      const fromDateInput = within(dateInputs[0]).getByPlaceholderText("DD");
   fireEvent.change(fromDateInput, { target: { value: "32" } });
-    fireEvent.click(screen.getByText("Apply Filters"));
+    fireEvent.click(screen.getByText("Apply"));
   });
 
   // Check if error flag was triggered (e.g., via aria or style changes)
