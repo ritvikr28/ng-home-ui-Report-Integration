@@ -154,22 +154,32 @@ const clearAll = () => {
         }
         if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
           setError("");
-          setToDateError("To date cannot be before From date.");
+          setToDateError("To date should not be before From date.");
           setIsDateError(true);
           return;
         }
+         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+          setError("Invalid from date");
+          setIsDateError(true);
+          return;
+  }
         if (thisDateStr) setToDateError("");
       } else {
         if (thisDateStr && !otherDateStr) {
-          setError("From date is required");
+          setFromDateError("From date is required");
           setIsDateError(true);
           return;
         }
         if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-          setError("To date cannot be before From date.");
+          setError("To date should not be before From date.");
           setIsDateError(true);
           return;
         }
+        if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+    setError("Invalid to date");
+    setIsDateError(true);
+    return;
+  }
         if (thisDateStr && otherDateStr) setError("");
       }
        const fromDateValue = isFrom ? thisDateStr : otherDateStr

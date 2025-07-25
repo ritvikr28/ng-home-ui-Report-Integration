@@ -127,7 +127,7 @@ describe("FilterDialog", () => {
     setDateInput(dateInputs[1], "09", "05", "2022");
 
     await waitFor(() => {
-      expect(screen.getByText("To date cannot be before From date.")).toBeInTheDocument();
+      expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -256,7 +256,7 @@ test("shows error when To Date is before From Date", async () => {
   const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
   fireEvent.click(applyButton);
 
-  expect(await screen.findByText("To date cannot be before From date.")).toBeInTheDocument();
+  expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
 });
 
 test("shows error when To date is selected but From date is not", async () => {
@@ -287,7 +287,7 @@ test("shows error when To date is before From date", async () => {
 
   fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
-  expect(await screen.findByText("To date cannot be before From date.")).toBeInTheDocument();
+  expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
 });
 
 it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
@@ -333,7 +333,7 @@ it("shows error when From date is after To date", async () => {
 
   // Assertion: error message triggered by From date being after To date
   await waitFor(() => {
-    expect(screen.getByText("To date cannot be before From date.")).toBeInTheDocument();
+    expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
   });
 });
