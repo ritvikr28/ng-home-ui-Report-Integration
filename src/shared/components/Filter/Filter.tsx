@@ -72,7 +72,6 @@ const clearAll = () => {
   setFromDate({ day: "", month: "", year: "" })
   setToDate({ day: "", month: "", year: "" })
 };
-  // Populate date fields from selectedDateRange when dialog opens
   useEffect(() => {
     if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
@@ -99,7 +98,6 @@ const clearAll = () => {
     setSelectedCategories((prev) => {
       const index = prev.findIndex(item => item.data?.type === "dateRange");
       if (index === -1) {
-        // First time: just add it
         return [...prev, dateVal];
       }
       const updated = [...prev];
@@ -119,11 +117,10 @@ const clearAll = () => {
     setIsDateError(false);
   }
   if (!isOpen) {
-    setWasApplied(false); // Reset for next open
+    setWasApplied(false); 
   }
 }, [isOpen]);
 
-  // Handlers for date input changes
      const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
@@ -140,11 +137,9 @@ const clearAll = () => {
       };
       setDate(newDate);
 
-      // Build date strings
       const thisDateStr = getDateString(newDate);
       const otherDateStr = getDateString(otherDate);
 
-      // Validation logic
       if (!newDate.day && !newDate.month && !newDate.year) {
         setError("");
         setIsDateError(false);
@@ -152,8 +147,6 @@ const clearAll = () => {
       }
 
       if (isFrom) {
-        // From date validations
-        
         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
           setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
           setIsDateError(true);
@@ -161,23 +154,34 @@ const clearAll = () => {
         }
         if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
           setError("");
-          setToDateError("To date cannot be before From date.");
+          setToDateError("To date should not be before From date.");
           setIsDateError(true);
           return;
         }
+         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+          setError("Invalid from date");
+          setIsDateError(true);
+          return;
+  }
+        if (thisDateStr) setToDateError("");
       } else {
-        // To date validations
         if (thisDateStr && !otherDateStr) {
-          setError("From date is required");
+          setFromDateError("From date is required");
           setIsDateError(true);
           return;
         }
         if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-          setError("To date cannot be before From date.");
+          setError("To date should not be before From date.");
           setIsDateError(true);
           return;
-         }
-       }
+        }
+        if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+    setError("Invalid to date");
+    setIsDateError(true);
+    return;
+  }
+        if (thisDateStr && otherDateStr) setError("");
+      }
        const fromDateValue = isFrom ? thisDateStr : otherDateStr
        const toDateValue = !isFrom ? thisDateStr : otherDateStr
        setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue })
@@ -204,20 +208,21 @@ const clearAll = () => {
         dataTestId={`${dataTestId}-categories`}
         isFixedMultiSelect
         multiSelect
+        isScrollbarVisible
       onSelectMultiple={(_, items) => {
-  setSelectedCategories(prev => {
-    // Find the previous index of dateRange
-    const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
-    const dateRangeItem = prev[dateRangeIndex];
+      setSelectedCategories(prev => {
+        // Find the previous index of dateRange
+        const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
+        const dateRangeItem = prev[dateRangeIndex];
 
-    // Remove dateRange from new selection
-    const newItems = items.filter(item => item.data?.type !== "dateRange")
-      .map(item => ({
-        ...item,
-        text: item.text || (typeof item.data === "string"
-          ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
-          : "")
-      }));
+        // Remove dateRange from new selection
+        const newItems = items.filter(item => item.data?.type !== "dateRange")
+          .map(item => ({
+            ...item,
+            text: item.text || (typeof item.data === "string"
+              ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+              : "")
+          }));
 
     // Calculate new index for dateRange: count how many items from prev before dateRange are still in newItems
     let insertIndex = newItems.length;
@@ -261,7 +266,7 @@ const clearAll = () => {
       </Dropdown>
 
       <div className="dms-filter-dialog-date">
-        <FormLabel>{t("Date Added")}</FormLabel>
+        <FormLabel className="date-added">{t("Date Added")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
@@ -313,7 +318,7 @@ const clearAll = () => {
           color={ButtonColor.Primary}
           size={ButtonSize.Small}
         >
-          {t("Apply Filters")}
+          {t("Apply")}
         </Button>
         </div>
     </Dialog>

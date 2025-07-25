@@ -25,7 +25,6 @@ import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
-
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
@@ -180,52 +179,48 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     "SignOutFlag"
   );
   
-  if (window.userpilot && typeof window.userpilot.track === "function") {
-    window.userpilot.track("Event Name");
-    console.log("window.userpilot.track", window.userpilot.track);
-
-    window.userpilot.track("Testing UserPilot from Home UI");
-    console.log("window.userpilot.track", window.userpilot.track);
-  }
-
-  useEffect(() => {
-    const orgId: string = authService.getOrgId() ?? '';
-    document.cookie = `OrgIdToBeShared=${orgId}`;
-    console.log("OrgIdToBeShared cookie set:", orgId);
-}, []);
-
-  useEffect(() => {
-    const user = {
-      userId: authService.getUserId(),
-      name: authService.getUsername(),
-      email: authService.getEmailId(),
-      createdDate: new Date().toISOString(),
-      orgId: authService.getOrgId()
+  if (hasUserPilotPermissions) {
+    if (window.userpilot && typeof window.userpilot.track === "function") {
+      window.userpilot.track("Event Name");
+      console.log("window.userpilot.track", window.userpilot.track);
+  
+      window.userpilot.track("Testing UserPilot from Home UI");
+      console.log("window.userpilot.track", window.userpilot.track);
     }
-    if (
-      hasUserPilotPermissions &&
-      window.userpilot &&
-      typeof window.userpilot.identify === "function"
-    ) {
-      window.userpilot.identify(
-        user.userId,
-        {
-          name: user.name,
-          email: user.email,
-          created_at: user.createdDate,
-          company: {
-            id: user.orgId,
-            name: "SIMS Next Gen",
-            industry: "Technology",
-            plan: "Free",
-          },
-          projectId: "SIMS NEXT GEN",
-          trialEnds: '2025-07-22'
-        })
-    console.log("UserPilot Idetify", window.userpilot);
+  
+    useEffect(() => {
+      const user = {
+        userId: authService.getUserId(),
+        name: authService.getUsername(),
+        email: authService.getEmailId(),
+        createdDate: new Date().toISOString(),
+        orgId: authService.getOrgId()
+      };
+      if (
+        window.userpilot &&
+        typeof window.userpilot.identify === "function"
+      ) {
+        window.userpilot.identify(
+          user.userId,
+          {
+            name: user.name,
+            email: user.email,
+            created_at: user.createdDate,
+            company: {
+              id: user.orgId,
+              name: "SIMS Next Gen",
+              industry: "Technology",
+              plan: "Free",
+            },
+            projectId: "SIMS NEXT GEN",
+            trialEnds: '2025-07-22'
+          }
+        );
+        console.log("UserPilot Idetify", window.userpilot);
+      }
+    }, []);
   }
-}, []); 
-
+  
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
