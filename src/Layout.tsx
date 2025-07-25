@@ -220,14 +220,8 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
         console.log("UserPilot Idetify", window.userpilot);
       }
     }, []);
-  } 
-
-useEffect(() => {
-  const orgId: string = authService.getOrgId() ?? '';
-  document.cookie = `OrgIdToBeShared=${orgId}`;
-  console.log("OrgIdToBeShared cookie set:", orgId);
-}, []);
-
+  }
+  
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
