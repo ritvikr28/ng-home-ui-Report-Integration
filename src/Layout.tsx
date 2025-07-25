@@ -25,7 +25,6 @@ import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
-
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
