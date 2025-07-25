@@ -130,8 +130,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
 
     useEffect(() => {
-       console.log("sortDirection in useEffect:", sortDirection);
-        
+   
         if (!isInitialLoad) {
             const allRegistrationIds = getAllRegistrationIds(selectedFormats);
             fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
