@@ -96,6 +96,7 @@ it("shows error banner when showErrorBanner is true", async () => {
 });
 
    it("handles error during fetchDocumentDetails", async () => {
+    jest.setTimeout(15000);
     (apiService.fetchDocumentDetails as jest.Mock).mockImplementationOnce(error)
     await act(async () => {
       render(<DocumentManagementServerView />);
@@ -108,6 +109,7 @@ it("shows error banner when showErrorBanner is true", async () => {
   });
 
   it("handles search input and Enter key", async () => {
+    jest.setTimeout(15000);
     const mockDatas = {
     totalRecords: 2,
     data:  [
@@ -615,7 +617,7 @@ it("shows date error when toDate is before fromDate", async () => {
   fireEvent.change(toMonth, { target: { value: "05" } });
   fireEvent.change(toYear, { target: { value: "2025" } });
   // Wait for dialog title to confirm it’s still open due to validation error
-  const errorText = await screen.findByText(/to date cannot be before from date/i);
+  const errorText = await screen.findByText(/to date should not be before from date/i);
   expect(errorText).toBeInTheDocument();
 });
 

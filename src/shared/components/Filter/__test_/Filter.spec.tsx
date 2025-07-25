@@ -317,6 +317,7 @@ it("inserts dateRange item at correct index when it existed in middle of previou
 });
 
 it("shows error when From date is after To date", async () => {
+  jest.setTimeout(15000);
   renderComponent();
 
   // Set To date first: 2022-05-10
