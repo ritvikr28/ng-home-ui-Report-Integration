@@ -15,9 +15,11 @@ export const getTableHeadersData: {
   isSimpleText?: boolean;
   txtTrunctLength?: number;
   isColumnSorting?: boolean;
-  
+  isSortingWithOnClick?: boolean;
   isColumnSortByDefault?: boolean;
-  sortDirection?: "Asc" | "Desc";
+  sortDirection?: "Desc";
+  isAscFirst?: boolean;
+  sortBy?: string;
   anyComponent?: (e: any) => JSX.Element;
 }[] = [
     {
@@ -38,8 +40,8 @@ export const getTableHeadersData: {
       isSimpleText: true,
       txtTrunctLength: 35,
       isColumnSorting: true,
-      
-     
+      isSortingWithOnClick:true,
+     isColumnSortByDefault: false,
       anyComponent: (e: any) => (
         <>
           <div style={{ display: "flex" }}>
@@ -142,8 +144,8 @@ export const getTableHeadersData: {
       isTextTruncate: false,
       isColumnSorting: true,
       isColumnSortByDefault: true,
-      // // isSorted: true,
-      // sortDirection: "Desc",
+      isSortingWithOnClick: true,
+      isAscFirst: true,
     },
     {
       text: "Format",
@@ -154,7 +156,6 @@ export const getTableHeadersData: {
       isTextTruncate: false,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 50,
-     
       columnWidth: "120px",
       anyComponent: (e: any) => (
         <>

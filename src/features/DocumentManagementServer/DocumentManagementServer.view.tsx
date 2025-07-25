@@ -54,15 +54,15 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
-    const [sortDirection, setSortDirection] = useState<"Asc" | "Desc">("Desc");
+    const [sortDirection, setSortDirection] = useState<string>("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
         useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
-    
-    
+
+
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -117,25 +117,27 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const fetchInitialData = async () => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        const dataFetch = fetchGetDocumentDetails(searchText, currentPage, []);
+        const dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
         // Fetch categories
         
         await Promise.all([minLoaderTime, dataFetch]);
         setIsLoading(false);
         setIsInitialLoad(false);
     };
+
     fetchInitialData();
 }, []);
 
 
-
     useEffect(() => {
+       console.log("sortDirection in useEffect:", sortDirection);
+        
         if (!isInitialLoad) {
             const allRegistrationIds = getAllRegistrationIds(selectedFormats);
             fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
 
     
@@ -181,7 +183,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
+
    const handleSorting = (columnName: string) => {
+
+
   let apiColumnName = columnName;
   switch (columnName) {
     case "Date added":
@@ -196,12 +201,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
       case "Size":
       apiColumnName = "Size";
       break;
-    
+      case "Category":
+      apiColumnName = "Category";   
+        break;
+
     default:
         
     return;
   }
-  let newDirection: "Asc" | "Desc" = "Desc";
+  let newDirection="Asc";
 if (sortBy === apiColumnName) {
   newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
 }
@@ -374,10 +382,10 @@ if (sortBy === apiColumnName) {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading={true}
                                 isShowSubHeading={false}
-                                isSorting={false}
+                                isSorting={true}
                                 sortByDefault={false}
-                                sortAscFirst={false}
-                                
+                                 sortAscFirst={!isInitialLoad}
+                                isIconRightAligned={true}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -582,3 +590,5 @@ if (sortBy === apiColumnName) {
     </>)
 }
 export default DocumentManagementServerView
+
+
