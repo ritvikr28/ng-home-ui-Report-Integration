@@ -258,7 +258,9 @@ it("handles sorting for Document column and ignores non-sortable columns", async
 
 it("handles sorting for Date added column", async () => {
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+   act(() => {
+      jest.advanceTimersByTime(2000);
+    });
 
   await waitFor(() => {
     expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
@@ -270,7 +272,9 @@ it("handles sorting for Date added column", async () => {
     .find(div => div.textContent?.includes("Date added"));
   fireEvent.click(dateAddedHeaderDiv!);
 
-  act(() => { jest.advanceTimersByTime(1000); });
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
 
   await waitFor(() => {
     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
@@ -281,7 +285,9 @@ it("handles sorting for Date added column", async () => {
 
 it("handles sorting for Format column", async () => {
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+   act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
   await waitFor(() => {
     expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
@@ -293,7 +299,9 @@ it("handles sorting for Format column", async () => {
     .find(div => div.textContent?.includes("Format"));
   fireEvent.click(formatHeaderDiv!);
 
-  act(() => { jest.advanceTimersByTime(1000); });
+   act(() => {
+    jest.advanceTimersByTime(1000);
+  });
 
   await waitFor(() => {
     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
@@ -304,7 +312,9 @@ it("handles sorting for Format column", async () => {
 
 it("handles sorting for Size column", async () => {
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+   act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
   await waitFor(() => {
     expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
@@ -316,7 +326,9 @@ it("handles sorting for Size column", async () => {
     .find(div => div.textContent?.includes("Size"));
   fireEvent.click(sizeHeaderDiv!);
 
-  act(() => { jest.advanceTimersByTime(1000); });
+   act(() => {
+    jest.advanceTimersByTime(1000);
+  });
 
   await waitFor(() => {
     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(

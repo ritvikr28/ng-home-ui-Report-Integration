@@ -256,7 +256,7 @@ const clearAll = () => {
       </Dropdown>
 
       <div className="dms-filter-dialog-date">
-        <FormLabel>{t("Date Added")}</FormLabel>
+        <FormLabel className="date-added">{t("Date Added")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
@@ -308,7 +308,7 @@ const clearAll = () => {
           color={ButtonColor.Primary}
           size={ButtonSize.Small}
         >
-          {t("Apply Filters")}
+          {t("Apply")}
         </Button>
         </div>
     </Dialog>
