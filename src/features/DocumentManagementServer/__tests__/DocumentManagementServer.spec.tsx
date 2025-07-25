@@ -340,6 +340,48 @@ it("handles sorting for Size column", async () => {
   });
 });
 
+it("handles sorting for Category column", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  const categoryHeaderDiv = screen.getAllByTestId("columnheader")
+    .find(div => div.textContent?.includes("Category"));
+  fireEvent.click(categoryHeaderDiv!);
+
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  await waitFor(() => {
+    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
+      expect.objectContaining({ sortBy: "Category" })
+    );
+  });
+});
+
+it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  });
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  // Try clicking a non-sortable column, e.g., "Added by"
+  const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
+  fireEvent.click(addedByHeader);
+
+  // The API should NOT be called with sortBy: "Added by"
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
 
   it("handles pagination changes", async () => {
      const mockDatas = {
