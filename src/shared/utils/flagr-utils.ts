@@ -1,4 +1,4 @@
-import { pilotReady, pilotReadyForForAnyOrAll, } from './flagr-helper';
+import { pilotReady, pilotReadyForForAnyOrAll} from './flagr-helper';
 
 export const isOrganisationInVariant: (flagName:string) => boolean = (flagName:string) => {
   const organisationEnabled: boolean = pilotReady(
