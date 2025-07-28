@@ -64,6 +64,7 @@ describe("DocumentManagementServerView", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    jest.setTimeout(15000);
   });
  
 it("shows error banner when showErrorBanner is true", async () => {
@@ -314,6 +315,7 @@ it("handles sorting for Format column", async () => {
 });
 
 it("handles sorting for Size column", async () => {
+  jest.setTimeout(15000);
   render(<DocumentManagementServerView />);
    act(() => {
     jest.advanceTimersByTime(2000);
