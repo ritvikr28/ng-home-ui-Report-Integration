@@ -80,21 +80,15 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 900px) {
     .dms-filter-dialog-fromdate-input #ng-calendar-content {
-    position: fixed !important;
-    inset: 0px auto auto 0px !important;
+    position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;
    
   }
-  .dms-filter-dialog-date #ng-calendar-content .react-calendar {
-    width: 100vw !important;
-    max-width: 100vw !important;
-    border-radius: 0 !important;
-  }
   .dms-filter-dialog-todate-input #ng-calendar-content {
-    position: fixed !important;
-    transform: translate3d(15px, -216px, 0px) !important;
+    position: relative !important;
+    transform: translate3d(0px, 0px, 0px) !important;
    
   }
 }
