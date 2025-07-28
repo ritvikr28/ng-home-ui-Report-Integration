@@ -31,7 +31,7 @@ import DBManagement from "./features/DBManagement/DBManagement.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
-import { isOrganisationInVariant } from "./shared/utils/flagr-utils";
+import { isOrganisationInVariant, isOrganisationInVariantForAnyOrAll } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
@@ -146,7 +146,7 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SystemStatusORG"
   );
-  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariant("SystemStatusORG");
+  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariantForAnyOrAll("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage", Operation: "View" }],
