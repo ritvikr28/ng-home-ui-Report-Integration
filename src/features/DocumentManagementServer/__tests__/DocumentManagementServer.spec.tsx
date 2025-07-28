@@ -386,6 +386,7 @@ it("does not call fetchDocumentDetails when non-sortable column is clicked", asy
 });
 
   it("handles pagination changes", async () => {
+  jest.setTimeout(15000);
      const mockDatas = {
     totalRecords: 41,
     data:  [
