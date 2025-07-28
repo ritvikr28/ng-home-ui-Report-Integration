@@ -113,18 +113,23 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             setTotalPage(totalPages);
         }
     }, [docData]);
-    useEffect(() => {
+   useEffect(() => {
+    let isMounted = true;
     const fetchInitialData = async () => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
         const dataFetch = fetchGetDocumentDetails(searchText, currentPage, []);
-        // Fetch categories
-        
         await Promise.all([minLoaderTime, dataFetch]);
-        setIsLoading(false);
-        setIsInitialLoad(false);
+        if (isMounted) {
+            setIsLoading(false);
+            setIsInitialLoad(false);
+        }
     };
     fetchInitialData();
+
+    return () => {
+        isMounted = false; 
+    };
 }, []);
 
 
@@ -220,7 +225,7 @@ if (sortBy === apiColumnName) {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if (isSearchTriggered || searchText) {
             return getTableHeadersData;
         }
         return [];

@@ -191,12 +191,30 @@ const clearAll = () => {
       };
 
       const handleApplyWrapper = () => {
-        setWasApplied(true);
-        handleApply();
-      };
+  // Validate partial from date
+  const fromAnyFilled = fromDate.day || fromDate.month || fromDate.year;
+  const fromAllFilled = fromDate.day && fromDate.month && fromDate.year;
+  if (fromAnyFilled && !fromAllFilled) {
+    setFromDateError("Invalid from date");
+    setIsDateError(true);
+    return;
+  }
+  // Validate partial to date
+  const toAnyFilled = toDate.day || toDate.month || toDate.year;
+  const toAllFilled = toDate.day && toDate.month && toDate.year;
+  if (toAnyFilled && !toAllFilled) {
+    setToDateError("Invalid to date");
+    setIsDateError(true);
+    return;
+  }
+
+  setWasApplied(true);
+  handleApply();
+};
     
   return (
     <Dialog
+      className="dms-filter-dialog"
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
