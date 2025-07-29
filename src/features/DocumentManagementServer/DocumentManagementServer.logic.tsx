@@ -3,6 +3,7 @@ import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISe
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
+import {truncatedString} from "../../shared/utils/commonFunctions";
 
 export const getTableHeadersData: {
   text: string;
@@ -36,24 +37,26 @@ export const getTableHeadersData: {
       isSimpleText: true,
       txtTrunctLength: 35,
       isColumnSorting: true,
-      anyComponent: (e: any) => (
-        <>
+      anyComponent: (e: any) =>{
+        const value = e?.length > 25 ? truncatedString(e, 25)?.truncated : "";
+        if (!value) return <div style={{ display: "flex" }}><span className="document-text document-column">{e}</span></div>;
+        return (
+          <>
           <div style={{ display: "flex" }}>
             <Tooltip
-              dataTestId='tooltip-eventtime'
-              content={
-                <span >{e}</span>}
+              dataTestId="tooltip-eventtime"
+              content={<span>{e}</span>}
               align={TooltipAlign.Center}
               position={TooltipPosition.Bottom}
             >
-              <div className="tooltip-content document-text document-column">
-                <span > {e} </span>
+              <div className="tooltip-content document-text">
+                <span>{value}</span>
               </div>
-
             </Tooltip>
           </div>
-        </>
-      )
+          </>
+        );
+      }
     },
     {
       text: "Related to",
@@ -102,25 +105,27 @@ export const getTableHeadersData: {
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
-      
+
       isColumnSorting: true,
       columnWidth: "144px",
-      anyComponent: (e: any) => (
-        <>
-          <Tooltip
-            dataTestId='tooltip-eventtime'
-            content={
-              <span >{e}</span>}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content document-text">
-              <span > {e} </span>
-            </div>
-
-          </Tooltip>
-        </>
-      )
+      anyComponent: (e: any) => {
+        const value = e?.length > 10 ? truncatedString(e, 10)?.truncated : "";
+        if (!value) return <span className="document-text document-column">{e}</span>;
+        return (
+          <>
+            <Tooltip
+              dataTestId="tooltip-eventtime"
+              content={<span>{e}</span>}
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <div className="tooltip-content document-text">
+                <span>{value}</span>
+              </div>
+            </Tooltip>
+          </>
+        );
+      }
     },
     {
       text: "Added by",
@@ -149,22 +154,24 @@ export const getTableHeadersData: {
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 50,
       columnWidth: "120px",
-      anyComponent: (e: any) => (
-        <>
-          <Tooltip
-            dataTestId='tooltip-eventtime'
-            content={
-              <span >{e}</span>}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content document-text">
-              <span >{e}</span>
-            </div>
-
-          </Tooltip>
-        </>
-      )
+      anyComponent: (e: any) => {
+        const value = e?.length > 25 ? truncatedString(e, 25)?.truncated : "";
+        if (!value) return <div style={{ display: "flex" }}><span className="document-text document-column">{e}</span></div>;
+        return (
+          <>
+            <Tooltip
+              dataTestId="tooltip-eventtime"
+              content={<span>{e}</span>}
+              align={TooltipAlign.Center}
+              position={TooltipPosition.Bottom}
+            >
+              <div className="tooltip-content document-text">
+                <span>{value}</span>
+              </div>
+            </Tooltip>
+          </>
+        );
+      }
     },
     {
       text: "Size",
@@ -177,19 +184,20 @@ export const getTableHeadersData: {
       headerTxtTrunctLength: 50,
       columnWidth: "129px",
       anyComponent: (e: any) => {
-        // Support both string and array input
         const value = Array.isArray(e) ? e[0] : e;
+        const sizeVal = value?.length > 10 ? truncatedString(value, 10)?.truncated : "";
         if (!value) return <></>;
+        else if (!sizeVal) return <span className="document-text document-column">{value}</span>;
         return (
           <div style={{ display: "flex" }}>
             <Tooltip
-                dataTestId="tooltip-eventtime"
+              dataTestId="tooltip-eventtime"
               content={<span>{value}</span>}
               align={TooltipAlign.Center}
               position={TooltipPosition.Bottom}
             >
               <div className="tooltip-content document-text">
-                <span>{value}</span>
+                <span>{sizeVal}</span>
               </div>
             </Tooltip>
           </div>
