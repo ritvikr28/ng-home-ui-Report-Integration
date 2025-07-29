@@ -493,4 +493,28 @@ it("sets error when toDate is in invalid format", async () => {
   expect(validationText[1]).toHaveTextContent(/invalid date/i);
 });
 
+it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
+  const prevCategories = [
+    { data: "send", text: "Send" },
+    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
+    { data: "pupils", text: "Pupils" }
+  ];
+
+  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+    const newItems = updater(prevCategories);
+    expect(newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(1);
+  });
+
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={prevCategories}
+      setSelectedCategories={mockSetSelectedCategoriesWithCheck}
+    />
+  );
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+});
+
 });
