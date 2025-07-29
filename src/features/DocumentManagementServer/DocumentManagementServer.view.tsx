@@ -226,7 +226,7 @@ if (sortBy === apiColumnName) {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if (isSearchTriggered || searchText) {
             return getTableHeadersData;
         }
         return [];

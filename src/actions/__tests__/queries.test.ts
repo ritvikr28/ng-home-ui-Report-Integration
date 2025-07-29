@@ -3,13 +3,19 @@ import getAppModulesPermissions from "../queries";
 // import { clearQueries } from "../../../jest-config/__mocks__/mocks";
 import { envConfig, service } from "../../shared/utils";
 
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    saveAuthTokens: jest.fn(),
+  },
+}));
+
 service.get = jest.fn();
 service.init = jest.fn();
 
 authService.saveAuthTokens({
-  accessToken: "accessToken",
+  accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
   expiresIn: 3600,
-  idToken: "id_token"
+  idToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
 });
 beforeAll(() => {
   // clearQueries();
