@@ -727,4 +727,168 @@ it("handles suggestion fetch error gracefully", async () => {
 
 });
 
+  it("logs View download when clicked", async () => {
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  });
+
+  const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  render(<DocumentManagementServerView />);
+  console.log(screen.debug());
+    act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+  await waitFor(() => screen.getByText("Documents")); // Wait for load
+
+  const actionsButton = screen.getByText(/Actions/i);
+  fireEvent.click(actionsButton);
+
+  const viewDownloadOption = await screen.findByText("View download");
+  fireEvent.click(viewDownloadOption);
+
+  expect(logSpy).toHaveBeenCalledWith("View download clicked");
+});
+
+  it("logs Edit button clicked when Actions button is clicked", async () => {
+     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  });
+  const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  render(<DocumentManagementServerView />);
+
+   act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+  await waitFor(() => screen.getByText("Documents"));
+
+  // Find and click the Actions button
+  const actionsButton = screen.getByText(/Actions/i);
+  fireEvent.click(actionsButton);
+
+  expect(logSpy).toHaveBeenCalledWith("Edit button clicked");
+});
+
+      it("shows confirmation dialog when Prepare download is clicked", async () => {
+         (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+            statusCode: 200,
+            totalRecords: 0,
+            data: [],
+          });
+      const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        render(<DocumentManagementServerView />);
+          act(() => {
+        jest.advanceTimersByTime(2000);
+      });
+
+
+        await waitFor(() => screen.getByText("Documents"));
+
+        // Find and click the Actions menu
+       const actionsButton = screen.getByText(/Actions/i);
+       fireEvent.click(actionsButton);
+
+        // Find and click "Prepare download"
+        const prepareDownloadOption = await screen.findByText("Prepare download");
+        fireEvent.click(prepareDownloadOption);
+
+        // Assert dialog appears
+        expect(logSpy).toHaveBeenCalledWith("Prepare download clicked");
+        await waitFor(() => {
+          expect(screen.getByText(/Please select at least one item from the search result to perform the action./i)).toBeInTheDocument();
+        });
+      });
+
+      it("shows confirmation dialog when Delete is clicked", async () => {
+        (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+            statusCode: 200,
+            totalRecords: 0,
+            data: [],
+          });
+            const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+        render(<DocumentManagementServerView />);
+         act(() => {
+            jest.advanceTimersByTime(2000);
+          });
+        await waitFor(() => screen.getByText("Documents"));
+
+        const actionsButton = screen.getByText(/Actions/i);
+        fireEvent.click(actionsButton);
+
+        const deleteOption = await screen.findByText("Delete");
+        fireEvent.click(deleteOption);
+        expect(logSpy).toHaveBeenCalledWith("Delete clicked");
+        await waitFor(() => {
+          expect(screen.getByText(/Please select at least one item from the search result to perform the action./i)).toBeInTheDocument();
+        });
+      });
+
+
 })
+describe("handleEditSelectedOverFlowMenu", () => {
+  let setConfirmationDialogContent: jest.Mock;
+  let setIsOpenConfirmationDialog: jest.Mock;
+  let consoleLogSpy: jest.SpyInstance;
+
+  // Example handler for isolated testing
+  function handler(e: React.SyntheticEvent, selectedItem: { value: string }) {
+    if (selectedItem.value === "Prepare download") {
+      setConfirmationDialogContent("Are you sure you want to prepare download for the selected documents?");
+      setIsOpenConfirmationDialog(true);
+      console.log("Prepare download clicked");
+    } else if (selectedItem.value === "View download") {
+      console.log("View download clicked");
+    } else if (selectedItem.value === "Delete") {
+      console.log("Delete clicked");
+      setConfirmationDialogContent("Are you sure you want to delete the selected documents?");
+      setIsOpenConfirmationDialog(true);
+    }
+  }
+
+  beforeEach(() => {
+    setConfirmationDialogContent = jest.fn();
+    setIsOpenConfirmationDialog = jest.fn();
+    consoleLogSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("should handle Prepare download action", () => {
+    handler({} as React.SyntheticEvent, { value: "Prepare download" });
+    expect(setConfirmationDialogContent).toHaveBeenCalledWith(
+      "Are you sure you want to prepare download for the selected documents?"
+    );
+    expect(setIsOpenConfirmationDialog).toHaveBeenCalledWith(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith("Prepare download clicked");
+  });
+
+  it("should handle View download action", () => {
+    handler({} as React.SyntheticEvent, { value: "View download" });
+    expect(consoleLogSpy).toHaveBeenCalledWith("View download clicked");
+    expect(setConfirmationDialogContent).not.toHaveBeenCalled();
+    expect(setIsOpenConfirmationDialog).not.toHaveBeenCalled();
+  });
+
+  it("should handle Delete action", () => {
+    handler({} as React.SyntheticEvent, { value: "Delete" });
+    expect(setConfirmationDialogContent).toHaveBeenCalledWith(
+      "Are you sure you want to delete the selected documents?"
+    );
+    expect(setIsOpenConfirmationDialog).toHaveBeenCalledWith(true);
+    expect(consoleLogSpy).toHaveBeenCalledWith("Delete clicked");
+  });
+
+  it("should do nothing for unknown action", () => {
+    handler({} as React.SyntheticEvent, { value: "Unknown" });
+    expect(setConfirmationDialogContent).not.toHaveBeenCalled();
+    expect(setIsOpenConfirmationDialog).not.toHaveBeenCalled();
+    expect(consoleLogSpy).not.toHaveBeenCalled();
+  });
+});

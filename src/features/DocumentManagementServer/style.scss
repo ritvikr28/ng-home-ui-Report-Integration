@@ -77,7 +77,20 @@
   }
 }
 
+//changes
+.filter-tool-view .edit-selected-third-element .essui-overflow-menu {
+  margin: 5px 0 0 3px !important;
+  width: 100%;
+  min-width: 148px;
+}
 
+.essui-dialog__button-cancel {
+  display: none !important;
+}
+
+button[data-testid="tid-discard-btn--large-screen"] {
+  display: none !important;
+}
 
 .relatedto-main {
   display: flex;

@@ -1,5 +1,5 @@
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button, ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
@@ -62,6 +62,9 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
 
+    const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [confirmationDialogContent, setConfirmationDialogContent] = useState("");
 
 const categoryArr = getCategoryArr(selectedFormats);
 
@@ -184,8 +187,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
 
    const handleSorting = (columnName: string) => {
-
-
   let apiColumnName = columnName;
   switch (columnName) {
     case "Date added":
@@ -203,19 +204,33 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
       case "Category":
       apiColumnName = "Category";   
         break;
-
     default:
-        
-    return;
-  }
-  let newDirection="Asc";
-if (sortBy === apiColumnName) {
-  newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-}
+        return;
+    }
+        let newDirection = "Asc";
+        if (sortBy === apiColumnName) {
+            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+            }
 
-  setSortBy(apiColumnName);
-  setSortDirection(newDirection);
-};
+        setSortBy(apiColumnName);
+        setSortDirection(newDirection);
+      };
+
+      const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
+        if (selectedItem.value === "Prepare download") {
+             setConfirmationDialogContent("Please select at least one item from the search result to perform the action.");
+             setIsOpenConfirmationDialog(true); 
+            console.log("Prepare download clicked");
+        } else if (selectedItem.value === "View download") {
+            console.log("View download clicked");
+            // Add logic for View download
+        } else if (selectedItem.value === "Delete") {
+            console.log("Delete clicked");
+            // Add logic for Delete
+              setConfirmationDialogContent("Please select at least one item from the search result to perform the action.");
+        setIsOpenConfirmationDialog(true);
+        }
+      }
 
     const getEmptyStateMsg = () => {
         if (searchText !== "") return undefined;
@@ -241,7 +256,7 @@ if (sortBy === apiColumnName) {
         setShowSearchError(false);
         setIsSearchLoading(false);
         setSearchText("");
-    };
+};
 
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
         if (event.key === "Enter") {
@@ -375,6 +390,7 @@ if (sortBy === apiColumnName) {
                             />
                         </div>
                         }
+                        
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
                                 isMobileViewBreadcrumb
@@ -383,7 +399,7 @@ if (sortBy === apiColumnName) {
                                 isShowSubHeading={false}
                                 isSorting={true}
                                 sortByDefault={false}
-                                 sortAscFirst={!isInitialLoad}
+                                sortAscFirst={!isInitialLoad}
                                 isIconRightAligned={true}
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -404,17 +420,18 @@ if (sortBy === apiColumnName) {
                                         value: "Inactive"
                                     }
                                 ]}
+                                isShowCheckboxCol={true}
                                 editSelectedBtnTitle="Actions"
                                 editSelectedOptions={[
                                     {
                                         disabled: false,
-                                        text: 'Make active',
-                                        value: 'Active'
+                                        text: 'Prepare download',
+                                        value: 'Prepare download'
                                     },
                                     {
                                         disabled: false,
-                                        text: 'Make inactive',
-                                        value: 'Inactive'
+                                        text: 'View download',
+                                        value: 'View download'
                                     },
                                     {
                                         disabled: false,
@@ -424,6 +441,11 @@ if (sortBy === apiColumnName) {
                                         value: 'Delete'
                                     }
                                 ]}
+                                onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
+                                onEditSelectedBtnClick={(e) => {
+                                    console.log("Edit button clicked");
+                                }}
+                                handleCloseDialogConfirmation={() => setIsOpenConfirmationDialog(false)}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -512,7 +534,8 @@ if (sortBy === apiColumnName) {
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle="Cancel"
-                                showConfirmDialog
+                                showConfirmDialog={showConfirmDialog}
+                                
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
                             Please try again. If the issue persists, please get in touch with our support team.
                             We appreciate your patience and understanding during this time."
@@ -552,23 +575,34 @@ if (sortBy === apiColumnName) {
                                 }
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
-                              sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
+                                sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
-                                        cancelText: 'Cancel',
-                                        contentText: 'You have unsaved changes that will be lost.',
-                                        isNotificationanner: false,
-                                        notificationStatus: NotificationStatus.SUCCESS,
-                                        okText: 'Discard',
-                                        onCancel: (): void => { },
-                                        onConfirm: (): void => { },
-                                        template: DialogTemplate.Confirmation
+                                        cancelText: "",
+                                        contentText: confirmationDialogContent,
+                                                isNotificationanner: false,
+                                                notificationStatus: NotificationStatus.WARNING,
+                                        okText: 'Okay',
+                                        onCancel: (): void => setIsOpenConfirmationDialog(false),
+                                        onConfirm: (): void => {
+                                             setIsOpenConfirmationDialog(false);
+                                         },
+                                                template: DialogTemplate.Confirmation
                                     }
                                 }
-                                titleConfirmation="Discard changes?"
+                                // templatePropsConfirmation={{
+                                //     contentText: 'You have unsaved changes that will be lost.',
+                                //     isNotificationanner: false,
+                                //     notificationStatus: NotificationStatus.SUCCESS,
+                                    
+                                //     onCancel: (): void => { /* your cancel logic */ },
+                                //     onConfirm: (): void => { /* your confirm logic */ },
+                                //     template: DialogTemplate.Confirmation
+                                //     }}
+                                titleConfirmation="No items selected"
+                                isOpenConfirmationDialog={isOpenConfirmationDialog}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationTitle=""
-                                isOpenConfirmationDialog={false}
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement={true}
                                 isShowAutoSuggest={isShowAutoSuggest}
