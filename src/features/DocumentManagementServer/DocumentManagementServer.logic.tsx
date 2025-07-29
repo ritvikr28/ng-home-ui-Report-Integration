@@ -187,7 +187,7 @@ export const getTableHeadersData: {
         const value = Array.isArray(e) ? e[0] : e;
         const sizeVal = value?.length > 10 ? truncatedString(value, 10)?.truncated : "";
         if (!value) return <></>;
-        else if (!sizeVal) return <span className="document-text document-column">{value}</span>;
+        if (!sizeVal) return <span className="document-text document-column">{value}</span>;
         return (
           <div style={{ display: "flex" }}>
             <Tooltip

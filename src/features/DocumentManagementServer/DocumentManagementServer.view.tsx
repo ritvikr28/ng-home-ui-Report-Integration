@@ -93,9 +93,16 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     );
 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
- useEffect(() => {
-        !isMobileView && document.body.classList.add("no-scroll");
-    }, []);
+
+    useEffect(() => {
+        if (!isMobileView) {
+            document.body.classList.add("no-scroll");
+            return () => {
+                document.body.classList.remove("no-scroll");
+            };
+        }
+        return () => { };
+    }, [isMobileView]);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -226,7 +233,7 @@ if (sortBy === apiColumnName) {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if (isSearchTriggered || searchText) {
             return getTableHeadersData;
         }
         return [];
