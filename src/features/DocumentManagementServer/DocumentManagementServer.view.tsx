@@ -93,9 +93,16 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     );
 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
- useEffect(() => {
-        !isMobileView && document.body.classList.add("no-scroll");
-    }, []);
+
+    useEffect(() => {
+        if (!isMobileView) {
+            document.body.classList.add("no-scroll");
+            return () => {
+                document.body.classList.remove("no-scroll");
+            };
+        }
+        return () => { };
+    }, [isMobileView]);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
