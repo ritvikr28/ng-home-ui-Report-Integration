@@ -33,6 +33,7 @@ jest.mock("@essnextgen/ui-kit", () => ({
   },
 }));
 
+
 describe("getTableHeadersData", () => {
   const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
   const anyComponent = relatedToColumn?.anyComponent;
@@ -461,11 +462,26 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     expect(container).not.toBeEmptyDOMElement(); // still renders Tooltip
   });
 
-  // it("Format column renders nothing when input is undefined", () => {
-  //   const column = headers.find(h => h.text === "Format");
-  //   const { container } = render(<>{column?.anyComponent?.(undefined)}</>);
-  //   expect(container).toBeEmptyDOMElement();
-  // });
+
+  it("renders plain value if value is falsy or length <= 25", () => {
+    const column = headers.find(h => h.text === "Format");
+    const { container } = render(<>{column?.anyComponent?.('pdf')}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("pdf");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders truncated value with tooltip if length > 25", () => {
+    const column = headers.find(h => h.text === "Format");
+    const longValue = "averylongformatnamethatisdefinitelymorethan25chars";
+    const { container } = render(<>{column?.anyComponent?.(longValue)}</>);
+    expect(container).toHaveTextContent("averylongformatnamethatisdefinitelymorethan25chars".substring(0, 25));
+  });
+   it("renders plain value if value is empty string", () => {
+    const column = headers.find(h => h.text === "Format");
+    const { container } = render(<>{column?.anyComponent?.('')}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
 
   it("Size column renders nothing when input is undefined", () => {
     const column = headers.find(h => h.text === "Size");
@@ -792,3 +808,114 @@ describe("getAllRegistrationIds", () => {
     expect(getAllRegistrationIds(input)).toEqual(expected);
   });
 })
+
+describe("Document column anyComponent", () => {
+  const documentColumn = getTableHeadersData.find(h => h.text === "Document");
+  const categoryColumn = getTableHeadersData.find(h => h.text === "Category");
+
+  it("renders plain value if value is falsy or length <= 25", () => {
+    const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("Short Name");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders truncated value with tooltip if length > 25", () => {
+    const longValue = "averylongdocumentnamethatisdefinitelymorethan25chars";
+    const { container } = render(<>{documentColumn?.anyComponent?.(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 25));
+  });
+
+  it("renders plain value if value is empty string", () => {
+    const { container } = render(<>{documentColumn?.anyComponent?.("")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders plain value if value is null", () => {
+    const { container } = render(<>{documentColumn?.anyComponent?.(null)}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+
+  it("renders plain value if value is falsy or length <= 10", () => {
+    const { container } = render(<>{categoryColumn?.anyComponent?.("ShortCat")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("ShortCat");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders truncated value with tooltip if length > 10", () => {
+    const longValue = "averylongcategoryname";
+    const { container } = render(<>{categoryColumn?.anyComponent?.(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 10));
+  });
+
+  it("renders plain value if value is empty string", () => {
+    const { container } = render(<>{categoryColumn?.anyComponent?.("")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders plain value if value is null", () => {
+    const { container } = render(<>{categoryColumn?.anyComponent?.(null)}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+});
+
+describe("Size column anyComponent", () => {
+  const sizeColumn = getTableHeadersData.find(h => h.text === "Size");
+
+  it("renders nothing if value is undefined", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const { container } = render(<>{sizeColumn!.anyComponent!(undefined)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders nothing if value is null", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const { container } = render(<>{sizeColumn!.anyComponent!(null)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders nothing if array with undefined", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const { container } = render(<>{sizeColumn!.anyComponent!([undefined])}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("renders plain value if string length <= 10", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const { container } = render(<>{sizeColumn!.anyComponent!("1234567890")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("1234567890");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders plain value if array first value length <= 10", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const { container } = render(<>{sizeColumn!.anyComponent!(["1234567890"])}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("1234567890");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders truncated value with tooltip if string length > 10", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{sizeColumn!.anyComponent!(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 10));
+  });
+
+  it("renders truncated value with tooltip if array first value length > 10", () => {
+    expect(sizeColumn).toBeDefined();
+    expect(sizeColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{sizeColumn!.anyComponent!([longValue, "other"])}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 10));
+  });
+});

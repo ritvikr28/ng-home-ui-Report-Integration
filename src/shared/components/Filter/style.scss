@@ -54,11 +54,16 @@
   .essui-validation-text {
     width: 100%;
   }
+
 }
 
 .dms-filter-dialog{
   overflow-y: scroll;
 }
+
+.filter-tool-view .dropdown .essui-overflow-menu{
+    width: 97%;
+  }
 
 @media (max-width: 900px) {
   .dms-filter-dialog-date {
