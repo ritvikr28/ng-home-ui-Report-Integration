@@ -97,12 +97,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         !isMobileView && document.body.classList.add("no-scroll");
     }, []);
 
-    useEffect(() => {
-       const container = document.getElementById("side-navigation-panel-container");
-  if (container) {
-    container.scrollTop = 0;
-  }
-    }, [currentPage]);
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
