@@ -121,6 +121,16 @@ const clearAll = () => {
   }
 }, [isOpen]);
 
+const isValidDate = (dateStr: string) => {
+  if (!dayjs(dateStr, "YYYY-MM-DD", true).isValid()) return false;
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return (
+    year >= 1900 && year <= 2100 &&
+    month >= 1 && month <= 12 &&
+    day >= 1 && day <= 31
+  );
+};
+
      const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
@@ -146,6 +156,14 @@ const clearAll = () => {
         return;
       }
 
+      if (!newDate.day && !newDate.month && !newDate.year) {
+        setError("");
+        setFromDateError("");
+        setToDateError("");
+        setIsDateError(false);
+        setSelectedDateRange({ fromDate: "", toDate: "" });
+        return;
+      }
       if (isFrom) {
         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
           setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
@@ -159,7 +177,7 @@ const clearAll = () => {
           return;
         }
          if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-          setError("Invalid date");
+          setError("Invalid date-");
           setIsDateError(true);
           return;
   }
@@ -176,7 +194,7 @@ const clearAll = () => {
           return;
         }
         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-          setError("Invalid date");
+          setError("Invalid date=");
           setIsDateError(true);
           return;
         }
@@ -192,10 +210,15 @@ const clearAll = () => {
         setIsDateError(false);
       };
 
-      const handleApplyWrapper = () => {
-            setWasApplied(true);
-            handleApply();
-          };
+const handleApplyWrapper = () => {
+  
+  if (isDateError || fromDateError || toDateError) {
+    return;
+  }
+
+  setWasApplied(true);
+  handleApply();
+};
     
   return (
     <Dialog
