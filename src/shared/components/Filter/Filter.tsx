@@ -120,7 +120,7 @@ const clearAll = () => {
     setWasApplied(false); 
   }
 }, [isOpen]);
-
+ 
      const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
