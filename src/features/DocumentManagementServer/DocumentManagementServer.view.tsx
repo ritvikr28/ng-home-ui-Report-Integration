@@ -34,7 +34,7 @@ export const breadcrumbActionsList = [
     }
 ]
 
-const DocumentManagementServerView: React.FC = () => {
+const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
