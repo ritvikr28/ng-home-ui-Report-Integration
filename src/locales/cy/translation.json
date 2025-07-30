@@ -409,6 +409,7 @@
     "invitationConflict" : "Gwrthdaro gwahoddiad",
     "invitationConflictDescription" : "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID. Cysylltwch â'n tîm Desg Gwasanaeth am help i ddatrys y mater hwn.",
     "cancel" : "Canslo",
-    "save" : "Arbed"
+    "save" : "Arbed",
+    "pleaseWaitLoader" : "Arhoswch os gwelwch yn dda"
   }
 }

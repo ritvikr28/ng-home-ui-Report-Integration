@@ -67,7 +67,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     showInvitationConflictBanner,
     setshowInvitationConflictBanner,
     isSearchLoader,
-    setSearchLoader
+    setSearchLoader,
   } = props;
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
@@ -80,17 +80,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     {
       active: true,
       linkName: `${t("homePage.appTitle")}`,
-      path: "/"
+      path: "/",
     },
     {
       active: false,
       linkName: `${t("breadcrumbsadminconsole")}`,
-      path: homeurl
+      path: homeurl,
     },
     {
       active: false,
       linkName: `${t("inviteUsers.title")}`,
-      path: "/"
+      path: "/",
     }
   ];
 
@@ -100,7 +100,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       isShow: false,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
-      columnWidth: "10px"
+      columnWidth: "10px",
     },
     {
       text: `${t("inviteUsers.name")}`,
@@ -112,7 +112,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       headerTxtTrunctLength: 50,
       isSimpleText: true,
       isColumnSorting: true,
-      isColumnSortByDefault: true
+      isColumnSortByDefault: true,
     },
     {
       text: `${t("inviteUsers.email")}`,
@@ -123,7 +123,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       headerTxtTrunctLength: 17,
       isSimpleText: true,
       isColumnSorting: true,
-      columnWidth: "325px"
+      columnWidth: "325px",
     },
     {
       text: `${t("inviteUsers.userType")}`,
@@ -133,7 +133,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       isHeaderTextTruncate: false,
       headerTxtTrunctLength: 50,
       isColumnSorting: false,
-      columnWidth: "165px"
+      columnWidth: "165px",
     },
     {
       text: `${t("inviteUsers.invitationStatus")}`,
@@ -156,7 +156,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       isHeaderTextTruncate: false,
       headerTxtTrunctLength: 50,
       isColumnSorting: false,
-      columnWidth: "206px"
+      columnWidth: "206px",
     }
   ];
 
@@ -221,8 +221,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     searchText: "",
     selectedStatus: {
       text: InvitationStatusFilterOptions.NotInvited,
-      value: "Not invited"
-    }
+      value: "Not invited",
+    },
   });
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
     string,
@@ -230,13 +230,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   ] = useState<string>(`${t("inviteUsers.noDataToDisplay")}`);
   const statusFilterRef = useRef<ISelectedItem>({
     text: InvitationStatusFilterOptions.NotInvited,
-    value: "Not invited"
+    value: "Not invited",
   });
 
   useEffect(() => {
     setSearchAndStatusFilter((prev) => ({
       ...prev,
-      selectedStatus: statusFilterRef?.current as ISelectedItem
+      selectedStatus: statusFilterRef?.current as ISelectedItem,
     }));
   }, [statusFilterRef?.current]);
 
@@ -263,7 +263,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
-      setNoDataTextToDisplay
+      setNoDataTextToDisplay,
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
@@ -290,7 +290,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         searchAndStatusFilter,
         setTotalPage,
         setShowErrorBanner,
-        setshowInvitationConflictBanner
+        setshowInvitationConflictBanner,
       }).then((res) => {
         setLoader(false);
         setUsersTableData(res);
@@ -310,7 +310,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setSearchAndStatusFilter((prev) => ({
       ...prev,
       searchText: "",
-      selectedStatus: searchAndStatusFilter.selectedStatus
+      selectedStatus: searchAndStatusFilter.selectedStatus,
     }));
     setSearchLoader(false);
     setLoader(true);
@@ -321,12 +321,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       sortDirection,
       searchAndStatusFilter: {
         searchText: "",
-        selectedStatus: searchAndStatusFilter.selectedStatus
+        selectedStatus: searchAndStatusFilter.selectedStatus,
       },
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
-      setNoDataTextToDisplay
+      setNoDataTextToDisplay,
     }).then((res) => {
       setLoader(false);
       setUsersTableData(res);
@@ -337,7 +337,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     handleSelectedUserData({
       selectedCheckBoxIds,
       usersTableData,
-      setUsersTableData
+      setUsersTableData,
     });
   }, [selectedCheckBoxIds]);
 
@@ -346,7 +346,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       event: "click",
       action: "Sidebar Toggled",
       category: "Navigation",
-      label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened"
+      label: isSidebarOpen ? "Sidebar Closed" : "Sidebar Opened",
     });
     setIsSidebarOpen((prev: boolean): boolean => !prev);
   };
@@ -356,7 +356,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       event: "click",
       action: "Sidebar Closed",
       category: "Navigation",
-      label: "Admin Console Sidebar"
+      label: "Admin Console Sidebar",
     });
     setIsSidebarOpen(false);
   };
@@ -368,7 +368,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       linkText: "View Invite users",
       linkUrl: `${envConfig.INVITE_STAFF_URL}`,
       clickType: "link",
-      clickLocation: "breadcrumb"
+      clickLocation: "breadcrumb",
     });
   };
 
@@ -385,7 +385,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setShowSearchError,
         {
           searchText: e.target.value,
-          selectedStatus: statusFilterRef.current
+          selectedStatus: statusFilterRef.current,
         }
       );
     }
@@ -435,7 +435,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
             text: `${t("inviteUsers.title")}`,
-            value: window.location.href
+            value: window.location.href,
           }}
         />
       </div>
@@ -542,7 +542,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               statusFilterRef.current = selectedItem;
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
-                selectedStatus: selectedItem
+                selectedStatus: selectedItem,
               }));
               setCurrentPage(1);
             }}
@@ -551,7 +551,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
                 text: InvitationStatusFilterOptions.NotInvited,
-                value: "Not invited"
+                value: "Not invited",
               }
             }
             filterDDLdisabled={false}
@@ -586,7 +586,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               if (e.key === "Enter") {
                 setSearchAndStatusFilter((prev: any) => ({
                   ...prev,
-                  searchText: searchTerm
+                  searchText: searchTerm,
                 }));
                 setCurrentPage(1);
               }
@@ -596,7 +596,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setSearchTerm(item?.name || "");
               setSearchAndStatusFilter((prev: any) => ({
                 ...prev,
-                searchText: item?.name || ""
+                searchText: item?.name || "",
               }));
             }}
             searchOnCloseHandle={() => {
@@ -607,7 +607,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isTruncateInputText
             emptyRowType={TableRowType.Info}
             emptyRowResponseCode={ResponseCode.Info}
-            emptyRowResponseMessage={noDataTextToDisplay}
+            emptyRowResponseMessage={
+              noDataTextToDisplay === "No data to display"
+                ? `${t("inviteUsers.noDataToDisplay")}`
+                : ""
+            }
             secondaryButtonTitle={`${t("inviteUsers.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
@@ -643,7 +647,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                   : `${t("inviteUsers.inviteUser?Description")}`,
               isNotificationanner: source === "Bulk",
               notificationTitle: `${t("inviteUsers.sendInviteDescription", {
-                NoOfusers: selectedCheckBoxIds.length
+                NoOfusers: selectedCheckBoxIds.length,
               })}`,
               notificationStatus: NotificationStatus.WARNING,
               okText: `${t("inviteUsers.save")}`,
@@ -653,18 +657,19 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               onConfirm: (): void => {
                 setShowConfirmDialog(false);
                 const requestBody: IRequestBodyType = {
-                  externalId: selectedRowItems.map((item) => item?.id)
+                  externalId: selectedRowItems.map((item) => item?.id),
                 };
                 handleSendInvite({
                   requestBody,
                   setLoader,
                   setShowInviteErrBanner,
-                  setDataUpdated
+                  setDataUpdated,
                 });
               },
-              template: DialogTemplate.Confirmation
+              template: DialogTemplate.Confirmation,
             }}
             titleConfirmation={`${t("inviteUsers.inviteUser?")}`}
+            dynamicTableLoaderText={`${t("inviteUsers.pleaseWaitLoader")}`}
             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
             toastNotificationTitle={toastMessage}
             showToastNotification={showToast}
@@ -688,28 +693,28 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 variant: "warning",
                 title: `${t("inviteUsers.informationUnavailable")}`,
                 message: `${t("inviteUsers.technicalIssue")}`,
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInvitationConflictBanner,
                 variant: "warning",
                 title: `${t("inviteUsers.invitationConflict")}`,
                 message: `${t("inviteUsers.invitationConflictDescription")}`,
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source !== "Bulk",
                 variant: "warning",
                 title: `${t("inviteUsers.unableToSave")}`,
                 message: `${t("inviteUsers.unableToSaveDescription")}`,
-                autoclose: true
+                autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
                 title: `${t("inviteUsers.unableToInvite")}`,
                 message: BulkInviteErrBanner({ selectedRowItems }),
-                autoclose: true
+                autoclose: true,
               }
             ]}
             onClickOverflowItem={(e: any, selectedRow: any) => {
@@ -723,7 +728,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               handleCheckBoxSelection({
                 id,
                 selectedCheckBoxIds,
-                setSelectedCheckBoxIds
+                setSelectedCheckBoxIds,
               });
             }}
             isClearSelectedCheckbox={selectedCheckBoxIds.length === 0}
@@ -740,7 +745,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
 export const NoDataMessage = {
   noDataOnSearch: (keyword: string) =>
     `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
-  noDataToDisplay: "No data to display"
+  noDataToDisplay: "No data to display",
 };
 
 export const getValues = (
@@ -762,7 +767,7 @@ export const getValues = (
       text: `${record?.forename} ${record?.surname} `,
       props: {
         externalId: record?.externalId,
-        name: `${record?.forename} ${record?.surname}`
+        name: `${record?.forename} ${record?.surname}`,
       },
-      value: <></>
+      value: <></>,
     }));

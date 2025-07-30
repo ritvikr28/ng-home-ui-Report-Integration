@@ -471,6 +471,7 @@
     "invitationConflict" : "Invitation conflict",
     "invitationConflictDescription" : "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
     "cancel" : "Cancel",
-    "save" : "Save"
+    "save" : "Save",
+    "pleaseWaitLoader" : "Please wait"
   }
 }
