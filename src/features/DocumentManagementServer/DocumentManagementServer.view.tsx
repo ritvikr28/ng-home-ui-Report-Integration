@@ -299,6 +299,10 @@ if (sortBy === apiColumnName) {
      const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
     const handleApply = () => {
+         if (isDateError) {
+            setIsDateError(true);
+            return;
+        }
     if (
         isDateError ||
         (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
