@@ -511,7 +511,7 @@ const TableComponent: React.FC<{
 
     return (
       <TableWrapper className="system-status-table-wrapper">
-        <Table className="status-table">
+        <Table className="status-table" isStatus>
           <TableHead>
             <TableRow>
               <TableCell header className="status-table-cell">
