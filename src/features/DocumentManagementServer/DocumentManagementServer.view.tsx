@@ -299,14 +299,23 @@ if (sortBy === apiColumnName) {
      const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
     const handleApply = () => {
-        if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
+         if (isDateError) {
             setIsDateError(true);
-        } else {
-            setSelectedFormats(selectedCategories)
-            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
-            setIsFilterDialogOpen(false);
+            return;
         }
-    };
+    if (
+        isDateError ||
+        (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
+        (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
+        (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
+    ) {
+        setIsDateError(true);
+    } else {
+        setSelectedFormats(selectedCategories)
+        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+        setIsFilterDialogOpen(false);
+    }
+};
 
    const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
