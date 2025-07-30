@@ -120,7 +120,7 @@ const clearAll = () => {
     setWasApplied(false); 
   }
 }, [isOpen]);
- 
+
      const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
@@ -176,11 +176,13 @@ const clearAll = () => {
           return;
         }
         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-    setError("Invalid date");
-    setIsDateError(true);
-    return;
-  }
-        if (thisDateStr && otherDateStr) setError("");
+          setError("Invalid date");
+          setIsDateError(true);
+          return;
+        }
+        if (thisDateStr && otherDateStr){
+           setError("");
+        }
       }
        const fromDateValue = isFrom ? thisDateStr : otherDateStr
        const toDateValue = !isFrom ? thisDateStr : otherDateStr
@@ -191,53 +193,9 @@ const clearAll = () => {
       };
 
       const handleApplyWrapper = () => {
-  // Validate "From" date
-      if (fromDate.day || fromDate.month || fromDate.year) {
-        if (!(fromDate.day && fromDate.month && fromDate.year)) {
-          setFromDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-        const fromDateStr = getDateString(fromDate);
-        if (!dayjs(fromDateStr, "YYYY-MM-DD", true).isValid()) {
-          setFromDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-      }
-
-      // Validate "To" date
-      if (toDate.day || toDate.month || toDate.year) {
-        if (!(toDate.day && toDate.month && toDate.year)) {
-          setToDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-        const toDateStr = getDateString(toDate);
-        if (!dayjs(toDateStr, "YYYY-MM-DD", true).isValid()) {
-          setToDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-      }
-
-      // Check logical order
-      const fromDateStr = getDateString(fromDate);
-      const toDateStr = getDateString(toDate);
-      if (fromDateStr && toDateStr && dayjs(toDateStr).isBefore(dayjs(fromDateStr), "day")) {
-        setToDateError("To date should not be before From date.");
-        setIsDateError(true);
-        return;
-      }
-
-      // If any error, block apply
-      if (fromDateError || toDateError || isDateError) {
-        return;
-      }
-
-      setWasApplied(true);
-      handleApply();
-  };
+            setWasApplied(true);
+            handleApply();
+          };
     
   return (
     <Dialog
