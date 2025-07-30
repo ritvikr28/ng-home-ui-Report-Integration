@@ -191,26 +191,53 @@ const clearAll = () => {
       };
 
       const handleApplyWrapper = () => {
-        
-            const fromAnyFilled = fromDate.day || fromDate.month || fromDate.year;
-            const fromAllFilled = fromDate.day && fromDate.month && fromDate.year;
-            if (fromAnyFilled && !fromAllFilled) {
-              setFromDateError("Invalid date");
-              setIsDateError(true);
-              return;
-            }
+  // Validate "From" date
+      if (fromDate.day || fromDate.month || fromDate.year) {
+        if (!(fromDate.day && fromDate.month && fromDate.year)) {
+          setFromDateError("Invalid date");
+          setIsDateError(true);
+          return;
+        }
+        const fromDateStr = getDateString(fromDate);
+        if (!dayjs(fromDateStr, "YYYY-MM-DD", true).isValid()) {
+          setFromDateError("Invalid date");
+          setIsDateError(true);
+          return;
+        }
+      }
 
-            const toAnyFilled = toDate.day || toDate.month || toDate.year;
-            const toAllFilled = toDate.day && toDate.month && toDate.year;
-            if (toAnyFilled && !toAllFilled) {
-              setToDateError("Invalid date");
-              setIsDateError(true);
-              return;
-            }
-          
-            setWasApplied(true);
-            handleApply();
-          };
+      // Validate "To" date
+      if (toDate.day || toDate.month || toDate.year) {
+        if (!(toDate.day && toDate.month && toDate.year)) {
+          setToDateError("Invalid date");
+          setIsDateError(true);
+          return;
+        }
+        const toDateStr = getDateString(toDate);
+        if (!dayjs(toDateStr, "YYYY-MM-DD", true).isValid()) {
+          setToDateError("Invalid date");
+          setIsDateError(true);
+          return;
+        }
+      }
+
+      // Check logical order
+      const fromDateStr = getDateString(fromDate);
+      const toDateStr = getDateString(toDate);
+      if (fromDateStr && toDateStr && dayjs(toDateStr).isBefore(dayjs(fromDateStr), "day")) {
+        setToDateError("To date should not be before From date.");
+        setIsDateError(true);
+        return;
+      }
+
+      // If any error, block apply
+      if (fromDateError || toDateError || isDateError) {
+        return;
+      }
+
+      setWasApplied(true);
+      handleApply();
+  };
     
   return (
     <Dialog
