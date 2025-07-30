@@ -265,6 +265,32 @@ if (sortBy === apiColumnName) {
         // setSuggestions([]);
     }
     }
+
+    const handleTagClose = (
+        e: React.SyntheticEvent,
+        text: string,
+        closeObj: { name?: string; id?: string | number },
+        id?: string | number
+        ) => {
+        // Detect date range tag by its name format
+        if (
+            typeof closeObj.name === "string" &&
+            (closeObj.name.match(/^\d{2} \w{3} \d{4} -$/) ||
+                closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
+            ) {
+            setSelectedDateRange({ fromDate: "", toDate: "" });
+            setDateRange({ fromDate: "", toDate: "" });
+            setIsDateError(false);
+        }
+
+        // Remove category/format tag
+        setSelectedCategories(prev =>
+            prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+        );
+        setSelectedFormats(prev =>
+            prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+        );
+    };
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -557,6 +583,7 @@ if (sortBy === apiColumnName) {
                                         />
                                     </>
                                 }
+                                searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
                               sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
