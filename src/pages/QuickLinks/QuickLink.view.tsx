@@ -15,7 +15,7 @@ import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/Fille
 
 const requiredPermissions: Permission[] = [
   {
-    Securable: "NG.Homepage",
+    Securable: "NG.Homepage.Access",
     Operation: "View"
   }
 ];
