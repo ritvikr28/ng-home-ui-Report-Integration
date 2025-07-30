@@ -570,17 +570,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             toastNotificationAutoclose
             isOpenConfirmationDialog={showConfirmDialog}
             isShowOverflowMenuCol
-            // globalNotificationBannerOnClickClose={(e, index) => {
-            //   if (index === 0) {
-            //     setShowErrorBanner(false);
-            //   }
-            //   if (index === 1) {
-            //     setshowInvitationConflictBanner(false);
-            //   }
-            //   if (index === 2 || index === 3) {
-            //     setShowInviteErrBanner(false);
-            //   }
-            // }}
+            globalNotificationBannerOnClickClose={(e, index) => {
+              if (index === 0) {
+                setShowErrorBanner(false);
+              }
+              if (index === 1) {
+                setshowInvitationConflictBanner(false);
+              }
+              if (index === 2 || index === 3) {
+                setShowInviteErrBanner(false);
+              }
+            }}
             globalNotificationMsgBannerObject={[
               {
                 isShow: !!showErrorBanner,

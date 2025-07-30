@@ -408,28 +408,113 @@ it("calculates insertIndex from matching prevBeforeDate items when dateRange is 
   expect(mockSetSelectedCategories2).toHaveBeenCalled();
 });
 
-it("sets insertIndex to 0 when dateRangeItem is first in the list", () => {
-  const prev = [
-    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
-    { data: "send", text: "Send" }
-  ];
+it("sets error when toDate is invalid format", async () => {
+  render(<FilterDialog {...defaultProps} />);
 
-  const mockSetSelectedCategories1 = jest.fn((updater) => {
-    const result = updater(prev);
-    // Assert that dateRange is inserted at index 0
-    expect(result[0].data?.type).toBe("dateRange");
-  });
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
 
-  renderComponent({
-    selectedCategories: prev,
-    setSelectedCategories: mockSetSelectedCategories1
-  });
+  const toDay = within(dateInputs[1]).getByPlaceholderText("DD");
+  const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
+  const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
 
-  // Mock dropdown click triggers `onSelectMultiple` with `send` only
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  // Invalid date: 31 Feb 2025
+  fireEvent.change(toDay, { target: { value: "31" } });
+  fireEvent.change(toMonth, { target: { value: "02" } });
+  fireEvent.change(toYear, { target: { value: "205" } });
 
-  expect(mockSetSelectedCategories1).toHaveBeenCalled();
+  // Expect error
+  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
+
+  expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
 });
 
+it("shows error when fromDate is partially filled", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+  const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
+
+  fireEvent.change(fromDay, { target: { value: "15" } });
+  fireEvent.change(fromMonth, { target: { value: "05" } });
+
+  const applyBtn = screen.getByTestId("dms-filter-dialog-apply-btn");
+  fireEvent.click(applyBtn);
+
+  await screen.findByText(/Invalid date/i);
+});
+
+it("shows error when toDate is partially filled", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
+
+  fireEvent.change(toMonth, { target: { value: "07" } });
+
+  const applyBtn = screen.getByTestId("dms-filter-dialog-apply-btn");
+  fireEvent.click(applyBtn);
+
+  await screen.findByText(/Invalid date/i);
+});
+
+it("sets error when fromDate is in invalid format", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+  const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
+  const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
+
+  fireEvent.change(fromDay, { target: { value: "31" } });
+  fireEvent.change(fromMonth, { target: { value: "02" } });
+  fireEvent.change(fromYear, { target: { value: "203" } });
+
+  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
+  expect(validationText[0]).toHaveTextContent(/invalid date/i);
+});
+
+it("sets error when toDate is in invalid format", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+  const toDay = within(dateInputs[1]).getByPlaceholderText("DD");
+  const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
+  const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
+
+  // Enter invalid date: 31st Feb is not valid
+  fireEvent.change(toDay, { target: { value: "31" } });
+  fireEvent.change(toMonth, { target: { value: "02" } });
+  fireEvent.change(toYear, { target: { value: "203" } });
+
+  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
+  expect(validationText[1]).toHaveTextContent(/invalid date/i);
+});
+
+it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
+  const prevCategories = [
+    { data: "send", text: "Send" },
+    { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
+    { data: "pupils", text: "Pupils" }
+  ];
+
+  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+    const newItems = updater(prevCategories);
+    expect(newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(1);
+  });
+
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={prevCategories}
+      setSelectedCategories={mockSetSelectedCategoriesWithCheck}
+    />
+  );
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+});
 
 });

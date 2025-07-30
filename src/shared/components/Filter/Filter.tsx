@@ -159,7 +159,7 @@ const clearAll = () => {
           return;
         }
          if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-          setError("Invalid from date");
+          setError("Invalid date");
           setIsDateError(true);
           return;
   }
@@ -176,7 +176,7 @@ const clearAll = () => {
           return;
         }
         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-    setError("Invalid to date");
+    setError("Invalid date");
     setIsDateError(true);
     return;
   }
@@ -195,7 +195,7 @@ const clearAll = () => {
             const fromAnyFilled = fromDate.day || fromDate.month || fromDate.year;
             const fromAllFilled = fromDate.day && fromDate.month && fromDate.year;
             if (fromAnyFilled && !fromAllFilled) {
-              setFromDateError("Invalid from date");
+              setFromDateError("Invalid date");
               setIsDateError(true);
               return;
             }
@@ -203,7 +203,7 @@ const clearAll = () => {
             const toAnyFilled = toDate.day || toDate.month || toDate.year;
             const toAllFilled = toDate.day && toDate.month && toDate.year;
             if (toAnyFilled && !toAllFilled) {
-              setToDateError("Invalid to date");
+              setToDateError("Invalid date");
               setIsDateError(true);
               return;
             }
@@ -214,6 +214,7 @@ const clearAll = () => {
     
   return (
     <Dialog
+      className="dms-filter-dialog"
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits

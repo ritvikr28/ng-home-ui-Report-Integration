@@ -68,4 +68,33 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   return true;
 };
 
-export { getFeatureFlagVariantAttachment, pilotReady };
+const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boolean = (
+  flagName: string,
+  variantType: string
+): boolean => {
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`, flagName);
+
+  if (pilotReadyOrg?.enabled) {
+    const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
+      getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
+
+    if (
+      variantAttachmentPayload &&
+      variantAttachmentPayload.IncludeOrganisations.length > 0
+    ) {
+      const isIncludedOrganisation: string | undefined =
+        variantAttachmentPayload.IncludeOrganisations.find(
+          x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
+        );
+     
+      if (!isIncludedOrganisation) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  return false;
+};
+
+export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll };

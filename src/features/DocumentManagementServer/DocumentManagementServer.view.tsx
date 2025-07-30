@@ -98,8 +98,14 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
-        document.body.classList.add("no-scroll");
-    }, []);
+        if (!isMobileView) {
+            document.body.classList.add("no-scroll");
+            return () => {
+                document.body.classList.remove("no-scroll");
+            };
+        }
+        return () => { };
+    }, [isMobileView]);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -242,7 +248,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if (isSearchTriggered || searchText) {
             return getTableHeadersData;
         }
         return [];
@@ -340,8 +346,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     return (<>
         <>
-            <Grid className="dms-layout" style={{ display: 'flex' }}>
-                <GridItem className={isOpen ? "side-width" : "no-side-width"}>
+            <Grid className="dms-layout">
+                <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
                         <Button
                             className="base-class"
@@ -614,6 +620,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 className="grid_wrapper"
                                 searchTagList = { searchTagList}
                                 onOverflowTagClose ={()=>{}}
+                                isShowFourthElement={false}
                             />
                         </div>}
                     </div>
