@@ -102,7 +102,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -117,7 +117,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -130,7 +130,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -141,7 +141,7 @@ describe('fetchDMSSuggestions', () => {
   test('should return empty array on API error', async () => {
     jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('Network error'));
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];

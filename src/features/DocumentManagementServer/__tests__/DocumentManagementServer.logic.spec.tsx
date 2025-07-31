@@ -174,7 +174,7 @@ describe("debouncedFetchSuggestions", () => {
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
-    debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
       jest.advanceTimersByTime(1000);
@@ -193,7 +193,7 @@ describe("debouncedFetchSuggestions", () => {
   const setSuggestions = jest.fn();
   const setShowError = jest.fn();
 
-  debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
+  debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
     jest.advanceTimersByTime(1000);
@@ -210,7 +210,7 @@ describe("debouncedFetchSuggestions", () => {
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
-    debouncedFetchSuggestions("FailTest", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
       jest.advanceTimersByTime(1000);
@@ -241,7 +241,7 @@ describe("handleSearchChange", () => {
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
 
-    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading };
   };
@@ -259,7 +259,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
 });
 
@@ -270,7 +270,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -288,7 +288,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -365,7 +365,7 @@ describe("loadSuggestions", () => {
     const data = [{ fileId: "1", fileName: "Doc1" }];
     (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(data);
 
-    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
+    await loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
     expect(setSuggestions).toHaveBeenCalledWith(data);
     expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
   });
@@ -373,7 +373,7 @@ it("logs error when fetchDMSSuggestions fails", async () => {
   const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-  await loadSuggestions("Test", jest.fn(), jest.fn());
+  await loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
 
   expect(consoleSpy).toHaveBeenCalled();
   consoleSpy.mockRestore();
@@ -382,7 +382,7 @@ it("logs error when fetchDMSSuggestions fails", async () => {
   it("sets suggestions to [] on error", async () => {
     (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
+    await loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
   });
@@ -398,7 +398,7 @@ describe("handleSearchChange boundary tests", () => {
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
 
-    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -410,7 +410,7 @@ it("should not call fetch if value is only whitespace", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });

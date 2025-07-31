@@ -8,7 +8,9 @@ import {
   ISelectedItem,
   DateInput,
   ButtonSize,
-  ValidationTextLevel
+  ValidationTextLevel,
+  Loader,
+  LoaderType
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
@@ -30,6 +32,7 @@ interface FilterDialogProps {
   isDateError: boolean;
   setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string, toDate: string }>>
   selectedDateRange: { fromDate: string, toDate: string }
+  isLoading?: boolean;
 }
 
 const FilterDialog = ({
@@ -45,7 +48,8 @@ const FilterDialog = ({
   setIsDateError,
   isDateError,
   setSelectedDateRange,
-  selectedDateRange
+  selectedDateRange,
+  isLoading
 }: FilterDialogProps) => {
   const { t } = useTranslation();
   const [fromDateError, setFromDateError] = useState<string>("");
@@ -256,8 +260,18 @@ const clearAll = () => {
       dataTestId={dataTestId}
       escapeExits
       onClose={onClose}
-      title={title}
-    >     
+      title={isLoading ? "" : title}
+      
+    >
+      {isLoading ? (
+        <div className="filter-dialog-loader">
+          <Loader 
+            loaderType={LoaderType.Circular}
+            loaderText="Please Wait"
+           />
+        </div>
+      ) : (
+        <>
       <FormLabel>{t("Category")}</FormLabel>
       <Dropdown
         dataTestId={`${dataTestId}-categories`}
@@ -376,6 +390,7 @@ const clearAll = () => {
           {t("Apply")}
         </Button>
         </div>
+        </>)}
     </Dialog>
   );
 };

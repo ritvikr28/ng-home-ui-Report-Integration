@@ -278,14 +278,23 @@ export const hasItems = (suggestions: Suggestion[]): boolean =>
 // Search input change logic
 export const handleSearchChange = (
   e: React.ChangeEvent<HTMLInputElement>,
+  categoryId: number[] | null,
+  fromDate: string,
+  toDate: string, 
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
 
+  console.log("AutoSuggest Params:", {
+    searchText: value,
+    categoryId,
+    fromDate,
+    toDate
+  });
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
@@ -298,20 +307,26 @@ export const handleSearchChange = (
 
   debouncedFetchSuggestions(
     value,
+    categoryId,
+    fromDate,
+    toDate,
     setIsSearchLoading,
     setSuggestions,
-    setShowSearchError
+    setShowSearchError,
   );
 };
 
 export const loadSuggestions = async (
   text: string,
+  fromDate: string,
+  toDate: string,
+  categoryId: number[] | null,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setSuggestionsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   try {
     setSuggestionsLoading(true);
-    const result = await fetchDMSSuggestions(text);
+    const result = await fetchDMSSuggestions(text, fromDate, toDate, categoryId);
     setSuggestions(result);
   } catch (err) {
     console.error("Suggestion fetch failed:", err);
@@ -380,12 +395,18 @@ export const getResultNotFoundMsg = (
   searchTerm: string,
   showErrorBanner: boolean
 ): string | undefined => {
-  if (searchText && !docData?.data?.length) {
-    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-  }if (showErrorBanner) {
-    return "Information unavailable";
+  if (showErrorBanner) {
+    return "Information unavailable.";
   }
-  return undefined;
+  // Show search message if search is performed and no results
+  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+  }
+  // Show "No data to display" only if not searching and no data
+  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return "No data to display.";
+  }
+  return "Documents will appear here once they are uploaded.";
 };
 
 
@@ -426,12 +447,21 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export const debouncedFetchSuggestions = debounce(
   async (
     searchText: string,
+    categoryId: number[] | null,
+    fromDate: string,
+    toDate: string,
     setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
-      const response = await fetchDMSSuggestions(searchText);
+      console.log("Fetching suggestions for:", {
+        searchText,
+        categoryId,
+        fromDate,
+        toDate
+      });
+      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload?.[0]?.values ?? [];
       setSuggestions(formatSuggestions(values));
     } catch (err) {

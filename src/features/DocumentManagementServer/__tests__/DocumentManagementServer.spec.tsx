@@ -438,12 +438,16 @@ it("does not call fetchDocumentDetails when non-sortable column is clicked", asy
 
   it("handles search change function", () => {
     const e = { target: { value: "search" } } as React.ChangeEvent<HTMLInputElement>;
+    const getAllRegistrationIds = jest.fn();
+    const selectedFromDate = "2024-01-01";
+    const selectedToDate = "2024-12-31";
+    const selectedFormats = ["pdf", "docx"];
     const setSearchText = jest.fn();
     const setPageNumber = jest.fn();
     const setShowResultNotFound = jest.fn();
     const fetchDocuments = jest.fn();
     const spy = jest.spyOn(logicModule, "handleSearchChange");
-    logicModule.handleSearchChange(e, setSearchText, setPageNumber, setShowResultNotFound, fetchDocuments);
+    logicModule.handleSearchChange(e, getAllRegistrationIds(selectedFormats), selectedFromDate, selectedToDate, setSearchText, setPageNumber, setShowResultNotFound, fetchDocuments);
     expect(spy).toHaveBeenCalled();
   });
 
@@ -717,7 +721,7 @@ it("handles suggestion fetch error gracefully", async () => {
 
 
   // Call the debounced function
-  debouncedFetchSuggestions("fail", mockSetLoading, mockSetSuggestions, mockSetError);
+  debouncedFetchSuggestions("fail",[], "","", mockSetLoading, mockSetSuggestions, mockSetError);
 
   // Fast-forward time to trigger the debounce
   await act(async () => {

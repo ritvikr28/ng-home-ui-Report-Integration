@@ -6,7 +6,7 @@ import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFound
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
-import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
+import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 
@@ -61,6 +61,7 @@ const DocumentManagementServerView: React.FC = () => {
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
+    const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
 
 const categoryArr = getCategoryArr(selectedFormats);
@@ -78,7 +79,11 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
-    const tableData: tableDataProps[] = (showSearchError || !docData?.data?.length) ? [] : docData?.data?.map((doc: any) => ({
+    const tableData: tableDataProps[] = showErrorBanner
+  ? [] // Show no data if error banner is active
+  : (showSearchError || !docData?.data?.length)
+    ? []
+    : docData?.data?.map((doc: any) => ({
         id: doc?.fileId,
         Document: doc?.document,
         Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
@@ -87,7 +92,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
         Format: doc?.format,
         Size: doc?.size,
-    }));
+      }));
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -171,6 +176,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                 setCurrentPage(page);
                 setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
                 setShowSearchError(false);
+                setShowErrorBanner(false)
             } else if (result && result?.status === 400) {
                 setShowErrorBanner(true);
             }
@@ -224,7 +230,11 @@ if (sortBy === apiColumnName) {
 };
 
     const getEmptyStateMsg = () => {
+        if(showErrorBanner) return "Information unavailable.";
         if (searchText !== "") return undefined;
+        if (docData && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+            return "No data to display.";
+        }
         if (!isSearchTriggered && showSearchError) return "Information unavailable.";
         return "Documents will appear here once they are uploaded.";
     };
@@ -322,15 +332,41 @@ if (sortBy === apiColumnName) {
         }
     ]
 
+    useEffect(() => {
+    if (searchTerm?.length > 2) {
+        handleSearchChange(
+        { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
+        getAllRegistrationIds(selectedFormats),
+        selectedDateRange?.fromDate,
+        selectedDateRange?.toDate,
+        setSearchTerm,
+        setSuggestions,
+        setShowSearchError,
+        setIsSearchLoading
+        );
+    }
+}, [searchTerm, selectedFormats, selectedDateRange]);
+
      const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
+     
     const handleApply = () => {
+        if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
+           selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
+            setIsDateError(true);
+            return;
+        }
+
         if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
             setIsDateError(true);
         } else {
-            setSelectedFormats(selectedCategories)
-            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+            setIsFilterLoading(true);
+            setTimeout(() => {
+            setSelectedFormats(selectedCategories);
+            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
             setIsFilterDialogOpen(false);
+            setIsFilterLoading(false);
+        }, 1000);
         }
     };
 
@@ -516,7 +552,7 @@ if (sortBy === apiColumnName) {
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
-                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner)}
+                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner || (docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) && !isSearchTriggered)}
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
@@ -533,7 +569,7 @@ if (sortBy === apiColumnName) {
                                     setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
                                 }}
-                                searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+                                searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
@@ -571,6 +607,7 @@ if (sortBy === apiColumnName) {
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title="Filter by"
+                                            isLoading={isFilterLoading}
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}

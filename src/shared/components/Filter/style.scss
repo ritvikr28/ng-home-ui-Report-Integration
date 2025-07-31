@@ -59,6 +59,14 @@
 
 .dms-filter-dialog{
   overflow-y: scroll;
+
+  .filter-dialog-loader{
+    align-self: center;
+
+    .essui-loader{
+      width: auto;
+    }
+  }
 }
 
 .filter-tool-view .dropdown .essui-overflow-menu{

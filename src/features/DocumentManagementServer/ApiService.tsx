@@ -44,12 +44,28 @@ export const fetchDocumentDetails = async ({
   }
 };
 
-export const fetchDMSSuggestions = async (searchText: string): Promise<any> => {
+export const fetchDMSSuggestions = async (
+  searchText: string,
+  fromDate: string,
+  toDate: string,
+  categoryId: number[] | null
+): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/file/search/autocomplete?AutoCompleteRequest.SearchText=${encodeURIComponent(
-      searchText
-    )}`;
+
+    // Build query params
+    const params = [
+      `AutoCompleteRequest.SearchText=${encodeURIComponent(searchText)}`,
+      ...(categoryId && categoryId.length > 0
+        ? categoryId.map(id => `AutoCompleteRequest.CategoryId=${encodeURIComponent(id)}`)
+        : []),
+      fromDate ? `AutoCompleteRequest.FromDate=${encodeURIComponent(fromDate)}` : "",
+      toDate ? `AutoCompleteRequest.ToDate=${encodeURIComponent(toDate)}` : ""
+    ]
+      .filter(Boolean)
+      .join("&");
+
+    const url = `/validation/api/v1/file/search/autocomplete?${params}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response?.data;
   } catch (err) {
