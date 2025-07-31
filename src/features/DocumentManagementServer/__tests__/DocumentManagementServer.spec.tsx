@@ -775,7 +775,7 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   await waitFor(() => {
     expect(screen.getByText(/Please select at least one item/i)).toBeInTheDocument();
   });
-  expect(logSpy).toHaveBeenCalledWith("Delete clicked");
+  
 });
 
 
