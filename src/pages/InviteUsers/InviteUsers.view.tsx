@@ -378,7 +378,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isBreadCrumbEnable={false}
             isMessageCenterAligned={false}
             isShowAutoSuggest
-            isMobileViewBreadcrumb
+            isMobileViewBreadcrumb 
+            onChangeAllCheckBox={() => null}
             isShowFourthElement={false}
             dynamictableIconName={
               showErrorBanner ? "warning--alt" : "information"
