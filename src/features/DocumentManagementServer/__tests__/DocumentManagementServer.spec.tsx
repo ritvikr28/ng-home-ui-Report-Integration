@@ -685,5 +685,97 @@ it("handles suggestion fetch error gracefully", async () => {
   expect(mockSetSuggestions).toHaveBeenCalledWith([]);
 
 });
+it("shows dialog when Prepare download is clicked and no checkbox is selected", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+  {
+      fileId: "1",
+      document: "Doc 1",
+      relatedTo: ["HR"],
+      category: "legal",
+      addedBy: "User A",
+      dateAdded: "2025-06-10",
+      format: "pdf",
+      size: "500KB",
+    },
+    {
+      fileId: "2",
+      document: "Doc 2",
+      relatedTo: ["Finance"],
+      category: "finance",
+      addedBy: "User B",
+      dateAdded: "2025-06-11",
+      format: "docx",
+      size: "1MB",
+    }
+    ],
+  });
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
 
-})
+  await waitFor(() => screen.getByText("Documents"));
+
+  // Click Actions button
+  const actionsButton = screen.getByText(/Actions/i);
+  fireEvent.click(actionsButton);
+
+  // Click Prepare download
+  const prepareDownloadOption = await screen.findByText("Prepare download");
+  fireEvent.click(prepareDownloadOption);
+
+  // Assert dialog appears
+  await waitFor(() => {
+    expect(screen.getByText(/Please select at least one item/i)).toBeInTheDocument();
+  });
+});
+it("shows dialog when Delete is clicked and no checkbox is selected", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  });
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => screen.getByText("Documents"));
+
+  // Click Actions button
+  const actionsButton = screen.getByText(/Actions/i);
+  fireEvent.click(actionsButton);
+
+  // Click Delete
+  const deleteOption = await screen.findByText("Delete");
+  fireEvent.click(deleteOption);
+
+  // Assert dialog appears
+  await waitFor(() => {
+    expect(screen.getByText(/Please select at least one item/i)).toBeInTheDocument();
+  });
+  
+});
+
+});
+
