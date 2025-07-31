@@ -757,7 +757,6 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
       }
     ],
   });
-  const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
 
