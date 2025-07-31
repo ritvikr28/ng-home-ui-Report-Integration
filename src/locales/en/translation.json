@@ -473,5 +473,12 @@
     "cancel" : "Cancel",
     "save" : "Save",
     "pleaseWaitLoader" : "Please wait"
+  },
+  "HomePageForSimsConnectedNormalUser": {
+    "welcomeToSims": "Welcome to SIMS",
+    "needAccessToSimsNextGen": "Need access to SIMS Next Gen?",
+    "contactYourAdministrator": "Contact your administrator",
+    "subHeadingPartOne": "You might not have the right permissions, or your organisation may not be licensed for this product.",
+    "subHeadingPartTwo": "Please contact your administrator to check your access or get help."
   }
 }

@@ -80,3 +80,71 @@ footer>* {
 .c-clear-padding-top {
   padding-top: 0 !important;
 }
+
+.home-page-for-sims-connected-normal-user-wrapper {
+
+  margin: 24px 152px;
+  display: flex;
+
+  .welcome-heading {
+    font-size: 48px;
+    font-weight: 400;
+    line-height: 72px;
+  }
+  .what-new-sims {
+    flex-grow: 1;
+  }
+  .sims-next-gen-update-wrapper {
+    width: 100%;
+  }
+
+  .gap-24 {
+    gap: 24px;
+  }
+
+  .new-sims-uppersection .new-title-container {
+    margin-bottom: 0 !important;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .home-page-for-sims-connected-normal-user-wrapper {
+    margin: 24px;
+
+    .action-card-container-closeview.sims-ng {
+      gap: 24px !important;
+
+      .essui-activity-card-center {
+        width: 90% !important;
+      }
+    }
+
+     .welcome-heading-container {
+      flex-basis: 100%;
+      max-width: 100%;
+
+      .welcome-heading {
+        font-size: 30px;
+        line-height: 36px;
+      }
+    }
+    .sims-next-gen-update-wrapper {
+      gap: 16px !important;
+    }
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .home-page-for-sims-connected-normal-user-wrapper {
+
+    margin: 24px 16px;
+
+    .action-card-container-closeview.sims-ng {
+      gap: 16px !important;
+
+      .essui-activity-card-center {
+        width: 90% !important;
+      }
+    }
+  }
+}
