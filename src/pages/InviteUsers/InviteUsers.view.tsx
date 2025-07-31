@@ -15,15 +15,22 @@ import {
   ISearchItemProp,
   ISelectedItem,
   TableRowType,
-  ResponseCode
+  ResponseCode,
+  TableHeader,
+  ShowValAs,
+  ValidationText,
+  IBreadcrumbLink
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  breadcrumbActions,
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
+import {
   BulkInviteErrBanner,
   editSelectedOptions,
   filterOptions,
-  getTableHeadersData,
+  homeurl,
   IInviteUserDetails,
   InvitationStatusFilterOptions,
   InviteUserProps,
@@ -44,6 +51,9 @@ import {
 import InviteUsersDialog from "./InviteUsersDialog";
 
 export const InviteUserView: React.FC<InviteUserProps> = (props) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+
   const {
     usersTableData,
     setUsersTableData,
@@ -62,10 +72,93 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
-  const smallScreen:boolean = useMediaQuery(
+  const smallScreen: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 767px)"
-  ); 
+  );
 
+  const breadcrumbActions: IBreadcrumbLink[] = [
+    {
+      active: true,
+      linkName: `${t("homePage.appTitle")}`,
+      path: "/",
+    },
+    {
+      active: false,
+      linkName: `${t("breadcrumbsadminconsole")}`,
+      path: homeurl,
+    },
+    {
+      active: false,
+      linkName: `${t("inviteUsers.title")}`,
+      path: "/",
+    }
+  ];
+
+  const getTableHeadersData: TableHeader[] = [
+    {
+      text: "Id",
+      isShow: false,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      columnWidth: "10px",
+    },
+    {
+      text: `${t("inviteUsers.name")}`,
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      columnWidth: "285px",
+      headerTxtTrunctLength: 50,
+      isSimpleText: true,
+      isColumnSorting: true,
+      isColumnSortByDefault: true,
+    },
+    {
+      text: `${t("inviteUsers.email")}`,
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      headerTxtTrunctLength: 17,
+      isSimpleText: true,
+      isColumnSorting: true,
+      columnWidth: "325px",
+    },
+    {
+      text: `${t("inviteUsers.userType")}`,
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      headerTxtTrunctLength: 50,
+      isColumnSorting: false,
+      columnWidth: "165px",
+    },
+    {
+      text: `${t("inviteUsers.invitationStatus")}`,
+      isShow: true,
+      showValAs: ShowValAs.CustomeComponent,
+      anyComponent: (propsI: any) => {
+        if (propsI === "Invitation conflict") {
+          return (
+            <ValidationText
+              className="invite-user-status"
+              text="Invitation conflict"
+              textLevel={ValidationTextLevel.Warning}
+            />
+          );
+        }
+        return propsI;
+      },
+
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      headerTxtTrunctLength: 50,
+      isColumnSorting: false,
+      columnWidth: "206px",
+    }
+  ];
 
   const [isSidebarOpen, setIsSidebarOpen]: [
     boolean,
@@ -134,7 +227,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
     string,
     React.Dispatch<React.SetStateAction<string>>
-  ] = useState<string>(NoDataMessage.noDataToDisplay);
+  ] = useState<string>(`${t("inviteUsers.noDataToDisplay")}`);
   const statusFilterRef = useRef<ISelectedItem>({
     text: InvitationStatusFilterOptions.NotInvited,
     value: "Not invited",
@@ -204,7 +297,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setDataUpdated(false);
         setShowToast(true);
         setSelectedRowItems([]);
-        setToastMessage("Changes saved");
+        setToastMessage(`${t("inviteUsers.changesSaved")}`);
       });
       setTimeout(() => setShowToast(false), 9000);
     }
@@ -212,7 +305,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
 
   const handleClearSearch: () => void = () => {
     setShowErrorBanner(false);
-    setNoDataTextToDisplay(NoDataMessage.noDataToDisplay);
+    setNoDataTextToDisplay(`${t("inviteUsers.noDataToDisplay")}`);
     setSearchTerm("");
     setSearchAndStatusFilter((prev) => ({
       ...prev,
@@ -317,11 +410,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     handleResize();
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [breadcrumbActions]);
-
+  }, []);
 
   return (
-        <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users">
+    <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users">
       {showDialog && <InviteUsersDialog setShowDialog={setShowDialog} />}
 
       <div className="new-side-panel-invite-users">
@@ -342,7 +434,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           onCloseSideNavigationPanel={closeSidebar}
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
-            text: "Invite Users",
+            text: `${t("inviteUsers.title")}`,
             value: window.location.href,
           }}
         />
@@ -389,10 +481,15 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               e: React.SyntheticEvent,
               columnName: string
             ) => {
-              if (columnName === "Email" || columnName === "Name") {
+              if (
+                columnName === `${t("inviteUsers.email")}` ||
+                columnName === `${t("inviteUsers.name")}`
+              ) {
                 setshowInvitationConflictBanner(false);
                 const apiColumnName =
-                  columnName === "Name" ? "Forename" : "EmailId";
+                  columnName === `${t("inviteUsers.name")}`
+                    ? "Forename"
+                    : "EmailId";
                 let newDirection = true;
 
                 if (sortBy === apiColumnName) {
@@ -429,14 +526,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               }
             }}
             dynamictableNoMsgColor={ValidationTextLevel.Warning}
-            isShowdynamictableNoMsg={showErrorBanner || usersTableData.length === 0}
+            isShowdynamictableNoMsg={
+              showErrorBanner || usersTableData.length === 0
+            }
             isAddEventBtnShow={false}
             dynamicTableLoader={isLoader}
             filterDDLOptions={filterOptions}
             isIconRightAligned
-            editSelectedBtnTitle="Edit selected"
-            headingText="Invite Users"
-            subHeadingText="Invite SIMS 7 users to access SIMS Next Gen"
+            editSelectedBtnTitle={`${t("inviteUsers.editSelected")}`}
+            headingText={`${t("inviteUsers.title")}`}
+            subHeadingText={`${t("inviteUsers.subTitle")}`}
             id="Inviteusers-list"
             filterDDLuseAutoWidth
             filterDDLisSelected
@@ -448,7 +547,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               }));
               setCurrentPage(1);
             }}
-            filterDDLlabel="Invitation status"
+            filterDDLlabel={`${t("inviteUsers.invitationStatus")}`}
             filterDDLplaceholder="Select"
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
@@ -458,14 +557,14 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             }
             filterDDLdisabled={false}
             isOnCloseSidepnl
-            isPagination={totalPage>1  && usersTableData.length !==0}
+            isPagination={totalPage > 1 && usersTableData.length !== 0}
             lastColContentAlign="center"
             paginationCount={totalPage}
             paginationOnChange={handlePageChange}
             paginationPage={currentPage}
             paginationMinCountToHideNextPreviousBtn={0}
-            searchHeadingText="Search user"
-            searchPlaceholderText="Search by name"
+            searchHeadingText={`${t("inviteUsers.searchUser")}`}
+            searchPlaceholderText={`${t("inviteUsers.searchByName")}`}
             firstColHeaderAlign="center"
             searchIsLoader={isSearchLoader}
             isSearchHideClearIcon={
@@ -509,8 +608,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isTruncateInputText
             emptyRowType={TableRowType.Info}
             emptyRowResponseCode={ResponseCode.Info}
-            emptyRowResponseMessage={noDataTextToDisplay}
-            secondaryButtonTitle="Cancel"
+            emptyRowResponseMessage={
+              noDataTextToDisplay === "No data to display"
+                ? `${t("inviteUsers.noDataToDisplay")}`
+                : ""
+            }
+            secondaryButtonTitle={`${t("inviteUsers.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
             tableBodyData={usersTableData || []}
@@ -538,15 +641,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setShowConfirmDialog(false);
             }}
             templatePropsConfirmation={{
-              cancelText: "Cancel",
+              cancelText: `${t("inviteUsers.cancel")}`,
               contentText:
                 source === "Bulk"
                   ? ""
-                  : "This user will be sent an invite to access the system.",
+                  : `${t("inviteUsers.inviteUser?Description")}`,
               isNotificationanner: source === "Bulk",
-              notificationTitle: `${selectedCheckBoxIds.length} users will be sent invites to access the system`,
+              notificationTitle: `${t("inviteUsers.sendInviteDescription", {
+                NoOfusers: selectedCheckBoxIds.length,
+              })}`,
               notificationStatus: NotificationStatus.WARNING,
-              okText: "Save",
+              okText: `${t("inviteUsers.save")}`,
               onCancel: (): void => {
                 setShowConfirmDialog(false);
               },
@@ -564,7 +669,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               template: DialogTemplate.Confirmation,
             }}
-            titleConfirmation="Invite user?"
+            titleConfirmation={`${t("inviteUsers.inviteUser?")}`}
+            dynamicTableLoaderText={`${t("inviteUsers.pleaseWaitLoader")}`}
             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
             toastNotificationTitle={toastMessage}
             showToastNotification={showToast}
@@ -586,31 +692,28 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               {
                 isShow: !!showErrorBanner,
                 variant: "warning",
-                title: "Information unavailable",
-                message:
-                  "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+                title: `${t("inviteUsers.informationUnavailable")}`,
+                message: `${t("inviteUsers.technicalIssue")}`,
                 autoclose: true,
               },
               {
                 isShow: !!showInvitationConflictBanner,
                 variant: "warning",
-                title: "Invitation conflict",
-                message:
-                  "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
+                title: `${t("inviteUsers.invitationConflict")}`,
+                message: `${t("inviteUsers.invitationConflictDescription")}`,
                 autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source !== "Bulk",
                 variant: "warning",
-                title: "Unable to save",
-                message:
-                  "A technical issue at our end has stopped us from saving the changes. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time.",
+                title: `${t("inviteUsers.unableToSave")}`,
+                message: `${t("inviteUsers.unableToSaveDescription")}`,
                 autoclose: true,
               },
               {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
-                title: "Unable to invite",
+                title: `${t("inviteUsers.unableToInvite")}`,
                 message: BulkInviteErrBanner({ selectedRowItems }),
                 autoclose: true,
               }

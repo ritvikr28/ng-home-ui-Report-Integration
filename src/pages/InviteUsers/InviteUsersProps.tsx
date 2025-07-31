@@ -1,5 +1,4 @@
 import {
-  IBreadcrumbLink,
   ISelectedItem,
   OptionsEntity,
   ShowValAs,
@@ -125,24 +124,6 @@ export const getTableHeadersData: TableHeader[] = [
     headerTxtTrunctLength: 50,
     isColumnSorting: false,
     columnWidth: "206px"
-  }
-];
-
-export const breadcrumbActions: IBreadcrumbLink[] = [
-  {
-    active: true,
-    linkName: "Home",
-    path: "/"
-  },
-  {
-    active: false,
-    linkName: "Admin Console",
-    path: homeurl
-  },
-  {
-    active: false,
-    linkName: "Invite Users",
-    path: "/"
   }
 ];
 
