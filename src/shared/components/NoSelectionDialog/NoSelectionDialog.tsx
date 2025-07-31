@@ -30,7 +30,7 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
 }
 
 NoSelectionDialog.defaultProps = {
-  message: "", // Add this line for the optional prop
+  message: "", 
 };
 
 

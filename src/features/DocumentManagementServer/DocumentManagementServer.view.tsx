@@ -229,21 +229,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
       const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
-            if(selectedCheckBoxIds.length === 0){
+            if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }
         } 
-        // else if (selectedItem.value === "View download") {
-        //     console.log("View download clicked");
-           
-        // } 
+        
         else if (selectedItem.value === "Delete") {
-            console.log("Delete clicked");
-           
-            if(selectedCheckBoxIds.length === 0){
+            if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }
- 
         }
       }
 
@@ -469,9 +463,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     }
                                 ]}
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
-                                onEditSelectedBtnClick={() => {
-                                    console.log("Edit button clicked");
-                                }}
+                                onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
