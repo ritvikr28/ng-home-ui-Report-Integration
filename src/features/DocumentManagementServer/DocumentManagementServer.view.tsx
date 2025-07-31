@@ -66,10 +66,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-//  const [selectedCheckBoxIds, setSelectedCheckBoxIds]: [
-//     string[],
-//     React.Dispatch<React.SetStateAction<string[]>>
-//   ] = useState<string[]>([]);
 const [selectedCheckBoxIds] = useState<string[]>([]);
 const categoryArr = getCategoryArr(selectedFormats);
 
@@ -607,15 +603,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-                                // templatePropsConfirmation={{
-                                //     contentText: 'You have unsaved changes that will be lost.',
-                                //     isNotificationanner: false,
-                                //     notificationStatus: NotificationStatus.SUCCESS,
-                                    
-                                //     onCancel: (): void => { /* your cancel logic */ },
-                                //     onConfirm: (): void => { /* your confirm logic */ },
-                                //     template: DialogTemplate.Confirmation
-                                //     }}
+        
                                 titleConfirmation="No items selected"
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

@@ -2,17 +2,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import NoSelectionDialog from "../NoSelectionDialog";
 
 describe("NoSelectionDialog", () => {
-//   it("renders dialog with correct title and content", () => {
-//     const setShowDialog = jest.fn();
-//     render(<NoSelectionDialog setShowDialog={setShowDialog} />);
-//     expect(screen.getByText("No items selected")).toBeInTheDocument();
-//     expect(
-//       screen.getByText(
-//         "Please select at least one item from the search results to perform the action."
-//       )
-//     ).toBeInTheDocument();
-//     expect(screen.getByRole("button", { name: /okay/i })).toBeInTheDocument();
-//   });
 
   it("calls setShowDialog(false) when Okay button is clicked", () => {
     const setShowDialog = jest.fn();
