@@ -9,6 +9,7 @@ import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
+import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
 
 
 export const breadcrumbActionsList = [
@@ -62,10 +63,14 @@ const DocumentManagementServerView: React.FC = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
 
-    const [isOpenConfirmationDialog, setIsOpenConfirmationDialog] = useState(false);
+    const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-    const [confirmationDialogContent, setConfirmationDialogContent] = useState("");
 
+//  const [selectedCheckBoxIds, setSelectedCheckBoxIds]: [
+//     string[],
+//     React.Dispatch<React.SetStateAction<string[]>>
+//   ] = useState<string[]>([]);
+const [selectedCheckBoxIds] = useState<string[]>([]);
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -224,17 +229,21 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
       const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
-             setConfirmationDialogContent("Please select at least one item from the search result to perform the action.");
-             setIsOpenConfirmationDialog(true); 
-            console.log("Prepare download clicked");
-        } else if (selectedItem.value === "View download") {
-            console.log("View download clicked");
-            // Add logic for View download
-        } else if (selectedItem.value === "Delete") {
+            if(selectedCheckBoxIds.length === 0){
+                setShowDialog(true);
+            }
+        } 
+        // else if (selectedItem.value === "View download") {
+        //     console.log("View download clicked");
+           
+        // } 
+        else if (selectedItem.value === "Delete") {
             console.log("Delete clicked");
-            // Add logic for Delete
-              setConfirmationDialogContent("Please select at least one item from the search result to perform the action.");
-        setIsOpenConfirmationDialog(true);
+           
+            if(selectedCheckBoxIds.length === 0){
+                setShowDialog(true);
+            }
+ 
         }
       }
 
@@ -347,6 +356,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     return (<>
         <>
             <Grid className="dms-layout">
+                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog} 
+                message="Please select at least one item from the search results to perform the action."/>}
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
                         <Button
@@ -448,10 +459,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     }
                                 ]}
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
-                                onEditSelectedBtnClick={(e) => {
+                                onEditSelectedBtnClick={() => {
                                     console.log("Edit button clicked");
                                 }}
-                                handleCloseDialogConfirmation={() => setIsOpenConfirmationDialog(false)}
+                                handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -585,14 +596,12 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 templatePropsConfirmation={
                                     {
                                         cancelText: "",
-                                        contentText: confirmationDialogContent,
+                                        contentText: "",
                                                 isNotificationanner: false,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Okay',
-                                        onCancel: (): void => setIsOpenConfirmationDialog(false),
-                                        onConfirm: (): void => {
-                                             setIsOpenConfirmationDialog(false);
-                                         },
+                                        onCancel: (): void => {},
+                                        onConfirm: (): void => { },
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
@@ -606,7 +615,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 //     template: DialogTemplate.Confirmation
                                 //     }}
                                 titleConfirmation="No items selected"
-                                isOpenConfirmationDialog={isOpenConfirmationDialog}
+                                isOpenConfirmationDialog={showConfirmDialog}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationTitle=""
                                 isShowOverflowMenuCol={false}
