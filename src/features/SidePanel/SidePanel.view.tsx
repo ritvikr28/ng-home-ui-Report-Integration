@@ -31,7 +31,7 @@ import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 
 const requiredPermissionsforquicklink: Permission[] = [
   {
-    Securable: "NG.Homepage",
+    Securable: "NG.Homepage.Access",
     Operation: "View"
   }
 ];

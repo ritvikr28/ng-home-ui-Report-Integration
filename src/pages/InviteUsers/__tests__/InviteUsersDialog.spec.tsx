@@ -1,10 +1,28 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { I18nextProvider, IntlProvider } from "@essnextgen/ui-intl-kit";
 import InviteUsersDialog from "../InviteUsersDialog";
+import translationEn from "../../../locales/en/translation.json";
+import translationCy from "../../../locales/cy/translation.json";
+
+const renderWithWelsh: any = (component: React.ReactNode) =>
+  render(
+    <I18nextProvider
+      i18n={IntlProvider.init({
+        translation: {
+          en: translationEn,
+          cy: translationCy
+        }
+      })}
+    >
+      <div>{component}</div>
+    </I18nextProvider>
+  );
 
 describe("InviteUsersDialog", () => {
   it("renders dialog with correct title and content", () => {
     const setShowDialog = jest.fn();
-    render(<InviteUsersDialog setShowDialog={setShowDialog} />);
+    renderWithWelsh(<InviteUsersDialog setShowDialog={setShowDialog} />);
     expect(screen.getByText("No items selected")).toBeInTheDocument();
     expect(
       screen.getByText(
