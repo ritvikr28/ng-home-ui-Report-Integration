@@ -652,6 +652,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 const requestBody: IRequestBodyType = {
                   externalId: selectedRowItems.map((item) => item?.id)
                 };
+                
+                gtmAnalytics.pushEvent({
+                  event: "change_saved",
+                  changeType: "Invite Users",
+                  changeValue: selectedRowItems.length.toString()
+                });
+                                
                 handleSendInvite({
                   requestBody,
                   setLoader,
