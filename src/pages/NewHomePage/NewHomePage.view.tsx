@@ -22,7 +22,7 @@ import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIM
 
 const requiredPermissions: Permission[] = [
   {
-    Securable: "NG.Homepage",
+    Securable: "NG.Homepage.Access",
     Operation: "View"
   }
 ];

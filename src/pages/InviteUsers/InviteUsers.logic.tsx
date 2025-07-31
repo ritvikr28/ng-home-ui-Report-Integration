@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { InviteUserView } from "./InviteUsers.view";
 import { IInviteUserDetails } from "./InviteUsersProps";
+import gtmAnalytics from "../../shared/utils/analytics";
 
 export const InviteUsersLogic = () => {
   const [currentPage, setCurrentPage]: [
@@ -26,6 +27,10 @@ export const InviteUsersLogic = () => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+
+  useEffect(() => {
+    gtmAnalytics.pushPageViewEvent();   
+  }, []);
 
   const handlePageChange: (event: any, handlepageCount: number) => void = (
     event: any,
