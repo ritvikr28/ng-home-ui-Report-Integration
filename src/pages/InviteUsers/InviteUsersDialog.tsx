@@ -5,29 +5,34 @@ import {
   DialogContent,
   DialogFooter
 } from "@essnextgen/ui-kit";
-import './style.scss'
+import "./style.scss";
+import {
+  useTranslation,
+  UseTranslationResponse
+} from "@essnextgen/ui-intl-kit";
 
 interface IInviteUsersDialogProps {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
   const { setShowDialog } = props;
   return (
     <Dialog
       dataTestId="test-id"
       id="invite-user-element-id"
-      title="No items selected"
+      title={`${t("inviteUsers.noItemsSelected")}`}
       onClose={() => setShowDialog(false)}
       className="invite-user-dialog-footer"
     >
       <DialogContent>
-        Please select at least one item from the search results to perform the
-        action.
+        {`${t("inviteUsers.selectAtLeastOneItem")}`}
       </DialogContent>
       <DialogFooter>
         <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
-          Okay
+          {`${t("inviteUsers.okay")}`}
         </Button>
       </DialogFooter>
     </Dialog>

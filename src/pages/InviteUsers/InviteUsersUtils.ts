@@ -167,9 +167,11 @@ export const inviteUsersSorting = async (
   let apiColumnName = columnName;
   switch (columnName) {
     case "Name":
+    case "Enw":
       apiColumnName = "Forename";
       break;
     case "Email":
+    case "E-bost":
       apiColumnName = "EmailId";
       break;
     default:

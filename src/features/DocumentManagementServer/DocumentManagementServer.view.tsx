@@ -34,7 +34,7 @@ export const breadcrumbActionsList = [
     }
 ]
 
-const DocumentManagementServerView: React.FC = () => {
+const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
     const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -299,14 +299,23 @@ if (sortBy === apiColumnName) {
      const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
     const handleApply = () => {
-        if (isDateError || (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) || (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) || (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())) {
+         if (isDateError) {
             setIsDateError(true);
-        } else {
-            setSelectedFormats(selectedCategories)
-            setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
-            setIsFilterDialogOpen(false);
+            return;
         }
-    };
+    if (
+        isDateError ||
+        (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
+        (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
+        (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
+    ) {
+        setIsDateError(true);
+    } else {
+        setSelectedFormats(selectedCategories)
+        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+        setIsFilterDialogOpen(false);
+    }
+};
 
    const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);

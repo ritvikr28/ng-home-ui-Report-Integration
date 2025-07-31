@@ -82,7 +82,7 @@ describe("InviteUserView", () => {
     jest.spyOn(React, "useState").mockImplementation(useStateMock);
     jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
     render(<InviteUserView {...mockInviteUserProps} />);
-    expect(screen.getByText("Invite Users")).toBeInTheDocument();
+    expect(screen.getByText("Mock ControlledList")).toBeInTheDocument();
   });
 
   test("mocks and renders ControlledList component", () => {
