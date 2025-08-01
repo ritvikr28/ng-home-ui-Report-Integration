@@ -412,12 +412,12 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                             <ControlledList
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
-                                isShowHeading={true}
+                                isShowHeading
                                 isShowSubHeading={false}
-                                isSorting={true}
+                                isSorting
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
-                                isIconRightAligned={true}
+                                isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[
@@ -437,7 +437,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         value: "Inactive"
                                     }
                                 ]}
-                                isShowCheckboxCol={true}
+                                isShowCheckboxCol
                                 editSelectedBtnTitle="Actions"
                                 editSelectedOptions={[
                                     {
@@ -514,7 +514,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 paginationDefaultPage={1}
                                 paginationPage={currentPage}
                                 paginationOnChange={onPageChange}
-                                isPagination={true}
+                                isPagination
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 primaryButtonTitle=""
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
@@ -609,7 +609,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationTitle=""
                                 isShowOverflowMenuCol={false}
-                                isShowFirstElement={true}
+                                isShowFirstElement
                                 isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."

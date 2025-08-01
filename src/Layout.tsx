@@ -1,13 +1,27 @@
-import React, { Suspense, lazy, LazyExoticComponent, FC, useState } from "react";
+import React, {
+  Suspense,
+  lazy,
+  LazyExoticComponent,
+  FC,
+  useState,
+  useEffect
+} from "react";
 import { useDispatch } from "react-redux";
-import { ProtectedRoute, Auth, authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
+import {
+  ProtectedRoute,
+  Auth,
+  authService,
+  MatchPermissions,
+  Permission
+} from "@essnextgen/auth-ui";
 import {
   Switch,
   Route,
   BrowserRouter as Router,
   useHistory,
-  Redirect
- } from "react-router-dom";
+  Redirect,
+  Link
+} from "react-router-dom";
 import {
   Header,
   IApplicationMenu,
@@ -15,7 +29,20 @@ import {
   IModulePermission,
   SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
-import { Loader, LoaderType } from "@essnextgen/ui-kit";
+import {
+  ActionCard,
+  Button,
+  ButtonColor,
+  ButtonSize,
+  Divider,
+  ErrorActionList,
+  ErrorActionListItem,
+  Grid,
+  GridItem,
+  Loader,
+  LoaderType,
+  useMediaQuery
+} from "@essnextgen/ui-kit";
 import {
   useTranslation,
   UseTranslationResponse
@@ -31,11 +58,17 @@ import DBManagement from "./features/DBManagement/DBManagement.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
-import { isOrganisationInVariant, isOrganisationInVariantForAnyOrAll } from "./shared/utils/flagr-utils";
+import {
+  isOrganisationInVariant,
+  isOrganisationInVariantForAnyOrAll
+} from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
+import { fetchLinks } from "./shared/hooks/useSIMSNextGenLinks";
+import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
+import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -71,18 +104,30 @@ export const getMenus: (
 };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
-  baseRouteName
+  baseRouteName,
 }: ILayoutProps) => {
   const dispatch: any = useDispatch();
   const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-    const [isServiceInitiated, setIsServiceInitiated]: [
-      boolean,
-      React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(false);
- 
-  const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (menus: IApplicationMenu[]) => {
+
+  const [isServiceInitiated, setIsServiceInitiated]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+  const [hasSimsConnected, setHasSimsConnected]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+
+  const [loadingSimsConnectedData, setLoadingSimsConnectedData]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
+
+  const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (
+    menus: IApplicationMenu[]
+  ) => {
     startRequest();
     const modules: IAppModule[] = filterAndMapModules(menus);
     if (menus.length !== ApplicationConfig.getDefaultMenus().length) {
@@ -91,11 +136,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     return menus;
   };
 
-  const filterAndMapModules: (menus: IApplicationMenu[]) => IAppModule[] = (menus: IApplicationMenu[]) => {
+  const filterAndMapModules: (menus: IApplicationMenu[]) => IAppModule[] = (
+    menus: IApplicationMenu[]
+  ) => {
     const filteredModules: IApplicationMenu[] = menus.filter(
       (x) => !x.allowedRoles.includes("admin")
     );
-     /* eslint-disable */
+    /* eslint-disable */
     return filteredModules.map((x) => ({
       appUrl: x.isStandalone === false ? x.relativePath : x.absolutePath,
       title: t(`slices.${x.appCode}.title`),
@@ -103,50 +150,55 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       code: x.appCode,
       canView: true,
       linkText: t(`slices.${x.appCode}.linkText`),
-      link: t(`slices.${x.appCode}.link`)
+      link: t(`slices.${x.appCode}.link`),
     }));
   };
-    /* eslint-enable */
+  /* eslint-enable */
   const onAuthenticated: any = () => {
     /* istanbul ignore next */
     sessionStorage.removeItem("IS_NAVIGATED_FROM_COVER");
     if (authService.isAuthenticated()) {
       service.init();
       setIsServiceInitiated(true);
-    }
-    /* istanbul ignore next */
-    else{
+    } else {
+      /* istanbul ignore next */
       authService.logOut();
       history.push("/auth");
     }
   };
 
-const hasInviteUserView : boolean =  hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "InviteUserView"
-);
+  const hasInviteUserView: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "InviteUserView"
+  );
 
-  const hasInviteUserOrgView: boolean = isOrganisationInVariant("InviteUserView");
+  const hasInviteUserOrgView: boolean =
+    isOrganisationInVariant("InviteUserView");
 
   const hasInviteUserPermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.System.Permissions", Operation: "View" }],
     MatchPermissions.all
   );
 
-  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(`${envConfig.APPLICATION}`, "AdminConsoleView");
+  const hasAdminConsoleFlagrPermission: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "AdminConsoleView"
+  );
 
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "RefreshDBORG"
   );
 
-  const hasRefreshDBOrgPermission: boolean = isOrganisationInVariant("RefreshDBORG");
-  
+  const hasRefreshDBOrgPermission: boolean =
+    isOrganisationInVariant("RefreshDBORG");
+
   const hasSystemStatusPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SystemStatusORG"
   );
-  const hasSystemStatusOrgPermission: boolean = isOrganisationInVariantForAnyOrAll("SystemStatusORG");
+  const hasSystemStatusOrgPermission: boolean =
+    isOrganisationInVariantForAnyOrAll("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
     [{ Securable: "NG.Homepage.Access", Operation: "View" }],
@@ -174,6 +226,15 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
     MatchPermissions.any
   );
 
+  useEffect(() => {
+    (async () => {
+      const hasSimsConnectedData = await fetchLinks();
+      setLoadingSimsConnectedData(false);
+      setHasSimsConnected(hasSimsConnectedData);
+    })();
+    setLoadingSimsConnectedData(true);
+  }, []);
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -181,8 +242,10 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
         <Header
           isRenderOnFrame
           menuFilterHandler={menuFilterHandler}
-          onClickLogo={() => { } }
-          useSchoolPermission simsMenuData={[]}        />
+          onClickLogo={() => {}}
+          useSchoolPermission
+          simsMenuData={[]}
+        />
       )}
       <Suspense
         fallback={
@@ -200,22 +263,33 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             exact
             path="/"
             component={
-              isServiceInitiated
-                ? renderHomePage(
-                    hasNewHomePagePermission
+             isServiceInitiated
+                ? loadingSimsConnectedData ? LoaderComponent : renderHomePage(
+                    hasNewHomePagePermission,
+                    hasSimsConnected
                   )
                 : EmptyComponent
             }
           />
-           {/* eslint-enable */}
+          {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
-          <ProtectedRoute exact path="/unauthorized" component={UnAuthorisedAccess} />
+          <ProtectedRoute
+            exact
+            path="/unauthorized"
+            component={UnAuthorisedAccess}
+          />
           {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
               path="/AdminConsole"
-              render={() => hasAdminConsolePermissions || isAuthzUserAdmin() ? <AdminConsole /> : <Redirect to="/unauthorized" />}
+              render={() =>
+                hasAdminConsolePermissions || isAuthzUserAdmin() ? (
+                  <AdminConsole />
+                ) : (
+                  <Redirect to="/unauthorized" />
+                )
+              }
             />
           )}
           {hasAdminConsoleFlagrPermission && (
@@ -223,26 +297,44 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
               exact
               /* istanbul ignore next */
               path="/documents"
-              render={() => hasAdminConsolePermissions ? <DocumentManagementServer /> : <Redirect to="/unauthorized" />}
+              render={() =>
+                hasAdminConsolePermissions ? (
+                  <DocumentManagementServer />
+                ) : (
+                  <Redirect to="/unauthorized" />
+                )
+              }
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
+            exact
+            path="/adminConsole/userManagement"
+            render={() => <EarlyAdpterPage />}
+          />
+          <ProtectedRoute
+            exact
+            path="/schoolRedirect"
+            component={SchoolGroupRedirect}
+          />
+          {hasRefreshDBOrgPermission && hasRefreshDBPermission && (
+            <ProtectedRoute
               exact
-              path="/adminConsole/userManagement"
-              render={() => <EarlyAdpterPage /> }
+              path="/dbmanagement"
+              component={DBManagement}
             />
-          <ProtectedRoute exact path="/schoolRedirect" component={SchoolGroupRedirect} />
-          {hasRefreshDBOrgPermission && hasRefreshDBPermission &&<ProtectedRoute exact path="/dbmanagement" component={DBManagement} />}
-           {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
+          )}
+          {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
             <ProtectedRoute
               exact
               path="/systemstatus"
               render={() =>
-                canViewSystemStatus || canUpdateSystemStatus
-                  ? <SystemStatus />
-                  : <UnAuthorisedAccess />
+                canViewSystemStatus || canUpdateSystemStatus ? (
+                  <SystemStatus />
+                ) : (
+                  <UnAuthorisedAccess />
+                )
               }
             />
           )}
@@ -250,8 +342,15 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
             exact
             /* istanbul ignore next */
             path="/inviteusers"
-            render={() => hasInviteUserView && hasInviteUserOrgView &&
-              (isAuthzUserAdmin() || hasInviteUserPermissions) ? <InviteUsersLogic /> : <Redirect to="/unauthorized" />}
+            render={() =>
+              hasInviteUserView &&
+              hasInviteUserOrgView &&
+              (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
+                <InviteUsersLogic />
+              ) : (
+                <Redirect to="/unauthorized" />
+              )
+            }
           />
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
@@ -261,24 +360,146 @@ const hasInviteUserView : boolean =  hasFeaturePermission(
 };
 
 const renderHomePage: (
-  hasNewHomePagePermission: boolean
+  hasNewHomePagePermission: boolean,
+  hasSimsConnected: boolean
 ) => React.ComponentType<any> | undefined = (
-  hasNewHomePagePermission: boolean
+  hasNewHomePagePermission: boolean,
+  hasSimsConnected: boolean
 ) => {
-  /* istanbul ignore next */
+  if (!isAuthzUserAdmin() && !hasNewHomePagePermission && hasSimsConnected) {
+    return HomePageForSimsConnectedNormalUser;
+  } 
+  if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+    return SIMSIDAdminPageView;
+  } 
   if (hasNewHomePagePermission) {
     return NewHomepageView;
-  } /* eslint-disable */
-  else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
-    return SIMSIDAdminPageView;
-  } /* istanbul ignore next */
-  else {
-    return UnAuthorisedAccess;
-  }
+  } 
+  return UnAuthorisedAccess;  
 };
 
-  {/* eslint-enable */}
+/* eslint-enable */
 /* istanbul ignore next */
 const EmptyComponent: () => JSX.Element = () => (
-  <div data-testid="empty-component" className=""/>
+  <div data-testid="empty-component" className="" />
+);
+
+const HomePageForSimsConnectedNormalUser: React.FC = () => {
+  const rel: any = { rel: "noopener noreferrer" };
+  const onCardClick: () => void = () => {};
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
+  const isMobileView: boolean = useMediaQuery("(max-width: 767.9px)");
+  const onButtonClick: () => void = () => {
+    const anchor: HTMLAnchorElement = document.createElement("a");
+    anchor.href =
+      "https://help.parentpaygroup.com/csm/en/sims-next-gen-videos?id=kb_article_view&sysparm_article=KB0012323";
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.click();
+  };
+  return (
+    <div className="home-page-for-sims-connected-normal-user-wrapper">
+      <Grid container className="gap-24">
+        <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="mt-16">
+          <SIMSConnectedLauncher />
+        </GridItem>
+        <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="welcome-heading-container">
+          <div>
+            <span className="welcome-heading">{t("HomePageForSimsConnectedNormalUser.welcomeToSims")}</span>
+          </div>
+        </GridItem>
+        <GridItem sm md lg >
+          <Grid className="new-sims-uppersection sims-next-gen-update-wrapper" >
+              <GridItem sm md lg className="new-sims-uppersection">
+                <SectionTitle title={t("discoverMore.simsupdatetext")} />
+              </GridItem>
+
+              <GridItem sm md lg className="new-sims-discoverbtn">
+                <Button
+                  color={ButtonColor.Secondary}
+                  dataTestId="btn-save"
+                  onClick={onButtonClick}
+                  size={ButtonSize.Small}
+                >
+                  <span className="new-discoverbtn-style">
+                    {
+                      isMobileView
+                      ? t("discoverMore.mobilesimsupdatetext")
+                      : t("discoverMore.mobilesimsupdatemoretext")
+                    }
+                  </span>
+                </Button>
+              </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem sm={12} md={12} lg={12} xl={12} xxl={12}>
+          <Grid className="action-card-container-closeview sims-ng">
+            <GridItem sm={12} lg={6} md={12} className="what-new-sims">
+              <Link
+                dataTestId="link1"
+                href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
+                target="_blank"
+                {...rel}
+              >
+                <ActionCard
+                  className="primary-text"
+                  dataTestId="what-new-test-id"
+                  id="action-card"
+                  onClickActionCard={() => onCardClick()}
+                  primaryText={t("discoverMore.primarytext")}
+                  secondaryText={t("discoverMore.secondarytext")}
+                />
+              </Link>
+            </GridItem>
+            <GridItem
+              sm={12}
+              lg={6}
+              md={12}
+              className="what-new-sims action-card"
+            >
+              <Link
+                dataTestId="link2"
+                href="https://help.parentpaygroup.com/csm/en/%25short_descr?id=copy_of_kb_article_view_1&sysparm_article=KB0012256"
+                target="_blank"
+                {...rel}
+              >
+                <ActionCard
+                  className="primary-text"
+                  dataTestId="test-id"
+                  id="action-card"
+                  onClickActionCard={() => onCardClick()}
+                  primaryText={t("discoverMore.primarytextsimsnextgen")}
+                  secondaryText={t("discoverMore.secondarytextsimsnextgen")}
+                />
+              </Link>
+            </GridItem>
+          </Grid>
+        </GridItem>
+        <GridItem sm={12} md={12} lg={12}>
+          <ErrorActionList description={t("HomePageForSimsConnectedNormalUser.needAccessToSimsNextGen")}>
+            <ErrorActionListItem
+              iconName="information"
+              title={t("HomePageForSimsConnectedNormalUser.contactYourAdministrator")}
+            >
+              {t("HomePageForSimsConnectedNormalUser.subHeadingPartOne")}
+              <br />
+              {t("HomePageForSimsConnectedNormalUser.subHeadingPartTwo")}
+            </ErrorActionListItem>
+            <Divider />
+          </ErrorActionList>
+        </GridItem>
+      </Grid>
+    </div>
+  );
+};
+
+const LoaderComponent: React.FC = () => (
+  <div className="loader-wrapper">
+    <Loader
+      className="loader-wrapper"
+      loaderText="Loading..."
+      loaderType={LoaderType.Circular}
+    />
+  </div>
 );

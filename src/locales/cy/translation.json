@@ -411,5 +411,12 @@
     "cancel" : "Canslo",
     "save" : "Arbed",
     "pleaseWaitLoader" : "Arhoswch os gwelwch yn dda"
-  }
+  },
+  "HomePageForSimsConnectedNormalUser": {
+    "welcomeToSims": "Croeso i SIMS",
+    "needAccessToSimsNextGen": "Angen mynediad i SIMS Next Gen?",
+    "contactYourAdministrator": "Cysylltwch â'ch gweinyddwr",
+    "subHeadingPartOne": "Efallai nad oes gennych y caniatâd cywir, neu efallai nad oes gan eich sefydliad drwydded ar gyfer y cynnyrch hwn.",
+    "subHeadingPartTwo": "Cysylltwch â'ch gweinyddwr i wirio'ch mynediad neu i gael cymorth."
+  }  
 }

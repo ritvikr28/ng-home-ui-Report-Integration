@@ -37,8 +37,8 @@ describe('SIMSIDAdminMainPanelView', () => {
   it('renders with isOpen true and notification enabled', () => {
     render(
       <SIMSIDAdminMainPanelView
-        isOpen={true}
-        enableNotification={true}
+        isOpen
+        enableNotification
         setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
       />
@@ -55,7 +55,7 @@ describe('SIMSIDAdminMainPanelView', () => {
     render(
       <SIMSIDAdminMainPanelView
         isOpen={false}
-        enableNotification={true}
+        enableNotification
         setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
       />
@@ -71,7 +71,7 @@ describe('SIMSIDAdminMainPanelView', () => {
   it('renders with notification disabled', () => {
     render(
       <SIMSIDAdminMainPanelView
-        isOpen={true}
+        isOpen
         enableNotification={false}
         setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
@@ -87,7 +87,7 @@ describe('SIMSIDAdminMainPanelView', () => {
     render(
       <SIMSIDAdminMainPanelView
         isOpen={false}
-        enableNotification={true}
+        enableNotification
         setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
       />
@@ -100,8 +100,8 @@ describe('SIMSIDAdminMainPanelView', () => {
   it('calls setDisableNotification when notification is clicked', () => {
     render(
       <SIMSIDAdminMainPanelView
-        isOpen={true}
-        enableNotification={true}
+        isOpen
+        enableNotification
         setDisableNotification={setDisableNotification}
         setIsOpen={setIsOpen}
       />
@@ -120,7 +120,7 @@ describe('SIMSIDAdminMainPanel', () => {
 
   it('renders SIMSIDAdminMainPanelView with notification enabled', () => {
     jest.spyOn(stateHelper, 'usePersistantState').mockReturnValue([true, jest.fn()]);
-    render(<SIMSIDAdminMainPanel isOpen={true} setIsOpen={setIsOpen} />);
+    render(<SIMSIDAdminMainPanel isOpen setIsOpen={setIsOpen} />);
     expect(screen.getByTestId('SIMSID-Admin-View')).toBeInTheDocument();
     expect(screen.getByTestId('notification-test-id')).toBeInTheDocument();
   });
