@@ -367,7 +367,10 @@ const renderHomePage: (
   hasSimsConnected: boolean
 ) => {
   if (!isAuthzUserAdmin() && !hasNewHomePagePermission && hasSimsConnected) {
-    return HomePageForSimsConnectedNormalUser;
+    return () => <HomePageForSimsConnectedNormalUser hasSimsConnected={hasSimsConnected} />;
+  }
+  if (!isAuthzUserAdmin() && !hasNewHomePagePermission && !hasSimsConnected) {
+    return UnAuthorisedAccess
   } 
   if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
     return SIMSIDAdminPageView;
@@ -384,7 +387,7 @@ const EmptyComponent: () => JSX.Element = () => (
   <div data-testid="empty-component" className="" />
 );
 
-const HomePageForSimsConnectedNormalUser: React.FC = () => {
+const HomePageForSimsConnectedNormalUser: React.FC<{hasSimsConnected: boolean}> = ({hasSimsConnected}) => {
   const rel: any = { rel: "noopener noreferrer" };
   const onCardClick: () => void = () => {};
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -401,9 +404,12 @@ const HomePageForSimsConnectedNormalUser: React.FC = () => {
   return (
     <div className="home-page-for-sims-connected-normal-user-wrapper">
       <Grid container className="gap-24">
-        <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="mt-16">
-          <SIMSConnectedLauncher />
-        </GridItem>
+        {
+          hasSimsConnected &&
+          <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="mt-16">
+            <SIMSConnectedLauncher />
+          </GridItem>
+        }
         <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="welcome-heading-container">
           <div>
             <span className="welcome-heading">{t("HomePageForSimsConnectedNormalUser.welcomeToSims")}</span>
