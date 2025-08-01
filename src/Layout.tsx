@@ -204,12 +204,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     isOrganisationInVariantForAnyOrAll("SystemStatusORG");
 
   const hasNewHomePagePermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.Homepage", Operation: "View" }],
+    [{ Securable: "NG.Homepage.Access", Operation: "View" }],
     MatchPermissions.all
   );
 
   const hasAdminConsolePermissions: boolean = authService.isAuthorised(
-    [{ Securable: "NG.AdminConsole", Operation: "View" }],
+    [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
     MatchPermissions.all
   );
 

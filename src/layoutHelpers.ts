@@ -21,10 +21,10 @@ export const hasOrgVariant: (variant: string) => boolean =
 
 
     export const shouldShowAdminConsole = () =>
-        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole", "View");
+        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
       
       export const shouldShowDocuments = () =>
-        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole", "View");
+        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
       
       export const shouldShowUAM = () =>
         hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
