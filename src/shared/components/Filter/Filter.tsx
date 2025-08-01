@@ -73,9 +73,45 @@ const clearAll = () => {
   setToDateError("");
   setIsDateError(false);
   setSelectedDateRange({ fromDate: "", toDate: "" });
-  setFromDate({ day: "", month: "", year: "" })
-  setToDate({ day: "", month: "", year: "" })
 };
+
+
+
+useEffect(() => {
+  const hasFrom = !!selectedDateRange.fromDate;
+  const hasTo = !!selectedDateRange.toDate;
+
+  if (hasFrom || hasTo) {
+    const from = hasFrom ? dayjs(selectedDateRange.fromDate).format("DD MMM YYYY") : "";
+    const to = hasTo ? dayjs(selectedDateRange.toDate).format("DD MMM YYYY") : "";
+
+    const dateString = hasFrom && hasTo
+      ? `${from} to ${to}`
+      : hasFrom
+        ? `${from} to -`
+        : `- to ${to}`;
+
+    const dateVal = {
+      text: dateString,
+      data: { type: "dateRange" },
+      value: dateString,
+    };
+
+    setSelectedCategories((prev) => {
+      const index = prev.findIndex(item => item.data?.type === "dateRange");
+      if (index === -1) return [...prev, dateVal];
+      const updated = [...prev];
+      updated[index] = dateVal;
+      return updated;
+    });
+  } else {
+    // ✅ Remove date tag if both dates are empty
+    setSelectedCategories((prev) =>
+      prev.filter(item => item.data?.type !== "dateRange")
+    );
+  }
+}, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
+
   useEffect(() => {
     if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
@@ -91,7 +127,14 @@ const clearAll = () => {
   if (selectedDateRange?.fromDate || selectedDateRange?.toDate) {
     const from = dayjs(selectedDateRange.fromDate).format("DD MMM YYYY");
     const to = selectedDateRange.toDate && dayjs(selectedDateRange.toDate).format("DD MMM YYYY");
-    const dateString = `${from} ${(to ? 'to ' : '-' )+ to}`;
+      let dateString = "";
+    if (selectedDateRange.fromDate && selectedDateRange.toDate) {
+      dateString = `${from} to ${to}`;
+    } else if (selectedDateRange.fromDate) {
+      dateString = `${from} to -`; 
+    } else if (selectedDateRange.toDate) {
+      dateString = `- to ${to}`;
+    }
  
     const dateVal = {
       text: dateString,
@@ -135,7 +178,22 @@ const clearAll = () => {
   }
 }, [isOpen]);
  
-     const handleDateChange = (
+useEffect(() => {
+  if (!isOpen) return;
+
+  const handleEsc = (event: KeyboardEvent) => {
+    if (event.key === "Escape") {
+      onClose();
+    }
+  };
+
+  window.addEventListener("keydown", handleEsc);
+  return () => {
+    window.removeEventListener("keydown", handleEsc);
+  };
+}, [isOpen, onClose]);
+
+   const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
       day: string | number,
@@ -154,12 +212,28 @@ const clearAll = () => {
       const thisDateStr = getDateString(newDate);
       const otherDateStr = getDateString(otherDate);
 
-      if (!newDate.day && !newDate.month && !newDate.year) {
+      if (
+        !newDate.day && !newDate.month && !newDate.year &&
+        !otherDate.day && !otherDate.month && !otherDate.year
+      ) {
         setError("");
         setIsDateError(false);
+        setFromDateError("");
+        setToDateError("");
+        setSelectedDateRange({ fromDate: "", toDate: "" });
         return;
       }
 
+     if (!newDate.day && !newDate.month && !newDate.year) {
+      setError("");
+      setIsDateError(false);
+      // Add this: if To date is present, show "From date is required"
+      if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
+        setError("From date is required");
+        setIsDateError(true);
+      }
+      return;
+    }
       if (isFrom) {
         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
           setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
@@ -173,11 +247,11 @@ const clearAll = () => {
           return;
         }
          if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-          setError("Invalid date");
+          setError("Invalid Date");
           setIsDateError(true);
           return;
   }
-        if (thisDateStr) setToDateError("");
+        // if (thisDateStr) setToDateError("");
       } else {
         if (thisDateStr && !otherDateStr) {
           setFromDateError("From date is required");
@@ -190,11 +264,11 @@ const clearAll = () => {
           return;
         }
         if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-    setError("Invalid date");
-    setIsDateError(true);
-    return;
-  }
-        if (thisDateStr && otherDateStr) setError("");
+          setError("Invalid Date");
+          setIsDateError(true);
+          return;
+        }
+        // if (thisDateStr && otherDateStr) setError("");
       }
        const fromDateValue = isFrom ? thisDateStr : otherDateStr
        const toDateValue = !isFrom ? thisDateStr : otherDateStr
@@ -205,50 +279,8 @@ const clearAll = () => {
       };
 
       const handleApplyWrapper = () => {
-  // Validate "From" date
-      if (fromDate.day || fromDate.month || fromDate.year) {
-        if (!(fromDate.day && fromDate.month && fromDate.year)) {
-          setFromDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-        const fromDateStr = getDateString(fromDate);
-        if (!dayjs(fromDateStr, "YYYY-MM-DD", true).isValid()) {
-          setFromDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-      }
 
-      // Validate "To" date
-      if (toDate.day || toDate.month || toDate.year) {
-        if (!(toDate.day && toDate.month && toDate.year)) {
-          setToDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-        const toDateStr = getDateString(toDate);
-        if (!dayjs(toDateStr, "YYYY-MM-DD", true).isValid()) {
-          setToDateError("Invalid date");
-          setIsDateError(true);
-          return;
-        }
-      }
-
-      // Check logical order
-      const fromDateStr = getDateString(fromDate);
-      const toDateStr = getDateString(toDate);
-      if (fromDateStr && toDateStr && dayjs(toDateStr).isBefore(dayjs(fromDateStr), "day")) {
-        setToDateError("To date should not be before From date.");
-        setIsDateError(true);
-        return;
-      }
-
-      // If any error, block apply
-      if (fromDateError || toDateError || isDateError) {
-        return;
-      }
-
+      handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       setWasApplied(true);
       handleApply();
   };
@@ -350,7 +382,8 @@ const clearAll = () => {
                 }
               invalidDateErrorMessage={fromDateError}
               validationText={fromDateError}
-              validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
+              isInvalidDate={false}
+              validationTextLevel={fromDateError ? ValidationTextLevel.Error : undefined}
             />
           </div>
           <div className="dms-filter-dialog-todate-input">
@@ -366,7 +399,8 @@ const clearAll = () => {
                 }
               invalidDateErrorMessage={toDateError}
               validationText={toDateError}
-              validationTextLevel={isDateError ? ValidationTextLevel.Error : undefined}
+              isInvalidDate={false}
+              validationTextLevel={toDateError ? ValidationTextLevel.Error : undefined}
             />
           </div>
         </div>

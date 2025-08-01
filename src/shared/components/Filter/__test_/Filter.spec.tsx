@@ -417,7 +417,7 @@ it("calculates insertIndex from matching prevBeforeDate items when dateRange is 
 //   const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
 //   const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
 
-//   // Invalid date: 31 Feb 2025
+//   // Invalid Date: 31 Feb 2025
 //   fireEvent.change(toDay, { target: { value: "31" } });
 //   fireEvent.change(toMonth, { target: { value: "02" } });
 //   fireEvent.change(toYear, { target: { value: "205" } });
@@ -472,7 +472,7 @@ it("sets error when fromDate is in invalid format", async () => {
   fireEvent.change(fromYear, { target: { value: "203" } });
 
   const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[0]).toHaveTextContent(/invalid date/i);
+  expect(validationText[0]).toHaveTextContent(/Invalid Date/i);
 });
 
 it("sets error when toDate is in invalid format", async () => {
@@ -484,13 +484,13 @@ it("sets error when toDate is in invalid format", async () => {
   const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
   const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
 
-  // Enter invalid date: 31st Feb is not valid
+  // Enter Invalid Date: 31st Feb is not valid
   fireEvent.change(toDay, { target: { value: "31" } });
   fireEvent.change(toMonth, { target: { value: "02" } });
   fireEvent.change(toYear, { target: { value: "203" } });
 
   const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[1]).toHaveTextContent(/invalid date/i);
+  expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
 });
 
 it("inserts dateRange item at correct index when it existed in middle of previous list", () => {

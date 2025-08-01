@@ -5,7 +5,8 @@ import {
   fireEvent,
   waitFor,
   act,
-  within
+  within,
+  waitForElementToBeRemoved
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { error } from "console";
@@ -379,10 +380,54 @@ it("does not call fetchDocumentDetails when non-sortable column is clicked", asy
   const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
   fireEvent.click(addedByHeader);
 
-    // The API should NOT be called with sortBy: "Added by"
-    expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-      expect.objectContaining({ sortBy: "Added by" })
-    );
+  // The API should NOT be called with sortBy: "Added by"
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
+
+  it("handles pagination changes", async () => {
+  jest.setTimeout(15000);
+     const mockDatas = {
+    totalRecords: 41,
+    data:  [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+    statusCode: 200
+  };
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
+    const spy = jest.spyOn(logicModule, "handlePageChange");
+
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    await waitFor(() => {
+      const header = screen.getByText("2");
+      fireEvent.click(header);
+    });
+
+    expect(spy).toHaveBeenCalled();
   });
 
   it("handles suggestion click", () => {
@@ -781,5 +826,41 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   
 });
 
+// it("should delete preview filter tag when close button is clicked", async () => {
+//   const categoryList = [
+//     { application: "AppX", registrationId: 111, section: "S1" },
+//     { application: "AppX", registrationId: 112, section: "S2" },
+//     { application: "AppY", registrationId: 113, section: "S3" }
+//   ];
+//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
+
+//   const { container } = render(<DocumentManagementServerView />);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   const filterButton = await screen.findByTestId("filter-btn");
+//   fireEvent.click(filterButton);
+
+//   const categoryDropdown = screen.getByTestId("text-input-dms-filter-dialog-categories");
+//   fireEvent.click(categoryDropdown);
+//   console.log(container.innerHTML);
+//   const categoryCheckbox = screen.getByLabelText("AppX");
+//   fireEvent.click(categoryCheckbox);
+//   const applyButton = screen.getByText("Apply");
+//   fireEvent.click(applyButton);
+
+
+
+//   await waitFor(() => {
+//     expect(screen.getByText("Category: legal")).toBeInTheDocument();
+//   });
+//   const closeButton = screen.getByTestId("filter-tag-close-btn");
+//   fireEvent.click(closeButton);
+
+//   await waitFor(() => {
+//     expect(screen.queryByText("Category: legal")).not.toBeInTheDocument();
+//   });
+// })
 });
 

@@ -2,7 +2,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -244,20 +244,29 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
       }
 
     const getEmptyStateMsg = () => {
-        if(showErrorBanner) return "Information unavailable.";
-        if (searchText !== "") return undefined;
-        if (docData && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-            return "No data to display.";
-        }
-        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-        return "Documents will appear here once they are uploaded.";
-    };
+    if (showErrorBanner) return "Information unavailable.";
+    if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
+
+    // Show "No data to display." only if search is triggered and no data
+    if (
+        isSearchTriggered &&
+        docData &&
+        docData?.statusCode === 200 &&
+        Array.isArray(docData?.data) &&
+        docData?.data.length === 0
+    ) {
+        return "No data to display.";
+    }
+
+    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+    return "Documents will appear here once they are uploaded.";
+};
 
     const getTableHeaders = () => {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if ((isSearchTriggered || searchText || docData)) {
 
             return getTableHeadersData;
         }
@@ -291,30 +300,21 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }
 
     const handleTagClose = (
-        e: React.SyntheticEvent,
-        text: string,
-        closeObj: { name?: string; id?: string | number },
-        id?: string | number
-        ) => {
-        // Detect date range tag by its name format
-        if (
-            typeof closeObj.name === "string" &&
-            (closeObj.name.match(/^\d{2} \w{3} \d{4} -$/) ||
-                closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
-            ) {
-            setSelectedDateRange({ fromDate: "", toDate: "" });
-            setDateRange({ fromDate: "", toDate: "" });
-            setIsDateError(false);
-        }
-
-        // Remove category/format tag
-        setSelectedCategories(prev =>
-            prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
-        );
-        setSelectedFormats(prev =>
-            prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
-        );
-    };
+  e: React.SyntheticEvent,
+  text: string,
+  closeObj: { name?: string; id?: string | number }
+) => {
+  handleTagCloseLogic(
+    e,
+    text,
+    closeObj,
+    setSelectedDateRange,
+    setDateRange,
+    setIsDateError,
+    setSelectedCategories,
+    setSelectedFormats,
+  );
+};
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -365,6 +365,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
      
     const handleApply = () => {
+        
         if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
            selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
             setIsDateError(true);
@@ -384,12 +385,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsDateError(true);
     } else {
             setIsFilterLoading(true);
+            
+        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
             setTimeout(() => {
         setSelectedFormats(selectedCategories);
-        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
         setIsFilterDialogOpen(false);
             setIsFilterLoading(false);
-        }, 1000);
+        }, 500);
     }
 };
 

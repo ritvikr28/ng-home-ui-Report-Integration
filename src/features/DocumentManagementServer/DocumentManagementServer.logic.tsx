@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -379,6 +379,36 @@ export const getCategoryArr = (selectedFormats: any[]) =>
   ];
 };
 
+export const handleTagCloseLogic = (
+  e: React.SyntheticEvent,
+  text: string,
+  closeObj: { name?: string; id?: string | number },
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>,
+  setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>,
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>,
+  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>,
+  setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>
+) => {
+  // Detect date range tag by its name format
+  if (
+    typeof closeObj.name === "string" &&
+    (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
+      closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
+  ) {
+    setSelectedDateRange({ fromDate: "", toDate: "" });
+    setDateRange({ fromDate: "", toDate: "" });
+    setIsDateError(false);
+  }
+
+  // Remove category/format tag
+  setSelectedCategories(prev =>
+    prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+  );
+  setSelectedFormats(prev =>
+    prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+  );
+};
+
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
@@ -393,7 +423,7 @@ export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
-  showErrorBanner: boolean
+  showErrorBanner: boolean,
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
@@ -406,7 +436,7 @@ export const getResultNotFoundMsg = (
   if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return "No data to display.";
   }
-  return "Documents will appear here once they are uploaded.";
+  return undefined;
 };
 
 
@@ -455,12 +485,6 @@ export const debouncedFetchSuggestions = debounce(
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
-      console.log("Fetching suggestions for:", {
-        searchText,
-        categoryId,
-        fromDate,
-        toDate
-      });
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload?.[0]?.values ?? [];
       setSuggestions(formatSuggestions(values));
@@ -472,6 +496,6 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  1000
+  1
 );
 
