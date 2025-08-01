@@ -176,7 +176,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     isOrganisationInVariant("InviteUserView");
 
   const hasInviteUserPermissions: boolean = authService.isAuthorised(
-    [{ Securable: "NG.System.Permissions", Operation: "View" }],
+    [{ Securable: "NG.UserManagement.Groups", Operation: "View" }],
     MatchPermissions.all
   );
 
