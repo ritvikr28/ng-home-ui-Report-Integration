@@ -1,6 +1,7 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
+import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
 import {
   debouncedFetchSuggestions,
@@ -21,7 +22,6 @@ import {
   onBreadcrumbClick,
   tableBodyData
 } from "../DocumentManagementServer.logic";
-import { ISelectedItem } from "@essnextgen/ui-kit";
 
 const analytics = require('../../../shared/utils/analytics').default;
 
@@ -360,8 +360,6 @@ describe("onBreadcrumbClick", () => {
 });
 
 describe("loadSuggestions", () => {
-  const setSuggestions = jest.fn();
-  const setSuggestionsLoading = jest.fn();
 
   it("loads and sets suggestions", async () => {
   const data = [{ fileId: "1", fileName: "Doc1" }];
@@ -946,7 +944,7 @@ describe("handleTagCloseLogic", () => {
     handleTagCloseLogic(
       {} as React.SyntheticEvent,
       "dummyText",
-      { name: "30 Jul 2025 -" },
+      { name: "30 Jul 2025 to -" },
       mockSetSelectedDateRange,
       mockSetDateRange,
       mockSetIsDateError,

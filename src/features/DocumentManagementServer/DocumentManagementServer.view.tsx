@@ -83,20 +83,24 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
-    const tableData: tableDataProps[] = showErrorBanner
-  ? [] // Show no data if error banner is active
-  : (showSearchError || !docData?.data?.length)
-    ? []
-    : docData?.data?.map((doc: any) => ({
-        id: doc?.fileId,
-        Document: doc?.document,
-        Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
-        Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-        Addedby: doc?.addedBy || "",
-        "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-        Format: doc?.format,
-        Size: doc?.size,
-      }));
+    let tableData: tableDataProps[] = [];
+
+        if (showErrorBanner) {
+        tableData = [];
+        } else if (showSearchError || !docData?.data?.length) {
+        tableData = [];
+        } else if (docData?.data) {
+        tableData = docData.data.map((doc: any) => ({
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+            Format: doc?.format,
+            Size: doc?.size,
+        }));
+}
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -312,7 +316,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     setDateRange,
     setIsDateError,
     setSelectedCategories,
-    setSelectedFormats,
+    setSelectedFormats
   );
 };
     useEffect(() => {

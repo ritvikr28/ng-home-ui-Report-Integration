@@ -284,7 +284,7 @@ export const handleSearchChange = (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
@@ -312,7 +312,7 @@ export const handleSearchChange = (
     toDate,
     setIsSearchLoading,
     setSuggestions,
-    setShowSearchError,
+    setShowSearchError
   );
 };
 
@@ -423,7 +423,7 @@ export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
-  showErrorBanner: boolean,
+  showErrorBanner: boolean
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";

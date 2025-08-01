@@ -5,8 +5,7 @@ import {
   fireEvent,
   waitFor,
   act,
-  within,
-  waitForElementToBeRemoved
+  within
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import { error } from "console";

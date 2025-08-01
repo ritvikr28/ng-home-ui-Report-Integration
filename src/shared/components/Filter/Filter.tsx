@@ -44,9 +44,9 @@ const FilterDialog = ({
   setSelectedCategories,
   selectedCategories,
   handleApply,
+  isDateError,
   isFilterDialogOpen,
   setIsDateError,
-  isDateError,
   setSelectedDateRange,
   selectedDateRange,
   isLoading
@@ -85,11 +85,12 @@ useEffect(() => {
     const from = hasFrom ? dayjs(selectedDateRange.fromDate).format("DD MMM YYYY") : "";
     const to = hasTo ? dayjs(selectedDateRange.toDate).format("DD MMM YYYY") : "";
 
-    const dateString = hasFrom && hasTo
-      ? `${from} to ${to}`
-      : hasFrom
-        ? `${from} to -`
-        : `- to ${to}`;
+    let dateString = "";
+      if (hasFrom && hasTo) {
+        dateString = `${from} to ${to}`;
+      } else if (hasFrom) {
+        dateString = `${from} to -`;
+      }
 
     const dateVal = {
       text: dateString,
@@ -105,7 +106,6 @@ useEffect(() => {
       return updated;
     });
   } else {
-    // ✅ Remove date tag if both dates are empty
     setSelectedCategories((prev) =>
       prev.filter(item => item.data?.type !== "dateRange")
     );
@@ -132,9 +132,7 @@ useEffect(() => {
       dateString = `${from} to ${to}`;
     } else if (selectedDateRange.fromDate) {
       dateString = `${from} to -`; 
-    } else if (selectedDateRange.toDate) {
-      dateString = `- to ${to}`;
-    }
+    } 
  
     const dateVal = {
       text: dateString,
@@ -179,7 +177,10 @@ useEffect(() => {
 }, [isOpen]);
  
 useEffect(() => {
-  if (!isOpen) return;
+  if (!isOpen) {
+    // Return a no-op cleanup function for consistent return
+    return () => {};
+  }
 
   const handleEsc = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -192,7 +193,6 @@ useEffect(() => {
     window.removeEventListener("keydown", handleEsc);
   };
 }, [isOpen, onClose]);
-
    const handleDateChange = (
       setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
       setError: React.Dispatch<React.SetStateAction<string>>,
@@ -224,14 +224,20 @@ useEffect(() => {
         return;
       }
 
-     if (!newDate.day && !newDate.month && !newDate.year) {
+    if (!newDate.day && !newDate.month && !newDate.year) {
       setError("");
       setIsDateError(false);
-      // Add this: if To date is present, show "From date is required"
       if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
         setError("From date is required");
         setIsDateError(true);
       }
+      return;
+    }
+
+    // If any field is missing (partial date), show required error instead of invalid date
+    if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
+      setError("From date is required");
+      setIsDateError(true);
       return;
     }
       if (isFrom) {
@@ -279,8 +285,12 @@ useEffect(() => {
       };
 
       const handleApplyWrapper = () => {
-
+      
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
+      if (fromDateError || toDateError || isDateError) {
+        setIsDateError(true);
+        return;
+      }
       setWasApplied(true);
       handleApply();
   };
@@ -380,7 +390,7 @@ useEffect(() => {
                 onChange={(day, month, year) =>
                   handleDateChange(setFromDate, setFromDateError, day, month, year, toDate, true)
                 }
-              invalidDateErrorMessage={fromDateError}
+              invalidDateErrorMessage=""
               validationText={fromDateError}
               isInvalidDate={false}
               validationTextLevel={fromDateError ? ValidationTextLevel.Error : undefined}
@@ -397,7 +407,7 @@ useEffect(() => {
                onChange={(day, month, year) =>
                   handleDateChange(setToDate, setToDateError, day, month, year, fromDate, false)
                 }
-              invalidDateErrorMessage={toDateError}
+              invalidDateErrorMessage=""
               validationText={toDateError}
               isInvalidDate={false}
               validationTextLevel={toDateError ? ValidationTextLevel.Error : undefined}
@@ -429,7 +439,8 @@ useEffect(() => {
   );
 };
 FilterDialog.defaultProps = {
-  dataTestId: "dms-filter-dialog"
+  dataTestId: "dms-filter-dialog",
+  isLoading: false,
 };
 
 export default FilterDialog;
