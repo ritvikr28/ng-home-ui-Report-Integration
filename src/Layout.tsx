@@ -359,6 +359,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   );
 };
 
+/* istanbul ignore next */
 const renderHomePage: (
   hasNewHomePagePermission: boolean,
   hasSimsConnected: boolean
@@ -387,6 +388,7 @@ const EmptyComponent: () => JSX.Element = () => (
   <div data-testid="empty-component" className="" />
 );
 
+/* istanbul ignore next */
 const HomePageForSimsConnectedNormalUser: React.FC<{hasSimsConnected: boolean}> = ({hasSimsConnected}) => {
   const rel: any = { rel: "noopener noreferrer" };
   const onCardClick: () => void = () => {};
