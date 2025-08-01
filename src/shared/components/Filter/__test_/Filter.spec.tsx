@@ -290,31 +290,6 @@ test("shows error when To date is before From date", async () => {
   expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
 });
 
-// it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
-//   const prevCategories = [
-//     { data: "send", text: "Send" },
-//     { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
-//     { data: "pupils", text: "Pupils" }
-//   ];
-
-//   const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
-//     const newItems = updater(prevCategories);
-//     // Expect dateRange to be inserted after "send" if "send" is still present
-//     expect(newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(1);
-//   });
-
-//   render(
-//     <FilterDialog
-//       {...defaultProps}
-//       selectedCategories={prevCategories}
-//       setSelectedCategories={mockSetSelectedCategoriesWithCheck}
-//     />
-//   );
-
-//   // Trigger dropdown selection (mock selects "send")
-//   fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-//   expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
-// });
 
 it("shows error when From date is after To date", async () => {
   jest.setTimeout(15000);
@@ -386,47 +361,6 @@ it("updates existing dateRange in selectedCategories if it exists", () => {
   expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
 });
 
-// it("calculates insertIndex from matching prevBeforeDate items when dateRange is in middle", () => {
-//   const prev = [
-//     { data: "send", text: "Send" },
-//     { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
-//     { data: "pupils", text: "Pupils" }
-//   ];
-
-//   const mockSetSelectedCategories2 = jest.fn((updater) => {
-//     const newItems = updater(prev);
-//     const dateRangeIndex = newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange");
-//     expect(dateRangeIndex).toBe(-1); // after "send"
-//   });
-
-//   renderComponent({
-//     selectedCategories: prev,
-//     setSelectedCategories: mockSetSelectedCategories2
-//   });
-
-//   fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-//   expect(mockSetSelectedCategories2).toHaveBeenCalled();
-// });
-
-// it("sets error when toDate is invalid format", async () => {
-//   render(<FilterDialog {...defaultProps} />);
-
-//   const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-
-//   const toDay = within(dateInputs[1]).getByPlaceholderText("DD");
-//   const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
-//   const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
-
-//   // Invalid Date: 31 Feb 2025
-//   fireEvent.change(toDay, { target: { value: "31" } });
-//   fireEvent.change(toMonth, { target: { value: "02" } });
-//   fireEvent.change(toYear, { target: { value: "205" } });
-
-//   // Expect error
-//   const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-
-//   expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
-// });
 
 it("shows error when fromDate is partially filled", async () => {
   render(<FilterDialog {...defaultProps} />);
@@ -446,27 +380,6 @@ it("shows error when fromDate is partially filled", async () => {
   await screen.findByText(/Invalid Date/i);
 });
 
-// it("shows error when toDate is partially filled", async () => {
-//   renderComponent();
-
-//   // Enter partial toDate: Day = 15, Month = (empty), Year = 2023
-//   const toDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[1];
-//   const dayInput = within(toDateInputs).getByLabelText("Day");
-//   const yearInput = within(toDateInputs).getByLabelText("Year");
-
-//   fireEvent.change(dayInput, { target: { value: "15" } });
-//   fireEvent.change(yearInput, { target: { value: "2023" } });
-
-//   // Click Apply
-//   fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-//   // Look for the presence of any validation alert role
-//   await waitFor(() => {
-//     const alerts = screen.getAllByRole("alert");
-//     expect(alerts.length).toBeGreaterThan(0);
-//     expect(alerts[0]).not.toHaveClass("hidden");
-//   });
-// });
 
 it("sets error when fromDate is in invalid format", async () => {
   render(<FilterDialog {...defaultProps} />);
@@ -503,29 +416,6 @@ it("sets error when toDate is in invalid format", async () => {
   expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
 });
 
-// it("inserts dateRange item at correct index when it existed in middle of previous list", () => {
-//   const prevCategories = [
-//     { data: "send", text: "Send" },
-//     { data: { type: "dateRange" }, text: "10 May 2022 to 12 May 2022" },
-//     { data: "pupils", text: "Pupils" }
-//   ];
-
-//   const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
-//     const newItems = updater(prevCategories);
-//     expect(newItems.findIndex((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(1);
-//   });
-
-//   render(
-//     <FilterDialog
-//       {...defaultProps}
-//       selectedCategories={prevCategories}
-//       setSelectedCategories={mockSetSelectedCategoriesWithCheck}
-//     />
-//   );
-
-//   fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-//   expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
-// });
 
 it("shows tag as [fromDate] to - when only From Date is selected", async () => {
   renderComponent();

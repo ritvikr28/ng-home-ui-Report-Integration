@@ -289,12 +289,6 @@ export const handleSearchChange = (
   const { value } = e.target;
   setSearchTerm(value);
 
-  console.log("AutoSuggest Params:", {
-    searchText: value,
-    categoryId,
-    fromDate,
-    toDate
-  });
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);

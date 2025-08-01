@@ -825,41 +825,5 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   
 });
 
-// it("should delete preview filter tag when close button is clicked", async () => {
-//   const categoryList = [
-//     { application: "AppX", registrationId: 111, section: "S1" },
-//     { application: "AppX", registrationId: 112, section: "S2" },
-//     { application: "AppY", registrationId: 113, section: "S3" }
-//   ];
-//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
-
-//   const { container } = render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   const filterButton = await screen.findByTestId("filter-btn");
-//   fireEvent.click(filterButton);
-
-//   const categoryDropdown = screen.getByTestId("text-input-dms-filter-dialog-categories");
-//   fireEvent.click(categoryDropdown);
-//   console.log(container.innerHTML);
-//   const categoryCheckbox = screen.getByLabelText("AppX");
-//   fireEvent.click(categoryCheckbox);
-//   const applyButton = screen.getByText("Apply");
-//   fireEvent.click(applyButton);
-
-
-
-//   await waitFor(() => {
-//     expect(screen.getByText("Category: legal")).toBeInTheDocument();
-//   });
-//   const closeButton = screen.getByTestId("filter-tag-close-btn");
-//   fireEvent.click(closeButton);
-
-//   await waitFor(() => {
-//     expect(screen.queryByText("Category: legal")).not.toBeInTheDocument();
-//   });
-// })
 });
 
