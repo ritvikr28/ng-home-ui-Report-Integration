@@ -151,14 +151,14 @@ useEffect(() => {
     });
   }
   setFromDate({
-    day: selectedDateRange.fromDate ? dayjs(selectedDateRange.fromDate).date().toString() : "",
-    month: selectedDateRange.fromDate ? (dayjs(selectedDateRange.fromDate).month() + 1).toString() : "",
-    year: selectedDateRange.fromDate ? dayjs(selectedDateRange.fromDate).year().toString() : "",
+    day: selectedDateRange?.fromDate ? dayjs(selectedDateRange?.fromDate).date().toString() : "",
+    month: selectedDateRange?.fromDate ? (dayjs(selectedDateRange?.fromDate).month() + 1).toString() : "",
+    year: selectedDateRange?.fromDate ? dayjs(selectedDateRange?.fromDate).year().toString() : "",
   });
   setToDate({
-    day: selectedDateRange.toDate ? dayjs(selectedDateRange.toDate).date().toString() : "",
-    month: selectedDateRange.toDate ? (dayjs(selectedDateRange.toDate).month() + 1).toString() : "",
-    year: selectedDateRange.toDate ? dayjs(selectedDateRange.toDate).year().toString() : "",
+    day: selectedDateRange?.toDate ? dayjs(selectedDateRange?.toDate).date().toString() : "",
+    month: selectedDateRange?.toDate ? (dayjs(selectedDateRange?.toDate).month() + 1).toString() : "",
+    year: selectedDateRange?.toDate ? dayjs(selectedDateRange?.toDate).year().toString() : "",
   });
 }, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
 
