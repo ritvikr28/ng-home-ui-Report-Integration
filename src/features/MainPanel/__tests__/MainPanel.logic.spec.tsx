@@ -121,7 +121,7 @@ describe("MainPanelView", () => {
 
   it("does not render StaffTimeTableView when isSchoolPrimary is true", () => {
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Calendar.Staff.Timetable");
-    const { queryByTestId } = render(<MainPanelView {...defaultProps} isSchoolPrimary={true} />);
+    const { queryByTestId } = render(<MainPanelView {...defaultProps} isSchoolPrimary />);
     expect(queryByTestId("staff-timetable")).not.toBeInTheDocument();
   });
 

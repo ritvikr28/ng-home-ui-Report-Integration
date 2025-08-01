@@ -4,7 +4,7 @@ import React, {
   LazyExoticComponent,
   FC,
   useState,
-  useEffect,
+  useEffect
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -12,7 +12,7 @@ import {
   Auth,
   authService,
   MatchPermissions,
-  Permission,
+  Permission
 } from "@essnextgen/auth-ui";
 import {
   Switch,
@@ -20,14 +20,14 @@ import {
   BrowserRouter as Router,
   useHistory,
   Redirect,
-  Link,
+  Link
 } from "react-router-dom";
 import {
   Header,
   IApplicationMenu,
   ApplicationConfig,
   IModulePermission,
-  SchoolGroupRedirect,
+  SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import {
   ActionCard,
@@ -37,18 +37,15 @@ import {
   Divider,
   ErrorActionList,
   ErrorActionListItem,
-  ErrorPage,
-  ErrorReasonList,
-  ErrorReasonListItem,
   Grid,
   GridItem,
   Loader,
   LoaderType,
-  useMediaQuery,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import {
   useTranslation,
-  UseTranslationResponse,
+  UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
@@ -63,7 +60,7 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import UAM from "./features/AdminConsole/UAM.view";
 import {
   isOrganisationInVariant,
-  isOrganisationInVariantForAnyOrAll,
+  isOrganisationInVariantForAnyOrAll
 } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
@@ -214,11 +211,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   );
 
   const requiredSystemStatusViewPermission: Permission[] = [
-    { Securable: "NG.AlertEmails.List", Operation: "View" },
+    { Securable: "NG.AlertEmails.List", Operation: "View" }
   ];
   const requiredSystemStatusUpdatePermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "Update" },
-    { Securable: "NG.AlertEmails.List", Operation: "Write" },
+    { Securable: "NG.AlertEmails.List", Operation: "Write" }
   ];
   const canViewSystemStatus = authService.isAuthorised(
     requiredSystemStatusViewPermission,
@@ -231,9 +228,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   useEffect(() => {
     (async () => {
-      const hasSimsConnected = await fetchLinks();
+      const hasSimsConnectedData = await fetchLinks();
       setLoadingSimsConnectedData(false);
-      setHasSimsConnected(hasSimsConnected);
+      setHasSimsConnected(hasSimsConnectedData);
     })();
     setLoadingSimsConnectedData(true);
   }, []);
@@ -371,18 +368,17 @@ const renderHomePage: (
 ) => {
   if (!isAuthzUserAdmin() && !hasNewHomePagePermission && hasSimsConnected) {
     return HomePageForSimsConnectedNormalUser;
-  } else if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+  } 
+  if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
     return SIMSIDAdminPageView;
-  } else if (hasNewHomePagePermission) {
+  } 
+  if (hasNewHomePagePermission) {
     return NewHomepageView;
-  } else {
-    return UnAuthorisedAccess;
-  }
+  } 
+  return UnAuthorisedAccess;  
 };
 
-{
-  /* eslint-enable */
-}
+/* eslint-enable */
 /* istanbul ignore next */
 const EmptyComponent: () => JSX.Element = () => (
   <div data-testid="empty-component" className="" />
