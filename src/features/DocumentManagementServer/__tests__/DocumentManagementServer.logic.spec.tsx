@@ -1,6 +1,7 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
+import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
 import {
   debouncedFetchSuggestions,
@@ -15,6 +16,7 @@ import {
   handlePageChange,
   handleSearchChange,
   handleSuggestionClick,
+  handleTagCloseLogic,
   hasItems,
   loadSuggestions,
   onBreadcrumbClick,
@@ -174,7 +176,7 @@ describe("debouncedFetchSuggestions", () => {
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
-    debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
       jest.advanceTimersByTime(1000);
@@ -193,7 +195,7 @@ describe("debouncedFetchSuggestions", () => {
   const setSuggestions = jest.fn();
   const setShowError = jest.fn();
 
-  debouncedFetchSuggestions("Doc", setSearchLoading, setSuggestions, setShowError);
+  debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
     jest.advanceTimersByTime(1000);
@@ -210,7 +212,7 @@ describe("debouncedFetchSuggestions", () => {
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
-    debouncedFetchSuggestions("FailTest", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
       jest.advanceTimersByTime(1000);
@@ -241,7 +243,7 @@ describe("handleSearchChange", () => {
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
 
-    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading };
   };
@@ -259,7 +261,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
 });
 
@@ -270,7 +272,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -288,7 +290,7 @@ describe("handleSearchChange", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -358,34 +360,39 @@ describe("onBreadcrumbClick", () => {
 });
 
 describe("loadSuggestions", () => {
+
+  it("loads and sets suggestions", async () => {
+  const data = [{ fileId: "1", fileName: "Doc1" }];
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(data);
+
   const setSuggestions = jest.fn();
   const setSuggestionsLoading = jest.fn();
 
-  it("loads and sets suggestions", async () => {
-    const data = [{ fileId: "1", fileName: "Doc1" }];
-    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(data);
+  await loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
 
-    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
-    expect(setSuggestions).toHaveBeenCalledWith(data);
-    expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
-  });
+  expect(setSuggestions).toHaveBeenCalledWith(data);
+  expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
+});
 it("logs error when fetchDMSSuggestions fails", async () => {
   const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
   (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-  await loadSuggestions("Test", jest.fn(), jest.fn());
+  await loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
 
   expect(consoleSpy).toHaveBeenCalled();
   consoleSpy.mockRestore();
 });
 
   it("sets suggestions to [] on error", async () => {
-    (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-    await loadSuggestions("Doc", setSuggestions, setSuggestionsLoading);
-    expect(setSuggestions).toHaveBeenCalledWith([]);
-    expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
-  });
+  const setSuggestions = jest.fn();
+  const setSuggestionsLoading = jest.fn();
+
+  await loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
+
+  expect(setSuggestions).toHaveBeenCalledWith([]);
+  expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
 });
 
 
@@ -398,7 +405,7 @@ describe("handleSearchChange boundary tests", () => {
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
 
-    handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -410,7 +417,7 @@ it("should not call fetch if value is only whitespace", () => {
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -688,7 +695,7 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-    const result = getResultNotFoundMsg('test', { data: [] }, 'test', false);
+    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false);
     expect(result).toBe(
       'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
     );
@@ -696,7 +703,7 @@ describe('getResultNotFoundMsg', () => {
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
     const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
-    expect(result).toBe('Information unavailable');
+    expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
@@ -919,3 +926,112 @@ describe("Size column anyComponent", () => {
     expect(container).toHaveTextContent(longValue.substring(0, 10));
   });
 });
+
+describe("handleTagCloseLogic", () => {
+  const mockSetSelectedDateRange = jest.fn();
+  const mockSetDateRange = jest.fn();
+  const mockSetIsDateError = jest.fn();
+  const mockSetSelectedCategories = jest.fn();
+  const mockSetSelectedFormats = jest.fn();
+
+  const setup = () => {
+    jest.clearAllMocks();
+  };
+
+  it("clears date range if name matches single-date format", () => {
+    setup();
+
+    handleTagCloseLogic(
+      {} as React.SyntheticEvent,
+      "dummyText",
+      { name: "30 Jul 2025 to -" },
+      mockSetSelectedDateRange,
+      mockSetDateRange,
+      mockSetIsDateError,
+      mockSetSelectedCategories,
+      mockSetSelectedFormats
+    );
+
+    expect(mockSetSelectedDateRange).toHaveBeenCalledWith({ fromDate: "", toDate: "" });
+    expect(mockSetDateRange).toHaveBeenCalledWith({ fromDate: "", toDate: "" });
+    expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+  });
+
+  it("clears date range if name matches date range format", () => {
+    setup();
+
+    handleTagCloseLogic(
+      {} as React.SyntheticEvent,
+      "dummyText",
+      { name: "01 Jul 2024 to 31 Jul 2024" },
+      mockSetSelectedDateRange,
+      mockSetDateRange,
+      mockSetIsDateError,
+      mockSetSelectedCategories,
+      mockSetSelectedFormats
+    );
+
+    expect(mockSetSelectedDateRange).toHaveBeenCalledWith({ fromDate: "", toDate: "" });
+    expect(mockSetDateRange).toHaveBeenCalledWith({ fromDate: "", toDate: "" });
+    expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+  });
+
+  it("removes a category/format tag", () => {
+    setup();
+
+    const nameToRemove = "Finance";
+    const originalItems: ISelectedItem[] = [
+      { text: "HR", data: "HR" },
+      { text: "Finance", data: "Finance" },
+      { text: "Legal", data: "Legal" }
+    ];
+
+    mockSetSelectedCategories.mockImplementation(fn => fn(originalItems));
+    mockSetSelectedFormats.mockImplementation(fn => fn(originalItems));
+
+    handleTagCloseLogic(
+      {} as React.SyntheticEvent,
+      "dummyText",
+      { name: nameToRemove },
+      mockSetSelectedDateRange,
+      mockSetDateRange,
+      mockSetIsDateError,
+      mockSetSelectedCategories,
+      mockSetSelectedFormats
+    );
+
+    expect(mockSetSelectedCategories).toHaveBeenCalled();
+    const filteredCats = mockSetSelectedCategories.mock.calls[0][0](originalItems);
+    expect(filteredCats).toEqual([
+      { text: "HR", data: "HR" },
+      { text: "Legal", data: "Legal" }
+    ]);
+
+    expect(mockSetSelectedFormats).toHaveBeenCalled();
+    const filteredFormats = mockSetSelectedFormats.mock.calls[0][0](originalItems);
+    expect(filteredFormats).toEqual([
+      { text: "HR", data: "HR" },
+      { text: "Legal", data: "Legal" }
+    ]);
+  });
+
+  it("does nothing if closeObj.name is undefined", () => {
+    setup();
+
+    handleTagCloseLogic(
+      {} as React.SyntheticEvent,
+      "dummyText",
+      { id: "123" },
+      mockSetSelectedDateRange,
+      mockSetDateRange,
+      mockSetIsDateError,
+      mockSetSelectedCategories,
+      mockSetSelectedFormats
+    );
+
+    expect(mockSetSelectedDateRange).not.toHaveBeenCalled();
+    expect(mockSetDateRange).not.toHaveBeenCalled();
+    expect(mockSetIsDateError).not.toHaveBeenCalled();
+  });
+});
+})

@@ -102,7 +102,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -117,7 +117,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -130,7 +130,7 @@ describe('fetchDMSSuggestions', () => {
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
@@ -141,12 +141,61 @@ describe('fetchDMSSuggestions', () => {
   test('should return empty array on API error', async () => {
     jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('Network error'));
 
-    const result = await fetchDMSSuggestions('doc');
+    const result = await fetchDMSSuggestions('doc', '', '', []);
     const values = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
 
     expect(values).toEqual([]);
+  });
+   it('should include categoryId params when categoryId is provided', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc', '', '', [1, 2, 3]);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=1');
+    expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=2');
+    expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=3');
+  });
+
+  it('should not include categoryId params when categoryId is empty', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc', '', '', []);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).not.toContain('AutoCompleteRequest.CategoryId=');
+  });
+
+  it('should include FromDate param when fromDate is provided', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc', '2024-07-01', '', []);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).toContain('AutoCompleteRequest.FromDate=2024-07-01');
+  });
+
+  it('should include ToDate param when toDate is provided', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc', '', '2024-07-31', []);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).toContain('AutoCompleteRequest.ToDate=2024-07-31');
+  });
+
+  it('should encode special characters in params', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc test', '2024-07-01', '2024-07-31', [10]);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).toContain('AutoCompleteRequest.SearchText=doc%20test');
+    expect(calledUrl).toContain('AutoCompleteRequest.FromDate=2024-07-01');
+    expect(calledUrl).toContain('AutoCompleteRequest.ToDate=2024-07-31');
+    expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=10');
   });
 });
 

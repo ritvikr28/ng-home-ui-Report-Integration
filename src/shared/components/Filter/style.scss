@@ -59,13 +59,21 @@
 
 .dms-filter-dialog{
   overflow-y: scroll;
+
+  .filter-dialog-loader{
+    align-self: center;
+
+    .essui-loader{
+      width: auto;
+    }
+  }
 }
 
 .filter-tool-view .dropdown .essui-overflow-menu{
     width: 97%;
   }
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
   .dms-filter-dialog-date {
     .dms-filter-dialog-date-inputs {
       flex-direction: column;
@@ -85,7 +93,7 @@
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1050px) {
     .dms-filter-dialog-fromdate-input #ng-calendar-content {
     position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;

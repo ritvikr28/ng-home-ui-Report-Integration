@@ -2,11 +2,11 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
-import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
+import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
@@ -62,6 +62,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
+    const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -82,16 +83,24 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
-    const tableData: tableDataProps[] = (showSearchError || !docData?.data?.length) ? [] : docData?.data?.map((doc: any) => ({
-        id: doc?.fileId,
-        Document: doc?.document,
-        Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
-        Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-        Addedby: doc?.addedBy || "",
-        "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-        Format: doc?.format,
-        Size: doc?.size,
-    }));
+    let tableData: tableDataProps[] = [];
+
+        if (showErrorBanner) {
+        tableData = [];
+        } else if (showSearchError || !docData?.data?.length) {
+        tableData = [];
+        } else if (docData?.data) {
+        tableData = docData.data.map((doc: any) => ({
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+            Format: doc?.format,
+            Size: doc?.size,
+        }));
+}
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -175,6 +184,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                 setCurrentPage(page);
                 setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
                 setShowSearchError(false);
+                setShowErrorBanner(false)
             } else if (result && result?.status === 400) {
                 setShowErrorBanner(true);
             }
@@ -238,16 +248,29 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
       }
 
     const getEmptyStateMsg = () => {
-        if (searchText !== "") return undefined;
-        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-        return "Documents will appear here once they are uploaded.";
-    };
+    if (showErrorBanner) return "Information unavailable.";
+    if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
+
+    // Show "No data to display." only if search is triggered and no data
+    if (
+        isSearchTriggered &&
+        docData &&
+        docData?.statusCode === 200 &&
+        Array.isArray(docData?.data) &&
+        docData?.data.length === 0
+    ) {
+        return "No data to display.";
+    }
+
+    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+    return "Documents will appear here once they are uploaded.";
+};
 
     const getTableHeaders = () => {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
-        if (isSearchTriggered || searchText || docData) {
+        if ((isSearchTriggered || searchText || docData)) {
 
             return getTableHeadersData;
         }
@@ -279,6 +302,23 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         // setSuggestions([]);
     }
     }
+
+    const handleTagClose = (
+  e: React.SyntheticEvent,
+  text: string,
+  closeObj: { name?: string; id?: string | number }
+) => {
+  handleTagCloseLogic(
+    e,
+    text,
+    closeObj,
+    setSelectedDateRange,
+    setDateRange,
+    setIsDateError,
+    setSelectedCategories,
+    setSelectedFormats
+  );
+};
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -310,9 +350,32 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
     ]
 
+    useEffect(() => {
+    if (searchTerm?.length > 2) {
+        handleSearchChange(
+        { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
+        getAllRegistrationIds(selectedFormats),
+        selectedDateRange?.fromDate,
+        selectedDateRange?.toDate,
+        setSearchTerm,
+        setSuggestions,
+        setShowSearchError,
+        setIsSearchLoading
+        );
+    }
+}, [searchTerm, selectedFormats, selectedDateRange]);
+
      const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
 
+     
     const handleApply = () => {
+        
+        if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
+           selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
+            setIsDateError(true);
+            return;
+        }
+
          if (isDateError) {
             setIsDateError(true);
             return;
@@ -325,9 +388,14 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     ) {
         setIsDateError(true);
     } else {
-        setSelectedFormats(selectedCategories)
-        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate })
+            setIsFilterLoading(true);
+            
+        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
+            setTimeout(() => {
+        setSelectedFormats(selectedCategories);
         setIsFilterDialogOpen(false);
+            setIsFilterLoading(false);
+        }, 500);
     }
 };
 
@@ -520,7 +588,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
-                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner)}
+                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner || (docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) && !isSearchTriggered)}
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
@@ -537,7 +605,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
                                 }}
-                                searchOnChange={(e: any) => handleSearchChange(e, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+                                searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
@@ -576,6 +644,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title="Filter by"
+                                            isLoading={isFilterLoading}
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
@@ -588,6 +657,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         />
                                     </>
                                 }
+                                searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeaders()}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}

@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -278,6 +278,9 @@ export const hasItems = (suggestions: Suggestion[]): boolean =>
 // Search input change logic
 export const handleSearchChange = (
   e: React.ChangeEvent<HTMLInputElement>,
+  categoryId: number[] | null,
+  fromDate: string,
+  toDate: string, 
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
@@ -298,6 +301,9 @@ export const handleSearchChange = (
 
   debouncedFetchSuggestions(
     value,
+    categoryId,
+    fromDate,
+    toDate,
     setIsSearchLoading,
     setSuggestions,
     setShowSearchError
@@ -306,12 +312,15 @@ export const handleSearchChange = (
 
 export const loadSuggestions = async (
   text: string,
+  fromDate: string,
+  toDate: string,
+  categoryId: number[] | null,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setSuggestionsLoading: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   try {
     setSuggestionsLoading(true);
-    const result = await fetchDMSSuggestions(text);
+    const result = await fetchDMSSuggestions(text, fromDate, toDate, categoryId);
     setSuggestions(result);
   } catch (err) {
     console.error("Suggestion fetch failed:", err);
@@ -364,6 +373,36 @@ export const getCategoryArr = (selectedFormats: any[]) =>
   ];
 };
 
+export const handleTagCloseLogic = (
+  e: React.SyntheticEvent,
+  text: string,
+  closeObj: { name?: string; id?: string | number },
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>,
+  setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>,
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>,
+  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>,
+  setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>
+) => {
+  // Detect date range tag by its name format
+  if (
+    typeof closeObj.name === "string" &&
+    (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
+      closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
+  ) {
+    setSelectedDateRange({ fromDate: "", toDate: "" });
+    setDateRange({ fromDate: "", toDate: "" });
+    setIsDateError(false);
+  }
+
+  // Remove category/format tag
+  setSelectedCategories(prev =>
+    prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+  );
+  setSelectedFormats(prev =>
+    prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
+  );
+};
+
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
@@ -380,10 +419,16 @@ export const getResultNotFoundMsg = (
   searchTerm: string,
   showErrorBanner: boolean
 ): string | undefined => {
-  if (searchText && !docData?.data?.length) {
+  if (showErrorBanner) {
+    return "Information unavailable.";
+  }
+  // Show search message if search is performed and no results
+  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-  }if (showErrorBanner) {
-    return "Information unavailable";
+  }
+  // Show "No data to display" only if not searching and no data
+  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return "No data to display.";
   }
   return undefined;
 };
@@ -426,12 +471,15 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export const debouncedFetchSuggestions = debounce(
   async (
     searchText: string,
+    categoryId: number[] | null,
+    fromDate: string,
+    toDate: string,
     setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
     try {
-      const response = await fetchDMSSuggestions(searchText);
+      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload?.[0]?.values ?? [];
       setSuggestions(formatSuggestions(values));
     } catch (err) {
@@ -442,6 +490,6 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  1000
+  1
 );
 
