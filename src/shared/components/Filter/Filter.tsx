@@ -224,6 +224,12 @@ useEffect(() => {
         return;
       }
 
+      if ( newDate.year && newDate.year.length < 4) {
+            setError(isFrom ? "From date is required" : "");
+            setIsDateError(true);
+            return;
+          }
+
     if (!newDate.day && !newDate.month && !newDate.year) {
       setError("");
       setIsDateError(false);
