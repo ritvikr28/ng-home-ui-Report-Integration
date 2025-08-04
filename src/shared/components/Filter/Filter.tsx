@@ -377,7 +377,7 @@ useEffect(() => {
       </Dropdown>
 
       <div className="dms-filter-dialog-date">
-        <FormLabel className="date-added">{t("Date Added")}</FormLabel>
+        <FormLabel className="date-added">{t("Date added")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
@@ -423,7 +423,7 @@ useEffect(() => {
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
         >
-          {t("Clear All")}
+          {t("Clear all")}
         </Button>
         <Button
           dataTestId={`${dataTestId}-apply-btn`}
