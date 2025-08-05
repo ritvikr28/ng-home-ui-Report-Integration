@@ -675,4 +675,20 @@ describe("Dropdown dateRange insertIndex logic (unit coverage)", () => {
 
   expect(mockOnClose).toHaveBeenCalled();
 });
+
+it("shows error when day or month is 00 or 0", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+  // Test day = "00"
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "00" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+
+  await waitFor(() => {
+    expect(screen.getByText(/From date is required/i)).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  });
+})
 });
