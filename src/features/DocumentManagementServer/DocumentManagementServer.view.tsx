@@ -355,7 +355,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     ]
 
     useEffect(() => {
-    if (searchTerm?.length > 2) {
+    if (searchTerm?.length > 1) {
         handleSearchChange(
         { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
         getAllRegistrationIds(selectedFormats),

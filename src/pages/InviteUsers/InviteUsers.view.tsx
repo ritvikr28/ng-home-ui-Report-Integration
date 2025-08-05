@@ -19,7 +19,8 @@ import {
   TableHeader,
   ShowValAs,
   ValidationText,
-  IBreadcrumbLink
+  IBreadcrumbLink,
+  OptionsEntity
 } from "@essnextgen/ui-kit";
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -28,7 +29,6 @@ import {
 } from "@essnextgen/ui-intl-kit";
 import {
   BulkInviteErrBanner,
-  editSelectedOptions,
   filterOptions,
   homeurl,
   IInviteUserDetails,
@@ -53,6 +53,36 @@ import InviteUsersDialog from "./InviteUsersDialog";
 export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
+
+    const editSelectedOptions: OptionsEntity[] = [
+    {
+      disabled: false,
+      text: `${t("inviteUsers.sendInvite")}`, 
+      value: "SendInvite",
+      isShowDivider: false,
+      isSelected: false
+    }
+  ];
+
+  const getTableDataArry = (data:any)=>{
+    let tdata = data
+    if(data.length > 0){
+      tdata = data.map((item:any)=>({
+          ...item,
+          actions: {
+          options: [
+            {
+              disabled: false,
+              isSelected: false,
+              text: `${t("inviteUsers.sendInvite")}`,
+              value: "SendInvite"
+            }
+          ]
+        }
+        }))
+    }
+    return tdata
+  }
 
   const {
     usersTableData,
@@ -608,7 +638,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             secondaryButtonTitle={`${t("inviteUsers.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
-            tableBodyData={usersTableData || []}
+            tableBodyData={ getTableDataArry(usersTableData) || []}
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
@@ -617,7 +647,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             editSelectedOptions={editSelectedOptions}
             onEditSelectedBtnClick={() => {}}
             onEditSelectedOverFlowMenu={(e: any) => {
-              if (e.target?.innerHTML === "Send invite") {
+              if (e.target?.innerHTML === `${t("inviteUsers.sendInvite")}`) {
                 if (selectedCheckBoxIds.length === 0) {
                   setShowDialog(true);
                 } else {
@@ -718,7 +748,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               }
             ]}
             onClickOverflowItem={(e: any, selectedRow: any) => {
-              if (e.target?.innerHTML === "Send Invite") {
+              if (e.target?.innerHTML === `${t("inviteUsers.sendInvite")}`) {
                 setSource("Overflow");
                 setShowConfirmDialog(true);
                 setSelectedRowItems([selectedRow]);
