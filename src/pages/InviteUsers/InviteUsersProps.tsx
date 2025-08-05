@@ -1,11 +1,11 @@
 import {
   ISelectedItem,
-  OptionsEntity,
   ShowValAs,
   ValidationText,
   ValidationTextLevel
 } from "@essnextgen/ui-kit";
 import React from "react";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { envConfig } from "../../shared/utils";
 
 export interface InviteUserProps {
@@ -127,15 +127,7 @@ export const getTableHeadersData: TableHeader[] = [
   }
 ];
 
-export const editSelectedOptions: OptionsEntity[] = [
-  {
-    disabled: false,
-    text: "Send invite",
-    value: "SendInvite",
-    isShowDivider: false,
-    isSelected: false
-  }
-];
+
 
 export interface IInviteUserDetails {
   emailId: string;
@@ -235,17 +227,17 @@ export const BulkInviteErrBanner = ({
 }: {
   selectedRowItems: IInviteUserDetails[];
 }) => {
+  const { t }: UseTranslationResponse<"translation", undefined> =
+    useTranslation();
   const emails = selectedRowItems.map((item) => item.emailId).join("; ");
   return (
     <>
       <p>
-        A technical issue at our end has stopped us from inviting the following
-        users:
+        {`${t("inviteUsers.unableToInviteUserList")}`}
       </p>
       <p>&nbsp; • &nbsp; {emails}</p>
       <p>
-        Please try again. If the issue persists, please get in touch with our
-        support team.
+        {`${t("inviteUsers.unableToInviteUserListDescription")}`}
       </p>
     </>
   );
