@@ -208,7 +208,10 @@ useEffect(() => {
         year: year?.toString() ?? "",
       };
       setDate(newDate);
-      if (newDate.day === "00" || newDate.month === "00") {
+      if (
+        newDate.day === "00" || newDate.day === "0" ||
+        newDate.month === "00" || newDate.month === "0"
+      ) {
         setError("Invalid Date");
         setIsDateError(true);
         return;
