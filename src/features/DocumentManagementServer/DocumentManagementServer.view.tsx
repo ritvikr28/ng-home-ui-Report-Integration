@@ -66,8 +66,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-const [selectedCheckBoxIds] = useState<string[]>([]);
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -237,12 +237,16 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         if (selectedItem.value === "Prepare download") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
+            }else{
+                setShowConfirmDialog(true);
             }
         } 
         
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
+            }else{
+                setShowConfirmDialog(true);
             }
         }
       }
@@ -420,6 +424,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
+    const handleCloseSidePanel = () => setIsSidePanelOpen(false);
 
     return (<>
         <>
@@ -529,6 +534,22 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
+                                selectedCheckboxIds={(ids: string[]) => {
+                                    setSelectedCheckBoxIds(ids);
+                                    console.log("Selected IDs:", ids);
+                                    }}
+
+                                    onChangeListCheckBox={(index: number, id: string) => {
+                                        // Toggle the checkbox selection
+                                        const updatedCheckBoxIds = [...selectedCheckBoxIds];
+                                        if (updatedCheckBoxIds.includes(id)) {
+                                            updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
+                                        } else {
+                                            updatedCheckBoxIds.push(id);
+                                        }
+                                        setSelectedCheckBoxIds(updatedCheckBoxIds);
+                                        // console.log("Selected IDs:", updatedCheckBoxIds); // <-- See IDs in console
+                                    }}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -584,7 +605,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 paginationOnChange={onPageChange}
                                 isPagination
                                 paginationMinCountToHideNextPreviousBtn={0}
-                                primaryButtonTitle=""
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
@@ -616,16 +636,18 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
+                                primaryButtonTitle="Clear all"
                                 secondaryButtonTitle="Cancel"
+                                isShowSecondaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
-                                
+                                sidePanelShowNotification={true}
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
                             Please try again. If the issue persists, please get in touch with our support team.
                             We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.WARNING}
-                                sidePanelNotificationTitle="Unable to [action]"
-                                sidePanelSubTitle=""
-                                sidePanelTitle=""
+                                sidePanelNotificationTitle="Unable to Download"
+                                sidePanelSubTitle="Files you Download will appear here"
+                                sidePanelTitle="Download"
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
@@ -663,23 +685,28 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
-                                        cancelText: "",
+                                        cancelText: "Cancel",
                                         contentText: "",
-                                                isNotificationanner: false,
+                                                isNotificationanner: true,
+                                                notificationTitle: `${selectedCheckBoxIds.length} document about to be prepared for download`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Okay',
-                                        onCancel: (): void => {},
-                                        onConfirm: (): void => { },
+                                        onCancel: (): void => {setShowConfirmDialog(false)},
+                                        onConfirm: (): void => {
+                                            setShowConfirmDialog(false);
+                                            setIsSidePanelOpen(true)
+                                         },
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-        
-                                titleConfirmation="No items selected"
+                                titleConfirmation="Prepare download"
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationTitle=""
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
+                                isSidePanelOpen={isSidePanelOpen}
+                                handleCloseSidePanel={handleCloseSidePanel}
                                 isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
