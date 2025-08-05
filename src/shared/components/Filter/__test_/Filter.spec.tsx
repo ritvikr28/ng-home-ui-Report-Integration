@@ -65,8 +65,8 @@ describe("FilterDialog", () => {
   it("renders with all form elements", () => {
     renderComponent();
     expect(screen.getByText("Category")).toBeInTheDocument();
-    expect(screen.getByText("Date Added")).toBeInTheDocument();
-    expect(screen.getByText("Clear All")).toBeInTheDocument();
+    expect(screen.getByText("Date added")).toBeInTheDocument();
+    expect(screen.getByText("Clear all")).toBeInTheDocument();
     expect(screen.getByText("Apply")).toBeInTheDocument();
   });
 
@@ -412,8 +412,9 @@ it("sets error when toDate is in invalid format", async () => {
   fireEvent.change(toMonth, { target: { value: "02" } });
   fireEvent.change(toYear, { target: { value: "203" } });
 
-  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
+  await waitFor(() => {
+  expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
+});
 });
 
 

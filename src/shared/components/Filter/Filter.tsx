@@ -224,6 +224,12 @@ useEffect(() => {
         return;
       }
 
+      if ( newDate.year && newDate.year.length < 4) {
+            setError(isFrom ? "From date is required" : "");
+            setIsDateError(true);
+            return;
+          }
+
     if (!newDate.day && !newDate.month && !newDate.year) {
       setError("");
       setIsDateError(false);
@@ -377,7 +383,7 @@ useEffect(() => {
       </Dropdown>
 
       <div className="dms-filter-dialog-date">
-        <FormLabel className="date-added">{t("Date Added")}</FormLabel>
+        <FormLabel className="date-added">{t("Date added")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
@@ -423,7 +429,7 @@ useEffect(() => {
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
         >
-          {t("Clear All")}
+          {t("Clear all")}
         </Button>
         <Button
           dataTestId={`${dataTestId}-apply-btn`}
