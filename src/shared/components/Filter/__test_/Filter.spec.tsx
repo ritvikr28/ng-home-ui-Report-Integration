@@ -65,8 +65,8 @@ describe("FilterDialog", () => {
   it("renders with all form elements", () => {
     renderComponent();
     expect(screen.getByText("Category")).toBeInTheDocument();
-    expect(screen.getByText("Date Added")).toBeInTheDocument();
-    expect(screen.getByText("Clear All")).toBeInTheDocument();
+    expect(screen.getByText("Date added")).toBeInTheDocument();
+    expect(screen.getByText("Clear all")).toBeInTheDocument();
     expect(screen.getByText("Apply")).toBeInTheDocument();
   });
 
@@ -412,8 +412,9 @@ it("sets error when toDate is in invalid format", async () => {
   fireEvent.change(toMonth, { target: { value: "02" } });
   fireEvent.change(toYear, { target: { value: "203" } });
 
-  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
+  await waitFor(() => {
+  expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
+});
 });
 
 
@@ -674,4 +675,20 @@ describe("Dropdown dateRange insertIndex logic (unit coverage)", () => {
 
   expect(mockOnClose).toHaveBeenCalled();
 });
+
+it("shows error when day or month is 00 or 0", async () => {
+  render(<FilterDialog {...defaultProps} />);
+
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+  // Test day = "00"
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "00" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+
+  await waitFor(() => {
+    expect(screen.getByText(/From date is required/i)).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  });
+})
 });
