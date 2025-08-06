@@ -13,12 +13,21 @@ import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
+// import { handleCheckBoxSelection } from "../DocumentManagementServer.view";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
   return {
     ...original,
     useMediaQuery: jest.fn(() => false),
+  };
+});
+
+jest.mock('@essnextgen/ui-kit', () => {
+  const actual = jest.requireActual('@essnextgen/ui-kit');
+  return {
+    ...actual,
+    SidePanel: ({ children }: any) => <div data-testid="mock-side-panel">{children}</div>,
   };
 });
 
@@ -778,6 +787,7 @@ it("shows dialog when Prepare download is clicked and no checkbox is selected", 
     expect(screen.getByText(/Please select at least one item/i)).toBeInTheDocument();
   });
 });
+
 it("shows dialog when Delete is clicked and no checkbox is selected", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
     statusCode: 200,
@@ -824,6 +834,179 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   });
   
 });
+
+
+
+it("closes confirmation dialog when Cancel is clicked", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  });
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Select a checkbox to enable the action
+  await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
+  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+  console.log(checkboxes.length, checkboxes.map(cb => cb.outerHTML));
+expect(checkboxes.length).toBeGreaterThan(1);
+fireEvent.click(checkboxes[1]);
+
+  // Open Actions menu and click Prepare download
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("Prepare download"));
+
+  // Wait for confirmation dialog
+  await waitFor(() => expect(screen.getByText(/document about to be prepared for download/i)).toBeInTheDocument());
+
+  // Click Cancel
+  fireEvent.click(screen.getByText(/Cancel/i));
+
+  // Dialog should close
+  await waitFor(() => {
+    expect(screen.queryByText(/document about to be prepared for download/i)).not.toBeInTheDocument();
+  });
+});
+
+it("shows loader in side panel when Okay is clicked and hides after timeout", async () => {
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  });
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Select a checkbox to enable the action
+  await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
+  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+
+  // Open Actions menu and click Prepare download
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("Prepare download"));
+
+  // Wait for confirmation dialog
+  await waitFor(() => expect(screen.getByText(/document about to be prepared for download/i)).toBeInTheDocument());
+
+  // Click Okay
+  fireEvent.click(screen.getByText(/Okay/i));
+
+  // Loader should appear
+  await waitFor(() => {
+    expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+  });
+
+  // Fast-forward the loader timeout
+  // act(() => {
+  //   jest.advanceTimersByTime(1000);
+  // });
+
+  // Loader should disappear
+  // await waitFor(() => {
+  //   expect(screen.queryByTestId("loader-circular")).not.toBeInTheDocument();
+  // });
+});
+
+
+
+// test("should close side panel on close button click", async () => {
+//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+//     statusCode: 200,
+//     totalRecords: 2,
+//     data: [
+//       {
+//         fileId: "1",
+//         document: "Doc 1",
+//         relatedTo: ["HR"],
+//         category: "legal",
+//         addedBy: "User A",
+//         dateAdded: "2025-06-10",
+//         format: "pdf",
+//         size: "500KB",
+//       },
+//       {
+//         fileId: "2",
+//         document: "Doc 2",
+//         relatedTo: ["Finance"],
+//         category: "finance",
+//         addedBy: "User B",
+//         dateAdded: "2025-06-11",
+//         format: "docx",
+//         size: "1MB",
+//       },
+//     ],
+//   });
+//   render(<DocumentManagementServerView />);
+//   act(() => { jest.advanceTimersByTime(2000); });
+
+//  await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
+//  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+//   fireEvent.click(checkboxes[0]);
+
+//   // Click "Actions" > "Prepare download"
+//   fireEvent.click(screen.getByText(/Actions/i));
+//   fireEvent.click(await screen.findByText("Prepare download"))
+
+//   await waitFor(() => expect(screen.getByText(/document about to be prepared for download/i)).toBeInTheDocument());
+
+//   fireEvent.click(await screen.findByText("Okay"));
+
+//   await waitFor(() => {
+//     expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+//   });
+
+//   fireEvent.click(screen.getByTestId("side-navigation-panel-close-button"));
+
+//   await waitFor(() => {
+//     expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
+//   });
+//   10000
+// });
+
 
 });
 

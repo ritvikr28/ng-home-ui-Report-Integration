@@ -5,6 +5,7 @@ import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
+import { Notification, NotificationActionElement } from "@essnextgen/ui-kit"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
@@ -64,6 +65,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
+    const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
@@ -480,7 +482,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                             />
                         </div>
                         }
-                        
+                 
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
                                 isMobileViewBreadcrumb
@@ -640,13 +642,28 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 secondaryButtonTitle="Cancel"
                                 isShowSecondaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
-                                sidePanelShowNotification={true}
-                                sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                            Please try again. If the issue persists, please get in touch with our support team.
-                            We appreciate your patience and understanding during this time."
-                                sidePanelNotificationStatus={NotificationStatus.WARNING}
-                                sidePanelNotificationTitle="Unable to Download"
-                                sidePanelSubTitle="Files you Download will appear here"
+                            //     sidePanelShowNotification={true}
+                            //     sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
+                            // Please try again. If the issue persists, please get in touch with our support team.
+                            // We appreciate your patience and understanding during this time."
+                            //     sidePanelNotificationStatus={NotificationStatus.WARNING}
+                            //     sidePanelNotificationTitle="Unable to Download"
+                                 addEditTemplateChild={
+                                    <>
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to Download"
+                                                message="A technical issue at our end has stopped us from [action]. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time."
+                                                autoclose
+                                            />
+                                            <div>
+                                                Unable to download the selected files. Please try again later.
+                                            </div>
+                                            </>
+                                        }
+                                 
+                                isSidePanelLoader={isSidePanelLoader}
+                                sidePanelSubTitle=""
                                 sidePanelTitle="Download"
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
@@ -693,16 +710,22 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         okText: 'Okay',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
                                         onConfirm: (): void => {
-                                            setShowConfirmDialog(false);
+                                            // setShowConfirmDialog(false);
+                                            setIsSidePanelLoader(true);
                                             setIsSidePanelOpen(true)
+
+                                            setTimeout(() => {
+                                                setIsSidePanelLoader(false); 
+                                            }, 1000);
                                          },
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
                                 titleConfirmation="Prepare download"
                                 isOpenConfirmationDialog={showConfirmDialog}
+                                showToastNotification={true}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationTitle=""
+                                toastNotificationTitle="hi hello"
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
