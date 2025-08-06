@@ -167,11 +167,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     }
   };
 
-  const hasInviteUserView: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "InviteUserView"
-  );
-
   const hasInviteUserOrgView: boolean =
     isOrganisationInVariant("InviteUserView");
 
@@ -343,7 +338,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             /* istanbul ignore next */
             path="/inviteusers"
             render={() =>
-              hasInviteUserView &&
               hasInviteUserOrgView &&
               (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
                 <InviteUsersLogic />
