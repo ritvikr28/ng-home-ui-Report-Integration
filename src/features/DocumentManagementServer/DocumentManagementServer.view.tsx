@@ -648,8 +648,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     <>
                                             <Notification
                                                 status={NotificationStatus.WARNING}
-                                                title="Unable to Download"
-                                                message="A technical issue at our end has stopped us from [action]. Please try again. If the issue persists, please get in touch with our support team. We appreciate your patience and understanding during this time."
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="A technical issue at our end has stopped us from preparing the [document/documents]for download. Please try again later. If the issue persists, please get in touch with our support team."
                                                 autoclose
                                             />
                                             <div>
