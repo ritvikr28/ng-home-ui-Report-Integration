@@ -1,11 +1,10 @@
-import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
+import { LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
-import { Notification, NotificationActionElement } from "@essnextgen/ui-kit"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
@@ -247,8 +246,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
-            }else{
-                setShowConfirmDialog(true);
             }
         }
       }
@@ -426,7 +423,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
-    const handleCloseSidePanel = () => setIsSidePanelOpen(false);
+//   ??  const handleCloseSidePanel = () => setIsSidePanelOpen(false);
 
     return (<>
         <>
@@ -550,7 +547,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                             updatedCheckBoxIds.push(id);
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
-                                        // console.log("Selected IDs:", updatedCheckBoxIds); // <-- See IDs in console
                                     }}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
@@ -642,12 +638,12 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 secondaryButtonTitle="Cancel"
                                 isShowSecondaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
-                            //     sidePanelShowNotification={true}
-                            //     sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                            // Please try again. If the issue persists, please get in touch with our support team.
-                            // We appreciate your patience and understanding during this time."
-                            //     sidePanelNotificationStatus={NotificationStatus.WARNING}
-                            //     sidePanelNotificationTitle="Unable to Download"
+                                sidePanelShowNotification={false}
+                                sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
+                                    Please try again. If the issue persists, please get in touch with our support team.
+                                    We appreciate your patience and understanding during this time."
+                                sidePanelNotificationStatus={NotificationStatus.WARNING}
+                                sidePanelNotificationTitle="Unable to Download"
                                  addEditTemplateChild={
                                     <>
                                             <Notification
@@ -710,7 +706,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         okText: 'Okay',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
                                         onConfirm: (): void => {
-                                            // setShowConfirmDialog(false);
                                             setIsSidePanelLoader(true);
                                             setIsSidePanelOpen(true)
 
@@ -723,13 +718,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 }
                                 titleConfirmation="Prepare download"
                                 isOpenConfirmationDialog={showConfirmDialog}
-                                showToastNotification={true}
+                                showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationTitle="hi hello"
+                                toastNotificationTitle=""
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
-                                handleCloseSidePanel={handleCloseSidePanel}
+                                handleCloseSidePanel={()=>setIsSidePanelOpen(false)}
                                 isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
