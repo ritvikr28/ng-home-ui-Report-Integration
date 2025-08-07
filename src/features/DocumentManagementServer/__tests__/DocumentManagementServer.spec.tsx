@@ -764,7 +764,7 @@ it("shows dialog when Prepare download is clicked and no checkbox is selected", 
     ],
   });
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+  act(() => { jest.advanceTimersByTime(1000); });
 
   await waitFor(() => screen.getByText("Documents"));
 
@@ -807,7 +807,7 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
     ],
   });
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+  act(() => { jest.advanceTimersByTime(1000); });
 
   await waitFor(() => screen.getByText("Documents"));
 
@@ -853,7 +853,7 @@ it("closes confirmation dialog when Cancel is clicked", async () => {
     ],
   });
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+  act(() => { jest.advanceTimersByTime(1000); });
 
   await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
   const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
@@ -901,7 +901,7 @@ it("shows loader in side panel when Okay is clicked and hides after timeout", as
     ],
   });
   render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
+  act(() => { jest.advanceTimersByTime(1000); });
 
   await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
   const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
@@ -950,7 +950,7 @@ it("shows loader in side panel when Okay is clicked and hides after timeout, the
 
   render(<DocumentManagementServerView />);
   act(() => {
-    jest.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(1000);
   });
 
 
@@ -1012,7 +1012,7 @@ it("removes ID from selected list when checkbox is unchecked", async () => {
 
   render(<DocumentManagementServerView />);
   act(() => {
-    jest.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(1000);
   });
 
   const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
