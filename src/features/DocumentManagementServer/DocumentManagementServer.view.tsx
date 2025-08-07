@@ -1,6 +1,6 @@
-import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import React, { useState, useEffect } from "react"
+import { LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
 import "./style.scss"
@@ -64,10 +64,11 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
+    const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-
-const [selectedCheckBoxIds] = useState<string[]>([]);
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -237,6 +238,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         if (selectedItem.value === "Prepare download") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
+            }else{
+                setShowConfirmDialog(true);
             }
         } 
         
@@ -475,7 +478,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                             />
                         </div>
                         }
-                        
+                 
                         {hasFetched && <div className="grid-wrapper">
                             <ControlledList
                                 isMobileViewBreadcrumb
@@ -529,6 +532,20 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
+                                selectedCheckboxIds={(ids: string[]) => {
+                                    setSelectedCheckBoxIds(ids);
+                                    }}
+
+                                    onChangeListCheckBox={(index: number, id: string) => {
+                        
+                                        const updatedCheckBoxIds = [...selectedCheckBoxIds];
+                                        if (updatedCheckBoxIds?.includes(id)) {
+                                            updatedCheckBoxIds?.splice(updatedCheckBoxIds.indexOf(id), 1);
+                                        } else {
+                                            updatedCheckBoxIds?.push(id);
+                                        }
+                                        setSelectedCheckBoxIds(updatedCheckBoxIds);
+                                    }}
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -584,7 +601,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 paginationOnChange={onPageChange}
                                 isPagination
                                 paginationMinCountToHideNextPreviousBtn={0}
-                                primaryButtonTitle=""
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
@@ -616,16 +632,33 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
+                                primaryButtonTitle="Clear all"
                                 secondaryButtonTitle="Cancel"
+                                isShowSecondaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
-                                
+                                sidePanelShowNotification={false}
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                            Please try again. If the issue persists, please get in touch with our support team.
-                            We appreciate your patience and understanding during this time."
+                                    Please try again. If the issue persists, please get in touch with our support team.
+                                    We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.WARNING}
-                                sidePanelNotificationTitle="Unable to [action]"
+                                sidePanelNotificationTitle="Unable to Download"
+                                 addEditTemplateChild={
+                                    <>
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="A technical issue at our end has stopped us from preparing the [document/documents]for download. Please try again later. If the issue persists, please get in touch with our support team."
+                                                autoclose
+                                            />
+                                            <div>
+                                               <p>Files you download will appear here.</p>
+                                            </div>
+                                            </>
+                                        }
+                                 
+                                isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
-                                sidePanelTitle=""
+                                sidePanelTitle="Download"
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
@@ -663,23 +696,33 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {
-                                        cancelText: "",
+                                        cancelText: "Cancel",
                                         contentText: "",
-                                                isNotificationanner: false,
+                                                isNotificationanner: true,
+                                                notificationTitle: `${selectedCheckBoxIds?.length} document about to be prepared for download`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Okay',
-                                        onCancel: (): void => {},
-                                        onConfirm: (): void => { },
+                                        onCancel: (): void => {setShowConfirmDialog(false)},
+                                        onConfirm: (): void => {
+                                            setIsSidePanelLoader(true);
+                                            setIsSidePanelOpen(true)
+
+                                            setTimeout(() => {
+                                                setIsSidePanelLoader(false); 
+                                            }, 1000);
+                                         },
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-        
-                                titleConfirmation="No items selected"
+                                titleConfirmation="Prepare download"
                                 isOpenConfirmationDialog={showConfirmDialog}
+                                showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationTitle=""
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
+                                isSidePanelOpen={isSidePanelOpen}
+                                handleCloseSidePanel={()=>setIsSidePanelOpen(false)}
                                 isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
