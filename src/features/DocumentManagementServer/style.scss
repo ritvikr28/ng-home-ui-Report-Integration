@@ -69,35 +69,29 @@
       margin-bottom: 20px;
     }
 
-    .dynamic-table {
-      overflow-x: auto;
+      .dynamic-table {
+        overflow-x: auto;
 
-      table td:first-child,
-      table th:first-child {
-        text-align: center;
-        min-width: 82px;
-      }
+        table td:first-child,
+        table th:first-child {
+          text-align: center;
+          min-width: 82px;
+        }
 
-      .essui-table__cell {
-        min-width: 140px;
-        text-align: left;
+        .essui-table__cell {
+          min-width: 140px;
+          text-align: left;
+        }
       }
-    }
   }
-  .parent-container { // Replace with your actual parent class
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%; // or a fixed height
-  position: relative;
-}
-.grid-wrapper .vertical-center {
-    width: 98px;
-    height: auto;
-    background-color: white;
-    border-radius: 10px;
-    margin-left: 0;
-}
+
+    .grid-wrapper .vertical-center {
+        width: 98px;
+        height: auto;
+        background-color: white;
+        border-radius: 10px;
+        margin-left: 0;
+    }
 
   .essui-dialog__footer {
     display: flex;

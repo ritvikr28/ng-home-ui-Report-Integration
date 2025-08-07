@@ -423,7 +423,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
-//   ??  const handleCloseSidePanel = () => setIsSidePanelOpen(false);
 
     return (<>
         <>
@@ -535,16 +534,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
-                                    console.log("Selected IDs:", ids);
                                     }}
 
                                     onChangeListCheckBox={(index: number, id: string) => {
-                                        // Toggle the checkbox selection
+                        
                                         const updatedCheckBoxIds = [...selectedCheckBoxIds];
-                                        if (updatedCheckBoxIds.includes(id)) {
-                                            updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
+                                        if (updatedCheckBoxIds?.includes(id)) {
+                                            updatedCheckBoxIds?.splice(updatedCheckBoxIds.indexOf(id), 1);
                                         } else {
-                                            updatedCheckBoxIds.push(id);
+                                            updatedCheckBoxIds?.push(id);
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
                                     }}
@@ -653,7 +651,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                 autoclose
                                             />
                                             <div>
-                                            
+                                               <p>Files you download will appear here.</p>
                                             </div>
                                             </>
                                         }
@@ -701,7 +699,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${selectedCheckBoxIds.length} document about to be prepared for download`,
+                                                notificationTitle: `${selectedCheckBoxIds?.length} document about to be prepared for download`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Okay',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
