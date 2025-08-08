@@ -374,7 +374,7 @@ const renderHomePage: (
     return NewHomepageView;
   } 
   return UnAuthorisedAccess;  
-};
+}; 
 
 /* eslint-enable */
 /* istanbul ignore next */
