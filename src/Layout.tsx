@@ -171,7 +171,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     isOrganisationInVariant("InviteUserView");
 
   const hasInviteUserPermissions: boolean = authService.isAuthorised(
-    [{ Securable: "NG.UserManagement.Groups", Operation: "View" }],
+    [{ Securable: "NG.UserManagement.Invite", Operation: "View" }],
     MatchPermissions.all
   );
 
@@ -374,7 +374,7 @@ const renderHomePage: (
     return NewHomepageView;
   } 
   return UnAuthorisedAccess;  
-};
+}; 
 
 /* eslint-enable */
 /* istanbul ignore next */
