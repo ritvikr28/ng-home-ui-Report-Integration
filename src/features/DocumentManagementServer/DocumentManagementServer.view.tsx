@@ -633,8 +633,9 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 primaryButtonTitle="Clear all"
-                                secondaryButtonTitle="Cancel"
-                                isShowSecondaryBtn={false}
+                                secondaryButtonTitle="Clear all"
+                                isShowSecondaryBtn={true}
+                                isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
@@ -647,7 +648,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                             <Notification
                                                 status={NotificationStatus.WARNING}
                                                 title="Unable to prepare [document/documents] for download"
-                                                message="A technical issue at our end has stopped us from preparing the [document/documents]for download. Please try again later. If the issue persists, please get in touch with our support team."
+                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists, please get in touch with our support team."
                                                 autoclose
                                             />
                                             <div>
@@ -699,9 +700,9 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${selectedCheckBoxIds?.length} document about to be prepared for download`,
+                                                notificationTitle: `${selectedCheckBoxIds?.length} document is about to be prepared for downloading.`,
                                                 notificationStatus: NotificationStatus.WARNING,
-                                        okText: 'Okay',
+                                        okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
                                         onConfirm: (): void => {
                                             setIsSidePanelLoader(true);
@@ -714,7 +715,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-                                titleConfirmation="Prepare download"
+                                titleConfirmation="Prepare download?"
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

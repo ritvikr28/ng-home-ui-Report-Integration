@@ -104,7 +104,22 @@
     min-width: 148px;
   }
 
+  .essui-dialog {
+  max-height: 90vh; /* or use calc(100vh - some padding) */
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
+
+.essui-dialog__body {
+  overflow-y: auto;
+  // padding: 1rem;
+  flex-grow: 1;
+}
+
+}
+
+
 
 .relatedto-main {
   display: flex;
@@ -275,4 +290,17 @@
       height: 100vh !important;
     }
   }
+}
+
+@media (max-width: 397px) {
+  .dms-layout{ 
+    .essui-side-panel-container-grid-item {
+    // max-width: 100%;
+    max-width: fit-content;
+    width: 100%;
+    height: 101vh;
+    font-size: 14px; 
+    padding: 6px;
+    overflow: auto;
+  }} 
 }
