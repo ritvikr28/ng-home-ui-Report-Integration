@@ -249,7 +249,8 @@ useEffect(() => {
 
     // If any field is missing (partial date), show required error instead of invalid date
     if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
-      setError("From date is required");
+      // setError("From date is required");
+      setError("Invalid Date");
       setIsDateError(true);
       return;
     }

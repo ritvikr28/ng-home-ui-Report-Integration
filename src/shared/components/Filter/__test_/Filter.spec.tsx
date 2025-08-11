@@ -687,7 +687,7 @@ it("shows error when day or month is 00 or 0", async () => {
   fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
 
   await waitFor(() => {
-    expect(screen.getByText(/From date is required/i)).toBeInTheDocument();
+    expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
   });
 })
