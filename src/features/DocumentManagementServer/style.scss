@@ -304,3 +304,13 @@
     overflow: auto;
   }} 
 }
+
+@media (max-width: 600px), (max-height: 600px) {
+  .dms-layout {
+    #ng-calendar-content {
+      max-height: 60vh;
+      min-width: 220px;
+      overflow-y: auto !important;
+    }
+  }
+}
