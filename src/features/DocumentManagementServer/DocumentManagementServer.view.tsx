@@ -659,7 +659,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                  
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
-                                sidePanelTitle="Download"
+                                sidePanelTitle="Downloads"
                                 subHeadingText=""
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
