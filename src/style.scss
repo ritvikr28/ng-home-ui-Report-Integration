@@ -91,9 +91,11 @@ footer>* {
     font-weight: 400;
     line-height: 72px;
   }
+
   .what-new-sims {
     flex-grow: 1;
   }
+
   .sims-next-gen-update-wrapper {
     width: 100%;
   }
@@ -117,9 +119,10 @@ footer>* {
       .essui-activity-card-center {
         width: 90% !important;
       }
+
     }
 
-     .welcome-heading-container {
+    .welcome-heading-container {
       flex-basis: 100%;
       max-width: 100%;
 
@@ -128,6 +131,7 @@ footer>* {
         line-height: 36px;
       }
     }
+
     .sims-next-gen-update-wrapper {
       gap: 16px !important;
     }
@@ -145,6 +149,7 @@ footer>* {
       .essui-activity-card-center {
         width: 90% !important;
       }
+
     }
   }
 }

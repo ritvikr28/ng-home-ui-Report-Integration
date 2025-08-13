@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
   Suspense,
   lazy,
   LazyExoticComponent,
   FC,
-  useState,
-  useEffect
+  useState
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -66,7 +66,6 @@ import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
-import { fetchLinks } from "./shared/hooks/useSIMSNextGenLinks";
 import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 
@@ -115,15 +114,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const [hasSimsConnected, setHasSimsConnected]: [
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [hasSimsConnected]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
 
-  const [loadingSimsConnectedData, setLoadingSimsConnectedData]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
 
   const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (
     menus: IApplicationMenu[]
@@ -221,14 +217,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-  useEffect(() => {
-    (async () => {
-      const hasSimsConnectedData = await fetchLinks();
-      setLoadingSimsConnectedData(false);
-      setHasSimsConnected(hasSimsConnectedData);
-    })();
-    setLoadingSimsConnectedData(true);
-  }, []);
 
   return (
     /* eslint-disable react/prop-types */
@@ -258,11 +246,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             exact
             path="/"
             component={
-             isServiceInitiated
-                ? loadingSimsConnectedData ? LoaderComponent : renderHomePage(
-                    hasNewHomePagePermission,
-                    hasSimsConnected
-                  )
+              isServiceInitiated
+                ? renderHomePage(
+                  hasNewHomePagePermission,
+                  hasSimsConnected
+                )
                 : EmptyComponent
             }
           />
@@ -361,20 +349,18 @@ const renderHomePage: (
   hasNewHomePagePermission: boolean,
   hasSimsConnected: boolean
 ) => {
-  if (!isAuthzUserAdmin() && !hasNewHomePagePermission && hasSimsConnected) {
-    return () => <HomePageForSimsConnectedNormalUser hasSimsConnected={hasSimsConnected} />;
-  }
-  if (!isAuthzUserAdmin() && !hasNewHomePagePermission && !hasSimsConnected) {
-    return UnAuthorisedAccess
-  } 
-  if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
-    return SIMSIDAdminPageView;
-  } 
-  if (hasNewHomePagePermission) {
-    return NewHomepageView;
-  } 
-  return UnAuthorisedAccess;  
-}; 
+
+    if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
+      return () => <HomePageForSimsConnectedNormalUser hasSimsConnected={hasSimsConnected} />;
+    }
+    if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+      return SIMSIDAdminPageView;
+    }
+    if (hasNewHomePagePermission) {
+      return NewHomepageView;
+    }
+    return UnAuthorisedAccess;
+  };
 
 /* eslint-enable */
 /* istanbul ignore next */
@@ -495,13 +481,3 @@ const HomePageForSimsConnectedNormalUser: React.FC<{hasSimsConnected: boolean}> 
     </div>
   );
 };
-
-const LoaderComponent: React.FC = () => (
-  <div className="loader-wrapper">
-    <Loader
-      className="loader-wrapper"
-      loaderText="Loading..."
-      loaderType={LoaderType.Circular}
-    />
-  </div>
-);

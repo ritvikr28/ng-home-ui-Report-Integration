@@ -23,8 +23,8 @@ const NotificationView: React.FC<INotificationProps> = () => {
   };
 
   useEffect(() => {
-    fetchSimsConnectedLink();
-  })
+      fetchSimsConnectedLink();
+  },[])
 
   return (isRenderSimsConnectedBanner && (
     <div data-testid="notification-test-id">

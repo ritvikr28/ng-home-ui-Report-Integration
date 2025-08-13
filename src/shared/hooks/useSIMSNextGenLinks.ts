@@ -23,6 +23,7 @@ export const fetchLinks: () => Promise<boolean> = async () => {
 
     return (hasValidLink && !isExcluded);
   } catch (err) {
+    console.error("Error fetching SIMS Next Gen links:", err);
     return false;
   }
 };

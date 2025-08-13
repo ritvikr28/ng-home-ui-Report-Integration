@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { lazy, Suspense, useEffect, useState } from "react";
 import { Redirect } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import "./style.scss";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 
-import { useMediaQuery } from "@essnextgen/ui-kit";
+import { Loader, LoaderType, useMediaQuery } from "@essnextgen/ui-kit";
 import QuickLinkLogic from "../QuickLinks";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import {
@@ -15,10 +15,7 @@ import { logger } from "../../shared/components/AppInsights";
 import MainPanel from "../../features/MainPanel/MainPanel.logic";
 import { envConfig, getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
-import WhatsNewBanner from "../../shared/components/Notification-menu/ClassViewWhatsNewBanner";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
-import { fetchLinks } from "../../shared/hooks/useSIMSNextGenLinks";
-import SIMSConnectedLauncher from "../../shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 
 const requiredPermissions: Permission[] = [
   {
@@ -27,23 +24,10 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-// const fetchAndSetQuickLinkData = async (
-//   setQuickLinkData: Dispatch<SetStateAction<IQuickLinkApiResponse[] | null>>,
-//   setIsError: Dispatch<SetStateAction<boolean>>
-// ) => {
-//   try {
-//     logger.info(`Displayed new Home Page, orgId: ${getUserOrganisation()}`);
-//     const responseapidata: IFetchQuickLinkDetailsFunctionResponse | null | undefined = await fetchQuickLinkDetails();
-//     if (responseapidata != null) {
-//       setQuickLinkData(responseapidata.response);
-//       setIsError(responseapidata.status);
-//     }
-//   } catch (error) {
-//     console.error(error);
-//   }
-// };
+const NewHomePageBanner = lazy(() => import("./NewHomePageBanner.view"));
 
-const NewHomepageView: React.FC = () => {
+
+const NewHomepageView = () => {
   const isPermission: boolean = authService.isAuthorised(
     requiredPermissions,
     MatchPermissions.all
@@ -76,19 +60,8 @@ const NewHomepageView: React.FC = () => {
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
 
-  const [isRenderSimsConnectedBanner, setRenderSimsConnectedBanner]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-
-  const [hasConnectedLauncher, sethasConnectedLauncher]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-
-  const ClassViewNotificationBanner: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "ClassViewNotificationBanner"
+  const [showClassViewNotification, setShowClassViewNotification] = useState(
+    hasFeaturePermission(`${envConfig.APPLICATION}`, "ClassViewNotificationBanner")
   );
 
   const showQuickLinkView: () => void = () => {
@@ -132,19 +105,6 @@ const NewHomepageView: React.FC = () => {
     })();
   }, []);
 
-  useEffect(() => {
-    (async () => {
-      if (isRenderSimsConnectedBanner === false) {
-        const responseapidata = await fetchLinks();
-        if (responseapidata != null) {
-          sethasConnectedLauncher(responseapidata);
-
-        }
-        setRenderSimsConnectedBanner(true);
-      }
-    })();
-    sethasConnectedLauncher(false);
-  }, [])
 
   const renderContent: () => JSX.Element = () => {
     /* istanbul ignore next */
@@ -161,24 +121,14 @@ const NewHomepageView: React.FC = () => {
       );
     }
 
-    let banner = null;
-    if (hasConnectedLauncher) {
-      banner = (
-        <div data-testid="sims-launcher">
-          <SIMSConnectedLauncher />
-        </div>
-      );
-    } else if (ClassViewNotificationBanner) {
-      banner = (
-        <div data-testid="whats-new-banner">
-          <WhatsNewBanner />
-        </div>
-      );
-    }
 
     return <>
-      {banner}
-     <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
+      <Suspense fallback={<><Loader loaderType={LoaderType.Circular} /></>}>
+      
+        <NewHomePageBanner
+          showClassViewNotification={showClassViewNotification} setShowClassViewNotification={setShowClassViewNotification} />
+      </Suspense>
+      <MainPanel isOpen={isOpen} setIsOpen={setIsOpen} />
     </>
   };
 
@@ -202,8 +152,8 @@ const NewHomepageView: React.FC = () => {
       </div>
 }
       <div className={showQuickLink ? "new-main-panel-quicklink" : "new-main-panel"}>
-
-        {isRenderSimsConnectedBanner && renderContent()}
+        {renderContent()}
+        {/* {isRenderSimsConnectedBanner && renderContent()} */}
       </div>
     </div>
   ) : (
