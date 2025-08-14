@@ -99,21 +99,6 @@
       expect(getByText("quickLink.headingTitle")).toBeInTheDocument();
     });
 
-  
-
-    test('renders with Tooltip when userFullname is truthy and length > 24', () => {
-      jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
-      jest
-  
-      .spyOn(authService, "getUsername")
-  
-      .mockImplementation(() => "JonathanQuincyAdamsSmithsonianabcd");
-      
-      const {getByText } = render(<SidePanel isOpen togglePanel={jest.fn()} closePanel={jest.fn()} showQuickLinkView={jest.fn()} setQuickLinkData={jest.fn()} quicklinkData={mockApiResponse} />);
-      expect(getByText("JonathanQuincyAdamsSmith...")).toBeInTheDocument();
-
-    });
-
     test("renders sidepanel component with mock data and star icon", async () => {
       jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
 

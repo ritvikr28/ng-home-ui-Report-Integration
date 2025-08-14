@@ -6,9 +6,6 @@ import {
   SideNavigationPanelContent,
   Loader,
   LoaderType,
-  Tooltip,
-  TooltipAlign,
-  TooltipPosition,
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import "./style.scss";
@@ -175,7 +172,7 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
 }: RenderSideNavigationPanelProps) => {
   return isMobileView || !isOpen ? (
     <SideNavigationPanel
-      title={getNavigationPanelTitle(loginFullname, isMobileView)}
+      title=""
       isOpen={isOpen}
       onClose={togglePanel}
     >
@@ -216,39 +213,6 @@ const renderSideNavigationPanel: React.FC<RenderSideNavigationPanelProps> = ({
   );
 };
 
-/* eslint-disable */
-const getNavigationPanelTitle: (
-  loginFullname: string,
-  isMobileView: boolean
-) => JSX.Element = (loginFullname: string, isMobileView: boolean) => {
-  return loginFullname && loginFullname.length > 24 ? (
-    isMobileView ? (
-      <Tooltip
-        dataTestId="test-id"
-        align={TooltipAlign.Center}
-        position={TooltipPosition.Bottom}
-        content={loginFullname}
-      >
-        <span className="quick-link-username-tooltip-dertfsg11463f">
-          {`${loginFullname.substring(0, 24)}...`}
-          {`${loginFullname.substring(0, 24)}...`}
-        </span>
-      </Tooltip>
-    ) : (
-      <span className="quick-link-username">
-        {`${loginFullname.substring(0, 24)}...`}
-      </span>
-    )
-  ) : isMobileView ? (
-    <span className="quick-link-username-tooltip-dertfsg11463f">
-      <strong>{loginFullname}</strong>
-    </span>
-  ) : (
-    <span className="quick-link-username">
-      <strong>{loginFullname}</strong>
-    </span>
-  );
-};
 /* eslint-enable */
 const renderCloseIcon: (closePanel: () => void) => JSX.Element = (
   closePanel: () => void
@@ -285,7 +249,6 @@ interface RenderQuickLinkContentProps {
 }
 
 const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
-  loginFullname,
   closePanel,
   isSIMSIDAdmin,
   isPermissionquicklink,
@@ -299,7 +262,6 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
 }: RenderQuickLinkContentProps) => (
   <div>
     <div className="user-name-display">
-      {getNavigationPanelTitle(loginFullname, isMobileView)}
       {renderCloseIcon(closePanel)}
     </div>
     {isSIMSIDAdmin
