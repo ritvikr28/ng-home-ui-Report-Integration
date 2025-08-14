@@ -33,8 +33,9 @@ const WelcomeUser: (props: IWelcomeUserLogicProps) => JSX.Element = () => {
     };
   }, []);
 
-  const userName: string =
-    userFullname === null ? "" : userFullname?.split(" ")[0];
+  // Optimized: Format userFullname as initial of first name and full last name
+  const parts = (userFullname || "").trim().split(/\s+/);
+  const userName = parts.length > 1 ? `${parts[0][0]} ${parts.slice(1).join(" ")}` : parts[0] || "";
 
   return (
     <WelcomeUserView data-testid="subparent-element" fullName={userName} />
