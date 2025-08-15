@@ -94,7 +94,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         tableData = docData.data.map((doc: any) => ({
             id: doc?.fileId,
             Document: doc?.document,
-            Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
+            RelatedTo:["Pupil","Conduct"],
+            // Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
             Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
             Addedby: doc?.addedBy || "",
             "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
@@ -372,6 +373,14 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
      
     const handleApply = () => {
+
+        //  const today = dayjs().startOf('day');
+        //     if (selectedDateRange.toDate && dayjs(selectedDateRange.toDate).isAfter(today)) {
+        //         setIsDateError(true);
+                
+        //         // setDateErrorMsg(`To date must be on or before ${today.format("DD/MM/YYYY")}`);
+        //         return;
+        //     }
         
         if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
            selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
