@@ -312,8 +312,12 @@ useEffect(() => {
        const toDateValue = !isFrom ? thisDateStr : otherDateStr
        setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue })
        setError("");
-       setFromDateError("");
+       if (!fromDateError && !toDateError) {
+        setFromDateError("");
         setIsDateError(false);
+      }
+      //  setFromDateError("");
+      //  setIsDateError(false);
       };
 
       const handleApplyWrapper = () => {
