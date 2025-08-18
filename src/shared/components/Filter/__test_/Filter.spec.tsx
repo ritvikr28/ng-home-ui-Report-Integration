@@ -699,7 +699,6 @@ describe("To date future validation", () => {
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
     const futureDate = dayjs().add(1, "day");
 
-    // Set To date to a future date
     setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
 
     await waitFor(() => {
@@ -713,13 +712,11 @@ describe("To date future validation", () => {
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
     const futureDate = dayjs().add(1, "day");
 
-    // First set To date to a future date (should show error)
     setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
     await waitFor(() => {
       expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
     });
 
-    // Now set To date to today (should clear error)
     const today = dayjs();
     setDateInput(dateInputs[1], today.date().toString(), (today.month() + 1).toString(), today.year().toString());
     await waitFor(() => {
@@ -733,13 +730,11 @@ describe("To date future validation", () => {
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
     const futureDate = dayjs().add(1, "day");
 
-    // First set To date to a future date (should show error)
     setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
     await waitFor(() => {
       expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
     });
 
-    // Now set To date to a past date (should clear error)
     const pastDate = dayjs().subtract(1, "day");
     setDateInput(dateInputs[1], pastDate.date().toString(), (pastDate.month() + 1).toString(), pastDate.year().toString());
     await waitFor(() => {
@@ -754,7 +749,6 @@ describe("From date minimum validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // Set From date to 31/12/1899 (before 01/01/1900)
     setDateInput(dateInputs[0], "31", "12", "1899");
 
     await waitFor(() => {
@@ -767,13 +761,11 @@ describe("From date minimum validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // First set From date to 31/12/1899 (should show error)
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
       expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
     });
 
-    // Now set From date to 01/01/1900 (should clear error)
     setDateInput(dateInputs[0], "01", "01", "1900");
     await waitFor(() => {
       expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
@@ -785,13 +777,11 @@ describe("From date minimum validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // First set From date to 31/12/1899 (should show error)
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
       expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
     });
 
-    // Now set From date to 02/01/1900 (should clear error)
     setDateInput(dateInputs[0], "02", "01", "1900");
     await waitFor(() => {
       expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
@@ -805,7 +795,6 @@ describe("From date invalid format validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // Set From date to an invalid date: 31st Feb 2023
     setDateInput(dateInputs[0], "31", "02", "2023");
 
     await waitFor(() => {
@@ -818,7 +807,6 @@ describe("From date invalid format validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // Set From date to a partially filled date
     setDateInput(dateInputs[0], "15", "05", "202");
 
     await waitFor(() => {
@@ -833,7 +821,6 @@ describe("To date invalid format validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // Set To date to an invalid date: 31st Feb 2023
     setDateInput(dateInputs[1], "31", "02", "2023");
 
     await waitFor(() => {
@@ -846,7 +833,6 @@ describe("To date invalid format validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    // Set To date to a partially filled date
     setDateInput(dateInputs[1], "15", "05", "202");
 
     await waitFor(() => {

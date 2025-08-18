@@ -282,20 +282,16 @@ useEffect(() => {
           setError(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`);
           setIsDateError(true);
           return;
-        }else{
+        }
           setToDateError("");
           setIsDateError(false);
-        }
+        
         if (thisDateStr && !otherDateStr) {
           setFromDateError("From date is required");
           setIsDateError(true);
           return;
         }
-        // if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-        //   setError(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`);
-        //   setIsDateError(true);
-        //   return;
-        // }
+
         if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
           setError("To date should not be before From date.");
           setIsDateError(true);
