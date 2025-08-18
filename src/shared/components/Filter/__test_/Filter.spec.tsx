@@ -692,3 +692,152 @@ it("shows error when day or month is 00 or 0", async () => {
   });
 })
 });
+
+describe("To date future validation", () => {
+  it("shows error when To date is in the future", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    const futureDate = dayjs().add(1, "day");
+
+    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
+
+    await waitFor(() => {
+      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("clears error when To date is changed to today", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    const futureDate = dayjs().add(1, "day");
+
+    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
+    await waitFor(() => {
+      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
+    });
+
+    const today = dayjs();
+    setDateInput(dateInputs[1], today.date().toString(), (today.month() + 1).toString(), today.year().toString());
+    await waitFor(() => {
+      expect(screen.queryByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).not.toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+    });
+  });
+
+  it("clears error when To date is changed to a past date", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    const futureDate = dayjs().add(1, "day");
+
+    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
+    await waitFor(() => {
+      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
+    });
+
+    const pastDate = dayjs().subtract(1, "day");
+    setDateInput(dateInputs[1], pastDate.date().toString(), (pastDate.month() + 1).toString(), pastDate.year().toString());
+    await waitFor(() => {
+      expect(screen.queryByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).not.toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+    });
+  });
+});
+
+describe("From date minimum validation", () => {
+  it("shows error when From date is before 01/01/1900", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[0], "31", "12", "1899");
+
+    await waitFor(() => {
+      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("clears error when From date is changed to 01/01/1900", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[0], "31", "12", "1899");
+    await waitFor(() => {
+      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+    });
+
+    setDateInput(dateInputs[0], "01", "01", "1900");
+    await waitFor(() => {
+      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+    });
+  });
+
+  it("clears error when From date is changed to a valid date after 01/01/1900", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[0], "31", "12", "1899");
+    await waitFor(() => {
+      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+    });
+
+    setDateInput(dateInputs[0], "02", "01", "1900");
+    await waitFor(() => {
+      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+    });
+  });
+});
+
+describe("From date invalid format validation", () => {
+  it("shows error when From date is invalid (e.g. 31/02/2023)", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[0], "31", "02", "2023");
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error when From date is partially filled (e.g. 15/05/202)", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[0], "15", "05", "202");
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+});
+
+describe("To date invalid format validation", () => {
+  it("shows error when To date is invalid (e.g. 31/02/2023)", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[1], "31", "02", "2023");
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error when To date is partially filled (e.g. 15/05/202)", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    setDateInput(dateInputs[1], "15", "05", "202");
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+});

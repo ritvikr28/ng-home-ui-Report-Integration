@@ -372,7 +372,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
      
     const handleApply = () => {
-        
+
         if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
            selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
             setIsDateError(true);

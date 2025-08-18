@@ -260,6 +260,11 @@ useEffect(() => {
           setIsDateError(true);
           return;
         }
+        if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
+          setError("From date must be on or after 01/01/1900");
+          setIsDateError(true);
+          return;
+        }
         if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
           setError("");
           setToDateError("To date should not be before From date.");
@@ -273,11 +278,20 @@ useEffect(() => {
   }
         // if (thisDateStr) setToDateError("");
       } else {
+         if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
+          setError(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`);
+          setIsDateError(true);
+          return;
+        }
+          setToDateError("");
+          setIsDateError(false);
+        
         if (thisDateStr && !otherDateStr) {
           setFromDateError("From date is required");
           setIsDateError(true);
           return;
         }
+
         if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
           setError("To date should not be before From date.");
           setIsDateError(true);
@@ -294,8 +308,12 @@ useEffect(() => {
        const toDateValue = !isFrom ? thisDateStr : otherDateStr
        setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue })
        setError("");
-       setFromDateError("");
+       if (!fromDateError && !toDateError) {
+        setFromDateError("");
         setIsDateError(false);
+      }
+      //  setFromDateError("");
+      //  setIsDateError(false);
       };
 
       const handleApplyWrapper = () => {
