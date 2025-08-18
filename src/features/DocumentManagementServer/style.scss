@@ -59,6 +59,7 @@
 
 
 .dms-layout {
+
   .grid-wrapper {
     .filter-tool-view .filter-btn {
       margin-right: 8px;
@@ -70,7 +71,7 @@
     }
 
      .edit-selected-btn .base-class {
-            height: 40px!important;
+            height: 40px !important;
             width: 100% !important;
         }
 
@@ -93,7 +94,7 @@
   }
 
     .dynamic-table .essui-table__cell:last-child {
-                padding-right: 16px;
+                padding-right: 16px !important;
             }
 
 

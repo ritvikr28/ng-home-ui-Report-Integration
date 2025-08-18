@@ -312,8 +312,6 @@ useEffect(() => {
         setFromDateError("");
         setIsDateError(false);
       }
-      //  setFromDateError("");
-      //  setIsDateError(false);
       };
 
       const handleApplyWrapper = () => {
