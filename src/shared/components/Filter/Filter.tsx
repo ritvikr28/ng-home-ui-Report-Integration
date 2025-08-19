@@ -204,139 +204,143 @@ useEffect(() => {
             !date.isAfter(dayjs(), "day")
           );
         };
+  
+const handleDateChange = (
+  setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
+  setError: React.Dispatch<React.SetStateAction<string>>,
+  day: string | number,
+  month: string | number,
+  year: string | number,
+  otherDate: { day: string; month: string; year: string },
+  isFrom: boolean
+) => {
+  const newDate = {
+    day: day?.toString() ?? "",
+    month: month?.toString() ?? "",
+    year: year?.toString() ?? "",
+  };
+  setDate(newDate);
 
-      const handleDateChange = (
-        setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
-        setError: React.Dispatch<React.SetStateAction<string>>,
-        day: string | number,
-        month: string | number,
-        year: string | number,
-        otherDate: { day: string; month: string; year: string },
-        isFrom: boolean
-      ) => {
-        const newDate = {
-          day: day?.toString() ?? "",
-          month: month?.toString() ?? "",
-          year: year?.toString() ?? "",
-        };
-        setDate(newDate);
+  if (
+    newDate.day === "00" || newDate.day === "0" ||
+    newDate.month === "00" || newDate.month === "0"
+  ) {
+    setError("Invalid Date");
+    setIsDateError(true);
+    return;
+  }
 
-        if (
-          newDate.day === "00" || newDate.day === "0" ||
-          newDate.month === "00" || newDate.month === "0"
-        ) {
-          setError("Invalid Date");
-          setIsDateError(true);
-          return;
-        }
+  const thisDateStr = getDateString(newDate);
+  const otherDateStr = getDateString(otherDate);
 
-        const thisDateStr = getDateString(newDate);
-        const otherDateStr = getDateString(otherDate);
+  if (
+    !newDate.day && !newDate.month && !newDate.year &&
+    !otherDate.day && !otherDate.month && !otherDate.year
+  ) {
+    setError("");
+    setIsDateError(false);
+    setFromDateError("");
+    setToDateError("");
+    setSelectedDateRange({ fromDate: "", toDate: "" });
+    return;
+  }
 
-        if (
-          !newDate.day && !newDate.month && !newDate.year &&
-          !otherDate.day && !otherDate.month && !otherDate.year
-        ) {
-          setError("");
-          setIsDateError(false);
-          setFromDateError("");
-          setToDateError("");
-          setSelectedDateRange({ fromDate: "", toDate: "" });
-          return;
-        }
+  if (newDate.year && newDate.year.length < 4) {
+    setError(isFrom ? "From date is required" : "");
+    setIsDateError(true);
+    return;
+  }
 
-        if (newDate.year && newDate.year.length < 4) {
-          setError(isFrom ? "From date is required" : "");
-          setIsDateError(true);
-          return;
-        }
+  if (!newDate.day && !newDate.month && !newDate.year) {
+    setError("");
+    setIsDateError(false);
+    if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
+      setError("From date is required");
+      setIsDateError(true);
+    }
+    return;
+  }
 
-        if (!newDate.day && !newDate.month && !newDate.year) {
-          setError("");
-          setIsDateError(false);
-          if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
-            setError("From date is required");
-            setIsDateError(true);
-          }
-          return;
-        }
+  // If any field is missing (partial date), show required error instead of invalid date
+  if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
+    setError("Invalid Date");
+    setIsDateError(true);
+    return;
+  }
 
-        // If any field is missing (partial date), show required error instead of invalid date
-        if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
-          setError("Invalid Date");
-          setIsDateError(true);
-          return;
-        }
-
-        // --- Validation for From Date ---
-        if (isFrom) {
-          if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-            setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
-            setIsDateError(true);
-            return;
-          }
-          if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-            setError("From date must be on or after 01/01/1900");
-            setIsDateError(true);
-            return;
-          }
-          if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-            setError("Invalid Date");
-            setIsDateError(true);
-            return;
-          }
-          // Check if To date is before From date
-          if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
-            setToDateError("To date should not be before From date.");
-            setIsDateError(true);
-          } else {
-            // Only clear To date error if To date is valid
-            if (isValidDate(otherDateStr)) {
-              setToDateError("");
-            }
-            setIsDateError(false);
-          }
-          setError("");
-        }
-        // --- Validation for To Date ---
-        else {
-          if ((newDate.day || newDate.month || newDate.year) && (!otherDate.day || !otherDate.month || !otherDate.year)) {
+  // --- Validation for From Date ---
+  if (isFrom) {
+    if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
+      setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setIsDateError(true);
+      return;
+    }
+    if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
+      setError("From date must be on or after 01/01/1900");
+      setIsDateError(true);
+      return;
+    }
+    if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+      setError("Invalid Date");
+      setIsDateError(true);
+      return;
+    }
+    // Check if To date is before From date
+    if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
+      setToDateError("To date should not be before From date.");
+      setIsDateError(true);
+    } else {
+      // Only clear To date error if To date is valid
+      if (isValidDate(otherDateStr)) {
+        setToDateError("");
+      }
+      setIsDateError(false);
+    }
+    setError("");
+  }
+  // --- Validation for To Date ---
+  else {
+     if ((newDate.day || newDate.month || newDate.year) && (!otherDate.day || !otherDate.month || !otherDate.year)) {
             setFromDateError("From date is required");
             setIsDateError(true);
-            setError(""); 
+             setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
             return;
           }
-                    if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-            setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
-            setIsDateError(true);
-            return;
-          }
-  
-          if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-            setError("Invalid Date");
-            setIsDateError(true);
-            return;
-          }
-          // Check if To date is before From date
-          if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-            setError("To date should not be before From date.");
-            setIsDateError(true);
-            return;
-          } else {
-            // Only clear From date error if From date is valid
-            if (isValidDate(otherDateStr)) {
-              setFromDateError("");
-            }
-            setIsDateError(false);
-          }
-          setError("");
-        }
+    if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
+      setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setIsDateError(true);
+      return;
+    }
+    if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
+      setError("To date must be on or after 01/01/1900");
+      setIsDateError(true);
+      return;
+    }
+    if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
+      setError("Invalid Date");
+      setIsDateError(true);
+      return;
+    }
+    // Check if To date is before From date
+    if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
+      setError("To date should not be before From date.");
+      setIsDateError(true);
+      return;
+    } else {
+      // Only clear From date error if From date is valid
+      if (isValidDate(otherDateStr)) {
+        setFromDateError("");
+      }
+      setIsDateError(false);
+    }
+    setError("");
+  }
 
-        // Update selectedDateRange
-        const fromDateValue = isFrom ? thisDateStr : otherDateStr;
-        const toDateValue = !isFrom ? thisDateStr : otherDateStr;
-        setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue });
-      };
+  // Update selectedDateRange
+  const fromDateValue = isFrom ? thisDateStr : otherDateStr;
+  const toDateValue = !isFrom ? thisDateStr : otherDateStr;
+  setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue });
+};
 
       const handleApplyWrapper = () => {
       
