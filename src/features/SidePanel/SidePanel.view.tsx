@@ -16,8 +16,7 @@ import {
 } from "@essnextgen/ui-intl-kit";
 import {
   SidePanelProps,
-  QuickLinkSidePanel,
-  QuickLink
+  QuickLinkSidePanel
 } from "./SidePanelProps";
 import { fetchQuickLinkDetails } from "../../shared/components/QuickLink/Quicklinkresponse";
 import { FetchQuickLinkpost } from "../../shared/services/quickLinkDomain/quickLinkService";
@@ -347,36 +346,7 @@ eslint-disable
             !isError &&
             quicklinkData && (
               <>
-                <div
-                  className="quick-link-panel-item"
-                  onClick={() => {
-                    const classViewLink: string | undefined = (
-                      quicklinkData as QuickLink[]
-                    ).find(
-                      (link: QuickLink) =>
-                        link.name === t("quickLink.classview")
-                    )?.link;
-                    if (classViewLink) {
-                      window.location.href = classViewLink;
-                      gtmAnalytics.pushEvent({
-                        event: "click",
-                        linkText: "Class View",
-                        linkUrl: classViewLink,
-                        clickType: "link",
-                        clickLocation: "sidebar"
-                      });
-                    }
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  {t("quickLink.classview")}
-                </div>
-
                 {quicklinkData
-                  .filter(
-                    (sidelink: any) =>
-                      sidelink.name !== t("quickLink.classview")
-                  )
                   .slice(0, 6)
                   .map((sidelink: any) => (
                     <div
