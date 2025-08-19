@@ -300,12 +300,7 @@ const handleDateChange = (
   }
   // --- Validation for To Date ---
   else {
-     if ((newDate.day || newDate.month || newDate.year) && (!otherDate.day || !otherDate.month || !otherDate.year)) {
-            setFromDateError("From date is required");
-            setIsDateError(true);
-             setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
-            return;
-          }
+  
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
       setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
       setIsDateError(true);
