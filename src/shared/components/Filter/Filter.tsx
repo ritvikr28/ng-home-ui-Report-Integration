@@ -321,13 +321,13 @@ const handleDateChange = (
       setError("To date should not be before From date.");
       setIsDateError(true);
       return;
-    } else {
+    } 
       // Only clear From date error if From date is valid
       if (isValidDate(otherDateStr)) {
         setFromDateError("");
       }
       setIsDateError(false);
-    }
+    
     setError("");
   }
 
