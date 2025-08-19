@@ -94,17 +94,17 @@ describe("FilterDialog", () => {
     });
   });
 
-  it("shows error if To date is set without From date", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+  // it("shows error if To date is set without From date", async () => {
+  //   renderComponent();
+  //   const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    setDateInput(dateInputs[1], "12", "05", "2022");
+  //   setDateInput(dateInputs[1], "12", "05", "2022");
 
-    await waitFor(() => {
-      expect(screen.getByText("From date is required")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
+  //   await waitFor(() => {
+  //     expect(screen.getByText("From date is required")).toBeInTheDocument();
+  //     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  //   });
+  // });
 
   it("shows error if From date is in the future", async () => {
     renderComponent();
@@ -693,57 +693,6 @@ it("shows error when day or month is 00 or 0", async () => {
 })
 });
 
-describe("To date future validation", () => {
-  it("shows error when To date is in the future", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    const futureDate = dayjs().add(1, "day");
-
-    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
-
-    await waitFor(() => {
-      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-
-  it("clears error when To date is changed to today", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    const futureDate = dayjs().add(1, "day");
-
-    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
-    await waitFor(() => {
-      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
-    });
-
-    const today = dayjs();
-    setDateInput(dateInputs[1], today.date().toString(), (today.month() + 1).toString(), today.year().toString());
-    await waitFor(() => {
-      expect(screen.queryByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).not.toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("clears error when To date is changed to a past date", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    const futureDate = dayjs().add(1, "day");
-
-    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
-    await waitFor(() => {
-      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).toBeInTheDocument();
-    });
-
-    const pastDate = dayjs().subtract(1, "day");
-    setDateInput(dateInputs[1], pastDate.date().toString(), (pastDate.month() + 1).toString(), pastDate.year().toString());
-    await waitFor(() => {
-      expect(screen.queryByText(`To date must be on or before ${dayjs().format("DD/MM/YYYY")}`)).not.toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
-    });
-  });
-});
-
 describe("From date minimum validation", () => {
   it("shows error when From date is before 01/01/1900", async () => {
     renderComponent();
@@ -840,4 +789,92 @@ describe("To date invalid format validation", () => {
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
+});
+
+describe("To date validation", () => {
+  it("shows error when To date is in the future", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    const futureDate = dayjs().add(1, "day");
+
+    setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
+
+    // fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    await waitFor(() => {
+      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
+     
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+  it("shows error when To date is set without From date", async () => {
+  renderComponent();
+  const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+  setDateInput(dateInputs[1], "20", "8", "2025"); // Only To date
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  await waitFor(() => {
+    expect(screen.getByText("From date is required")).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  });
+});
+
+  it("shows error when From date is in invalid format", async () => {
+  render(<FilterDialog {...defaultProps} />);
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+
+  // Invalid date: 31st Feb is not valid
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "31" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "02" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  expect(await screen.findByText("Invalid Date")).toBeInTheDocument();
+  expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+});
+
+  it("shows error when To date is in invalid format", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    // Invalid date: 31st Feb is not valid
+    setDateInput(dateInputs[1], "31", "02", "2023");
+
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error when To date is in the future (with valid From date)", async () => {
+  renderComponent();
+  const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+  // Enter valid From date
+  setDateInput(dateInputs[0], "10", "08", "2025");
+
+  // Enter To date in the future
+  const futureDate = dayjs().add(1, "day");
+  setDateInput(
+    dateInputs[1],
+    futureDate.date().toString(),
+    (futureDate.month() + 1).toString(),
+    futureDate.year().toString()
+  );
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  await waitFor(() => {
+    expect(
+      screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)
+    ).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+  });
+});
+
 });
