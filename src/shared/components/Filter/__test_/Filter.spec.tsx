@@ -802,8 +802,8 @@ describe("To date validation", () => {
     // fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     await waitFor(() => {
-      // expect(screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
-      expect(screen.getByText(`From date is required`)).toBeInTheDocument();
+      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
+     
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
