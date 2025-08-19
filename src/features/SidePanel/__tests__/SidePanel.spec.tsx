@@ -388,16 +388,12 @@
         />
       );
 
-
-      const classViewLink = getByText(/class view/i);
+      const classViewLink = getByText("Class View");
       expect(classViewLink).toBeInTheDocument();
-
 
       fireEvent.click(classViewLink);
 
-
       expect(window.location.href).toBe("http://localhost/");
-
 
       expect(pushEventMock).toHaveBeenCalledWith({
         event: "click",
@@ -408,8 +404,7 @@
       });
     });
 
-    test("retrieves the correct link for 'Class view' from quicklinkData", () => {
-
+    test("Class View appears in the normal quick link list with starring functionality", () => {
       const quicklinkDataWithClassView = [
         { id: 1, name: "Class View", link: "https://dev.home.sims.co.uk/seatingplans/classview", favourite: false, createdOn: "2025-02-12T12:25:53.843" },
         { id: 2, name: "Link 1", link: "/link-1", favourite: true, createdOn: "2023-01-01T12:00:00Z" },
@@ -419,7 +414,7 @@
       jest.spyOn(authService, "isAuthorised").mockImplementation(() => true);
       jest.spyOn(qicklink, "FetchQuickLinkData").mockResolvedValue(mockres);
 
-      const { getByText } = render(
+      const { getByText, getByTestId } = render(
         <SidePanel
           isOpen
           togglePanel={jest.fn()}
@@ -429,12 +424,13 @@
           quicklinkData={quicklinkDataWithClassView}
         />
       );
-
-
-      const classViewLink = getByText(/quickLink.classview/i);
+      const classViewLink = getByText("Class View");
       expect(classViewLink).toBeInTheDocument();
 
+      const classViewStar = getByTestId("btn-star1");
+      expect(classViewStar).toBeInTheDocument();
 
-      expect(classViewLink).toBeInTheDocument();
+      expect(getByText("Link 1")).toBeInTheDocument();
+      expect(getByText("Link 2")).toBeInTheDocument();
     });
   });
