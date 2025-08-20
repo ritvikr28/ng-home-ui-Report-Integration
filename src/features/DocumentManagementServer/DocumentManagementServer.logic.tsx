@@ -10,9 +10,9 @@ const renderRelatedToItem = (item: any) => {
     return (
       <>
         <a href={`/staffprofile/${item.staffId}`} className="relatedto-link">
-          {item.name}
+          {item.name} {" | "}{item.staffCode}
         </a>
-        {" | "}{item.staffCode}
+        {/* {" | "}{item.staffCode} */}
       </>
     );
   }
@@ -98,7 +98,7 @@ export const getTableHeadersData: {
       columnWidth: "261px",
       txtTrunctLength: 35,
       isColumnSorting: true,
-   anyComponent: (elem: any) => (
+anyComponent: (elem: any) => (
   <>
     {(!elem || !Array.isArray(elem) || !elem.length) ? null : (
       <div className="relatedto-main">
@@ -106,15 +106,20 @@ export const getTableHeadersData: {
         {elem.length > 1 ? (
           <Tooltip
             dataTestId='tooltip-eventtime'
-            content={
-              <div>
-                {elem.map((item: any, idx: number) => (
-                  <div key={item.name + idx}>
-                    {renderRelatedToItem(item)}
-                  </div>
-                ))}
-              </div>
-            }
+              content={
+                <div>
+                  {elem.slice(1).map((item: any, idx: number) => (
+                    <div key={item.name + idx}>
+                      {item.type === "staff"
+                        ? <span>{item.name} | {item.staffCode}</span>
+                        : item.type === "pupil"
+                          ? <span>{item.name} <span className="relatedto-tag">{`| ${item.year}${item.reg ? ` | ${item.reg}` : ""}`}</span></span>
+                          : <span>{item.name}</span>
+                      }
+                    </div>
+                  ))}
+                </div>
+              }
             align={TooltipAlign.Center}
             position={TooltipPosition.Bottom}
           >
@@ -127,83 +132,6 @@ export const getTableHeadersData: {
     )}
   </>
 )
-// anyComponent: (elem: any) => (
-//   <>
-//     {(!elem || !Array.isArray(elem) || !elem.length) ? [] : (
-//       <div className="relatedto-main">
-//         {/* First item */}
-//         {elem[0].type === "staff" ? (
-//           <a
-//             href={`/staffprofile/${elem[0].staffId}`}
-//             className="relatedto-link"
-//           >
-//             {elem[0].name}
-//           </a>
-//         ) : elem[0].type === "pupil" ? (
-//           <>
-//             <a
-//               href={`/pupilprofile/${elem[0].pupilId}`}
-//               className="relatedto-link"
-//             >
-//               {elem[0].name}
-//             </a>
-//             <Tag
-//               dataTestId="name"
-//               id="name"
-//               className="relatedto-tag"
-//               text={`${elem[0].year}${elem[0].reg ? ` / ${elem[0].reg}` : ""}`}
-//             />
-//           </>
-//         ) : (
-//           <span>{elem[0].name}</span>
-//         )}
-//         {/* Tooltip for more */}
-//         {elem.length > 1 ? (
-//           <Tooltip
-//             dataTestId='tooltip-eventtime'
-//             content={
-//               <div>
-//                 {elem.map((item: any, idx: number) => (
-//                   <div key={item.name + idx}>
-//                     {item.type === "staff"
-//                       ? (
-//                         <a
-//                           href={`/staffprofile/${item.staffId}`}
-//                           className="relatedto-link"
-//                         >
-//                           {item.name}
-//                         </a>
-//                       ) + ` | ${item.staffCode}`
-//                       : item.type === "pupil"
-//                         ? (
-//                           <>
-//                             <a
-//                               href={`/pupilprofile/${item.pupilId}`}
-//                               className="relatedto-link"
-//                             >
-//                               {item.name}
-//                             </a>
-//                             {` | ${item.year} | ${item.reg}`}
-//                           </>
-//                         )
-//                         : item.name
-//                     }
-//                   </div>
-//                 ))}
-//               </div>
-//             }
-//             align={TooltipAlign.Center}
-//             position={TooltipPosition.Bottom}
-//           >
-//             <div className="tooltip-content">
-//               <span>{`+${elem.length - 1}`}</span>
-//             </div>
-//           </Tooltip>
-//         ) : ""}
-//       </div>
-//     )}
-//   </>
-// )
     },
     {
       text: "Category",

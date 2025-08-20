@@ -1034,4 +1034,168 @@ describe("handleTagCloseLogic", () => {
     expect(mockSetIsDateError).not.toHaveBeenCalled();
   });
 });
+
+describe("tableData mapping for relatedTo types", () => {
+  const relatedToColumn = getTableHeadersData.find(h => h.text === "Related to");
+  const renderRelated = relatedToColumn?.anyComponent;
+
+  it("maps pupils correctly when documentRealatedTo === 1", () => {
+    const doc = {
+      documentRealatedTo: 1,
+      relatedTo: [
+        {
+          preferredForename: "John",
+          preferredSurname: "Doe",
+          currentYearGroup: "Y5",
+          currentPrimaryClass: "A",
+          learnerExternalId: "p123"
+        }
+      ]
+    };
+    // Simulate mapping logic
+    const relatedArr = doc.relatedTo.map((pupil: any) => ({
+      type: "pupil",
+      name: `${pupil.preferredForename} ${pupil.preferredSurname}`.trim(),
+      year: pupil.currentYearGroup || "",
+      reg: pupil.currentPrimaryClass || "",
+      pupilId: pupil.learnerExternalId || "",
+    }));
+    expect(relatedArr[0]).toEqual({
+      type: "pupil",
+      name: "John Doe",
+      year: "Y5",
+      reg: "A",
+      pupilId: "p123"
+    });
+
+    // Render and check output
+    const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(getByText("John Doe")).toBeInTheDocument();
+    expect(getByText("Y5 / A")).toBeInTheDocument();
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/pupilprofile/p123");
+  });
+
+  it("maps staff correctly when documentRealatedTo === 3", () => {
+    const doc = {
+      documentRealatedTo: 3,
+      relatedTo: [
+        {
+          preferredForename: "Jane",
+          preferredSurname: "Smith",
+          staffCode: "S001",
+          externalId: "s456"
+        }
+      ]
+    };
+    const relatedArr = doc.relatedTo.map((staff: any) => ({
+      type: "staff",
+      name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
+      staffCode: staff.staffCode || "",
+      staffId: staff.externalId || "",
+    }));
+    expect(relatedArr[0]).toEqual({
+      type: "staff",
+      name: "Jane Smith",
+      staffCode: "S001",
+      staffId: "s456"
+    });
+
+    const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(getByText("Jane Smith | S001")).toBeInTheDocument();
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/staffprofile/s456");
+  });
+
+  it("maps school correctly when documentRealatedTo === 2", () => {
+    const doc = {
+      documentRealatedTo: 2,
+      relatedTo: [
+        {
+          schoolName: "Springfield High"
+        }
+      ]
+    };
+    const relatedArr = doc.relatedTo.map((school: any) => ({
+      type: "school",
+      name: school.schoolName || "",
+    }));
+    expect(relatedArr[0]).toEqual({
+      type: "school",
+      name: "Springfield High"
+    });
+
+    const { getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(getByText("Springfield High")).toBeInTheDocument();
+  });
+
+  // it("handles multiple relatedTo items and renders tooltip for extra", () => {
+  //   const doc = {
+  //     documentRealatedTo: 3,
+  //     relatedTo: [
+  //       { preferredForename: "A", preferredSurname: "B", staffCode: "X", externalId: "id1" },
+  //       { preferredForename: "C", preferredSurname: "D", staffCode: "Y", externalId: "id2" }
+  //     ]
+  //   };
+  //   const relatedArr = doc.relatedTo.map((staff: any) => ({
+  //     type: "staff",
+  //     name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
+  //     staffCode: staff.staffCode || "",
+  //     staffId: staff.externalId || "",
+  //   }));
+  //   const { getByText, container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+  //   expect(getByText("A B | X")).toBeInTheDocument();
+  //   expect(getByText("+1")).toBeInTheDocument();
+  //   expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeInTheDocument();
+  // });
+
+  it("handles empty relatedTo array", () => {
+    const doc = {
+      documentRealatedTo: 1,
+      relatedTo: []
+    };
+    const relatedArr: any[] = [];
+    const { container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("handles missing relatedTo field", () => {
+    const doc = {
+      documentRealatedTo: 2
+      // relatedTo missing
+    };
+    const relatedArr: any[] = [];
+    const { container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(container).toBeEmptyDOMElement();
+  });
+
+  it("handles missing fields in relatedTo items", () => {
+    const doc = {
+      documentRealatedTo: 1,
+      relatedTo: [
+        {
+          preferredForename: "OnlyFirst",
+          // preferredSurname missing
+          // currentYearGroup missing
+          // currentPrimaryClass missing
+          // learnerExternalId missing
+        }
+      ]
+    };
+    const relatedArr = doc.relatedTo.map((pupil: any) => ({
+      type: "pupil",
+      name: `${pupil.preferredForename} ${pupil.preferredSurname || ""}`.trim(),
+      year: pupil.currentYearGroup || "",
+      reg: pupil.currentPrimaryClass || "",
+      pupilId: pupil.learnerExternalId || "",
+    }));
+    expect(relatedArr[0]).toEqual({
+      type: "pupil",
+      name: "OnlyFirst",
+      year: "",
+      reg: "",
+      pupilId: ""
+    });
+    const { getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
+    expect(getByText("OnlyFirst")).toBeInTheDocument();
+  });
+});
 })
