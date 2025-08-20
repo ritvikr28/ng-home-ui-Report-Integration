@@ -5,6 +5,36 @@ import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
 
+const renderRelatedToItem = (item: any) => {
+  if (item.type === "staff") {
+    return (
+      <>
+        <a href={`/staffprofile/${item.staffId}`} className="relatedto-link">
+          {item.name}
+        </a>
+        {" | "}{item.staffCode}
+      </>
+    );
+  }
+  if (item.type === "pupil") {
+    return (
+      <>
+        <a href={`/pupilprofile/${item.pupilId}`} className="relatedto-link">
+          {item.name}
+        </a>
+        <Tag
+          dataTestId="name"
+          id="name"
+          className="relatedto-tag"
+          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
+        />
+      </>
+    );
+  }
+  // School or other types
+  return <span>{item.name}</span>;
+};
+
 export const getTableHeadersData: {
   text: string;
   isShow: boolean;
@@ -68,36 +98,112 @@ export const getTableHeadersData: {
       columnWidth: "261px",
       txtTrunctLength: 35,
       isColumnSorting: true,
-      anyComponent: (elem: any) => (
-        <>
-          {(!elem || !Array.isArray(elem) || !elem?.length) ? [] : (<div className="relatedto-main">
-            <a href="/pupilprofile">{elem[0]}</a>
-            <Tag
-              dataTestId="name"
-              id="name"
-              className="relatedto-tag"
-              text="Year / Reg"
-            />
-            {elem?.length > 1 ? (<Tooltip
-              dataTestId='tooltip-eventtime'
-              content={
-                <div>
-                  {elem?.map((item: any) => (
-                    <div>{item} | "Year" | "Reg"</div>
-                  ))}
-                </div>
-              }
-              align={TooltipAlign.Center}
-              position={TooltipPosition.Bottom}
-            >
-              <div className="tooltip-content">
-                <span>{`+${elem.length - 1}`}</span>
+   anyComponent: (elem: any) => (
+  <>
+    {(!elem || !Array.isArray(elem) || !elem.length) ? null : (
+      <div className="relatedto-main">
+        {renderRelatedToItem(elem[0])}
+        {elem.length > 1 ? (
+          <Tooltip
+            dataTestId='tooltip-eventtime'
+            content={
+              <div>
+                {elem.map((item: any, idx: number) => (
+                  <div key={item.name + idx}>
+                    {renderRelatedToItem(item)}
+                  </div>
+                ))}
               </div>
-
-            </Tooltip>) : ""}
-          </div>)}
-        </>
-      )
+            }
+            align={TooltipAlign.Center}
+            position={TooltipPosition.Bottom}
+          >
+            <div className="tooltip-content">
+              <span>{`+${elem.length - 1}`}</span>
+            </div>
+          </Tooltip>
+        ) : null}
+      </div>
+    )}
+  </>
+)
+// anyComponent: (elem: any) => (
+//   <>
+//     {(!elem || !Array.isArray(elem) || !elem.length) ? [] : (
+//       <div className="relatedto-main">
+//         {/* First item */}
+//         {elem[0].type === "staff" ? (
+//           <a
+//             href={`/staffprofile/${elem[0].staffId}`}
+//             className="relatedto-link"
+//           >
+//             {elem[0].name}
+//           </a>
+//         ) : elem[0].type === "pupil" ? (
+//           <>
+//             <a
+//               href={`/pupilprofile/${elem[0].pupilId}`}
+//               className="relatedto-link"
+//             >
+//               {elem[0].name}
+//             </a>
+//             <Tag
+//               dataTestId="name"
+//               id="name"
+//               className="relatedto-tag"
+//               text={`${elem[0].year}${elem[0].reg ? ` / ${elem[0].reg}` : ""}`}
+//             />
+//           </>
+//         ) : (
+//           <span>{elem[0].name}</span>
+//         )}
+//         {/* Tooltip for more */}
+//         {elem.length > 1 ? (
+//           <Tooltip
+//             dataTestId='tooltip-eventtime'
+//             content={
+//               <div>
+//                 {elem.map((item: any, idx: number) => (
+//                   <div key={item.name + idx}>
+//                     {item.type === "staff"
+//                       ? (
+//                         <a
+//                           href={`/staffprofile/${item.staffId}`}
+//                           className="relatedto-link"
+//                         >
+//                           {item.name}
+//                         </a>
+//                       ) + ` | ${item.staffCode}`
+//                       : item.type === "pupil"
+//                         ? (
+//                           <>
+//                             <a
+//                               href={`/pupilprofile/${item.pupilId}`}
+//                               className="relatedto-link"
+//                             >
+//                               {item.name}
+//                             </a>
+//                             {` | ${item.year} | ${item.reg}`}
+//                           </>
+//                         )
+//                         : item.name
+//                     }
+//                   </div>
+//                 ))}
+//               </div>
+//             }
+//             align={TooltipAlign.Center}
+//             position={TooltipPosition.Bottom}
+//           >
+//             <div className="tooltip-content">
+//               <span>{`+${elem.length - 1}`}</span>
+//             </div>
+//           </Tooltip>
+//         ) : ""}
+//       </div>
+//     )}
+//   </>
+// )
     },
     {
       text: "Category",

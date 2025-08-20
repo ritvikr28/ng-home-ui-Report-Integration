@@ -94,7 +94,34 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         tableData = docData.data.map((doc: any) => ({
             id: doc?.fileId,
             Document: doc?.document,
-            Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
+
+Relatedto: Array.isArray(doc?.relatedTo) && doc.relatedTo.length > 0
+    ? doc.relatedTo.map((item: any) => {
+        if (item.type === "staff") {
+            return {
+                type: "staff",
+                name: `${item.staffForename} ${item.staffSurname}`.trim(),
+                staffCode: item.staffCode || "",
+                staffId: item.staffId, // for profile link
+            };
+        }
+        if (item.type === "school") {
+            return {
+                type: "school",
+                name: item.schoolName || "",
+            };
+        }
+        // Default to pupil
+        return {
+            type: "pupil",
+            name: `${item.preferredForename} ${item.preferredSurname}`.trim(),
+            year: item.currentYearGroup || "",
+            reg: item.currentPrimaryClass || "",
+            pupilId: item.pupilId, // for profile link
+        };
+    })
+    : [],
+            // Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
             Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
             Addedby: doc?.addedBy || "",
             "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
