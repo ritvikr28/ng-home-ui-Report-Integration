@@ -285,16 +285,6 @@ const simsIdAdminQuickLink: () => JSX.Element = () => {
     <div className="left-sidepanel-home113">
       <div className="quick-link-title">Quick Links</div>
       <div className="quick-link-section">
-        <div
-          className="quick-link-panel-item label-css"
-          key={1}
-          onClick={() => {
-            window.location.href = `${envConfig.INVITE_STAFF_URL}`;
-          }}
-          style={{ cursor: "pointer" }}
-        >
-          Invite Staff
-        </div>
         {hasInviteUserView && (
           <div
             className="quick-link-panel-item label-css"
