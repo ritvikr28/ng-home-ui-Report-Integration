@@ -139,35 +139,35 @@ anyComponent: (e: any) => (
             dataTestId='tooltip-eventtime'
               content={
               <div className="relatedto-tooltip">
-                {e.slice(1).map((item: any, idx: number) => {
-                  if (item.type === "staff") {
+                {e.map((item: any, idx: number) => {
+                    if (item.type === "staff") {
+                      return (
+                        <div key={item.name + idx}>
+                          <span>{item.name} | {item.staffCode}</span>
+                        </div>
+                      );
+                    }
+                    if (item.type === "pupil") {
+                      return (
+                        <div key={item.name + idx}>
+                          <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
+                        </div>
+                      );
+                    }
+                    // School or other types
                     return (
                       <div key={item.name + idx}>
-                        <span>{item.name} | {item.staffCode}</span>
+                        <span>{item.name}</span>
                       </div>
                     );
-                  }
-                  if (item.type === "pupil") {
-                    return (
-                      <div key={item.name + idx}>
-                        <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
-                      </div>
-                    );
-                  }
-                  // School or other types
-                  return (
-                    <div key={item.name + idx}>
-                      <span>{item.name}</span>
-                    </div>
-                  );
-                })}
+                  })}
               </div>
 }
             align={TooltipAlign.Center}
             position={TooltipPosition.Bottom}
           >
             <div className="tooltip-content">
-              <span>{`+${e.length - 1}`}</span>
+              <span>{`+${e.length}`}</span>
             </div>
           </Tooltip>
         ) : null}
