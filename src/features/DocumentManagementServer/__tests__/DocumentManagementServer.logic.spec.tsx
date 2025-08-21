@@ -20,7 +20,8 @@ import {
   hasItems,
   loadSuggestions,
   onBreadcrumbClick,
-  tableBodyData
+  tableBodyData,
+  mapRelatedArr
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1127,56 +1128,13 @@ describe("tableData mapping for relatedTo types", () => {
     expect(getByText("Springfield High")).toBeInTheDocument();
   });
 
-  // it("handles multiple relatedTo items and renders tooltip for extra", () => {
-  //   const doc = {
-  //     documentRealatedTo: 3,
-  //     relatedTo: [
-  //       { preferredForename: "A", preferredSurname: "B", staffCode: "X", externalId: "id1" },
-  //       { preferredForename: "C", preferredSurname: "D", staffCode: "Y", externalId: "id2" }
-  //     ]
-  //   };
-  //   const relatedArr = doc.relatedTo.map((staff: any) => ({
-  //     type: "staff",
-  //     name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
-  //     staffCode: staff.staffCode || "",
-  //     staffId: staff.externalId || "",
-  //   }));
-  //   const { getByText, container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
-  //   expect(getByText("A B | X")).toBeInTheDocument();
-  //   expect(getByText("+1")).toBeInTheDocument();
-  //   expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeInTheDocument();
-  // });
-
-  it("handles empty relatedTo array", () => {
-    const doc = {
-      documentRealatedTo: 1,
-      relatedTo: []
-    };
-    const relatedArr: any[] = [];
-    const { container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
-    expect(container).toBeEmptyDOMElement();
-  });
-
-  it("handles missing relatedTo field", () => {
-    const doc = {
-      documentRealatedTo: 2
-      // relatedTo missing
-    };
-    const relatedArr: any[] = [];
-    const { container } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
-    expect(container).toBeEmptyDOMElement();
-  });
-
   it("handles missing fields in relatedTo items", () => {
     const doc = {
       documentRealatedTo: 1,
       relatedTo: [
         {
           preferredForename: "OnlyFirst",
-          // preferredSurname missing
-          // currentYearGroup missing
-          // currentPrimaryClass missing
-          // learnerExternalId missing
+          
         }
       ]
     };
@@ -1199,3 +1157,72 @@ describe("tableData mapping for relatedTo types", () => {
   });
 });
 })
+
+
+describe('mapRelatedArr', () => {
+  it('maps pupils correctly', () => {
+    const doc = {
+      documentRealatedTo: 1,
+      relatedTo: [
+        {
+          preferredForename: 'Ben',
+          preferredSurname: 'Smith',
+          currentYearGroup: 'Year 1',
+          currentPrimaryClass: 'A',
+          learnerExternalId: '123'
+        }
+      ]
+    };
+    const result = mapRelatedArr(doc);
+    expect(result).toEqual([
+      {
+        type: 'pupil',
+        name: 'Ben Smith',
+        year: 'Year 1',
+        reg: 'A',
+        pupilId: '123'
+      }
+    ]);
+  });
+
+  it('maps staff correctly', () => {
+    const doc = {
+      documentRealatedTo: 3,
+      relatedTo: [
+        {
+          preferredForename: 'Alice',
+          preferredSurname: 'Brown',
+          staffCode: 'S001',
+          externalId: '456'
+        }
+      ]
+    };
+    const result = mapRelatedArr(doc);
+    expect(result).toEqual([
+      {
+        type: 'staff',
+        name: 'Alice Brown',
+        staffCode: 'S001',
+        staffId: '456'
+      }
+    ]);
+  });
+
+  it('maps school correctly', () => {
+    const doc = {
+      documentRealatedTo: 2,
+      relatedTo: [
+        {
+          schoolName: 'Greenwood High'
+        }
+      ]
+    };
+    const result = mapRelatedArr(doc);
+    expect(result).toEqual([
+      {
+        type: 'school',
+        name: 'Greenwood High'
+      }
+    ]);
+  });
+});

@@ -5,7 +5,7 @@ import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
 
-const renderRelatedToItem = (item: any) => {
+export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
     return (
       <>
@@ -34,6 +34,37 @@ const renderRelatedToItem = (item: any) => {
   // School or other types
   return <span>{item.name}</span>;
 };
+
+export function mapRelatedArr(doc: any): any[] {
+  let relatedArr: any[] = [];
+  if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
+    if (doc.documentRealatedTo === 1) {
+      // Pupils
+      relatedArr = doc.relatedTo.map((pupil: any) => ({
+        type: "pupil",
+        name: `${pupil.preferredForename} ${pupil.preferredSurname}`.trim(),
+        year: pupil.currentYearGroup || "",
+        reg: pupil.currentPrimaryClass || "",
+        pupilId: pupil.learnerExternalId || "",
+      }));
+    } else if (doc.documentRealatedTo === 3) {
+      // Staff
+      relatedArr = doc.relatedTo.map((staff: any) => ({
+        type: "staff",
+        name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
+        staffCode: staff.staffCode || "",
+        staffId: staff.externalId || "",
+      }));
+    } else if (doc.documentRealatedTo === 2) {
+      // School
+      relatedArr = doc.relatedTo.map((school: any) => ({
+        type: "school",
+        name: school.schoolName || "",
+      }));
+    }
+  }
+  return relatedArr;
+}
 
 export const getTableHeadersData: {
   text: string;
@@ -98,33 +129,45 @@ export const getTableHeadersData: {
       columnWidth: "261px",
       txtTrunctLength: 35,
       isColumnSorting: true,
-anyComponent: (elem: any) => (
+anyComponent: (e: any) => (
   <>
-    {(!elem || !Array.isArray(elem) || !elem.length) ? null : (
+    {(!e || !Array.isArray(e) || !e.length) ? null : (
       <div className="relatedto-main">
-        {renderRelatedToItem(elem[0])}
-        {elem.length > 1 ? (
+        {renderRelatedToItem(e[0])}
+        {e.length > 1 ? (
           <Tooltip
             dataTestId='tooltip-eventtime'
               content={
-                <div>
-                  {elem.slice(1).map((item: any, idx: number) => (
+              <div className="relatedto-tooltip">
+                {e.slice(1).map((item: any, idx: number) => {
+                  if (item.type === "staff") {
+                    return (
+                      <div key={item.name + idx}>
+                        <span>{item.name} | {item.staffCode}</span>
+                      </div>
+                    );
+                  }
+                  if (item.type === "pupil") {
+                    return (
+                      <div key={item.name + idx}>
+                        <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
+                      </div>
+                    );
+                  }
+                  // School or other types
+                  return (
                     <div key={item.name + idx}>
-                      {item.type === "staff"
-                        ? <span>{item.name} | {item.staffCode}</span>
-                        : item.type === "pupil"
-                          ? <span>{item.name} <span className="relatedto-tag">{`| ${item.year}${item.reg ? ` | ${item.reg}` : ""}`}</span></span>
-                          : <span>{item.name}</span>
-                      }
+                      <span>{item.name}</span>
                     </div>
-                  ))}
-                </div>
-              }
+                  );
+                })}
+              </div>
+}
             align={TooltipAlign.Center}
             position={TooltipPosition.Bottom}
           >
             <div className="tooltip-content">
-              <span>{`+${elem.length - 1}`}</span>
+              <span>{`+${e.length - 1}`}</span>
             </div>
           </Tooltip>
         ) : null}
@@ -526,4 +569,8 @@ export const debouncedFetchSuggestions = debounce(
   },
   1
 );
+
+// function renderRelatedToItem(arg0: any) {
+//   throw new Error("Function not implemented.");
+// }
 

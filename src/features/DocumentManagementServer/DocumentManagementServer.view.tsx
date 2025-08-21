@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -91,88 +91,16 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         } else if (showSearchError || !docData?.data?.length) {
         tableData = [];
         } else if (docData?.data) {
-    //     tableData = docData.data.map((doc: any) => ({
-         
-    //         id: doc?.fileId,
-    //         Document: doc?.document,
-
-    // Relatedto: Array.isArray(doc?.relatedTo) && doc.relatedTo.length > 0
-    // ? doc.relatedTo.map((item: any) => {
-    //     console.log("related to:",item.type)
-    //     if (item.type === "staff") {
-    //         return {
-    //             type: "staff",
-    //             name: `${item.staffForename} ${item.staffSurname}`.trim(),
-    //             staffCode: item.staffCode || "",
-    //             staffId: item.staffId, // for profile link
-    //         };
-    //     }
-    //     if (item.type === "school") {
-    //         return {
-    //             type: "school",
-    //             name: item.schoolName || "",
-    //         };
-    //     }
-    //     // Default to pupil
-    //     return {
-    //         type: "pupil",
-    //         name: `${item.preferredForename} ${item.preferredSurname}`.trim(),
-    //         year: item.currentYearGroup || "",
-    //         reg: item.currentPrimaryClass || "",
-    //         pupilId: item.pupilId, // for profile link
-    //     };
-    // })
-    // : [],
-    //         // Relatedto: (doc?.relatedTo && doc?.relatedTo?.length > 0) ? doc.relatedTo : [],
-    //         Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-    //         Addedby: doc?.addedBy || "",
-    //         "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-    //         Format: doc?.format,
-    //         Size: doc?.size,
-    //     }));
-// ...existing code...
-
-tableData = docData.data.map((doc: any) => {
-    let relatedArr: any[] = [];
-    if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
-        if (doc.documentRealatedTo === 1) {
-            // Pupils
-            relatedArr = doc?.relatedTo.map((pupil: any) => ({
-                type: "pupil",
-                name: `${pupil.preferredForename} ${pupil.preferredSurname}`.trim(),
-                year: pupil.currentYearGroup || "",
-                reg: pupil.currentPrimaryClass || "",
-                pupilId: pupil.learnerExternalId || "",
-            }));
-        } else if (doc.documentRealatedTo === 3) {
-            // Staff
-            relatedArr = doc?.relatedTo.map((staff: any) => ({
-                type: "staff",
-                name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
-                staffCode: staff.staffCode || "",
-                staffId: staff.externalId || "",
-            }));
-        } else if (doc.documentRealatedTo === 2) {
-            // School
-            relatedArr = doc?.relatedTo.map((school: any) => ({
-                type: "school",
-                name: school.schoolName || "",
-            }));
-        }
-    }
-
-    return {
-        id: doc?.fileId,
-        Document: doc?.document,
-        Relatedto: relatedArr,
-        Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-        Addedby: doc?.addedBy || "",
-        "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-        Format: doc?.format,
-        Size: doc?.size,
-    };
-});
-
+        tableData = docData?.data.map((doc: any) => ({
+    id: doc?.fileId,
+    Document: doc?.document,
+    Relatedto: mapRelatedArr(doc) || "",
+    Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+    Addedby: doc?.addedBy || "",
+    "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+    Format: doc?.format,
+    Size: doc?.size,
+}));
 }
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
