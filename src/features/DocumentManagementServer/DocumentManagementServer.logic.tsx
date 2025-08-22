@@ -18,7 +18,7 @@ export function renderRelatedToItem(item: any) {
     );
   }
   if (item.type === "pupil") {
-     const href = item?.pupilId ? `/staff/profile/${item.pupilId}` : "#";
+     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "#";
     return (
       <>
         <a href={href} className="relatedto-link">
