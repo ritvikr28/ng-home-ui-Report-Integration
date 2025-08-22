@@ -1073,7 +1073,7 @@ describe("tableData mapping for relatedTo types", () => {
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("John Doe")).toBeInTheDocument();
     expect(getByText("Y5 / A")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/pupilprofile/p123");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/pupilprofile/profile/p123");
   });
 
   it("maps staff correctly when documentRealatedTo === 3", () => {
@@ -1103,7 +1103,7 @@ describe("tableData mapping for relatedTo types", () => {
 
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("Jane Smith | S001")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/staffprofile/s456");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/staff/profile/s456");
   });
 
   it("maps school correctly when documentRealatedTo === 2", () => {
