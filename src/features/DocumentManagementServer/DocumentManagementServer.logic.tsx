@@ -7,21 +7,20 @@ import {truncatedString} from "../../shared/utils/commonFunctions";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
-     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "#";
+     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "/";
     return (
       <>
-        <a href={href} className="relatedto-link">
+        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name} {" | "}{item.staffCode}
         </a>
-        {/* {" | "}{item.staffCode} */}
       </>
     );
   }
   if (item.type === "pupil") {
-     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "#";
+     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "/";
     return (
       <>
-        <a href={href} className="relatedto-link">
+        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
         <Tag
