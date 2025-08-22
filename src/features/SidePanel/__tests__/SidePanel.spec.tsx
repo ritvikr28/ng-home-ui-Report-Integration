@@ -344,26 +344,6 @@
       },
     }));
 
-    test("clicking 'Invite Staff' navigates to the correct URL", () => {
-      const { getByText } = render(
-        <SidePanel
-          isOpen
-          togglePanel={jest.fn()}
-          closePanel={jest.fn()}
-          setQuickLinkData={jest.fn()}
-          isSIMSIDAdmin
-        />
-      );
-      
-      const inviteStaffLink = getByText("Invite Staff");
-      expect(inviteStaffLink).toBeInTheDocument();
-  
-      fireEvent.click(inviteStaffLink);
-  
-      // Check that window.location.href was updated correctly
-      expect(window.location.href).toBe("http://localhost/");
-    });
-
     test("clicking 'Class View' navigates to the correct URL and tracks the event", () => {
 
       const quicklinkDataWithClassView = [

@@ -5,21 +5,23 @@ import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
 
-const renderRelatedToItem = (item: any) => {
+export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
+     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "#";
     return (
       <>
-        <a href={`/staffprofile/${item.staffId}`} className="relatedto-link">
-          {item.name}
+        <a href={href} className="relatedto-link">
+          {item.name} {" | "}{item.staffCode}
         </a>
-        {" | "}{item.staffCode}
+        {/* {" | "}{item.staffCode} */}
       </>
     );
   }
   if (item.type === "pupil") {
+     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "#";
     return (
       <>
-        <a href={`/pupilprofile/${item.pupilId}`} className="relatedto-link">
+        <a href={href} className="relatedto-link">
           {item.name}
         </a>
         <Tag
@@ -34,6 +36,37 @@ const renderRelatedToItem = (item: any) => {
   // School or other types
   return <span>{item.name}</span>;
 };
+
+export function mapRelatedArr(doc: any): any[] {
+  let relatedArr: any[] = [];
+  if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
+    if (doc.documentRealatedTo === 1) {
+      // Pupils
+      relatedArr = doc.relatedTo.map((pupil: any) => ({
+        type: "pupil",
+        name: `${pupil.preferredForename} ${pupil.preferredSurname}`.trim(),
+        year: pupil.currentYearGroup || "",
+        reg: pupil.currentPrimaryClass || "",
+        pupilId: pupil.learnerExternalId || "",
+      }));
+    } else if (doc.documentRealatedTo === 3) {
+      // Staff
+      relatedArr = doc.relatedTo.map((staff: any) => ({
+        type: "staff",
+        name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
+        staffCode: staff.staffCode || "",
+        staffId: staff.externalId || "",
+      }));
+    } else if (doc.documentRealatedTo === 2) {
+      // School
+      relatedArr = doc.relatedTo.map((school: any) => ({
+        type: "school",
+        name: school.schoolName || "",
+      }));
+    }
+  }
+  return relatedArr;
+}
 
 export const getTableHeadersData: {
   text: string;
@@ -98,28 +131,45 @@ export const getTableHeadersData: {
       columnWidth: "261px",
       txtTrunctLength: 35,
       isColumnSorting: true,
-   anyComponent: (elem: any) => (
+anyComponent: (e: any) => (
   <>
-    {(!elem || !Array.isArray(elem) || !elem.length) ? null : (
+    {(!e || !Array.isArray(e) || !e.length) ? null : (
       <div className="relatedto-main">
-        {renderRelatedToItem(elem[0])}
-        {elem.length > 1 ? (
+        {renderRelatedToItem(e[0])}
+        {e.length > 1 ? (
           <Tooltip
             dataTestId='tooltip-eventtime'
-            content={
-              <div>
-                {elem.map((item: any, idx: number) => (
-                  <div key={item.name + idx}>
-                    {renderRelatedToItem(item)}
-                  </div>
-                ))}
+              content={
+              <div className="relatedto-tooltip">
+                {e.map((item: any, idx: number) => {
+                    if (item.type === "staff") {
+                      return (
+                        <div key={item.name + idx}>
+                          <span>{item.name} | {item.staffCode}</span>
+                        </div>
+                      );
+                    }
+                    if (item.type === "pupil") {
+                      return (
+                        <div key={item.name + idx}>
+                          <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
+                        </div>
+                      );
+                    }
+                    // School or other types
+                    return (
+                      <div key={item.name + idx}>
+                        <span>{item.name}</span>
+                      </div>
+                    );
+                  })}
               </div>
-            }
+}
             align={TooltipAlign.Center}
             position={TooltipPosition.Bottom}
           >
             <div className="tooltip-content">
-              <span>{`+${elem.length - 1}`}</span>
+              <span>{`+${e.length}`}</span>
             </div>
           </Tooltip>
         ) : null}
@@ -127,83 +177,6 @@ export const getTableHeadersData: {
     )}
   </>
 )
-// anyComponent: (elem: any) => (
-//   <>
-//     {(!elem || !Array.isArray(elem) || !elem.length) ? [] : (
-//       <div className="relatedto-main">
-//         {/* First item */}
-//         {elem[0].type === "staff" ? (
-//           <a
-//             href={`/staffprofile/${elem[0].staffId}`}
-//             className="relatedto-link"
-//           >
-//             {elem[0].name}
-//           </a>
-//         ) : elem[0].type === "pupil" ? (
-//           <>
-//             <a
-//               href={`/pupilprofile/${elem[0].pupilId}`}
-//               className="relatedto-link"
-//             >
-//               {elem[0].name}
-//             </a>
-//             <Tag
-//               dataTestId="name"
-//               id="name"
-//               className="relatedto-tag"
-//               text={`${elem[0].year}${elem[0].reg ? ` / ${elem[0].reg}` : ""}`}
-//             />
-//           </>
-//         ) : (
-//           <span>{elem[0].name}</span>
-//         )}
-//         {/* Tooltip for more */}
-//         {elem.length > 1 ? (
-//           <Tooltip
-//             dataTestId='tooltip-eventtime'
-//             content={
-//               <div>
-//                 {elem.map((item: any, idx: number) => (
-//                   <div key={item.name + idx}>
-//                     {item.type === "staff"
-//                       ? (
-//                         <a
-//                           href={`/staffprofile/${item.staffId}`}
-//                           className="relatedto-link"
-//                         >
-//                           {item.name}
-//                         </a>
-//                       ) + ` | ${item.staffCode}`
-//                       : item.type === "pupil"
-//                         ? (
-//                           <>
-//                             <a
-//                               href={`/pupilprofile/${item.pupilId}`}
-//                               className="relatedto-link"
-//                             >
-//                               {item.name}
-//                             </a>
-//                             {` | ${item.year} | ${item.reg}`}
-//                           </>
-//                         )
-//                         : item.name
-//                     }
-//                   </div>
-//                 ))}
-//               </div>
-//             }
-//             align={TooltipAlign.Center}
-//             position={TooltipPosition.Bottom}
-//           >
-//             <div className="tooltip-content">
-//               <span>{`+${elem.length - 1}`}</span>
-//             </div>
-//           </Tooltip>
-//         ) : ""}
-//       </div>
-//     )}
-//   </>
-// )
     },
     {
       text: "Category",
@@ -681,4 +654,8 @@ export const debouncedFetchSuggestions = debounce(
   },
   500
 );
+
+// function renderRelatedToItem(arg0: any) {
+//   throw new Error("Function not implemented.");
+// }
 
