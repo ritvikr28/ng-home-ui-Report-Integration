@@ -139,24 +139,179 @@ describe("tableBodyData", () => {
   });
 });
 
+
 describe("formatSuggestions", () => {
-  test("formats suggestion array correctly", () => {
+  it("returns empty array when input is empty", () => {
+    expect(formatSuggestions([])).toEqual([]);
+    expect(formatSuggestions(undefined as any)).toEqual([]);
+    expect(formatSuggestions(null as any)).toEqual([]);
+  });
+
+  it("formats Document category correctly", () => {
     const input = [
-      { fileId: "1", fileName: "File 1" },
-      { fileId: "2", fileName: "File 2" }
+      {
+        name: "Document",
+        values: [
+          { fileId: "1", fileName: "File 1" },
+          { fileId: "2", fileName: "File 2" }
+        ]
+      }
     ];
     const result = formatSuggestions(input);
     expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Document");
     expect(result[0].values).toHaveLength(2);
     expect(result[0].values[0].text).toBe("File 1");
+    expect(result[0].values[0].props).toMatchObject({ name: "File 1", id: "1" });
   });
 
- 
-  test("returns empty when input is empty", () => {
+  it("formats Pupil category with icon and value", () => {
+    const input = [
+      {
+        name: "Pupil",
+        values: [
+          {
+            pupilId: "p1",
+            preferredForename: "John",
+            preferredSurname: "Doe",
+            legalName: "Jonathan Doe",
+            imagePath: "",
+            currentYearGroup: "Y5",
+            currentPrimaryClass: "A"
+          }
+        ]
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Pupil");
+    expect(result[0].values[0].text).toContain("John Doe (Jonathan Doe)");
+    expect(result[0].values[0].icon).toBeTruthy();
+    expect(result[0].values[0].value).toBeTruthy();
+    expect(result[0].values[0].props).toMatchObject({
+      name: "John Doe (Jonathan Doe)",
+      id: "p1"
+    });
+  });
+
+  it("formats Staff category with icon", () => {
+    const input = [
+      {
+        name: "Staff",
+        values: [
+          {
+            staffId: "s1",
+            preferredForename: "Jane",
+            preferredSurname: "Smith",
+            imagePath: "",
+            name: "Jane Smith"
+          }
+        ]
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Staff");
+    expect(result[0].values[0].text).toContain("Jane Smith");
+    expect(result[0].values[0].icon).toBeTruthy();
+    expect(result[0].values[0].props).toMatchObject({
+      name: "Jane Smith",
+      id: "s1"
+    });
+  });
+
+  it("formats Organisation category", () => {
+    const input = [
+      {
+        name: "Organisation",
+        values: [
+          {
+            orgId: "o1",
+            schoolName: "Test School",
+            name: "Test Org"
+          }
+        ]
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Organisation");
+    expect(result[0].values[0].text).toBe("Test School");
+    expect(result[0].values[0].props).toMatchObject({
+      name: "Test Org",
+      id: "o1"
+    });
+  });
+
+  it("formats default category", () => {
+    const input = [
+      {
+        name: "Other",
+        values: [
+          {
+            id: "x1",
+            name: "Other Name"
+          }
+        ]
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Other");
+    expect(result[0].values[0].text).toBe("Other Name");
+    expect(result[0].values[0].props).toMatchObject({
+      name: "Other Name",
+      id: "x1"
+    });
+  });
+
+  it("handles empty values array for a category", () => {
+    const input = [
+      {
+        name: "Document",
+        values: []
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Document");
+    expect(result[0].values).toEqual([]);
+  });
+
+  // it("handles missing category name", () => {
+  //   const input = [
+  //     {
+  //       values: [
+  //         { fileId: "1", fileName: "File 1" }
+  //       ]
+  //     }
+  //   ];
+  //   const result = formatSuggestions(input);
+  //   expect(result).toHaveLength(1);
+  //   expect(result[0].name).toBe("");
+  //   expect(result[0].values[0].text).toBe("File 1");
+  // });
+
+  it("handles missing values property", () => {
+    const input = [
+      {
+        name: "Document"
+      }
+    ];
+    const result = formatSuggestions(input);
+    expect(result).toHaveLength(1);
+    expect(result[0].name).toBe("Document");
+    expect(result[0].values).toEqual([]);
+  });
+   test("returns empty when input is empty", () => {
     const result = formatSuggestions([]);
-    expect(result).toEqual([{ name: "", values: [] }]);
+    expect(result).toEqual([]);
   });
 });
+
+ 
+ 
+
 
 describe("debouncedFetchSuggestions", () => {
   beforeEach(() => {
@@ -202,7 +357,7 @@ describe("debouncedFetchSuggestions", () => {
     return Promise.resolve();
   });
 
-  expect(setSuggestions).toHaveBeenCalledWith([{ name: "", values: [] }]);
+  expect(setSuggestions).toHaveBeenCalledWith([]);
 });
 
   test("handles API error", async () => {
@@ -507,7 +662,42 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     const { getByText } = render(<>{column?.anyComponent?.(["100KB", "200KB"])}</>);
     expect(getByText("100KB")).toBeInTheDocument();
   });
+
+  it("renders pupil related item with link and tag", () => {
+  const headers = getTableHeadersData;
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "pupil",
+    name: "John Doe",
+    pupilId: "p1",
+    year: "Y5",
+    reg: "A"
+  }];
+   const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+    // Check for link
+    const link = getByRole("link", { name: "John Doe" });
+    expect(link).toHaveAttribute("href", "/pupilprofile/p1");
+    // Check for tag
+    expect(getByText("Y5 / A")).toBeInTheDocument();
 });
+  it("renders staff related item with link and staff code", () => {
+  const headers = getTableHeadersData;
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "staff",
+    name: "Jane Smith",
+    staffId: "s1",
+    staffCode: "SC123"
+  }];
+  const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  // Check for link
+  const link = getByRole("link", { name: "Jane Smith" });
+  expect(link).toHaveAttribute("href", "/staffprofile/s1");
+  // Check for staff code
+  expect(getByText("| SC123")).toBeInTheDocument();
+});
+});
+})
 
 
 describe('getVisibleTagsWithSummary', () => {
@@ -1034,4 +1224,3 @@ describe("handleTagCloseLogic", () => {
     expect(mockSetIsDateError).not.toHaveBeenCalled();
   });
 });
-})

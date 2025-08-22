@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -552,19 +552,102 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         return [];
     }) || [];
 
-export const formatSuggestions = (values: any[]): Suggestion[] => [
-  {
-    name: "",
-    values: values?.map((item: any) => ({
-      text: item?.fileName,
-      props: {
-        name: item?.fileName,
-        id: item?.fileId
-      },
-      value: <></>
-    }))
-  }
-];
+export const formatSuggestions = (payload: any[]): Suggestion[] =>
+  payload?.map((category: any) => ({
+    name: category?.name || "",
+    values: (category?.values || []).map((item: any) => {
+      let text = "";
+      let props: ISearchItemProp = {};
+      let icon: JSX.Element | undefined = undefined;
+      let value: JSX.Element | string | undefined = undefined;
+
+      switch (category?.name) {
+        case "Document":
+          text = item?.fileName || "";
+          props = {
+            name: item?.fileName,
+            id: item?.fileId,
+            ...item
+          };
+          break;
+        case "Pupil":
+          text = (item?.preferredForename + " " + item?.preferredSurname) + " (" + item?.legalName + ")",
+          icon = (
+            <>
+              {(item.imagePath === "") ? (
+                <Icon
+                  name="user--filled"
+                  size={IconSize.Medium}
+                  color={IconColor.Neutral400}
+                />
+              ) : (
+                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+              )}
+            </>
+          );
+          value = ((item?.currentYearGroup || item?.currentRegistration) && (
+            <Tag
+              text={
+                [item?.currentYearGroup, item?.currentPrimaryClass]
+                  .filter(Boolean)
+                  .join(" / ")
+              }
+              color={TagColor.Warning}
+              size={TagSize.Small}
+            />
+          ));
+          props = {
+            name: text,
+            id: item?.pupilId,
+            value,
+            ...item
+          };
+          break;
+        case "Staff":
+          text = (item?.preferredForename + " " + item?.preferredSurname) || item?.name || "";
+          icon = (
+            <>
+              {(item.imagePath === "") ? (
+                <Icon
+                  name="user--filled"
+                  size={IconSize.Medium}
+                  color={IconColor.Neutral400}
+                />
+              ) : (
+                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+              )}
+            </>
+          );
+          props = {
+            name: text,
+            id: item?.staffId,
+            ...item
+          };
+          break;
+        case "Organisation":
+          text = item?.schoolName || item?.name || "";
+          props = {
+            name: text,
+            id: item?.orgId,
+            ...item
+          };
+          break;
+        default:
+          text = item?.name || "";
+          props = {
+            name: item?.name,
+            id: item?.id,
+            ...item
+          };
+      }
+      return {
+        text,
+        icon,
+        props,
+        value,
+      };
+    }),
+  })) || [];
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
@@ -586,7 +669,7 @@ export const debouncedFetchSuggestions = debounce(
   ) => {
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
-      const values = response?.payload?.[0]?.values ?? [];
+      const values = response?.payload ?? [];
       setSuggestions(formatSuggestions(values));
     } catch (err) {
       console.error("Autosuggest error:", err);
@@ -596,6 +679,6 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  1
+  500
 );
 

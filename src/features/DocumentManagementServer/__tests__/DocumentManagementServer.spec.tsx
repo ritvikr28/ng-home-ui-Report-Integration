@@ -906,7 +906,6 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
     render(<DocumentManagementServerView />);
     act(() => { jest.advanceTimersByTime(1000); });
-    screen.debug(); 
     await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
 
  
@@ -934,4 +933,46 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     await waitFor(() => expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument());
   });
 
+  it("maps staff and school relatedTo items correctly", async () => {
+    const mockDatas = {
+  totalRecords: 1,
+  statusCode: 200,
+  data: [
+    {
+      fileId: "1",
+      document: "Doc 1",
+      relatedTo: [
+        {
+          type: "staff",
+          staffForename: "Jane",
+          staffSurname: "Smith",
+          staffCode: "SC123",
+          staffId: "s1"
+        },
+        {
+          type: "school",
+          schoolName: "Test School"
+        }
+      ],
+      category: "legal",
+      addedBy: "User A",
+      dateAdded: "2025-06-10",
+      format: "pdf",
+      size: "500KB",
+    }
+  ],
+};
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  expect(await screen.findByText("Doc 1")).toBeInTheDocument();
+
+  // Staff
+  expect(await screen.findByText("Jane Smith")).toBeInTheDocument();
+  expect(await screen.findByText("| SC123")).toBeInTheDocument();
+
+});
 });

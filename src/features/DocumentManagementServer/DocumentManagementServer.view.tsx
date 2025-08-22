@@ -395,8 +395,8 @@ Relatedto: Array.isArray(doc?.relatedTo) && doc.relatedTo.length > 0
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
-     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
-
+    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+    const filteredSuggestions = suggestions.filter(s => s?.values.length > 0);
      
     const handleApply = () => {
 
@@ -643,7 +643,7 @@ Relatedto: Array.isArray(doc?.relatedTo) && doc.relatedTo.length > 0
                                 isSearchHideClearIcon={searchTerm.length === 0}
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
-                                searchSuggestions={hasItems ? suggestions : []}
+                                searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
                                     setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
