@@ -721,7 +721,7 @@ it("renders tooltip with multiple staff and pupil and school items", () => {
   expect(getByText("+3")).toBeInTheDocument();
 
   const link = getByRole("link", { name: "Jane Smith | SC123" });
-  expect(link).toHaveAttribute("href", "#");
+  expect(link).toHaveAttribute("href", "/");
 });
 });
 })

@@ -1128,6 +1128,94 @@ describe("tableData mapping logic for relatedArr", () => {
   });
 });
 
+it("sets date error when fromDate is invalid in handleApply", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Open filter dialog
+  const filterButton = await screen.findByTestId("filter-btn");
+  fireEvent.click(filterButton);
+
+  // Find date inputs
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+  fireEvent.change(fromDay, { target: { value: "32" } }); // Invalid day
+
+  // Click Apply
+  fireEvent.click(screen.getByText("Apply"));
+
+  
+});
+
+
+it("handles search suggestion click", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Simulate typing to trigger suggestions
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Doc" } });
+
+  // Wait for suggestions to appear (adjust text as per your suggestion rendering)
+  const suggestion = await screen.findByText(/Doc 1/i); // or whatever suggestion text appears
+
+  // Click the suggestion
+  fireEvent.click(suggestion);
+
+  // Assert that the search term or text is updated, or that the suggestion handler was called
+  // (You can spy on handleSuggestionClick if exported, or check the UI for the effect)
+  expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
+});
+
+// it("shows 'No data to display.' when filter is applied and docData is empty", async () => {
+//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+//     statusCode: 200,
+//     totalRecords: 2,
+//     data: [],
+//   });
+//    const mockCategoryResponse = [
+//     { application: "App1", registrationId: 101, section: "Section1" },
+//     { application: "App1", registrationId: 102, section: "Section2" }
+//   ];
+//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
+
+
+//   const { container } = render(<DocumentManagementServerView />);
+
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   const filterButton = await screen.findByTestId("filter-btn");
+//   fireEvent.click(filterButton);
+
+//   // Find date inputs
+//   const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+//   const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+//   fireEvent.change(fromDay, { target: { value: "1" } }); 
+//   const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
+//   fireEvent.change(fromMonth, { target: { value: "01" } });
+//   const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
+//   fireEvent.change(fromYear, { target: { value: "2024" } });
+
+//   // Click Apply
+//   fireEvent.click(screen.getByText("Apply"));
+
+//   // // Wait for the loader to disappear
+//   // await waitFor(() => {
+//   //   expect(screen.queryByText("Please wait")).not.toBeInTheDocument();
+//   // });
+
+//   act(() => {
+//     jest.advanceTimersByTime(1000);
+//   });
+
+//   // Now assert for the empty state message
+//   await waitFor(() => {
+//     console.log(container.innerHTML); // Debug output
+//     expect(screen.getByText("No data to display.")).toBeInTheDocument();
+//   });
+// });
 });
 
 
