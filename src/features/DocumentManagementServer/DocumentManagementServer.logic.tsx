@@ -7,9 +7,10 @@ import {truncatedString} from "../../shared/utils/commonFunctions";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
+     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "#";
     return (
       <>
-        <a href={`/staffprofile/${item.staffId}`} className="relatedto-link">
+        <a href={href} className="relatedto-link">
           {item.name} {" | "}{item.staffCode}
         </a>
         {/* {" | "}{item.staffCode} */}
@@ -17,9 +18,10 @@ export function renderRelatedToItem(item: any) {
     );
   }
   if (item.type === "pupil") {
+     const href = item?.pupilId ? `/staff/profile/${item.pupilId}` : "#";
     return (
       <>
-        <a href={`/pupilprofile/${item.pupilId}`} className="relatedto-link">
+        <a href={href} className="relatedto-link">
           {item.name}
         </a>
         <Tag
