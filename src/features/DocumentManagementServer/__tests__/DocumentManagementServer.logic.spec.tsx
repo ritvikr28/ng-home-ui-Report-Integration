@@ -677,7 +677,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
    const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
     // Check for link
     const link = getByRole("link", { name: "John Doe" });
-    expect(link).toHaveAttribute("href", "/pupilprofile/p1");
+    expect(link).toHaveAttribute("href", "/pupilprofile/profile/p1");
     // Check for tag
     expect(getByText("Y5 / A")).toBeInTheDocument();
 });
@@ -690,12 +690,38 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     staffId: "s1",
     staffCode: "SC123"
   }];
-  const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
   // Check for link
-  const link = getByRole("link", { name: "Jane Smith" });
-  expect(link).toHaveAttribute("href", "/staffprofile/s1");
-  // Check for staff code
-  expect(getByText("| SC123")).toBeInTheDocument();
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/staff/profile/s1");
+});
+
+it("renders tooltip with multiple staff and pupil and school items", () => {
+  const headers = getTableHeadersData;
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [
+    {
+      type: "staff",
+      name: "Jane Smith",
+      staffCode: "SC123"
+    },
+    {
+      type: "pupil",
+      name: "John Doe",
+      year: "Y5",
+      reg: "A"
+    },
+    {
+      type: "school",
+      name: "Springfield High"
+    }
+  ];
+  const { getByText, getAllByTestId, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+
+  expect(getByText("+3")).toBeInTheDocument();
+
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "#");
 });
 });
 })
@@ -1346,8 +1372,6 @@ describe("tableData mapping for relatedTo types", () => {
     expect(getByText("OnlyFirst")).toBeInTheDocument();
   });
 });
-})
-
 
 describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
