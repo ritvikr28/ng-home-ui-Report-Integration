@@ -1440,3 +1440,33 @@ describe('mapRelatedArr', () => {
     ]);
   });
 });
+
+import { filterNonEmptySuggestions } from "../DocumentManagementServer.logic";
+
+describe("filterNonEmptySuggestions", () => {
+  it("returns only groups with non-empty values", () => {
+    const input = [
+      { name: "A", values: [{ text: "foo" }] },
+      { name: "B", values: [] },
+      { name: "C", values: [{ text: "bar" }] },
+    ];
+    const result = filterNonEmptySuggestions(input as any);
+    expect(result).toEqual([
+      { name: "A", values: [{ text: "foo" }] },
+      { name: "C", values: [{ text: "bar" }] },
+    ]);
+  });
+
+  it("returns empty array if all groups are empty", () => {
+    const input = [
+      { name: "A", values: [] },
+      { name: "B", values: [] },
+    ];
+    const result = filterNonEmptySuggestions(input as any);
+    expect(result).toEqual([]);
+  });
+
+  it("returns empty array if input is empty", () => {
+    expect(filterNonEmptySuggestions([] as any)).toEqual([]);
+  });
+})

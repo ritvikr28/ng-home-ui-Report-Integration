@@ -621,6 +621,9 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
     }),
   })) || [];
 
+  export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
+  suggestions.filter(s => s?.values.length > 0);
+
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: Parameters<T>) {

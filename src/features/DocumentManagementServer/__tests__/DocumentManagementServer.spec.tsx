@@ -269,6 +269,53 @@ it("handles sorting for Document column and ignores non-sortable columns", async
   );
 });
 
+it("does not sort when a non-sortable column is clicked", async () => {
+ const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  render(<DocumentManagementServerView />);
+  
+  
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  await waitFor(() => {
+    const addedByHeaderDiv = screen.getAllByTestId("columnheader")
+      .find(div => div.textContent?.includes("Added by"));
+    fireEvent.click(addedByHeaderDiv!);
+  });
+  // Optionally, assert that no sort API call was made
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
+
 it("handles sorting for Date added column", async () => {
   render(<DocumentManagementServerView />);
    act(() => {
@@ -1167,55 +1214,7 @@ it("handles search suggestion click", async () => {
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
 
-// it("shows 'No data to display.' when filter is applied and docData is empty", async () => {
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
-//     statusCode: 200,
-//     totalRecords: 2,
-//     data: [],
-//   });
-//    const mockCategoryResponse = [
-//     { application: "App1", registrationId: 101, section: "Section1" },
-//     { application: "App1", registrationId: 102, section: "Section2" }
-//   ];
-//   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
 
-
-//   const { container } = render(<DocumentManagementServerView />);
-
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   const filterButton = await screen.findByTestId("filter-btn");
-//   fireEvent.click(filterButton);
-
-//   // Find date inputs
-//   const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-//   const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
-//   fireEvent.change(fromDay, { target: { value: "1" } }); 
-//   const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
-//   fireEvent.change(fromMonth, { target: { value: "01" } });
-//   const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
-//   fireEvent.change(fromYear, { target: { value: "2024" } });
-
-//   // Click Apply
-//   fireEvent.click(screen.getByText("Apply"));
-
-//   // // Wait for the loader to disappear
-//   // await waitFor(() => {
-//   //   expect(screen.queryByText("Please wait")).not.toBeInTheDocument();
-//   // });
-
-//   act(() => {
-//     jest.advanceTimersByTime(1000);
-//   });
-
-//   // Now assert for the empty state message
-//   await waitFor(() => {
-//     console.log(container.innerHTML); // Debug output
-//     expect(screen.getByText("No data to display.")).toBeInTheDocument();
-//   });
-// });
 });
 
 
