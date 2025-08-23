@@ -530,8 +530,8 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
     values: (category?.values || []).map((item: any) => {
       let text = "";
       let props: ISearchItemProp = {};
-      let icon: JSX.Element | undefined = undefined;
-      let value: JSX.Element | string | undefined = undefined;
+      let icon: JSX.Element | undefined;
+      let value: JSX.Element | string | undefined;
 
       switch (category?.name) {
         case "Document":
@@ -543,7 +543,7 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
           };
           break;
         case "Pupil":
-          text = (item?.preferredForename + " " + item?.preferredSurname) + " (" + item?.legalName + ")",
+          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
           icon = (
             <>
               {(item.imagePath === "") ? (
@@ -576,7 +576,7 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
           };
           break;
         case "Staff":
-          text = (item?.preferredForename + " " + item?.preferredSurname) || item?.name || "";
+          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim() || item?.name || "";
           icon = (
             <>
               {(item.imagePath === "") ? (

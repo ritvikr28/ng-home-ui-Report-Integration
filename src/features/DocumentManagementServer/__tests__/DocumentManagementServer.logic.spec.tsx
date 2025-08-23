@@ -21,7 +21,8 @@ import {
   loadSuggestions,
   onBreadcrumbClick,
   tableBodyData,
-  mapRelatedArr
+  mapRelatedArr,
+  filterNonEmptySuggestions
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -665,7 +666,6 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   });
 
   it("renders pupil related item with link and tag", () => {
-  const headers = getTableHeadersData;
   const relatedToColumn = headers.find(h => h.text === "Related to");
   const elem = [{
     type: "pupil",
@@ -682,7 +682,6 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     expect(getByText("Y5 / A")).toBeInTheDocument();
 });
   it("renders staff related item with link and staff code", () => {
-  const headers = getTableHeadersData;
   const relatedToColumn = headers.find(h => h.text === "Related to");
   const elem = [{
     type: "staff",
@@ -697,7 +696,6 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
 });
 
 it("renders tooltip with multiple staff and pupil and school items", () => {
-  const headers = getTableHeadersData;
   const relatedToColumn = headers.find(h => h.text === "Related to");
   const elem = [
     {
@@ -716,7 +714,7 @@ it("renders tooltip with multiple staff and pupil and school items", () => {
       name: "Springfield High"
     }
   ];
-  const { getByText, getAllByTestId, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
 
   expect(getByText("+3")).toBeInTheDocument();
 
@@ -1441,26 +1439,24 @@ describe('mapRelatedArr', () => {
   });
 });
 
-import { filterNonEmptySuggestions } from "../DocumentManagementServer.logic";
-
 describe("filterNonEmptySuggestions", () => {
   it("returns only groups with non-empty values", () => {
     const input = [
       { name: "A", values: [{ text: "foo" }] },
       { name: "B", values: [] },
-      { name: "C", values: [{ text: "bar" }] },
+      { name: "C", values: [{ text: "bar" }] }
     ];
     const result = filterNonEmptySuggestions(input as any);
     expect(result).toEqual([
       { name: "A", values: [{ text: "foo" }] },
-      { name: "C", values: [{ text: "bar" }] },
+      { name: "C", values: [{ text: "bar" }] }
     ]);
   });
 
   it("returns empty array if all groups are empty", () => {
     const input = [
       { name: "A", values: [] },
-      { name: "B", values: [] },
+      { name: "B", values: [] }
     ];
     const result = filterNonEmptySuggestions(input as any);
     expect(result).toEqual([]);
