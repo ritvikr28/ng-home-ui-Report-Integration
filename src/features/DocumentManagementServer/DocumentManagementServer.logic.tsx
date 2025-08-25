@@ -11,7 +11,8 @@ export function renderRelatedToItem(item: any) {
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-          {item.name} {" | "}{item.staffCode}
+           {item.name}
+           {item.staffCode ? ` | ${item.staffCode}` : ""}
         </a>
       </>
     );
