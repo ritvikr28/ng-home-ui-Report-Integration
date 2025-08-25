@@ -910,7 +910,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
 
  
     const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
-    fireEvent.click(checkboxes[0]);
+    fireEvent.click(checkboxes[0]); 
    
     fireEvent.click(screen.getByText(/Actions/i));
     fireEvent.click(await screen.findByText("Prepare download"));
