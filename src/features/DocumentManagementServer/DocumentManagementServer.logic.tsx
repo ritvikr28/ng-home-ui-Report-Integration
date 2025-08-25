@@ -11,7 +11,8 @@ export function renderRelatedToItem(item: any) {
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-          {item.name} {" | "}{item.staffCode}
+           {item?.name}
+           {item?.staffCode ? ` | ${item?.staffCode}` : ""}
         </a>
       </>
     );
@@ -576,7 +577,12 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
           };
           break;
         case "Staff":
-          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim() || item?.name || "";
+          text = [
+            `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+            item?.staffCode
+          ]
+            .filter(Boolean)
+            .join(" | ") || item?.name || "";
           icon = (
             <>
               {(item.imagePath === "") ? (

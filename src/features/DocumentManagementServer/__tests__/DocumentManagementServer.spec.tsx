@@ -269,53 +269,6 @@ it("handles sorting for Document column and ignores non-sortable columns", async
   );
 });
 
-it("does not sort when a non-sortable column is clicked", async () => {
- const mockDatas1 = {
-    totalRecords: 2,
-    statusCode: 200,
-    data: [
-      {
-        fileId: "1",
-        document: "Doc 1",
-        relatedTo: ["HR"],
-        category: "legal",
-        addedBy: "User A",
-        dateAdded: "2025-06-10",
-        format: "pdf",
-        size: "500KB",
-      },
-      {
-        fileId: "2",
-        document: "Doc 2",
-        relatedTo: ["Finance"],
-        category: "finance",
-        addedBy: "User B",
-        dateAdded: "2025-06-11",
-        format: "docx",
-        size: "1MB",
-      }
-    ],
-  };
-
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
-
-  render(<DocumentManagementServerView />);
-  
-  
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
-  await waitFor(() => {
-    const addedByHeaderDiv = screen.getAllByTestId("columnheader")
-      .find(div => div.textContent?.includes("Added by"));
-    fireEvent.click(addedByHeaderDiv!);
-  });
-  // Optionally, assert that no sort API call was made
-  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-    expect.objectContaining({ sortBy: "Added by" })
-  );
-});
-
 it("handles sorting for Date added column", async () => {
   render(<DocumentManagementServerView />);
    act(() => {
@@ -957,8 +910,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
 
  
     const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
-    fireEvent.click(checkboxes[0]);
-    screen.debug(); 
+    fireEvent.click(checkboxes[0]); 
    
     fireEvent.click(screen.getByText(/Actions/i));
     fireEvent.click(await screen.findByText("Prepare download"));
