@@ -576,7 +576,12 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
           };
           break;
         case "Staff":
-          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim() || item?.name || "";
+          text = [
+            `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+            item?.staffCode
+          ]
+            .filter(Boolean)
+            .join(" | ") || item?.name || "";
           icon = (
             <>
               {(item.imagePath === "") ? (
