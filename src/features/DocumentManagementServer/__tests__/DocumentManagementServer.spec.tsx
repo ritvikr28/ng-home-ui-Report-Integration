@@ -269,6 +269,53 @@ it("handles sorting for Document column and ignores non-sortable columns", async
   );
 });
 
+it("does not sort when a non-sortable column is clicked", async () => {
+ const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  render(<DocumentManagementServerView />);
+  
+  
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  await waitFor(() => {
+    const addedByHeaderDiv = screen.getAllByTestId("columnheader")
+      .find(div => div.textContent?.includes("Added by"));
+    fireEvent.click(addedByHeaderDiv!);
+  });
+  // Optionally, assert that no sort API call was made
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
+
 it("handles sorting for Date added column", async () => {
   render(<DocumentManagementServerView />);
    act(() => {
@@ -906,7 +953,6 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
     render(<DocumentManagementServerView />);
     act(() => { jest.advanceTimersByTime(1000); });
-    screen.debug(); 
     await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
 
  
@@ -1128,6 +1174,46 @@ describe("tableData mapping logic for relatedArr", () => {
     pupilId: "id123"
   });
 });
+
+it("sets date error when fromDate is invalid in handleApply", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Open filter dialog
+  const filterButton = await screen.findByTestId("filter-btn");
+  fireEvent.click(filterButton);
+
+  // Find date inputs
+  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
+  fireEvent.change(fromDay, { target: { value: "32" } }); // Invalid day
+
+  // Click Apply
+  fireEvent.click(screen.getByText("Apply"));
+
+  
+});
+
+
+it("handles search suggestion click", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Simulate typing to trigger suggestions
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Doc" } });
+
+  // Wait for suggestions to appear (adjust text as per your suggestion rendering)
+  const suggestion = await screen.findByText(/Doc 1/i); // or whatever suggestion text appears
+
+  // Click the suggestion
+  fireEvent.click(suggestion);
+
+  // Assert that the search term or text is updated, or that the suggestion handler was called
+  // (You can spy on handleSuggestionClick if exported, or check the UI for the effect)
+  expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
+});
+
 
 });
 

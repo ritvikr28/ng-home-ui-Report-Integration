@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -157,13 +157,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         setIsSearchTriggered(false)
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
-
-
-    
-
-    const hasItems: boolean = suggestions?.some(
-        ({ values }: Suggestion) => values?.length > 0
-    );
 
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
@@ -368,8 +361,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
-     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
-
+    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+    const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
     const handleApply = () => {
 
@@ -616,7 +609,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 isSearchHideClearIcon={searchTerm.length === 0}
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
-                                searchSuggestions={hasItems ? suggestions : []}
+                                searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
                                     setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
