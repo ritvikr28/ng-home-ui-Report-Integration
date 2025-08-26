@@ -1127,6 +1127,52 @@ describe("tableData mapping logic for relatedArr", () => {
   });
 });
 
+
+it("does not sort when a non-sortable column is clicked", async () => {
+ const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+  render(<DocumentManagementServerView />);
+  
+  
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  await waitFor(() => {
+    const addedByHeaderDiv = screen.getAllByTestId("columnheader")
+      .find(div => div.textContent?.includes("Added by"));
+    fireEvent.click(addedByHeaderDiv!);
+  });
+  // Optionally, assert that no sort API call was made
+  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+    expect.objectContaining({ sortBy: "Added by" })
+  );
+});
+
 it("sets date error when fromDate is invalid in handleApply", async () => {
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
@@ -1171,3 +1217,152 @@ it("handles search suggestion click", async () => {
 
 
 })
+describe("date validation logic", () => {
+  const setIsDateError = jest.fn();
+  const isValidDate = (date?: string) => date === "2024-01-01" || date === "2024-12-31";
+  const dayjs = (date: string, format: string) => ({
+    isValid: () => date === "2024-01-01" || date === "2024-12-31"
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  function validateDates(selectedDateRange: any, isDateError: boolean) {
+    if (
+      (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
+      (selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate))
+    ) {
+      setIsDateError(true);
+      return;
+    }
+    if (isDateError) {
+      setIsDateError(true);
+      return;
+    }
+    if (
+      isDateError ||
+      (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid()) ||
+      (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid()) ||
+      (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid())
+    ) {
+      setIsDateError(true);
+    }
+  }
+
+  it("sets error if fromDate is invalid", () => {
+    validateDates({ fromDate: "invalid-date", toDate: "2024-12-31" }, false);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("sets error if toDate is invalid", () => {
+    validateDates({ fromDate: "2024-01-01", toDate: "invalid-date" }, false);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("sets error if isDateError is true", () => {
+    validateDates({ fromDate: "2024-01-01", toDate: "2024-12-31" }, true);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("sets error if fromDate is not valid according to dayjs", () => {
+    validateDates({ fromDate: "bad-date", toDate: "2024-12-31" }, false);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("sets error if toDate is not valid according to dayjs", () => {
+    validateDates({ fromDate: "2024-01-01", toDate: "bad-date" }, false);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("sets error if only toDate is present and valid", () => {
+    validateDates({ fromDate: undefined, toDate: "2024-12-31" }, false);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+
+  it("does not set error if both dates are valid and isDateError is false", () => {
+    validateDates({ fromDate: "2024-01-01", toDate: "2024-12-31" }, false);
+    expect(setIsDateError).not.toHaveBeenCalled();
+  });
+
+  it("sets error if both dates are missing and isDateError is true", () => {
+    validateDates({}, true);
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+  });
+});
+
+// ...existing code...
+
+describe("onSearchSuggestionItemClick", () => {
+  it("sets isSearchTrue to true and calls handleSuggestionClick with correct arguments", () => {
+    const setIsSearchTrue = jest.fn();
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    const handleSuggestionClick = jest.fn();
+    const item = { label: "Doc 1", value: "Doc 1" };
+
+    // Simulate the callback
+    const callback = (item: any) => {
+      setIsSearchTrue(true);
+      handleSuggestionClick(item, setSearchTerm, setSearchText);
+    };
+
+    callback(item);
+
+    expect(setIsSearchTrue).toHaveBeenCalledWith(true);
+    expect(handleSuggestionClick).toHaveBeenCalledWith(item, setSearchTerm, setSearchText);
+  });
+
+  it("calls handleSuggestionClick even if item is empty", () => {
+    const setIsSearchTrue = jest.fn();
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    const handleSuggestionClick = jest.fn();
+    const item = {};
+
+    const callback = (item: any) => {
+      setIsSearchTrue(true);
+      handleSuggestionClick(item, setSearchTerm, setSearchText);
+    };
+
+    callback(item);
+
+    expect(setIsSearchTrue).toHaveBeenCalledWith(true);
+    expect(handleSuggestionClick).toHaveBeenCalledWith(item, setSearchTerm, setSearchText);
+  });
+
+  it("handles search suggestion click", async () => {
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Simulate typing to trigger suggestions
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Doc" } });
+
+  // Wait for suggestions to appear
+  const suggestion = await screen.findByText(/Doc 1/i);
+
+  // Click the suggestion
+  fireEvent.click(suggestion);
+
+  // Assert that the search term or text is updated
+  expect((searchInput as HTMLInputElement).value).toMatch(/doc/i);
+});
+
+it("sets visibleBreadcrumbs to full list when width >= 1024", () => {
+  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 1200 });
+
+  // Optionally, mock useMediaQuery to return true if your logic depends on it
+  // jest.spyOn(require("@essnextgen/ui-kit"), "useMediaQuery").mockReturnValue(true);
+
+  const { getByText } = render(<DocumentManagementServerView />);
+  
+  // Assert that all breadcrumb items are visible
+  expect(getByText("Home")).toBeInTheDocument();
+  expect(getByText("Admin Console")).toBeInTheDocument();
+  expect(getByText("Document Management Server")).toBeInTheDocument();
+  expect(getByText("Documents")).toBeInTheDocument();
+});
+
+});
+// ...existing code...

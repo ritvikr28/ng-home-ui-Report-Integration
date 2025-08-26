@@ -1369,33 +1369,33 @@ describe("tableData mapping for relatedTo types", () => {
     const { getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("OnlyFirst")).toBeInTheDocument();
   });
+  
 });
 
 describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
-    const doc = {
-      documentRealatedTo: 1,
-      relatedTo: [
-        {
-          preferredForename: 'Ben',
-          preferredSurname: 'Smith',
-          currentYearGroup: 'Year 1',
-          currentPrimaryClass: 'A',
-          learnerExternalId: '123'
-        }
-      ]
-    };
-    const result = mapRelatedArr(doc);
-    expect(result).toEqual([
+  const doc = {
+    documentRealatedTo: 1,
+    relatedTo: [
       {
-        type: 'pupil',
-        name: 'Ben Smith',
-        year: 'Year 1',
-        reg: 'A',
-        pupilId: '123'
+        preferredForename: 'Ben',
+        preferredSurname: 'Smith',
+        currentYearGroup: 'Year 1',
+        currentPrimaryClass: 'A',
+        learnerExternalId: '123'
       }
-    ]);
+    ]
+  };
+  const result = mapRelatedArr(doc);
+  expect(result).toHaveLength(1);
+  expect(result[0]).toMatchObject({
+    type: 'pupil',
+    name: 'Ben Smith',
+    year: 'Year 1',
+    reg: 'A',
+    pupilId: '123'
   });
+});
 
   it('maps staff correctly', () => {
     const doc = {

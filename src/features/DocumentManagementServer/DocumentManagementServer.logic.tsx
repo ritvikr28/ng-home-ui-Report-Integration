@@ -19,17 +19,20 @@ export function renderRelatedToItem(item: any) {
   }
   if (item.type === "pupil") {
      const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "/";
+    const pupilYear = item?.isLeaver?.toLowerCase() === "leaver" ? `(${item?.year || "-"}) ${item?.reg ? ` / (${item.reg})` : ""}`
+     : `${item.year}${item.reg ? ` / ${item.reg}` : ""}`;
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-        <Tag
+        
+        {(item?.year || item?.reg) && <Tag
           dataTestId="name"
           id="name"
           className="relatedto-tag"
-          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
-        />
+          text={pupilYear || ""}
+        />}
       </>
     );
   }
@@ -48,6 +51,7 @@ export function mapRelatedArr(doc: any): any[] {
         year: pupil.currentYearGroup || "",
         reg: pupil.currentPrimaryClass || "",
         pupilId: pupil.learnerExternalId || "",
+        isLeaver:pupil?.onRollState || ""
       }));
     } else if (doc.documentRealatedTo === 3) {
       // Staff
