@@ -1,3 +1,6 @@
+interface HomePageForSimsConnectedNormalUserProps {
+  isRenderSimsConnectedBanner: boolean;
+}
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
   Suspense,
@@ -47,6 +50,7 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
@@ -68,6 +72,7 @@ import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
+import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -105,17 +110,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
+  const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
   const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
   const [isServiceInitiated, setIsServiceInitiated]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [hasSimsConnected]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
@@ -249,7 +250,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               isServiceInitiated
                 ? renderHomePage(
                   hasNewHomePagePermission,
-                  hasSimsConnected
+                  isRenderSimsConnectedBanner
                 )
                 : EmptyComponent
             }
@@ -344,14 +345,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 /* istanbul ignore next */
 const renderHomePage: (
   hasNewHomePagePermission: boolean,
-  hasSimsConnected: boolean
+  isRenderSimsConnectedBanner: boolean
 ) => React.ComponentType<any> | undefined = (
   hasNewHomePagePermission: boolean,
-  hasSimsConnected: boolean
+  isRenderSimsConnectedBanner: boolean
 ) => {
-
     if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
-      return () => <HomePageForSimsConnectedNormalUser hasSimsConnected={hasSimsConnected} />;
+      return () => <HomePageForSimsConnectedNormalUser isRenderSimsConnectedBanner={isRenderSimsConnectedBanner} />;
     }
     if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
       return SIMSIDAdminPageView;
@@ -369,7 +369,7 @@ const EmptyComponent: () => JSX.Element = () => (
 );
 
 /* istanbul ignore next */
-const HomePageForSimsConnectedNormalUser: React.FC<{hasSimsConnected: boolean}> = ({hasSimsConnected}) => {
+const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNormalUserProps> = ({ isRenderSimsConnectedBanner }) => {
   const rel: any = { rel: "noopener noreferrer" };
   const onCardClick: () => void = () => {};
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -386,12 +386,11 @@ const HomePageForSimsConnectedNormalUser: React.FC<{hasSimsConnected: boolean}> 
   return (
     <div className="home-page-for-sims-connected-normal-user-wrapper">
       <Grid container className="gap-24">
-        {
-          hasSimsConnected &&
+        {isRenderSimsConnectedBanner && (
           <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="mt-16">
             <SIMSConnectedLauncher />
           </GridItem>
-        }
+        )}
         <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="welcome-heading-container">
           <div>
             <span className="welcome-heading">{t("HomePageForSimsConnectedNormalUser.welcomeToSims")}</span>
