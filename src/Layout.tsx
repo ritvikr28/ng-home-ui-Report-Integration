@@ -1,6 +1,3 @@
-interface HomePageForSimsConnectedNormalUserProps {
-  isRenderSimsConnectedBanner: boolean;
-}
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, {
   Suspense,
@@ -73,6 +70,10 @@ import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
+
+interface HomePageForSimsConnectedNormalUserProps {
+  isRenderSimsConnectedBanner: boolean;
+}
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
