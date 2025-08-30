@@ -14,6 +14,7 @@ import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
 // import { handleCheckBoxSelection } from "../DocumentManagementServer.view";
+// import { getTableHeadersData } from "../DocumentManagementServer.view";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
@@ -1365,4 +1366,3 @@ it("sets visibleBreadcrumbs to full list when width >= 1024", () => {
 });
 
 });
-// ...existing code...

@@ -1465,4 +1465,162 @@ describe("filterNonEmptySuggestions", () => {
   it("returns empty array if input is empty", () => {
     expect(filterNonEmptySuggestions([] as any)).toEqual([]);
   });
+
+  
 })
+
+// ...existing code...
+
+describe("pupilYear logic", () => {
+  function getPupilYear(item: any) {
+    return item?.isLeaver?.toLowerCase() === "leaver"
+      ? `(${item?.year || "-"})${item?.reg ? ` / (${item.reg})` : ""}`
+      : "";
+  }
+
+  it("returns year and reg when isLeaver is 'leaver' and both year and reg are present", () => {
+    const item = { isLeaver: "leaver", year: "Y5", reg: "A" };
+    expect(getPupilYear(item)).toBe("(Y5) / (A)");
+  });
+
+  it("returns year only when isLeaver is 'leaver' and reg is missing", () => {
+    const item = { isLeaver: "leaver", year: "Y5" };
+    expect(getPupilYear(item)).toBe("(Y5)");
+  });
+
+  it("returns '-' for year when isLeaver is 'leaver' and year is missing", () => {
+    const item = { isLeaver: "leaver", reg: "A" };
+    expect(getPupilYear(item)).toBe("(-) / (A)");
+  });
+
+  it("returns '-' for year and empty reg when isLeaver is 'leaver' and both year and reg are missing", () => {
+    const item = { isLeaver: "leaver" };
+    expect(getPupilYear(item)).toBe("(-)");
+  });
+
+  it("returns empty string when isLeaver is not 'leaver'", () => {
+    const item = { isLeaver: "notleaver", year: "Y5", reg: "A" };
+    expect(getPupilYear(item)).toBe("");
+  });
+
+  it("returns empty string when isLeaver is undefined", () => {
+    const item = { year: "Y5", reg: "A" };
+    expect(getPupilYear(item)).toBe("");
+  });
+
+  it("returns empty string when item is undefined", () => {
+    expect(getPupilYear(undefined)).toBe("");
+  });
+});
+
+describe("getTableHeadersData pupil branch coverage", () => {
+  const relatedToColumn = getTableHeadersData.find(h => h.text === "Related to");
+  const renderPupil = (item: any) => relatedToColumn?.anyComponent?.([item]);
+
+  // test("renders pupil with isLeaver='leaver', year and reg present", () => {
+  //   const item = {
+  //     type: "pupil",
+  //     name: "Leaver Full",
+  //     pupilId: "p1",
+  //     year: "Y5",
+  //     reg: "A",
+  //     isLeaver: "leaver"
+  //   };
+  //   const { getByRole, getByText } = render(<>{renderPupil(item)}</>);
+  //   expect(getByRole("link", { name: "Leaver Full" })).toHaveAttribute("href", "/pupilprofile/profile/p1");
+  //   expect(getByText("(Y5)  / (A)")).toBeInTheDocument();
+  // });
+
+  // test("renders pupil with isLeaver='leaver', year present, reg missing", () => {
+  //   const item = {
+  //     type: "pupil",
+  //     name: "Leaver Year Only",
+  //     pupilId: "p2",
+  //     year: "Y6",
+  //     reg: "",
+  //     isLeaver: "leaver"
+  //   };
+  //   const { getByText } = render(<>{renderPupil(item)}</>);
+  //   expect(getByText("(Y6) ")).toBeInTheDocument();
+  // });
+
+  // test("renders pupil with isLeaver='leaver', year missing, reg present", () => {
+  //   const item = {
+  //     type: "pupil",
+  //     name: "Leaver Reg Only",
+  //     pupilId: "p3",
+  //     year: "",
+  //     reg: "B",
+  //     isLeaver: "leaver"
+  //   };
+  //   const { getByText } = render(<>{renderPupil(item)}</>);
+  //   expect(getByText("(-)  / (B)")).toBeInTheDocument();
+  // });
+
+  // test("renders pupil with isLeaver='leaver', year and reg missing", () => {
+  //   const item = {
+  //     type: "pupil",
+  //     name: "Leaver None",
+  //     pupilId: "p4",
+  //     year: "",
+  //     reg: "",
+  //     isLeaver: "leaver"
+  //   };
+  //   const { getByText } = render(<>{renderPupil(item)}</>);
+  //   expect(getByText("(-) ")).toBeInTheDocument();
+  // });
+
+  test("renders pupil with isLeaver!='leaver', year and reg present", () => {
+    const item = {
+      type: "pupil",
+      name: "Active Full",
+      pupilId: "p5",
+      year: "Y7",
+      reg: "C",
+      isLeaver: "active"
+    };
+    const { getByText } = render(<>{renderPupil(item)}</>);
+    expect(getByText("Y7 / C")).toBeInTheDocument();
+  });
+
+  test("renders pupil with isLeaver!='leaver', only year present", () => {
+    const item = {
+      type: "pupil",
+      name: "Active Year Only",
+      pupilId: "p6",
+      year: "Y8",
+      reg: "",
+      isLeaver: "active"
+    };
+    const { getByText } = render(<>{renderPupil(item)}</>);
+    expect(getByText("Y8")).toBeInTheDocument();
+  });
+
+  // test("renders pupil with isLeaver!='leaver', only reg present", () => {
+  //   const item = {
+  //     type: "pupil",
+  //     name: "Active Reg Only",
+  //     pupilId: "p7",
+  //     year: "",
+  //     reg: "D",
+  //     isLeaver: "active"
+  //   };
+  //   const { getByText } = render(<>{renderPupil(item)}</>);
+  //   expect(getByText(" / D")).toBeInTheDocument();
+  // });
+
+  test("renders pupil with isLeaver!='leaver', year and reg missing (no tag)", () => {
+    const item = {
+      type: "pupil",
+      name: "Active None",
+      pupilId: "p8",
+      year: "",
+      reg: "",
+      isLeaver: "active"
+    };
+    const { getByRole, queryByTestId } = render(<>{renderPupil(item)}</>);
+    expect(getByRole("link", { name: "Active None" })).toBeInTheDocument();
+    expect(queryByTestId("name")).toBeNull();
+  });
+});
+

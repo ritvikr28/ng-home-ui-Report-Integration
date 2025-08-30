@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterValidSuggestions, 
+    // filterNonEmptySuggestions, 
+    // filterAllowedSuggestions 
+} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -133,13 +136,35 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             setTotalPage(totalPages);
         }
     }, [docData]);
-    useEffect(() => {
+
+//     useEffect(() => {
+//     const fetchInitialData = async () => {
+//         setIsLoading(true);
+//         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+//         const dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
+//         // Fetch categories
+        
+//         await Promise.all([minLoaderTime, dataFetch]);
+//         setIsLoading(false);
+//         setIsInitialLoad(false);
+//     };
+
+//     fetchInitialData();
+// }, []);
+
+useEffect(() => {
     const fetchInitialData = async () => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        const dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
-        // Fetch categories
-        
+        // Only fetch if there is a searchText
+        let dataFetch;
+        if (searchText) {
+            dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
+        } else {
+            // Optionally, setDocData to empty if no searchText
+            setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+            dataFetch = Promise.resolve();
+        }
         await Promise.all([minLoaderTime, dataFetch]);
         setIsLoading(false);
         setIsInitialLoad(false);
@@ -147,27 +172,27 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     fetchInitialData();
 }, []);
-
-
-    useEffect(() => {
+    // useEffect(() => {
    
-        if (!isInitialLoad) {
-            const allRegistrationIds = getAllRegistrationIds(selectedFormats);
-            fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
-        }
-        setIsSearchTriggered(false)
-    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
+    //     if (!isInitialLoad) {
+    //         const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+    //         fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
+    //     }
+    //     setIsSearchTriggered(false)
+    // }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection, fromDate?: string, toDate?: string) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
-                fromDate: dateRange?.fromDate,
-                toDate: dateRange?.toDate,
+                // fromDate: dateRange?.fromDate,
+                // toDate: dateRange?.toDate,
+                fromDate: fromDate,
+            toDate: toDate,
                 categoryId: categories || [],
                 isSearchTextExactMatch: isSearchTrue,
                 sortBy: sortByCol,
@@ -276,34 +301,73 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
-        setIsSearchTriggered(true);
+        setIsSearchTriggered(false);
         setCurrentPage(1);
         setShowSearchError(false);
         setIsSearchLoading(false);
         setSearchText("");
+        setDocData({ statusCode: 200, data: [], totalRecords: 0 });
 };
 
+    // const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+    //     if (event.key === "Enter") {
+    //         const keyword = searchTerm?.trim()?.toLowerCase();
+    //         if(keyword !== searchText) {
+    //         setSearchTerm(keyword);
+    //         setSearchText(keyword);
+    //         setIsSearchTriggered(true);
+    //         setIsSearchDataLoading(true);
+    //         setIsSearchTrue(false);
+    //     }
+    //     setIsSearchLoading(false);
+    //     setIsShowAutoSuggest(false); 
+    //     // setSuggestions([]);
+    // }
+    // }
+
     const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-        if (event.key === "Enter") {
-            const keyword = searchTerm?.trim()?.toLowerCase();
-            if(keyword !== searchText) {
+    if (event.key === "Enter") {
+        const keyword = searchTerm?.trim()?.toLowerCase();
+        if (keyword !== searchText) {
             setSearchTerm(keyword);
             setSearchText(keyword);
             setIsSearchTriggered(true);
             setIsSearchDataLoading(true);
-            setIsSearchTrue(false);
+            fetchGetDocumentDetails(keyword, 1, getAllRegistrationIds(selectedFormats), sortBy, sortDirection);
         }
         setIsSearchLoading(false);
         setIsShowAutoSuggest(false); 
-        // setSuggestions([]);
     }
     }
 
-    const handleTagClose = (
+//     const handleTagClose = (
+//   e: React.SyntheticEvent,
+//   text: string,
+//   closeObj: { name?: string; id?: string | number }
+// ) => {
+//   handleTagCloseLogic(
+//     e,
+//     text,
+//     closeObj,
+//     setSelectedDateRange,
+//     setDateRange,
+//     setIsDateError,
+//     setSelectedCategories,
+//     setSelectedFormats
+//   );
+// };
+
+
+const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number }
 ) => {
+  // Save previous state
+  const prevSelectedCategories = [...selectedCategories];
+  const prevSelectedFormats = [...selectedFormats];
+  const prevDateRange = { ...selectedDateRange };
+
   handleTagCloseLogic(
     e,
     text,
@@ -314,7 +378,96 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     setSelectedCategories,
     setSelectedFormats
   );
+
+  // Compute next state after tag removal
+  let nextSelectedCategories = prevSelectedCategories.filter(item => item.text !== closeObj.name && item.data !== closeObj.name);
+  let nextSelectedFormats = prevSelectedFormats.filter(item => item.text !== closeObj.name && item.data !== closeObj.name);
+  let nextDateRange = { ...prevDateRange };
+  if (
+    typeof closeObj.name === "string" &&
+    (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
+      closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
+  ) {
+    nextDateRange = { fromDate: "", toDate: "" };
+  }
+
+  const noFilters =
+    (!nextDateRange.fromDate && !nextDateRange.toDate) &&
+    nextSelectedCategories.length === 0 &&
+    nextSelectedFormats.length === 0;
+
+  if (noFilters) {
+    // Fetch all results for the current search term (no filters)
+    fetchGetDocumentDetails(
+      searchTerm,
+      1,
+      [],
+      sortBy,
+      sortDirection
+    );
+    setIsSearchTriggered(true);
+    setCurrentPage(1);
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    setIsInitialLoad(false);
+  } else {
+    // Fetch with remaining filters
+    fetchGetDocumentDetails(
+      searchTerm,
+      1,
+      getAllRegistrationIds(nextSelectedFormats),
+      sortBy,
+      sortDirection,
+      nextDateRange.fromDate,
+      nextDateRange.toDate
+    );
+  }
 };
+
+// const handleTagClose = (
+//   e: React.SyntheticEvent,
+//   text: string,
+//   closeObj: { name?: string; id?: string | number }
+// ) => {
+//   handleTagCloseLogic(
+//     e,
+//     text,
+//     closeObj,
+//     setSelectedDateRange,
+//     setDateRange,
+//     setIsDateError,
+//     setSelectedCategories,
+//     setSelectedFormats
+//   );
+
+//   // Check if all filters/tags are cleared
+//   const noFilters =
+//     (!selectedDateRange?.fromDate && !selectedDateRange?.toDate) &&
+//     selectedCategories.length === 0 &&
+//     selectedFormats.length === 0;
+
+//   if (noFilters) {
+//     setIsSearchTriggered(false);
+//     setSearchText("");
+//     setSearchTerm("");
+//     setCurrentPage(1);
+//     setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+//     setShowSearchError(false);
+//     setIsSearchLoading(false);
+//     setIsInitialLoad(true);
+//     // Optionally, set other states as needed for initial load
+//   } else {
+//     // Fetch with remaining filters
+//     fetchGetDocumentDetails(
+//       searchText,
+//       1,
+//       getAllRegistrationIds(selectedFormats),
+//       sortBy,
+//       sortDirection
+//     );
+//   }
+// };
+
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -362,20 +515,61 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
-    const filteredSuggestions = filterNonEmptySuggestions(suggestions);
-     
-    const handleApply = () => {
+    const filteredSuggestions = filterValidSuggestions(suggestions);
+    //  const filteredSuggestions = filterAllowedSuggestions(filterNonEmptySuggestions(suggestions));
 
-        if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
-           selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
-            setIsDateError(true);
-            return;
-        }
+//     const handleApply = () => {
 
-         if (isDateError) {
-            setIsDateError(true);
-            return;
-        }
+//         if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
+//            selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
+//             setIsDateError(true);
+//             return;
+//         }
+
+//          if (isDateError) {
+//             setIsDateError(true);
+//             return;
+//         }
+//     if (
+//         isDateError ||
+//         (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
+//         (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
+//         (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
+//     ) {
+//         setIsDateError(true);
+//     } else {
+//             setIsFilterLoading(true);
+            
+//         setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
+//             setTimeout(() => {
+//         setSelectedFormats(selectedCategories);
+//          fetchGetDocumentDetails(
+//             searchText,
+//             1,
+//             getAllRegistrationIds(selectedCategories),
+//             sortBy,
+//             sortDirection
+//         );
+//         setIsFilterDialogOpen(false);
+//             setIsFilterLoading(false);
+//         }, 500);
+//     }
+// };
+
+const handleApply = () => {
+    if (
+        selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) ||
+        selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)
+    ) {
+        setIsDateError(true);
+        return;
+    }
+
+    if (isDateError) {
+        setIsDateError(true);
+        return;
+    }
+
     if (
         isDateError ||
         (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
@@ -384,18 +578,34 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     ) {
         setIsDateError(true);
     } else {
-            setIsFilterLoading(true);
-            
+        setIsFilterLoading(true);
+
         setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
-            setTimeout(() => {
         setSelectedFormats(selectedCategories);
-        setIsFilterDialogOpen(false);
+
+        setTimeout(() => {
+            // Always use the current searchText and selected filters
+            fetchGetDocumentDetails(
+                // searchText,
+                searchTerm,
+                1,
+                getAllRegistrationIds(selectedCategories),
+                sortBy,
+                sortDirection,
+                selectedDateRange?.fromDate,
+                selectedDateRange?.toDate
+            );
+            setIsFilterDialogOpen(false);
             setIsFilterLoading(false);
         }, 500);
     }
 };
 
    const handleFilterOnClick = () => {
+    if (!searchTerm || searchTerm.trim().length === 0) {
+        // Optionally, show a notification or message to the user here
+        return;
+    }
         setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
@@ -472,12 +682,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                         </div>
                         }
                  
-                        {hasFetched && <div className="grid-wrapper">
+                         <div className="grid-wrapper">
                             <ControlledList
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
-                                isShowSubHeading={false}
+                                isShowSubHeading={true}
+                                // subHeadingText={docData && docData?.totalRecords ? `${docData?.totalRecords} results found` : "No results found"}
                                 isSorting
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
@@ -600,7 +811,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner || (docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) && !isSearchTriggered)}
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
-                                searchHeadingText="Search by document or related to name"
+                                searchHeadingText="Search by pupil, staff or school name"
                                 searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=" "
@@ -610,9 +821,23 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={filteredSuggestions}
-                                onSearchSuggestionItemClick={(item) =>{
+                                // onSearchSuggestionItemClick={(item) =>{
+                                //     setIsSearchTrue(true);
+                                //     handleSuggestionClick(item, setSearchTerm, setSearchText)
+                                // }}
+                                onSearchSuggestionItemClick={(item)=>{
                                     setIsSearchTrue(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
+                                    setIsSearchTriggered(true);
+                                    setIsSearchDataLoading(true);
+                                    const keyword = item?.text?.trim()?.toLowerCase() || item?.name?.trim()?.toLowerCase() || "";
+                                    fetchGetDocumentDetails(
+                                        keyword,
+                                        1,
+                                        getAllRegistrationIds(selectedFormats),
+                                        sortBy,
+                                        sortDirection
+                                    );
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
@@ -653,7 +878,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
-                                subHeadingText=""
+                                subHeadingText="Bulk download or delete documents for pupils, staff members, or the school"
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
                                     <>
@@ -728,7 +953,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 onOverflowTagClose ={()=>{}}
                                 isShowFourthElement={false}
                             />
-                        </div>}
+                        </div>
                     </div>
                 </GridItem>
             </Grid>
