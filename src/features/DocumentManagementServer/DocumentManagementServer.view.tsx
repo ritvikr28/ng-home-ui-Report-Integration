@@ -627,7 +627,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                 searchOnCloseHandle={handleSearchClose}
                                 primaryButtonTitle="Clear all"
                                 secondaryButtonTitle="Clear all"
-                                isShowSecondaryBtn={true}
+                                isShowSecondaryBtn
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
