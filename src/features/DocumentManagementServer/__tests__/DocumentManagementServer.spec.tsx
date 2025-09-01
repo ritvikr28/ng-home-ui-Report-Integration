@@ -92,7 +92,7 @@ describe("DocumentManagementServerView", () => {
 //   });
 // });
 
-it.only("shows no records on initial load, shows records after search", async () => {
+it("shows no records on initial load, shows records after search", async () => {
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
 
@@ -148,41 +148,95 @@ it("shows empty state message on initial load", async () => {
   });
 });
 
-// it("shows results after search when data is returned", async () => {
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValueOnce({
-//     statusCode: 200,
-//     totalRecords: 2,
-//     data: [
-//       {
-//         fileId: "1",
-//         document: "Doc 1",
-//         relatedTo: ["HR"],
-//         category: "legal",
-//         addedBy: "User A",
-//         dateAdded: "2025-06-10",
-//         format: "pdf",
-//         size: "500KB",
-//       },
-//     ],
-//   });
+it("shows results after search when data is returned", async () => {
+  // First call: initial load (empty or whatever your component expects)
+  (apiService.fetchDocumentDetails as jest.Mock)
+  .mockResolvedValueOnce({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  })
+  .mockResolvedValueOnce({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  });
 
-//   render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+  payload: [
+    {
+      name: "Document",
+      link: "",
+      values: [
+        { fileName: "Doc 1" },
+        { fileName: "Doc 2" }
+      ]
+    },
+    {
+      name: "Pupil",
+      link: "",
+      values: []
+    },
+    {
+      name: "Staff",
+      link: null,
+      values: []
+    },
+    {
+      name: "Organisation",
+      link: null,
+      values: []
+    }
+  ],
+  statusCode: 200
+});
+  const { container } = render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
-//   const searchInput = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(searchInput, { target: { value: "Doc" } });
-//   fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  const searchInput = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Doc 1" } });
+  act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  console.log(container.innerHTML);
+const suggestion = await screen.findAllByText((_, element) =>
+  element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+);
+  // Click the suggestion to trigger the search
+  fireEvent.click(suggestion[1]);
 
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   await waitFor(() => {
-//     expect(screen.getByText("Doc 1")).toBeInTheDocument();
-//   });
-// });
+  await waitFor(() => {
+    expect(screen.getByText("Doc 1")).toBeInTheDocument();
+  });
+});
 
 // it("shows 'no results' message when search yields no matches", async () => {
 //   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValueOnce({
