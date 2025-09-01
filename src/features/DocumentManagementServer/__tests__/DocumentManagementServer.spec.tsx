@@ -99,6 +99,8 @@ it.only("shows no records on initial load, shows records after search", async ()
   // On initial load, no document rows
   // expect(screen.queryByText(/Doc 1/)).not.toBeInTheDocument();
   // expect(screen.queryByText(/Doc 2/)).not.toBeInTheDocument();
+
+  
   (apiService.fetchDocumentDetails as jest.Mock);
  act(() => {
     jest.advanceTimersByTime(7000);
