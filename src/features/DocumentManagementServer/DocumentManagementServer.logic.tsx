@@ -1,9 +1,10 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
+import { DocumentPrepareDownload } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -627,6 +628,17 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
     }),
   })) || [];
 
+
+  export const prepareDownload = async (fileDetails: DocumentPrepareDownload[]) => {
+    try {
+
+      const response = await prepareAndDownloadFile(fileDetails);
+
+      return response?.status
+    } catch (error) {
+      console.error("Error preparing download:", error);
+    }
+  };
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 
@@ -663,7 +675,4 @@ export const debouncedFetchSuggestions = debounce(
   500
 );
 
-// function renderRelatedToItem(arg0: any) {
-//   throw new Error("Function not implemented.");
-// }
 

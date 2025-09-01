@@ -65,3 +65,9 @@ export interface Category{
   application: string;
   section: string[];
 };
+
+export interface DocumentPrepareDownload {
+  fileId: string;
+  registrationId: number;
+  status?: string;
+}
