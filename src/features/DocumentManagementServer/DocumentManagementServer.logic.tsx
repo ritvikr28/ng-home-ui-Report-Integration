@@ -660,7 +660,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  500
+  5
 );
 
 // function renderRelatedToItem(arg0: any) {
