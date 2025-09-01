@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterValidSuggestions, 
-    // filterNonEmptySuggestions, 
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, 
+    // filterValidSuggestions, 
+    filterNonEmptySuggestions, 
     // filterAllowedSuggestions 
 } from "./DocumentManagementServer.logic"
 import "./style.scss"
@@ -87,38 +88,50 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
+    // Table data mapping (deduplicated)
     let tableData: tableDataProps[] = [];
+    if (showErrorBanner || showSearchError || !docData?.data?.length) {
+        tableData = [];
+    } else if (docData?.data) {
+        tableData = docData.data.map((doc: any) => ({
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: mapRelatedArr(doc) || "",
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded ? dayjs(doc?.dateAdded).format("DD MMM YYYY") : "",
+            Format: doc?.format,
+            Size: doc?.size,
+        }));
+    }
 
-        if (showErrorBanner) {
-        tableData = [];
-        } else if (showSearchError || !docData?.data?.length) {
-        tableData = [];
-        } else if (docData?.data) {
-        tableData = docData?.data.map((doc: any) => ({
-    id: doc?.fileId,
-    Document: doc?.document,
-    Relatedto: mapRelatedArr(doc) || "",
-    Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-    Addedby: doc?.addedBy || "",
-    "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-    Format: doc?.format,
-    Size: doc?.size,
-}));
-}
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
+    // useEffect for breadcrumbs (deduplicated logic)
+    useEffect(() => {
+        const handleResize = () => {
+            setVisibleBreadcrumbs(
+                window.innerWidth < 1024 && breadcrumbActionsList.length > 1
+                    ? breadcrumbActionsList.slice(-2, -1)
+                    : breadcrumbActionsList
+            );
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
+
+    // useEffect for mobile view scroll (unchanged)
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
-            return () => {
-                document.body.classList.remove("no-scroll");
-            };
+            return () => document.body.classList.remove("no-scroll");
         }
-        return () => { };
+        return () => {};
     }, [isMobileView]);
 
     const handleButtonClick: () => void = () => {
@@ -131,9 +144,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
 
     useEffect(() => {
-        if (docData && docData?.totalRecords) {
-            const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
-            setTotalPage(totalPages);
+        if (docData?.totalRecords) {
+            setTotalPage(Math.ceil(docData.totalRecords / pageSizeNumber));
         }
     }, [docData]);
 
@@ -152,35 +164,109 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 //     fetchInitialData();
 // }, []);
 
+// useEffect(() => {
+//   // Check if both search and filters are empty
+//   const noFilters =
+//     (!selectedDateRange.fromDate && !selectedDateRange.toDate) &&
+//     selectedCategories.length === 0 &&
+//     selectedFormats.length === 0;
+
+//   if ((!searchTerm || searchTerm.trim() === "") && noFilters) {
+//     // Initial/empty state
+//     setIsSearchTriggered(false);
+//     setSearchText("");
+//     setSearchTerm("");
+//     setCurrentPage(1);
+//     setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+//     setShowSearchError(false);
+//     setIsSearchLoading(false);
+//     setIsInitialLoad(true);
+//     return;
+//   }
+
+//   // If search is empty but filters remain, fetch with filters only
+//   if (!searchTerm || searchTerm.trim() === "") {
+//     fetchGetDocumentDetails(
+//       "",
+//       1,
+//       getAllRegistrationIds(selectedFormats),
+//       sortBy,
+//       sortDirection,
+//       selectedDateRange.fromDate,
+//       selectedDateRange.toDate
+//     );
+//     setIsSearchTriggered(false);
+//     setCurrentPage(1);
+//     setShowSearchError(false);
+//     setIsSearchLoading(false);
+//     setIsInitialLoad(false);
+//     return;
+//   }
+
+//   // If search exists, fetch with search and filters
+//   fetchGetDocumentDetails(
+//     searchTerm,
+//     1,
+//     getAllRegistrationIds(selectedFormats),
+//     sortBy,
+//     sortDirection,
+//     selectedDateRange.fromDate,
+//     selectedDateRange.toDate
+//   );
+// }, [searchTerm, selectedCategories, selectedFormats, selectedDateRange]);
+
 useEffect(() => {
-    const fetchInitialData = async () => {
+  const filtersExist =
+    selectedFormats.length > 0 ||
+    selectedCategories.length > 0 ||
+    selectedDateRange.fromDate ||
+    selectedDateRange.toDate;
+
+  if (!searchTerm && filtersExist) {
+    // Fetch with filters only
+    fetchGetDocumentDetails(
+      "",
+      1,
+      getAllRegistrationIds(selectedFormats),
+      sortBy,
+      sortDirection,
+      selectedDateRange.fromDate,
+      selectedDateRange.toDate
+    );
+    setIsSearchTriggered(false);
+    setCurrentPage(1);
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    setIsInitialLoad(false);
+    return;
+  }
+
+  if (!searchTerm && !filtersExist) {
+    // Initial/empty state
+    setIsSearchTriggered(false);
+    setSearchText("");
+    setSearchTerm("");
+    setCurrentPage(1);
+    setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    setIsInitialLoad(true);
+    return;
+  }
+}, [searchTerm, selectedFormats, selectedCategories, selectedDateRange]);
+
+    // Initial data fetch (unchanged)
+    useEffect(() => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        // Only fetch if there is a searchText
-        let dataFetch;
+        let dataFetch = Promise.resolve();
         if (searchText) {
             dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
         } else {
-            // Optionally, setDocData to empty if no searchText
             setDocData({ statusCode: 200, data: [], totalRecords: 0 });
-            dataFetch = Promise.resolve();
         }
-        await Promise.all([minLoaderTime, dataFetch]);
-        setIsLoading(false);
-        setIsInitialLoad(false);
-    };
-
-    fetchInitialData();
-}, []);
-    // useEffect(() => {
-   
-    //     if (!isInitialLoad) {
-    //         const allRegistrationIds = getAllRegistrationIds(selectedFormats);
-    //         fetchGetDocumentDetails(searchText, currentPage, allRegistrationIds, sortBy, sortDirection);
-    //     }
-    //     setIsSearchTriggered(false)
-    // }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
-
+        Promise.all([minLoaderTime, dataFetch]).then(() => setIsLoading(false));
+    }, []);
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection, fromDate?: string, toDate?: string) => {
         setIsSearchDataLoading(true);
@@ -192,7 +278,7 @@ useEffect(() => {
                 // fromDate: dateRange?.fromDate,
                 // toDate: dateRange?.toDate,
                 fromDate: fromDate,
-            toDate: toDate,
+                toDate: toDate,
                 categoryId: categories || [],
                 isSearchTextExactMatch: isSearchTrue,
                 sortBy: sortByCol,
@@ -221,8 +307,7 @@ useEffect(() => {
         
     }
 
-
-   const handleSorting = (columnName: string) => {
+ const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
     case "Date added":
@@ -269,25 +354,24 @@ useEffect(() => {
       }
 
     const getEmptyStateMsg = () => {
-    if (showErrorBanner) return "Information unavailable.";
-    if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
+        if (showErrorBanner) return "Information unavailable.";
+        if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
 
-    // Show "No data to display." only if search is triggered and no data
-    if (
-        isSearchTriggered &&
-        docData &&
-        docData?.statusCode === 200 &&
-        Array.isArray(docData?.data) &&
-        docData?.data.length === 0
-    ) {
-        return "No data to display.";
-    }
+        // Show "No data to display." only if search is triggered and no data
+        if (
+            isSearchTriggered &&
+            docData &&
+            docData?.statusCode === 200 &&
+            Array.isArray(docData?.data) &&
+            docData?.data.length === 0
+        ) {
+            return "No data to display.";
+        }
 
-    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-    return "Documents will appear here once they are uploaded.";
+        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+         return "Documents will appear here once they are uploaded.";
 };
-
-    const getTableHeaders = () => {
+  const getTableHeaders = () => {
         if (tableData?.length > 0 || showErrorBanner) {
             return getTableHeadersData;
         }
@@ -307,67 +391,14 @@ useEffect(() => {
         setIsSearchLoading(false);
         setSearchText("");
         setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+        setIsInitialLoad(true);
 };
 
-    // const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-    //     if (event.key === "Enter") {
-    //         const keyword = searchTerm?.trim()?.toLowerCase();
-    //         if(keyword !== searchText) {
-    //         setSearchTerm(keyword);
-    //         setSearchText(keyword);
-    //         setIsSearchTriggered(true);
-    //         setIsSearchDataLoading(true);
-    //         setIsSearchTrue(false);
-    //     }
-    //     setIsSearchLoading(false);
-    //     setIsShowAutoSuggest(false); 
-    //     // setSuggestions([]);
-    // }
-    // }
-
-    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-    if (event.key === "Enter") {
-        const keyword = searchTerm?.trim()?.toLowerCase();
-        if (keyword !== searchText) {
-            setSearchTerm(keyword);
-            setSearchText(keyword);
-            setIsSearchTriggered(true);
-            setIsSearchDataLoading(true);
-            fetchGetDocumentDetails(keyword, 1, getAllRegistrationIds(selectedFormats), sortBy, sortDirection);
-        }
-        setIsSearchLoading(false);
-        setIsShowAutoSuggest(false); 
-    }
-    }
-
-//     const handleTagClose = (
-//   e: React.SyntheticEvent,
-//   text: string,
-//   closeObj: { name?: string; id?: string | number }
-// ) => {
-//   handleTagCloseLogic(
-//     e,
-//     text,
-//     closeObj,
-//     setSelectedDateRange,
-//     setDateRange,
-//     setIsDateError,
-//     setSelectedCategories,
-//     setSelectedFormats
-//   );
-// };
-
-
-const handleTagClose = (
+    const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number }
 ) => {
-  // Save previous state
-  const prevSelectedCategories = [...selectedCategories];
-  const prevSelectedFormats = [...selectedFormats];
-  const prevDateRange = { ...selectedDateRange };
-
   handleTagCloseLogic(
     e,
     text,
@@ -378,114 +409,7 @@ const handleTagClose = (
     setSelectedCategories,
     setSelectedFormats
   );
-
-  // Compute next state after tag removal
-  let nextSelectedCategories = prevSelectedCategories.filter(item => item.text !== closeObj.name && item.data !== closeObj.name);
-  let nextSelectedFormats = prevSelectedFormats.filter(item => item.text !== closeObj.name && item.data !== closeObj.name);
-  let nextDateRange = { ...prevDateRange };
-  if (
-    typeof closeObj.name === "string" &&
-    (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
-      closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
-  ) {
-    nextDateRange = { fromDate: "", toDate: "" };
-  }
-
-  const noFilters =
-    (!nextDateRange.fromDate && !nextDateRange.toDate) &&
-    nextSelectedCategories.length === 0 &&
-    nextSelectedFormats.length === 0;
-
-  if (noFilters) {
-    // Fetch all results for the current search term (no filters)
-    fetchGetDocumentDetails(
-      searchTerm,
-      1,
-      [],
-      sortBy,
-      sortDirection
-    );
-    setIsSearchTriggered(true);
-    setCurrentPage(1);
-    setShowSearchError(false);
-    setIsSearchLoading(false);
-    setIsInitialLoad(false);
-  } else {
-    // Fetch with remaining filters
-    fetchGetDocumentDetails(
-      searchTerm,
-      1,
-      getAllRegistrationIds(nextSelectedFormats),
-      sortBy,
-      sortDirection,
-      nextDateRange.fromDate,
-      nextDateRange.toDate
-    );
-  }
 };
-
-// const handleTagClose = (
-//   e: React.SyntheticEvent,
-//   text: string,
-//   closeObj: { name?: string; id?: string | number }
-// ) => {
-//   handleTagCloseLogic(
-//     e,
-//     text,
-//     closeObj,
-//     setSelectedDateRange,
-//     setDateRange,
-//     setIsDateError,
-//     setSelectedCategories,
-//     setSelectedFormats
-//   );
-
-//   // Check if all filters/tags are cleared
-//   const noFilters =
-//     (!selectedDateRange?.fromDate && !selectedDateRange?.toDate) &&
-//     selectedCategories.length === 0 &&
-//     selectedFormats.length === 0;
-
-//   if (noFilters) {
-//     setIsSearchTriggered(false);
-//     setSearchText("");
-//     setSearchTerm("");
-//     setCurrentPage(1);
-//     setDocData({ statusCode: 200, data: [], totalRecords: 0 });
-//     setShowSearchError(false);
-//     setIsSearchLoading(false);
-//     setIsInitialLoad(true);
-//     // Optionally, set other states as needed for initial load
-//   } else {
-//     // Fetch with remaining filters
-//     fetchGetDocumentDetails(
-//       searchText,
-//       1,
-//       getAllRegistrationIds(selectedFormats),
-//       sortBy,
-//       sortDirection
-//     );
-//   }
-// };
-
-    useEffect(() => {
-        const handleResize = () => {
-            if (window.innerWidth < 1024) {
-                // md and below
-                if (breadcrumbActionsList.length > 1) {
-                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-2, -1));
-                } else {
-                    setVisibleBreadcrumbs(breadcrumbActionsList);
-                }
-            } else {
-                setVisibleBreadcrumbs(breadcrumbActionsList);
-            }
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, [breadcrumbActionsList]);
-
 
 
     const NotificationMsgBannerObject = [
@@ -499,107 +423,38 @@ const handleTagClose = (
         }
     ]
 
-    useEffect(() => {
-    if (searchTerm?.length > 1) {
-        handleSearchChange(
-        { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
-        getAllRegistrationIds(selectedFormats),
-        selectedDateRange?.fromDate,
-        selectedDateRange?.toDate,
-        setSearchTerm,
-        setSuggestions,
-        setShowSearchError,
-        setIsSearchLoading
-        );
-    }
-}, [searchTerm, selectedFormats, selectedDateRange]);
+    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isInitialLoad);
+    const filteredSuggestions = filterNonEmptySuggestions(suggestions);
 
-    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
-    const filteredSuggestions = filterValidSuggestions(suggestions);
-    //  const filteredSuggestions = filterAllowedSuggestions(filterNonEmptySuggestions(suggestions));
-
-//     const handleApply = () => {
-
-//         if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
-//            selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
-//             setIsDateError(true);
-//             return;
-//         }
-
-//          if (isDateError) {
-//             setIsDateError(true);
-//             return;
-//         }
-//     if (
-//         isDateError ||
-//         (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
-//         (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
-//         (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
-//     ) {
-//         setIsDateError(true);
-//     } else {
-//             setIsFilterLoading(true);
-            
-//         setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
-//             setTimeout(() => {
-//         setSelectedFormats(selectedCategories);
-//          fetchGetDocumentDetails(
-//             searchText,
-//             1,
-//             getAllRegistrationIds(selectedCategories),
-//             sortBy,
-//             sortDirection
-//         );
-//         setIsFilterDialogOpen(false);
-//             setIsFilterLoading(false);
-//         }, 500);
-//     }
-// };
-
-const handleApply = () => {
-    if (
-        selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) ||
-        selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)
-    ) {
-        setIsDateError(true);
-        return;
-    }
-
-    if (isDateError) {
-        setIsDateError(true);
-        return;
-    }
-
-    if (
-        isDateError ||
-        (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
-        (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
-        (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
-    ) {
-        setIsDateError(true);
-    } else {
+    const handleApply = () => {
+        if (
+            (selectedDateRange.fromDate && !isValidDate(selectedDateRange.fromDate)) ||
+            (selectedDateRange.toDate && !isValidDate(selectedDateRange.toDate)) ||
+            isDateError ||
+            (selectedDateRange.fromDate && !dayjs(selectedDateRange.fromDate, "YYYY-MM-DD").isValid()) ||
+            (!selectedDateRange.fromDate && selectedDateRange.toDate && dayjs(selectedDateRange.toDate, "YYYY-MM-DD").isValid()) ||
+            (selectedDateRange.toDate && !dayjs(selectedDateRange.toDate, "YYYY-MM-DD").isValid())
+        ) {
+            setIsDateError(true);
+            return;
+        }
         setIsFilterLoading(true);
-
-        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
+        setDateRange({ fromDate: selectedDateRange.fromDate, toDate: selectedDateRange.toDate });
         setSelectedFormats(selectedCategories);
-
         setTimeout(() => {
-            // Always use the current searchText and selected filters
             fetchGetDocumentDetails(
-                // searchText,
                 searchTerm,
                 1,
                 getAllRegistrationIds(selectedCategories),
                 sortBy,
                 sortDirection,
-                selectedDateRange?.fromDate,
-                selectedDateRange?.toDate
+                selectedDateRange.fromDate,
+                selectedDateRange.toDate
             );
             setIsFilterDialogOpen(false);
             setIsFilterLoading(false);
         }, 500);
-    }
-};
+    };
 
    const handleFilterOnClick = () => {
     if (!searchTerm || searchTerm.trim().length === 0) {
@@ -830,7 +685,7 @@ const handleApply = () => {
                                     handleSuggestionClick(item, setSearchTerm, setSearchText)
                                     setIsSearchTriggered(true);
                                     setIsSearchDataLoading(true);
-                                    const keyword = item?.text?.trim()?.toLowerCase() || item?.name?.trim()?.toLowerCase() || "";
+                                    const keyword = item?.props?.id|| item?.text?.trim()?.toLowerCase() || item?.name?.trim()?.toLowerCase() || "";
                                     fetchGetDocumentDetails(
                                         keyword,
                                         1,
@@ -840,6 +695,19 @@ const handleApply = () => {
                                     );
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+//                                 searchOnChange={(e: any) => {
+//   handleSearchChange(
+//     e,
+//     getAllRegistrationIds(selectedCategories),
+//     selectedDateRange?.fromDate,
+//     selectedDateRange?.toDate,
+//     setSearchTerm,
+//     setSuggestions,
+//     setShowSearchError,
+//     setIsSearchLoading
+//   );
+//   setDocData({ statusCode: 200, data: [], totalRecords: 0 }); // Clear table while typing
+// }}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
@@ -848,7 +716,7 @@ const handleApply = () => {
                                 }
 
 
-                                onSearchKeyDown={handleSearchEnter}
+                                // onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 primaryButtonTitle="Clear all"
                                 secondaryButtonTitle="Clear all"

@@ -570,26 +570,64 @@ export const fetchCategory = async (): Promise<any[]> => {
 //   return undefined;
 // };
 
+
+// export const getResultNotFoundMsg = (
+//   searchText: string,
+//   docData: any,
+//   searchTerm: string,
+//   showErrorBanner: boolean,
+//   isInitialLoad: boolean
+// ): string | undefined => {
+//   if (showErrorBanner) {
+//     return "Information unavailable.";
+//   }
+
+//   // Search performed but no results
+//   if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+//     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+//   }
+
+//   // Initial load, no data
+//   if (isInitialLoad && !searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+//     return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+//   }
+
+//   // General no data (not initial load, not search)
+//   if ( !searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+//     return "No data to display";
+//   }
+
+//   return undefined;
+// };
+
 export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
-  showErrorBanner: boolean
+  showErrorBanner: boolean,
+  isInitialLoad: boolean
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
   }
-  // Show search message if search is performed and no results
-  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+
+  // Case 1: Initial load before API call
+  if (
+  isInitialLoad &&
+  (!docData || (Array.isArray(docData.data) && docData.data.length === 0))
+) {
+  return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+}
+
+  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData.data.length === 0) {
     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
   }
-  // Show "No data to display" only if not searching and no data
-  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-   return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+
+  // Case 2b: No search, API returned success but empty
+  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData.data.length === 0) {
+    return "No data to display.";
   }
-   if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
-  }
+
   return undefined;
 };
 
@@ -616,14 +654,14 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
       let value: JSX.Element | string | undefined;
 
       switch (category?.name) {
-        // case "Document":
-        //   text = item?.fileName || "";
-        //   props = {
-        //     name: item?.fileName,
-        //     id: item?.fileId,
-        //     ...item
-        //   };
-        //   break;
+        case "Document":
+          text = item?.fileName || "";
+          props = {
+            name: item?.fileName,
+            id: item?.fileId,
+            ...item
+          };
+          break;
         case "Pupil":
           text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
           icon = (
@@ -708,20 +746,20 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
     }),
   })) || [];
 
-//   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
-//   suggestions.filter(s => s?.values.length > 0);
+  export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
+  suggestions.filter(s => s?.values.length > 0);
 
 // export const filterAllowedSuggestions = (suggestions: Suggestion[]) =>
 //   suggestions.filter(s =>
 //     ["Pupil", "Staff", "Organisation"].includes(s.name)
 //   );
 
-export const filterValidSuggestions = (suggestions: Suggestion[]) =>
-  suggestions.filter(
-    s =>
-      s?.values.length > 0 &&
-      ["Pupil", "Staff", "Organisation"].includes(s.name)
-  );
+// export const filterValidSuggestions = (suggestions: Suggestion[]) =>
+//   suggestions.filter(
+//     s =>
+//       s?.values.length > 0 &&
+//       ["Pupil", "Staff", "Organisation"].includes(s.name)
+//   );
 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
