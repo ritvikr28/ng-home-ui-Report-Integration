@@ -3,10 +3,10 @@ import { render, waitFor } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { authService } from "@essnextgen/auth-ui";
+import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import configureStore from "../redux/store";
 import App from "../App";
 import { fetchPreferredLanguage } from "../shared/services/localisationDomain/localisationPreferences";
-import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { service } from "../shared/utils";
 import gtmAnalytics from "../shared/utils/analytics";
 import ErrorBoundary from "../shared/components/ErrorBoundary/Index";
@@ -121,7 +121,6 @@ describe("App i18n and error handling coverage", () => {
   });
 
   it("renders ErrorBoundary fallback when child throws", async () => {
-    const history = createBrowserHistory();
     const ThrowComponent = () => {
       throw new Error("test error");
     };
