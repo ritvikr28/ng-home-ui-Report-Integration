@@ -247,7 +247,27 @@
     width: 2rem;
 }
 
-
+.viewDownloadWrap {
+  .viewDownloadDetails {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    .fileDetails{
+      p {
+        margin-bottom: 0px;
+      }
+      span {
+        color: #5E5E5E;
+        font-size: 14px;
+      }
+    }
+  }
+  .viewDownloadBtn{
+    background-color: #ffffff;
+    color: #2177c2;
+    font-size: 16px;
+  }
+}
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:360px) and (max-width:599.9px) {
   .grid-wrapper {

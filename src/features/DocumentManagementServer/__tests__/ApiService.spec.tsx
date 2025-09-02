@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -272,5 +272,35 @@ describe('fetchFilterCategory', () => {
       expect.any(Error)
     );
     consoleSpy.mockRestore();
+  });
+});
+
+describe('viewDownload', () => {
+  it('returns response data on success', async () => {
+    (service.get as jest.Mock).mockResolvedValue({ data: { foo: 'bar' } });
+    const result = await viewDownload();
+    expect(result).toEqual({ foo: 'bar' });
+  });
+
+  it('returns empty object and logs error on failure', async () => {
+    const error = new Error('Network error');
+    (service.get as jest.Mock).mockRejectedValue(error);
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const result = await viewDownload();
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching view downloads data:',
+      error
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('calls service.get with correct arguments', async () => {
+    (service.get as jest.Mock).mockResolvedValue({ data: {} });
+    await viewDownload();
+    expect(service.get).toHaveBeenCalledWith(
+      '/validation/api/v1/viewDownload',
+      expect.any(String)
+    );
   });
 });
