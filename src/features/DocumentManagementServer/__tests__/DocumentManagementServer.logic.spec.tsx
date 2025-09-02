@@ -20,7 +20,6 @@ import {
   hasItems,
   loadSuggestions,
   onBreadcrumbClick,
-  tableBodyData,
   mapRelatedArr,
   filterNonEmptySuggestions
 } from "../DocumentManagementServer.logic";
@@ -68,11 +67,6 @@ describe("getTableHeadersData", () => {
     expect(container).toBeEmptyDOMElement();
   });
 
-  // test("renders link and tag when elem has one item", () => {
-  //   render(<>{anyComponent && anyComponent(["John Doe"])}</>);
-  //   expect(document.querySelector(".relatedto-main")).toBeInTheDocument();
-  //   expect(screen.getByRole("link", { name: "John Doe" })).toBeInTheDocument();
-  // });
 
   test("does not render tooltip when only one related item", () => {
   const relatedToCol = getTableHeadersData.find(h => h.text === "Related to");
@@ -123,22 +117,6 @@ describe("getTableHeadersData column anyComponent rendering", () => {
   expect(container).toBeEmptyDOMElement();
 });
 
-});
-
-
-describe("tableBodyData", () => {
-  test("should have correct keys in each row", () => {
-    tableBodyData.forEach(row => {
-      expect(row).toHaveProperty("id");
-      expect(row).toHaveProperty("Document");
-      expect(row).toHaveProperty("Relatedto");
-      expect(row).toHaveProperty("Category");
-      expect(row).toHaveProperty("Addedby");
-      expect(row).toHaveProperty("Date added");
-      expect(row).toHaveProperty("Format");
-      expect(row).toHaveProperty("Size");
-    });
-  });
 });
 
 

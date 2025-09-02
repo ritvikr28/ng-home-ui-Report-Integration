@@ -354,7 +354,7 @@ eslint-disable
                       }}
                       style={{ cursor: "pointer" }}
                     >
-                      {sidelink.name}
+                      {t(sidelink.name)}
                       <Icon
                         color={
                           sidelink.favourite
