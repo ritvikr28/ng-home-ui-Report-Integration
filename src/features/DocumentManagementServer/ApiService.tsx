@@ -1,8 +1,9 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
-import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
+import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
+import { Doc } from "prettier";
 
 export const fetchDocumentDetails = async ({
   pageNumber,
@@ -84,6 +85,22 @@ export const fetchFilterCategory = async (): Promise<any> => {
     console.error("Error fetching DMS suggestions:", err);
     return {};
   }
+}
+
+  export const prepareAndDownloadFile = async (fileDetails: DocumentPrepareDownload[]): Promise<DocumentPrepareDownload | undefined> => {
+    try {
+      const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+      const url = `/validation/api/v1/file/download`;
+      const payload = { fileDetails };
+      const responseData: AxiosResponse<DocumentPrepareDownload> =await service.post(url, payload, { baseURL: baseUrl });
+
+    if (responseData?.status === 200) {
+      return responseData?.data;
+    }
+    
+  } catch (error) {
+    console.error("Error preparing and downloading file:", error);
+  }
 };
 
 export const viewDownload = async (): Promise<any> => {
@@ -97,3 +114,4 @@ export const viewDownload = async (): Promise<any> => {
     return {};
   }
 };
+

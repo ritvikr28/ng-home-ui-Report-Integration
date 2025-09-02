@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps } from "./responseModel"
+import { Category, DocumentPrepareDownload, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
@@ -102,6 +102,12 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     Size: doc?.size,
 }));
 }
+
+    let registrationId = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
+    ? selectedCheckBoxIds.flatMap((id) => 
+        docData?.data.find((doc: any) => doc.fileId === id)?.registrationIds || []
+      )
+    : [];
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -201,6 +207,16 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
+    const selectedDocs: DocumentPrepareDownload[] = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
+  ? selectedCheckBoxIds
+      .map(id => {
+        const doc = docData.data.find((d: any) => d.fileId === id);
+        return doc && doc.registrationId !== undefined
+          ? { fileId: id, registrationId: doc.registrationId }
+          : undefined;
+      })
+      .filter(Boolean) as DocumentPrepareDownload[]
+  : [];
 
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
@@ -658,7 +674,8 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                     <p>Prepared downloads will expire after 5 days</p>
                                                     {viewData.map((item, index) => {
                                                         const isComplete = item?.status?.toLowerCase() === 'complete';
-                                                        return (
+                                                        const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+                                                    return (
                                                             <div className="viewDownloadDetails" key={index}>
                                                                 <div className="fileDetails">
                                                                     <p>{item?.name}</p>
@@ -669,7 +686,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                                 {isComplete && (
                                                                     <Button className="viewDownloadBtn">Download</Button>
                                                                 )}
-                                                            </div>
+                                                                {isInProgress && (
+                                                                <span className="inProgressLoader">
+                                                                    <Loader
+                                                                        loaderType={LoaderType.Circular}
+                                                                       
+                                                                    />
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                         );
                                                     })}
                                                 </>
@@ -728,6 +753,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
                                         onConfirm: (): void => {
+                                            prepareDownload(selectedDocs);
                                             setIsSidePanelLoader(true);
                                             setIsSidePanelOpen(true)
 

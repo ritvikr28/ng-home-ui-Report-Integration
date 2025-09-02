@@ -1,9 +1,10 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
+import { DocumentPrepareDownload } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -362,6 +363,25 @@ export const viewData: {
     "timestamp": "2025-08-20T17:00:06.5396144+05:30",
     "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
     fileExpiryDays: 4
+  },
+  {
+    "batchId": 1,
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "name": "Test.pdf",
+    "totalNoOfFiles": 16,
+    "zipSourceFilesSize": 0,
+    "size": 0,
+    "status": "InProgress",
+    "roleName": "",
+    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
+    "registrationId": null,
+    "application": null,
+    "section": null,
+    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
+    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
+    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
+    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
+    fileExpiryDays: null
   }
   ];
 export const handlePageChange = (
@@ -674,6 +694,17 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
     }),
   })) || [];
 
+
+  export const prepareDownload = async (fileDetails: DocumentPrepareDownload[]) => {
+    try {
+
+      const response = await prepareAndDownloadFile(fileDetails);
+
+      return response?.status
+    } catch (error) {
+      console.error("Error preparing download:", error);
+    }
+  };
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 
@@ -710,7 +741,4 @@ export const debouncedFetchSuggestions = debounce(
   5
 );
 
-// function renderRelatedToItem(arg0: any) {
-//   throw new Error("Function not implemented.");
-// }
 
