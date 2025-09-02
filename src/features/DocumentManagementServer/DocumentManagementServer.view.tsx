@@ -137,6 +137,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             setTotalPage(totalPages);
         }
     }, [docData]);
+
     useEffect(() => {
     const fetchInitialData = async () => {
         setIsLoading(true);
@@ -653,22 +654,25 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                         />
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
-                                                viewData.map((item, index) => {
-                                                    const isComplete = item?.status?.toLowerCase() === 'complete';
-                                                    return (
-                                                        <div className="viewDownloadDetails" key={index}>
-                                                            <div className="fileDetails">
-                                                                <p>{item?.name}</p>
+                                                <>
+                                                    <p>Prepared downloads will expire after 5 days</p>
+                                                    {viewData.map((item, index) => {
+                                                        const isComplete = item?.status?.toLowerCase() === 'complete';
+                                                        return (
+                                                            <div className="viewDownloadDetails" key={index}>
+                                                                <div className="fileDetails">
+                                                                    <p>{item?.name}</p>
+                                                                    {isComplete && (
+                                                                        <span>Expires in {item?.fileExpiryDays} days</span>
+                                                                    )}
+                                                                </div>
                                                                 {isComplete && (
-                                                                    <span>Expires in {item?.fileExpiryDays} days</span>
+                                                                    <Button className="viewDownloadBtn">Download</Button>
                                                                 )}
                                                             </div>
-                                                            {isComplete && (
-                                                                <Button className="viewDownloadBtn">Download</Button>
-                                                            )}
-                                                        </div>
-                                                    );
-                                                })
+                                                        );
+                                                    })}
+                                                </>
                                             ) : (
                                                 <p>Files you download will appear here.</p>
                                             )}
