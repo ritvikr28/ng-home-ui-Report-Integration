@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, DocumentPrepareDownload, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -671,6 +671,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                             {viewData?.length > 0 ? (
                                                 viewData.map((item, index) => {
                                                     const isComplete = item?.status?.toLowerCase() === 'complete';
+                                                    const isInProgress = item?.status?.toLowerCase() === 'inprogress';
                                                     return (
                                                         <div className="viewDownloadDetails" key={index}>
                                                             <div className="fileDetails">
@@ -681,6 +682,14 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                                             </div>
                                                             {isComplete && (
                                                                 <Button className="viewDownloadBtn">Download</Button>
+                                                            )}
+                                                            {isInProgress && (
+                                                                <span className="inProgressLoader">
+                                                                    <Loader
+                                                                        loaderType={LoaderType.Circular}
+                                                                       
+                                                                    />
+                                                                </span>
                                                             )}
                                                         </div>
                                                     );
