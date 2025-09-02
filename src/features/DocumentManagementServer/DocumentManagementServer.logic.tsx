@@ -286,37 +286,84 @@ anyComponent: (e: any) => (
     }
   ];
 
-export const tableBodyData: {
-  id: string;
-  Document: string;
-  Relatedto: string[];
-  Category: string;
-  Addedby: string;
-  "Date added": string;
-  Format: string;
-  Size: string;
+export const viewData: {
+  batchId: number;
+  organisationId: string;
+  totalNoOfFiles: number;
+  zipSourceFilesSize: number;
+  name: string;
+  userIdCreatedBy: string;
+  roleName: string;
+  status: string;
+  size: number;
+  registrationId: string | null;
+  application: string | null;
+  section: string | null;
+  partitionKey: string;
+  rowKey: string;
+  timestamp: string;
+  eTag: string;
+  fileExpiryDays: number | null;
 }[] = [
-    {
-      id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Document: "Name ",
-      Relatedto: ["Bayberry View High", "Benjamin Johnson", "Charmaine Brown"],
-      Category: "School",
-      Addedby: "Helen Avery",
-      "Date added": "01 Jan 2025",
-      Format: "pdf",
-      Size: "300 bytes",
-    },
-    {
-      id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Document:
-        "This is very long name that we have dsghgdfhgfhsdffdsdfds sdfhgsdjfgsjhdfgsjd fsdfsfsdhfgsdjfg fsdhfgjsdfgsj ",
-      Relatedto: ["Araminta Martin"],
-      Category: "Conduct",
-      Addedby: "Richard Wilton",
-      "Date added": "01 Jan 2025",
-      Format: "doc",
-      Size: "3KB",
-    }
+    
+  {
+    "batchId": 1,
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "name": "SIMS_2025-8-20_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
+    "totalNoOfFiles": 16,
+    "zipSourceFilesSize": 0,
+    "size": 0,
+    "status": "InProgress",
+    "roleName": "",
+    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
+    "registrationId": null,
+    "application": null,
+    "section": null,
+    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
+    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
+    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
+    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
+    fileExpiryDays: null
+  },
+  
+  {
+    "batchId": 1,
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "name": "SIMS_2025-8-22_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
+    "totalNoOfFiles": 16,
+    "zipSourceFilesSize": 0,
+    "size": 0,
+    "status": "Complete",
+    "roleName": "",
+    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
+    "registrationId": null,
+    "application": null,
+    "section": null,
+    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
+    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
+    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
+    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
+    fileExpiryDays:5
+  },
+  {
+    "batchId": 1,
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "name": "medical.pdf",
+    "totalNoOfFiles": 16,
+    "zipSourceFilesSize": 0,
+    "size": 0,
+    "status": "Complete",
+    "roleName": "",
+    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
+    "registrationId": null,
+    "application": null,
+    "section": null,
+    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
+    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
+    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
+    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
+    fileExpiryDays: 4
+  }
   ];
 export const handlePageChange = (
   _event: any,
@@ -672,7 +719,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  500
+  5
 );
 
 

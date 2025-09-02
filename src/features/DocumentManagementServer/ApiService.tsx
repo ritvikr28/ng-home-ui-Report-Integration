@@ -97,7 +97,21 @@ export const fetchFilterCategory = async (): Promise<any> => {
     if (responseData?.status === 200) {
       return responseData?.data;
     }
+    
   } catch (error) {
     console.error("Error preparing and downloading file:", error);
   }
 };
+
+export const viewDownload = async (): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/viewDownload`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response?.data;
+  } catch (err) {
+    console.error("Error fetching view downloads data:", err);
+    return {};
+  }
+};
+

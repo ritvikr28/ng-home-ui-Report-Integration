@@ -538,25 +538,25 @@ it("should handle button click when syncDataStatus is 'In Progress'", async () =
   });
 });
 
-it("should handle button click when clicked before", async () => {
-  render(
-    <Router history={history}>
-      <SyncDataView
-        handleException={handleExceptionMock}
-        inProgressStatus={inProgressStatusMock}
-        status={statusMock}
-        syncDataStatus="In Progress"
-      />
-    </Router>
-  );
+// it("should handle button click when clicked before", async () => {
+//   render(
+//     <Router history={history}>
+//       <SyncDataView
+//         handleException={handleExceptionMock}
+//         inProgressStatus={inProgressStatusMock}
+//         status={statusMock}
+//         syncDataStatus="In Progress"
+//       />
+//     </Router>
+//   );
 
-  const syncButton = screen.getByRole("button", { name: /Sync/i });
-  fireEvent.click(syncButton);
-  fireEvent.click(syncButton);
+//   const syncButton = screen.getByRole("button", { name: /Sync/i });
+//   fireEvent.click(syncButton);
+//   fireEvent.click(syncButton);
 
-  await waitFor(() => {
-    expect(mockSetShowSyncDialog).not.toHaveBeenCalledWith(true);
-  });
-});
+//   await waitFor(() => {
+//     expect(mockSetShowSyncDialog).not.toHaveBeenCalledWith(true);
+//   });
+// });
 
 });

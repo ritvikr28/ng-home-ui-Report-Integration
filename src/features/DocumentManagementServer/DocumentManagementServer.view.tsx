@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, DocumentPrepareDownload, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -123,6 +123,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         return () => { };
     }, [isMobileView]);
+
+    useEffect(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, [currentPage]);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -256,6 +260,9 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }
+        }
+        else if((selectedItem?.value?.toLowerCase() === "view download")){
+            setIsSidePanelOpen(true);
         }
       }
 
@@ -652,20 +659,39 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.WARNING}
                                 sidePanelNotificationTitle="Unable to Download"
-                                 addEditTemplateChild={
+                                addEditTemplateChild={
                                     <>
-                                            <Notification
-                                                status={NotificationStatus.WARNING}
-                                                title="Unable to prepare [document/documents] for download"
-                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
-                                                autoclose
-                                            />
-                                            <div>
-                                               <p>Files you download will appear here.</p>
-                                            </div>
-                                            </>
-                                        }
-                                 
+                                        <Notification
+                                            status={NotificationStatus.WARNING}
+                                            title="Unable to prepare [document/documents] for download"
+                                            message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
+                                            autoclose
+                                        />
+                                        <div className="viewDownloadWrap">
+                                            {viewData?.length > 0 ? (
+                                                viewData.map((item, index) => {
+                                                    const isComplete = item?.status?.toLowerCase() === 'complete';
+                                                    return (
+                                                        <div className="viewDownloadDetails" key={index}>
+                                                            <div className="fileDetails">
+                                                                <p>{item?.name}</p>
+                                                                {isComplete && (
+                                                                    <span>Expires in {item?.fileExpiryDays} days</span>
+                                                                )}
+                                                            </div>
+                                                            {isComplete && (
+                                                                <Button className="viewDownloadBtn">Download</Button>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })
+                                            ) : (
+                                                <p>Files you download will appear here.</p>
+                                            )}
+                                        </div>
+                                    </>
+                                }
+
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
