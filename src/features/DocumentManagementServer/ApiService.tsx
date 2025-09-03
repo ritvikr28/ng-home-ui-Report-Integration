@@ -1,8 +1,9 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
-import { service } from "../../shared/utils";
+import { envConfig, service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
-import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
+import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
+import { authService } from "@essnextgen/auth-ui";
 
 export const fetchDocumentDetails = async ({
   pageNumber,
@@ -94,6 +95,19 @@ export const viewDownload = async (): Promise<any> => {
     return response?.data;
   } catch (err) {
     console.error("Error fetching view downloads data:", err);
+    return {};
+  }
+};
+
+export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
+  try {
+    // Use the correct base URL for the photo service
+    const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
+    const url = `/api/v1/personThumbnailImage/${externalId}`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response;
+  } catch (err) {
+    console.error("Error fetching staff profile photo:", err);
     return {};
   }
 };
