@@ -68,7 +68,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -207,16 +208,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
-    const selectedDocs: DocumentPrepareDownload[] = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
-  ? selectedCheckBoxIds
-      .map(id => {
-        const doc = docData.data.find((d: any) => d.fileId === id);
-        return doc && doc.registrationId !== undefined
-          ? { fileId: id, registrationId: doc.registrationId }
-          : undefined;
-      })
-      .filter(Boolean) as DocumentPrepareDownload[]
-  : [];
+    const selectedDocs: DocumentPrepareDownload[] = allSelectedDocs;
 
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
@@ -554,12 +546,25 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     }}
 
                                     onChangeListCheckBox={(index: number, id: string) => {
-                        
                                         const updatedCheckBoxIds = [...selectedCheckBoxIds];
-                                        if (updatedCheckBoxIds?.includes(id)) {
-                                            updatedCheckBoxIds?.splice(updatedCheckBoxIds.indexOf(id), 1);
+                                        const doc = docData?.data?.find((d: any) => d.fileId === id);
+
+                                        if (updatedCheckBoxIds.includes(id)) {
+                                            updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
+                                            setAllSelectedDocs(prev => prev.filter(item => item.fileId !== id));
                                         } else {
-                                            updatedCheckBoxIds?.push(id);
+                                            updatedCheckBoxIds.push(id);
+                                            if (doc && doc.registrationId !== undefined) {
+                                                setAllSelectedDocs(prev => {
+                                                    if (!prev.some(item => item.fileId === id)) {
+                                                        return [
+                                                            ...prev,
+                                                            { fileId: id, registrationId: Number(doc.registrationId) } // Ensure number type
+                                                        ];
+                                                    }
+                                                    return prev;
+                                                });
+                                            }
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
                                     }}
