@@ -46,9 +46,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
 
     const handleStorageChange = (event: any) => {
       if (event.key === "i18nextLng" && event.newValue) {
-        console.log("Language changed event new value:", event.newValue);
         setLangCode(event.newValue);
-        console.log("set language event new value:", event.newValue);
       }
     };
 
@@ -82,7 +80,6 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
           },
         }).init({ lng: langCode });
 
-        console.log("i18n initialized with:", langCode);
         setInitialized(true);
       } catch (err) {
         console.error("Error initializing i18n:", err);
