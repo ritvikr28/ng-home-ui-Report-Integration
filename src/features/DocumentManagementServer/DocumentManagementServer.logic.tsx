@@ -413,17 +413,17 @@ export const onBreadcrumbClick = (path: string) => {
 };
 
 // Suggestion item click logic
-// export const handleSuggestionClick = async (
-//   item: ISearchItemProp | null,
-//   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-//   setSearchText: React.Dispatch<React.SetStateAction<string>>,
-//   // setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>
-// ) => {
-//   if (!item || !item.name) return;
-//   setSearchTerm(item.name);
-//   setSearchText(item.name);
-//   // setIsSearchTriggered(true);
-// };
+export const handleSuggestionClick = async (
+  item: ISearchItemProp | null,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+  setSearchText: React.Dispatch<React.SetStateAction<string>>,
+  // setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>
+) => {
+  if (!item || !item.name) return;
+  setSearchTerm(item.name);
+  setSearchText(item.name);
+  // setIsSearchTriggered(true);
+};
 
 // export const handleSuggestionClick = async (
 //   item: ISearchItemProp | null,
@@ -439,17 +439,17 @@ export const onBreadcrumbClick = (path: string) => {
 //   }
 // };
 
-export const handleSuggestionClick = async (
-  item: ISearchItemProp | null,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSearchText: React.Dispatch<React.SetStateAction<string>>
-) => {
-  if (!item) return;
-  // Use item.text if available, otherwise item.name
-  const value = item.text || item.name || "";
-  setSearchTerm(value);
-  setSearchText(value);
-};
+// export const handleSuggestionClick = async (
+//   item: ISearchItemProp | null,
+//   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+//   setSearchText: React.Dispatch<React.SetStateAction<string>>
+// ) => {
+//   if (!item) return;
+//   // Use item.text if available, otherwise item.name
+//   const value = item.text || item.name || "";
+//   setSearchTerm(value);
+//   setSearchText(value);
+// };
 
 // Has items check
 export const hasItems = (suggestions: Suggestion[]): boolean =>

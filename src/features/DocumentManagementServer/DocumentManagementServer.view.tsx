@@ -2,7 +2,11 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, 
+    // filterValidSuggestions, 
+    filterNonEmptySuggestions, 
+    // filterAllowedSuggestions 
+} from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -130,10 +134,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         return () => {};
     }, [isMobileView]);
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage]);
-
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
@@ -149,6 +149,113 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
     }, [docData]);
 
+//     useEffect(() => {
+//     const fetchInitialData = async () => {
+//         setIsLoading(true);
+//         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
+//         const dataFetch = fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection);
+//         // Fetch categories
+        
+//         await Promise.all([minLoaderTime, dataFetch]);
+//         setIsLoading(false);
+//         setIsInitialLoad(false);
+//     };
+
+//     fetchInitialData();
+// }, []);
+
+// useEffect(() => {
+//   // Check if both search and filters are empty
+//   const noFilters =
+//     (!selectedDateRange.fromDate && !selectedDateRange.toDate) &&
+//     selectedCategories.length === 0 &&
+//     selectedFormats.length === 0;
+
+//   if ((!searchTerm || searchTerm.trim() === "") && noFilters) {
+//     // Initial/empty state
+//     setIsSearchTriggered(false);
+//     setSearchText("");
+//     setSearchTerm("");
+//     setCurrentPage(1);
+//     setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+//     setShowSearchError(false);
+//     setIsSearchLoading(false);
+//     setIsInitialLoad(true);
+//     return;
+//   }
+
+//   // If search is empty but filters remain, fetch with filters only
+//   if (!searchTerm || searchTerm.trim() === "") {
+//     fetchGetDocumentDetails(
+//       "",
+//       1,
+//       getAllRegistrationIds(selectedFormats),
+//       sortBy,
+//       sortDirection,
+//       selectedDateRange.fromDate,
+//       selectedDateRange.toDate
+//     );
+//     setIsSearchTriggered(false);
+//     setCurrentPage(1);
+//     setShowSearchError(false);
+//     setIsSearchLoading(false);
+//     setIsInitialLoad(false);
+//     return;
+//   }
+
+//   // If search exists, fetch with search and filters
+//   fetchGetDocumentDetails(
+//     searchTerm,
+//     1,
+//     getAllRegistrationIds(selectedFormats),
+//     sortBy,
+//     sortDirection,
+//     selectedDateRange.fromDate,
+//     selectedDateRange.toDate
+//   );
+// }, [searchTerm, selectedCategories, selectedFormats, selectedDateRange]);
+
+useEffect(() => {
+  const filtersExist =
+    selectedFormats.length > 0 ||
+    selectedCategories.length > 0 ||
+    selectedDateRange.fromDate ||
+    selectedDateRange.toDate;
+
+  if (!searchTerm && filtersExist) {
+    // Fetch with filters only
+    fetchGetDocumentDetails(
+      "",
+      1,
+      getAllRegistrationIds(selectedFormats),
+      sortBy,
+      sortDirection,
+      selectedDateRange.fromDate,
+      selectedDateRange.toDate
+    );
+    setIsSearchTriggered(false);
+    setCurrentPage(1);
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    setIsInitialLoad(false);
+    return;
+  }
+
+  if (!searchTerm && !filtersExist) {
+    // Initial/empty state
+    setIsSearchTriggered(false);
+    setSearchText("");
+    setSearchTerm("");
+    setCurrentPage(1);
+    setDocData({ statusCode: 200, data: [], totalRecords: 0 });
+    setShowSearchError(false);
+    setIsSearchLoading(false);
+    setIsInitialLoad(true);
+    return;
+  }
+}, [searchTerm, selectedFormats, selectedCategories, selectedDateRange]);
+
+    // Initial data fetch (unchanged)
     useEffect(() => {
         setIsLoading(true);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
@@ -200,7 +307,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
- const handleSorting = (columnName: string) => {
+    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
     case "Date added":
@@ -212,23 +319,65 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     case "Format":
       apiColumnName = "Format";
       break;
-      case "Size":
+    case "Size":
       apiColumnName = "Size";
       break;
-      case "Category":
-      apiColumnName = "Category";   
-        break;
+    case "Category":
+      apiColumnName = "Category";
+      break;
     default:
-        return;
-    }
-        let newDirection = "Asc";
-        if (sortBy === apiColumnName) {
-            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-            }
+      return;
+  }
+  let newDirection = "Asc";
+  if (sortBy === apiColumnName) {
+    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+  }
 
-        setSortBy(apiColumnName);
-        setSortDirection(newDirection);
-      };
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+
+  // Trigger fetch with new sort
+  if (searchText) {
+    setIsSearchDataLoading(true);
+    fetchGetDocumentDetails(
+      searchText,
+      currentPage,
+      getAllRegistrationIds(selectedFormats),
+      apiColumnName,
+      newDirection
+    );
+  }
+};
+
+//  const handleSorting = (columnName: string) => {
+//   let apiColumnName = columnName;
+//   switch (columnName) {
+//     case "Date added":
+//       apiColumnName = "DateAdded";
+//       break;
+//     case "Document":
+//       apiColumnName = "Document";
+//       break;
+//     case "Format":
+//       apiColumnName = "Format";
+//       break;
+//       case "Size":
+//       apiColumnName = "Size";
+//       break;
+//       case "Category":
+//       apiColumnName = "Category";   
+//         break;
+//     default:
+//         return;
+//     }
+//         let newDirection = "Asc";
+//         if (sortBy === apiColumnName) {
+//             newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+//             }
+
+//         setSortBy(apiColumnName);
+//         setSortDirection(newDirection);
+//       };
 
       const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
@@ -243,9 +392,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }
-        }
-        else if((selectedItem?.value?.toLowerCase() === "view download")){
-            setIsSidePanelOpen(true);
         }
       }
 
@@ -320,7 +466,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     ]
 
     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isInitialLoad);
-    const filteredSuggestions = filterNonEmptySuggestions(suggestions);
+    // const filteredSuggestions = filterNonEmptySuggestions(suggestions);
+    const filteredSuggestions = filterNonEmptySuggestions(
+  suggestions.map(s => ({
+    ...s,
+    values: s.values.filter(v =>
+      v.text?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  }))
+).filter(s => s.values.length > 0);
 
     const handleApply = () => {
         if (
@@ -625,42 +779,20 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
                                     We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.WARNING}
                                 sidePanelNotificationTitle="Unable to Download"
-                                addEditTemplateChild={
+                                 addEditTemplateChild={
                                     <>
-                                        <Notification
-                                            status={NotificationStatus.WARNING}
-                                            title="Unable to prepare [document/documents] for download"
-                                            message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
-                                            autoclose
-                                        />
-                                        <div className="viewDownloadWrap">
-                                            {viewData?.length > 0 ? (
-                                                <>
-                                                    <p>Prepared downloads will expire after 5 days</p>
-                                                    {viewData.map((item, index) => {
-                                                        const isComplete = item?.status?.toLowerCase() === 'complete';
-                                                        return (
-                                                            <div className="viewDownloadDetails" key={index}>
-                                                                <div className="fileDetails">
-                                                                    <p>{item?.name}</p>
-                                                                    {isComplete && (
-                                                                        <span>Expires in {item?.fileExpiryDays} days</span>
-                                                                    )}
-                                                                </div>
-                                                                {isComplete && (
-                                                                    <Button className="viewDownloadBtn">Download</Button>
-                                                                )}
-                                                            </div>
-                                                        );
-                                                    })}
-                                                </>
-                                            ) : (
-                                                <p>Files you download will appear here.</p>
-                                            )}
-                                        </div>
-                                    </>
-                                }
-
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                            />
+                                            <div>
+                                               <p>Files you download will appear here.</p>
+                                            </div>
+                                            </>
+                                        }
+                                 
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
