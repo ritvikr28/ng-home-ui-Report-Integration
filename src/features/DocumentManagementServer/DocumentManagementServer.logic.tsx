@@ -638,7 +638,6 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                 .filter(Boolean)
                 .join(" | ") || item?.name || "";
               const data = await getStaffProfilePhoto((item?.externalId).toLowerCase());
-              console.log("Fetched staff profile photo URL:", data);
               icon = (
                 <>
                   {(data?.imagePath === "") ? (
