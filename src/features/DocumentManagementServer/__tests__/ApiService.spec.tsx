@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -302,5 +302,58 @@ describe('viewDownload', () => {
       '/validation/api/v1/viewDownload',
       expect.any(String)
     );
+  });
+});
+
+describe('fetchStaffProfilePhoto', () => {
+  const mockExternalId = 'abc123';
+  const mockUrl = `/api/v1/personThumbnailImage/${mockExternalId}`;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns response on success', async () => {
+    const mockResponse = { data: { foo: 'bar' } };
+    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual(mockResponse);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.any(String));
+  });
+
+  it('returns empty object and logs error on failure', async () => {
+    const error = new Error('Network error');
+    (service.get as jest.Mock).mockRejectedValueOnce(error);
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching staff profile photo:',
+      error
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('calls service.get with correct url and baseUrl', async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({ data: {} });
+    await fetchStaffProfilePhoto(mockExternalId);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.any(String));
+  });
+
+  it('handles empty externalId gracefully', async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({ data: {} });
+    await fetchStaffProfilePhoto('');
+    expect(service.get).toHaveBeenCalledWith('/api/v1/personThumbnailImage/', expect.any(String));
+  });
+
+  it('returns empty object if service.get throws non-Error', async () => {
+    (service.get as jest.Mock).mockRejectedValueOnce('some error');
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
   });
 });
