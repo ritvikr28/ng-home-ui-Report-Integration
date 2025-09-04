@@ -71,3 +71,22 @@ export interface DocumentPrepareDownload {
   registrationId: number;
   status?: string;
 }
+
+export interface ReferenceMappingDetail {
+  refernceExternalId: string;
+  documentRealatedTo: string;
+  relatedTo: any[];
+}
+
+export interface DownloadCriteria {
+  refernceMappingDetails: ReferenceMappingDetail[];
+  categoryId: number[];
+  fromDate: string;
+  toDate: string;
+}
+
+export interface PrepareDownloadRequest {
+  selectAll: boolean;
+  downloadCriteria: DownloadCriteria;
+  fileDetails: DocumentPrepareDownload[];
+}

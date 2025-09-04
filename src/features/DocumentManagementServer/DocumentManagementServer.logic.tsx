@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
-import { DocumentPrepareDownload } from "./responseModel";
+import { DocumentPrepareDownload, PrepareDownloadRequest } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -621,7 +621,7 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
                   color={IconColor.Neutral400}
                 />
               ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+                <img src={item.imagePath} alt="Pupil photo" className="dms-search__profile-icon" />
               )}
             </>
           );
@@ -659,7 +659,7 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
                   color={IconColor.Neutral400}
                 />
               ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+                <img src={item.imagePath} alt="Staff profile" className="dms-search__profile-icon" />
               )}
             </>
           );
@@ -695,7 +695,7 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
   })) || [];
 
 
-  export const prepareDownload = async (fileDetails: DocumentPrepareDownload[]) => {
+  export const prepareDownload = async (fileDetails: PrepareDownloadRequest[]) => {
     try {
 
       const response = await prepareAndDownloadFile(fileDetails);

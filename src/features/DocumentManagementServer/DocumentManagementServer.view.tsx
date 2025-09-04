@@ -4,7 +4,7 @@ import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize,
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, DocumentPrepareDownload, tableDataProps } from "./responseModel"
+import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
 import { fetchDocumentDetails } from "./ApiService"
@@ -197,7 +197,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             }
             setHasFetched(true);
         } catch (err) {
-            console.error("Error fetching document details:", err);
+            console.error("Error fetching document ddocDataetails:", err);
             setShowSearchError(true);
         }
      
@@ -206,15 +206,37 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
-    const selectedDocs: DocumentPrepareDownload[] = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
+const selectedDocs: PrepareDownloadRequest[] = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
   ? selectedCheckBoxIds
       .map(id => {
-        const doc = docData.data.find((d: any) => d.fileId === id);
-        return doc && doc.registrationId !== undefined
-          ? { fileId: id, registrationId: doc.registrationId }
-          : undefined;
+        const doc = docData?.data.find((d: any) => d?.fileId === id);
+        if (doc && doc.registrationId !== undefined) {
+          return {
+            
+            selectAll: false, // or set appropriately
+            downloadCriteria: {
+              refernceMappingDetails: [
+                {
+                  refernceExternalId: doc?.referenceExternalId || "",
+                  documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
+                    ? doc.documentRealatedTo.join(", ")
+                    : (doc?.documentRealatedTo || ""),
+                  relatedTo: doc?.relatedTo || ""
+                },
+              ], // Provide appropriate value if available
+              categoryId: doc.categoryId ?? "", // Provide appropriate value if available
+              fromDate: doc.fromDate ?? "", // Provide appropriate value if available
+              toDate: doc.toDate ?? "" // Provide appropriate value if available
+            },
+            fileDetails: [{
+                fileId: id,
+                registrationId: doc.registrationId,
+            }] // or set appropriately
+          } as PrepareDownloadRequest;
+        }
+        return undefined;
       })
-      .filter(Boolean) as DocumentPrepareDownload[]
+      .filter((item): item is PrepareDownloadRequest => item !== undefined)
   : [];
 
    const handleSorting = (columnName: string) => {
