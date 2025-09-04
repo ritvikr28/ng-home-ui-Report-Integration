@@ -306,14 +306,14 @@ it("handles search input and Enter key", async () => {
       1,
       expect.objectContaining({
         categoryId: [],
-        fromDate: undefined,
+        fromDate: "",
         isSearchTextExactMatch: false,
         pageNumber: 1,
         pageSize: 40,
         searchText: "doc 1",
         sortBy: "DateAdded",
         sortDirection: "Desc",
-        toDate: undefined
+        toDate: ""
       })
     );
   });

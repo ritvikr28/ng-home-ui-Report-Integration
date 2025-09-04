@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr,filterNonEmptySuggestions,  viewData} from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -46,7 +46,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [docData, setDocData] = useState<any>(null);
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
-    // const [hasFetched, setHasFetched] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -163,9 +162,7 @@ useEffect(() => {
       1,
       getAllRegistrationIds(selectedFormats),
       sortBy,
-      sortDirection,
-      selectedDateRange.fromDate,
-      selectedDateRange.toDate
+      sortDirection
     );
     setIsSearchTriggered(false);
     setCurrentPage(1);
@@ -201,15 +198,17 @@ useEffect(() => {
         Promise.all([minLoaderTime, dataFetch]).then(() => setIsLoading(false));
     }, []);
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection, fromDate?: string, toDate?: string) => {
+    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
             const result = await fetchDocumentDetails({
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
-                fromDate: dateRange?.fromDate,
-                toDate: dateRange?.toDate,
+                fromDate: selectedDateRange?.fromDate ,
+                toDate: selectedDateRange?.toDate ,
+                // fromDate: fromDate,
+                // toDate: toDate,
                 categoryId: categories || [],
                 isSearchTextExactMatch: isSearchTrue,
                 sortBy: sortByCol,
@@ -227,7 +226,6 @@ useEffect(() => {
             else {
                 setShowSearchError(true);
             }
-            // setHasFetched(true);
         } catch (err) {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);
@@ -279,6 +277,7 @@ useEffect(() => {
     );
   }
 };
+
 
   const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
@@ -355,6 +354,7 @@ useEffect(() => {
     setSelectedCategories,
     setSelectedFormats
   );
+  setIsInitialLoad(true);
 };
 
 
@@ -369,7 +369,7 @@ useEffect(() => {
         }
     ]
 
-    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
     const filteredSuggestions = filterNonEmptySuggestions(
   suggestions.map(s => ({
     ...s,
@@ -400,9 +400,7 @@ useEffect(() => {
                 1,
                 getAllRegistrationIds(selectedCategories),
                 sortBy,
-                sortDirection,
-                selectedDateRange.fromDate,
-                selectedDateRange.toDate
+                sortDirection               
             );
             setIsFilterDialogOpen(false);
             setIsFilterLoading(false);
@@ -664,7 +662,7 @@ useEffect(() => {
                                         setShowSearchError,
                                         setIsSearchLoading
                                     );
-                                     setSearchText(e.target.value); 
+                                    //  setSearchText(e.target.value); 
                                     // setDocData({ statusCode: 200, data: [], totalRecords: 0 }); // Clear table while typing
                                     }}
                                 searchValidationText={
