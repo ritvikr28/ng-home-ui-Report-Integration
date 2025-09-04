@@ -101,7 +101,6 @@ export const viewDownload = async (): Promise<any> => {
 
 export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
   try {
-    // Use the correct base URL for the photo service
     const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
     const url = `/api/v1/personThumbnailImage/${externalId}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
