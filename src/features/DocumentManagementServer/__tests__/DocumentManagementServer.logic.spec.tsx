@@ -258,20 +258,6 @@ describe("formatSuggestions", () => {
     expect(result[0].values).toEqual([]);
   });
 
-  // it("handles missing category name", () => {
-  //   const input = [
-  //     {
-  //       values: [
-  //         { fileId: "1", fileName: "File 1" }
-  //       ]
-  //     }
-  //   ];
-  //   const result = formatSuggestions(input);
-  //   expect(result).toHaveLength(1);
-  //   expect(result[0].name).toBe("");
-  //   expect(result[0].values[0].text).toBe("File 1");
-  // });
-
   it("handles missing values property", () => {
     const input = [
       {
@@ -450,13 +436,7 @@ it("should not call setters if item is null", async () => {
   expect(setSearchTerm).not.toHaveBeenCalled();
   expect(setSearchText).not.toHaveBeenCalled();
 });
-  it("should not trigger if name is missing", async () => {
-    const setSearchTerm = jest.fn();
-    const loadData = jest.fn();
 
-    await handleSuggestionClick({}, setSearchTerm, loadData);
-    expect(setSearchTerm).not.toHaveBeenCalled();
-  });
 });
 
 describe("hasItems", () => {
@@ -564,14 +544,6 @@ describe("handleSuggestionClick edge cases", () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
     await handleSuggestionClick(null, setSearchTerm, setSearchText);
-    expect(setSearchTerm).not.toHaveBeenCalled();
-    expect(setSearchText).not.toHaveBeenCalled();
-  });
-
-  it("should do nothing if item.name is falsy", async () => {
-    const setSearchTerm = jest.fn();
-    const setSearchText = jest.fn();
-    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText);
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -888,24 +860,24 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false, false);
+    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false);
     expect(result).toBe(
       'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
     );
   });
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
-    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true, false);
+    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
     expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
-    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false, false);
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false,);
     expect(result).toBeUndefined();
   });
 
   it('returns undefined when searchText is empty and no error banner', () => {
-    const result = getResultNotFoundMsg('', { data: [] }, '', false, false);
+    const result = getResultNotFoundMsg('', { data: [] }, '', false);
     expect(result).toBeUndefined();
   });
 });
@@ -1495,59 +1467,6 @@ describe("getTableHeadersData pupil branch coverage", () => {
   const relatedToColumn = getTableHeadersData.find(h => h.text === "Related to");
   const renderPupil = (item: any) => relatedToColumn?.anyComponent?.([item]);
 
-  // test("renders pupil with isLeaver='leaver', year and reg present", () => {
-  //   const item = {
-  //     type: "pupil",
-  //     name: "Leaver Full",
-  //     pupilId: "p1",
-  //     year: "Y5",
-  //     reg: "A",
-  //     isLeaver: "leaver"
-  //   };
-  //   const { getByRole, getByText } = render(<>{renderPupil(item)}</>);
-  //   expect(getByRole("link", { name: "Leaver Full" })).toHaveAttribute("href", "/pupilprofile/profile/p1");
-  //   expect(getByText("(Y5)  / (A)")).toBeInTheDocument();
-  // });
-
-  // test("renders pupil with isLeaver='leaver', year present, reg missing", () => {
-  //   const item = {
-  //     type: "pupil",
-  //     name: "Leaver Year Only",
-  //     pupilId: "p2",
-  //     year: "Y6",
-  //     reg: "",
-  //     isLeaver: "leaver"
-  //   };
-  //   const { getByText } = render(<>{renderPupil(item)}</>);
-  //   expect(getByText("(Y6) ")).toBeInTheDocument();
-  // });
-
-  // test("renders pupil with isLeaver='leaver', year missing, reg present", () => {
-  //   const item = {
-  //     type: "pupil",
-  //     name: "Leaver Reg Only",
-  //     pupilId: "p3",
-  //     year: "",
-  //     reg: "B",
-  //     isLeaver: "leaver"
-  //   };
-  //   const { getByText } = render(<>{renderPupil(item)}</>);
-  //   expect(getByText("(-)  / (B)")).toBeInTheDocument();
-  // });
-
-  // test("renders pupil with isLeaver='leaver', year and reg missing", () => {
-  //   const item = {
-  //     type: "pupil",
-  //     name: "Leaver None",
-  //     pupilId: "p4",
-  //     year: "",
-  //     reg: "",
-  //     isLeaver: "leaver"
-  //   };
-  //   const { getByText } = render(<>{renderPupil(item)}</>);
-  //   expect(getByText("(-) ")).toBeInTheDocument();
-  // });
-
   test("renders pupil with isLeaver!='leaver', year and reg present", () => {
     const item = {
       type: "pupil",
@@ -1574,18 +1493,6 @@ describe("getTableHeadersData pupil branch coverage", () => {
     expect(getByText("Y8")).toBeInTheDocument();
   });
 
-  // test("renders pupil with isLeaver!='leaver', only reg present", () => {
-  //   const item = {
-  //     type: "pupil",
-  //     name: "Active Reg Only",
-  //     pupilId: "p7",
-  //     year: "",
-  //     reg: "D",
-  //     isLeaver: "active"
-  //   };
-  //   const { getByText } = render(<>{renderPupil(item)}</>);
-  //   expect(getByText(" / D")).toBeInTheDocument();
-  // });
 
   test("renders pupil with isLeaver!='leaver', year and reg missing (no tag)", () => {
     const item = {

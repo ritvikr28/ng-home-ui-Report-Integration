@@ -412,44 +412,20 @@ export const onBreadcrumbClick = (path: string) => {
   });
 };
 
-// Suggestion item click logic
+
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
-  // setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchTriggered?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  if (!item || !item.name) return;
-  setSearchTerm(item.name);
-  setSearchText(item.name);
-  // setIsSearchTriggered(true);
+  if (!item) return;
+  // Use item.text if available, otherwise item.name
+  const value = item.text || item.name || "";
+  setSearchTerm(value);
+  setSearchText(value);
+   if (setIsSearchTriggered) setIsSearchTriggered(true); 
 };
-
-// export const handleSuggestionClick = async (
-//   item: ISearchItemProp | null,
-//   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-//   setSearchText: React.Dispatch<React.SetStateAction<string>>,
-//   fetchCallback?: (keyword: string) => void
-// ) => {
-//   if (!item || !item.name) return;
-//   setSearchTerm(item.name);
-//   setSearchText(item.name);
-//   if (fetchCallback) {
-//     fetchCallback(item.name?.trim()?.toLowerCase() || "");
-//   }
-// };
-
-// export const handleSuggestionClick = async (
-//   item: ISearchItemProp | null,
-//   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-//   setSearchText: React.Dispatch<React.SetStateAction<string>>
-// ) => {
-//   if (!item) return;
-//   // Use item.text if available, otherwise item.name
-//   const value = item.text || item.name || "";
-//   setSearchTerm(value);
-//   setSearchText(value);
-// };
 
 // Has items check
 export const hasItems = (suggestions: Suggestion[]): boolean =>
@@ -593,90 +569,31 @@ export const fetchCategory = async (): Promise<any[]> => {
   }
 }
 
-// export const getResultNotFoundMsg = (
-//   searchText: string,
-//   docData: any,
-//   searchTerm: string,
-//   showErrorBanner: boolean
-// ): string | undefined => {
-//   if (showErrorBanner) {
-//     return "Information unavailable.";
-//   }
-//   // Show search message if search is performed and no results
-//   if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-//   }
-// // Show custom initial load message only if not searching and no data
-//   if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//     return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
-//   }
-//   // Show "No data to display" only if not searching and no data
-//   // if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//   //   return "No data to display.";
-//   // }
-//   return undefined;
-// };
-
-
-// export const getResultNotFoundMsg = (
-//   searchText: string,
-//   docData: any,
-//   searchTerm: string,
-//   showErrorBanner: boolean,
-//   isInitialLoad: boolean
-// ): string | undefined => {
-//   if (showErrorBanner) {
-//     return "Information unavailable.";
-//   }
-
-//   // Search performed but no results
-//   if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-//   }
-
-//   // Initial load, no data
-//   if (isInitialLoad && !searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//     return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
-//   }
-
-//   // General no data (not initial load, not search)
-//   if ( !searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-//     return "No data to display";
-//   }
-
-//   return undefined;
-// };
-
 export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
-  showErrorBanner: boolean,
-  isInitialLoad: boolean
+  showErrorBanner: boolean
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
   }
-
-  // Case 1: Initial load before API call
-  if (
-  isInitialLoad &&
-  (!docData || (Array.isArray(docData.data) && docData.data.length === 0))
-) {
-  return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
-}
-
-  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData.data.length === 0) {
+  // Show search message if search is performed and no results
+  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
   }
-
-  // Case 2b: No search, API returned success but empty
-  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData.data.length === 0) {
-    return "No data to display.";
+// Show custom initial load message only if not searching and no data
+  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
   }
-
+  // Show "No data to display" only if not searching and no data
+  // if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+  //   return "No data to display.";
+  // }
   return undefined;
 };
+
+
 
 
 export const getAllRegistrationIds = (selectedFormats: any[]): any[] => 
@@ -796,18 +713,6 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 
-// export const filterAllowedSuggestions = (suggestions: Suggestion[]) =>
-//   suggestions.filter(s =>
-//     ["Pupil", "Staff", "Organisation"].includes(s.name)
-//   );
-
-// export const filterValidSuggestions = (suggestions: Suggestion[]) =>
-//   suggestions.filter(
-//     s =>
-//       s?.values.length > 0 &&
-//       ["Pupil", "Staff", "Organisation"].includes(s.name)
-//   );
-
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: Parameters<T>) {
@@ -841,7 +746,4 @@ export const debouncedFetchSuggestions = debounce(
   5
 );
 
-// function renderRelatedToItem(arg0: any) {
-//   throw new Error("Function not implemented.");
-// }
 
