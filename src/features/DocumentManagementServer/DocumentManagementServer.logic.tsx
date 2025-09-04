@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
 
@@ -608,107 +608,123 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         return [];
     }) || [];
 
-export const formatSuggestions = (payload: any[]): Suggestion[] =>
-  payload?.map((category: any) => ({
-    name: category?.name || "",
-    values: (category?.values || []).map((item: any) => {
-      let text = "";
-      let props: ISearchItemProp = {};
-      let icon: JSX.Element | undefined;
-      let value: JSX.Element | string | undefined;
 
-      switch (category?.name) {
-        case "Document":
-          text = item?.fileName || "";
-          props = {
-            name: item?.fileName,
-            id: item?.fileId,
-            ...item
-          };
-          break;
-        case "Pupil":
-          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
+export const getStaffProfilePhoto = async (staffId: string) => {
+  const response = await fetchStaffProfilePhoto(staffId);
+  return response?.data ?? "";
+}
+export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> => {
+  if (!payload) return [];
+  return Promise.all(
+    payload.map(async (category: any) => {
+      const values = await Promise.all(
+        (category?.values || []).map(async (item: any) => {
+          let text = "";
+          let props: ISearchItemProp = {};
+          let icon: JSX.Element | undefined;
+          let value: JSX.Element | string | undefined;
+
+          switch (category?.name) {
+            case "Document":
+              text = item?.fileName || "";
+              props = {
+                name: item?.fileName,
+                id: item?.fileId,
+                ...item
+              };
+              break;
+            case "Pupil":
+              text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
+              icon = (
+                <>
+                  {(item.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              value = ((item?.currentYearGroup || item?.currentRegistration) && (
+                <Tag
+                  text={
+                    [item?.currentYearGroup, item?.currentPrimaryClass]
+                      .filter(Boolean)
+                      .join(" / ")
+                  }
+                  color={TagColor.Warning}
+                  size={TagSize.Small}
                 />
-              ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          value = ((item?.currentYearGroup || item?.currentRegistration) && (
-            <Tag
-              text={
-                [item?.currentYearGroup, item?.currentPrimaryClass]
-                  .filter(Boolean)
-                  .join(" / ")
-              }
-              color={TagColor.Warning}
-              size={TagSize.Small}
-            />
-          ));
-          props = {
-            name: text,
-            id: item?.pupilId,
+              ));
+              props = {
+                name: text,
+                id: item?.pupilId,
+                value,
+                ...item
+              };
+              break;
+            case "Staff": {
+              text = [
+                `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+                item?.staffCode
+              ]
+                .filter(Boolean)
+                .join(" | ") || item?.name || "";
+              const data = await getStaffProfilePhoto((item?.externalId).toLowerCase());
+              icon = (
+                <>
+                  {(data?.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={data?.imagePath} alt="" className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              props = {
+                name: text,
+                id: item?.externalId,
+                ...item
+              };
+              break;
+            }
+            case "Organisation":
+              text = item?.schoolName || item?.name || "";
+              props = {
+                name: text,
+                id: item?.orgId,
+                ...item
+              };
+              break;
+            default:
+              text = item?.name || "";
+              props = {
+                name: item?.name,
+                id: item?.id,
+                ...item
+              };
+          }
+          return {
+            text,
+            icon,
+            props,
             value,
-            ...item
           };
-          break;
-        case "Staff":
-          text = [
-            `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
-            item?.staffCode
-          ]
-            .filter(Boolean)
-            .join(" | ") || item?.name || "";
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
-                />
-              ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          props = {
-            name: text,
-            id: item?.staffId,
-            ...item
-          };
-          break;
-        case "Organisation":
-          text = item?.schoolName || item?.name || "";
-          props = {
-            name: text,
-            id: item?.orgId,
-            ...item
-          };
-          break;
-        default:
-          text = item?.name || "";
-          props = {
-            name: item?.name,
-            id: item?.id,
-            ...item
-          };
-      }
+        })
+      );
       return {
-        text,
-        icon,
-        props,
-        value,
+        name: category?.name || "",
+        values,
       };
-    }),
-  })) || [];
+    })
+  );
+};
 
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
@@ -734,7 +750,8 @@ export const debouncedFetchSuggestions = debounce(
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload ?? [];
-      setSuggestions(formatSuggestions(values));
+      const suggestions = await formatSuggestions(values);
+      setSuggestions(suggestions);
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);

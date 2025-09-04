@@ -4,9 +4,7 @@ import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { withAITracking } from "@microsoft/applicationinsights-react-js";
 import { authService } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
-import {
-  uiAppKitTranslation
-} from "@essnextgen/ui-application-kit";
+import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
 import { ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
@@ -17,62 +15,93 @@ import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
-import { fetchPreferredLanguage } from "./shared/services/localisationDomain/localisationPreferences";
+
+// Patch localStorage.setItem to dispatch custom event in same tab
+const patchLocalStorage = () => {
+  const originalSetItem = localStorage.setItem;
+  localStorage.setItem = function (key, value) {
+    const event = new Event("localstorage-change");
+    // @ts-ignore
+    event.key = key;
+    // @ts-ignore
+    event.newValue = value;
+    window.dispatchEvent(event);
+    originalSetItem.apply(this, [key, value]);
+  };
+};
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
-  baseRouteName
+  baseRouteName,
 }: ILayoutProps) => {
   const [initialized, setInitialized] = useState(false);
- 
- useEffect(() => {
-  const initI18n = async () => {
-    try {
-      const preferred = await fetchPreferredLanguage();
-      const browserLang = navigator.language.startsWith("cy") ? "cy" : "en";
-      const langCode = preferred?.languageCode || browserLang;
- 
-      localStorage.setItem("i18nextLng", langCode);
- 
-      await IntlProvider.init({
-        translation: {
-          en: {
-            ...uiKitTranslation.en,
-            ...uiAppKitTranslation.en,
-            ...translationEn
+  const [langCode, setLangCode] = useState<string>(
+    localStorage.getItem("i18nextLng") ||
+    navigator.language.split("-")[0] ||
+    "en"
+  );
+
+  useEffect(() => {
+    patchLocalStorage();
+
+    const handleStorageChange = (event: any) => {
+      if (event.key === "i18nextLng" && event.newValue) {
+        setLangCode(event.newValue);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange); // cross-tab
+    window.addEventListener("localstorage-change", handleStorageChange); // same-tab
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("localstorage-change", handleStorageChange);
+    };
+  }, []);
+
+  // Reinitialize IntlProvider whenever langCode changes
+  useEffect(() => {
+    const initI18n = async () => {
+      try {
+        localStorage.setItem("i18nextLng", langCode);
+
+        await IntlProvider.init({
+          translation: {
+            en: {
+              ...uiKitTranslation.en,
+              ...uiAppKitTranslation.en,
+              ...translationEn,
+            },
+            cy: {
+              ...uiKitTranslation.cy,
+              ...uiAppKitTranslation.cy,
+              ...translationCy,
+            },
           },
-          cy: {
-            ...uiKitTranslation.cy,
-            ...uiAppKitTranslation.cy,
-            ...translationCy
-          }
-        }
-      }).init({ lng: langCode });
- 
-      setInitialized(true);
-    } catch (err) {
-      console.error("Error initializing i18n:", err);
-      setInitialized(true);
-    }
-  };
- 
-  initI18n();
-}, []);
- 
- 
+        }).init({ lng: langCode });
+
+        setInitialized(true);
+      } catch (err) {
+        console.error("Error initializing i18n:", err);
+        setInitialized(true);
+      }
+    };
+
+    initI18n();
+  }, [langCode]);
+
   /* istanbul ignore next */
   const getFeatureFlags: () => Promise<IResponse> = () =>
     service.get("v1/features");
- 
+
   /* istanbul ignore next */
   const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
     authService.isAuthenticated() ? getFeatureFlags : undefined;
- 
+
   gtmAnalytics.pushLogInEvent();
- 
-  // Don’t render app until i18n is ready
+
   if (!initialized) return null;
- 
+
   return (
     <FeatureFlagsProvider
       fetchFeatures={fetchFeatureFlags}
@@ -89,5 +118,5 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     </FeatureFlagsProvider>
   );
 };
- 
+
 export default withAITracking(reactPlugin, App);

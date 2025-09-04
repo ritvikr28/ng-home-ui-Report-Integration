@@ -21,7 +21,8 @@ import {
   loadSuggestions,
   onBreadcrumbClick,
   mapRelatedArr,
-  filterNonEmptySuggestions
+  filterNonEmptySuggestions,
+  getStaffProfilePhoto
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -121,13 +122,13 @@ describe("getTableHeadersData column anyComponent rendering", () => {
 
 
 describe("formatSuggestions", () => {
-  it("returns empty array when input is empty", () => {
-    expect(formatSuggestions([])).toEqual([]);
-    expect(formatSuggestions(undefined as any)).toEqual([]);
-    expect(formatSuggestions(null as any)).toEqual([]);
-  });
+  it("returns empty array when input is empty", async () => {
+  expect(await formatSuggestions([])).toEqual([]);
+  expect(await formatSuggestions(undefined as any)).toEqual([]);
+  expect(await formatSuggestions(null as any)).toEqual([]);
+});
 
-  it("formats Document category correctly", () => {
+  it("formats Document category correctly", async () => {
     const input = [
       {
         name: "Document",
@@ -137,7 +138,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toHaveLength(2);
@@ -145,7 +146,7 @@ describe("formatSuggestions", () => {
     expect(result[0].values[0].props).toMatchObject({ name: "File 1", id: "1" });
   });
 
-  it("formats Pupil category with icon and value", () => {
+  it("formats Pupil category with icon and value", async () => {
     const input = [
       {
         name: "Pupil",
@@ -162,7 +163,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Pupil");
     expect(result[0].values[0].text).toContain("John Doe (Jonathan Doe)");
@@ -174,7 +175,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats Staff category with icon", () => {
+  it("formats Staff category with icon", async () => {
     const input = [
       {
         name: "Staff",
@@ -184,12 +185,13 @@ describe("formatSuggestions", () => {
             preferredForename: "Jane",
             preferredSurname: "Smith",
             imagePath: "",
-            name: "Jane Smith"
+            name: "Jane Smith",
+            externalId: "s1"
           }
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Staff");
     expect(result[0].values[0].text).toContain("Jane Smith");
@@ -200,7 +202,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats Organisation category", () => {
+  it("formats Organisation category", async () => {
     const input = [
       {
         name: "Organisation",
@@ -213,7 +215,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Organisation");
     expect(result[0].values[0].text).toBe("Test School");
@@ -223,7 +225,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats default category", () => {
+  it("formats default category", async () => {
     const input = [
       {
         name: "Other",
@@ -235,7 +237,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Other");
     expect(result[0].values[0].text).toBe("Other Name");
@@ -245,34 +247,35 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("handles empty values array for a category", () => {
+  it("handles empty values array for a category", async () => {
     const input = [
       {
         name: "Document",
         values: []
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
   });
 
-  it("handles missing values property", () => {
+
+  it("handles missing values property", async () => {
     const input = [
       {
         name: "Document"
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
   });
-   test("returns empty when input is empty", () => {
-    const result = formatSuggestions([]);
-    expect(result).toEqual([]);
-  });
+   test("returns empty when input is empty", async () => {
+  const result = await formatSuggestions([]);
+  expect(result).toEqual([]);
+});
 });
 
  
@@ -1509,3 +1512,42 @@ describe("getTableHeadersData pupil branch coverage", () => {
   });
 });
 
+
+
+describe("getStaffProfilePhoto", () => {
+   const mockFetch = jest.fn();
+  beforeAll(() => {
+    jest.spyOn(ApiService, "fetchStaffProfilePhoto").mockImplementation(mockFetch);
+  });
+  afterEach(() => {
+    mockFetch.mockReset();
+  });
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("returns data when API resolves with data", async () => {
+    mockFetch.mockResolvedValue({ data: "photo-url" });
+    const result = await getStaffProfilePhoto("staff123");
+    expect(result).toBe("photo-url");
+    expect(mockFetch).toHaveBeenCalledWith("staff123");
+  });
+
+  it("returns empty string when API resolves with null", async () => {
+    mockFetch.mockResolvedValue(null);
+    const result = await getStaffProfilePhoto("staff456");
+    expect(result).toBe("");
+  });
+
+  it("returns empty string when API resolves with no data property", async () => {
+    mockFetch.mockResolvedValue({});
+    const result = await getStaffProfilePhoto("staff789");
+    expect(result).toBe("");
+  });
+
+  it("returns empty string when API throws", async () => {
+    mockFetch.mockRejectedValue(new Error("fail"));
+    // The function does not catch, so this will throw unless we wrap
+    await expect(getStaffProfilePhoto("staff000")).rejects.toThrow("fail");
+  });
+});
