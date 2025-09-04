@@ -8,13 +8,10 @@ import {
   within
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { error } from "console";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
-import exp from "constants";
-import userEvent from "@testing-library/user-event";
 // import { handleCheckBoxSelection } from "../DocumentManagementServer.view";
 
 jest.mock("@essnextgen/ui-kit", () => {
@@ -71,31 +68,8 @@ afterAll(() => {
 });
 
 
-type Suggestion = {
-  id: string;
-  text: string;
-  value: string;
-};
-
-const mockSuggestionsList: Suggestion[] = [
-  { id: "1", text: "Doc 1", value: "Doc 1" },
-  { id: "2", text: "Doc 2", value: "Doc 2" },
-];
-
 const renderView = () => render(<DocumentManagementServerView />);
  
-async function setupWithSearch(term = "Doc") {
-  renderView();
- 
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: term } });
-  fireEvent.keyDown(input, { key: "Enter" });
- 
-  const suggestion = await screen.findByText("Doc 1");
-  fireEvent.click(suggestion);
- 
-  return input;
-}
 
 // --- Helper Functions ---
 const defaultSuggestionsPayload = [
@@ -106,7 +80,7 @@ const defaultSuggestionsPayload = [
   },
   { name: "Pupil", link: "", values: [] },
   { name: "Staff", link: null, values: [] },
-  { name: "Organisation", link: null, values: [] },
+  { name: "Organisation", link: null, values: [] }
 ];
 
 function mockSuggestions(payload = defaultSuggestionsPayload) {
@@ -144,12 +118,6 @@ async function openFilterDialog() {
   const filterBtn = await screen.findByTestId("filter-btn");
   fireEvent.click(filterBtn);
   await screen.findByText("Filter by");
-}
-
-async function selectFirstCheckbox() {
-  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
-  fireEvent.click(checkboxes[0]);
-  return checkboxes[0];
 }
 
 describe("DocumentManagementServerView", () => {
@@ -231,7 +199,7 @@ it("shows no records on initial load, shows records after search", async () => {
       },
       { name: "Pupil", link: "", values: [] },
       { name: "Staff", link: null, values: [] },
-      { name: "Organisation", link: null, values: [] },
+      { name: "Organisation", link: null, values: [] }
     ],
     statusCode: 200,
   });
@@ -433,10 +401,9 @@ it("handles sorting for Document column and ignores non-sortable columns", async
   );
 });
 
-
-  //Sorting not working fix this
+  // Sorting not working fix this
   it("handles sorting for Date added column", async () => {
-   jest.setTimeout(15000);
+   jest.setTimeout(15000)
 
   const mockDatas = {
     totalRecords: 2,
@@ -684,7 +651,7 @@ it("handles sorting for Category column", async () => {
   );
 });
 
-//Sorting not working fix this
+// Sorting not working fix this
 it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
   jest.setTimeout(15000);
 
@@ -842,7 +809,7 @@ await waitFor(() => {
 
 
 it("calls fetchGetDocumentDetails on selectedFormats change", async () => {
-  jest.setTimeout(15000);
+  // jest.setTimeout(15000);
 
   mockSuggestions(); 
   mockDocumentDetails(mockData); 

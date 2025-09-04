@@ -580,7 +580,7 @@ export const getResultNotFoundMsg = (
   }
   // Show search message if search is performed and no results
   if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+    return `Your search - ${searchText} - did not match any results. Make sure that all words are spelled correctly.`;
   }
 // Show custom initial load message only if not searching and no data
   if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {

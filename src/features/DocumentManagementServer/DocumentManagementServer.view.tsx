@@ -46,7 +46,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [docData, setDocData] = useState<any>(null);
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
-    const [hasFetched, setHasFetched] = useState(false);
+    // const [hasFetched, setHasFetched] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -79,7 +79,7 @@ const searchTagListRaw = [
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     const [isSearchTrue, setIsSearchTrue] = useState(false); 
-    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
+    const [isShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -185,7 +185,6 @@ useEffect(() => {
     setShowSearchError(false);
     setIsSearchLoading(false);
     setIsInitialLoad(true);
-    return;
   }
 }, [searchTerm, selectedFormats, selectedCategories, selectedDateRange]);
 
@@ -209,8 +208,8 @@ useEffect(() => {
                 pageNumber: page,
                 pageSize: pageSizeNumber,
                 searchText: searchTexts,
-                fromDate: fromDate,
-                toDate: toDate,
+                fromDate: dateRange?.fromDate,
+                toDate: dateRange?.toDate,
                 categoryId: categories || [],
                 isSearchTextExactMatch: isSearchTrue,
                 sortBy: sortByCol,
@@ -228,7 +227,7 @@ useEffect(() => {
             else {
                 setShowSearchError(true);
             }
-            setHasFetched(true);
+            // setHasFetched(true);
         } catch (err) {
             console.error("Error fetching document details:", err);
             setShowSearchError(true);

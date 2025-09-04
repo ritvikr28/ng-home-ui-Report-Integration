@@ -875,7 +875,7 @@ describe('getResultNotFoundMsg', () => {
   });
 
   it('returns undefined when there is data and no error', () => {
-    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false,);
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false);
     expect(result).toBeUndefined();
   });
 
