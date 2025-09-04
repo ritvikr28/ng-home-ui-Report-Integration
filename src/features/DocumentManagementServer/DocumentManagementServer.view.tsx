@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload, getReferenceExternalId } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -217,7 +217,7 @@ const selectedDocs: PrepareDownloadRequest[] = Array.isArray(selectedCheckBoxIds
             downloadCriteria: {
               refernceMappingDetails: [
                 {
-                  refernceExternalId: doc?.referenceExternalId || "",
+                  refernceExternalId: getReferenceExternalId(doc?.relatedTo) || "",
                   documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
                     ? doc.documentRealatedTo.join(", ")
                     : (doc?.documentRealatedTo || ""),

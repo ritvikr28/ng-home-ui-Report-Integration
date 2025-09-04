@@ -549,6 +549,14 @@ export const handleTagCloseLogic = (
   );
 };
 
+export function getReferenceExternalId(relatedTo: any): string {
+  if (!relatedTo) return "";
+  if (relatedTo.organisationId) return relatedTo.organisationId;
+  if (relatedTo.externalId) return relatedTo.externalId;
+  if (relatedTo.learnerExternalId) return relatedTo.learnerExternalId;
+  return "";
+}
+
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();

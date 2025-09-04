@@ -90,7 +90,7 @@ export const fetchFilterCategory = async (): Promise<any> => {
   export const prepareAndDownloadFile = async (fileDetails: PrepareDownloadRequest[]): Promise<DocumentPrepareDownload | undefined> => {
     try {
       const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-      const url = `/validation/api/v1/file/download`;
+      const url = `/validation/api/v1/file/preparedownload`;
       const payload = { fileDetails };
       const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
 
