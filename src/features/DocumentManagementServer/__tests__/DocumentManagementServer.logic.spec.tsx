@@ -1450,7 +1450,7 @@ describe("filterNonEmptySuggestions", () => {
 describe("getStaffProfilePhoto", () => {
    const mockFetch = jest.fn();
   beforeAll(() => {
-    jest.spyOn(require("../ApiService"), "fetchStaffProfilePhoto").mockImplementation(mockFetch);
+    jest.spyOn(ApiService, "fetchStaffProfilePhoto").mockImplementation(mockFetch);
   });
   afterEach(() => {
     mockFetch.mockReset();

@@ -630,7 +630,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                 ...item
               };
               break;
-            case "Staff":
+            case "Staff": {
               text = [
                 `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
                 item?.staffCode
@@ -657,6 +657,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                 ...item
               };
               break;
+            }
             case "Organisation":
               text = item?.schoolName || item?.name || "";
               props = {

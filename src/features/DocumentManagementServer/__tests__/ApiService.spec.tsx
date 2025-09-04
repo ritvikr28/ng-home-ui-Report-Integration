@@ -307,7 +307,6 @@ describe('viewDownload', () => {
 
 describe('fetchStaffProfilePhoto', () => {
   const mockExternalId = 'abc123';
-  const mockBaseUrl = 'https://dev.staffprofile.sims.co.uk';
   const mockUrl = `/api/v1/personThumbnailImage/${mockExternalId}`;
 
   afterEach(() => {

@@ -1,9 +1,8 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
-import { envConfig, service } from "../../shared/utils";
+import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
-import { authService } from "@essnextgen/auth-ui";
 
 export const fetchDocumentDetails = async ({
   pageNumber,
