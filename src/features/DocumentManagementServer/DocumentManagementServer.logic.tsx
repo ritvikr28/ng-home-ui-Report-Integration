@@ -608,7 +608,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                       color={IconColor.Neutral400}
                     />
                   ) : (
-                    <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+                    <img src={item.imagePath} alt="Pupil Photo" className="dms-search__profile-icon" />
                   )}
                 </>
               );
@@ -647,7 +647,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                       color={IconColor.Neutral400}
                     />
                   ) : (
-                    <img src={data?.imagePath} alt="" className="dms-search__profile-icon" />
+                    <img src={data?.imagePath} alt="Staff Photo" className="dms-search__profile-icon" />
                   )}
                 </>
               );
