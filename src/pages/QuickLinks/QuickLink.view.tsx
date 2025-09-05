@@ -82,7 +82,7 @@ const QuickLink: ({ }: IQuickLinkViewProps) => JSX.Element = ({
                                 clickType: "link",
                                 clickLocation: "body"
                               })}>
-                                {link.name}
+                                {t(link.name)}
                               </span>
                             </Link>
                           </TableCell>

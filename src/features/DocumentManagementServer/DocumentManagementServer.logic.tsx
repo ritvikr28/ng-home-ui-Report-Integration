@@ -609,10 +609,10 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         }
         return [];
     }) || [];
- 
+
 const staffImgString = 'Staff Photo';
 const pupilImgString = 'Pupil Photo';
- 
+
 export const getStaffProfilePhoto = async (staffId: string) => {
   const response = await fetchStaffProfilePhoto(staffId);
   return response?.data ?? "";
