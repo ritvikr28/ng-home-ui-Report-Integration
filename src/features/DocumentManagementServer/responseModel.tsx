@@ -65,3 +65,9 @@ export interface Category{
   application: string;
   section: string[];
 };
+
+ export interface ViewDownloadItem {
+        name?: string;
+        status?: string;
+        fileExpiryDays?: number;
+    }

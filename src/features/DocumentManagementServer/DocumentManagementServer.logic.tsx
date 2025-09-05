@@ -286,82 +286,97 @@ anyComponent: (e: any) => (
   ];
 
 export const viewData: {
-  batchId: number;
+  batchId: string;
   organisationId: string;
   totalNoOfFiles: number;
-  zipSourceFilesSize: number;
   name: string;
   userIdCreatedBy: string;
-  roleName: string;
   status: string;
   size: number;
-  registrationId: string | null;
   application: string | null;
   section: string | null;
   partitionKey: string;
   rowKey: string;
   timestamp: string;
-  eTag: string;
+  eTag: {};
   fileExpiryDays: number | null;
+  groupBatchId: string;
+  shouldNotifyByEmail: boolean;
+  userEmailId: string | null;
+  fileId: string;
+  blobName: string;
+  batchStatus: string;
+  totalSourceFilesSize: number;
 }[] = [
     
-  {
-    "batchId": 1,
+   {
+    "partitionKey": "8cf6afc7-20c3-4b26-9727-f74500b5cf2e",
+    "rowKey": "91531fb6-f3a4-443a-8ada-508f066a2e89",
+    "timestamp": "2025-09-05T05:51:22.798441+00:00",
+    "eTag": {},
+    "groupBatchId": "f789b742-cf35-4f08-a0fc-aef2f0a195f6",
+    "batchId": "a0710298-a922-419e-9221-baff311b41e8",
+    "shouldNotifyByEmail": true,
+    "userEmailId": "Hirani@example.com",
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-20_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "InProgress",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: null
-  },
-  
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-22_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays:5
+    "application": "",
+    "section": "",
+    "fileId": "00000000-0000-0000-0000-000000000000",
+    "blobName": "SIMS_5-9-2025-5-51-22-566-8cf6afc7-20c3-4b26-9727-f74500b5cf2e.zip",
+    "name": "SIMS_5-9-2025-5-51-22-566-1of1.zip",
+    "totalNoOfFiles": 2,
+    "totalSourceFilesSize": 6480232,
+    "size": 6480232,
+    "status": "Initiated",
+    "batchStatus": "Initiated",
+    "fileExpiryDays": 4
   },
   {
-    "batchId": 1,
+    "partitionKey": "91ecb0a3-9cae-472d-9aa4-8847848aacd5",
+    "rowKey": "b9673196-1ebe-47df-b761-0b67d31bee1b",
+    "timestamp": "2025-09-04T15:51:15.0940255+00:00",
+    "eTag": {},
+    "groupBatchId": "2a2d475c-2d7f-477c-9e72-917d41fc2dd6",
+    "batchId": "fc1b7132-e05a-4e69-9398-39b5384d0766",
+    "shouldNotifyByEmail": true,
+    "userEmailId": "Hirani@example.com",
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "medical.pdf",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
+    "application": "",
+    "section": "",
+    "fileId": "00000000-0000-0000-0000-000000000000",
+    "blobName": "SIMS_4-9-2025-15-51-14-258-91ecb0a3-9cae-472d-9aa4-8847848aacd5.zip",
+    "name": "SIMS_4-9-2025-15-51-14-258-1of1.zip",
+    "totalNoOfFiles": 2,
+    "totalSourceFilesSize": 6480232,
+    "size": 6480232,
+    "status": "Initiated",
+    "batchStatus": "Initiated",
+    "fileExpiryDays": 4
+  },
+  {
+    "partitionKey": "974ce6a4-f45a-48bc-9e4a-83ad260f479f",
+    "rowKey": "d6b29f56-ed47-47c9-9d21-79fcc59ff2d9",
+    "timestamp": "2025-09-05T05:55:38.6729585+00:00",
+    "eTag": {},
+    "groupBatchId": "00000000-0000-0000-0000-000000000000",
+    "batchId": "00000000-0000-0000-0000-000000000000",
+    "shouldNotifyByEmail": false,
+    "userEmailId": null,
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "application": "Application6",
+    "section": "Section5",
+    "fileId": "ebeb18e3-f3ba-4688-9d01-83594fe6238c",
+    "blobName": "Application6_EBEB18E3-F3BA-4688-9D01-83594FE6238C_sample_file_5.pdf",
+    "name": "sample_file_5.pdf",
+    "totalNoOfFiles": 1,
+    "totalSourceFilesSize": 0,
+    "size": 1233244,
     "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: 4
+    "batchStatus": "Complete",
+    "fileExpiryDays": 4
   }
   ];
 export const handlePageChange = (
