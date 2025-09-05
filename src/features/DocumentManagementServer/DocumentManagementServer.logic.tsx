@@ -218,7 +218,7 @@ anyComponent: (e: any) => (
   columnWidth: "180px",
   isColumnSorting: true,
   anyComponent: (e: any) => {
-    const value = e?.length > 25 ? truncatedString(e, 25)?.truncated : "";
+    const value = e?.length > 11 ? truncatedString(e, 11)?.truncated : "";
     if (!value) return (
       <div style={{ display: "flex" }}>
         <span className="document-text document-column">{e}</span>
@@ -420,7 +420,6 @@ export const handleSuggestionClick = async (
   setIsSearchTriggered?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   if (!item) return;
-  // Use item.text if available, otherwise item.name
   const value = item.text || item.name || "";
   setSearchTerm(value);
   setSearchText(value);
@@ -575,23 +574,20 @@ export const getResultNotFoundMsg = (
   searchTerm: string,
   showErrorBanner: boolean,
   isSearchTriggered: boolean
-  // isInitialLoad?: boolean
+  
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
   }
-  // Show search message if search is performed and no results
+
   if (isSearchTriggered && searchTerm && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
   }
-// Show custom initial load message only if not searching and no data
+
   if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
   }
-  // Show "No data to display" only if not searching and no data
-  // if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-  //   return "No data to display.";
-  // }
+  
   return undefined;
 };
  

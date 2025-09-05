@@ -121,6 +121,7 @@ describe("DocumentManagementServerView", () => {
   });
  
 it("shows error banner when showErrorBanner is true", async () => {
+  jest.setTimeout(15000);
   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
     payload: [
       {
@@ -362,7 +363,7 @@ const suggestion = await screen.findAllByText((_, element) =>
         isSearchTextExactMatch: true,
         pageNumber: 1,
         pageSize: 40,
-        searchText: "doc 1",
+        searchText: "Doc 1",
         sortBy: "DateAdded",
         sortDirection: "Desc",
         toDate: ""

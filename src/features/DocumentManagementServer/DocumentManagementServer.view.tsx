@@ -83,7 +83,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
  
-    // Table data mapping (deduplicated)
     let tableData: tableDataProps[] = [];
     if (showErrorBanner || showSearchError || !docData?.data?.length) {
         tableData = [];
@@ -106,7 +105,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
  
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
  
-    // useEffect for breadcrumbs (deduplicated logic)
+    // useEffect for breadcrumbs
     useEffect(() => {
         const handleResize = () => {
             setVisibleBreadcrumbs(
@@ -148,42 +147,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
     }, [docData]);
  
-useEffect(() => {
-  const filtersExist =
-    selectedFormats.length > 0 ||
-    selectedCategories.length > 0 ||
-    selectedDateRange.fromDate ||
-    selectedDateRange.toDate;
- 
-  if (!searchTerm && filtersExist) {
-    fetchGetDocumentDetails(
-      "",
-      1,
-      getAllRegistrationIds(selectedFormats),
-      sortBy,
-      sortDirection
-    );
-    setIsSearchTriggered(false);
-    setCurrentPage(1);
-    setShowSearchError(false);
-    setIsSearchLoading(false);
-    setIsInitialLoad(false);
-    return;
-  }
- 
-  if (!searchTerm && !filtersExist) {
-    // Initial/empty state: clear grid, do NOT fetch
-    setIsSearchTriggered(false);
-    setSearchText("");
-    setSearchTerm("");
-    setCurrentPage(1);
-    setDocData({ statusCode: 200, data: [], totalRecords: 0 });
-    setShowSearchError(false);
-    setIsSearchLoading(false);
-    setIsInitialLoad(true);
-  }
- 
-}, [searchTerm, selectedFormats, selectedCategories, selectedDateRange]);
     // Initial data fetch (unchanged)
     useEffect(() => {
         setIsLoading(true);
@@ -206,8 +169,6 @@ useEffect(() => {
                 searchText: searchTexts,
                 fromDate: selectedDateRange?.fromDate ,
                 toDate: selectedDateRange?.toDate ,
-                // fromDate: fromDate,
-                // toDate: toDate,
                 categoryId: categories || [],
                 isSearchTextExactMatch: true,
                 sortBy: sortByCol,
@@ -263,18 +224,6 @@ useEffect(() => {
  
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
- 
-  // Trigger fetch with new sort
-  if (searchText) {
-    setIsSearchDataLoading(true);
-    fetchGetDocumentDetails(
-      searchText,
-      currentPage,
-      getAllRegistrationIds(selectedFormats),
-      apiColumnName,
-      newDirection
-    );
-  }
 };
  
  
@@ -358,7 +307,19 @@ useEffect(() => {
  
   setReloadAfterTagClose(true);
 }
- 
+useEffect(() => {
+  if (searchText) {
+    setIsSearchDataLoading(true);
+    fetchGetDocumentDetails(
+      searchText,
+      currentPage,
+      getAllRegistrationIds(selectedFormats),
+      sortBy,
+      sortDirection
+    );
+  }
+}, [searchText, currentPage, selectedFormats, sortBy, sortDirection]); 
+
 useEffect(() => {
   if (reloadAfterTagClose) {
     const categories = getAllRegistrationIds(selectedCategories);
@@ -646,17 +607,6 @@ useEffect(() => {
                                 onSearchSuggestionItemClick={(item)=>{
                                         handleSuggestionClick(item, setSearchTerm, setSearchText, setIsSearchTriggered);
                                         setIsSearchDataLoading(true);
-                                        const keyword = item?.props?.id || item?.text?.trim()?.toLowerCase() || item?.name?.trim()?.toLowerCase() || "";
-                                        setSearchText(keyword);
-                                        setSearchTerm(keyword);
-                                        setIsSearchTriggered(true);
-                                        fetchGetDocumentDetails(
-                                            keyword,
-                                            1,
-                                            getAllRegistrationIds(selectedFormats),
-                                            sortBy,
-                                            sortDirection
-                                        );
  
                                     }}
                                 searchOnChange={(e: any) => {
