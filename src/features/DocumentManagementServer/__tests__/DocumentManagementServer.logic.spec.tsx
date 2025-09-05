@@ -26,8 +26,11 @@ import {
   prepareDownload,
   getReferenceExternalId,
   reduceCategories,
-  fetchViewDownloadData
+  fetchViewDownloadData,
+  validateAndApplyFilter,
+  closeSidePanel
 } from "../DocumentManagementServer.logic";
+import dayjs from "dayjs";
 
 const analytics = require('../../../shared/utils/analytics').default;
 
@@ -1751,4 +1754,159 @@ describe("fetchViewDownloadData", () => {
     expect(setIsSidePanelLoader).not.toHaveBeenCalledWith(true);
     expect(setIsSidePanelLoader).toHaveBeenCalledWith(false);
   });
+});
+
+describe("validateAndApplyFilter", () => {
+  let setIsDateError: jest.Mock;
+  let setIsFilterLoading: jest.Mock;
+  let setDateRange: jest.Mock;
+  let setSelectedFormats: jest.Mock;
+  let setIsFilterDialogOpen: jest.Mock;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setIsDateError = jest.fn();
+    setIsFilterLoading = jest.fn();
+    setDateRange = jest.fn();
+    setSelectedFormats = jest.fn();
+    setIsFilterDialogOpen = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("sets date error if fromDate is invalid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-13-01", toDate: "2025-01-01" }, // invalid month
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if toDate is invalid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-32" }, // invalid day
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if isDateError is true", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: true,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if dayjs validation fails for fromDate", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "invalid-date", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if dayjs validation fails for toDate", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "invalid-date" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if fromDate is empty and toDate is valid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "", toDate: dayjs().format("YYYY-MM-DD") },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("applies filter when dates are valid and no error", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: ["cat1"],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsFilterLoading).toHaveBeenCalledWith(true);
+    expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
+    jest.runAllTimers();
+    expect(setSelectedFormats).toHaveBeenCalledWith(["cat1"]);
+    expect(setIsFilterDialogOpen).toHaveBeenCalledWith(false);
+    expect(setIsFilterLoading).toHaveBeenLastCalledWith(false);
+  });
+});
+
+describe("closeSidePanel", () => {
+  it("sets side panel closed and clears interval if exists", () => {
+  const setIsSidePanelOpen = jest.fn();
+  const intervalId = setInterval(() => {}, 1000);
+  const pollingRef = { current: intervalId };
+  const clearSpy = jest.spyOn(global, "clearInterval");
+  closeSidePanel(setIsSidePanelOpen, pollingRef);
+  expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
+  expect(clearSpy).toHaveBeenCalledWith(intervalId);
+  expect(pollingRef.current).toBeNull();
+  clearSpy.mockRestore();
+});
+
+ it("sets side panel closed and does nothing if interval does not exist", () => {
+  const setIsSidePanelOpen = jest.fn();
+  const pollingRef = { current: null };
+  const clearSpy = jest.spyOn(global, "clearInterval");
+  closeSidePanel(setIsSidePanelOpen, pollingRef);
+  expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
+  expect(clearSpy).not.toHaveBeenCalled();
+  expect(pollingRef.current).toBeNull();
+  clearSpy.mockRestore();
+});
 });

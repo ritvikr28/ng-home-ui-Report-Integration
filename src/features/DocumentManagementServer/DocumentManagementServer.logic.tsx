@@ -3,7 +3,7 @@ import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISe
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import {truncatedString} from "../../shared/utils/commonFunctions";
+import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
 import { Category, FetchViewDownloadDataParams } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
@@ -702,6 +702,70 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
+}
+
+export function validateAndApplyFilter({
+  selectedDateRange,
+  isDateError,
+  setIsDateError,
+  setIsFilterLoading,
+  setDateRange,
+  setSelectedFormats,
+  selectedCategories,
+  setIsFilterDialogOpen,
+}: {
+  selectedDateRange: { fromDate?: string; toDate?: string };
+  isDateError: boolean;
+  setIsDateError: (v: boolean) => void;
+  setIsFilterLoading: (v: boolean) => void;
+  setDateRange: (v: { fromDate: string; toDate: string }) => void;
+  setSelectedFormats: (v: any) => void;
+  selectedCategories: any;
+  setIsFilterDialogOpen: (v: boolean) => void;
+}) {
+  if (
+    (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
+    (selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate))
+  ) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (isDateError) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (
+    isDateError ||
+    (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid()) ||
+    (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid()) ||
+    (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid())
+  ) {
+    setIsDateError(true);
+  } else {
+    setIsFilterLoading(true);
+     setDateRange({
+      fromDate: selectedDateRange?.fromDate ?? "",
+      toDate: selectedDateRange?.toDate ?? ""
+    });
+    setTimeout(() => {
+      setSelectedFormats(selectedCategories);
+      setIsFilterDialogOpen(false);
+      setIsFilterLoading(false);
+    }, 500);
+  }
+}
+
+export function closeSidePanel(
+  setIsSidePanelOpen: (v: boolean) => void,
+  downloadPollingIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>
+) {
+  setIsSidePanelOpen(false);
+  if (downloadPollingIntervalRef.current) {
+    clearInterval(downloadPollingIntervalRef.current);
+    downloadPollingIntervalRef.current = null;
+  }
 }
 
 export const debouncedFetchSuggestions = debounce(

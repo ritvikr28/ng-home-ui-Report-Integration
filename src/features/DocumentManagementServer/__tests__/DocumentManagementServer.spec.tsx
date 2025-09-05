@@ -1371,4 +1371,50 @@ it("shows error notification when prepareDownload rejects", async () => {
   fireEvent.click(screen.getByText("Prepare download"));
   
 });
+
+it("calls fetchViewDownloadData after timeout when sidePanelOpenReason is 'prepare'", async () => {
+  // Mock fetchViewDownloadData
+  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Open side panel with "prepare" reason
+  await waitFor(() => screen.getByText("Documents"));
+  const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+  fireEvent.click(screen.getByTestId("edit-selected-btn-testid"));
+  act(() => { jest.advanceTimersByTime(1000); });
+  fireEvent.click(await screen.getByText("Prepare download"));
+  await waitFor(() => {
+      screen.getByText(/document is about to be prepared for downloading/i);
+    });
+  const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
+  fireEvent.click(confirmBtn);
+
+// Wait for side panel to appear (optional, for UI confirmation)
+await waitFor(() => {
+  expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+});
+
+spy.mockRestore();
+});
+
+it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
+  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Open side panel with "view" reason
+  await waitFor(() => screen.getByText("Documents"));
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(spy).toHaveBeenCalled();
+  });
+
+  spy.mockRestore();
+});
 })

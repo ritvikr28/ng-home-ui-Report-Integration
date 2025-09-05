@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId, fetchViewDownloadData, reduceCategories } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -71,13 +71,11 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
-    const [downloadPollingInterval, setDownloadPollingInterval] = useState<NodeJS.Timeout | null>(null);
-    const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
 
 const categoryArr = getCategoryArr(selectedFormats);
-    const downloadPollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
-
+    const downloadPollingIntervalRef = React.useRef<NodeJS.Timeout | null>(null) as React.MutableRefObject<NodeJS.Timeout | null>;
 
 const searchTagListRaw = [
   ...categoryArr
@@ -455,35 +453,18 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
-    const handleApply = () => {
 
-        if(selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate) || 
-           selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate)) {
-            setIsDateError(true);
-            return;
-        }
-
-         if (isDateError) {
-            setIsDateError(true);
-            return;
-        }
-    if (
-        isDateError ||
-        (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD")?.isValid()) ||
-        (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid()) ||
-        (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD")?.isValid())
-    ) {
-        setIsDateError(true);
-    } else {
-            setIsFilterLoading(true);
-            
-        setDateRange({ fromDate: selectedDateRange?.fromDate, toDate: selectedDateRange?.toDate });
-            setTimeout(() => {
-        setSelectedFormats(selectedCategories);
-        setIsFilterDialogOpen(false);
-            setIsFilterLoading(false);
-        }, 500);
-    }
+const handleApply = () => {
+  validateAndApplyFilter({
+    selectedDateRange,
+    isDateError,
+    setIsDateError,
+    setIsFilterLoading,
+    setDateRange,
+    setSelectedFormats,
+    selectedCategories,
+    setIsFilterDialogOpen,
+  });
 };
 
    const handleFilterOnClick = () => {
@@ -500,11 +481,7 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
 };
 
 const handleCloseSidePanel = () => {
-    setIsSidePanelOpen(false);
-    if (downloadPollingIntervalRef.current) {
-        clearInterval(downloadPollingIntervalRef.current);
-        downloadPollingIntervalRef.current = null;
-    }
+  closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
 };
 
     return (<>
@@ -832,10 +809,12 @@ const handleCloseSidePanel = () => {
                                             if (status !== 204) {
                                                 setPrepareDownloadError(true);
                                             }
+                                            setSelectedCheckBoxIds([]);
                                             })
                                             .catch(() => {
                                             setIsSidePanelLoader(false);
                                             setPrepareDownloadError(true);
+                                            setSelectedCheckBoxIds([]);
                                             });
 
                                         setTimeout(() => {
