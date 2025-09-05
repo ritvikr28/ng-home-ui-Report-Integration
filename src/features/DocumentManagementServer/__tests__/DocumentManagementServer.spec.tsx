@@ -1224,7 +1224,7 @@ it("handles search suggestion click", async () => {
 
 });
 
-  describe('📁 DocumentManagementServerView - fetchViewDownloadData', () => {
+  describe('DocumentManagementServerView - fetchViewDownloadData', () => {
     const viewDownloadMockData = [
       { name: 'Doc.pdf', status: 'Complete', fileExpiryDays: 3 }
     ];
@@ -1238,7 +1238,7 @@ it("handles search suggestion click", async () => {
       jest.setTimeout(15000);
     });
 
-    test('📁 Shows download files when API returns status 200 with data', async () => {
+    test('Shows download files when API returns status 200 with data', async () => {
       render(<DocumentManagementServerView />);
       act(() => { jest.advanceTimersByTime(1000); });
 

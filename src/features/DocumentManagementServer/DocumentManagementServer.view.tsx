@@ -166,8 +166,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
     useEffect(() => {
-        isSidePanelOpen && fetchViewDownloadData()
-    },[isSidePanelOpen])
+        if (isSidePanelOpen) {
+            fetchViewDownloadData();
+        }
+    }, [isSidePanelOpen]);
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
@@ -210,7 +212,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSidePanelLoader(true);
         try {
             const result = await viewDownload()
-            debugger
             if (result?.data && result?.status === 200) {
                 console.log(result)
                 setViewData(result.data)
