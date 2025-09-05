@@ -87,19 +87,19 @@ export const fetchFilterCategory = async (): Promise<any> => {
   }
 }
 
-  export const prepareAndDownloadFile = async (fileDetails: PrepareDownloadRequest[]): Promise<DocumentPrepareDownload | undefined> => {
-    try {
-      const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-      const url = `/validation/api/v1/file/preparedownload`;
-      const payload = { fileDetails };
-      const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
+export const prepareAndDownloadFile = async (payload: { request: any }) => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/preparedownload`;
+    const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
 
-    if (responseData?.status === 200) {
-      return responseData?.data;
+    return responseData?.status; // Return status code directly
+  } catch (error: any) {
+    // If error response exists, return its status
+    if (error?.response?.status) {
+      return error.response.status;
     }
-    
-  } catch (error) {
-    console.error("Error preparing and downloading file:", error);
+    return 400; // Default to error status
   }
 };
 

@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -272,5 +272,65 @@ describe('fetchFilterCategory', () => {
       expect.any(Error)
     );
     consoleSpy.mockRestore();
+  });
+});
+
+describe("prepareAndDownloadFile", () => {
+  const payload = { request: { foo: "bar" } };
+  const baseUrl = "https://dev.platform.sims.co.uk";
+  const url = "/validation/api/v1/file/preparedownload";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("returns status code on successful response", async () => {
+    const mockResponse: AxiosResponse = {
+      data: {},
+      status: 204,
+      statusText: "No Content",
+      headers: {},
+      config: {},
+    };
+    (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(204);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns error status from error.response.status", async () => {
+    const error = {
+      response: { status: 401 },
+    };
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(401);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns 400 if error does not have response.status", async () => {
+    const error = new Error("Network error");
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(400);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns status code on successful response with status 400", async () => {
+    const mockResponse: AxiosResponse = {
+      data: {},
+      status: 400,
+      statusText: "Bad Request",
+      headers: {},
+      config: {},
+    };
+    (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(400);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
 });

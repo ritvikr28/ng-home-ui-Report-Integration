@@ -703,16 +703,10 @@ export const formatSuggestions = (payload: any[]): Suggestion[] =>
   })) || [];
 
 
-  export const prepareDownload = async (fileDetails: PrepareDownloadRequest[]) => {
-    try {
-
-      const response = await prepareAndDownloadFile(fileDetails);
-
-      return response?.status
-    } catch (error) {
-      console.error("Error preparing download:", error);
-    }
-  };
+export const prepareDownload = async (payload: { request: any }[]) => {
+  const status = await prepareAndDownloadFile(payload[0]);
+  return status;
+};
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 

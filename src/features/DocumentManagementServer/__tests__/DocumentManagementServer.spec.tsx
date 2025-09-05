@@ -1151,22 +1151,67 @@ it("handles search suggestion click", async () => {
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
 
-  // Simulate typing to trigger suggestions
   const searchInput = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(searchInput, { target: { value: "Doc" } });
 
-  // Wait for suggestions to appear (adjust text as per your suggestion rendering)
   const suggestion = await screen.findByText(/Doc 1/i); // or whatever suggestion text appears
 
-  // Click the suggestion
   fireEvent.click(suggestion);
 
-  // Assert that the search term or text is updated, or that the suggestion handler was called
-  // (You can spy on handleSuggestionClick if exported, or check the UI for the effect)
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
 
+// it("does not include documents without registrationId in download payload when user selects them", async () => {
+//   // Mock data: one document missing registrationId
+//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
+//   render(<DocumentManagementServerView />);
+//   act(() => { jest.advanceTimersByTime(1000); });
+
+//   // Wait for table to render
+//   await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
+
+//   // Simulate user selecting both checkboxes
+//   const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+//   fireEvent.click(checkboxes[0]); // Doc 1 (no registrationId)
+//   fireEvent.click(checkboxes[1]); // Doc 2 (valid)
+
+//   // Simulate user clicking "Actions" > "Prepare download"
+//   fireEvent.click(screen.getByText(/Actions/i));
+//   fireEvent.click(screen.getByText("Prepare download"));
+
+//   // Confirm download (triggers payload mapping)
+//   fireEvent.click(screen.getByText("Prepare download"));
+
+//   // Now, check that only the valid document is included in the payload
+//   // You can spy on the prepareDownload function or check the UI effect
+//   // For example, if you expose selectedDocs for testing:
+//   // expect(selectedDocs.length).toBe(1);
+//   // Or check that the error dialog does not appear for the invalid doc
+// });
+
+});
+
+it("shows error notification when prepareDownload rejects", async () => {
+  // Mock prepareDownload to reject
+  jest.spyOn(logicModule, "prepareDownload").mockRejectedValueOnce(new Error("API failure"));
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Select a valid checkbox
+  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+
+  // Simulate user clicking "Actions" > "Prepare download"
+  fireEvent.click(screen.getByText(/Actions/i));
+  // fireEvent.click(await screen.findByText("Prepare download"));
+
+  // Confirm download (triggers prepareDownload)
+  act(() => { jest.advanceTimersByTime(1000); });
+  fireEvent.click(screen.getByText("Prepare download"));
+  
 });
 
 

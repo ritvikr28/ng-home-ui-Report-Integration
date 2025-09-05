@@ -21,7 +21,8 @@ import {
   loadSuggestions,
   onBreadcrumbClick,
   mapRelatedArr,
-  filterNonEmptySuggestions
+  filterNonEmptySuggestions,
+  prepareDownload
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1442,5 +1443,27 @@ describe("filterNonEmptySuggestions", () => {
 
   it("returns empty array if input is empty", () => {
     expect(filterNonEmptySuggestions([] as any)).toEqual([]);
+  });
+})
+
+describe("prepareDownload", () => {
+  const payload = [{ request: { foo: "bar" } }];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns status from prepareAndDownloadFile (success)", async () => {
+    (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(204);
+    const result = await prepareDownload(payload);
+    expect(result).toBe(204);
+    expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
+  });
+
+  it("returns status from prepareAndDownloadFile (error)", async () => {
+    (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(400);
+    const result = await prepareDownload(payload);
+    expect(result).toBe(400);
+    expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
   });
 })

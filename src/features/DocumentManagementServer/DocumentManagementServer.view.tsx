@@ -69,6 +69,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+
 const categoryArr = getCategoryArr(selectedFormats);
 
 
@@ -206,37 +208,42 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
-const selectedDocs: PrepareDownloadRequest[] = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
+const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
   ? selectedCheckBoxIds
       .map(id => {
         const doc = docData?.data.find((d: any) => d?.fileId === id);
         if (doc && doc.registrationId !== undefined) {
           return {
-            
-            selectAll: false, // or set appropriately
-            downloadCriteria: {
-              refernceMappingDetails: [
-                {
-                  refernceExternalId: getReferenceExternalId(doc?.relatedTo) || "",
-                  documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
-                    ? doc.documentRealatedTo.join(", ")
-                    : (doc?.documentRealatedTo || ""),
-                  relatedTo: doc?.relatedTo || ""
-                },
-              ], // Provide appropriate value if available
-              categoryId: doc.categoryId ?? "", // Provide appropriate value if available
-              fromDate: doc.fromDate ?? "", // Provide appropriate value if available
-              toDate: doc.toDate ?? "" // Provide appropriate value if available
-            },
-            fileDetails: [{
+            request: {
+              selectAll: false,
+              downloadCriteria: {
+                referenceMappingDetails: [
+                  {
+                    referenceExternalId: Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
+                      ? doc.relatedTo[0].learnerExternalId
+                      : "",
+                    documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
+                      ? doc.documentRealatedTo.join(", ")
+                      : (doc?.documentRealatedTo || ""),
+                    relatedTo: doc?.relatedTo
+                  },
+                ],
+                categoryId: Array.isArray(doc?.categoryId)
+                    ? doc.categoryId.map((id: any) => Number(id))
+                    : [Number(doc?.categoryId ?? 3)],
+                fromDate: doc?.fromDate ?? "",
+                toDate: doc?.toDate ?? ""
+              },
+              fileDetails: [{
                 fileId: id,
-                registrationId: doc.registrationId,
-            }] // or set appropriately
-          } as PrepareDownloadRequest;
+                registrationId: doc?.registrationId,
+              }]
+            }
+          };
         }
         return undefined;
       })
-      .filter((item): item is PrepareDownloadRequest => item !== undefined)
+      .filter((item): item is { request: any } => item !== undefined)
   : [];
 
    const handleSorting = (columnName: string) => {
@@ -683,12 +690,12 @@ const selectedDocs: PrepareDownloadRequest[] = Array.isArray(selectedCheckBoxIds
                                 sidePanelNotificationTitle="Unable to Download"
                                 addEditTemplateChild={
                                     <>
-                                        <Notification
+                                        {prepareDownloadError && <Notification
                                             status={NotificationStatus.WARNING}
                                             title="Unable to prepare [document/documents] for download"
                                             message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
                                             autoclose
-                                        />
+                                        />} 
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
                                                 viewData.map((item, index) => {
@@ -770,15 +777,28 @@ const selectedDocs: PrepareDownloadRequest[] = Array.isArray(selectedCheckBoxIds
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
-                                        onConfirm: (): void => {
-                                            prepareDownload(selectedDocs);
-                                            setIsSidePanelLoader(true);
-                                            setIsSidePanelOpen(true)
+                                       onConfirm: (): void => {
+                                        setPrepareDownloadError(false);
+                                        setIsSidePanelLoader(true);
+                                        setIsSidePanelOpen(true);
 
-                                            setTimeout(() => {
-                                                setIsSidePanelLoader(false); 
-                                            }, 1000);
-                                         },
+                                        prepareDownload(selectedDocs)
+                                            .then((status) => {
+                                            setIsSidePanelLoader(false);
+                                            // Show error only for 400/401
+                                            if (status !== 204) {
+                                                setPrepareDownloadError(true);
+                                            }
+                                            })
+                                            .catch(() => {
+                                            setIsSidePanelLoader(false);
+                                            setPrepareDownloadError(true);
+                                            });
+
+                                        setTimeout(() => {
+                                            setIsSidePanelLoader(false);
+                                        }, 1000);
+                                        },
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
