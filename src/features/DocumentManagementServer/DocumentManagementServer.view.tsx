@@ -70,6 +70,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
+    const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
 
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
 
@@ -174,8 +175,17 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
     useEffect(() => {
-        isSidePanelOpen && fetchViewDownloadData()
-    },[isSidePanelOpen])
+  if (isSidePanelOpen) {
+    if (sidePanelOpenReason === "prepare") {
+      const timer = setTimeout(() => {
+        fetchViewDownloadData();
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      fetchViewDownloadData();
+    }
+  }
+}, [isSidePanelOpen, sidePanelOpenReason]);
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
@@ -218,7 +228,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSidePanelLoader(true);
         try {
             const result = await viewDownload()
-            debugger
             if (result?.data && result?.status === 200) {
                 console.log(result)
                 setViewData(result.data)
@@ -313,7 +322,8 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                 setShowDialog(true);
             }
         }
-        else if((selectedItem?.value?.toLowerCase() === "view download")){
+        else if ((selectedItem?.value?.toLowerCase() === "view download")) {
+            setSidePanelOpenReason("view");
             setIsSidePanelOpen(true);
         }
       }
@@ -726,6 +736,7 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                                     {viewData.map((item, index) => {
                                                         const isComplete = item?.status?.toLowerCase() === 'complete';
                                                         const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+                                                        const isInitiated = item?.status?.toLowerCase() === 'initiated';
                                                     return (
                                                             <div className="viewDownloadDetails" key={index}>
                                                                 <div className="fileDetails">
@@ -737,7 +748,7 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                                                 {isComplete && (
                                                                     <Button className="viewDownloadBtn">Download</Button>
                                                                 )}
-                                                                {isInProgress && (
+                                                                {(isInProgress || isInitiated) && (
                                                                 <span className="inProgressLoader">
                                                                     <Loader
                                                                         loaderType={LoaderType.Circular}
@@ -806,12 +817,12 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                        onConfirm: (): void => {
                                         setPrepareDownloadError(false);
                                         setIsSidePanelLoader(true);
+                                        setSidePanelOpenReason("prepare"); // <-- set reason
                                         setIsSidePanelOpen(true);
 
                                         prepareDownload(selectedDocs)
                                             .then((status) => {
                                             setIsSidePanelLoader(false);
-                                            // Show error only for 400/401
                                             if (status !== 204) {
                                                 setPrepareDownloadError(true);
                                             }

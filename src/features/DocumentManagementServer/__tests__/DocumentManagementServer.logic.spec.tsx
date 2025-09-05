@@ -23,7 +23,8 @@ import {
   mapRelatedArr,
   filterNonEmptySuggestions,
   getStaffProfilePhoto,
-  prepareDownload
+  prepareDownload,
+  getReferenceExternalId
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1507,3 +1508,29 @@ describe("prepareDownload", () => {
     expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
   });
 })
+
+describe("getReferenceExternalId", () => {
+  it("returns empty string if relatedTo is undefined", () => {
+    expect(getReferenceExternalId(undefined)).toBe("");
+  });
+
+  it("returns empty string if relatedTo is null", () => {
+    expect(getReferenceExternalId(null)).toBe("");
+  });
+
+  it("returns organisationId if present", () => {
+    expect(getReferenceExternalId({ organisationId: "org123" })).toBe("org123");
+  });
+
+  it("returns externalId if present and organisationId is missing", () => {
+    expect(getReferenceExternalId({ externalId: "ext456" })).toBe("ext456");
+  });
+
+  it("returns learnerExternalId if present and others are missing", () => {
+    expect(getReferenceExternalId({ learnerExternalId: "learner789" })).toBe("learner789");
+  });
+
+  it("returns empty string if none of the keys are present", () => {
+    expect(getReferenceExternalId({ foo: "bar" })).toBe("");
+  });
+});
