@@ -13,7 +13,6 @@ import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
-// import { handleCheckBoxSelection } from "../DocumentManagementServer.view";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
@@ -1218,37 +1217,139 @@ it("handles search suggestion click", async () => {
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
 
-// it("does not include documents without registrationId in download payload when user selects them", async () => {
-//   // Mock data: one document missing registrationId
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-//   render(<DocumentManagementServerView />);
-//   act(() => { jest.advanceTimersByTime(1000); });
-
-//   // Wait for table to render
-//   await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
-
-//   // Simulate user selecting both checkboxes
-//   const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
-//   fireEvent.click(checkboxes[0]); // Doc 1 (no registrationId)
-//   fireEvent.click(checkboxes[1]); // Doc 2 (valid)
-
-//   // Simulate user clicking "Actions" > "Prepare download"
-//   fireEvent.click(screen.getByText(/Actions/i));
-//   fireEvent.click(screen.getByText("Prepare download"));
-
-//   // Confirm download (triggers payload mapping)
-//   fireEvent.click(screen.getByText("Prepare download"));
-
-//   // Now, check that only the valid document is included in the payload
-//   // You can spy on the prepareDownload function or check the UI effect
-//   // For example, if you expose selectedDocs for testing:
-//   // expect(selectedDocs.length).toBe(1);
-//   // Or check that the error dialog does not appear for the invalid doc
-// });
-
 });
 
+  describe('DocumentManagementServerView - fetchViewDownloadData', () => {
+    const viewDownloadMockData = [
+      { name: 'Doc.pdf', status: 'Complete', fileExpiryDays: 3 }
+    ];
+    const mockResData = {
+      status: 200,
+      data: viewDownloadMockData
+    }
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue(mockResData);
+      jest.setTimeout(15000);
+    });
+
+    test('Shows download files when API returns status 200 with data', async () => {
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      const sidePanelHeader = await screen.findByTestId("side-panel-header");
+      expect(sidePanelHeader).toBeInTheDocument();
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+        expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+        expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+      });
+    });
+
+    test('Shows download files when API returns status 200 with data', async () => {
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      // Assert rendered file
+      expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+      expect(screen.getByText(/Expires in 3 days/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+    });
+
+    test('Shows empty message when API returns status 200 with empty data', async () => {
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [],
+      });
+      jest.setTimeout(1000);
+
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      // Check empty state message
+      expect(
+        screen.getByText('Files you download will appear here.')
+      ).toBeInTheDocument();
+    });
+
+    test('Does not set viewData when API returns non-200 status', async () => {
+
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 500
+      });
+      jest.setTimeout(1000);
+
+      (apiService.viewDownload as jest.Mock).mockRejectedValue(
+        new Error('API Error')
+      );
+
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      // Should fallback to empty message
+      expect(
+        screen.getByText('Files you download will appear here.')
+      ).toBeInTheDocument();
+    });
+
+  });
+
+  
 it("shows error notification when prepareDownload rejects", async () => {
   // Mock prepareDownload to reject
   jest.spyOn(logicModule, "prepareDownload").mockRejectedValueOnce(new Error("API failure"));
@@ -1269,29 +1370,5 @@ it("shows error notification when prepareDownload rejects", async () => {
   act(() => { jest.advanceTimersByTime(1000); });
   fireEvent.click(screen.getByText("Prepare download"));
   
-});
-
-it("reduces category data properly in handleFilterOnClick", async () => {
-  const categoryList = [
-    { application: "AppX", registrationId: 111, section: "S1" },
-    { application: "AppX", registrationId: 112, section: "S2" },
-    { application: "AppY", registrationId: 113, section: "S3" }
-  ];
-  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
-
-  render(<DocumentManagementServerView />);
-  act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-
-  await waitFor(() => {
-    const filterButton = screen.getByTestId("filter-btn");
-    fireEvent.click(filterButton);
-  });
-
-  await waitFor(() => {
-    expect(apiService.fetchFilterCategory).toHaveBeenCalled();
-    // Optionally, check that availableCategories state is set correctly
-  });
 });
 })

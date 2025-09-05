@@ -530,8 +530,8 @@ const handleCloseSidePanel = () => {
                         onCloseSideNavigationPanel={() => setIsOpen(false)}
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
-                            text: "Invite Users",
-                            value: window.location.href,
+                            text: "Documents",
+                            value: `${window.location.href}/documents`,
                         }}
                     />
 
@@ -715,8 +715,8 @@ const handleCloseSidePanel = () => {
 
                                 onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
-                                primaryButtonTitle="Clear all"
-                                secondaryButtonTitle="Clear all"
+                                secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
+                                onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
