@@ -269,6 +269,7 @@ it("handles sorting for Document column and ignores non-sortable columns", async
   );
 });
 
+
 it("handles sorting for Date added column", async () => {
   render(<DocumentManagementServerView />);
    act(() => {
@@ -823,6 +824,61 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   
 });
 
+it("opens side panel when View download is clicked in Actions menu", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  });
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  await waitFor(() => screen.getByText("Documents"));
+
+  // Debugging line to check rendered output
+  const actionsButton = screen.getByText('Actions');
+  fireEvent.click(actionsButton);
+
+  // Click the "View download" option
+  act(() => { jest.advanceTimersByTime(1000); });
+  
+  const viewDownloadOption = screen.getByText('View download');
+  fireEvent.click(viewDownloadOption);
+
+ const sidePanelHeader = await screen.findByTestId("side-panel-header");
+  expect(sidePanelHeader).toBeInTheDocument();
+ 
+  // Find and click the close button
+  const closeIcon = screen.getByTestId("side-panel-close-button");
+  fireEvent.click(closeIcon);
+ 
+  // Wait for side panel header to be removed
+  await waitFor(() =>
+    expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument()
+  );
+});
+
 });
 
 
@@ -1145,6 +1201,7 @@ it("sets date error when fromDate is invalid in handleApply", async () => {
 
   
 });
+
 
 
 it("handles search suggestion click", async () => {

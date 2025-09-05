@@ -70,6 +70,7 @@ import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
+import SendNotification from "./features/MainPanel/Notifications/SendNotifications.view";
 
 interface HomePageForSimsConnectedNormalUserProps {
   isRenderSimsConnectedBanner: boolean;
@@ -220,6 +221,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   );
 
 
+  const sendNotificationFlagr: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SendNotification"
+  );
+  console.log("Feature Flag - SendNotification:", sendNotificationFlagr);
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -292,6 +299,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
+           {sendNotificationFlagr ? (<ProtectedRoute exact path="/notification" component={SendNotification} />) : (
+            <Redirect to="/unauthorized" />
+          )}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact

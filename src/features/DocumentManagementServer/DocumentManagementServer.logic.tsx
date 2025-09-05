@@ -1,7 +1,7 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
 import { DocumentPrepareDownload, PrepareDownloadRequest } from "./responseModel";
@@ -287,101 +287,97 @@ anyComponent: (e: any) => (
   ];
 
 export const viewData: {
-  batchId: number;
+  batchId: string;
   organisationId: string;
   totalNoOfFiles: number;
-  zipSourceFilesSize: number;
   name: string;
   userIdCreatedBy: string;
-  roleName: string;
   status: string;
   size: number;
-  registrationId: string | null;
   application: string | null;
   section: string | null;
   partitionKey: string;
   rowKey: string;
   timestamp: string;
-  eTag: string;
+  eTag: {};
   fileExpiryDays: number | null;
+  groupBatchId: string;
+  shouldNotifyByEmail: boolean;
+  userEmailId: string | null;
+  fileId: string;
+  blobName: string;
+  batchStatus: string;
+  totalSourceFilesSize: number;
 }[] = [
     
-  {
-    "batchId": 1,
+   {
+    "partitionKey": "8cf6afc7-20c3-4b26-9727-f74500b5cf2e",
+    "rowKey": "91531fb6-f3a4-443a-8ada-508f066a2e89",
+    "timestamp": "2025-09-05T05:51:22.798441+00:00",
+    "eTag": {},
+    "groupBatchId": "f789b742-cf35-4f08-a0fc-aef2f0a195f6",
+    "batchId": "a0710298-a922-419e-9221-baff311b41e8",
+    "shouldNotifyByEmail": true,
+    "userEmailId": "Hirani@example.com",
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-20_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "InProgress",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: null
+    "application": "",
+    "section": "",
+    "fileId": "00000000-0000-0000-0000-000000000000",
+    "blobName": "SIMS_5-9-2025-5-51-22-566-8cf6afc7-20c3-4b26-9727-f74500b5cf2e.zip",
+    "name": "SIMS_5-9-2025-5-51-22-566-1of1.zip",
+    "totalNoOfFiles": 2,
+    "totalSourceFilesSize": 6480232,
+    "size": 6480232,
+    "status": "Initiated",
+    "batchStatus": "Initiated",
+    "fileExpiryDays": 4
   },
-  
   {
-    "batchId": 1,
+    "partitionKey": "91ecb0a3-9cae-472d-9aa4-8847848aacd5",
+    "rowKey": "b9673196-1ebe-47df-b761-0b67d31bee1b",
+    "timestamp": "2025-09-04T15:51:15.0940255+00:00",
+    "eTag": {},
+    "groupBatchId": "2a2d475c-2d7f-477c-9e72-917d41fc2dd6",
+    "batchId": "fc1b7132-e05a-4e69-9398-39b5384d0766",
+    "shouldNotifyByEmail": true,
+    "userEmailId": "Hirani@example.com",
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-22_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
+    "application": "",
+    "section": "",
+    "fileId": "00000000-0000-0000-0000-000000000000",
+    "blobName": "SIMS_4-9-2025-15-51-14-258-91ecb0a3-9cae-472d-9aa4-8847848aacd5.zip",
+    "name": "SIMS_4-9-2025-15-51-14-258-1of1.zip",
+    "totalNoOfFiles": 2,
+    "totalSourceFilesSize": 6480232,
+    "size": 6480232,
+    "status": "Initiated",
+    "batchStatus": "Initiated",
+    "fileExpiryDays": 4
+  },
+  {
+    "partitionKey": "974ce6a4-f45a-48bc-9e4a-83ad260f479f",
+    "rowKey": "d6b29f56-ed47-47c9-9d21-79fcc59ff2d9",
+    "timestamp": "2025-09-05T05:55:38.6729585+00:00",
+    "eTag": {},
+    "groupBatchId": "00000000-0000-0000-0000-000000000000",
+    "batchId": "00000000-0000-0000-0000-000000000000",
+    "shouldNotifyByEmail": false,
+    "userEmailId": null,
+    "userIdCreatedBy": "364d9798-1869-4661-94af-8e8a421c1678",
+    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
+    "application": "Application6",
+    "section": "Section5",
+    "fileId": "ebeb18e3-f3ba-4688-9d01-83594fe6238c",
+    "blobName": "Application6_EBEB18E3-F3BA-4688-9D01-83594FE6238C_sample_file_5.pdf",
+    "name": "sample_file_5.pdf",
+    "totalNoOfFiles": 1,
+    "totalSourceFilesSize": 0,
+    "size": 1233244,
     "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays:5
-  },
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "medical.pdf",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: 4
-  },
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "Test.pdf",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "InProgress",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: null
+    "batchStatus": "Complete",
+    "fileExpiryDays": 4
   }
   ];
 export const handlePageChange = (
@@ -600,107 +596,125 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         return [];
     }) || [];
 
-export const formatSuggestions = (payload: any[]): Suggestion[] =>
-  payload?.map((category: any) => ({
-    name: category?.name || "",
-    values: (category?.values || []).map((item: any) => {
-      let text = "";
-      let props: ISearchItemProp = {};
-      let icon: JSX.Element | undefined;
-      let value: JSX.Element | string | undefined;
+const staffImgString = 'Staff Photo';
+const pupilImgString = 'Pupil Photo';
 
-      switch (category?.name) {
-        case "Document":
-          text = item?.fileName || "";
-          props = {
-            name: item?.fileName,
-            id: item?.fileId,
-            ...item
-          };
-          break;
-        case "Pupil":
-          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
+export const getStaffProfilePhoto = async (staffId: string) => {
+  const response = await fetchStaffProfilePhoto(staffId);
+  return response?.data ?? "";
+}
+export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> => {
+  if (!payload) return [];
+  return Promise.all(
+    payload.map(async (category: any) => {
+      const values = await Promise.all(
+        (category?.values || []).map(async (item: any) => {
+          let text = "";
+          let props: ISearchItemProp = {};
+          let icon: JSX.Element | undefined;
+          let value: JSX.Element | string | undefined;
+
+          switch (category?.name) {
+            case "Document":
+              text = item?.fileName || "";
+              props = {
+                name: item?.fileName,
+                id: item?.fileId,
+                ...item
+              };
+              break;
+            case "Pupil":
+              text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
+              icon = (
+                <>
+                  {(item.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={item.imagePath} alt={pupilImgString} className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              value = ((item?.currentYearGroup || item?.currentRegistration) && (
+                <Tag
+                  text={
+                    [item?.currentYearGroup, item?.currentPrimaryClass]
+                      .filter(Boolean)
+                      .join(" / ")
+                  }
+                  color={TagColor.Warning}
+                  size={TagSize.Small}
                 />
-              ) : (
-                <img src={item.imagePath} alt="Pupil photo" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          value = ((item?.currentYearGroup || item?.currentRegistration) && (
-            <Tag
-              text={
-                [item?.currentYearGroup, item?.currentPrimaryClass]
-                  .filter(Boolean)
-                  .join(" / ")
-              }
-              color={TagColor.Warning}
-              size={TagSize.Small}
-            />
-          ));
-          props = {
-            name: text,
-            id: item?.pupilId,
+              ));
+              props = {
+                name: text,
+                id: item?.pupilId,
+                value,
+                ...item
+              };
+              break;
+            case "Staff": {
+              text = [
+                `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+                item?.staffCode
+              ]
+                .filter(Boolean)
+                .join(" | ") || item?.name || "";
+              const data = await getStaffProfilePhoto((item?.externalId).toLowerCase());
+              icon = (
+                <>
+                  {(data?.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={data?.imagePath} alt={staffImgString} className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              props = {
+                name: text,
+                id: item?.externalId,
+                ...item
+              };
+              break;
+            }
+            case "Organisation":
+              text = item?.schoolName || item?.name || "";
+              props = {
+                name: text,
+                id: item?.orgId,
+                ...item
+              };
+              break;
+            default:
+              text = item?.name || "";
+              props = {
+                name: item?.name,
+                id: item?.id,
+                ...item
+              };
+          }
+          return {
+            text,
+            icon,
+            props,
             value,
-            ...item
           };
-          break;
-        case "Staff":
-          text = [
-            `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
-            item?.staffCode
-          ]
-            .filter(Boolean)
-            .join(" | ") || item?.name || "";
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
-                />
-              ) : (
-                <img src={item.imagePath} alt="Staff profile" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          props = {
-            name: text,
-            id: item?.staffId,
-            ...item
-          };
-          break;
-        case "Organisation":
-          text = item?.schoolName || item?.name || "";
-          props = {
-            name: text,
-            id: item?.orgId,
-            ...item
-          };
-          break;
-        default:
-          text = item?.name || "";
-          props = {
-            name: item?.name,
-            id: item?.id,
-            ...item
-          };
-      }
+        })
+      );
       return {
-        text,
-        icon,
-        props,
-        value,
+        name: category?.name || "",
+        values,
       };
-    }),
-  })) || [];
+    })
+  );
+};
 
 
 export const prepareDownload = async (payload: { request: any }[]) => {
@@ -731,7 +745,8 @@ export const debouncedFetchSuggestions = debounce(
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload ?? [];
-      setSuggestions(formatSuggestions(values));
+      const suggestions = await formatSuggestions(values);
+      setSuggestions(suggestions);
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);

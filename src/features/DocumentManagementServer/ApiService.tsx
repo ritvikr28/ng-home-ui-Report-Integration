@@ -2,7 +2,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload, PrepareDownloadRequest } from "./responseModel";
-import {PLATFORM_BASEURLS} from "../../ApiConfig.json"
+import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 import { Doc } from "prettier";
 
 export const fetchDocumentDetails = async ({
@@ -106,12 +106,23 @@ export const prepareAndDownloadFile = async (payload: { request: any }) => {
 export const viewDownload = async (): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/viewDownload`;
+    const url = `/validation/api/v1/file/viewDownload`;
     const response: AxiosResponse = await service.get(url, baseUrl);
-    return response?.data;
+    return response;
   } catch (err) {
     console.error("Error fetching view downloads data:", err);
     return {};
   }
 };
 
+export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
+    const url = `/api/v1/personThumbnailImage/${externalId}`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response;
+  } catch (err) {
+    console.error("Error fetching staff profile photo:", err);
+    return {};
+  }
+};

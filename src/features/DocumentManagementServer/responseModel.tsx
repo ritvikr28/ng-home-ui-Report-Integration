@@ -66,6 +66,12 @@ export interface Category{
   section: string[];
 };
 
+ export interface ViewDownloadItem {
+        name?: string;
+        status?: string;
+        fileExpiryDays?: number;
+    }
+
 export interface DocumentPrepareDownload {
   fileId: string;
   registrationId: number;

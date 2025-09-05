@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData, prepareDownload, getReferenceExternalId } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps } from "./responseModel"
+import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
-import { fetchDocumentDetails } from "./ApiService"
+import { fetchDocumentDetails, viewDownload } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
 
@@ -68,7 +68,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
+
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
 
 const categoryArr = getCategoryArr(selectedFormats);
@@ -145,6 +147,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             setTotalPage(totalPages);
         }
     }, [docData]);
+
     useEffect(() => {
     const fetchInitialData = async () => {
         setIsLoading(true);
@@ -170,6 +173,9 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSearchTriggered(false)
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
+    useEffect(() => {
+        isSidePanelOpen && fetchViewDownloadData()
+    },[isSidePanelOpen])
 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
@@ -206,6 +212,23 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSearchLoading(false);
         setIsSearchDataLoading(false);
         
+    }
+
+    const fetchViewDownloadData = async () => {
+        setIsSidePanelLoader(true);
+        try {
+            const result = await viewDownload()
+            debugger
+            if (result?.data && result?.status === 200) {
+                console.log(result)
+                setViewData(result.data)
+            }
+            setIsSidePanelLoader(false);
+        }
+        catch (err) {
+           console.error("Error fetching view download details:", err);
+           setIsSidePanelLoader(false);
+        }
     }
 
 const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
@@ -698,21 +721,23 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                         />} 
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
-                                                viewData.map((item, index) => {
-                                                    const isComplete = item?.status?.toLowerCase() === 'complete';
-                                                    const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+                                                <>
+                                                    <p>Prepared downloads will expire after 5 days</p>
+                                                    {viewData.map((item, index) => {
+                                                        const isComplete = item?.status?.toLowerCase() === 'complete';
+                                                        const isInProgress = item?.status?.toLowerCase() === 'inprogress';
                                                     return (
-                                                        <div className="viewDownloadDetails" key={index}>
-                                                            <div className="fileDetails">
-                                                                <p>{item?.name}</p>
+                                                            <div className="viewDownloadDetails" key={index}>
+                                                                <div className="fileDetails">
+                                                                    <p>{item?.name}</p>
+                                                                    {isComplete && (
+                                                                        <span>Expires in {item?.fileExpiryDays} days</span>
+                                                                    )}
+                                                                </div>
                                                                 {isComplete && (
-                                                                    <span>Expires in {item?.fileExpiryDays} days</span>
+                                                                    <Button className="viewDownloadBtn">Download</Button>
                                                                 )}
-                                                            </div>
-                                                            {isComplete && (
-                                                                <Button className="viewDownloadBtn">Download</Button>
-                                                            )}
-                                                            {isInProgress && (
+                                                                {isInProgress && (
                                                                 <span className="inProgressLoader">
                                                                     <Loader
                                                                         loaderType={LoaderType.Circular}
@@ -721,8 +746,9 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                                                 </span>
                                                             )}
                                                         </div>
-                                                    );
-                                                })
+                                                        );
+                                                    })}
+                                                </>
                                             ) : (
                                                 <p>Files you download will appear here.</p>
                                             )}

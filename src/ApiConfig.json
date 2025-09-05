@@ -4,6 +4,12 @@
         { "env": "qa", "url": "https://qa.platform.sims.co.uk"},
         { "env": "prod", "url": "https://www.platform.sims.co.uk"},
         { "env": "perf", "url": "https://pre.platform.sims.co.uk"}
+    ],
+    "STAFFPROFILE_BASEURLS" : [
+        { "env": "dev", "url": "https://dev.photos.sims.co.uk"},
+        { "env": "qa", "url": "https://qa.photos.sims.co.uk"},
+        { "env": "prod", "url": "https://www.photos.sims.co.uk"},
+        { "env": "perf", "url": "https://pre.photos.sims.co.uk"}
     ]
 }
   
