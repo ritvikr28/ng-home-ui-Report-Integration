@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
-import { DocumentPrepareDownload, PrepareDownloadRequest } from "./responseModel";
+import { Category, FetchViewDownloadDataParams } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -553,6 +553,71 @@ export function getReferenceExternalId(relatedTo: any): string {
   return "";
 }
 
+export function reduceCategories(res: any[]): Category[] {
+  return Object.values(
+    res?.reduce((acc: any, curr: any) => {
+      if (!acc[curr.application]) {
+        acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
+      }
+      acc[curr.application].registrationId.push(curr.registrationId);
+      acc[curr.application].section.push(curr.section);
+      return acc;
+    }, {})
+  ) as Category[];
+}
+
+export const fetchViewDownloadData = async ({
+  showLoader = true,
+  setIsSidePanelLoader,
+  setViewData,
+  viewDownload,
+  downloadPollingIntervalRef,
+}: FetchViewDownloadDataParams) => {
+  let pollingRef = downloadPollingIntervalRef;
+  if (showLoader) setIsSidePanelLoader(true);
+  try {
+    const result = await viewDownload();
+    if (result?.data && result?.status === 200) {
+      setViewData(result.data);
+
+      const hasInProgress = result.data.some(
+        (item: { status: string }) =>
+          item?.status?.toLowerCase() === "inprogress" ||
+          item?.status?.toLowerCase() === "initiated"
+      );
+
+      if (hasInProgress && !pollingRef.current) {
+        pollingRef.current = setInterval(() => {
+          fetchViewDownloadData({
+            showLoader: false,
+            setIsSidePanelLoader,
+            setViewData,
+            viewDownload,
+            downloadPollingIntervalRef: pollingRef,
+          });
+        }, 300000);
+      }
+
+      if (!hasInProgress && pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    } else {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching view download details:", err);
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  } finally {
+    setIsSidePanelLoader(false);
+  }
+};
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();

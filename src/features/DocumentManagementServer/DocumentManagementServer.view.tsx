@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId, fetchViewDownloadData, reduceCategories } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -71,10 +71,12 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
-
+    const [downloadPollingInterval, setDownloadPollingInterval] = useState<NodeJS.Timeout | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
 
 const categoryArr = getCategoryArr(selectedFormats);
+    const downloadPollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
 
 const searchTagListRaw = [
@@ -162,6 +164,14 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     };
 
     fetchInitialData();
+
+      fetchCategory().then((res) => {
+    const map: Record<string, number> = {};
+    res.forEach((cat: any) => {
+      map[cat.application] = cat.registrationId;
+    });
+    setCategoryRegistrationMap(map);
+  });
 }, []);
 
 
@@ -174,15 +184,27 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSearchTriggered(false)
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
-    useEffect(() => {
+  useEffect(() => {
   if (isSidePanelOpen) {
     if (sidePanelOpenReason === "prepare") {
       const timer = setTimeout(() => {
-        fetchViewDownloadData();
+        fetchViewDownloadData({
+        showLoader: true,
+        setIsSidePanelLoader,
+        setViewData,
+        viewDownload,
+        downloadPollingIntervalRef,
+        }); // Show loader on initial fetch
       }, 1000);
       return () => clearTimeout(timer);
     } else {
-      fetchViewDownloadData();
+      fetchViewDownloadData({
+        showLoader: true,
+        setIsSidePanelLoader,
+        setViewData,
+        viewDownload,
+        downloadPollingIntervalRef,
+        }); // Show loader on initial fetch
     }
   }
 }, [isSidePanelOpen, sidePanelOpenReason]);
@@ -224,22 +246,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         
     }
 
-    const fetchViewDownloadData = async () => {
-        setIsSidePanelLoader(true);
-        try {
-            const result = await viewDownload()
-            if (result?.data && result?.status === 200) {
-                console.log(result)
-                setViewData(result.data)
-            }
-            setIsSidePanelLoader(false);
-        }
-        catch (err) {
-           console.error("Error fetching view download details:", err);
-           setIsSidePanelLoader(false);
-        }
-    }
-
 const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
   ? selectedCheckBoxIds
       .map(id => {
@@ -260,9 +266,9 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                     relatedTo: doc?.relatedTo
                   },
                 ],
-                categoryId: Array.isArray(doc?.categoryId)
-                    ? doc.categoryId.map((id: any) => Number(id))
-                    : [Number(doc?.categoryId ?? 3)],
+                categoryId: categoryRegistrationMap[doc?.category]
+                  ? [categoryRegistrationMap[doc?.category]]
+                  : [],
                 fromDate: doc?.fromDate ?? "",
                 toDate: doc?.toDate ?? ""
               },
@@ -484,23 +490,22 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
         setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
-                const categories = Object.values(
-                    res?.reduce((acc: any, curr: any) => {
-                        if (!acc[curr.application]) {
-                            acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
-                        }
-                        acc[curr.application].registrationId.push(curr.registrationId);
-                        acc[curr.application].section.push(curr.section);
-                        return acc;
-                    }, {})
-                ) as Category[];
-                setAvailableCategories(categories);
+            const categories = reduceCategories(res);
+            setAvailableCategories(categories);
             });
         if (selectedFormats) {
             setSelectedCategories(selectedFormats);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
+};
+
+const handleCloseSidePanel = () => {
+    setIsSidePanelOpen(false);
+    if (downloadPollingIntervalRef.current) {
+        clearInterval(downloadPollingIntervalRef.current);
+        downloadPollingIntervalRef.current = null;
     }
+};
 
     return (<>
         <>
@@ -728,6 +733,7 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                             title="Unable to prepare [document/documents] for download"
                                             message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
                                             autoclose
+                                            onClickClose={() => setPrepareDownloadError(false)}
                                         />} 
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
@@ -847,7 +853,7 @@ const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
-                                handleCloseSidePanel={()=>setIsSidePanelOpen(false)}
+                                handleCloseSidePanel={handleCloseSidePanel}
                                 isShowAutoSuggest={isShowAutoSuggest}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."

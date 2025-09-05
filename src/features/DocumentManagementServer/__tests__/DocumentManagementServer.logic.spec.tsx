@@ -24,7 +24,9 @@ import {
   filterNonEmptySuggestions,
   getStaffProfilePhoto,
   prepareDownload,
-  getReferenceExternalId
+  getReferenceExternalId,
+  reduceCategories,
+  fetchViewDownloadData
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -912,6 +914,15 @@ describe('getResultNotFoundMsg', () => {
     const result = getResultNotFoundMsg('', { data: [] }, '', false);
     expect(result).toBeUndefined();
   });
+  it('returns "No data to display" when not searching and no data', () => {
+  const result = getResultNotFoundMsg(
+    "", // searchText is empty
+    { statusCode: 200, data: [] }, // docData has empty array
+    "", // searchTerm
+    false // showErrorBanner
+  );
+  expect(result).toBe("No data to display.");
+});
 });
 
 describe("getAllRegistrationIds", () => {
@@ -1532,5 +1543,212 @@ describe("getReferenceExternalId", () => {
 
   it("returns empty string if none of the keys are present", () => {
     expect(getReferenceExternalId({ foo: "bar" })).toBe("");
+  });
+});
+
+describe("reduceCategories", () => {
+  it("reduces multiple categories with same application", () => {
+    const input = [
+      { application: "AppX", registrationId: 1, section: "S1" },
+      { application: "AppX", registrationId: 2, section: "S2" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: "AppX",
+        registrationId: [1, 2],
+        section: ["S1", "S2"]
+      }
+    ]);
+  });
+
+  it("reduces categories with different applications", () => {
+    const input = [
+      { application: "AppX", registrationId: 1, section: "S1" },
+      { application: "AppY", registrationId: 2, section: "S2" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: "AppX",
+        registrationId: [1],
+        section: ["S1"]
+      },
+      {
+        application: "AppY",
+        registrationId: [2],
+        section: ["S2"]
+      }
+    ]);
+  });
+
+  it("handles empty input array", () => {
+    const result = reduceCategories([]);
+    expect(result).toEqual([]);
+  });
+
+
+  it("handles missing application property", () => {
+    const input = [
+      { registrationId: 1, section: "S1" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: undefined,
+        registrationId: [1],
+        section: ["S1"]
+      }
+    ]);
+  });
+});
+
+describe("fetchViewDownloadData", () => {
+  let setIsSidePanelLoader: jest.Mock;
+  let setViewData: jest.Mock;
+  let viewDownload: jest.Mock;
+  let downloadPollingIntervalRef: { current: any };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setIsSidePanelLoader = jest.fn();
+    setViewData = jest.fn();
+    viewDownload = jest.fn();
+    downloadPollingIntervalRef = { current: null };
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.clearAllMocks();
+  });
+
+  it("sets loader, sets data, starts polling if in progress, and clears polling when complete", async () => {
+    // First call: in progress
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "inprogress" }],
+      status: 200
+    });
+    // Second call: complete
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
+    expect(setViewData).toHaveBeenCalledWith([{ status: "inprogress" }]);
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+
+    // Simulate interval tick
+    expect(downloadPollingIntervalRef.current).not.toBeNull();
+    jest.runOnlyPendingTimers();
+
+    // Await the second call
+    await Promise.resolve();
+
+    expect(setViewData).toHaveBeenCalledWith([{ status: "inprogress" }]);
+  });
+
+  it("does not start polling if no in progress files", async () => {
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
+    expect(setViewData).toHaveBeenCalledWith([{ status: "complete" }]);
+    expect(downloadPollingIntervalRef.current).toBeNull();
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+  });
+
+  it("clears polling interval if not in progress and interval exists", async () => {
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(downloadPollingIntervalRef.current).toBeNull();
+  });
+
+  it("clears polling interval if result is not 200", async () => {
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 400
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(downloadPollingIntervalRef.current).toBeNull();
+  });
+
+  it("clears polling interval and logs error on exception", async () => {
+    const error = new Error("fail");
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockRejectedValueOnce(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith("Error fetching view download details:", error);
+    expect(downloadPollingIntervalRef.current).toBeNull();
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+
+    consoleSpy.mockRestore();
+  });
+
+  it("does not set loader if showLoader is false", async () => {
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: false,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).not.toHaveBeenCalledWith(true);
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(false);
   });
 });

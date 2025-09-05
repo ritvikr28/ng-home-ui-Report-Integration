@@ -1,9 +1,8 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
-import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload, PrepareDownloadRequest } from "./responseModel";
+import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
-import { Doc } from "prettier";
 
 export const fetchDocumentDetails = async ({
   pageNumber,

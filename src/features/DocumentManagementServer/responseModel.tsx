@@ -96,3 +96,11 @@ export interface PrepareDownloadRequest {
   downloadCriteria: DownloadCriteria;
   fileDetails: DocumentPrepareDownload[];
 }
+
+export interface FetchViewDownloadDataParams {
+  showLoader?: boolean;
+  setIsSidePanelLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  setViewData: React.Dispatch<React.SetStateAction<any[]>>;
+  viewDownload: () => Promise<any>;
+  downloadPollingIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+}

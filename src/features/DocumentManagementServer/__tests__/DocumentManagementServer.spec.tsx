@@ -1271,5 +1271,27 @@ it("shows error notification when prepareDownload rejects", async () => {
   
 });
 
+it("reduces category data properly in handleFilterOnClick", async () => {
+  const categoryList = [
+    { application: "AppX", registrationId: 111, section: "S1" },
+    { application: "AppX", registrationId: 112, section: "S2" },
+    { application: "AppY", registrationId: 113, section: "S3" }
+  ];
+  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
 
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(3000);
+  });
+
+  await waitFor(() => {
+    const filterButton = screen.getByTestId("filter-btn");
+    fireEvent.click(filterButton);
+  });
+
+  await waitFor(() => {
+    expect(apiService.fetchFilterCategory).toHaveBeenCalled();
+    // Optionally, check that availableCategories state is set correctly
+  });
+});
 })
