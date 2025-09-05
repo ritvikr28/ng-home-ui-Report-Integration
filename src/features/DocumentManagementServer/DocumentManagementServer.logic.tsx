@@ -1,10 +1,10 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory, prepareAndDownloadFile } from "./ApiService";
+import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import {truncatedString} from "../../shared/utils/commonFunctions";
-import { DocumentPrepareDownload } from "./responseModel";
+import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
+import { Category, FetchViewDownloadDataParams } from "./responseModel";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -286,104 +286,7 @@ anyComponent: (e: any) => (
     }
   ];
 
-export const viewData: {
-  batchId: number;
-  organisationId: string;
-  totalNoOfFiles: number;
-  zipSourceFilesSize: number;
-  name: string;
-  userIdCreatedBy: string;
-  roleName: string;
-  status: string;
-  size: number;
-  registrationId: string | null;
-  application: string | null;
-  section: string | null;
-  partitionKey: string;
-  rowKey: string;
-  timestamp: string;
-  eTag: string;
-  fileExpiryDays: number | null;
-}[] = [
-    
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-20_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "InProgress",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: null
-  },
-  
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "SIMS_2025-8-22_17-0-Batch1-9793799e-4912-4948-ad30-27fa829f819b.zip",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays:5
-  },
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "medical.pdf",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "Complete",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819e",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: 4
-  },
-  {
-    "batchId": 1,
-    "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
-    "name": "Test.pdf",
-    "totalNoOfFiles": 16,
-    "zipSourceFilesSize": 0,
-    "size": 0,
-    "status": "InProgress",
-    "roleName": "",
-    "userIdCreatedBy": "072f12f9-2911-40de-a9c3-f95ac843d06f",
-    "registrationId": null,
-    "application": null,
-    "section": null,
-    "partitionKey": "9793799e-4912-4948-ad30-27fa829f819b",
-    "rowKey": "2d171222-9e46-4671-86fa-e4184aa506c2",
-    "timestamp": "2025-08-20T17:00:06.5396144+05:30",
-    "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
-    fileExpiryDays: null
-  }
-  ];
+
 export const handlePageChange = (
   _event: any,
   page: number,
@@ -549,6 +452,79 @@ export const handleTagCloseLogic = (
   );
 };
 
+export function getReferenceExternalId(relatedTo: any): string {
+  if (!relatedTo) return "";
+  if (relatedTo.organisationId) return relatedTo.organisationId;
+  if (relatedTo.externalId) return relatedTo.externalId;
+  if (relatedTo.learnerExternalId) return relatedTo.learnerExternalId;
+  return "";
+}
+
+export function reduceCategories(res: any[]): Category[] {
+  return Object.values(
+    res?.reduce((acc: any, curr: any) => {
+      if (!acc[curr.application]) {
+        acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
+      }
+      acc[curr.application].registrationId.push(curr.registrationId);
+      acc[curr.application].section.push(curr.section);
+      return acc;
+    }, {})
+  ) as Category[];
+}
+
+export const fetchViewDownloadData = async ({
+  showLoader = true,
+  setIsSidePanelLoader,
+  setViewData,
+  viewDownload,
+  downloadPollingIntervalRef,
+}: FetchViewDownloadDataParams) => {
+  let pollingRef = downloadPollingIntervalRef;
+  if (showLoader) setIsSidePanelLoader(true);
+  try {
+    const result = await viewDownload();
+    if (result?.data && result?.status === 200) {
+      setViewData(result.data);
+
+      const hasInProgress = result.data.some(
+        (item: { status: string }) =>
+          item?.status?.toLowerCase() === "inprogress" ||
+          item?.status?.toLowerCase() === "initiated"
+      );
+
+      if (hasInProgress && !pollingRef.current) {
+        pollingRef.current = setInterval(() => {
+          fetchViewDownloadData({
+            showLoader: false,
+            setIsSidePanelLoader,
+            setViewData,
+            viewDownload,
+            downloadPollingIntervalRef: pollingRef,
+          });
+        }, 300000);
+      }
+
+      if (!hasInProgress && pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    } else {
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching view download details:", err);
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  } finally {
+    setIsSidePanelLoader(false);
+  }
+};
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
@@ -592,119 +568,131 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         return [];
     }) || [];
 
-export const formatSuggestions = (payload: any[]): Suggestion[] =>
-  payload?.map((category: any) => ({
-    name: category?.name || "",
-    values: (category?.values || []).map((item: any) => {
-      let text = "";
-      let props: ISearchItemProp = {};
-      let icon: JSX.Element | undefined;
-      let value: JSX.Element | string | undefined;
+const staffImgString = 'Staff Photo';
+const pupilImgString = 'Pupil Photo';
 
-      switch (category?.name) {
-        case "Document":
-          text = item?.fileName || "";
-          props = {
-            name: item?.fileName,
-            id: item?.fileId,
-            ...item
-          };
-          break;
-        case "Pupil":
-          text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
+export const getStaffProfilePhoto = async (staffId: string) => {
+  const response = await fetchStaffProfilePhoto(staffId);
+  return response?.data ?? "";
+}
+export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> => {
+  if (!payload) return [];
+  return Promise.all(
+    payload.map(async (category: any) => {
+      const values = await Promise.all(
+        (category?.values || []).map(async (item: any) => {
+          let text = "";
+          let props: ISearchItemProp = {};
+          let icon: JSX.Element | undefined;
+          let value: JSX.Element | string | undefined;
+
+          switch (category?.name) {
+            case "Document":
+              text = item?.fileName || "";
+              props = {
+                name: item?.fileName,
+                id: item?.fileId,
+                ...item
+              };
+              break;
+            case "Pupil":
+              text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
+              icon = (
+                <>
+                  {(item.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={item.imagePath} alt={pupilImgString} className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              value = ((item?.currentYearGroup || item?.currentRegistration) && (
+                <Tag
+                  text={
+                    [item?.currentYearGroup, item?.currentPrimaryClass]
+                      .filter(Boolean)
+                      .join(" / ")
+                  }
+                  color={TagColor.Warning}
+                  size={TagSize.Small}
                 />
-              ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          value = ((item?.currentYearGroup || item?.currentRegistration) && (
-            <Tag
-              text={
-                [item?.currentYearGroup, item?.currentPrimaryClass]
-                  .filter(Boolean)
-                  .join(" / ")
-              }
-              color={TagColor.Warning}
-              size={TagSize.Small}
-            />
-          ));
-          props = {
-            name: text,
-            id: item?.pupilId,
+              ));
+              props = {
+                name: text,
+                id: item?.pupilId,
+                value,
+                ...item
+              };
+              break;
+            case "Staff": {
+              text = [
+                `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+                item?.staffCode
+              ]
+                .filter(Boolean)
+                .join(" | ") || item?.name || "";
+              const data = await getStaffProfilePhoto((item?.externalId).toLowerCase());
+              icon = (
+                <>
+                  {(data?.imagePath === "") ? (
+                    <Icon
+                      name="user--filled"
+                      size={IconSize.Medium}
+                      color={IconColor.Neutral400}
+                    />
+                  ) : (
+                    <img src={data?.imagePath} alt={staffImgString} className="dms-search__profile-icon" />
+                  )}
+                </>
+              );
+              props = {
+                name: text,
+                id: item?.externalId,
+                ...item
+              };
+              break;
+            }
+            case "Organisation":
+              text = item?.schoolName || item?.name || "";
+              props = {
+                name: text,
+                id: item?.orgId,
+                ...item
+              };
+              break;
+            default:
+              text = item?.name || "";
+              props = {
+                name: item?.name,
+                id: item?.id,
+                ...item
+              };
+          }
+          return {
+            text,
+            icon,
+            props,
             value,
-            ...item
           };
-          break;
-        case "Staff":
-          text = [
-            `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
-            item?.staffCode
-          ]
-            .filter(Boolean)
-            .join(" | ") || item?.name || "";
-          icon = (
-            <>
-              {(item.imagePath === "") ? (
-                <Icon
-                  name="user--filled"
-                  size={IconSize.Medium}
-                  color={IconColor.Neutral400}
-                />
-              ) : (
-                <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
-              )}
-            </>
-          );
-          props = {
-            name: text,
-            id: item?.staffId,
-            ...item
-          };
-          break;
-        case "Organisation":
-          text = item?.schoolName || item?.name || "";
-          props = {
-            name: text,
-            id: item?.orgId,
-            ...item
-          };
-          break;
-        default:
-          text = item?.name || "";
-          props = {
-            name: item?.name,
-            id: item?.id,
-            ...item
-          };
-      }
+        })
+      );
       return {
-        text,
-        icon,
-        props,
-        value,
+        name: category?.name || "",
+        values,
       };
-    }),
-  })) || [];
+    })
+  );
+};
 
 
-  export const prepareDownload = async (fileDetails: DocumentPrepareDownload[]) => {
-    try {
-
-      const response = await prepareAndDownloadFile(fileDetails);
-
-      return response?.status
-    } catch (error) {
-      console.error("Error preparing download:", error);
-    }
-  };
+export const prepareDownload = async (payload: { request: any }[]) => {
+  const status = await prepareAndDownloadFile(payload[0]);
+  return status;
+};
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 
@@ -714,6 +702,70 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
+}
+
+export function validateAndApplyFilter({
+  selectedDateRange,
+  isDateError,
+  setIsDateError,
+  setIsFilterLoading,
+  setDateRange,
+  setSelectedFormats,
+  selectedCategories,
+  setIsFilterDialogOpen,
+}: {
+  selectedDateRange: { fromDate?: string; toDate?: string };
+  isDateError: boolean;
+  setIsDateError: (v: boolean) => void;
+  setIsFilterLoading: (v: boolean) => void;
+  setDateRange: (v: { fromDate: string; toDate: string }) => void;
+  setSelectedFormats: (v: any) => void;
+  selectedCategories: any;
+  setIsFilterDialogOpen: (v: boolean) => void;
+}) {
+  if (
+    (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
+    (selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate))
+  ) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (isDateError) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (
+    isDateError ||
+    (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid()) ||
+    (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid()) ||
+    (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid())
+  ) {
+    setIsDateError(true);
+  } else {
+    setIsFilterLoading(true);
+     setDateRange({
+      fromDate: selectedDateRange?.fromDate ?? "",
+      toDate: selectedDateRange?.toDate ?? ""
+    });
+    setTimeout(() => {
+      setSelectedFormats(selectedCategories);
+      setIsFilterDialogOpen(false);
+      setIsFilterLoading(false);
+    }, 500);
+  }
+}
+
+export function closeSidePanel(
+  setIsSidePanelOpen: (v: boolean) => void,
+  downloadPollingIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>
+) {
+  setIsSidePanelOpen(false);
+  if (downloadPollingIntervalRef.current) {
+    clearInterval(downloadPollingIntervalRef.current);
+    downloadPollingIntervalRef.current = null;
+  }
 }
 
 export const debouncedFetchSuggestions = debounce(
@@ -729,7 +781,8 @@ export const debouncedFetchSuggestions = debounce(
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload ?? [];
-      setSuggestions(formatSuggestions(values));
+      const suggestions = await formatSuggestions(values);
+      setSuggestions(suggestions);
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);

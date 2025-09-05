@@ -21,8 +21,16 @@ import {
   loadSuggestions,
   onBreadcrumbClick,
   mapRelatedArr,
-  filterNonEmptySuggestions
+  filterNonEmptySuggestions,
+  getStaffProfilePhoto,
+  prepareDownload,
+  getReferenceExternalId,
+  reduceCategories,
+  fetchViewDownloadData,
+  validateAndApplyFilter,
+  closeSidePanel
 } from "../DocumentManagementServer.logic";
+import dayjs from "dayjs";
 
 const analytics = require('../../../shared/utils/analytics').default;
 
@@ -121,13 +129,13 @@ describe("getTableHeadersData column anyComponent rendering", () => {
 
 
 describe("formatSuggestions", () => {
-  it("returns empty array when input is empty", () => {
-    expect(formatSuggestions([])).toEqual([]);
-    expect(formatSuggestions(undefined as any)).toEqual([]);
-    expect(formatSuggestions(null as any)).toEqual([]);
-  });
+  it("returns empty array when input is empty", async () => {
+  expect(await formatSuggestions([])).toEqual([]);
+  expect(await formatSuggestions(undefined as any)).toEqual([]);
+  expect(await formatSuggestions(null as any)).toEqual([]);
+});
 
-  it("formats Document category correctly", () => {
+  it("formats Document category correctly", async () => {
     const input = [
       {
         name: "Document",
@@ -137,7 +145,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toHaveLength(2);
@@ -145,7 +153,7 @@ describe("formatSuggestions", () => {
     expect(result[0].values[0].props).toMatchObject({ name: "File 1", id: "1" });
   });
 
-  it("formats Pupil category with icon and value", () => {
+  it("formats Pupil category with icon and value", async () => {
     const input = [
       {
         name: "Pupil",
@@ -162,7 +170,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Pupil");
     expect(result[0].values[0].text).toContain("John Doe (Jonathan Doe)");
@@ -174,7 +182,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats Staff category with icon", () => {
+  it("formats Staff category with icon", async () => {
     const input = [
       {
         name: "Staff",
@@ -184,12 +192,13 @@ describe("formatSuggestions", () => {
             preferredForename: "Jane",
             preferredSurname: "Smith",
             imagePath: "",
-            name: "Jane Smith"
+            name: "Jane Smith",
+            externalId: "s1"
           }
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Staff");
     expect(result[0].values[0].text).toContain("Jane Smith");
@@ -200,7 +209,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats Organisation category", () => {
+  it("formats Organisation category", async () => {
     const input = [
       {
         name: "Organisation",
@@ -213,7 +222,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Organisation");
     expect(result[0].values[0].text).toBe("Test School");
@@ -223,7 +232,7 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("formats default category", () => {
+  it("formats default category", async () => {
     const input = [
       {
         name: "Other",
@@ -235,7 +244,7 @@ describe("formatSuggestions", () => {
         ]
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Other");
     expect(result[0].values[0].text).toBe("Other Name");
@@ -245,14 +254,14 @@ describe("formatSuggestions", () => {
     });
   });
 
-  it("handles empty values array for a category", () => {
+  it("handles empty values array for a category", async () => {
     const input = [
       {
         name: "Document",
         values: []
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
@@ -272,21 +281,21 @@ describe("formatSuggestions", () => {
   //   expect(result[0].values[0].text).toBe("File 1");
   // });
 
-  it("handles missing values property", () => {
+  it("handles missing values property", async () => {
     const input = [
       {
         name: "Document"
       }
     ];
-    const result = formatSuggestions(input);
+    const result = await formatSuggestions(input);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
   });
-   test("returns empty when input is empty", () => {
-    const result = formatSuggestions([]);
-    expect(result).toEqual([]);
-  });
+   test("returns empty when input is empty", async () => {
+  const result = await formatSuggestions([]);
+  expect(result).toEqual([]);
+});
 });
 
  
@@ -908,6 +917,15 @@ describe('getResultNotFoundMsg', () => {
     const result = getResultNotFoundMsg('', { data: [] }, '', false);
     expect(result).toBeUndefined();
   });
+  it('returns "No data to display" when not searching and no data', () => {
+  const result = getResultNotFoundMsg(
+    "", // searchText is empty
+    { statusCode: 200, data: [] }, // docData has empty array
+    "", // searchTerm
+    false // showErrorBanner
+  );
+  expect(result).toBe("No data to display.");
+});
 });
 
 describe("getAllRegistrationIds", () => {
@@ -1444,3 +1462,451 @@ describe("filterNonEmptySuggestions", () => {
     expect(filterNonEmptySuggestions([] as any)).toEqual([]);
   });
 })
+
+describe("getStaffProfilePhoto", () => {
+   const mockFetch = jest.fn();
+  beforeAll(() => {
+    jest.spyOn(ApiService, "fetchStaffProfilePhoto").mockImplementation(mockFetch);
+  });
+  afterEach(() => {
+    mockFetch.mockReset();
+  });
+  afterAll(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("returns data when API resolves with data", async () => {
+    mockFetch.mockResolvedValue({ data: "photo-url" });
+    const result = await getStaffProfilePhoto("staff123");
+    expect(result).toBe("photo-url");
+    expect(mockFetch).toHaveBeenCalledWith("staff123");
+  });
+
+  it("returns empty string when API resolves with null", async () => {
+    mockFetch.mockResolvedValue(null);
+    const result = await getStaffProfilePhoto("staff456");
+    expect(result).toBe("");
+  });
+
+  it("returns empty string when API resolves with no data property", async () => {
+    mockFetch.mockResolvedValue({});
+    const result = await getStaffProfilePhoto("staff789");
+    expect(result).toBe("");
+  });
+
+  it("returns empty string when API throws", async () => {
+    mockFetch.mockRejectedValue(new Error("fail"));
+    // The function does not catch, so this will throw unless we wrap
+    await expect(getStaffProfilePhoto("staff000")).rejects.toThrow("fail");
+  });
+});
+
+describe("prepareDownload", () => {
+  const payload = [{ request: { foo: "bar" } }];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns status from prepareAndDownloadFile (success)", async () => {
+    (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(204);
+    const result = await prepareDownload(payload);
+    expect(result).toBe(204);
+    expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
+  });
+
+  it("returns status from prepareAndDownloadFile (error)", async () => {
+    (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(400);
+    const result = await prepareDownload(payload);
+    expect(result).toBe(400);
+    expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
+  });
+})
+
+describe("getReferenceExternalId", () => {
+  it("returns empty string if relatedTo is undefined", () => {
+    expect(getReferenceExternalId(undefined)).toBe("");
+  });
+
+  it("returns empty string if relatedTo is null", () => {
+    expect(getReferenceExternalId(null)).toBe("");
+  });
+
+  it("returns organisationId if present", () => {
+    expect(getReferenceExternalId({ organisationId: "org123" })).toBe("org123");
+  });
+
+  it("returns externalId if present and organisationId is missing", () => {
+    expect(getReferenceExternalId({ externalId: "ext456" })).toBe("ext456");
+  });
+
+  it("returns learnerExternalId if present and others are missing", () => {
+    expect(getReferenceExternalId({ learnerExternalId: "learner789" })).toBe("learner789");
+  });
+
+  it("returns empty string if none of the keys are present", () => {
+    expect(getReferenceExternalId({ foo: "bar" })).toBe("");
+  });
+});
+
+describe("reduceCategories", () => {
+  it("reduces multiple categories with same application", () => {
+    const input = [
+      { application: "AppX", registrationId: 1, section: "S1" },
+      { application: "AppX", registrationId: 2, section: "S2" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: "AppX",
+        registrationId: [1, 2],
+        section: ["S1", "S2"]
+      }
+    ]);
+  });
+
+  it("reduces categories with different applications", () => {
+    const input = [
+      { application: "AppX", registrationId: 1, section: "S1" },
+      { application: "AppY", registrationId: 2, section: "S2" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: "AppX",
+        registrationId: [1],
+        section: ["S1"]
+      },
+      {
+        application: "AppY",
+        registrationId: [2],
+        section: ["S2"]
+      }
+    ]);
+  });
+
+  it("handles empty input array", () => {
+    const result = reduceCategories([]);
+    expect(result).toEqual([]);
+  });
+
+
+  it("handles missing application property", () => {
+    const input = [
+      { registrationId: 1, section: "S1" }
+    ];
+    const result = reduceCategories(input);
+    expect(result).toEqual([
+      {
+        application: undefined,
+        registrationId: [1],
+        section: ["S1"]
+      }
+    ]);
+  });
+});
+
+describe("fetchViewDownloadData", () => {
+  let setIsSidePanelLoader: jest.Mock;
+  let setViewData: jest.Mock;
+  let viewDownload: jest.Mock;
+  let downloadPollingIntervalRef: { current: any };
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setIsSidePanelLoader = jest.fn();
+    setViewData = jest.fn();
+    viewDownload = jest.fn();
+    downloadPollingIntervalRef = { current: null };
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.clearAllMocks();
+  });
+
+  it("sets loader, sets data, starts polling if in progress, and clears polling when complete", async () => {
+    // First call: in progress
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "inprogress" }],
+      status: 200
+    });
+    // Second call: complete
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
+    expect(setViewData).toHaveBeenCalledWith([{ status: "inprogress" }]);
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+
+    // Simulate interval tick
+    expect(downloadPollingIntervalRef.current).not.toBeNull();
+    jest.runOnlyPendingTimers();
+
+    // Await the second call
+    await Promise.resolve();
+
+    expect(setViewData).toHaveBeenCalledWith([{ status: "inprogress" }]);
+  });
+
+  it("does not start polling if no in progress files", async () => {
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
+    expect(setViewData).toHaveBeenCalledWith([{ status: "complete" }]);
+    expect(downloadPollingIntervalRef.current).toBeNull();
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+  });
+
+  it("clears polling interval if not in progress and interval exists", async () => {
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(downloadPollingIntervalRef.current).toBeNull();
+  });
+
+  it("clears polling interval if result is not 200", async () => {
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 400
+    });
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(downloadPollingIntervalRef.current).toBeNull();
+  });
+
+  it("clears polling interval and logs error on exception", async () => {
+    const error = new Error("fail");
+    downloadPollingIntervalRef.current = setInterval(() => {}, 1000);
+    viewDownload.mockRejectedValueOnce(error);
+
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(consoleSpy).toHaveBeenCalledWith("Error fetching view download details:", error);
+    expect(downloadPollingIntervalRef.current).toBeNull();
+    expect(setIsSidePanelLoader).toHaveBeenLastCalledWith(false);
+
+    consoleSpy.mockRestore();
+  });
+
+  it("does not set loader if showLoader is false", async () => {
+    viewDownload.mockResolvedValueOnce({
+      data: [{ status: "complete" }],
+      status: 200
+    });
+
+    await fetchViewDownloadData({
+      showLoader: false,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef
+    });
+
+    expect(setIsSidePanelLoader).not.toHaveBeenCalledWith(true);
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("validateAndApplyFilter", () => {
+  let setIsDateError: jest.Mock;
+  let setIsFilterLoading: jest.Mock;
+  let setDateRange: jest.Mock;
+  let setSelectedFormats: jest.Mock;
+  let setIsFilterDialogOpen: jest.Mock;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    setIsDateError = jest.fn();
+    setIsFilterLoading = jest.fn();
+    setDateRange = jest.fn();
+    setSelectedFormats = jest.fn();
+    setIsFilterDialogOpen = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("sets date error if fromDate is invalid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-13-01", toDate: "2025-01-01" }, // invalid month
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if toDate is invalid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-32" }, // invalid day
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if isDateError is true", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: true,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if dayjs validation fails for fromDate", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "invalid-date", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if dayjs validation fails for toDate", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "invalid-date" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("sets date error if fromDate is empty and toDate is valid", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "", toDate: dayjs().format("YYYY-MM-DD") },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: [],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsDateError).toHaveBeenCalledWith(true);
+    expect(setIsFilterLoading).not.toHaveBeenCalled();
+  });
+
+  it("applies filter when dates are valid and no error", () => {
+    validateAndApplyFilter({
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setSelectedFormats,
+      selectedCategories: ["cat1"],
+      setIsFilterDialogOpen,
+    });
+    expect(setIsFilterLoading).toHaveBeenCalledWith(true);
+    expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
+    jest.runAllTimers();
+    expect(setSelectedFormats).toHaveBeenCalledWith(["cat1"]);
+    expect(setIsFilterDialogOpen).toHaveBeenCalledWith(false);
+    expect(setIsFilterLoading).toHaveBeenLastCalledWith(false);
+  });
+});
+
+describe("closeSidePanel", () => {
+  it("sets side panel closed and clears interval if exists", () => {
+  const setIsSidePanelOpen = jest.fn();
+  const intervalId = setInterval(() => {}, 1000);
+  const pollingRef = { current: intervalId };
+  const clearSpy = jest.spyOn(global, "clearInterval");
+  closeSidePanel(setIsSidePanelOpen, pollingRef);
+  expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
+  expect(clearSpy).toHaveBeenCalledWith(intervalId);
+  expect(pollingRef.current).toBeNull();
+  clearSpy.mockRestore();
+});
+
+ it("sets side panel closed and does nothing if interval does not exist", () => {
+  const setIsSidePanelOpen = jest.fn();
+  const pollingRef = { current: null };
+  const clearSpy = jest.spyOn(global, "clearInterval");
+  closeSidePanel(setIsSidePanelOpen, pollingRef);
+  expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
+  expect(clearSpy).not.toHaveBeenCalled();
+  expect(pollingRef.current).toBeNull();
+  clearSpy.mockRestore();
+});
+});

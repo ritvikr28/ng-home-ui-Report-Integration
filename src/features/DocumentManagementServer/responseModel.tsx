@@ -66,8 +66,41 @@ export interface Category{
   section: string[];
 };
 
+ export interface ViewDownloadItem {
+        name?: string;
+        status?: string;
+        fileExpiryDays?: number;
+    }
+
 export interface DocumentPrepareDownload {
   fileId: string;
   registrationId: number;
   status?: string;
+}
+
+export interface ReferenceMappingDetail {
+  refernceExternalId: string;
+  documentRealatedTo: string;
+  relatedTo: any[];
+}
+
+export interface DownloadCriteria {
+  refernceMappingDetails: ReferenceMappingDetail[];
+  categoryId: number[];
+  fromDate: string;
+  toDate: string;
+}
+
+export interface PrepareDownloadRequest {
+  selectAll: boolean;
+  downloadCriteria: DownloadCriteria;
+  fileDetails: DocumentPrepareDownload[];
+}
+
+export interface FetchViewDownloadDataParams {
+  showLoader?: boolean;
+  setIsSidePanelLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  setViewData: React.Dispatch<React.SetStateAction<any[]>>;
+  viewDownload: () => Promise<any>;
+  downloadPollingIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
 }

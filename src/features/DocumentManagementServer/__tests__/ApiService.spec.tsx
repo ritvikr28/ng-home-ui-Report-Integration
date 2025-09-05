@@ -2,7 +2,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -277,9 +277,9 @@ describe('fetchFilterCategory', () => {
 
 describe('viewDownload', () => {
   it('returns response data on success', async () => {
-    (service.get as jest.Mock).mockResolvedValue({ data: { foo: 'bar' } });
+    (service.get as jest.Mock).mockResolvedValue({ data: [{ foo: 'bar' }] });
     const result = await viewDownload();
-    expect(result).toEqual({ foo: 'bar' });
+    expect(result).toEqual( { data: [{ foo: 'bar' }] });
   });
 
   it('returns empty object and logs error on failure', async () => {
@@ -299,8 +299,121 @@ describe('viewDownload', () => {
     (service.get as jest.Mock).mockResolvedValue({ data: {} });
     await viewDownload();
     expect(service.get).toHaveBeenCalledWith(
-      '/validation/api/v1/viewDownload',
+      '/validation/api/v1/file/viewDownload',
       expect.any(String)
     );
+  });
+});
+
+describe('fetchStaffProfilePhoto', () => {
+  const mockExternalId = 'abc123';
+  const mockUrl = `/api/v1/personThumbnailImage/${mockExternalId}`;
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns response on success', async () => {
+    const mockResponse = { data: { foo: 'bar' } };
+    (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual(mockResponse);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.any(String));
+  });
+
+  it('returns empty object and logs error on failure', async () => {
+    const error = new Error('Network error');
+    (service.get as jest.Mock).mockRejectedValueOnce(error);
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      'Error fetching staff profile photo:',
+      error
+    );
+    consoleSpy.mockRestore();
+  });
+
+  it('calls service.get with correct url and baseUrl', async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({ data: {} });
+    await fetchStaffProfilePhoto(mockExternalId);
+    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.any(String));
+  });
+
+  it('handles empty externalId gracefully', async () => {
+    (service.get as jest.Mock).mockResolvedValueOnce({ data: {} });
+    await fetchStaffProfilePhoto('');
+    expect(service.get).toHaveBeenCalledWith('/api/v1/personThumbnailImage/', expect.any(String));
+  });
+
+  it('returns empty object if service.get throws non-Error', async () => {
+    (service.get as jest.Mock).mockRejectedValueOnce('some error');
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const result = await fetchStaffProfilePhoto(mockExternalId);
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalled();
+    consoleSpy.mockRestore();
+  });
+});
+
+describe("prepareAndDownloadFile", () => {
+  const payload = { request: { foo: "bar" } };
+  const baseUrl = "https://dev.platform.sims.co.uk";
+  const url = "/validation/api/v1/file/preparedownload";
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test("returns status code on successful response", async () => {
+    const mockResponse: AxiosResponse = {
+      data: {},
+      status: 204,
+      statusText: "No Content",
+      headers: {},
+      config: {},
+    };
+    (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(204);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns error status from error.response.status", async () => {
+    const error = {
+      response: { status: 401 },
+    };
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(401);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns 400 if error does not have response.status", async () => {
+    const error = new Error("Network error");
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(400);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+
+  test("returns status code on successful response with status 400", async () => {
+    const mockResponse: AxiosResponse = {
+      data: {},
+      status: 400,
+      statusText: "Bad Request",
+      headers: {},
+      config: {},
+    };
+    (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await prepareAndDownloadFile(payload);
+    expect(result).toBe(400);
+    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
 });

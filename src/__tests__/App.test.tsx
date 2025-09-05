@@ -1,12 +1,11 @@
 import { createBrowserHistory } from "history";
-import { render, waitFor } from "@testing-library/react";
+import { render, waitFor, act } from "@testing-library/react";
 import { Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { authService } from "@essnextgen/auth-ui";
 import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import configureStore from "../redux/store";
 import App from "../App";
-import { fetchPreferredLanguage } from "../shared/services/localisationDomain/localisationPreferences";
 import { service } from "../shared/utils";
 import gtmAnalytics from "../shared/utils/analytics";
 import ErrorBoundary from "../shared/components/ErrorBoundary/Index";
@@ -22,7 +21,6 @@ jest.mock("../shared/utils", () => ({
   hasFeaturePermission: jest.fn().mockReturnValue(false),
 }));
 
-jest.mock("../shared/services/localisationDomain/localisationPreferences");
 jest.mock("@essnextgen/ui-intl-kit", () => ({
   IntlProvider: { init: jest.fn(() => ({ init: jest.fn() })) },
   useTranslation: () => ({
@@ -37,11 +35,11 @@ jest.mock("../shared/utils/analytics", () => ({
   pushLogInEvent: jest.fn(),
 }));
 
-function renderWithHistory(history: any) {
+function renderWithHistory(history: any, props = {}) {
   return render(
     <Provider store={configureStore()}>
       <Router history={history}>
-        <App isStandaloneApp baseRouteName="" />
+        <App isStandaloneApp baseRouteName="" {...props} />
       </Router>
     </Provider>
   );
@@ -53,70 +51,79 @@ describe("App i18n and error handling coverage", () => {
   beforeEach(() => {
     jest.spyOn(authService, "isAuthenticated").mockReturnValue(true);
     (IntlProvider.init as jest.Mock).mockReturnValue({ init: jest.fn() });
-    (service.get as jest.Mock).mockResolvedValue({}); // ensure Promise
+    (service.get as jest.Mock).mockResolvedValue({});
+    localStorage.clear();
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
     jest.clearAllMocks();
+    localStorage.clear();
   });
 
-  it("handles fetchPreferredLanguage error and still initializes", async () => {
-    (fetchPreferredLanguage as jest.Mock).mockRejectedValue(new Error("fail"));
+  it("initializes with localStorage language", async () => {
+    localStorage.setItem("i18nextLng", "cy");
     renderWithHistory(history);
     await waitFor(() => {
-      expect(fetchPreferredLanguage).toHaveBeenCalled();
+      expect(IntlProvider.init).toHaveBeenCalled();
+      expect(localStorage.getItem("i18nextLng")).toBe("cy");
+    });
+  });
+
+  it("initializes with browser language if localStorage not set", async () => {
+    Object.defineProperty(window.navigator, "language", {
+      value: "cy-GB",
+      configurable: true,
+    });
+    renderWithHistory(history);
+    await waitFor(() => {
+      expect(IntlProvider.init).toHaveBeenCalled();
+      expect(localStorage.getItem("i18nextLng")).toBe("cy");
+    });
+  });
+
+  it("initializes with default language if none found", async () => {
+    Object.defineProperty(window.navigator, "language", {
+      value: "",
+      configurable: true,
+    });
+    renderWithHistory(history);
+    await waitFor(() => {
+      expect(IntlProvider.init).toHaveBeenCalled();
+      expect(localStorage.getItem("i18nextLng")).toBe("en");
     });
   });
 
   it("handles IntlProvider.init error and still initializes", async () => {
-    (fetchPreferredLanguage as jest.Mock).mockResolvedValue({ languageCode: "en" });
     (IntlProvider.init as jest.Mock).mockImplementation(() => {
       throw new Error("init error");
     });
     renderWithHistory(history);
     await waitFor(() => {
-      expect(fetchPreferredLanguage).toHaveBeenCalled();
+      expect(IntlProvider.init).toHaveBeenCalled();
     });
   });
 
   it("sets fetchFeatureFlags to undefined if not authenticated", async () => {
-    (fetchPreferredLanguage as jest.Mock).mockResolvedValue({ languageCode: "en" });
     (authService.isAuthenticated as jest.Mock).mockReturnValue(false);
     renderWithHistory(history);
     await waitFor(() => {
-      expect(fetchPreferredLanguage).toHaveBeenCalled();
       expect(service.get).not.toHaveBeenCalled();
     });
   });
 
   it("calls getFeatureFlags if authenticated", async () => {
-    (fetchPreferredLanguage as jest.Mock).mockResolvedValue({ languageCode: "en" });
     (authService.isAuthenticated as jest.Mock).mockReturnValue(true);
     renderWithHistory(history);
     await waitFor(() => {
       expect(service.get).not.toBeUndefined();
-      expect(fetchPreferredLanguage).toHaveBeenCalled();
     });
   });
 
   it("calls gtmAnalytics.pushLogInEvent on init", async () => {
-    (fetchPreferredLanguage as jest.Mock).mockResolvedValue({ languageCode: "en" });
     renderWithHistory(history);
     await waitFor(() => {
       expect(gtmAnalytics.pushLogInEvent).toHaveBeenCalled();
-    });
-  });
-
-  it("uses browser language when no preferred language found", async () => {
-    Object.defineProperty(window.navigator, "language", {
-      value: "cy-GB",
-      configurable: true,
-    });
-    (fetchPreferredLanguage as jest.Mock).mockResolvedValue(undefined);
-    renderWithHistory(history);
-    await waitFor(() => {
-      expect(localStorage.getItem("i18nextLng")).toBe("cy");
     });
   });
 
@@ -135,6 +142,42 @@ describe("App i18n and error handling coverage", () => {
     );
     await waitFor(() => {
       expect(getByText("errorfallback.error-loading")).toBeInTheDocument();
+    });
+  });
+
+  // New test: Patch localStorage dispatches event
+  it("patchLocalStorage dispatches localstorage-change event", async () => {
+    const eventListener = jest.fn();
+    window.addEventListener("localstorage-change", eventListener);
+    renderWithHistory(history);
+    act(() => {
+      localStorage.setItem("i18nextLng", "cy");
+      const event = new Event("localstorage-change");
+      // @ts-ignore
+      event.key = "i18nextLng";
+      // @ts-ignore
+      event.newValue = "cy";
+      window.dispatchEvent(event);
+    });
+    await waitFor(() => {
+      expect(eventListener).toHaveBeenCalled();
+    });
+    window.removeEventListener("localstorage-change", eventListener);
+  });
+
+  // New test: Language changes on localstorage-change event
+  it("updates langCode on localstorage-change event", async () => {
+    renderWithHistory(history);
+    act(() => {
+      const event = new Event("localstorage-change");
+      // @ts-ignore
+      event.key = "i18nextLng";
+      // @ts-ignore
+      event.newValue = "cy";
+      window.dispatchEvent(event);
+    });
+    await waitFor(() => {
+      expect(localStorage.getItem("i18nextLng")).toBe("cy");
     });
   });
 });
