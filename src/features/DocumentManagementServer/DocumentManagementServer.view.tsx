@@ -10,8 +10,8 @@ import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFun
 import { fetchDocumentDetails } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
-
-
+ 
+ 
 export const breadcrumbActionsList = [
     {
         active: false,
@@ -34,7 +34,7 @@ export const breadcrumbActionsList = [
         path: ''
     }
 ]
-
+ 
 const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
@@ -62,27 +62,27 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-
+ 
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
 const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+const [reloadAfterTagClose, setReloadAfterTagClose] = useState(false);
 const categoryArr = getCategoryArr(selectedFormats);
-
-
+ 
+ 
 const searchTagListRaw = [
   ...categoryArr
 ];
-
+ 
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
-
-    const [isSearchTrue, setIsSearchTrue] = useState(false); 
-    const [isShowAutoSuggest] = useState(true);   
-
+ 
+    const [isShowAutoSuggest] = useState(true);  
+ 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
-
+ 
     // Table data mapping (deduplicated)
     let tableData: tableDataProps[] = [];
     if (showErrorBanner || showSearchError || !docData?.data?.length) {
@@ -99,13 +99,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             Size: doc?.size,
         }));
     }
-
+ 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
-
+ 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-
+ 
     // useEffect for breadcrumbs (deduplicated logic)
     useEffect(() => {
         const handleResize = () => {
@@ -119,7 +119,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
-
+ 
     // useEffect for mobile view scroll (unchanged)
     useEffect(() => {
         if (!isMobileView) {
@@ -128,35 +128,34 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         }
         return () => {};
     }, [isMobileView]);
-
+ 
     useEffect(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }, [currentPage]);
-
+ 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
-
+ 
     useEffect(() => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
-
-
+ 
+ 
     useEffect(() => {
         if (docData?.totalRecords) {
             setTotalPage(Math.ceil(docData.totalRecords / pageSizeNumber));
         }
     }, [docData]);
-
+ 
 useEffect(() => {
   const filtersExist =
     selectedFormats.length > 0 ||
     selectedCategories.length > 0 ||
     selectedDateRange.fromDate ||
     selectedDateRange.toDate;
-
+ 
   if (!searchTerm && filtersExist) {
-    // Fetch with filters only
     fetchGetDocumentDetails(
       "",
       1,
@@ -171,9 +170,9 @@ useEffect(() => {
     setIsInitialLoad(false);
     return;
   }
-
+ 
   if (!searchTerm && !filtersExist) {
-    // Initial/empty state
+    // Initial/empty state: clear grid, do NOT fetch
     setIsSearchTriggered(false);
     setSearchText("");
     setSearchTerm("");
@@ -183,8 +182,8 @@ useEffect(() => {
     setIsSearchLoading(false);
     setIsInitialLoad(true);
   }
+ 
 }, [searchTerm, selectedFormats, selectedCategories, selectedDateRange]);
-
     // Initial data fetch (unchanged)
     useEffect(() => {
         setIsLoading(true);
@@ -197,7 +196,7 @@ useEffect(() => {
         }
         Promise.all([minLoaderTime, dataFetch]).then(() => setIsLoading(false));
     }, []);
-
+ 
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
@@ -210,7 +209,7 @@ useEffect(() => {
                 // fromDate: fromDate,
                 // toDate: toDate,
                 categoryId: categories || [],
-                isSearchTextExactMatch: isSearchTrue,
+                isSearchTextExactMatch: true,
                 sortBy: sortByCol,
                 sortDirection : sortOrder,
             });
@@ -233,9 +232,9 @@ useEffect(() => {
      
         setIsSearchLoading(false);
         setIsSearchDataLoading(false);
-        
+       
     }
-
+ 
     const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
@@ -261,10 +260,10 @@ useEffect(() => {
   if (sortBy === apiColumnName) {
     newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
   }
-
+ 
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
-
+ 
   // Trigger fetch with new sort
   if (searchText) {
     setIsSearchDataLoading(true);
@@ -277,8 +276,8 @@ useEffect(() => {
     );
   }
 };
-
-
+ 
+ 
   const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
             if(selectedCheckBoxIds?.length === 0){
@@ -286,8 +285,8 @@ useEffect(() => {
             }else{
                 setShowConfirmDialog(true);
             }
-        } 
-        
+        }
+       
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
@@ -297,11 +296,11 @@ useEffect(() => {
             setIsSidePanelOpen(true);
         }
       }
-
+ 
     const getEmptyStateMsg = () => {
         if (showErrorBanner) return "Information unavailable.";
         if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
-
+ 
         // Show "No data to display." only if search is triggered and no data
         if (
             isSearchTriggered &&
@@ -312,7 +311,7 @@ useEffect(() => {
         ) {
             return "No data to display.";
         }
-
+ 
         if (!isSearchTriggered && showSearchError) return "Information unavailable.";
          return "Documents will appear here once they are uploaded.";
 };
@@ -321,12 +320,12 @@ useEffect(() => {
             return getTableHeadersData;
         }
         if ((isSearchTriggered || searchText || docData)) {
-
+ 
             return getTableHeadersData;
         }
         return [];
     };
-
+ 
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
@@ -338,7 +337,8 @@ useEffect(() => {
         setDocData({ statusCode: 200, data: [], totalRecords: 0 });
         setIsInitialLoad(true);
 };
-
+ 
+ 
     const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
@@ -355,9 +355,23 @@ useEffect(() => {
     setSelectedFormats
   );
   setIsInitialLoad(true);
-};
-
-
+ 
+  setReloadAfterTagClose(true);
+}
+ 
+useEffect(() => {
+  if (reloadAfterTagClose) {
+    const categories = getAllRegistrationIds(selectedCategories);
+    fetchGetDocumentDetails(
+      searchText,
+      1,
+      categories,
+      sortBy,
+      sortDirection
+    );
+    setReloadAfterTagClose(false);
+  }
+}, [reloadAfterTagClose, selectedCategories, selectedFormats, selectedDateRange, searchText, sortBy, sortDirection]);
     const NotificationMsgBannerObject = [
         {
             isShow: showErrorBanner,
@@ -368,7 +382,7 @@ useEffect(() => {
             autoclose: true
         }
     ]
-
+ 
     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
     const filteredSuggestions = filterNonEmptySuggestions(
   suggestions.map(s => ({
@@ -378,7 +392,7 @@ useEffect(() => {
     )
   }))
 ).filter(s => s.values.length > 0);
-
+ 
     const handleApply = () => {
         if (
             (selectedDateRange.fromDate && !isValidDate(selectedDateRange.fromDate)) ||
@@ -400,13 +414,13 @@ useEffect(() => {
                 1,
                 getAllRegistrationIds(selectedCategories),
                 sortBy,
-                sortDirection               
+                sortDirection              
             );
             setIsFilterDialogOpen(false);
             setIsFilterLoading(false);
         }, 500);
     };
-
+ 
    const handleFilterOnClick = () => {
     if (!searchTerm || searchTerm.trim().length === 0) {
         // Optionally, show a notification or message to the user here
@@ -432,11 +446,11 @@ useEffect(() => {
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
     }
-
+ 
     return (<>
         <>
             <Grid className="dms-layout">
-                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog} 
+                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog}
                 message="Please select at least one item from the search results to perform the action."/>}
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
@@ -460,7 +474,7 @@ useEffect(() => {
                             value: window.location.href,
                         }}
                     />
-
+ 
                     {isMobileView && <Breadcrumbs
                         breadcrumbActions={visibleBreadcrumbs}
                         className="essui-Breadcrumbs"
@@ -475,7 +489,7 @@ useEffect(() => {
                             marginBottom: 16,
                             width: "100%"
                         }}
-
+ 
                     >
                         {!isMobileView && <div>
                             <Breadcrumbs
@@ -494,7 +508,7 @@ useEffect(() => {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
                                 isShowSubHeading={true}
-                                
+                               
                                 isSorting
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
@@ -545,9 +559,9 @@ useEffect(() => {
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
                                     }}
-
+ 
                                     onChangeListCheckBox={(index: number, id: string) => {
-                        
+                       
                                         const updatedCheckBoxIds = [...selectedCheckBoxIds];
                                         if (updatedCheckBoxIds?.includes(id)) {
                                             updatedCheckBoxIds?.splice(updatedCheckBoxIds.indexOf(id), 1);
@@ -559,7 +573,7 @@ useEffect(() => {
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
-                                
+                               
                                 errorActionListItem={[
                                     {
                                         action: 'Secondary Text',
@@ -630,7 +644,6 @@ useEffect(() => {
                                 searchSuggestions={filteredSuggestions}
                                
                                 onSearchSuggestionItemClick={(item)=>{
-                                        setIsSearchTrue(true);
                                         handleSuggestionClick(item, setSearchTerm, setSearchText, setIsSearchTriggered);
                                         setIsSearchDataLoading(true);
                                         const keyword = item?.props?.id || item?.text?.trim()?.toLowerCase() || item?.name?.trim()?.toLowerCase() || "";
@@ -644,12 +657,7 @@ useEffect(() => {
                                             sortBy,
                                             sortDirection
                                         );
-                                        // Add this log:
-                                        setTimeout(() => {
-                                            console.log("searchText:", searchText);
-                                            console.log("isSearchTriggered:", isSearchTriggered);
-                                            console.log("docData:", docData);
-                                        }, 1000); // Wait for state and API to update
+ 
                                     }}
                                 searchOnChange={(e: any) => {
                                     handleSearchChange(
@@ -662,8 +670,8 @@ useEffect(() => {
                                         setShowSearchError,
                                         setIsSearchLoading
                                     );
-                                    //  setSearchText(e.target.value); 
-                                    // setDocData({ statusCode: 200, data: [], totalRecords: 0 }); // Clear table while typing
+                                    //  setSearchText(e.target.value);
+                                    setDocData({ statusCode: 200, data: [], totalRecords: 0 }); // Clear table while typing
                                     }}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
@@ -671,8 +679,8 @@ useEffect(() => {
                                 searchValidationTextLevel={
                                     showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
-
-
+ 
+ 
                                 // onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 primaryButtonTitle="Clear all"
@@ -738,7 +746,7 @@ useEffect(() => {
                                             iconName="filter"
                                             onClick={handleFilterOnClick}
                                         > Filter</Button>
-
+ 
                                         <FilterDialog
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
@@ -772,9 +780,9 @@ useEffect(() => {
                                         onConfirm: (): void => {
                                             setIsSidePanelLoader(true);
                                             setIsSidePanelOpen(true)
-
+ 
                                             setTimeout(() => {
-                                                setIsSidePanelLoader(false); 
+                                                setIsSidePanelLoader(false);
                                             }, 1000);
                                          },
                                                 template: DialogTemplate.Confirmation
@@ -808,5 +816,3 @@ useEffect(() => {
     </>)
 }
 export default DocumentManagementServerView
-
-

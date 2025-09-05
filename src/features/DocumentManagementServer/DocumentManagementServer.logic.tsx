@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {truncatedString} from "../../shared/utils/commonFunctions";
-
+ 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
      const href = item?.staffId ? `/staff/profile/${item.staffId}` : "/";
@@ -26,7 +26,7 @@ export function renderRelatedToItem(item: any) {
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-        
+       
         {(item?.year || item?.reg) && <Tag
           dataTestId="name"
           id="name"
@@ -39,7 +39,7 @@ export function renderRelatedToItem(item: any) {
   // School or other types
   return <span>{item.name}</span>;
 };
-
+ 
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
@@ -71,7 +71,7 @@ export function mapRelatedArr(doc: any): any[] {
   }
   return relatedArr;
 }
-
+ 
 export const getTableHeadersData: {
   text: string;
   isShow: boolean;
@@ -188,7 +188,7 @@ anyComponent: (e: any) => (
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
-
+ 
       isColumnSorting: true,
       columnWidth: "144px",
       anyComponent: (e: any) => {
@@ -310,7 +310,7 @@ anyComponent: (e: any) => (
       },
     }
   ];
-
+ 
 export const viewData: {
   batchId: number;
   organisationId: string;
@@ -330,7 +330,7 @@ export const viewData: {
   eTag: string;
   fileExpiryDays: number | null;
 }[] = [
-    
+   
   {
     "batchId": 1,
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
@@ -350,7 +350,7 @@ export const viewData: {
     "eTag": "W/\"datetime'2025-08-20T11%3A30%3A06.5396144Z'\"",
     fileExpiryDays: null
   },
-  
+ 
   {
     "batchId": 1,
     "organisationId": "8e3f658d-b952-4e64-bf2b-1eb5733e5416",
@@ -399,7 +399,7 @@ export const handlePageChange = (
   setIsSearchDataLoading(true);
   setCurrentPage(page);
 };
-
+ 
 // Breadcrumb logic
 export const onBreadcrumbClick = (path: string) => {
   window.location.assign(path);
@@ -411,8 +411,8 @@ export const onBreadcrumbClick = (path: string) => {
     clickLocation: "breadcrumb"
   });
 };
-
-
+ 
+ 
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
@@ -424,19 +424,19 @@ export const handleSuggestionClick = async (
   const value = item.text || item.name || "";
   setSearchTerm(value);
   setSearchText(value);
-   if (setIsSearchTriggered) setIsSearchTriggered(true); 
+   if (setIsSearchTriggered) setIsSearchTriggered(true);
 };
-
+ 
 // Has items check
 export const hasItems = (suggestions: Suggestion[]): boolean =>
   suggestions?.some(({ values }) => values?.length > 0);
-
+ 
 // Search input change logic
 export const handleSearchChange = (
   e: React.ChangeEvent<HTMLInputElement>,
   categoryId: number[] | null,
   fromDate: string,
-  toDate: string, 
+  toDate: string,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
@@ -444,17 +444,17 @@ export const handleSearchChange = (
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
-
+ 
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
     return;
   }
-
+ 
   setIsSearchLoading(true);
   setSuggestions([]);
-
+ 
   debouncedFetchSuggestions(
     value,
     categoryId,
@@ -465,7 +465,7 @@ export const handleSearchChange = (
     setShowSearchError
   );
 };
-
+ 
 export const loadSuggestions = async (
   text: string,
   fromDate: string,
@@ -485,7 +485,7 @@ export const loadSuggestions = async (
     setSuggestionsLoading(false);
   }
 };
-
+ 
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
   const visibleTags = tags.slice(0, maxVisible);
@@ -497,7 +497,7 @@ export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) =
   });
   return visibleTags;
 };
-
+ 
 export const getCategoryArr = (selectedFormats: any[]) =>
   selectedFormats?.map((cat: any) => ({
     text: cat?.text,
@@ -507,10 +507,10 @@ export const getCategoryArr = (selectedFormats: any[]) =>
       id: cat?.data?.registrationId,
     },
   })) || [];
-
+ 
   export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
   if (!dateRange.fromDate && !dateRange.toDate) return [];
-
+ 
   let text = "";
   if (dateRange.fromDate && dateRange.toDate) {
     text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
@@ -519,7 +519,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
   } else if (dateRange.toDate) {
     text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
   }
-
+ 
   return [
     {
       text,
@@ -528,7 +528,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     }
   ];
 };
-
+ 
 export const handleTagCloseLogic = (
   e: React.SyntheticEvent,
   text: string,
@@ -549,7 +549,7 @@ export const handleTagCloseLogic = (
     setDateRange({ fromDate: "", toDate: "" });
     setIsDateError(false);
   }
-
+ 
   // Remove category/format tag
   setSelectedCategories(prev =>
     prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
@@ -558,7 +558,7 @@ export const handleTagCloseLogic = (
     prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
   );
 };
-
+ 
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
@@ -568,13 +568,13 @@ export const fetchCategory = async (): Promise<any[]> => {
     return [];
   }
 }
-
+ 
 export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
   showErrorBanner: boolean,
-  isSearchTriggered: boolean,
+  isSearchTriggered: boolean
   // isInitialLoad?: boolean
 ): string | undefined => {
   if (showErrorBanner) {
@@ -594,11 +594,11 @@ export const getResultNotFoundMsg = (
   // }
   return undefined;
 };
-
-
-
-
-export const getAllRegistrationIds = (selectedFormats: any[]): any[] => 
+ 
+ 
+ 
+ 
+export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
      selectedFormats?.flatMap(item => {
         const regId = item?.data?.registrationId;
         if (Array.isArray(regId)) {
@@ -609,8 +609,10 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         }
         return [];
     }) || [];
-
-
+ 
+const staffImgString = 'Staff Photo';
+const pupilImgString = 'Pupil Photo';
+ 
 export const getStaffProfilePhoto = async (staffId: string) => {
   const response = await fetchStaffProfilePhoto(staffId);
   return response?.data ?? "";
@@ -625,7 +627,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
           let props: ISearchItemProp = {};
           let icon: JSX.Element | undefined;
           let value: JSX.Element | string | undefined;
-
+ 
           switch (category?.name) {
             case "Document":
               text = item?.fileName || "";
@@ -646,7 +648,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                       color={IconColor.Neutral400}
                     />
                   ) : (
-                    <img src={item.imagePath} alt="" className="dms-search__profile-icon" />
+                    <img src={item.imagePath} alt={pupilImgString} className="dms-search__profile-icon" />
                   )}
                 </>
               );
@@ -685,7 +687,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                       color={IconColor.Neutral400}
                     />
                   ) : (
-                    <img src={data?.imagePath} alt="" className="dms-search__profile-icon" />
+                    <img src={data?.imagePath} alt={staffImgString} className="dms-search__profile-icon" />
                   )}
                 </>
               );
@@ -727,10 +729,10 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
     })
   );
 };
-
+ 
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
-
+ 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: Parameters<T>) {
@@ -738,7 +740,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
-
+ 
 export const debouncedFetchSuggestions = debounce(
   async (
     searchText: string,
@@ -764,5 +766,3 @@ export const debouncedFetchSuggestions = debounce(
   },
   5
 );
-
-
