@@ -277,9 +277,9 @@ describe('fetchFilterCategory', () => {
 
 describe('viewDownload', () => {
   it('returns response data on success', async () => {
-    (service.get as jest.Mock).mockResolvedValue({ data: { foo: 'bar' } });
+    (service.get as jest.Mock).mockResolvedValue({ data: [{ foo: 'bar' }] });
     const result = await viewDownload();
-    expect(result).toEqual({ foo: 'bar' });
+    expect(result).toEqual( { data: [{ foo: 'bar' }] });
   });
 
   it('returns empty object and logs error on failure', async () => {
@@ -299,7 +299,7 @@ describe('viewDownload', () => {
     (service.get as jest.Mock).mockResolvedValue({ data: {} });
     await viewDownload();
     expect(service.get).toHaveBeenCalledWith(
-      '/validation/api/v1/viewDownload',
+      '/validation/api/v1/file/viewDownload',
       expect.any(String)
     );
   });

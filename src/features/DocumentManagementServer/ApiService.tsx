@@ -89,9 +89,9 @@ export const fetchFilterCategory = async (): Promise<any> => {
 export const viewDownload = async (): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/viewDownload`;
+    const url = `/validation/api/v1/file/viewDownload`;
     const response: AxiosResponse = await service.get(url, baseUrl);
-    return response?.data;
+    return response;
   } catch (err) {
     console.error("Error fetching view downloads data:", err);
     return {};

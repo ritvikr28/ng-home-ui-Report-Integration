@@ -2,12 +2,12 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, viewData } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps } from "./responseModel"
+import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
-import { fetchDocumentDetails } from "./ApiService"
+import { fetchDocumentDetails, viewDownload } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -67,7 +67,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
+
 const [reloadAfterTagClose, setReloadAfterTagClose] = useState(false);
 const categoryArr = getCategoryArr(selectedFormats);
  
@@ -195,8 +197,25 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSearchDataLoading(false);
        
     }
- 
-    const handleSorting = (columnName: string) => {
+
+    const fetchViewDownloadData = async () => {
+        setIsSidePanelLoader(true);
+        try {
+            const result = await viewDownload()
+            if (result?.data && result?.status === 200) {
+                console.log(result)
+                setViewData(result.data)
+            }
+            setIsSidePanelLoader(false);
+        }
+        catch (err) {
+           console.error("Error fetching view download details:", err);
+           setIsSidePanelLoader(false);
+        }
+    }
+
+
+   const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
     case "Date added":
@@ -431,8 +450,8 @@ useEffect(() => {
                         onCloseSideNavigationPanel={() => setIsOpen(false)}
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
-                            text: "Invite Users",
-                            value: window.location.href,
+                            text: "Documents",
+                            value: `${window.location.href}/documents`,
                         }}
                     />
  
@@ -633,8 +652,8 @@ useEffect(() => {
  
                                 // onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
-                                primaryButtonTitle="Clear all"
-                                secondaryButtonTitle="Clear all"
+                                secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
+                                onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
