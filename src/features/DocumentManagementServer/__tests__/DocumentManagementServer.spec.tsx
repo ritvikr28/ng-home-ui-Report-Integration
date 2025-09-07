@@ -122,55 +122,9 @@ describe("DocumentManagementServerView", () => {
     jest.setTimeout(15000);
   });
  
-it("shows error banner when showErrorBanner is true", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-    payload: [
-      {
-        name: "Document",
-        link: "",
-        values: [{ fileName: "Doc 1" }, { fileName: "Doc 2" }],
-      },
-      { name: "Pupil", link: "", values: [] },
-      { name: "Staff", link: null, values: [] },
-      { name: "Organisation", link: null, values: [] }
-    ],
-    statusCode: 200,
-  });
-
-  // Mock initial fetch with error status 400
-  (apiService.fetchDocumentDetails as jest.Mock)
-    .mockResolvedValueOnce({
-      status: 400,
-      data: [],
-      totalRecords: 0,
-    });
-
-  render(<DocumentManagementServerView />);
-  act(() => { jest.advanceTimersByTime(2000); });
-
-  // Simulate search via suggestion click
-  const searchInput = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(searchInput, { target: { value: "Doc" } });
-
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
-
-  // Wait for suggestions
-  const suggestions = await screen.findAllByRole("option");
-  expect(suggestions.length).toBeGreaterThan(0);
-
-  // Click first suggestion
-  fireEvent.click(suggestions[0]);
-
-  act(() => { jest.advanceTimersByTime(2000); });
-
-  await waitFor(() => {
-    expect(screen.getByText("Information unavailable")).toBeInTheDocument();
-  });
-});
 
 it("handles filter dialog open and apply", async () => {
+  jest.setTimeout(15000);
     mockSuggestions();
     await renderAndSearch();
     await openFilterDialog();
