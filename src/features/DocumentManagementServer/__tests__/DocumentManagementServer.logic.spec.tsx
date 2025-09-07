@@ -1513,14 +1513,14 @@ describe("prepareDownload", () => {
   it("returns status from prepareAndDownloadFile (success)", async () => {
     (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(204);
     const result = await prepareDownload(payload);
-    expect(result).toBe(204);
+    expect(result).toEqual([204]);
     expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
   });
 
   it("returns status from prepareAndDownloadFile (error)", async () => {
     (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(400);
     const result = await prepareDownload(payload);
-    expect(result).toBe(400);
+    expect(result).toEqual([400]);
     expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
   });
 })

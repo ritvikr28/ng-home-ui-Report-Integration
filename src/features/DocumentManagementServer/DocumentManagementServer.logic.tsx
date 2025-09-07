@@ -773,61 +773,72 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   };
 }
 
-export function buildSelectedDocs(selectedCheckBoxIds: string[], docData: any, categoryRegistrationMap: Record<string, number>) {
+export function buildSelectedDocs(
+  selectedCheckBoxIds: string[],
+  docData: any,
+  categoryRegistrationMap: Record<string, number>
+) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
-  // Gather all docs
-  const selectedDocs = docData.data.filter((d: any) =>
-    selectedCheckBoxIds.includes(d.fileId) && d.registrationId !== undefined
+  // Gather all valid docs
+  const selectedDocs = docData.data.filter(
+    (d: any) => selectedCheckBoxIds.includes(d.fileId) && d.registrationId !== undefined
   );
 
+  // If no valid docs, return empty array
+  if (selectedDocs.length === 0) return [];
+
   // Merge fileDetails
-  const fileDetails = selectedDocs.map((doc: { fileId: any; registrationId: any; }) => ({
+  const fileDetails = selectedDocs.map((doc: any) => ({
     fileId: doc.fileId,
     registrationId: doc.registrationId,
   }));
 
   // Merge referenceMappingDetails
-  const referenceMappingDetails = selectedDocs.map((doc: { relatedTo: { learnerExternalId: any; }[]; documentRealatedTo: any[]; }) => {
-  let relatedToArr: any[] = [];
-  if (Array.isArray(doc?.relatedTo)) {
-    relatedToArr = doc.relatedTo;
-  } else if (doc?.relatedTo) {
-    relatedToArr = [doc.relatedTo];
-  }
+  const referenceMappingDetails = selectedDocs.map((doc: any) => {
+    let relatedToArr: any[] = [];
+    if (Array.isArray(doc?.relatedTo)) {
+      relatedToArr = doc.relatedTo;
+    } else if (doc?.relatedTo) {
+      relatedToArr = [doc.relatedTo];
+    }
 
-  return {
-    referenceExternalId: Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
-      ? doc.relatedTo[0].learnerExternalId
-      : "",
-    documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
-      ? doc.documentRealatedTo.join(", ")
-      : (doc?.documentRealatedTo || ""),
-    relatedTo: relatedToArr
-  };
-});
+    return {
+      referenceExternalId:
+        Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
+          ? doc.relatedTo[0].learnerExternalId
+          : "",
+      documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
+        ? doc.documentRealatedTo.join(", ")
+        : doc?.documentRealatedTo || "",
+      relatedTo: relatedToArr,
+    };
+  });
 
   // Use categoryId from the first doc (or merge if needed)
-  const categoryId = selectedDocs.length > 0 && categoryRegistrationMap[selectedDocs[0]?.category]
-    ? [categoryRegistrationMap[selectedDocs[0]?.category]]
-    : [];
+  const categoryId =
+    selectedDocs.length > 0 && categoryRegistrationMap[selectedDocs[0]?.category]
+      ? [categoryRegistrationMap[selectedDocs[0]?.category]]
+      : [];
 
   // Use fromDate/toDate from the first doc (or merge if needed)
   const fromDate = selectedDocs[0]?.fromDate ?? "";
   const toDate = selectedDocs[0]?.toDate ?? "";
 
-  return [{
-    request: {
-      selectAll: false,
-      downloadCriteria: {
-        referenceMappingDetails,
-        categoryId,
-        fromDate,
-        toDate,
+  return [
+    {
+      request: {
+        selectAll: false,
+        downloadCriteria: {
+          referenceMappingDetails,
+          categoryId,
+          fromDate,
+          toDate,
+        },
+        fileDetails,
       },
-      fileDetails,
     }
-  }];
+  ];
 }
 
 export function validateAndApplyFilter({

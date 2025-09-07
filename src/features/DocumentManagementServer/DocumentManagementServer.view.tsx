@@ -74,7 +74,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
      const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
-
+    const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
@@ -107,8 +107,10 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
     Format: doc?.format,
     Size: doc?.size,
+    isShowCheckBox: true
 }));
 }
+const isSelectionCleared = selectedCheckBoxIds.length === 0;
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -519,7 +521,7 @@ const handleCloseSidePanel = () => {
                                         value: "Inactive"
                                     }
                                 ]}
-                                isShowCheckboxCol
+                                isShowCheckboxCol = {true}
                                 editSelectedBtnTitle="Actions"
                                 editSelectedOptions={[
                                     {
@@ -547,7 +549,7 @@ const handleCloseSidePanel = () => {
                                     setSelectedCheckBoxIds(ids);
                                     }}
 
-                                    onChangeListCheckBox={(index: number, id: string) => {
+                                onChangeListCheckBox={(index: number, id: string) => {
                                         const updatedCheckBoxIds = [...selectedCheckBoxIds];
                                         const doc = docData?.data?.find((d: any) => d.fileId === id);
 
@@ -676,6 +678,14 @@ const handleCloseSidePanel = () => {
                                             autoclose
                                             onClickClose={() => setPrepareDownloadError(false)}
                                         />} 
+                                        {showEmailNotification && (
+                                            <Notification
+                                                status={NotificationStatus.HIGHLIGHT}
+                                                title="Download notification email"
+                                                message="We'll send you an email when your download is ready. Please check your spam folder if you don't see it in your inbox."
+                                                onClickClose={() => setShowEmailNotification(false)}
+                                            />
+                                        )}
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
                                                 <>
@@ -764,23 +774,26 @@ const handleCloseSidePanel = () => {
                                        onConfirm: (): void => {
                                         setPrepareDownloadError(false);
                                         setIsSidePanelLoader(true);
-                                        setSidePanelOpenReason("prepare"); // <-- set reason
+                                        setSidePanelOpenReason("prepare");
                                         setIsSidePanelOpen(true);
 
                                         prepareDownload(selectedDocs)
-                                        .then((statuses) => {
+                                            .then((statuses) => {
                                             setIsSidePanelLoader(false);
-                                            // statuses is an array, so check with .some()
                                             if (statuses.some((status: number) => status !== 204)) {
-                                            setPrepareDownloadError(true);
-                                            }
-                                            setSelectedCheckBoxIds([]);
-                                        })
-                                        .catch(() => {
+                                                setPrepareDownloadError(true);
+                                            } else {
+                                                // Show email notification only if multiple files were selected
+                                                if (selectedCheckBoxIds.length > 1) {
+                                                setShowEmailNotification(true);
+                                                }
+                                                   
+                                    }
+                                            })
+                                            .catch(() => {
                                             setIsSidePanelLoader(false);
                                             setPrepareDownloadError(true);
-                                            setSelectedCheckBoxIds([]);
-                                        });
+                                            });
 
                                         setTimeout(() => {
                                             setIsSidePanelLoader(false);
@@ -789,7 +802,8 @@ const handleCloseSidePanel = () => {
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-                                titleConfirmation="Prepare download?"
+                                // isClearSelectedCheckbox={isSelectionCleared ? true : false}
+                                titleConfirmation="Prepare Download?"
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
