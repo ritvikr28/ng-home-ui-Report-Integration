@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from "react"
+/// <reference types="node" />
+import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, getReferenceExternalId, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, DocumentPrepareDownload, PrepareDownloadRequest, tableDataProps, ViewDownloadItem } from "./responseModel"
+import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
-import { CapitalizeFirstLetter, isValidDate } from "../../shared/utils/commonFunctions"
-import { fetchDocumentDetails, viewDownload } from "./ApiService"
+import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
+import { viewDownload } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
 
@@ -75,8 +76,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
 
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
-const categoryArr = getCategoryArr(selectedFormats);
-    const downloadPollingIntervalRef = React.useRef<NodeJS.Timeout | null>(null) as React.MutableRefObject<NodeJS.Timeout | null>;
+    const categoryArr = getCategoryArr(selectedFormats);
+    const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
 
 const searchTagListRaw = [
   ...categoryArr
@@ -109,11 +110,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 }));
 }
 
-    let registrationId = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
-    ? selectedCheckBoxIds.flatMap((id) => 
-        docData?.data.find((doc: any) => doc.fileId === id)?.registrationIds || []
-      )
-    : [];
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -183,105 +179,59 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         setIsSearchTriggered(false)
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection ]);
 
-  useEffect(() => {
-  if (isSidePanelOpen) {
-    if (sidePanelOpenReason === "prepare") {
-      const timer = setTimeout(() => {
-        fetchViewDownloadData({
-        showLoader: true,
-        setIsSidePanelLoader,
-        setViewData,
-        viewDownload,
-        downloadPollingIntervalRef,
-        }); // Show loader on initial fetch
-      }, 1000);
-      return () => clearTimeout(timer);
-    } else {
+useEffect(() => {
+  if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+    const timer = setTimeout(() => {
       fetchViewDownloadData({
         showLoader: true,
         setIsSidePanelLoader,
         setViewData,
         viewDownload,
         downloadPollingIntervalRef,
-        }); // Show loader on initial fetch
-    }
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
   }
+  if (isSidePanelOpen) {
+    fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef,
+    });
+  }
+  return undefined;
 }, [isSidePanelOpen, sidePanelOpenReason]);
 
-    const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
-        setIsSearchDataLoading(true);
-        try {
-            const result = await fetchDocumentDetails({
-                pageNumber: page,
-                pageSize: pageSizeNumber,
-                searchText: searchTexts,
-                fromDate: dateRange?.fromDate,
-                toDate: dateRange?.toDate,
-                categoryId: categories || [],
-                isSearchTextExactMatch: isSearchTrue,
-                sortBy: sortByCol,
-                sortDirection : sortOrder,
-            });
-            if (result && result?.statusCode === 200) {
-                setDocData(result);
-                setCurrentPage(page);
-                setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
-                setShowSearchError(false);
-                setShowErrorBanner(false)
-            } else if (result && result?.status === 400) {
-                setShowErrorBanner(true);
-            }
-            else {
-                setShowSearchError(true);
-            }
-            setHasFetched(true);
-        } catch (err) {
-            console.error("Error fetching document ddocDataetails:", err);
-            setShowSearchError(true);
-        }
-     
-        setIsSearchLoading(false);
-        setIsSearchDataLoading(false);
-        
-    }
 
-const selectedDocs = Array.isArray(selectedCheckBoxIds) && Array.isArray(docData?.data)
-  ? selectedCheckBoxIds
-      .map(id => {
-        const doc = docData?.data.find((d: any) => d?.fileId === id);
-        if (doc && doc.registrationId !== undefined) {
-          return {
-            request: {
-              selectAll: false,
-              downloadCriteria: {
-                referenceMappingDetails: [
-                  {
-                    referenceExternalId: Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
-                      ? doc.relatedTo[0].learnerExternalId
-                      : "",
-                    documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
-                      ? doc.documentRealatedTo.join(", ")
-                      : (doc?.documentRealatedTo || ""),
-                    relatedTo: doc?.relatedTo
-                  },
-                ],
-                categoryId: categoryRegistrationMap[doc?.category]
-                  ? [categoryRegistrationMap[doc?.category]]
-                  : [],
-                fromDate: doc?.fromDate ?? "",
-                toDate: doc?.toDate ?? ""
-              },
-              fileDetails: [{
-                fileId: id,
-                registrationId: doc?.registrationId,
-              }]
-            }
-          };
-        }
-        return undefined;
-      })
-      .filter((item): item is { request: any } => item !== undefined)
-  : [];
+    const fetchGetDocumentDetails = (
+  searchTexts: string,
+  page: number,
+  categories: number[],
+  sortByCol: string = sortBy,
+  sortOrder = sortDirection
+) => {
+  fetchGetDocumentDetailsLogic({
+    searchTexts,
+    page,
+    categories,
+    sortByCol,
+    sortOrder,
+    dateRange,
+    isSearchTrue,
+    setDocData,
+    setCurrentPage,
+    setTotalPage,
+    setShowSearchError,
+    setShowErrorBanner,
+    setHasFetched,
+    setIsSearchLoading,
+    setIsSearchDataLoading,
+  });
+};
+
+const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryRegistrationMap);
 
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
@@ -807,7 +757,7 @@ const handleCloseSidePanel = () => {
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${selectedCheckBoxIds?.length} document is about to be prepared for downloading.`,
+                                                notificationTitle: `${allSelectedDocs?.length} document is about to be prepared for downloading.`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
@@ -818,18 +768,19 @@ const handleCloseSidePanel = () => {
                                         setIsSidePanelOpen(true);
 
                                         prepareDownload(selectedDocs)
-                                            .then((status) => {
+                                        .then((statuses) => {
                                             setIsSidePanelLoader(false);
-                                            if (status !== 204) {
-                                                setPrepareDownloadError(true);
+                                            // statuses is an array, so check with .some()
+                                            if (statuses.some((status: number) => status !== 204)) {
+                                            setPrepareDownloadError(true);
                                             }
                                             setSelectedCheckBoxIds([]);
-                                            })
-                                            .catch(() => {
+                                        })
+                                        .catch(() => {
                                             setIsSidePanelLoader(false);
                                             setPrepareDownloadError(true);
                                             setSelectedCheckBoxIds([]);
-                                            });
+                                        });
 
                                         setTimeout(() => {
                                             setIsSidePanelLoader(false);

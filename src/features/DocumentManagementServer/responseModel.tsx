@@ -1,4 +1,6 @@
 // Represents each row in the document table
+import React from "react";
+
 export interface SingleDocumentDetail {
   organizationId: string;
   userId: string;
@@ -102,5 +104,5 @@ export interface FetchViewDownloadDataParams {
   setIsSidePanelLoader: React.Dispatch<React.SetStateAction<boolean>>;
   setViewData: React.Dispatch<React.SetStateAction<any[]>>;
   viewDownload: () => Promise<any>;
-  downloadPollingIntervalRef: React.MutableRefObject<NodeJS.Timeout | null>;
+  downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
 }

@@ -1,6 +1,7 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
 import { render } from "@testing-library/react";
+import dayjs from "dayjs";
 import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
 import {
@@ -28,9 +29,10 @@ import {
   reduceCategories,
   fetchViewDownloadData,
   validateAndApplyFilter,
-  closeSidePanel
+  closeSidePanel,
+  fetchGetDocumentDetailsLogic,
+  buildSelectedDocs
 } from "../DocumentManagementServer.logic";
-import dayjs from "dayjs";
 
 const analytics = require('../../../shared/utils/analytics').default;
 
@@ -1909,4 +1911,190 @@ describe("closeSidePanel", () => {
   expect(pollingRef.current).toBeNull();
   clearSpy.mockRestore();
 });
+});
+
+describe("fetchGetDocumentDetailsLogic", () => {
+  const mockSetDocData = jest.fn();
+  const mockSetCurrentPage = jest.fn();
+  const mockSetTotalPage = jest.fn();
+  const mockSetShowSearchError = jest.fn();
+  const mockSetShowErrorBanner = jest.fn();
+  const mockSetHasFetched = jest.fn();
+  const mockSetIsSearchLoading = jest.fn();
+  const mockSetIsSearchDataLoading = jest.fn();
+
+  const defaultArgs = {
+    searchTexts: "test",
+    page: 2,
+    categories: [1, 2],
+    sortByCol: "Document",
+    sortOrder: "Asc",
+    dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+    isSearchTrue: false,
+    setDocData: mockSetDocData,
+    setCurrentPage: mockSetCurrentPage,
+    setTotalPage: mockSetTotalPage,
+    setShowSearchError: mockSetShowSearchError,
+    setShowErrorBanner: mockSetShowErrorBanner,
+    setHasFetched: mockSetHasFetched,
+    setIsSearchLoading: mockSetIsSearchLoading,
+    setIsSearchDataLoading: mockSetIsSearchDataLoading,
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (global as any).pageSizeNumber = 10; // Ensure this matches your logic
+  });
+
+  it("handles successful fetch with statusCode 200", async () => {
+    const mockResult = {
+      statusCode: 200,
+      status: 200,
+      totalRecords: 20,
+      data: [{
+        organizationId: "org1",
+        userId: "user1",
+        registrationId: 123,
+        fileId: "1",
+        personExternalId: "person1",
+        documentInfo: { fileName: "Doc 1", isSelectedForPrepareDownload: false },
+        document: "Doc 1",
+        relatedTo: [],
+        category: "Cat1",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+        blobName: "blob1"
+      }],
+      pageNumber: 1,
+      pageSize: 10
+    };
+    jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
+
+    await fetchGetDocumentDetailsLogic(defaultArgs);
+
+    expect(mockSetDocData).toHaveBeenCalledWith(mockResult);
+    expect(mockSetCurrentPage).toHaveBeenCalledTimes(1);
+    expect(mockSetTotalPage).toHaveBeenCalledWith(Math.ceil(10 / 10));
+    expect(mockSetShowSearchError).toHaveBeenCalledWith(false);
+    expect(mockSetShowErrorBanner).toHaveBeenCalledWith(false);
+    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
+    expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
+  });
+
+  it("handles fetch with status 400", async () => {
+    const mockResult = {
+      status: 400,
+      statusCode: 400,
+      pageNumber: 1,
+      pageSize: 10,
+      totalRecords: 0,
+      data: []
+    };
+    jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
+
+    await fetchGetDocumentDetailsLogic(defaultArgs);
+
+    expect(mockSetShowErrorBanner).toHaveBeenCalledWith(true);
+    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
+    expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
+  });
+
+  it("handles fetch with other status", async () => {
+    const mockResult = {
+      status: 500,
+      statusCode: 500,
+      pageNumber: 1,
+      pageSize: 10,
+      totalRecords: 0,
+      data: []
+    };
+    jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
+
+    await fetchGetDocumentDetailsLogic(defaultArgs);
+
+    expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
+    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
+    expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
+  });
+
+  it("handles fetch throwing an error", async () => {
+    const error = new Error("fail");
+    jest.spyOn(ApiService, "fetchDocumentDetails").mockRejectedValueOnce(error);
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await fetchGetDocumentDetailsLogic(defaultArgs);
+
+    expect(consoleSpy).toHaveBeenCalledWith("Error fetching document details:", error);
+    expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
+    expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
+    expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
+
+    consoleSpy.mockRestore();
+  });
+});
+
+describe("buildSelectedDocs", () => {
+  const categoryRegistrationMap = { Legal: 1, Finance: 2 };
+
+  it("returns empty array if selectedCheckBoxIds is not an array", () => {
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap)).toEqual([]);
+  });
+
+  it("returns empty array if docData.data is not an array", () => {
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap)).toEqual([]);
+  });
+
+  it("returns empty array if no matching document for selected ID", () => {
+    const docData = { data: [{ fileId: "2", registrationId: 123 }] };
+    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap)).toEqual([]);
+  });
+
+  it("returns empty array if matching document has undefined registrationId", () => {
+    const docData = { data: [{ fileId: "1", registrationId: undefined }] };
+    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap)).toEqual([]);
+  });
+
+  it("returns correct request object for valid input", () => {
+    const docData = {
+      data: [{
+        fileId: "1",
+        registrationId: 123,
+        relatedTo: [{ learnerExternalId: "ext1" }],
+        documentRealatedTo: [1],
+        category: "Legal",
+        fromDate: "2025-01-01",
+        toDate: "2025-01-02"
+      }]
+    };
+    const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap);
+    expect(result).toEqual([
+      {
+        request: {
+          selectAll: false,
+          downloadCriteria: {
+            referenceMappingDetails: [
+              {
+                referenceExternalId: "ext1",
+                documentRealatedTo: "1",
+                relatedTo: [{ learnerExternalId: "ext1" }]
+              }
+            ],
+            categoryId: [1],
+            fromDate: "2025-01-01",
+            toDate: "2025-01-02"
+          },
+          fileDetails: [
+            { fileId: "1", registrationId: 123 }
+          ]
+        }
+      }
+    ]);
+  });
 });
