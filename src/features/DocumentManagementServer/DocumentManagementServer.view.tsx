@@ -110,7 +110,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     isShowCheckBox: true
 }));
 }
-const isSelectionCleared = selectedCheckBoxIds.length === 0;
+// const isSelectionCleared = selectedCheckBoxIds.length === 0;
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -782,13 +782,9 @@ const handleCloseSidePanel = () => {
                                             setIsSidePanelLoader(false);
                                             if (statuses.some((status: number) => status !== 204)) {
                                                 setPrepareDownloadError(true);
-                                            } else {
-                                                // Show email notification only if multiple files were selected
-                                                if (selectedCheckBoxIds.length > 1) {
+                                            } else if (selectedCheckBoxIds.length > 1) {
                                                 setShowEmailNotification(true);
-                                                }
-                                                   
-                                    }
+                                                 }
                                             })
                                             .catch(() => {
                                             setIsSidePanelLoader(false);
