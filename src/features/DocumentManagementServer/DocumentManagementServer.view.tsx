@@ -162,6 +162,12 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         Promise.all([minLoaderTime, dataFetch]).then(() => setIsLoading(false));
     }, []);
  
+        useEffect(() => {
+        if (isSidePanelOpen) {
+            fetchViewDownloadData();
+        }
+    }, [isSidePanelOpen]);
+
     const fetchGetDocumentDetails = async (searchTexts: string, page: number, categories: number[], sortByCol: string = sortBy, sortOrder= sortDirection) => {
         setIsSearchDataLoading(true);
         try {
@@ -341,14 +347,19 @@ useEffect(() => {
 
 useEffect(() => {
   if (reloadAfterTagClose) {
-    const categories = getAllRegistrationIds(selectedCategories);
-    fetchGetDocumentDetails(
-      searchText,
-      1,
-      categories,
-      sortBy,
-      sortDirection
-    );
+    if (searchText && searchText.trim().length > 0) {
+      const categories = getAllRegistrationIds(selectedCategories);
+      fetchGetDocumentDetails(
+        searchText,
+        1,
+        categories,
+        sortBy,
+        sortDirection
+      );
+    } else {
+      // Show initial screen: clear data and reset states
+      setIsInitialLoad(true);
+    }
     setReloadAfterTagClose(false);
   }
 }, [reloadAfterTagClose, selectedCategories, selectedFormats, selectedDateRange, searchText, sortBy, sortDirection]);
@@ -372,7 +383,6 @@ useEffect(() => {
     )
   }))
 ).filter(s => s.values.length > 0);
- 
     const handleApply = () => {
         if (
             (selectedDateRange.fromDate && !isValidDate(selectedDateRange.fromDate)) ||
@@ -628,29 +638,13 @@ useEffect(() => {
                                         setIsSearchDataLoading(true);
  
                                     }}
-                                searchOnChange={(e: any) => {
-                                    handleSearchChange(
-                                        e,
-                                        getAllRegistrationIds(selectedCategories),
-                                        selectedDateRange?.fromDate,
-                                        selectedDateRange?.toDate,
-                                        setSearchTerm,
-                                        setSuggestions,
-                                        setShowSearchError,
-                                        setIsSearchLoading
-                                    );
-                                    //  setSearchText(e.target.value);
-                                    setDocData({ statusCode: 200, data: [], totalRecords: 0 }); // Clear table while typing
-                                    }}
+                                searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }
                                 searchValidationTextLevel={
                                     showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
- 
- 
-                                // onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}

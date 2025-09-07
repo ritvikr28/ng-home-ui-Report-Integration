@@ -103,6 +103,9 @@ async function openFilterDialog() {
   await screen.findByText("Filter by");
 }
 
+
+
+
 beforeAll(() => {
   jest.useFakeTimers();
 });
@@ -120,7 +123,6 @@ describe("DocumentManagementServerView", () => {
   });
  
 it("shows error banner when showErrorBanner is true", async () => {
-  jest.setTimeout(15000);
   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
     payload: [
       {
@@ -140,7 +142,7 @@ it("shows error banner when showErrorBanner is true", async () => {
     .mockResolvedValueOnce({
       status: 400,
       data: [],
-      totalRecords: 0
+      totalRecords: 0,
     });
 
   render(<DocumentManagementServerView />);
@@ -324,7 +326,7 @@ it("shows no records on initial load, shows records after search", async () => {
   ],
   statusCode: 200
 });
-   render(<DocumentManagementServerView />);
+   const { container } = render(<DocumentManagementServerView />);
     act(() => {
       jest.advanceTimersByTime(2000);
     });
@@ -344,11 +346,12 @@ it("shows no records on initial load, shows records after search", async () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-
+  console.log(container.innerHTML);
 const suggestion = await screen.findAllByText((_, element) =>
   element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
 );
   // Click the suggestion to trigger the search
+  console.log(container.innerHTML);
   fireEvent.click(suggestion[0]);
   act(() => {
   jest.advanceTimersByTime(2000); // <-- Add this here
@@ -1398,7 +1401,7 @@ it("sets date error when fromDate is invalid", async () => {
     statusCode: 200
   });
 
-   render(<DocumentManagementServerView />);
+ render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(1000);
   });
@@ -1484,7 +1487,7 @@ it("opens filter dialog and processes fetched category data", async () => {
     statusCode: 200
   });
 
-  render(<DocumentManagementServerView />);
+  const { container } = render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(1000);
   });
@@ -1524,6 +1527,7 @@ it("opens filter dialog and processes fetched category data", async () => {
   
 
  
+    console.log(container.innerHTML); // Debug output
     expect(apiService.fetchFilterCategory).toHaveBeenCalled();
    
 });
@@ -1755,6 +1759,79 @@ it("shows date error when toDate is before fromDate", async () => {
 });
 
 
+it("trigger search even if searchTerm equals searchText", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+      {
+        name: "Pupil",
+        link: "",
+        values: []
+      },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Doc" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+  );
+  fireEvent.click(suggestion[0]);
+
+  const searchInput = screen.getByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Doc 1" } });
+  fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+
+  const searchLoader2 = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader2[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion2 = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+  );
+  fireEvent.click(suggestion2[0]);
+
+  expect(apiService.fetchDocumentDetails).toHaveBeenCalledTimes(1);
+});
 
 it("renders table headers even if no table data exists", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
@@ -2394,33 +2471,12 @@ describe("tableData mapping logic for relatedArr", () => {
     expect(relatedArr).toEqual([]);
   });
 
-  // it("handles missing relatedTo field", () => {
-  //   const doc = {
-  //     documentRealatedTo: 2
-  //     // relatedTo missing
-  //   };
-  //   let relatedArr: any[] = [];
-  //   if (Array.isArray(doc.relatedTo) && doc.relatedTo?.length > 0) {
-  //     if (doc.documentRealatedTo === 2) {
-  //       relatedArr = doc.relatedTo.map((school: any) => ({
-  //         type: "school",
-  //         name: school.schoolName || "",
-  //       }));
-  //     }
-  //   }
-  //   expect(relatedArr).toEqual([]);
-  // });
-
   it("handles missing fields in relatedTo items", () => {
     const doc = {
       documentRealatedTo: 1,
       relatedTo: [
         {
           preferredForename: "OnlyFirst"
-          // preferredSurname missing
-          // currentYearGroup missing
-          // currentPrimaryClass missing
-          // learnerExternalId missing
         }
       ]
     };
@@ -2479,7 +2535,7 @@ describe("tableData mapping logic for relatedArr", () => {
   });
 });
 
-
+ 
 it("handles search suggestion click", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
@@ -2551,137 +2607,168 @@ it("handles search suggestion click", async () => {
   const searchInput = screen.getByTestId("search-autocomplete-input");
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
-
 });
 
-  describe('DocumentManagementServerView - fetchViewDownloadData', () => {
-    const viewDownloadMockData = [
-      { name: 'Doc.pdf', status: 'Complete', fileExpiryDays: 3 }
-    ];
-    const mockResData = {
-      status: 200,
-      data: viewDownloadMockData
-    }
-    beforeEach(() => {
-      jest.clearAllMocks();
-      (apiService.viewDownload as jest.Mock).mockResolvedValue(mockResData);
-      jest.setTimeout(15000);
-    });
-
-    test('Shows download files when API returns status 200 with data', async () => {
-      render(<DocumentManagementServerView />);
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      await waitFor(() => screen.getByText("Documents"));
-
-      const actionsButton = screen.getByText('Actions');
-      fireEvent.click(actionsButton);
-
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      const viewDownloadOption = screen.getByText('View download');
-      fireEvent.click(viewDownloadOption);
-
-      const sidePanelHeader = await screen.findByTestId("side-panel-header");
-      expect(sidePanelHeader).toBeInTheDocument();
-      await waitFor(() => {
-        expect(apiService.viewDownload).toHaveBeenCalled();
-        expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
-        expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
-      });
-    });
-
-    test('Shows download files when API returns status 200 with data', async () => {
-      render(<DocumentManagementServerView />);
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      await waitFor(() => screen.getByText("Documents"));
-
-      const actionsButton = screen.getByText('Actions');
-      fireEvent.click(actionsButton);
-
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      const viewDownloadOption = screen.getByText('View download');
-      fireEvent.click(viewDownloadOption);
-
-      await waitFor(() => {
-        expect(apiService.viewDownload).toHaveBeenCalled();
-      });
-
-      // Assert rendered file
-      expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
-      expect(screen.getByText(/Expires in 3 days/)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
-    });
-
-    test('Shows empty message when API returns status 200 with empty data', async () => {
-      jest.clearAllMocks();
-      (apiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [],
-      });
-      jest.setTimeout(1000);
-
-      render(<DocumentManagementServerView />);
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      await waitFor(() => screen.getByText("Documents"));
-
-      const actionsButton = screen.getByText('Actions');
-      fireEvent.click(actionsButton);
-
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      const viewDownloadOption = screen.getByText('View download');
-      fireEvent.click(viewDownloadOption);
-
-      await waitFor(() => {
-        expect(apiService.viewDownload).toHaveBeenCalled();
-      });
-
-      // Check empty state message
-      expect(
-        screen.getByText('Files you download will appear here.')
-      ).toBeInTheDocument();
-    });
-
-    test('Does not set viewData when API returns non-200 status', async () => {
-
-      jest.clearAllMocks();
-      (apiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 500
-      });
-      jest.setTimeout(1000);
-
-      (apiService.viewDownload as jest.Mock).mockRejectedValue(
-        new Error('API Error')
-      );
-
-      render(<DocumentManagementServerView />);
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      await waitFor(() => screen.getByText("Documents"));
-
-      const actionsButton = screen.getByText('Actions');
-      fireEvent.click(actionsButton);
-
-      act(() => { jest.advanceTimersByTime(1000); });
-
-      const viewDownloadOption = screen.getByText('View download');
-      fireEvent.click(viewDownloadOption);
-
-      await waitFor(() => {
-        expect(apiService.viewDownload).toHaveBeenCalled();
-      });
-
-      // Should fallback to empty message
-      expect(
-        screen.getByText('Files you download will appear here.')
-      ).toBeInTheDocument();
-    });
 
   });
 
-})
+
+describe('DocumentManagementServerView - fetchViewDownloadData', () => {
+  const viewDownloadMockData = [
+    { name: 'Doc.pdf', status: 'Complete', fileExpiryDays: 3 }
+  ];
+  const mockResData = {
+    status: 200,
+    data: viewDownloadMockData
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    (apiService.viewDownload as jest.Mock).mockResolvedValue(mockResData);
+    jest.setTimeout(15000);
+  });
+
+  test('Shows download files when API returns status 200 with data', async () => {
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    await waitFor(() => {
+      expect(apiService.viewDownload).toHaveBeenCalled();
+    });
+
+    const sidePanelHeader = await screen.findByTestId("side-panel-header");
+    expect(sidePanelHeader).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+      expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+    });
+  });
+
+  test('Shows empty message when API returns status 200 with empty data', async () => {
+    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [],
+    });
+
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    await waitFor(() => {
+      expect(apiService.viewDownload).toHaveBeenCalled();
+    });
+
+    expect(
+      screen.getByText('Files you download will appear here.')
+    ).toBeInTheDocument();
+  });
+
+  test('Shows empty message when API returns non-200 status', async () => {
+    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 500
+    });
+
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    await waitFor(() => {
+      expect(apiService.viewDownload).toHaveBeenCalled();
+    });
+
+    expect(
+      screen.getByText('Files you download will appear here.')
+    ).toBeInTheDocument();
+  });
+
+  test('Shows empty message when viewDownload API throws', async () => {
+    (apiService.viewDownload as jest.Mock).mockRejectedValue(new Error('API Error'));
+
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    await waitFor(() => {
+      expect(apiService.viewDownload).toHaveBeenCalled();
+    });
+
+    expect(
+      screen.getByText('Files you download will appear here.')
+    ).toBeInTheDocument();
+  });
+
+  test('Closes side panel when close button is clicked after viewing downloads', async () => {
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    const sidePanelHeader = await screen.findByTestId("side-panel-header");
+    expect(sidePanelHeader).toBeInTheDocument();
+
+    const closeIcon = screen.getByTestId("side-panel-close-button");
+    fireEvent.click(closeIcon);
+
+    await waitFor(() =>
+      expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument()
+    );
+  });
+});

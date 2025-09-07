@@ -218,7 +218,8 @@ anyComponent: (e: any) => (
   columnWidth: "180px",
   isColumnSorting: true,
   anyComponent: (e: any) => {
-    const value = e?.length > 11 ? truncatedString(e, 11)?.truncated : "";
+    const shouldTruncate = 12;
+    const value = e?.length > shouldTruncate ? truncatedString(e, shouldTruncate)?.truncated : "";
     if (!value) return (
       <div style={{ display: "flex" }}>
         <span className="document-text document-column">{e}</span>
