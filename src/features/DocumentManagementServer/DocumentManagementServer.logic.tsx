@@ -321,11 +321,17 @@ export const handleSuggestionClick = async (
   if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
-  setDocumentRelatedTo(categoryMapping[item.categoryName as keyof typeof categoryMapping] || 0)
-  setSearchRefExternalId(item.categoryName === "Pupil" ?
-    item?.learnerExternalId : item.categoryName === "Staff" ?
-      item?.externalId : item.categoryName === "Organisation" ?
-        item?.organisationId : "")
+  setDocumentRelatedTo(categoryMapping[item.categoryName as keyof typeof categoryMapping] || 0);
+
+  let refExternalId = "";
+  if (item.categoryName === "Pupil") {
+    refExternalId = item?.learnerExternalId;
+  } else if (item.categoryName === "Staff") {
+    refExternalId = item?.externalId;
+  } else if (item.categoryName === "Organisation") {
+    refExternalId = item?.organisationId;
+  }
+  setSearchRefExternalId(refExternalId || "");
 };
 
 // Has items check

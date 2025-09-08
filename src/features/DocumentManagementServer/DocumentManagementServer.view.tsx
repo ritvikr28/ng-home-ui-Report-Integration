@@ -216,7 +216,7 @@ useEffect(() => {
   sortByCol: string = sortBy,
   sortOrder = sortDirection,
   refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRelatedTo,
+  relatedTo: number = documentRelatedTo
 ) => {
   fetchGetDocumentDetailsLogic({
     page,
@@ -719,24 +719,27 @@ const handleCloseSidePanel = () => {
                                                         const isInProgress = item?.status?.toLowerCase() === 'inprogress';
                                                         const isInitiated = item?.status?.toLowerCase() === 'initiated';
                                                     return (
-                                                            <div className="viewDownloadDetails" key={index}>
-                                                                <div className="fileDetails">
-                                                                    <p>{item?.name}</p>
-                                                                    {isComplete && item?.fileExpiryDays && item?.fileExpiryDays > 0 ? (
-                                                                        <span>Expires in {item?.fileExpiryDays} days</span>
-                                                                    ) : (
-                                                                        isComplete && item?.fileExpiryDays && item?.fileExpiryDays === 0 ? <span>Expires today</span> : null
-                                                                    )
-                                                                }
-                                                                </div>
-                                                                {isComplete && (
-                                                                    <Button className="viewDownloadBtn">Download</Button>
-                                                                )}
-                                                                {(isInProgress || isInitiated) && (
+                                                        <div className="viewDownloadDetails" key={index}>
+                                                            <div className="fileDetails">
+                                                                <p>{item?.name}</p>
+                                                                {isComplete && item?.fileExpiryDays !== undefined && (() => {
+                                                                    if (item.fileExpiryDays > 0) {
+                                                                        return <span>Expires in {item.fileExpiryDays} days</span>;
+                                                                    }
+                                                                    if (item.fileExpiryDays === 0) {
+                                                                        return <span>Expires today</span>;
+                                                                    }
+                                                                    return null;
+                                                                })()}
+                                                            </div>
+                                                            {isComplete && (
+                                                                <Button className="viewDownloadBtn">Download</Button>
+                                                            )}
+                                                            {(isInProgress || isInitiated) && (
                                                                 <span className="inProgressLoader">
                                                                     <Loader
                                                                         loaderType={LoaderType.Circular}
-                                                                       
+
                                                                     />
                                                                 </span>
                                                             )}
@@ -794,7 +797,7 @@ const handleCloseSidePanel = () => {
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents" : "document"} is about to be prepared for downloading.`,
+                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
