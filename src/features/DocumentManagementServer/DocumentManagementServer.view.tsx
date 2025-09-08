@@ -81,15 +81,18 @@ const [showDialog, setShowDialog] = useState(false);
     const [reloadAfterTagClose, setReloadAfterTagClose] = useState(false);
 const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null); 
- 
+     const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
+    const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
+
+
 const searchTagListRaw = [
   ...categoryArr
 ];
  
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
- 
-    const [isShowAutoSuggest] = useState(true);  
- 
+
+    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
+
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
  
@@ -165,7 +168,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
         let dataFetch = Promise.resolve();
         if (searchText) {
-            dataFetch = Promise.resolve(fetchGetDocumentDetails(searchText, currentPage, [], sortBy, sortDirection));
+            dataFetch = Promise.resolve(fetchGetDocumentDetails(currentPage, [], sortBy, sortDirection));
         } else {
             setDocData({ statusCode: 200, data: [], totalRecords: 0 });
         }
@@ -180,32 +183,56 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }, []);
  
     useEffect(() => {
-        if (isSidePanelOpen) {
-            fetchViewDownloadData({
-                showLoader: true,
-                setIsSidePanelLoader,
-                setViewData,
-                viewDownload,
-                downloadPollingIntervalRef
-            });
+   
+        if (!isInitialLoad) {
+            const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
         }
-    }, [isSidePanelOpen]);
+        setIsSearchTriggered(false)
+    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo]);
+
+useEffect(() => {
+  if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+    const timer = setTimeout(() => {
+      fetchViewDownloadData({
+        showLoader: true,
+        setIsSidePanelLoader,
+        setViewData,
+        viewDownload,
+        downloadPollingIntervalRef,
+      });
+    }, 1000);
+    return () => clearTimeout(timer);
+  }
+  if (isSidePanelOpen) {
+    fetchViewDownloadData({
+      showLoader: true,
+      setIsSidePanelLoader,
+      setViewData,
+      viewDownload,
+      downloadPollingIntervalRef,
+    });
+  }
+  return undefined;
+}, [isSidePanelOpen, sidePanelOpenReason]);
+
 
     const fetchGetDocumentDetails = (
-  searchTexts: string,
   page: number,
   categories: number[],
   sortByCol: string = sortBy,
-  sortOrder = sortDirection
+  sortOrder = sortDirection,
+  refExternalId: string = searchRefExternalId,
+  relatedTo: number = documentRelatedTo
 ) => {
   fetchGetDocumentDetailsLogic({
-    searchTexts,
     page,
     categories,
     sortByCol,
     sortOrder,
     dateRange,
-    isSearchTrue: !!searchText,
+    refExternalId,
+    relatedTo,
     setDocData,
     setCurrentPage,
     setTotalPage,
@@ -310,8 +337,22 @@ const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryReg
         setDocData({ statusCode: 200, data: [], totalRecords: 0 });
         setIsInitialLoad(true);
 };
- 
- 
+
+    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
+        if (event.key === "Enter") {
+            const keyword = searchTerm?.trim()?.toLowerCase();
+            if(keyword !== searchText) {
+            setSearchTerm(keyword);
+            setSearchText(keyword);
+            setIsSearchTriggered(true);
+            setIsSearchDataLoading(true);
+        }
+        setIsSearchLoading(false);
+        setIsShowAutoSuggest(false); 
+        // setSuggestions([]);
+    }
+    }
+
     const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
@@ -335,7 +376,7 @@ useEffect(() => {
   if (searchText) {
     setIsSearchDataLoading(true);
     fetchGetDocumentDetails(
-      searchText,
+    
       currentPage,
       getAllRegistrationIds(selectedFormats),
       sortBy,
@@ -349,7 +390,7 @@ useEffect(() => {
     if (searchText && searchText.trim().length > 0) {
       const categories = getAllRegistrationIds(selectedCategories);
       fetchGetDocumentDetails(
-        searchText,
+        
         1,
         categories,
         sortBy,
@@ -635,12 +676,10 @@ const handleCloseSidePanel = () => {
                                 onKeyUpLenght={2}
                                 searchDebouncerTreshold={1000}
                                 searchSuggestions={filteredSuggestions}
-                               
-                                onSearchSuggestionItemClick={(item)=>{
-                                        handleSuggestionClick(item, setSearchTerm, setSearchText, setIsSearchTriggered);
-                                        setIsSearchDataLoading(true);
- 
-                                    }}
+                                onSearchSuggestionItemClick={(item) =>{
+                                    handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
+                                    setIsSearchDataLoading(true);
+                                }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
@@ -698,21 +737,27 @@ const handleCloseSidePanel = () => {
                                                         const isInProgress = item?.status?.toLowerCase() === 'inprogress';
                                                         const isInitiated = item?.status?.toLowerCase() === 'initiated';
                                                     return (
-                                                            <div className="viewDownloadDetails" key={index}>
-                                                                <div className="fileDetails">
-                                                                    <p>{item?.name}</p>
-                                                                    {isComplete && (
-                                                                        <span>Expires in {item?.fileExpiryDays} days</span>
-                                                                    )}
-                                                                </div>
-                                                                {isComplete && (
-                                                                    <Button className="viewDownloadBtn">Download</Button>
-                                                                )}
-                                                                {(isInProgress || isInitiated) && (
+                                                        <div className="viewDownloadDetails" key={index}>
+                                                            <div className="fileDetails">
+                                                                <p>{item?.name}</p>
+                                                                {isComplete && item?.fileExpiryDays !== undefined && (() => {
+                                                                    if (item.fileExpiryDays > 0) {
+                                                                        return <span>Expires in {item.fileExpiryDays} days.</span>;
+                                                                    }
+                                                                    if (item.fileExpiryDays === 0) {
+                                                                        return <span>Expires today.</span>;
+                                                                    }
+                                                                    return null;
+                                                                })()}
+                                                            </div>
+                                                            {isComplete && (
+                                                                <Button className="viewDownloadBtn">Download</Button>
+                                                            )}
+                                                            {(isInProgress || isInitiated) && (
                                                                 <span className="inProgressLoader">
                                                                     <Loader
                                                                         loaderType={LoaderType.Circular}
-                                                                       
+
                                                                     />
                                                                 </span>
                                                             )}
@@ -770,7 +815,7 @@ const handleCloseSidePanel = () => {
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} document is about to be prepared for downloading.`,
+                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},

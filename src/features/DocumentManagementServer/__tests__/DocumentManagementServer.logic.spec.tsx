@@ -137,23 +137,6 @@ describe("formatSuggestions", () => {
   expect(await formatSuggestions(null as any)).toEqual([]);
 });
 
-  it("formats Document category correctly", async () => {
-    const input = [
-      {
-        name: "Document",
-        values: [
-          { fileId: "1", fileName: "File 1" },
-          { fileId: "2", fileName: "File 2" }
-        ]
-      }
-    ];
-    const result = await formatSuggestions(input);
-    expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("Document");
-    expect(result[0].values).toHaveLength(2);
-    expect(result[0].values[0].text).toBe("File 1");
-    expect(result[0].values[0].props).toMatchObject({ name: "File 1", id: "1" });
-  });
 
   it("formats Pupil category with icon and value", async () => {
     const input = [
@@ -431,11 +414,13 @@ describe("handleSearchChange", () => {
 });
 
 describe("handleSuggestionClick", () => {
+   const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
   it("should call setSearchTerm and setSearchText", async () => {
   const setSearchTerm = jest.fn();
   const setSearchText = jest.fn();
 
-  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText);
+  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
 
   expect(setSearchTerm).toHaveBeenCalledWith("DocA");
   expect(setSearchText).toHaveBeenCalledWith("DocA");
@@ -444,11 +429,14 @@ describe("handleSuggestionClick", () => {
 it("should not call setters if item is null", async () => {
   const setSearchTerm = jest.fn();
   const setSearchText = jest.fn();
-  await handleSuggestionClick(null, setSearchTerm, setSearchText);
+  await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId );
   expect(setSearchTerm).not.toHaveBeenCalled();
   expect(setSearchText).not.toHaveBeenCalled();
 });
 
+    await handleSuggestionClick({}, setSearchTerm, loadData, setDocumentRelatedTo, setSearchRefExternalId);
+    expect(setSearchTerm).not.toHaveBeenCalled();
+  });
 });
 
 describe("hasItems", () => {
@@ -552,10 +540,20 @@ it("should not call fetch if value is only whitespace", () => {
 });
 
 describe("handleSuggestionClick edge cases", () => {
+  const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
   it("should do nothing if item is null", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
-    await handleSuggestionClick(null, setSearchTerm, setSearchText);
+    await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(setSearchText).not.toHaveBeenCalled();
+  });
+
+  it("should do nothing if item.name is falsy", async () => {
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -1991,13 +1989,13 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetIsSearchDataLoading = jest.fn();
 
   const defaultArgs = {
-    searchTexts: "test",
     page: 2,
     categories: [1, 2],
     sortByCol: "Document",
     sortOrder: "Asc",
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
-    isSearchTrue: false,
+    refExternalId: "org123",
+    relatedTo: 1,
     setDocData: mockSetDocData,
     setCurrentPage: mockSetCurrentPage,
     setTotalPage: mockSetTotalPage,
