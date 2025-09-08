@@ -433,7 +433,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
         </GridItem>
         <GridItem sm={12} md={12} lg={12} xl={12} xxl={12}>
           <Grid className="action-card-container-closeview sims-ng">
-            <GridItem sm={12} lg={6} md={12} className="what-new-sims">
+            <GridItem sm={12} lg md={12} className="what-new-sims">
               <Link
                 dataTestId="link1"
                 href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
@@ -452,7 +452,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
             </GridItem>
             <GridItem
               sm={12}
-              lg={6}
+              lg
               md={12}
               className="what-new-sims action-card"
             >
@@ -474,7 +474,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem sm={12} md={12} lg={12}>
+        <GridItem sm={12} md lg={12}>
           <ErrorActionList description={t("HomePageForSimsConnectedNormalUser.needAccessToSimsNextGen")}>
             <ErrorActionListItem
               iconName="information"

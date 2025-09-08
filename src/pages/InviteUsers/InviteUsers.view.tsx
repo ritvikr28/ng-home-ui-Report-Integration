@@ -630,11 +630,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isTruncateInputText
             emptyRowType={TableRowType.Info}
             emptyRowResponseCode={ResponseCode.Info}
-            emptyRowResponseMessage={
-              noDataTextToDisplay === "No data to display"
-                ? `${t("inviteUsers.noDataToDisplay")}`
-                : ""
-            }
+            emptyRowResponseMessage={noDataTextToDisplay}
             secondaryButtonTitle={`${t("inviteUsers.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}

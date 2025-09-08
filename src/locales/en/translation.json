@@ -469,7 +469,7 @@
     "inviteStaffDescription" : "Invite Staff is being replaced",
     "learnMoreInviteUsers" : "Learn more about Invite Users",
     "invitationConflict" : "Invitation conflict",
-    "invitationConflictDescription" : "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact our Service Desk team for assistance in resolving this issue.",
+    "invitationConflictDescription" : "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact your SIMS support provider.",
     "cancel" : "Cancel",
     "save" : "Save",
     "pleaseWaitLoader" : "Please wait"
