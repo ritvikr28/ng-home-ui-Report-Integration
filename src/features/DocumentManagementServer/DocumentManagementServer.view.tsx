@@ -497,7 +497,7 @@ const renderViewDownloadContent = () => {
               )}
               {(isInProgress || isInitiated) && (
                 <span className="inProgressLoader">
-                  <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />
+                  <Loader loaderType={LoaderType.Circular} />
                 </span>
               )}
             </div>
