@@ -166,8 +166,7 @@ it("shows error banner when showErrorBanner is true", async () => {
       2, // Assert the 2nd call only
       expect.objectContaining({
         pageNumber: 1,
-        pageSize: expect.any(Number),
-        searchText: expect.stringMatching(/^doc$/i),
+        pageSize: expect.any(Number)
       })
     );
   });

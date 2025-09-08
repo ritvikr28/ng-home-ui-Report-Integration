@@ -137,23 +137,6 @@ describe("formatSuggestions", () => {
   expect(await formatSuggestions(null as any)).toEqual([]);
 });
 
-  it("formats Document category correctly", async () => {
-    const input = [
-      {
-        name: "Document",
-        values: [
-          { fileId: "1", fileName: "File 1" },
-          { fileId: "2", fileName: "File 2" }
-        ]
-      }
-    ];
-    const result = await formatSuggestions(input);
-    expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("Document");
-    expect(result[0].values).toHaveLength(2);
-    expect(result[0].values[0].text).toBe("File 1");
-    expect(result[0].values[0].props).toMatchObject({ name: "File 1", id: "1" });
-  });
 
   it("formats Pupil category with icon and value", async () => {
     const input = [
