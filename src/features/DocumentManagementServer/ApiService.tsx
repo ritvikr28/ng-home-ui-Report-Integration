@@ -92,13 +92,12 @@ export const prepareAndDownloadFile = async (payload: { request: any }) => {
     const url = `/validation/api/v1/file/preparedownload`;
     const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
 
-    return responseData?.status; // Return status code directly
+    return responseData?.status; 
   } catch (error: any) {
-    // If error response exists, return its status
+   
     if (error?.response?.status) {
       return error.response.status;
     }
-    return 400; // Default to error status
   }
 };
 

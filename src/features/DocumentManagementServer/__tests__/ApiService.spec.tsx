@@ -398,7 +398,7 @@ describe("prepareAndDownloadFile", () => {
     (service.post as jest.Mock).mockRejectedValueOnce(error);
 
     const result = await prepareAndDownloadFile(payload);
-    expect(result).toBe(400);
+    expect(result).toBe(undefined);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
 
