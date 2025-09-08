@@ -272,6 +272,10 @@
     justify-content: space-between;
     align-items: flex-start;
     .fileDetails{
+      margin-bottom: 16px;
+      word-break: break-all;
+      overflow-wrap: break-word;
+
       p {
         margin-bottom: 0px;
       }

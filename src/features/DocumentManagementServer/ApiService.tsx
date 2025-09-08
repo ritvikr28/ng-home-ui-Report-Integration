@@ -7,13 +7,13 @@ import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 export const fetchDocumentDetails = async ({
   pageNumber,
   pageSize,
-  searchText = '',
   categoryId = [],
   fromDate = '',
   toDate = '',
   sortBy = 'DateAdded',
   sortDirection = 'Desc',
-  isSearchTextExactMatch = false,
+  referenceExternalId = '',
+  documentRelatedTo = 0
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
@@ -23,13 +23,13 @@ export const fetchDocumentDetails = async ({
       documentsRequest: {
         pageNumber,
         pageSize,
-        searchText,
         categoryId,
         fromDate,
         toDate,
         sortBy,
         sortDirection,
-        isSearchTextExactMatch
+        referenceExternalId,
+        documentRelatedTo
       },
     };
 
@@ -53,7 +53,6 @@ export const fetchDMSSuggestions = async (
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
 
-    // Build query params
     const params = [
       `AutoCompleteRequest.SearchText=${encodeURIComponent(searchText)}`,
       ...(categoryId && categoryId.length > 0
