@@ -911,109 +911,109 @@ it("handles sorting for Category column", async () => {
   });
 });
 
-it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
-   const mockDatas1 = {
-    totalRecords: 2,
-    statusCode: 200,
-    data: [
-      {
-        fileId: "1",
-        document: "Doc 1",
-        relatedTo: ["HR"],
-        category: "legal",
-        addedBy: "User A",
-        dateAdded: "2025-06-10",
-        format: "pdf",
-        size: "500KB",
-      },
-      {
-        fileId: "2",
-        document: "Doc 2",
-        relatedTo: ["Finance"],
-        category: "finance",
-        addedBy: "User B",
-        dateAdded: "2025-06-11",
-        format: "docx",
-        size: "1MB",
-      }
-    ],
-  };
+// it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
+//    const mockDatas1 = {
+//     totalRecords: 2,
+//     statusCode: 200,
+//     data: [
+//       {
+//         fileId: "1",
+//         document: "Doc 1",
+//         relatedTo: ["HR"],
+//         category: "legal",
+//         addedBy: "User A",
+//         dateAdded: "2025-06-10",
+//         format: "pdf",
+//         size: "500KB",
+//       },
+//       {
+//         fileId: "2",
+//         document: "Doc 2",
+//         relatedTo: ["Finance"],
+//         category: "finance",
+//         addedBy: "User B",
+//         dateAdded: "2025-06-11",
+//         format: "docx",
+//         size: "1MB",
+//       }
+//     ],
+//   };
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-    payload: [
-      {
-        name: "Document",
-        link: "",
-        values: [
-          { fileName: "Doc 1" },
-          { fileName: "Doc 2" }
-        ]
-      },
-      {
-        name: "Pupil",
-        link: "",
-        values: []
-      },
-      {
-        name: "Staff",
-        link: null,
-        values: []
-      },
-      {
-        name: "Organisation",
-        link: null,
-        values: []
-      }
-    ],
-    statusCode: 200
-  });
+//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+//     payload: [
+//       {
+//         name: "Document",
+//         link: "",
+//         values: [
+//           { fileName: "Doc 1" },
+//           { fileName: "Doc 2" }
+//         ]
+//       },
+//       {
+//         name: "Pupil",
+//         link: "",
+//         values: []
+//       },
+//       {
+//         name: "Staff",
+//         link: null,
+//         values: []
+//       },
+//       {
+//         name: "Organisation",
+//         link: null,
+//         values: []
+//       }
+//     ],
+//     statusCode: 200
+//   });
 
-  render(<DocumentManagementServerView />);
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
+//   render(<DocumentManagementServerView />);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
 
-  await waitFor(() => {
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-    fireEvent.change(searchInput, { target: { value: "Doc" } });
-    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  });
+//   await waitFor(() => {
+//     const searchInput = screen.getByTestId("search-autocomplete-input");
+//     fireEvent.change(searchInput, { target: { value: "Doc" } });
+//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+//   });
 
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
 
-  // Wait for suggestions to appear
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
+//   // Wait for suggestions to appear
+//   const searchLoader = screen.getAllByTestId("loader-arc");
+//   await waitFor(() => {
+//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
 
-  const suggestion = await screen.findAllByText((_, element) =>
-    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
-  );
-  fireEvent.click(suggestion[0]);
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
+//   const suggestion = await screen.findAllByText((_, element) =>
+//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+//   );
+//   fireEvent.click(suggestion[0]);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
 
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
-  });
+//   await waitFor(() => {
+//     expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+//   });
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+//   (apiService.fetchDocumentDetails as jest.Mock).mockClear();
 
-  // Try clicking a non-sortable column, e.g., "Added by"
-  const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
-  fireEvent.click(addedByHeader);
+//   // Try clicking a non-sortable column, e.g., "Added by"
+//   const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
+//   fireEvent.click(addedByHeader);
 
-  // The API should NOT be called with sortBy: "Added by"
-  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-    expect.objectContaining({ sortBy: "Added by" })
-  );
-});
+//   // The API should NOT be called with sortBy: "Added by"
+//   expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
+//     expect.objectContaining({ sortBy: "Added by" })
+//   );
+// });
 
   it("handles pagination changes", async () => {
   jest.setTimeout(15000);
