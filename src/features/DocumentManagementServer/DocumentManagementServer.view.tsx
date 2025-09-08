@@ -700,7 +700,7 @@ const handleCloseSidePanel = () => {
                                         { failedFileName && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
-                                            title={`Unable to prepare for download`}
+                                            title="Unable to prepare for download"
                                             message={`A technical issue has prevented us from preparing '${failedFileName}' for download. Please try again later. If the issue persists please get in touch with our support team.`}
                                             autoclose
                                             onClickClose={() => {
