@@ -5,7 +5,7 @@ import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchSt
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
 import { Category, FetchViewDownloadDataParams } from "./responseModel";
-import { categoryMapping, pageSizeNumber } from "../../../public/Constants";
+import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -321,7 +321,7 @@ export const handleSuggestionClick = async (
   if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
-  setDocumentRelatedTo(categoryMapping[item.categoryName as keyof typeof categoryMapping] || 0);
+  setDocumentRelatedTo(relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0);
 
   let refExternalId = "";
   if (item.categoryName === "Pupil") {
