@@ -75,6 +75,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
      const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
+    const [failedFileName, setFailedFileName] = useState<string | null>(null);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
@@ -433,6 +434,16 @@ const handleApply = () => {
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
 };
 
+useEffect(() => {
+  if (viewData && viewData.length > 0) {
+    const cancelledFile = viewData.find(item => item.status?.toLowerCase() === 'cancel');
+    if (cancelledFile) {
+      setPrepareDownloadError(true);
+      setFailedFileName(cancelledFile.name || null);
+    }
+  }
+}, [viewData]);
+
 const handleCloseSidePanel = () => {
   closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
 };
@@ -685,6 +696,19 @@ const handleCloseSidePanel = () => {
                                                 message="We'll send you an email when your download is ready. Please check your spam folder if you don't see it in your inbox."
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
+                                        )}
+
+                                        { failedFileName && (
+                                        <Notification
+                                            status={NotificationStatus.WARNING}
+                                            title={`Unable to prepare ${failedFileName} for download`}
+                                            message={`A technical issue has prevented us from preparing '${failedFileName}' for download. Please try again later. If the issue persists please get in touch with our support team.`}
+                                            autoclose
+                                            onClickClose={() => {
+                                            setPrepareDownloadError(false);
+                                            setFailedFileName(null);
+                                            }}
+                                        />
                                         )}
                                         <div className="viewDownloadWrap">
                                             {viewData?.length > 0 ? (
