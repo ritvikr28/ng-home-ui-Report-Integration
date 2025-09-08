@@ -722,9 +722,12 @@ const handleCloseSidePanel = () => {
                                                             <div className="viewDownloadDetails" key={index}>
                                                                 <div className="fileDetails">
                                                                     <p>{item?.name}</p>
-                                                                    {isComplete && (
+                                                                    {isComplete && item?.fileExpiryDays && item?.fileExpiryDays > 0 ? (
                                                                         <span>Expires in {item?.fileExpiryDays} days</span>
-                                                                    )}
+                                                                    ) : (
+                                                                        isComplete && item?.fileExpiryDays && item?.fileExpiryDays === 0 ? <span>Expires today</span> : null
+                                                                    )
+                                                                }
                                                                 </div>
                                                                 {isComplete && (
                                                                     <Button className="viewDownloadBtn">Download</Button>
