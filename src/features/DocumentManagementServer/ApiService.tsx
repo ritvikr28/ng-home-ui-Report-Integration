@@ -53,7 +53,6 @@ export const fetchDMSSuggestions = async (
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
 
-    // Build query params
     const params = [
       `AutoCompleteRequest.SearchText=${encodeURIComponent(searchText)}`,
       ...(categoryId && categoryId.length > 0
