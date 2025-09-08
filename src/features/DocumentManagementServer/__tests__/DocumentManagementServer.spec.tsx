@@ -123,14 +123,112 @@ describe("DocumentManagementServerView", () => {
   });
  
 
-it("handles filter dialog open and apply", async () => {
-  jest.setTimeout(15000);
-    mockSuggestions();
-    await renderAndSearch();
-    await openFilterDialog();
-    const applyBtn = screen.getByRole("button", { name: /apply/i });
-    fireEvent.click(applyBtn);
+// it("handles filter dialog open and apply", async () => {
+//   jest.setTimeout(15000);
+//     mockSuggestions();
+//     await renderAndSearch();
+//     await openFilterDialog();
+//     const applyBtn = screen.getByRole("button", { name: /apply/i });
+//     fireEvent.click(applyBtn);
+//   });
+
+it("handles filter dialog open and apply (optimized)", async () => {
+  const mockDatas = {
+    totalRecords: 2,
+    data:  [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+    statusCode: 200,
+  };
+     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
+      jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+  payload: [
+    {
+      name: "Document",
+      link: "",
+      values: [
+        { fileName: "Doc 1" },
+        { fileName: "Doc 2" }
+      ]
+    },
+    {
+      name: "Pupil",
+      link: "",
+      values: []
+    },
+    {
+      name: "Staff",
+      link: null,
+      values: []
+    },
+    {
+      name: "Organisation",
+      link: null,
+      values: []
+    }
+  ],
+  statusCode: 200
+});
+   const { container } = render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+
+    fireEvent.change(searchInput, { target: { value: "Doc" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
   });
+
+  act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+const suggestion = await screen.findAllByText((_, element) =>
+  element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
+);
+  // Click the suggestion to trigger the search
+  fireEvent.click(suggestion[0]);
+  act(() => {
+  jest.advanceTimersByTime(2000); // <-- Add this here
+});
+
+  const filterBtn = await screen.getByTestId("filter-btn");
+  fireEvent.click(filterBtn);
+  await screen.getByText(/Filter by/i);
+
+  const applyBtn = screen.getByRole("button", { name: /apply/i });
+  
+  fireEvent.click(applyBtn);
+  
+  console.log(container.innerHTML);
+    expect(applyBtn).not.toBeDisabled();
+
+});
 
 it("shows empty state message on initial load", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
@@ -222,6 +320,7 @@ it("shows no records on initial load, shows records after search", async () => {
   expect(homeLabels.length).toBeGreaterThan(0);
 
 });
+
 
   it("handles search input and Enter key", async () => {
     jest.setTimeout(15000);
