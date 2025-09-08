@@ -89,140 +89,32 @@ describe("SendNotification", () => {
   // Wait for login to complete and token to be set
   await waitFor(() => expect(screen.getByText("user1 Logged in!")).toBeInTheDocument());
 });
+
+it("updates notification message when user types in Message input", () => {
+  render(<SendNotification />);
+  const messageInput = screen.getByPlaceholderText(/Message/i);
+  fireEvent.change(messageInput, { target: { value: "Hello world!" } });
+  expect(messageInput).toHaveValue("Hello world!");
+});
+
+it("updates notification type when user types in Type input", () => {
+  render(<SendNotification />);
+  const typeInput = screen.getByPlaceholderText(/Type/i);
+  fireEvent.change(typeInput, { target: { value: "info" } });
+  expect(typeInput).toHaveValue("info");
+});
+
+it("updates notification roles when user types in Roles input", () => {
+  render(<SendNotification />);
+  const rolesInput = screen.getByPlaceholderText(/Roles/i);
+  fireEvent.change(rolesInput, { target: { value: "admin, user" } });
+  expect(rolesInput).toHaveValue("admin,user");
+});
+
+it("updates notification userIds when user types in User IDs input", () => {
+  render(<SendNotification />);
+  const userIdsInput = screen.getByPlaceholderText(/User IDs/i);
+  fireEvent.change(userIdsInput, { target: { value: "123,456" } });
+  expect(userIdsInput).toHaveValue("123,456");
+});
 })
-
-describe("connectWebSocket", () => {
-  let originalWebSocket: any;
-  let mockSocket: any;
-  let setWsStatus: jest.Mock;
-  let setMessages: jest.Mock;
-  let reconnectAttempts: { current: number };
-  let reconnectTimeout: { current: any };
-  let wsRef: { current: any };
-  let token: string;
-
-  beforeAll(() => {
-    originalWebSocket = global.WebSocket;
-  });
-
- beforeEach(() => {
-  setWsStatus = jest.fn();
-  setMessages = jest.fn();
-  reconnectAttempts = { current: 0 };
-  reconnectTimeout = { current: null };
-  wsRef = { current: null };
-  token = "test-token";
-
-  mockSocket = {
-    onopen: null,
-    onmessage: null,
-    onclose: null,
-    onerror: null,
-    close: jest.fn(),
-    send: jest.fn(),
-  };
-
-  // Mock WebSocket constructor and static properties
-  const WS = jest.fn(() => mockSocket) as any;
-  WS.CONNECTING = 0;
-  WS.OPEN = 1;
-  WS.CLOSING = 2;
-  WS.CLOSED = 3;
-  WS.prototype = {};
-  global.WebSocket = WS;
-});
-  afterAll(() => {
-    global.WebSocket = originalWebSocket;
-  });
-
-  function getConnectWebSocket() {
-    // Import the hook or function from your component file, or copy the function here for isolated testing.
-    // For this example, we inline a simplified version:
-    return () => {
-      if (!token) return;
-      setWsStatus("connecting");
-      const socket = new global.WebSocket(`wss://test?access_token=${token}`);
-      wsRef.current = socket;
-
-      socket.onopen = () => {
-        setWsStatus("connected");
-        reconnectAttempts.current = 0;
-      };
-
-      socket.onmessage = (event: any) => {
-        setMessages((prev: any) => [...(prev || []), event.data]);
-      };
-
-      socket.onclose = () => {
-        setWsStatus("disconnected");
-        if (token && reconnectAttempts.current < 10) {
-          setWsStatus("reconnecting");
-          const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
-          reconnectTimeout.current = setTimeout(() => {}, delay);
-          reconnectAttempts.current += 1;
-        }
-      };
-
-      socket.onerror = () => {
-        socket.close();
-      };
-    };
-  }
-
-  it("does nothing if no token", () => {
-    token = "";
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    expect(setWsStatus).not.toHaveBeenCalled();
-    expect(global.WebSocket).not.toHaveBeenCalled();
-  });
-
-  it("sets wsStatus to connecting and assigns wsRef", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    expect(setWsStatus).toHaveBeenCalledWith("connecting");
-    expect(wsRef.current).toBe(mockSocket);
-  });
-
-  it("handles onopen event", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    mockSocket.onopen();
-    expect(setWsStatus).toHaveBeenCalledWith("connected");
-    expect(reconnectAttempts.current).toBe(0);
-  });
-
-  it("handles onmessage event", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    setMessages.mockImplementation((fn) => fn(["old"]));
-    mockSocket.onmessage({ data: "new message" });
-    expect(setMessages).toHaveBeenCalled();
-  });
-
-  it("handles onclose and triggers reconnect", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    reconnectAttempts.current = 0;
-    mockSocket.onclose();
-    expect(setWsStatus).toHaveBeenCalledWith("disconnected");
-    expect(setWsStatus).toHaveBeenCalledWith("reconnecting");
-    expect(reconnectAttempts.current).toBe(1);
-  });
-
-  it("does not reconnect if attempts >= 10", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    reconnectAttempts.current = 10;
-    mockSocket.onclose();
-    expect(setWsStatus).toHaveBeenCalledWith("disconnected");
-    expect(setWsStatus).not.toHaveBeenCalledWith("reconnecting");
-  });
-
-  it("handles onerror by closing socket", () => {
-    const connectWebSocket = getConnectWebSocket();
-    connectWebSocket();
-    mockSocket.onerror();
-    expect(mockSocket.close).toHaveBeenCalled();
-  });
-});

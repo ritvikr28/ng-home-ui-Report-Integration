@@ -1,9 +1,11 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchFilterCategory, fetchStaffProfilePhoto } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import {truncatedString} from "../../shared/utils/commonFunctions";
+import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
+import { Category, FetchViewDownloadDataParams } from "./responseModel";
+import { pageSizeNumber } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -378,6 +380,72 @@ export const loadSuggestions = async (
   }
 };
 
+export async function fetchGetDocumentDetailsLogic({
+  searchTexts,
+  page,
+  categories,
+  sortByCol,
+  sortOrder,
+  dateRange,
+  isSearchTrue,
+  setDocData,
+  setCurrentPage,
+  setTotalPage,
+  setShowSearchError,
+  setShowErrorBanner,
+  setHasFetched,
+  setIsSearchLoading,
+  setIsSearchDataLoading,
+}: {
+  searchTexts: string;
+  page: number;
+  categories: number[];
+  sortByCol: string;
+  sortOrder: string; // <-- Add type here
+  dateRange: { fromDate?: string; toDate?: string };
+  isSearchTrue: boolean;
+  setDocData: (v: any) => void;
+  setCurrentPage: (v: number) => void;
+  setTotalPage: (v: number) => void;
+  setShowSearchError: (v: boolean) => void;
+  setShowErrorBanner: (v: boolean) => void;
+  setHasFetched: (v: boolean) => void;
+  setIsSearchLoading: (v: boolean) => void;
+  setIsSearchDataLoading: (v: boolean) => void;
+}) {
+  setIsSearchDataLoading(true);
+  try {
+    const result = await fetchDocumentDetails({
+      pageNumber: page,
+      pageSize: pageSizeNumber,
+      searchText: searchTexts,
+      fromDate: dateRange?.fromDate,
+      toDate: dateRange?.toDate,
+      categoryId: categories || [],
+      isSearchTextExactMatch: isSearchTrue,
+      sortBy: sortByCol,
+      sortDirection: sortOrder,
+    });
+    if (result && result?.statusCode === 200) {
+      setDocData(result);
+      setCurrentPage(page);
+      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+      setShowSearchError(false);
+      setShowErrorBanner(false);
+    } else if (result && result?.status === 400) {
+      setShowErrorBanner(true);
+    } else {
+      setShowSearchError(true);
+    }
+    setHasFetched(true);
+  } catch (err) {
+    console.error("Error fetching document details:", err);
+    setShowSearchError(true);
+  }
+  setIsSearchLoading(false);
+  setIsSearchDataLoading(false);
+}
+
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
   const visibleTags = tags.slice(0, maxVisible);
@@ -449,6 +517,79 @@ export const handleTagCloseLogic = (
   setSelectedFormats(prev =>
     prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
   );
+};
+
+export function getReferenceExternalId(relatedTo: any): string {
+  if (!relatedTo) return "";
+  if (relatedTo.organisationId) return relatedTo.organisationId;
+  if (relatedTo.externalId) return relatedTo.externalId;
+  if (relatedTo.learnerExternalId) return relatedTo.learnerExternalId;
+  return "";
+}
+
+export function reduceCategories(res: any[]): Category[] {
+  return Object.values(
+    res?.reduce((acc: any, curr: any) => {
+      if (!acc[curr.application]) {
+        acc[curr.application] = { application: curr.application, registrationId: [], section: [] };
+      }
+      acc[curr.application].registrationId.push(curr.registrationId);
+      acc[curr.application].section.push(curr.section);
+      return acc;
+    }, {})
+  ) as Category[];
+}
+
+export const fetchViewDownloadData = async ({
+  showLoader = true,
+  setIsSidePanelLoader,
+  setViewData,
+  viewDownload,
+  downloadPollingIntervalRef,
+}: FetchViewDownloadDataParams) => {
+  const pollingRef = downloadPollingIntervalRef;
+  if (showLoader) setIsSidePanelLoader(true);
+  try {
+    const result = await viewDownload();
+    if (result?.data && result?.status === 200) {
+      setViewData(result.data);
+
+      const hasInProgress = result.data.some(
+        (item: { status: string }) =>
+          item?.status?.toLowerCase() === "inprogress" ||
+          item?.status?.toLowerCase() === "initiated"
+      );
+
+      if (hasInProgress && !pollingRef.current) {
+        pollingRef.current = setInterval(() => {
+          fetchViewDownloadData({
+            showLoader: false,
+            setIsSidePanelLoader,
+            setViewData,
+            viewDownload,
+            downloadPollingIntervalRef: pollingRef,
+          });
+        }, 300000);
+      }
+
+      if (!hasInProgress && pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+    }
+    if (!(result?.data && result?.status === 200) && pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  } catch (err) {
+    console.error("Error fetching view download details:", err);
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+  } finally {
+    setIsSidePanelLoader(false);
+  }
 };
 
 export const fetchCategory = async (): Promise<any[]> => {
@@ -614,6 +755,13 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
   );
 };
 
+
+export const prepareDownload = async (payload: { request: any }[]) => {
+  const statuses = await Promise.all(
+    payload.map(item => prepareAndDownloadFile(item))
+  );
+  return statuses;
+};
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
 
@@ -623,6 +771,140 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
+}
+
+export function buildSelectedDocs(
+  selectedCheckBoxIds: string[],
+  docData: any,
+  categoryRegistrationMap: Record<string, number>
+) {
+  if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
+
+  // Gather all valid docs
+  const selectedDocs = docData.data.filter(
+    (d: any) => selectedCheckBoxIds.includes(d.fileId) && d.registrationId !== undefined
+  );
+
+  // If no valid docs, return empty array
+  if (selectedDocs.length === 0) return [];
+
+  // Merge fileDetails
+  const fileDetails = selectedDocs.map((doc: any) => ({
+    fileId: doc.fileId,
+    registrationId: doc.registrationId,
+  }));
+
+  // Merge referenceMappingDetails
+  const referenceMappingDetails = selectedDocs.map((doc: any) => {
+    let relatedToArr: any[] = [];
+    if (Array.isArray(doc?.relatedTo)) {
+      relatedToArr = doc.relatedTo;
+    } else if (doc?.relatedTo) {
+      relatedToArr = [doc.relatedTo];
+    }
+
+    return {
+      referenceExternalId:
+        Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
+          ? doc.relatedTo[0].learnerExternalId
+          : "",
+      documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
+        ? doc.documentRealatedTo.join(", ")
+        : doc?.documentRealatedTo || "",
+      relatedTo: relatedToArr,
+    };
+  });
+
+  // Use categoryId from the first doc (or merge if needed)
+  const categoryId =
+    selectedDocs.length > 0 && categoryRegistrationMap[selectedDocs[0]?.category]
+      ? [categoryRegistrationMap[selectedDocs[0]?.category]]
+      : [];
+
+  // Use fromDate/toDate from the first doc (or merge if needed)
+  const fromDate = selectedDocs[0]?.fromDate ?? "";
+  const toDate = selectedDocs[0]?.toDate ?? "";
+
+  return [
+    {
+      request: {
+        selectAll: false,
+        downloadCriteria: {
+          referenceMappingDetails,
+          categoryId,
+          fromDate,
+          toDate,
+        },
+        fileDetails,
+      },
+    }
+  ];
+}
+
+export function validateAndApplyFilter({
+  selectedDateRange,
+  isDateError,
+  setIsDateError,
+  setIsFilterLoading,
+  setDateRange,
+  setSelectedFormats,
+  selectedCategories,
+  setIsFilterDialogOpen,
+}: {
+  selectedDateRange: { fromDate?: string; toDate?: string };
+  isDateError: boolean;
+  setIsDateError: (v: boolean) => void;
+  setIsFilterLoading: (v: boolean) => void;
+  setDateRange: (v: { fromDate: string; toDate: string }) => void;
+  setSelectedFormats: (v: any) => void;
+  selectedCategories: any;
+  setIsFilterDialogOpen: (v: boolean) => void;
+}) {
+  if (
+    (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
+    (selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate))
+  ) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (isDateError) {
+    setIsDateError(true);
+    return;
+  }
+
+  if (
+    isDateError ||
+    (selectedDateRange?.fromDate && !dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid()) ||
+    (!selectedDateRange?.fromDate && selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid()) ||
+    (selectedDateRange?.toDate && !dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid())
+  ) {
+    setIsDateError(true);
+  } else {
+    setIsFilterLoading(true);
+     setDateRange({
+      fromDate: selectedDateRange?.fromDate ?? "",
+      toDate: selectedDateRange?.toDate ?? ""
+    });
+    setTimeout(() => {
+      setSelectedFormats(selectedCategories);
+      setIsFilterDialogOpen(false);
+      setIsFilterLoading(false);
+    }, 500);
+  }
+}
+
+export function closeSidePanel(
+  setIsSidePanelOpen: (v: boolean) => void,
+  downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>
+) {
+  setIsSidePanelOpen(false);
+  if (downloadPollingIntervalRef.current) {
+    clearInterval(downloadPollingIntervalRef.current);
+    
+  // eslint-disable-next-line 
+    downloadPollingIntervalRef.current = null;
+  }
 }
 
 export const debouncedFetchSuggestions = debounce(
@@ -651,7 +933,4 @@ export const debouncedFetchSuggestions = debounce(
   5
 );
 
-// function renderRelatedToItem(arg0: any) {
-//   throw new Error("Function not implemented.");
-// }
 

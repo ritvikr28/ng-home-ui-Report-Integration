@@ -1,7 +1,7 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { AxiosResponse } from "axios";
 import { service } from "../../shared/utils";
-import { DocumentBasicDetails, DocumentManagementServerProps } from "./responseModel";
+import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 
 export const fetchDocumentDetails = async ({
@@ -84,6 +84,22 @@ export const fetchFilterCategory = async (): Promise<any> => {
     console.error("Error fetching DMS suggestions:", err);
     return {};
   }
+}
+
+export const prepareAndDownloadFile = async (payload: { request: any }) => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/preparedownload`;
+    const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
+
+    return responseData?.status; 
+  } catch (error: any) {
+   
+    if (error?.response?.status) {
+      return error.response.status;
+    }
+  }
+  return payload?.request?.status; 
 };
 
 export const viewDownload = async (): Promise<any> => {

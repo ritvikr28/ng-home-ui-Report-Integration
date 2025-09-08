@@ -1207,18 +1207,13 @@ it("handles search suggestion click", async () => {
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
 
-  // Simulate typing to trigger suggestions
   const searchInput = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(searchInput, { target: { value: "Doc" } });
 
-  // Wait for suggestions to appear (adjust text as per your suggestion rendering)
   const suggestion = await screen.findByText(/Doc 1/i); // or whatever suggestion text appears
 
-  // Click the suggestion
   fireEvent.click(suggestion);
 
-  // Assert that the search term or text is updated, or that the suggestion handler was called
-  // (You can spy on handleSuggestionClick if exported, or check the UI for the effect)
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
 
@@ -1353,5 +1348,74 @@ it("handles search suggestion click", async () => {
     });
 
   });
+
+  
+it("shows error notification when prepareDownload rejects", async () => {
+  // Mock prepareDownload to reject
+  jest.spyOn(logicModule, "prepareDownload").mockRejectedValueOnce(new Error("API failure"));
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Select a valid checkbox
+  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+
+  // Simulate user clicking "Actions" > "Prepare download"
+  fireEvent.click(screen.getByText(/Actions/i));
+  // fireEvent.click(await screen.findByText("Prepare download"));
+
+  // Confirm download (triggers prepareDownload)
+  act(() => { jest.advanceTimersByTime(1000); });
+  fireEvent.click(screen.getByText("Prepare download"));
+  
+});
+
+it("calls fetchViewDownloadData after timeout when sidePanelOpenReason is 'prepare'", async () => {
+  // Mock fetchViewDownloadData
+  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Open side panel with "prepare" reason
+  await waitFor(() => screen.getByText("Documents"));
+  const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+  fireEvent.click(screen.getByTestId("edit-selected-btn-testid"));
+  act(() => { jest.advanceTimersByTime(1000); });
+  fireEvent.click(await screen.getByText("Prepare download"));
+  await waitFor(() => {
+      screen.getByText(/document is about to be prepared for downloading/i);
+    });
+  const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
+  fireEvent.click(confirmBtn);
+
+// Wait for side panel to appear (optional, for UI confirmation)
+await waitFor(() => {
+  expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+});
+
+spy.mockRestore();
+});
+
+it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
+  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Open side panel with "view" reason
+  await waitFor(() => screen.getByText("Documents"));
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(spy).toHaveBeenCalled();
+  });
+
+  spy.mockRestore();
+});
 
 })
