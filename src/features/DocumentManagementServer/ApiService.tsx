@@ -99,6 +99,7 @@ export const prepareAndDownloadFile = async (payload: { request: any }) => {
       return error.response.status;
     }
   }
+  return payload?.request?.status; 
 };
 
 export const viewDownload = async (): Promise<any> => {
