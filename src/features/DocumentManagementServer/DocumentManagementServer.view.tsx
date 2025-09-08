@@ -723,39 +723,39 @@ const handleCloseSidePanel = () => {
                                         />
                                         )}
                                         <div className="viewDownloadWrap">
-{isSidePanelLoader ? (
-  <Loader loaderType={LoaderType.Circular} />
-) : hasFetchedViewDownload && viewData?.length === 0 ? (
-  <p>Files you download will appear here.</p>
-) : viewData?.length > 0 ? (
-  <>
-    <p>Prepared downloads will expire after 5 days</p>
-    {viewData.map((item, index) => {
-        const isComplete = item?.status?.toLowerCase() === 'complete';
-        const isInProgress = item?.status?.toLowerCase() === 'inprogress';
-        const isInitiated = item?.status?.toLowerCase() === 'initiated';
-        return (
-          <div className="viewDownloadDetails" key={index}>
-            <div className="fileDetails">
-              <p>{item?.name}</p>
-              {isComplete && (
-                <span>Expires in {item?.fileExpiryDays} days</span>
-              )}
-            </div>
-            {isComplete && (
-              <Button className="viewDownloadBtn">Download</Button>
-            )}
-            {(isInProgress || isInitiated) && (
-              <span className="inProgressLoader">
-                <Loader loaderType={LoaderType.Circular} />
-              </span>
-            )}
-          </div>
-        );
-      })}
-    </>
-  ) : <Loader loaderType={LoaderType.Circular} />}
-</div>
+                                            {isSidePanelLoader ? (
+                                            <Loader loaderType={LoaderType.Circular} />
+                                            ) : hasFetchedViewDownload && viewData?.length === 0 ? (
+                                            <p>Files you download will appear here.</p>
+                                            ) : viewData?.length > 0 ? (
+                                            <>
+                                                <p>Prepared downloads will expire after 5 days</p>
+                                                {viewData.map((item, index) => {
+                                                    const isComplete = item?.status?.toLowerCase() === 'complete';
+                                                    const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+                                                    const isInitiated = item?.status?.toLowerCase() === 'initiated';
+                                                    return (
+                                                    <div className="viewDownloadDetails" key={index}>
+                                                        <div className="fileDetails">
+                                                        <p>{item?.name}</p>
+                                                        {isComplete && (
+                                                            <span>Expires in {item?.fileExpiryDays} days</span>
+                                                        )}
+                                                        </div>
+                                                        {isComplete && (
+                                                        <Button className="viewDownloadBtn">Download</Button>
+                                                        )}
+                                                        {(isInProgress || isInitiated) && (
+                                                        <span className="inProgressLoader">
+                                                            <Loader loaderType={LoaderType.Circular} />
+                                                        </span>
+                                                        )}
+                                                    </div>
+                                                    );
+                                                })}
+                                                </>
+                                            ) : <Loader loaderType={LoaderType.Circular} />}
+                                            </div>
                                     </>
                                 }
 

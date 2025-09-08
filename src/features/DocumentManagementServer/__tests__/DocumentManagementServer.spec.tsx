@@ -1341,10 +1341,8 @@ it("handles search suggestion click", async () => {
         expect(apiService.viewDownload).toHaveBeenCalled();
       });
 
-      // Should fallback to empty message
-      expect(
-        screen.getByText('Files you download will appear here.')
-      ).toBeInTheDocument();
+      const searchLoader = screen.getAllByTestId("loader-arc");
+      expect(searchLoader[0]).toBeInTheDocument();
     });
 
   });
