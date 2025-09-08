@@ -444,11 +444,13 @@ describe("handleSearchChange", () => {
 });
 
 describe("handleSuggestionClick", () => {
+   const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
   it("should call setSearchTerm and setSearchText", async () => {
   const setSearchTerm = jest.fn();
   const setSearchText = jest.fn();
 
-  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText);
+  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
 
   expect(setSearchTerm).toHaveBeenCalledWith("DocA");
   expect(setSearchText).toHaveBeenCalledWith("DocA");
@@ -457,7 +459,7 @@ describe("handleSuggestionClick", () => {
 it("should not call setters if item is null", async () => {
   const setSearchTerm = jest.fn();
   const setSearchText = jest.fn();
-  await handleSuggestionClick(null, setSearchTerm, setSearchText);
+  await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId );
   expect(setSearchTerm).not.toHaveBeenCalled();
   expect(setSearchText).not.toHaveBeenCalled();
 });
@@ -465,7 +467,7 @@ it("should not call setters if item is null", async () => {
     const setSearchTerm = jest.fn();
     const loadData = jest.fn();
 
-    await handleSuggestionClick({}, setSearchTerm, loadData);
+    await handleSuggestionClick({}, setSearchTerm, loadData, setDocumentRelatedTo, setSearchRefExternalId);
     expect(setSearchTerm).not.toHaveBeenCalled();
   });
 });
@@ -571,10 +573,12 @@ it("should not call fetch if value is only whitespace", () => {
 });
 
 describe("handleSuggestionClick edge cases", () => {
+  const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
   it("should do nothing if item is null", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
-    await handleSuggestionClick(null, setSearchTerm, setSearchText);
+    await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -582,7 +586,7 @@ describe("handleSuggestionClick edge cases", () => {
   it("should do nothing if item.name is falsy", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
-    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText);
+    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -1924,13 +1928,13 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetIsSearchDataLoading = jest.fn();
 
   const defaultArgs = {
-    searchTexts: "test",
     page: 2,
     categories: [1, 2],
     sortByCol: "Document",
     sortOrder: "Asc",
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
-    isSearchTrue: false,
+    refExternalId: "org123",
+    relatedTo: 1,
     setDocData: mockSetDocData,
     setCurrentPage: mockSetCurrentPage,
     setTotalPage: mockSetTotalPage,

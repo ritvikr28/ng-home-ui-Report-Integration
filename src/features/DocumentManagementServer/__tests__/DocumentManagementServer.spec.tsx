@@ -441,7 +441,7 @@ it("does not call fetchDocumentDetails when non-sortable column is clicked", asy
   it("handles suggestion click", () => {
     const suggestionItem = { label: "Label", value: "Label" };
     const spy = jest.spyOn(logicModule, "handleSuggestionClick");
-    logicModule.handleSuggestionClick(suggestionItem, jest.fn(), jest.fn());
+    logicModule.handleSuggestionClick(suggestionItem, jest.fn(), jest.fn(), jest.fn(), jest.fn());
     expect(spy).toHaveBeenCalled();
   });
 

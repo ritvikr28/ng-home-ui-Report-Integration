@@ -5,7 +5,7 @@ import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchSt
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
 import { Category, FetchViewDownloadDataParams } from "./responseModel";
-import { pageSizeNumber } from "../../../public/Constants";
+import { categoryMapping, pageSizeNumber } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
@@ -314,11 +314,18 @@ export const onBreadcrumbClick = (path: string) => {
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSearchText: React.Dispatch<React.SetStateAction<string>>
+  setSearchText: React.Dispatch<React.SetStateAction<string>>,
+  setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>
 ) => {
   if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
+  setDocumentRelatedTo(categoryMapping[item.categoryName as keyof typeof categoryMapping] || 0)
+  setSearchRefExternalId(item.categoryName === "Pupil" ?
+    item?.learnerExternalId : item.categoryName === "Staff" ?
+      item?.externalId : item.categoryName === "Organisation" ?
+        item?.organisationId : "")
 };
 
 // Has items check
@@ -381,13 +388,13 @@ export const loadSuggestions = async (
 };
 
 export async function fetchGetDocumentDetailsLogic({
-  searchTexts,
   page,
   categories,
   sortByCol,
   sortOrder,
   dateRange,
-  isSearchTrue,
+  refExternalId,
+  relatedTo,
   setDocData,
   setCurrentPage,
   setTotalPage,
@@ -397,13 +404,13 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchLoading,
   setIsSearchDataLoading,
 }: {
-  searchTexts: string;
   page: number;
   categories: number[];
   sortByCol: string;
   sortOrder: string; // <-- Add type here
   dateRange: { fromDate?: string; toDate?: string };
-  isSearchTrue: boolean;
+  refExternalId: string;
+  relatedTo: number;
   setDocData: (v: any) => void;
   setCurrentPage: (v: number) => void;
   setTotalPage: (v: number) => void;
@@ -418,13 +425,13 @@ export async function fetchGetDocumentDetailsLogic({
     const result = await fetchDocumentDetails({
       pageNumber: page,
       pageSize: pageSizeNumber,
-      searchText: searchTexts,
       fromDate: dateRange?.fromDate,
       toDate: dateRange?.toDate,
       categoryId: categories || [],
-      isSearchTextExactMatch: isSearchTrue,
       sortBy: sortByCol,
       sortDirection: sortOrder,
+      referenceExternalId: refExternalId,
+      documentRelatedTo: relatedTo || 0
     });
     if (result && result?.statusCode === 200) {
       setDocData(result);
@@ -654,14 +661,6 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
           let value: JSX.Element | string | undefined;
 
           switch (category?.name) {
-            case "Document":
-              text = item?.fileName || "";
-              props = {
-                name: item?.fileName,
-                id: item?.fileId,
-                ...item
-              };
-              break;
             case "Pupil":
               text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
               icon = (
@@ -692,6 +691,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
                 name: text,
                 id: item?.pupilId,
                 value,
+                categoryName: category.name,
                 ...item
               };
               break;
@@ -719,6 +719,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               props = {
                 name: text,
                 id: item?.externalId,
+                categoryName: category.name,
                 ...item
               };
               break;
@@ -728,6 +729,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               props = {
                 name: text,
                 id: item?.orgId,
+                categoryName: category.name,
                 ...item
               };
               break;
@@ -736,6 +738,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               props = {
                 name: item?.name,
                 id: item?.id,
+                categoryName: category.name,
                 ...item
               };
           }

@@ -35,13 +35,13 @@ export interface DocumentBasicDetails {
 export interface DocumentManagementServerProps {
   pageNumber: number;
   pageSize: number;
-  searchText?: string;
   categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   sortBy?: string;
   sortDirection?: string;
-  isSearchTextExactMatch?: boolean;
+  referenceExternalId?: string;
+  documentRelatedTo?: number;
 }
 
 export interface tableDataProps {
