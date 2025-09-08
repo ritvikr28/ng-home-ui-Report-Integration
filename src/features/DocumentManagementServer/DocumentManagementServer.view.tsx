@@ -794,7 +794,7 @@ const handleCloseSidePanel = () => {
                                         cancelText: "Cancel",
                                         contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} document is about to be prepared for downloading.`,
+                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents" : "document"} is about to be prepared for downloading.`,
                                                 notificationStatus: NotificationStatus.WARNING,
                                         okText: 'Prepare download',
                                         onCancel: (): void => {setShowConfirmDialog(false)},
