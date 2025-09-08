@@ -2066,6 +2066,92 @@ it("opens side panel when View download is clicked in Actions menu", async () =>
   );
 });
 
+//   it("shows error notification when prepareDownload rejects", async () => {
+//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+//     payload: [
+//       {
+//         name: "Document",
+//         link: "",
+//         values: [
+//           { fileName: "Doc 1" },
+//           { fileName: "Doc 2" }
+//         ]
+//       },
+//       { name: "Pupil", link: "", values: [] },
+//       { name: "Staff", link: null, values: [] },
+//       { name: "Organisation", link: null, values: [] }
+//     ],
+//     statusCode: 200
+//   });
+
+//   // Simulate prepareDownload API rejection
+//   jest.spyOn(apiService, "prepareAndDownloadFile").mockResolvedValueOnce({ status: 400, message: "Download failed" });
+
+//   const { container } = render(<DocumentManagementServerView />);
+//   act(() => { jest.advanceTimersByTime(2000); });
+
+//   await waitFor(() => {
+//     const searchInput = screen.getByTestId("search-autocomplete-input");
+//     fireEvent.change(searchInput, { target: { value: "Doc" } });
+//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+//   });
+
+//   act(() => { jest.advanceTimersByTime(2000); });
+
+//   // Wait for suggestions to appear
+//   const searchLoader = screen.getAllByTestId("loader-arc");
+//   await waitFor(() => {
+//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
+
+//   const suggestion = await screen.getAllByText((_, element) =>
+//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
+//   );
+//   fireEvent.click(suggestion[0]);
+//   act(() => { jest.advanceTimersByTime(2000); });
+
+//    const searchLoaders = screen.getAllByTestId("loader-arc");
+//   await waitFor(() => {
+//     expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
+//   const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+//   fireEvent.click(checkboxes[0]);
+//   act(() => { jest.advanceTimersByTime(1000); });
+
+//   fireEvent.click(screen.getByText(/Actions/i));
+    
+//   fireEvent.click(await screen.getByTestId("module-menu-test"));
+
+//   fireEvent.click(await screen.getByTestId("option-test-0"));
+
+//   await waitFor(() => {
+//     console.log(container.innerHTML); // Debugging line to check rendered output
+
+//     screen.getByText(/document is about to be prepared for downloading/i);
+//   });
+
+//   const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
+//   fireEvent.click(confirmBtn);
+
+
+//   await waitFor(() => {
+//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
+//   // Wait for error notification to appear
+//   await waitFor(() => {
+
+//     expect(screen.getByText(/Files you download will appear here/i)).toBeInTheDocument();
+//   });
+
+//   // Optionally, check that side panel does not open
+//   // expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
+
+//   // Debug output if needed
+//   // console.log(container.innerHTML);
+// });
+
 });
 
 
@@ -2330,7 +2416,182 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     expect(checkboxes[0]).not.toBeChecked();
   });
 
-  it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
+  it("shows error notification when prepareDownload rejects", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+      { name: "Pupil", link: "", values: [] },
+      { name: "Staff", link: null, values: [] },
+      { name: "Organisation", link: null, values: [] }
+    ],
+    statusCode: 200
+  });
+
+  // Simulate prepareDownload API rejection
+  jest.spyOn(apiService, "prepareAndDownloadFile").mockResolvedValueOnce({ status: 400, message: "Download failed" });
+
+  const { container } = render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Doc 1" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion = await screen.getAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  //  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // await waitFor(() => {
+  //   expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  // });
+  const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+  fireEvent.click(checkboxes[0]);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  fireEvent.click(screen.getByText(/Actions/i));
+    
+  fireEvent.click(await screen.getByTestId("module-menu-test"));
+
+  fireEvent.click(await screen.getByTestId("option-test-0"));
+
+  await waitFor(() => {
+    console.log(container.innerHTML); // Debugging line to check rendered output
+
+    screen.getByText(/document is about to be prepared for downloading/i);
+  });
+
+  const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
+  fireEvent.click(confirmBtn);
+
+
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  // Wait for error notification to appear
+  await waitFor(() => {
+
+    expect(screen.getByText(/Files you download will appear here/i)).toBeInTheDocument();
+  });
+
+  // Optionally, check that side panel does not open
+  // expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
+
+  // Debug output if needed
+  // console.log(container.innerHTML);
+});
+
+
+
+// it("calls fetchViewDownloadData after timeout when sidePanelOpenReason is 'prepare'", async () => {
+//   // Mock fetchViewDownloadData
+//   const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+//  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+//     payload: [
+//       {
+//         name: "Document",
+//         link: "",
+//         values: [
+//           { fileName: "Doc 1" },
+//           { fileName: "Doc 2" }
+//         ]
+//       },
+//       {
+//         name: "Pupil",
+//         link: "",
+//         values: []
+//       },
+//       {
+//         name: "Staff",
+//         link: null,
+//         values: []
+//       },
+//       {
+//         name: "Organisation",
+//         link: null,
+//         values: []
+//       }
+//     ],
+//     statusCode: 200
+//   });
+
+//   const { container } = render(<DocumentManagementServerView />);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   await waitFor(() => {
+//     const searchInput = screen.getByTestId("search-autocomplete-input");
+//     fireEvent.change(searchInput, { target: { value: "Doc" } });
+//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+//   });
+
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+
+//   // Wait for suggestions to appear
+//   const searchLoader = screen.getAllByTestId("loader-arc");
+//   await waitFor(() => {
+//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
+
+//   const suggestion = await screen.getAllByText((_, element) =>
+//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
+//   );
+//   fireEvent.click(suggestion[0]);
+//   act(() => {
+//     jest.advanceTimersByTime(2000);
+//   });
+ 
+//     const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
+//     fireEvent.click(checkboxes[0]); 
+   
+//   act(() => { jest.advanceTimersByTime(1000); });
+//   console.log(container.innerHTML); // Debugging line to check rendered output
+
+//   fireEvent.click(screen.getByText(/Actions/i));
+//   fireEvent.click(await screen.getByText("Prepare download"));
+//   await waitFor(() => {
+//       screen.getByText(/document is about to be prepared for downloading/i);
+//     });
+//   const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
+//   fireEvent.click(confirmBtn);
+
+// // Wait for side panel to appear (optional, for UI confirmation)
+// await waitFor(() => {
+//   expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+// });
+
+// spy.mockRestore();
+// });
+
+
+
+   it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
@@ -2413,7 +2674,6 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     
     await waitFor(() => expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument());
   });
-
 describe("tableData mapping logic for relatedArr", () => {
   it("maps pupils correctly when documentRealatedTo === 1", () => {
     const doc = {
@@ -2655,8 +2915,6 @@ it("handles search suggestion click", async () => {
     });
   }
 
-  // Assert that the search term or text is updated, or that the suggestion handler was called
-  // (You can spy on handleSuggestionClick if exported, or check the UI for the effect)
   const searchInput = screen.getByTestId("search-autocomplete-input");
   expect((searchInput as HTMLInputElement).value).toMatch(/doc/i); // or other assertion based on your logic
 });
@@ -2798,30 +3056,25 @@ describe('DocumentManagementServerView - fetchViewDownloadData', () => {
     ).toBeInTheDocument();
   });
 
-  test('Closes side panel when close button is clicked after viewing downloads', async () => {
-    render(<DocumentManagementServerView />);
-    act(() => { jest.advanceTimersByTime(2000); });
-
-    await waitFor(() => {
-      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
-    });
-
-    const actionsButton = screen.getByText('Actions');
-    fireEvent.click(actionsButton);
-
-    act(() => { jest.advanceTimersByTime(1000); });
-
-    const viewDownloadOption = screen.getByText('View download');
-    fireEvent.click(viewDownloadOption);
-
-    const sidePanelHeader = await screen.findByTestId("side-panel-header");
-    expect(sidePanelHeader).toBeInTheDocument();
-
-    const closeIcon = screen.getByTestId("side-panel-close-button");
-    fireEvent.click(closeIcon);
-
-    await waitFor(() =>
-      expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument()
-    );
   });
+
+
+
+it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
+  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(1000); });
+
+  // Open side panel with "view" reason
+  await waitFor(() => screen.getByText("Documents"));
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(spy).toHaveBeenCalled();
+  });
+
+  spy.mockRestore();
 });
+

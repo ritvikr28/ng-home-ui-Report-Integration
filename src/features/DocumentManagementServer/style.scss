@@ -228,6 +228,25 @@
   .empty-table {
     background-color: #ffffff;
   }
+
+  .inProgressLoader .essui-loader{ 
+  
+    margin: 6px 2px;
+
+    .essui-loader-img{ 
+    align-self: center;
+    height: 45px;
+    position: relative;
+    width: 45px;
+    
+    .essui-loader-svg {
+    width: 45px !important;
+    height: 45px !important;
+  }
+}
+  }
+
+  
 }
 
 .dms-layout .essui-side-navigation-panel {
