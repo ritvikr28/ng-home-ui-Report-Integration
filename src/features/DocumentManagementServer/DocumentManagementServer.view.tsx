@@ -724,10 +724,10 @@ const handleCloseSidePanel = () => {
                                                                 <p>{item?.name}</p>
                                                                 {isComplete && item?.fileExpiryDays !== undefined && (() => {
                                                                     if (item.fileExpiryDays > 0) {
-                                                                        return <span>Expires in {item.fileExpiryDays} days</span>;
+                                                                        return <span>Expires in {item.fileExpiryDays} days.</span>;
                                                                     }
                                                                     if (item.fileExpiryDays === 0) {
-                                                                        return <span>Expires today</span>;
+                                                                        return <span>Expires today.</span>;
                                                                     }
                                                                     return null;
                                                                 })()}
