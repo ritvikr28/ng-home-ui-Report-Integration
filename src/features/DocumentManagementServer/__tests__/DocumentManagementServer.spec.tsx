@@ -166,8 +166,7 @@ it("shows error banner when showErrorBanner is true", async () => {
       2, // Assert the 2nd call only
       expect.objectContaining({
         pageNumber: 1,
-        pageSize: expect.any(Number),
-        searchText: expect.stringMatching(/^doc$/i),
+        pageSize: expect.any(Number)
       })
     );
   });
@@ -441,7 +440,7 @@ it("does not call fetchDocumentDetails when non-sortable column is clicked", asy
   it("handles suggestion click", () => {
     const suggestionItem = { label: "Label", value: "Label" };
     const spy = jest.spyOn(logicModule, "handleSuggestionClick");
-    logicModule.handleSuggestionClick(suggestionItem, jest.fn(), jest.fn());
+    logicModule.handleSuggestionClick(suggestionItem, jest.fn(), jest.fn(), jest.fn(), jest.fn());
     expect(spy).toHaveBeenCalled();
   });
 
