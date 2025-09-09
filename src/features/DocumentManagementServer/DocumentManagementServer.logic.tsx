@@ -859,6 +859,7 @@ export function validateAndApplyFilter({
   setSelectedFormats,
   selectedCategories,
   setIsFilterDialogOpen,
+  setCurrentPage
 }: {
   selectedDateRange: { fromDate?: string; toDate?: string };
   isDateError: boolean;
@@ -868,6 +869,7 @@ export function validateAndApplyFilter({
   setSelectedFormats: (v: any) => void;
   selectedCategories: any;
   setIsFilterDialogOpen: (v: boolean) => void;
+  setCurrentPage: (v: number) => void;
 }) {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
@@ -901,6 +903,7 @@ export function validateAndApplyFilter({
       setIsFilterLoading(false);
     }, 500);
   }
+  setCurrentPage(1);
 }
 
 export function closeSidePanel(
