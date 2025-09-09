@@ -193,7 +193,7 @@ useEffect(() => {
     // Wait for 2 seconds before calling view download API
     const timer = setTimeout(() => {
       fetchViewDownloadData({
-        showLoader: false, // Loader already shown
+        showLoader: false, 
         setIsSidePanelLoader,
         setViewData: (data) => {
     setViewData(data);
@@ -830,7 +830,6 @@ const renderViewDownloadContent = () => {
 
                                         prepareDownload(selectedDocs)
                                             .then((statuses) => {
-                                            setIsSidePanelLoader(false);
                                             if (statuses.some((status: number) => status !== 204)) {
                                                 setPrepareDownloadError(true);
                                             } else if (selectedCheckBoxIds.length > 1) {
@@ -841,10 +840,6 @@ const renderViewDownloadContent = () => {
                                             setIsSidePanelLoader(false);
                                             setPrepareDownloadError(true);
                                             });
-
-                                        setTimeout(() => {
-                                            setIsSidePanelLoader(false);
-                                        }, 1000);
                                         },
                                                 template: DialogTemplate.Confirmation
                                     }
