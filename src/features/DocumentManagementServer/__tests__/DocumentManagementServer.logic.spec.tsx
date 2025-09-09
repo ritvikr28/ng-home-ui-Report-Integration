@@ -429,14 +429,48 @@ describe("handleSuggestionClick", () => {
    const setDocumentRelatedTo = jest.fn();
   const setSearchRefExternalId = jest.fn();
   it("should call setSearchTerm and setSearchText", async () => {
-  const setSearchTerm = jest.fn();
-  const setSearchText = jest.fn();
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick(
+      {
+        name: "John Doe",
+        categoryName: "Pupil",
+        learnerExternalId: "pupil-123"
+      } as any,
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId
+    );
+    expect(setSearchTerm).toHaveBeenCalledWith("John Doe");
+    expect(setSearchText).toHaveBeenCalledWith("John Doe");
+    expect(setSearchRefExternalId).toHaveBeenCalledWith("pupil-123");
+    await handleSuggestionClick(
+      {
+        name: "John Doe",
+        categoryName: "Staff",
+        externalId: "staff-123"
+      } as any,
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId
+    );
+    expect(setSearchRefExternalId).toHaveBeenCalledWith("staff-123");
+    await handleSuggestionClick(
+      {
+        name: "John Doe",
+        categoryName: "Organisation",
+        organisationId: "organisation-123"
+      } as any,
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId
+    );
+    expect(setSearchRefExternalId).toHaveBeenCalledWith("organisation-123");
 
-  await handleSuggestionClick({ name: "DocA" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
-
-  expect(setSearchTerm).toHaveBeenCalledWith("DocA");
-  expect(setSearchText).toHaveBeenCalledWith("DocA");
-});
+  });
 
 it("should not call setters if item is null", async () => {
   const setSearchTerm = jest.fn();
@@ -445,7 +479,8 @@ it("should not call setters if item is null", async () => {
   expect(setSearchTerm).not.toHaveBeenCalled();
   expect(setSearchText).not.toHaveBeenCalled();
 });
-  it("should not trigger if name is missing", async () => {
+
+it("should not trigger if name is missing", async () => {
     const setSearchTerm = jest.fn();
     const loadData = jest.fn();
 
