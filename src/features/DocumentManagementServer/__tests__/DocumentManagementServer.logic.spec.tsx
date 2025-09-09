@@ -31,7 +31,8 @@ import {
   validateAndApplyFilter,
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
-  buildSelectedDocs
+  buildSelectedDocs,
+  renderRelatedToItem
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -82,6 +83,23 @@ describe("getTableHeadersData", () => {
   const { container } = render(<>{relatedToCol?.anyComponent?.(["Only One"])}</>);
   expect(container.querySelector('[data-testid="tooltip-eventtime"]')).not.toBeInTheDocument();
 });
+});
+
+describe('renderRelatedToItem pupil leaver year/reg branch', () => {
+
+
+  it('renders pupil leaver with year only (no reg)', () => {
+    const item = {
+      type: 'pupil',
+      isLeaver: 'leaver',
+      year: '2025',
+      name: 'Jane Doe',
+      pupilId: '124',
+    };
+    const { getByText } = render(<>{renderRelatedToItem(item)}</>);
+    expect(getByText('(2025)')).toBeInTheDocument();
+  });
+
 });
 
 describe("getTableHeadersData column anyComponent rendering", () => {

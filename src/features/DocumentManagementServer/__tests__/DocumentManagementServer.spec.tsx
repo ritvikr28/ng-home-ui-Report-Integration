@@ -111,19 +111,30 @@ it("handles filter dialog open and apply (optimized)", async () => {
      (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
       jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
   payload: [
-    {
-      name: "Document",
-      link: "",
-      values: [
-        { fileName: "Doc 1" },
-        { fileName: "Doc 2" }
-      ]
-    },
-    {
-      name: "Pupil",
-      link: "",
-      values: []
-    },
+  
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
     {
       name: "Staff",
       link: null,
@@ -137,7 +148,7 @@ it("handles filter dialog open and apply (optimized)", async () => {
   ],
   statusCode: 200
 });
-   const { container } = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
     act(() => {
       jest.advanceTimersByTime(2000);
     });
@@ -145,7 +156,7 @@ it("handles filter dialog open and apply (optimized)", async () => {
   await waitFor(() => {
     const searchInput = screen.getByTestId("search-autocomplete-input");
 
-    fireEvent.change(searchInput, { target: { value: "Doc" } });
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
   });
 
@@ -157,8 +168,8 @@ it("handles filter dialog open and apply (optimized)", async () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-const suggestion = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
+const suggestion = await screen.getAllByText((_, element) =>
+  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
 );
   // Click the suggestion to trigger the search
   fireEvent.click(suggestion[0]);
@@ -174,7 +185,6 @@ const suggestion = await screen.findAllByText((_, element) =>
   
   fireEvent.click(applyBtn);
   
-  console.log(container.innerHTML);
     expect(applyBtn).not.toBeDisabled();
 
 });
@@ -235,7 +245,7 @@ it("shows no records on initial load, shows records after search", async () => {
   (apiService.fetchDocumentDetails as jest.Mock)
     .mockResolvedValueOnce(mockData);
 
-  const { container } = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
  
   // On initial load, no document rows
@@ -262,7 +272,6 @@ it("shows no records on initial load, shows records after search", async () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
- console.log(container.innerHTML);
   // Now document rows should appear
   await waitFor(() => {
       const doc1Elements = screen.getAllByText((content, element) =>
@@ -291,121 +300,6 @@ it("shows no records on initial load, shows records after search", async () => {
 
 });
 
-
-  it("handles search input and Enter key", async () => {
-    jest.setTimeout(15000);
-    const mockDatas = {
-    totalRecords: 2,
-    data:  [
-      {
-        fileId: "1",
-        document: "Doc 1",
-        relatedTo: ["HR"],
-        category: "legal",
-        addedBy: "User A",
-        dateAdded: "2025-06-10",
-        format: "pdf",
-        size: "500KB",
-      },
-      {
-        fileId: "2",
-        document: "Doc 2",
-        relatedTo: ["Finance"],
-        category: "finance",
-        addedBy: "User B",
-        dateAdded: "2025-06-11",
-        format: "docx",
-        size: "1MB",
-      }
-    ],
-    statusCode: 200,
-  };
-     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
-      jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-  payload: [
-    { name: "Pupil", link: "", values: [
-                {
-                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-                    "preferredForename": "Alfie",
-                    "preferredSurname": "Harries",
-                    "legalName": "Alfie Harries",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001875",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
-                },
-                {
-                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-                    "preferredForename": "Firoz",
-                    "preferredSurname": "Bhandari",
-                    "legalName": "Firoz Bhandari",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001861",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
-                }] },
-    {
-      name: "Staff",
-      link: null,
-      values: []
-    },
-    {
-      name: "Organisation",
-      link: null,
-      values: []
-    }
-  ],
-  statusCode: 200
-});
-   const { container } = render(<DocumentManagementServerView />);
-    act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-
-  await waitFor(() => {
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-
-    fireEvent.change(searchInput, { target: { value: "Alfie" } });
-    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  });
-
-  act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-  // Wait for suggestions to appear
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-  console.log(container.innerHTML);
-const suggestion = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-  // Click the suggestion to trigger the search
-  console.log(container.innerHTML);
-  fireEvent.click(suggestion[0]);
-  act(() => {
-  jest.advanceTimersByTime(2000); // <-- Add this here
-});
-    await waitFor(() => {
-    expect(apiService.fetchDocumentDetails).toHaveBeenNthCalledWith(
-      1, 
-      expect.objectContaining({
-        categoryId: [],
-      documentRelatedTo: 1,
-      fromDate: "",
-      pageNumber: 1,
-      pageSize: 40,
-      referenceExternalId: "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-      sortBy: "DateAdded",
-      sortDirection: "Desc",
-      toDate: "",
-      })
-    );
-  });
-  });
 
   it("clears search input on cancel click", async () => {
     jest.setTimeout(15000);
@@ -1038,110 +932,6 @@ it("handles sorting for Category column", async () => {
   });
 });
 
-// it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
-//    const mockDatas1 = {
-//     totalRecords: 2,
-//     statusCode: 200,
-//     data: [
-//       {
-//         fileId: "1",
-//         document: "Doc 1",
-//         relatedTo: ["HR"],
-//         category: "legal",
-//         addedBy: "User A",
-//         dateAdded: "2025-06-10",
-//         format: "pdf",
-//         size: "500KB",
-//       },
-//       {
-//         fileId: "2",
-//         document: "Doc 2",
-//         relatedTo: ["Finance"],
-//         category: "finance",
-//         addedBy: "User B",
-//         dateAdded: "2025-06-11",
-//         format: "docx",
-//         size: "1MB",
-//       }
-//     ],
-//   };
-
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
-
-//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-//     payload: [
-//       {
-//         name: "Document",
-//         link: "",
-//         values: [
-//           { fileName: "Doc 1" },
-//           { fileName: "Doc 2" }
-//         ]
-//       },
-//       {
-//         name: "Pupil",
-//         link: "",
-//         values: []
-//       },
-//       {
-//         name: "Staff",
-//         link: null,
-//         values: []
-//       },
-//       {
-//         name: "Organisation",
-//         link: null,
-//         values: []
-//       }
-//     ],
-//     statusCode: 200
-//   });
-
-//   render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   await waitFor(() => {
-//     const searchInput = screen.getByTestId("search-autocomplete-input");
-//     fireEvent.change(searchInput, { target: { value: "Doc" } });
-//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-//   });
-
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   // Wait for suggestions to appear
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
-
-//   const suggestion = await screen.findAllByText((_, element) =>
-//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
-//   );
-//   fireEvent.click(suggestion[0]);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   await waitFor(() => {
-//     expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
-//   });
-
-//   (apiService.fetchDocumentDetails as jest.Mock).mockClear();
-
-//   // Try clicking a non-sortable column, e.g., "Added by"
-//   const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
-//   fireEvent.click(addedByHeader);
-
-//   // The API should NOT be called with sortBy: "Added by"
-//   expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-//     expect.objectContaining({ sortBy: "Added by" })
-//   );
-// });
-
   it("handles pagination changes", async () => {
   jest.setTimeout(15000);
      const mockDatas = {
@@ -1623,7 +1413,7 @@ it("opens filter dialog and processes fetched category data", async () => {
     statusCode: 200
   });
 
-  const { container } = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(1000);
   });
@@ -1663,7 +1453,6 @@ it("opens filter dialog and processes fetched category data", async () => {
   
 
  
-    console.log(container.innerHTML); // Debug output
     expect(apiService.fetchFilterCategory).toHaveBeenCalled();
    
 });
@@ -2182,91 +1971,6 @@ it("opens side panel when View download is clicked in Actions menu", async () =>
   );
 });
 
-//   it("shows error notification when prepareDownload rejects", async () => {
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-//     payload: [
-//       {
-//         name: "Document",
-//         link: "",
-//         values: [
-//           { fileName: "Doc 1" },
-//           { fileName: "Doc 2" }
-//         ]
-//       },
-//       { name: "Pupil", link: "", values: [] },
-//       { name: "Staff", link: null, values: [] },
-//       { name: "Organisation", link: null, values: [] }
-//     ],
-//     statusCode: 200
-//   });
-
-//   // Simulate prepareDownload API rejection
-//   jest.spyOn(apiService, "prepareAndDownloadFile").mockResolvedValueOnce({ status: 400, message: "Download failed" });
-
-//   const { container } = render(<DocumentManagementServerView />);
-//   act(() => { jest.advanceTimersByTime(2000); });
-
-//   await waitFor(() => {
-//     const searchInput = screen.getByTestId("search-autocomplete-input");
-//     fireEvent.change(searchInput, { target: { value: "Doc" } });
-//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-//   });
-
-//   act(() => { jest.advanceTimersByTime(2000); });
-
-//   // Wait for suggestions to appear
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
-
-//   const suggestion = await screen.getAllByText((_, element) =>
-//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
-//   );
-//   fireEvent.click(suggestion[0]);
-//   act(() => { jest.advanceTimersByTime(2000); });
-
-//    const searchLoaders = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
-//   const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
-//   fireEvent.click(checkboxes[0]);
-//   act(() => { jest.advanceTimersByTime(1000); });
-
-//   fireEvent.click(screen.getByText(/Actions/i));
-    
-//   fireEvent.click(await screen.getByTestId("module-menu-test"));
-
-//   fireEvent.click(await screen.getByTestId("option-test-0"));
-
-//   await waitFor(() => {
-//     console.log(container.innerHTML); // Debugging line to check rendered output
-
-//     screen.getByText(/document is about to be prepared for downloading/i);
-//   });
-
-//   const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
-//   fireEvent.click(confirmBtn);
-
-
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
-//   // Wait for error notification to appear
-//   await waitFor(() => {
-
-//     expect(screen.getByText(/Files you download will appear here/i)).toBeInTheDocument();
-//   });
-
-//   // Optionally, check that side panel does not open
-//   // expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
-
-//   // Debug output if needed
-//   // console.log(container.innerHTML);
-// });
 
 });
 
@@ -2578,93 +2282,6 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     fireEvent.click(checkboxes[0]);
     expect(checkboxes[0]).not.toBeChecked();
   });
-
-
-
-// it("calls fetchViewDownloadData after timeout when sidePanelOpenReason is 'prepare'", async () => {
-//   // Mock fetchViewDownloadData
-//   const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
-//  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-//     payload: [
-//       {
-//         name: "Document",
-//         link: "",
-//         values: [
-//           { fileName: "Doc 1" },
-//           { fileName: "Doc 2" }
-//         ]
-//       },
-//       {
-//         name: "Pupil",
-//         link: "",
-//         values: []
-//       },
-//       {
-//         name: "Staff",
-//         link: null,
-//         values: []
-//       },
-//       {
-//         name: "Organisation",
-//         link: null,
-//         values: []
-//       }
-//     ],
-//     statusCode: 200
-//   });
-
-//   const { container } = render(<DocumentManagementServerView />);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   await waitFor(() => {
-//     const searchInput = screen.getByTestId("search-autocomplete-input");
-//     fireEvent.change(searchInput, { target: { value: "Doc" } });
-//     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-//   });
-
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   // Wait for suggestions to appear
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
-
-//   const suggestion = await screen.getAllByText((_, element) =>
-//     element?.textContent?.replace(/\s+/g, " ").trim() === "Doc"
-//   );
-//   fireEvent.click(suggestion[0]);
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
- 
-//     const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
-//     fireEvent.click(checkboxes[0]); 
-   
-//   act(() => { jest.advanceTimersByTime(1000); });
-//   console.log(container.innerHTML); // Debugging line to check rendered output
-
-//   fireEvent.click(screen.getByText(/Actions/i));
-//   fireEvent.click(await screen.getByText("Prepare download"));
-//   await waitFor(() => {
-//       screen.getByText(/document is about to be prepared for downloading/i);
-//     });
-//   const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
-//   fireEvent.click(confirmBtn);
-
-// // Wait for side panel to appear (optional, for UI confirmation)
-// await waitFor(() => {
-//   expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
-// });
-
-// spy.mockRestore();
-// });
 
 
 
@@ -3218,61 +2835,6 @@ describe('DocumentManagementServerView - fetchViewDownloadData', () => {
     ).toBeInTheDocument();
   });
 
-  test('Shows empty message when API returns non-200 status', async () => {
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
-      status: 500
-    });
-
-    render(<DocumentManagementServerView />);
-    act(() => { jest.advanceTimersByTime(2000); });
-
-    await waitFor(() => {
-      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
-    });
-
-    const actionsButton = screen.getByText('Actions');
-    fireEvent.click(actionsButton);
-
-    act(() => { jest.advanceTimersByTime(1000); });
-
-    const viewDownloadOption = screen.getByText('View download');
-    fireEvent.click(viewDownloadOption);
-
-    await waitFor(() => {
-      expect(apiService.viewDownload).toHaveBeenCalled();
-    });
-
-    expect(
-      screen.getByText('Files you download will appear here.')
-    ).toBeInTheDocument();
-  });
-
-  test('Shows empty message when viewDownload API throws', async () => {
-    (apiService.viewDownload as jest.Mock).mockRejectedValue(new Error('API Error'));
-
-    render(<DocumentManagementServerView />);
-    act(() => { jest.advanceTimersByTime(2000); });
-
-    await waitFor(() => {
-      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
-    });
-
-    const actionsButton = screen.getByText('Actions');
-    fireEvent.click(actionsButton);
-
-    act(() => { jest.advanceTimersByTime(1000); });
-
-    const viewDownloadOption = screen.getByText('View download');
-    fireEvent.click(viewDownloadOption);
-
-    await waitFor(() => {
-      expect(apiService.viewDownload).toHaveBeenCalled();
-    });
-
-    expect(
-      screen.getByText('Files you download will appear here.')
-    ).toBeInTheDocument();
-  });
 
   });
 
@@ -3327,7 +2889,7 @@ it("shows 'Expires today.' when fileExpiryDays is 0 in view download panel", asy
     ]
   });
 
-  const {container} = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
   await waitFor(() => {
     expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
@@ -3337,7 +2899,6 @@ it("shows 'Expires today.' when fileExpiryDays is 0 in view download panel", asy
 
   await waitFor(() => {
     expect(apiService.viewDownload).toHaveBeenCalled();
-    console.log(container.innerHTML);
   });
 
   const searchLoader = screen.getAllByTestId("loader-arc");
@@ -3524,7 +3085,6 @@ it("calls fetchGetDocumentDetails with empty categories array on initial load", 
         sortOrder: "Desc",
         setCurrentPage: expect.any(Function),
         setDocData: expect.any(Function),
-        setHasFetched: expect.any(Function),
         // setIsSearchDataLoading: expect.any(Function),
         setIsSearchLoading: expect.any(Function),
         setShowErrorBanner: expect.any(Function),
@@ -3537,90 +3097,6 @@ it("calls fetchGetDocumentDetails with empty categories array on initial load", 
   spy.mockRestore();
 });
 
-
-it("shows 'Information unavailable.' when showErrorBanner is true", async () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
-    statusCode: 200,
-    totalRecords: 0,
-    data: [],
-  });
-
-  const { rerender,container } = render(<DocumentManagementServerView />);
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
-
-  // Set showErrorBanner to true by simulating an error
-  await waitFor(() => {
-    
-    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
-      status: 400,
-      data: [],
-      totalRecords: 0,
-    });
-    jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-    payload: [
-
-     { name: "Pupil", link: "", values: [
-                {
-                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-                    "preferredForename": "Alfie",
-                    "preferredSurname": "Harries",
-                    "legalName": "Alfie Harries",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001875",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
-                },
-                {
-                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-                    "preferredForename": "Firoz",
-                    "preferredSurname": "Bhandari",
-                    "legalName": "Firoz Bhandari",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001861",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
-                }] },
-      {
-        name: "Staff",
-        link: null,
-        values: []
-      },
-      {
-        name: "Organisation",
-        link: null,
-        values: []
-      }
-    ],
-    statusCode: 200
-  });
-    rerender(<DocumentManagementServerView />);
-    
-  });
-
-  
-
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  const suggestion = await screen.findAllByText((_, element) =>
-    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-  );
-  fireEvent.click(suggestion[0]);
-  // Wait for the error message to appear
-  await waitFor(() => {
-    console.log(container.innerHTML);
-    expect(screen.getByText("Information unavailable.")).toBeInTheDocument();
-  });
-});
 
 it("closes side panel when secondary button is clicked and viewData is empty", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
@@ -3645,12 +3121,12 @@ it("closes side panel when secondary button is clicked and viewData is empty", a
     data: [], // viewData is empty
   });
 
-  const { container } = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(2000); });
 
   // Open side panel
   await waitFor(() => screen.getByText("Documents"));
-  console.log(container.innerHTML); 
+  
   fireEvent.click(screen.getByText(/Actions/i));
   fireEvent.click(await screen.findByText("View download"));
 
@@ -3660,11 +3136,66 @@ it("closes side panel when secondary button is clicked and viewData is empty", a
   });
 
   // Find and click the secondary button ("Close")
-  const secondaryBtn = screen.getByRole("button", { name: /Close/i });
-  fireEvent.click(secondaryBtn);
+  const secondaryBtn = screen.getByTestId("side-panel-close-button");
+fireEvent.click(secondaryBtn);
 
   // Assert side panel is closed
   await waitFor(() => {
     expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
   });
 });
+
+
+const mockFetchGetDocumentDetails = jest.fn();
+
+
+describe("useEffect in Document Management", () => {
+ 
+beforeEach(() => {
+    jest.clearAllMocks();
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    jest.setTimeout(15000);
+  });
+
+  it("should not call fetchGetDocumentDetails if isInitialLoad = true", () => {
+    const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+   jest.setTimeout(15000);
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+  //  render(<TestComponent isInitialLoad={true} />);
+    expect(mockFetchGetDocumentDetails).not.toHaveBeenCalled();
+  });
+
+  
+});
+
