@@ -46,7 +46,6 @@ jest.mock("@essnextgen/ui-kit", () => ({
   },
 }));
 
-
 describe("getTableHeadersData", () => {
   const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
   const anyComponent = relatedToColumn?.anyComponent;
