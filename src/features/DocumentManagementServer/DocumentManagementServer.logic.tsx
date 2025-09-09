@@ -343,14 +343,11 @@ export const handleSuggestionClick = async (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
-  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>,
-  setIsSearchTriggered?: React.Dispatch<React.SetStateAction<boolean>>
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>
 ) => {
-  if (!item) return;
-  const value = item.text || item.name || "";
-  setSearchTerm(value);
-  setSearchText(value);
-   if (setIsSearchTriggered) setIsSearchTriggered(true);
+   if (!item || !item.name) return;
+  setSearchTerm(item.name);
+  setSearchText(item.name);
   setDocumentRelatedTo(relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0);
 
   let refExternalId = "";
@@ -436,9 +433,8 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage,
   setShowSearchError,
   setShowErrorBanner,
-  setHasFetched,
   setIsSearchLoading,
-  setIsSearchDataLoading,
+  setIsSearchDataLoading
 }: {
   page: number;
   categories: number[];
@@ -452,7 +448,6 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage: (v: number) => void;
   setShowSearchError: (v: boolean) => void;
   setShowErrorBanner: (v: boolean) => void;
-  setHasFetched: (v: boolean) => void;
   setIsSearchLoading: (v: boolean) => void;
   setIsSearchDataLoading: (v: boolean) => void;
 }) {
@@ -480,7 +475,6 @@ export async function fetchGetDocumentDetailsLogic({
     } else {
       setShowSearchError(true);
     }
-    setHasFetched(true);
   } catch (err) {
     console.error("Error fetching document details:", err);
     setShowSearchError(true);

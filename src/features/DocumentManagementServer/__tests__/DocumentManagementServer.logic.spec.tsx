@@ -692,6 +692,24 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   expect(link).toHaveAttribute("href", "/staff/profile/s1");
 });
 
+it("handles relatedTo as a single object", () => {
+  const docData = {
+    data: [{
+      fileId: "1",
+      registrationId: 123,
+      relatedTo: { learnerExternalId: "ext1" }, // not an array!
+      documentRealatedTo: [1],
+      category: "Legal",
+      fromDate: "2025-01-01",
+      toDate: "2025-01-02"
+    }]
+  };
+  const categoryRegistrationMap = { Legal: 1, Finance: 2 };
+  const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap);
+  expect(result[0].request.downloadCriteria.referenceMappingDetails[0].relatedTo)
+    .toEqual([{ learnerExternalId: "ext1" }]);
+});
+
 it("renders tooltip with multiple staff and pupil and school items", () => {
   const relatedToColumn = headers.find(h => h.text === "Related to");
   const elem = [
@@ -935,7 +953,7 @@ describe('getResultNotFoundMsg', () => {
     false, // showErrorBanner
     false
   );
-  expect(result).toBe("No data to display.");
+  expect(result).toBe("Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.");
 });
 });
 
@@ -1087,6 +1105,45 @@ describe("Document column anyComponent", () => {
 
   it("renders plain value if value is null", () => {
     const { container } = render(<>{categoryColumn?.anyComponent?.(null)}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+});
+
+
+describe("Added by column anyComponent", () => {
+  const addedByColumn = getTableHeadersData.find(h => h.text === "Added by");
+
+  it("renders plain value if value is falsy or length <= 12", () => {
+    const { container } = render(<>{addedByColumn?.anyComponent?.("Short Name")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("Short Name");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders truncated value with tooltip if length > 12", () => {
+    const longValue = "averylongdocumentnamethatisdefinitelymorethan12chars";
+    const { container } = render(<>{addedByColumn?.anyComponent?.(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 12));
+  });
+
+  it("renders plain value if value length is exactly 12", () => {
+    const value = "123456789012";
+    const { container } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
+    const span = container.querySelector(".document-text.document-column");
+    expect(span).not.toBeNull();
+    expect(span).toHaveTextContent(value);
+    expect(container.querySelector("[data-testid='tooltip-addedby']")).toBeNull();
+  });
+
+
+  it("renders plain value if value is empty string", () => {
+    const { container } = render(<>{addedByColumn?.anyComponent?.("")}</>);
+    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  });
+
+  it("renders plain value if value is null", () => {
+    const { container } = render(<>{addedByColumn?.anyComponent?.(null)}</>);
     expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
@@ -2031,7 +2088,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetTotalPage = jest.fn();
   const mockSetShowSearchError = jest.fn();
   const mockSetShowErrorBanner = jest.fn();
-  const mockSetHasFetched = jest.fn();
   const mockSetIsSearchLoading = jest.fn();
   const mockSetIsSearchDataLoading = jest.fn();
 
@@ -2048,7 +2104,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     setTotalPage: mockSetTotalPage,
     setShowSearchError: mockSetShowSearchError,
     setShowErrorBanner: mockSetShowErrorBanner,
-    setHasFetched: mockSetHasFetched,
     setIsSearchLoading: mockSetIsSearchLoading,
     setIsSearchDataLoading: mockSetIsSearchDataLoading,
   };
@@ -2091,7 +2146,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetTotalPage).toHaveBeenCalledWith(Math.ceil(10 / 10));
     expect(mockSetShowSearchError).toHaveBeenCalledWith(false);
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(false);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2110,7 +2164,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2129,7 +2182,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2208,5 +2260,36 @@ describe("buildSelectedDocs", () => {
         }
       }
     ]);
+  });
+});
+
+describe("handleSuggestionClick edge cases", () => {
+  const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
+
+  it("should set refExternalId for Staff", async () => {
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick(
+      { name: "Jane", categoryName: "Staff", externalId: "staff123" },
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId
+    );
+    expect(setSearchRefExternalId).toHaveBeenCalledWith("staff123");
+  });
+
+  it("should set refExternalId for Organisation", async () => {
+    const setSearchTerm = jest.fn();
+    const setSearchText = jest.fn();
+    await handleSuggestionClick(
+      { name: "Org", categoryName: "Organisation", organisationId: "org456" },
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId
+    );
+    expect(setSearchRefExternalId).toHaveBeenCalledWith("org456");
   });
 });

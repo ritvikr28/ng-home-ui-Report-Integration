@@ -64,7 +64,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isDateError, setIsDateError] = useState(false);
 const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
 
-const [hasFetched, setHasFetched] = useState<boolean>(false);
 
 const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
 const [showDialog, setShowDialog] = useState(false);
@@ -82,7 +81,6 @@ const [showDialog, setShowDialog] = useState(false);
     const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
-    const [reloadAfterTagClose, setReloadAfterTagClose] = useState(false);
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
 
@@ -92,7 +90,6 @@ const searchTagListRaw = [
  
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
-    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -251,7 +248,6 @@ useEffect(() => {
     setTotalPage,
     setShowSearchError,
     setShowErrorBanner,
-    setHasFetched,
     setIsSearchLoading,
     setIsSearchDataLoading,
   });
@@ -325,7 +321,6 @@ const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryReg
             return "No data to display.";
         }
  
-        if (!isSearchTriggered && showSearchError) return "Information unavailable.";
          return "Documents will appear here once they are uploaded.";
 };
   const getTableHeaders = () => {
@@ -349,22 +344,14 @@ const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryReg
         setSearchText("");
         setDocData({ statusCode: 200, data: [], totalRecords: 0 });
         setIsInitialLoad(true);
+
+        setSelectedCategories([]);
+    setSelectedFormats([]);
+    setSelectedDateRange({ fromDate: "", toDate: "" });
+    setDateRange({ fromDate: "", toDate: "" });
+    setIsDateError(false);
 };
 
-    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-        if (event.key === "Enter") {
-            const keyword = searchTerm?.trim()?.toLowerCase();
-            if(keyword !== searchText) {
-            setSearchTerm(keyword);
-            setSearchText(keyword);
-            setIsSearchTriggered(true);
-            setIsSearchDataLoading(true);
-        }
-        setIsSearchLoading(false);
-        setIsShowAutoSuggest(false); 
-        // setSuggestions([]);
-    }
-    }
 
     const handleTagClose = (
   e: React.SyntheticEvent,
@@ -381,9 +368,7 @@ const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryReg
     setSelectedCategories,
     setSelectedFormats
   );
-  setIsInitialLoad(true);
  
-  setReloadAfterTagClose(true);
 }
 useEffect(() => {
   if (searchText) {
@@ -398,24 +383,6 @@ useEffect(() => {
   }
 }, [searchText, currentPage, selectedFormats, sortBy, sortDirection]); 
 
-useEffect(() => {
-  if (reloadAfterTagClose) {
-    if (searchText && searchText.trim().length > 0) {
-      const categories = getAllRegistrationIds(selectedCategories);
-      fetchGetDocumentDetails(
-        
-        1,
-        categories,
-        sortBy,
-        sortDirection
-      );
-    } else {
-      // Show initial screen: clear data and reset states
-      setIsInitialLoad(true);
-    }
-    setReloadAfterTagClose(false);
-  }
-}, [reloadAfterTagClose, selectedCategories, selectedFormats, selectedDateRange, searchText, sortBy, sortDirection]);
     const NotificationMsgBannerObject = [
         {
             isShow: showErrorBanner,
@@ -877,7 +844,7 @@ const renderViewDownloadContent = () => {
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
                                 handleCloseSidePanel={handleCloseSidePanel}
-                                isShowAutoSuggest={isShowAutoSuggest}
+                                isShowAutoSuggest={true}
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
