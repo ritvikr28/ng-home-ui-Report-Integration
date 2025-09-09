@@ -79,7 +79,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-    const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
+    const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
 
@@ -182,7 +182,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo]);
+    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo]);
 
 useEffect(() => {
   if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
@@ -216,7 +216,7 @@ useEffect(() => {
   sortByCol: string = sortBy,
   sortOrder = sortDirection,
   refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRelatedTo
+  relatedTo: number = documentRealatedTo
 ) => {
   fetchGetDocumentDetailsLogic({
     page,

@@ -41,7 +41,7 @@ export interface DocumentManagementServerProps {
   sortBy?: string;
   sortDirection?: string;
   referenceExternalId?: string;
-  documentRelatedTo?: number;
+  documentRealatedTo?: number;
 }
 
 export interface tableDataProps {

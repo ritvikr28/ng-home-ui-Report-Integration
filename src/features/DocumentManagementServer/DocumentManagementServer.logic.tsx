@@ -437,7 +437,7 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRelatedTo: relatedTo || 0
+      documentRealatedTo: relatedTo || 0
     });
     if (result && result?.statusCode === 200) {
       setDocData(result);
