@@ -80,7 +80,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
     const categoryArr = getCategoryArr(selectedFormats);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-    const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
+    const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
 
@@ -183,7 +183,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo]);
+    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo]);
 
 useEffect(() => {
   // Only run when opening the side panel for "prepare"
@@ -229,7 +229,7 @@ useEffect(() => {
   sortByCol: string = sortBy,
   sortOrder = sortDirection,
   refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRelatedTo
+  relatedTo: number = documentRealatedTo
 ) => {
   fetchGetDocumentDetailsLogic({
     page,
@@ -433,6 +433,7 @@ const handleApply = () => {
     setSelectedFormats,
     selectedCategories,
     setIsFilterDialogOpen,
+    setCurrentPage
   });
 };
 
