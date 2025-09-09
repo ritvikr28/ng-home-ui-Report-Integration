@@ -13,7 +13,7 @@ export const fetchDocumentDetails = async ({
   sortBy = 'DateAdded',
   sortDirection = 'Desc',
   referenceExternalId = '',
-  documentRelatedTo = 0
+  documentRealatedTo = 0
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
@@ -29,7 +29,7 @@ export const fetchDocumentDetails = async ({
         sortBy,
         sortDirection,
         referenceExternalId,
-        documentRelatedTo
+        documentRealatedTo
       },
     };
 

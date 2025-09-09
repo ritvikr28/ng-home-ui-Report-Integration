@@ -2943,6 +2943,131 @@ it("handles search suggestion click", async () => {
 });
 });
 
+  describe('DocumentManagementServerView - fetchViewDownloadData', () => {
+    const viewDownloadMockData = [
+      { name: 'Doc.pdf', status: 'Complete', fileExpiryDays: 3 }
+    ];
+    const mockResData = {
+      status: 200,
+      data: viewDownloadMockData
+    }
+    beforeEach(() => {
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue(mockResData);
+      jest.setTimeout(15000);
+    });
+
+    test('Shows download files when API returns status 200 with data', async () => {
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      const sidePanelHeader = await screen.findByTestId("side-panel-header");
+      expect(sidePanelHeader).toBeInTheDocument();
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+        expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+        expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+      });
+    });
+
+    test('Shows download files when API returns status 200 with data', async () => {
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      // Assert rendered file
+      expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+      expect(screen.getByText(/Expires in 3 days/)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+    });
+
+    test('Shows empty message when API returns status 200 with empty data', async () => {
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [],
+      });
+      jest.setTimeout(1000);
+
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      // Check empty state message
+      expect(
+        screen.getByText('Files you download will appear here.')
+      ).toBeInTheDocument();
+    });
+
+    test('Does not set viewData when API returns non-200 status', async () => {
+
+      jest.clearAllMocks();
+      (apiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 500
+      });
+      jest.setTimeout(1000);
+
+      (apiService.viewDownload as jest.Mock).mockRejectedValue(
+        new Error('API Error')
+      );
+
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+      });
+
+      const searchLoader = screen.getAllByTestId("loader-arc");
+      expect(searchLoader[0]).toBeInTheDocument();
+    });
 
   });
 
@@ -3079,11 +3204,7 @@ describe('DocumentManagementServerView - fetchViewDownloadData', () => {
     ).toBeInTheDocument();
   });
 
-  });
-
-
-
-it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
+  it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
   const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
 
   render(<DocumentManagementServerView />);
@@ -3100,4 +3221,10 @@ it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'",
 
   spy.mockRestore();
 });
+  });
+
+
+
+
+
 

@@ -78,10 +78,11 @@ const [showDialog, setShowDialog] = useState(false);
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [failedFileName, setFailedFileName] = useState<string | null>(null);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
+    const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
+    const categoryArr = getCategoryArr(selectedFormats);
+    const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
+    const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [reloadAfterTagClose, setReloadAfterTagClose] = useState(false);
-const categoryArr = getCategoryArr(selectedFormats);
-    const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null); 
-     const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
 
@@ -189,26 +190,39 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
         }
         setIsSearchTriggered(false)
-    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo]);
+    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo]);
 
 useEffect(() => {
+  // Only run when opening the side panel for "prepare"
   if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+    setIsSidePanelLoader(true); // Show loader immediately
+
+    // Wait for 2 seconds before calling view download API
     const timer = setTimeout(() => {
       fetchViewDownloadData({
-        showLoader: true,
+        showLoader: false, // Loader already shown
         setIsSidePanelLoader,
-        setViewData,
+        setViewData: (data) => {
+    setViewData(data);
+    setHasFetchedViewDownload(true);
+  },
         viewDownload,
         downloadPollingIntervalRef,
       });
-    }, 1000);
+    }, 2000);
+
     return () => clearTimeout(timer);
   }
-  if (isSidePanelOpen) {
+  // For "view", call immediately
+  if (isSidePanelOpen && sidePanelOpenReason === "view") {
+    setIsSidePanelLoader(true);
     fetchViewDownloadData({
-      showLoader: true,
+      showLoader: false,
       setIsSidePanelLoader,
-      setViewData,
+      setViewData: (data) => {
+        setViewData(data);
+        setHasFetchedViewDownload(true);
+    },
       viewDownload,
       downloadPollingIntervalRef,
     });
@@ -216,14 +230,13 @@ useEffect(() => {
   return undefined;
 }, [isSidePanelOpen, sidePanelOpenReason]);
 
-
     const fetchGetDocumentDetails = (
   page: number,
   categories: number[],
   sortByCol: string = sortBy,
   sortOrder = sortDirection,
   refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRelatedTo
+  relatedTo: number = documentRealatedTo
 ) => {
   fetchGetDocumentDetailsLogic({
     page,
@@ -433,6 +446,7 @@ useEffect(() => {
     setSelectedFormats,
     selectedCategories,
     setIsFilterDialogOpen,
+    setCurrentPage
   });
 };
 
@@ -467,7 +481,52 @@ useEffect(() => {
 const handleCloseSidePanel = () => {
   closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
 };
- 
+
+const renderViewDownloadContent = () => {
+  if (isSidePanelLoader) {
+    return <Loader loaderType={LoaderType.Circular} />;
+  }
+  if (hasFetchedViewDownload && viewData?.length === 0) {
+    return <p>Files you download will appear here.</p>;
+  }
+  if (viewData?.length > 0) {
+    return (
+      <>
+        <p>Prepared downloads will expire after 5 days</p>
+        {viewData.map((item, index) => {
+          const isComplete = item?.status?.toLowerCase() === 'complete';
+          const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+          const isInitiated = item?.status?.toLowerCase() === 'initiated';
+          return (
+            <div className="viewDownloadDetails" key={index}>
+              <div className="fileDetails">
+                <p>{item?.name}</p>
+                {isComplete && item?.fileExpiryDays !== undefined && (() => {
+                    if (item.fileExpiryDays > 0) {
+                        return <span>Expires in {item.fileExpiryDays} days.</span>;
+                    }
+                    if (item.fileExpiryDays === 0) {
+                        return <span>Expires today.</span>;
+                    }
+                    return null;
+                    })()}
+              </div>
+              {isComplete && (
+                <Button className="viewDownloadBtn">Download</Button>
+              )}
+              {(isInProgress || isInitiated) && (
+                <span className="inProgressLoader">
+                  <Loader loaderType={LoaderType.Circular} />
+                </span>
+              )}
+            </div>
+          );
+        })}
+      </>
+    );
+  }
+  return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
+};
     return (<>
         <>
             <Grid className="dms-layout">
@@ -729,46 +788,8 @@ const handleCloseSidePanel = () => {
                                         />
                                         )}
                                         <div className="viewDownloadWrap">
-                                            {viewData?.length > 0 ? (
-                                                <>
-                                                    <p>Prepared downloads will expire after 5 days</p>
-                                                    {viewData.map((item, index) => {
-                                                        const isComplete = item?.status?.toLowerCase() === 'complete';
-                                                        const isInProgress = item?.status?.toLowerCase() === 'inprogress';
-                                                        const isInitiated = item?.status?.toLowerCase() === 'initiated';
-                                                    return (
-                                                        <div className="viewDownloadDetails" key={index}>
-                                                            <div className="fileDetails">
-                                                                <p>{item?.name}</p>
-                                                                {isComplete && item?.fileExpiryDays !== undefined && (() => {
-                                                                    if (item.fileExpiryDays > 0) {
-                                                                        return <span>Expires in {item.fileExpiryDays} days.</span>;
-                                                                    }
-                                                                    if (item.fileExpiryDays === 0) {
-                                                                        return <span>Expires today.</span>;
-                                                                    }
-                                                                    return null;
-                                                                })()}
-                                                            </div>
-                                                            {isComplete && (
-                                                                <Button className="viewDownloadBtn">Download</Button>
-                                                            )}
-                                                            {(isInProgress || isInitiated) && (
-                                                                <span className="inProgressLoader">
-                                                                    <Loader
-                                                                        loaderType={LoaderType.Circular}
-
-                                                                    />
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        );
-                                                    })}
-                                                </>
-                                            ) : (
-                                                <p>Files you download will appear here.</p>
-                                            )}
-                                        </div>
+                                           {renderViewDownloadContent()}
+                                            </div>
                                     </>
                                 }
                                  
