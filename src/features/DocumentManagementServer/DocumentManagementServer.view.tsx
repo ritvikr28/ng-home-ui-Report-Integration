@@ -844,7 +844,6 @@ const renderViewDownloadContent = () => {
                                                 template: DialogTemplate.Confirmation
                                     }
                                 }
-                                // isClearSelectedCheckbox={isSelectionCleared ? true : false}
                                 titleConfirmation="Prepare Download?"
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
