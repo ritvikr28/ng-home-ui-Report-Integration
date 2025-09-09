@@ -1751,6 +1751,7 @@ describe("validateAndApplyFilter", () => {
   let setDateRange: jest.Mock;
   let setSelectedFormats: jest.Mock;
   let setIsFilterDialogOpen: jest.Mock;
+  let setCurrentPage: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -1759,6 +1760,7 @@ describe("validateAndApplyFilter", () => {
     setDateRange = jest.fn();
     setSelectedFormats = jest.fn();
     setIsFilterDialogOpen = jest.fn();
+    setCurrentPage = jest.fn();
   });
 
   afterEach(() => {
@@ -1775,6 +1777,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1790,6 +1793,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1805,6 +1809,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1820,6 +1825,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1835,6 +1841,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1850,6 +1857,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1865,6 +1873,7 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: ["cat1"],
       setIsFilterDialogOpen,
+      setCurrentPage
     });
     expect(setIsFilterLoading).toHaveBeenCalledWith(true);
     expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
