@@ -752,7 +752,7 @@ const renderViewDownloadContent = () => {
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
-                                                title="Download notification email"
+                                                title="You'll get an email when your downloads are ready"
                                                 message="We'll send you an email when your download is ready. Please check your spam folder if you don't see it in your inbox."
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
