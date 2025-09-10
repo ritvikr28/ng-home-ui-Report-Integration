@@ -407,7 +407,7 @@
     "inviteStaffDescription" : "Mae Gwahoddiad Staff yn cael ei ddisodli",
     "learnMoreInviteUsers" : "Dysgu mwy am Gwahodd Defnyddwyr",
     "invitationConflict" : "Gwrthdaro gwahoddiad",
-    "invitationConflictDescription" : "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID.  Cysylltwch â'ch darparwr cymorth SIMS.",
+    "invitationConflictDescription" : "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID. Cysylltwch â'ch darparwr cymorth SIMS.",
     "cancel" : "Canslo",
     "save" : "Arbed",
     "pleaseWaitLoader" : "Arhoswch os gwelwch yn dda"
