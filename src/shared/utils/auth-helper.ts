@@ -43,8 +43,7 @@ export const getUserOrganisation: () => string = () => {
 
   if (idToken) {
     const decodedToken: any = decodeToken(idToken);
-    // eslint-disable-next-line dot-notation
-    return isEmpty(decodedToken) ? '' : (decodedToken['SIMSCX/OrganisationID'] || (decodedToken["userorganisationidentifier"].split("|")[1]));
+    return isEmpty(decodedToken) ? '' : (decodedToken['SIMSCX/OrganisationID'] || (decodedToken.userorganisationidentifier.split("|")[1]));
   }
 
   return '';
@@ -72,13 +71,14 @@ export const getUser: () => string = () => {
  /* istanbul ignore next */
   if (authToken) {
     const decodedToken: any = decodeToken(authToken);
-      // eslint-disable-next-line dot-notation
-      return decodedToken["SIMSCX/ExternalID"] === undefined &&
-        decodedToken["userorganisationidentifier"] === undefined
-        ? ""
-        : decodedToken["SIMSCX/ExternalID"] !== undefined
-        ? decodedToken["SIMSCX/ExternalID"]
-        : decodedToken["userorganisationidentifier"].split("|")[0];
+     /* eslint-disable */
+    return decodedToken["SIMSCX/ExternalID"] === undefined &&
+      decodedToken.userorganisationidentifier === undefined
+      ? ""
+      : decodedToken["SIMSCX/ExternalID"] !== undefined
+      ? decodedToken["SIMSCX/ExternalID"]
+      : decodedToken.userorganisationidentifier.split("|")[0];
+       /* eslint-enable */
   }
   return "";
 };
