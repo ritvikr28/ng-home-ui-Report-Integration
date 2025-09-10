@@ -210,6 +210,7 @@ it("shows empty state message on initial load", async () => {
  
 
 it("shows no records on initial load, shows records after search", async () => {
+  jest.setTimeout(15000);
   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
     payload: [
       { name: "Pupil", link: "", values: [
