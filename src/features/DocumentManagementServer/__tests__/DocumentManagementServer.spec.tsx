@@ -804,10 +804,12 @@ it("handles sorting for Size column", async () => {
     .find(div => div.textContent?.includes("Size"));
   fireEvent.click(sizeHeaderDiv!);
 
-   act(() => {
-    jest.advanceTimersByTime(1000);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
+  // Wait for suggestions to appear
+  // const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
       expect.objectContaining({ sortBy: "Size" })
@@ -926,7 +928,9 @@ it("handles sorting for Category column", async () => {
     .find(div => div.textContent?.includes("Category"));
   fireEvent.click(categoryHeaderDiv!);
 
-  act(() => { jest.advanceTimersByTime(1000); });
+   act(() => {
+    jest.advanceTimersByTime(1000);
+  });
 
   await waitFor(() => {
     expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(

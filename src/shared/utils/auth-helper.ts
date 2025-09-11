@@ -43,7 +43,7 @@ export const getUserOrganisation: () => string = () => {
 
   if (idToken) {
     const decodedToken: any = decodeToken(idToken);
-    return isEmpty(decodedToken) ? '' : decodedToken['SIMSCX/OrganisationID'];
+    return isEmpty(decodedToken) ? '' : (decodedToken['SIMSCX/OrganisationID'] || (decodedToken.userorganisationidentifier.split("|")[1]));
   }
 
   return '';
