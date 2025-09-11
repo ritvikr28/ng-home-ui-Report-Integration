@@ -62,17 +62,17 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
-const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-const [tableKey, setTableKey] = useState(0);
+    const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
+    const [tableKey, setTableKey] = useState(0);
 
-const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
-const [showDialog, setShowDialog] = useState(false);
+    const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
+    const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-        const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
-     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [failedFileName, setFailedFileName] = useState<string | null>(null);
@@ -317,7 +317,7 @@ const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryReg
         setSelectedDateRange({ fromDate: "", toDate: "" });
         setDateRange({ fromDate: "", toDate: "" });
         setIsDateError(false);
-        setTableKey(prev => prev + 1);
+        setTableKey( 1);
         setSelectedCheckBoxIds([]); 
         setAllSelectedDocs([]);
 };
