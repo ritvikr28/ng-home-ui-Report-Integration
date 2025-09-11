@@ -114,7 +114,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     isShowCheckBox: true
 }));
 }
-// const isSelectionCleared = selectedCheckBoxIds.length === 0;
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -250,8 +249,13 @@ useEffect(() => {
   });
 };
 
-const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryRegistrationMap);
-
+const selectedDocs = buildSelectedDocs(
+  selectedCheckBoxIds,
+  docData,
+  categoryRegistrationMap,
+  searchRefExternalId,
+  documentRealatedTo
+);
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
