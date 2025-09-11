@@ -1551,8 +1551,6 @@ describe("filterNonEmptySuggestions", () => {
   
 })
 
-// ...existing code...
-
 describe("pupilYear logic", () => {
   function getPupilYear(item: any) {
     return item?.isLeaver?.toLowerCase() === "leaver"

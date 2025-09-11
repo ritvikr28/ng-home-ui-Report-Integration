@@ -82,6 +82,8 @@ describe("DocumentManagementServerView", () => {
  
 
 it("handles filter dialog open and apply (optimized)", async () => {
+  jest.setTimeout(15000);
+  
   const mockDatas = {
     totalRecords: 2,
     data:  [

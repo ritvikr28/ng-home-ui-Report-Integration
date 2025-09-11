@@ -439,7 +439,7 @@ export async function fetchGetDocumentDetailsLogic({
   page: number;
   categories: number[];
   sortByCol: string;
-  sortOrder: string; // <-- Add type here
+  sortOrder: string; 
   dateRange: { fromDate?: string; toDate?: string };
   refExternalId: string;
   relatedTo: number;
