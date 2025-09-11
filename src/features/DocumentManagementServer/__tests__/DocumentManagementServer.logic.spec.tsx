@@ -1547,8 +1547,6 @@ describe("filterNonEmptySuggestions", () => {
   it("returns empty array if input is empty", () => {
     expect(filterNonEmptySuggestions([] as any)).toEqual([]);
   });
-
-  
 })
 
 describe("pupilYear logic", () => {
