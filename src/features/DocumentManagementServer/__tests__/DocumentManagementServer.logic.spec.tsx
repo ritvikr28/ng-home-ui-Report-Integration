@@ -2115,7 +2115,6 @@ describe("buildSelectedDocs", () => {
 
   jest.useRealTimers();
 });
-
 });
 
 describe("getReferenceMappingForSearchedPerson", () => {
