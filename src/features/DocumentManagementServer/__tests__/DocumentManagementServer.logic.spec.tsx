@@ -2182,5 +2182,5 @@ describe("getReferenceMappingForSearchedPerson", () => {
     }
   ]);
   jest.restoreAllMocks();
-});
+  });
 });
