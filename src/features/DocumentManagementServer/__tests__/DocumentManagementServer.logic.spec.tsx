@@ -4,6 +4,7 @@ import { render } from "@testing-library/react";
 import dayjs from "dayjs";
 import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
+import * as logicModule from "../DocumentManagementServer.logic";
 import {
   debouncedFetchSuggestions,
   fetchCategory,
@@ -25,13 +26,13 @@ import {
   filterNonEmptySuggestions,
   getStaffProfilePhoto,
   prepareDownload,
-  getReferenceExternalId,
   reduceCategories,
   fetchViewDownloadData,
   validateAndApplyFilter,
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
-  buildSelectedDocs
+  buildSelectedDocs,
+  getReferenceMappingForSearchedPerson
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1411,7 +1412,7 @@ describe('mapRelatedArr', () => {
         name: 'Ben Smith',
         year: 'Year 1',
         reg: 'A',
-        pupilId: '123'
+        referenceExternalId: '123'
       }
     ]);
   });
@@ -1434,7 +1435,7 @@ describe('mapRelatedArr', () => {
         type: 'staff',
         name: 'Alice Brown',
         staffCode: 'S001',
-        staffId: '456'
+        referenceExternalId: '456'
       }
     ]);
   });
@@ -1444,7 +1445,8 @@ describe('mapRelatedArr', () => {
       documentRealatedTo: 2,
       relatedTo: [
         {
-          schoolName: 'Greenwood High'
+          schoolName: 'Greenwood High',
+          organisationId: 'org789'
         }
       ]
     };
@@ -1452,7 +1454,8 @@ describe('mapRelatedArr', () => {
     expect(result).toEqual([
       {
         type: 'school',
-        name: 'Greenwood High'
+        name: 'Greenwood High',
+        referenceExternalId: 'org789'
       }
     ]);
   });
@@ -1546,31 +1549,6 @@ describe("prepareDownload", () => {
   });
 })
 
-describe("getReferenceExternalId", () => {
-  it("returns empty string if relatedTo is undefined", () => {
-    expect(getReferenceExternalId(undefined)).toBe("");
-  });
-
-  it("returns empty string if relatedTo is null", () => {
-    expect(getReferenceExternalId(null)).toBe("");
-  });
-
-  it("returns organisationId if present", () => {
-    expect(getReferenceExternalId({ organisationId: "org123" })).toBe("org123");
-  });
-
-  it("returns externalId if present and organisationId is missing", () => {
-    expect(getReferenceExternalId({ externalId: "ext456" })).toBe("ext456");
-  });
-
-  it("returns learnerExternalId if present and others are missing", () => {
-    expect(getReferenceExternalId({ learnerExternalId: "learner789" })).toBe("learner789");
-  });
-
-  it("returns empty string if none of the keys are present", () => {
-    expect(getReferenceExternalId({ foo: "bar" })).toBe("");
-  });
-});
 
 describe("reduceCategories", () => {
   it("reduces multiple categories with same application", () => {
@@ -2072,59 +2050,137 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = { Legal: 1, Finance: 2 };
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0)).toEqual([]);
   });
 
   it("returns empty array if no matching document for selected ID", () => {
     const docData = { data: [{ fileId: "2", registrationId: 123 }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
   });
 
   it("returns empty array if matching document has undefined registrationId", () => {
     const docData = { data: [{ fileId: "1", registrationId: undefined }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap)).toEqual([]);
+    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
   });
 
-  it("returns correct request object for valid input", () => {
-    const docData = {
-      data: [{
-        fileId: "1",
-        registrationId: 123,
-        relatedTo: [{ learnerExternalId: "ext1" }],
-        documentRealatedTo: [1],
-        category: "Legal",
-        fromDate: "2025-01-01",
-        toDate: "2025-01-02"
-      }]
-    };
-    const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap);
-    expect(result).toEqual([
-      {
-        request: {
-          selectAll: false,
-          downloadCriteria: {
-            referenceMappingDetails: [
-              {
-                referenceExternalId: "ext1",
-                documentRealatedTo: "1",
-                relatedTo: [{ learnerExternalId: "ext1" }]
-              }
-            ],
-            categoryId: [1],
-            fromDate: "2025-01-01",
-            toDate: "2025-01-02"
-          },
-          fileDetails: [
-            { fileId: "1", registrationId: 123 }
-          ]
-        }
+ it("returns correct request object for valid input", () => {
+  const mockDate = new Date("2025-09-11T09:46:57.985Z");
+  
+  // Mock system time to fixed date
+  jest.useFakeTimers().setSystemTime(mockDate);
+
+  const docData = {
+    data: [{
+      fileId: "1",
+      registrationId: 123,
+      relatedTo: [{ learnerExternalId: "ext1" }],
+      documentRealatedTo: 1,
+      category: "Legal",
+      fromDate: "2025-01-01",
+      toDate: "2025-01-02"
+    }]
+  };
+
+  const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap, "ext1", 1);
+
+  expect(result).toEqual([
+    {
+      request: {
+        selectAll: false,
+        downloadCriteria: {
+          referenceMappingDetails: [
+            {
+              referenceExternalId: "ext1",
+              documentRealatedTo: 1,
+              relatedTo: [{ learnerExternalId: "ext1" }]
+            }
+          ],
+          categoryId: [1],
+          fromDate: "2025-01-01",
+          toDate: "2025-01-02"
+        },
+        fileDetails: [
+          { fileId: "1", registrationId: 123 }
+        ],
+        currentDateTime: mockDate.toISOString()
       }
-    ]);
+    }
+  ]);
+
+  jest.useRealTimers();
+});
+});
+
+describe("getReferenceMappingForSearchedPerson", () => {
+  it("returns empty array if docData.data is not an array", () => {
+    expect(getReferenceMappingForSearchedPerson({
+      docData: { data: undefined },
+      searchRefExternalId: "ext1",
+      documentRealatedTo: 1,
+    })).toEqual([]);
+
+    expect(getReferenceMappingForSearchedPerson({
+      docData: { data: null },
+      searchRefExternalId: "ext1",
+      documentRealatedTo: 1,
+    })).toEqual([]);
+  });
+
+  it("returns empty array if no document matches documentRealatedTo", () => {
+    const docData = {
+      data: [
+        { documentRealatedTo: 2, relatedTo: [{ learnerExternalId: "ext1" }] }
+      ]
+    };
+    expect(getReferenceMappingForSearchedPerson({
+      docData,
+      searchRefExternalId: "ext1",
+      documentRealatedTo: 1,
+    })).toEqual([]);
+  });
+
+  it("returns empty array if no relatedItem matches searchRefExternalId", () => {
+    const docData = {
+      data: [
+        { documentRealatedTo: 1, relatedTo: [{ learnerExternalId: "notmatch" }] }
+      ]
+    };
+    expect(getReferenceMappingForSearchedPerson({
+      docData,
+      searchRefExternalId: "ext1",
+      documentRealatedTo: 1,
+    })).toEqual([]);
+  });
+
+  it("returns correct mapping if document and relatedItem match", () => {
+  const docData = {
+    data: [
+      {
+        documentRealatedTo: 1,
+        relatedTo: [{ learnerExternalId: "ext1", preferredForename: "John" }],
+      }
+    ]
+  };
+  jest.spyOn(logicModule, "mapRelatedArr").mockImplementation(() => [
+    { referenceExternalId: "ext1" }
+  ]);
+  expect(getReferenceMappingForSearchedPerson({
+    docData,
+    searchRefExternalId: "ext1",
+    documentRealatedTo: 1,
+  })).toEqual([
+    {
+      referenceExternalId: "ext1",
+      relatedTo: [{ learnerExternalId: "ext1", preferredForename: "John" }],
+      documentRealatedTo: 1
+    }
+  ]);
+  jest.restoreAllMocks();
   });
 });
