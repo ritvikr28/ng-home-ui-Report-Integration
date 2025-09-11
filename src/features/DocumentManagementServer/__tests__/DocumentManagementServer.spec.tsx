@@ -145,7 +145,7 @@ it("shows no records on initial load, shows records after search", async () => {
   expect(screen.queryByText(/Doc 2/)).not.toBeInTheDocument();
  
   // Simulate search via suggestion click
-  const searchInputs = await screen.findAllByTestId("search-autocomplete-input");
+  const searchInputs = await screen.getAllByTestId("search-autocomplete-input");
   fireEvent.change(searchInputs[0], { target: { value: "Alfie" } });
 
   act(() => {
@@ -153,7 +153,12 @@ it("shows no records on initial load, shows records after search", async () => {
   });
  
   // Wait for suggestions
-  const suggestions = await screen.findAllByRole("option");
+  const searchLoaders = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+ 
+  const suggestions = await screen.getAllByRole("option");
   expect(suggestions.length).toBeGreaterThan(0);
  
   // Click first suggestion
@@ -314,7 +319,7 @@ it("handles sorting for Document column and ignores non-sortable columns", async
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestion = await screen.findAllByText((_, element) =>
+  const suggestion = await screen.getAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
   fireEvent.click(suggestion[0]);
