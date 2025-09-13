@@ -220,8 +220,13 @@ useEffect(() => {
   });
 };
 
-const selectedDocs = buildSelectedDocs(selectedCheckBoxIds, docData, categoryRegistrationMap);
-
+const selectedDocs = buildSelectedDocs(
+  selectedCheckBoxIds,
+  docData,
+  categoryRegistrationMap,
+  searchRefExternalId,
+  documentRealatedTo
+);
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {

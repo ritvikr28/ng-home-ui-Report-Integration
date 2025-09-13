@@ -299,9 +299,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
-           {sendNotificationFlagr ? (<ProtectedRoute exact path="/notification" component={SendNotification} />) : (
-            <Redirect to="/unauthorized" />
-          )}
+          {sendNotificationFlagr && (<ProtectedRoute exact path="/notification" component={SendNotification} />)}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact

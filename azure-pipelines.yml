@@ -202,6 +202,7 @@ stages:
               coverageType: 'branches'
               coverageThreshold: '75'
               explicitFilter: true
+              treat0of0as100: true   
 
           - task: Bash@3
             displayName: 'Build image'

@@ -52,7 +52,7 @@ export function mapRelatedArr(doc: any): any[] {
         name: `${pupil.preferredForename} ${pupil.preferredSurname}`.trim(),
         year: pupil.currentYearGroup || "",
         reg: pupil.currentPrimaryClass || "",
-        pupilId: pupil.learnerExternalId || "",
+        referenceExternalId: pupil.learnerExternalId || "",
         isLeaver:pupil?.onRollState || ""
       }));
     } else if (doc.documentRealatedTo === 3) {
@@ -61,13 +61,14 @@ export function mapRelatedArr(doc: any): any[] {
         type: "staff",
         name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
         staffCode: staff.staffCode || "",
-        staffId: staff.externalId || "",
+        referenceExternalId: staff.externalId || "",
       }));
     } else if (doc.documentRealatedTo === 2) {
       // School
       relatedArr = doc.relatedTo.map((school: any) => ({
         type: "school",
         name: school.schoolName || "",
+        referenceExternalId: school.organisationId || "",
       }));
     }
   }
@@ -482,7 +483,45 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchLoading(false);
   setIsSearchDataLoading(false);
 }
- 
+
+export function getReferenceMappingForSearchedPerson({
+  docData,
+  searchRefExternalId,
+  documentRealatedTo,
+}: {
+  docData: any,
+  searchRefExternalId: string,
+  documentRealatedTo: number,
+}) {
+  if (!Array.isArray(docData?.data)) return [];
+
+  const doc = docData.data.find(
+    (d: any) => d.documentRealatedTo === documentRealatedTo
+  );
+  if (!doc) return [];
+
+  const relatedArr = mapRelatedArr(doc);
+  const relatedItem = relatedArr.find(
+    (item: any) => item?.referenceExternalId === searchRefExternalId
+  );
+  if (!relatedItem) return [];
+
+  const matchedRelatedTo = Array.isArray(doc.relatedTo)
+    ? doc.relatedTo.filter(
+        (r: any) =>
+          (r.learnerExternalId || r.externalId || r.organisationId) === searchRefExternalId
+      )
+    : doc.relatedTo;
+
+  return [
+    {
+      referenceExternalId: relatedItem.referenceExternalId,
+      relatedTo: matchedRelatedTo,
+      documentRealatedTo: doc.documentRealatedTo,
+    }
+  ];
+}
+
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
   const visibleTags = tags.slice(0, maxVisible);
@@ -556,13 +595,6 @@ export const handleTagCloseLogic = (
   );
 };
 
-export function getReferenceExternalId(relatedTo: any): string {
-  if (!relatedTo) return "";
-  if (relatedTo.organisationId) return relatedTo.organisationId;
-  if (relatedTo.externalId) return relatedTo.externalId;
-  if (relatedTo.learnerExternalId) return relatedTo.learnerExternalId;
-  return "";
-}
 
 export function reduceCategories(res: any[]): Category[] {
   return Object.values(
@@ -814,7 +846,9 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
-  categoryRegistrationMap: Record<string, number>
+  categoryRegistrationMap: Record<string, number>,
+  searchRefExternalId: string,
+  documentRealatedTo: number
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
@@ -833,25 +867,12 @@ export function buildSelectedDocs(
   }));
 
   // Merge referenceMappingDetails
-  const referenceMappingDetails = selectedDocs.map((doc: any) => {
-    let relatedToArr: any[] = [];
-    if (Array.isArray(doc?.relatedTo)) {
-      relatedToArr = doc.relatedTo;
-    } else if (doc?.relatedTo) {
-      relatedToArr = [doc.relatedTo];
-    }
-
-    return {
-      referenceExternalId:
-        Array.isArray(doc?.relatedTo) && doc?.relatedTo[0]?.learnerExternalId
-          ? doc.relatedTo[0].learnerExternalId
-          : "",
-      documentRealatedTo: Array.isArray(doc?.documentRealatedTo)
-        ? doc.documentRealatedTo.join(", ")
-        : doc?.documentRealatedTo || "",
-      relatedTo: relatedToArr,
-    };
+ const referenceMappingDetails = getReferenceMappingForSearchedPerson({
+    docData,
+    searchRefExternalId,
+    documentRealatedTo,
   });
+
 
   // Use categoryId from the first doc (or merge if needed)
   const categoryId =
@@ -863,6 +884,7 @@ export function buildSelectedDocs(
   const fromDate = selectedDocs[0]?.fromDate ?? "";
   const toDate = selectedDocs[0]?.toDate ?? "";
 
+  const currentDateTime = new Date().toISOString();
   return [
     {
       request: {
@@ -874,6 +896,7 @@ export function buildSelectedDocs(
           toDate,
         },
         fileDetails,
+        currentDateTime
       },
     }
   ];
