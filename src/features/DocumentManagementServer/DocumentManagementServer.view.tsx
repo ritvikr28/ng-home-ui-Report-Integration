@@ -39,7 +39,7 @@ export const breadcrumbActionsList = [
 const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
+    const [isLoading] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -47,10 +47,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showSearchError, setShowSearchError] = useState<boolean>(false);
     const [docData, setDocData] = useState<any>(null);
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
-    const [hasFetched, setHasFetched] = useState(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [isInitialLoad] = useState(true);
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
@@ -90,7 +89,7 @@ const searchTagListRaw = [
 
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
-    const [isShowAutoSuggest, setIsShowAutoSuggest] = useState(true);   
+    const [isShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -229,7 +228,6 @@ useEffect(() => {
     setTotalPage,
     setShowSearchError,
     setShowErrorBanner,
-    setHasFetched,
     setIsSearchLoading,
     setIsSearchDataLoading,
   });
@@ -315,10 +313,6 @@ const selectedDocs = buildSelectedDocs(
   if (!isSearchTriggered && showSearchError) return "Information unavailable.";
   return "Documents will appear here once they are uploaded.";
 };
-
-    const getTableHeaders = () => {
-        return getTableHeadersData;
-    };
 
     const handleSearchClose = () => {
         setSearchInput("");
@@ -799,7 +793,7 @@ const renderViewDownloadContent = () => {
                                 }
                                 searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={getTableHeaders()}
+                                tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
                                     {

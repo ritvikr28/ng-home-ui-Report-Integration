@@ -1984,7 +1984,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetTotalPage).toHaveBeenCalledWith(Math.ceil(10 / 10));
     expect(mockSetShowSearchError).toHaveBeenCalledWith(false);
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(false);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2003,7 +2002,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2022,7 +2020,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });

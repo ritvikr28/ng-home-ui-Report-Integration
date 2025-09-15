@@ -407,7 +407,6 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage,
   setShowSearchError,
   setShowErrorBanner,
-  setHasFetched,
   setIsSearchLoading,
   setIsSearchDataLoading,
 }: {
@@ -423,7 +422,6 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage: (v: number) => void;
   setShowSearchError: (v: boolean) => void;
   setShowErrorBanner: (v: boolean) => void;
-  setHasFetched: (v: boolean) => void;
   setIsSearchLoading: (v: boolean) => void;
   setIsSearchDataLoading: (v: boolean) => void;
 }) {
@@ -451,7 +449,6 @@ export async function fetchGetDocumentDetailsLogic({
     } else {
       setShowSearchError(true);
     }
-    setHasFetched(true);
   } catch (err) {
     console.error("Error fetching document details:", err);
     setShowSearchError(true);

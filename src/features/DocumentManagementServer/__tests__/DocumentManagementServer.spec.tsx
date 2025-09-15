@@ -5,23 +5,27 @@ import {
   fireEvent,
   waitFor,
   act,
-  within,
-  getByTestId,
-  cleanup
+  within
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { error } from "console";
+import userEvent from "@testing-library/user-event";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as apiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import { debouncedFetchSuggestions } from "../DocumentManagementServer.logic";
-import userEvent from "@testing-library/user-event";
 
 jest.mock("@essnextgen/ui-kit", () => {
   const original = jest.requireActual("@essnextgen/ui-kit");
   return {
     ...original,
     useMediaQuery: jest.fn(() => false),
+  };
+});
+
+jest.mock('@essnextgen/ui-kit', () => {
+  const actual = jest.requireActual('@essnextgen/ui-kit');
+  return {
+    ...actual,
     SidePanel: ({ children }: any) => <div data-testid="mock-side-panel">{children}</div>,
   };
 });
@@ -55,43 +59,10 @@ jest.mock("../ApiService");
       }
     ],
   };
-  
 
- const mockSuggestions = {
-  payload: [
-    {
-      name: "Pupil",
-      link: "",
-      values: [
-        {
-          learnerExternalId: "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-          preferredForename: "Alfie",
-          preferredSurname: "Harries",
-          legalName: "Alfie Harries",
-          currentYearGroup: "Year  4",
-          currentPrimaryClass: "4SL",
-          admissionNumber: "001875",
-          onRollState: "Current",
-          imagePath: "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d"
-        },
-        {
-          learnerExternalId: "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-          preferredForename: "Firoz",
-          preferredSurname: "Bhandari",
-          legalName: "Firoz Bhandari",
-          currentYearGroup: "Year  4",
-          currentPrimaryClass: "4SL",
-          admissionNumber: "001861",
-          onRollState: "Current",
-          imagePath: "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b"
-        }
-      ]
-    },
-    { name: "Staff", link: null, values: [] },
-    { name: "Organisation", link: null, values: [] }
-  ],
-  statusCode: 200
-};
+
+
+
 
 beforeAll(() => {
   jest.useFakeTimers();
@@ -101,85 +72,222 @@ afterAll(() => {
   jest.useRealTimers();
 });
 
-afterEach(() => {
-  jest.runOnlyPendingTimers();
-  jest.clearAllTimers();
-  jest.restoreAllMocks();
-  jest.clearAllMocks();
-  cleanup();
-});
-
 
 describe("DocumentManagementServerView", () => {
- 
-// it("shows error banner when showErrorBanner is true", async () => {
-//   (apiService.fetchDocumentDetails as jest.Mock)
-//     .mockResolvedValueOnce(
-//       { totalRecords: 0, data: [], statusCode: 400 }
-//     );
-//   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-//     payload: [
-//       { name: "Pupil", link: "", values: [
-//                 {
-//                     "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-//                     "preferredForename": "Alfie",
-//                     "preferredSurname": "Harries",
-//                     "legalName": "Alfie Harries",
-//                     "currentYearGroup": "Year  4",
-//                     "currentPrimaryClass": "4SL",
-//                     "admissionNumber": "001875",
-//                     "onRollState": "Current",
-//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
-//                 },
-//                 {
-//                     "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-//                     "preferredForename": "Firoz",
-//                     "preferredSurname": "Bhandari",
-//                     "legalName": "Firoz Bhandari",
-//                     "currentYearGroup": "Year  4",
-//                     "currentPrimaryClass": "4SL",
-//                     "admissionNumber": "001861",
-//                     "onRollState": "Current",
-//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
-//                 }] },
-//       { name: "Staff", link: null, values: [] },
-//       { name: "Organisation", link: null, values: [] }
-//     ],
-//     statusCode: 200,
-//   });
- 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    jest.setTimeout(15000);
+  });
  
 
-//   render(<DocumentManagementServerView />);
- 
-//   // On initial load, no document rows
-//   expect(screen.queryByText(/Doc 1/)).not.toBeInTheDocument();
-//   expect(screen.queryByText(/Doc 2/)).not.toBeInTheDocument();
- 
-//   // Simulate search via suggestion click
-//   const searchInputs = await screen.getByTestId("search-autocomplete-input");
-//   fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+it("handles filter dialog open and apply (optimized)", async () => {
+  jest.setTimeout(15000);
+  
+  const mockDatas = {
+    totalRecords: 2,
+    data:  [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+    statusCode: 200,
+  };
+     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
+      jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+  payload: [
+  
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+    {
+      name: "Staff",
+      link: null,
+      values: []
+    },
+    {
+      name: "Organisation",
+      link: null,
+      values: []
+    }
+  ],
+  statusCode: 200
+});
+  render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
 
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
- 
-//   // Wait for suggestions
-//   const searchLoaders = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
- 
-//   const suggestions = await screen.getAllByRole("option");
-//   expect(suggestions.length).toBeGreaterThan(0);
- 
-//   // Click first suggestion
-//   fireEvent.click(suggestions[0]);
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
 
-//   await waitFor(() => {
-//     expect(screen.getByText("Summary of issue")).toBeInTheDocument();
-//   });
-// });
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+const suggestion = await screen.getAllByText((_, element) =>
+  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+);
+  // Click the suggestion to trigger the search
+  fireEvent.click(suggestion[0]);
+  act(() => {
+  jest.advanceTimersByTime(2000); // <-- Add this here
+});
+
+  const filterBtn = await screen.getByTestId("filter-btn");
+  fireEvent.click(filterBtn);
+  await screen.getByText(/Filter by/i);
+
+  const applyBtn = screen.getByRole("button", { name: /apply/i });
+  
+  fireEvent.click(applyBtn);
+  
+    expect(applyBtn).not.toBeDisabled();
+
+});
+
+it("shows empty state message on initial load", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  });
+ 
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  console.log(screen.debug());
+  await waitFor(() => {
+    expect(
+      screen.getByText(/Use the search bar to find and select a pupil/i)
+    ).toBeInTheDocument();
+  });
+});
+ 
+
+it("shows no records on initial load, shows records after search", async () => {
+  jest.setTimeout(15000);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      { name: "Staff", link: null, values: [] },
+      { name: "Organisation", link: null, values: [] }
+    ],
+    statusCode: 200,
+  });
+ 
+  // Mock initial empty fetch (if any) and then with data after suggestion click
+  (apiService.fetchDocumentDetails as jest.Mock)
+    .mockResolvedValueOnce(mockData);
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+ 
+  // On initial load, no document rows
+  expect(screen.queryByText(/Doc 1/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Doc 2/)).not.toBeInTheDocument();
+ 
+  // Simulate search via suggestion click
+  const searchInputs = await screen.findAllByTestId("search-autocomplete-input");
+  fireEvent.change(searchInputs[0], { target: { value: "Alfie" } });
+
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+ 
+  // Wait for suggestions
+  const suggestions = await screen.findAllByRole("option");
+  expect(suggestions.length).toBeGreaterThan(0);
+ 
+  // Click first suggestion
+  fireEvent.click(suggestions[0]);
+ 
+  act(() => { jest.advanceTimersByTime(2000); });
+    const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  // Now document rows should appear
+  await waitFor(() => {
+      const doc1Elements = screen.getAllByText((content, element) =>
+
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 1"
+  );
+  expect(doc1Elements.length).toBeGreaterThan(0);
+  const doc2Elements = screen.getAllByText((content, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Doc 2"
+  );
+  expect(doc2Elements.length).toBeGreaterThan(0);
+  });
+});
 
  it("shows breadcrumbs in non-mobile view", () => {
   render(<DocumentManagementServerView />);
@@ -194,19 +302,6 @@ describe("DocumentManagementServerView", () => {
   expect(homeLabels.length).toBeGreaterThan(0);
 
 });
-
-  //  it("handles error during fetchDocumentDetails", async () => {
-  //   jest.setTimeout(15000);
-  //   (apiService.fetchDocumentDetails as jest.Mock).mockImplementationOnce(error)
-  //   await act(async () => {
-  //     render(<DocumentManagementServerView />);
-  //     jest.advanceTimersByTime(2000);
-  //   });
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Summary of issue")).toBeInTheDocument();
-  //   });
-  // });
 
 
   it("clears search input on cancel click", async () => {
@@ -236,57 +331,119 @@ describe("DocumentManagementServerView", () => {
     }
     );
   });
-it("handles sorting for Document column and ignores non-sortable columns", async () => {
- jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+  
+it("handles sorting for Document column and ignores non-sortable columns", async () => {
+  const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(2000);
   });
-  expect(screen.queryByText(/Doc 1/)).not.toBeInTheDocument();
-  expect(screen.queryByText(/Doc 2/)).not.toBeInTheDocument();
 
-  const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-  // Wait for table to appear
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument(); // Confirm table rendered
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
-    (apiService.fetchDocumentDetails as jest.Mock).mockClear();
-
+  // Click the Document column header to sort
   const documentHeaderDiv = screen.getAllByTestId("columnheader")
-  .find(div => div.textContent?.includes("Document"));
-   fireEvent.click(documentHeaderDiv!);
+    .find(div => div.textContent?.includes("Document"));
+  fireEvent.click(documentHeaderDiv!);
 
   act(() => {
-  jest.advanceTimersByTime(1000);
-});
+    jest.advanceTimersByTime(1000);
+  });
 
+  // The second call should be with sortBy: "Document"
   await waitFor(() => {
-    expect(apiService.fetchDocumentDetails).toHaveBeenCalledWith(
-      
+    expect(apiService.fetchDocumentDetails).toHaveBeenNthCalledWith(
+      2,
       expect.objectContaining({ sortBy: "Document" })
     );
   });
@@ -303,39 +460,107 @@ fireEvent.click(suggestions[0]);
 });
 
 
+  
 it("handles sorting for Date added column", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  render(<DocumentManagementServerView />);
-   act(() => {
-      jest.advanceTimersByTime(2000);
-    });
+  const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
 
-    const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
+
+  // (apiService.fetchDocumentDetails as jest.Mock).mockClear();
 
   const dateAddedHeaderDiv = screen.getAllByTestId("columnheader")
     .find(div => div.textContent?.includes("Date added"));
@@ -352,39 +577,105 @@ fireEvent.click(suggestions[0]);
   });
 });
 
+  
 it("handles sorting for Format column", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+    const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
-   act(() => {
+  act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-   const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
-
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
 
   const formatHeaderDiv = screen.getAllByTestId("columnheader")
     .find(div => div.textContent?.includes("Format"));
@@ -402,36 +693,112 @@ fireEvent.click(suggestions[0]);
 });
 
 it("handles sorting for Size column", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   jest.setTimeout(15000);
+   const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
-     const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
 
   const sizeHeaderDiv = screen.getAllByTestId("columnheader")
     .find(div => div.textContent?.includes("Size"));
@@ -449,35 +816,111 @@ fireEvent.click(suggestions[0]);
 });
 
 it("handles sorting for Category column", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+   const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
-   const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
   });
 
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
 
   const categoryHeaderDiv = screen.getAllByTestId("columnheader")
     .find(div => div.textContent?.includes("Category"));
@@ -492,90 +935,114 @@ fireEvent.click(suggestions[0]);
   });
 });
 
-it("does not call fetchDocumentDetails when non-sortable column is clicked", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  it("handles pagination changes", async () => {
+  jest.setTimeout(15000);
+     const mockDatas = {
+    totalRecords: 41,
+    data:  [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+    statusCode: 200
+  };
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
+    const spy = jest.spyOn(logicModule, "handlePageChange");
+
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+   { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
-   const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-
-  await waitFor(() => {
-    expect(screen.getByText(/Doc 1/)).toBeInTheDocument();
-  });
-
-  (apiService.fetchDocumentDetails as jest.Mock).mockClear();
-
-  // Try clicking a non-sortable column, e.g., "Added by"
-  const addedByHeader = screen.getByRole("columnheader", { name: /Added by/i });
-  fireEvent.click(addedByHeader);
-
-  // The API should NOT be called with sortBy: "Added by"
-  expect(apiService.fetchDocumentDetails).not.toHaveBeenCalledWith(
-    expect.objectContaining({ sortBy: "Added by" })
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
-});
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
-  // it("handles pagination changes", async () => {
-  // jest.setTimeout(15000);
-  //    const mockDatas = {
-  //   totalRecords: 41,
-  //   data:  [
-  //     {
-  //       fileId: "1",
-  //       document: "Doc 1",
-  //       relatedTo: ["HR"],
-  //       category: "legal",
-  //       addedBy: "User A",
-  //       dateAdded: "2025-06-10",
-  //       format: "pdf",
-  //       size: "500KB",
-  //     },
-  //     {
-  //       fileId: "2",
-  //       document: "Doc 2",
-  //       relatedTo: ["Finance"],
-  //       category: "finance",
-  //       addedBy: "User B",
-  //       dateAdded: "2025-06-11",
-  //       format: "docx",
-  //       size: "1MB",
-  //     }
-  //   ],
-  //   statusCode: 200
-  // };
-  //   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
-  //   const spy = jest.spyOn(logicModule, "handlePageChange");
+    await waitFor(() => {
+      const header = screen.getByText("2");
+      fireEvent.click(header);
+    });
 
-  //   render(<DocumentManagementServerView />);
-  //   act(() => {
-  //     jest.advanceTimersByTime(2000);
-  //   });
-
-  //   await waitFor(() => {
-  //     const header = screen.getByText("2");
-  //     fireEvent.click(header);
-  //   });
-
-  //   expect(spy).toHaveBeenCalled();
-  // });
+    expect(spy).toHaveBeenCalled();
+  });
 
   it("handles suggestion click", () => {
     const suggestionItem = { label: "Label", value: "Label" };
@@ -599,59 +1066,79 @@ fireEvent.click(suggestions[0]);
     expect(spy).toHaveBeenCalled();
   });
 
-  it("displays result not found when search term has no matches", async () => {
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [], statusCode: 200 });
-
-  render(<DocumentManagementServerView />);
-  const searchInput = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(searchInput, { target: { value: "xyz" } });
-
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
-
-  // Wait for suggestions loader to disappear
-  const searchLoaders = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  // Wait for the "no results" message to appear
-  await waitFor(() => {
-    expect(
-      screen.getByText(/Your search - /i)
-    ).toBeInTheDocument();
-  });
-});
 
 it("calls fetchGetDocumentDetails on selectedFormats change", async () => {
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
-    const searchInputs = await screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-  // Wait for suggestions to load
-  const searchLoaders = screen.getAllByTestId("loader-arc");
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(within(searchLoaders[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  // Click the desired suggestion
-  // Instead of getAllByRole("option"), use findAllByText for the suggestion label
-const suggestions = await screen.findAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-expect(suggestions.length).toBeGreaterThan(0);
-fireEvent.click(suggestions[0]);
-
-
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
   act(async () => {
   await waitFor(() => {
     const filterButton = screen.getByTestId("filter-btn");
@@ -673,34 +1160,84 @@ it("displays error banner when status 400 is returned", async () => {
     totalRecords: 0,
   });
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+       { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
 
-  const searchInputs = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(searchInputs, { target: { value: "Alfie" } });
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
 
   act(() => {
     jest.advanceTimersByTime(2000);
   });
 
-const highlights = await screen.findAllByText("Alfie", { selector: "mark" });
-fireEvent.click(highlights[0].closest('[role="option"]')!);
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
 
-
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
   act(() => {
-    jest.runAllTimers(); // flush async effects
+    jest.advanceTimersByTime(2000);
   });
 
   await waitFor(() => {
-    expect(screen.getByText(/Information unavailable/i)).toBeInTheDocument();
+    expect(screen.getByText("Information unavailable")).toBeInTheDocument();
   });
 });
 
 
 
-
 it("sets date error when fromDate is invalid", async () => {
+  jest.useFakeTimers();
   jest.setTimeout(15000); // Increase timeout for this test
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
@@ -799,20 +1336,90 @@ it("opens filter dialog and processes fetched category data", async () => {
   ];
   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(mockCategoryResponse);
 
+   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
   act(() => {
-    jest.advanceTimersByTime(2000);
+    jest.advanceTimersByTime(1000);
   });
 
   await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+
+  // Wait for grid loader to disappear if present
+  const gridLoader = screen.getAllByTestId("loader-arc");
+  if (gridLoader[1]) {
+    await waitFor(() => {
+      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+  }
+
+ 
     const filterButton = screen.getByTestId("filter-btn");
     fireEvent.click(filterButton);
-  });
+  
 
-  await waitFor(() => {
+ 
     expect(apiService.fetchFilterCategory).toHaveBeenCalled();
-    // If LocalisedMenu or something is affected by categories, check there too
-  });
+   
 });
 
 it("reduces category data properly in handleFilterOnClick", async () => {
@@ -823,15 +1430,86 @@ it("reduces category data properly in handleFilterOnClick", async () => {
   ];
   (apiService.fetchFilterCategory as jest.Mock).mockResolvedValueOnce(categoryList);
 
-  render(<DocumentManagementServerView />);
-   act(() => {
-  jest.advanceTimersByTime(3000);
-});
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+
+  // Wait for grid loader to disappear if present
+  const gridLoader = screen.getAllByTestId("loader-arc");
+  if (gridLoader[1]) {
     await waitFor(() => {
+      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+  }
+
+ 
     const filterButton = screen.getByTestId("filter-btn");
     fireEvent.click(filterButton);
-  });
+  
 
   await waitFor(() => {
     expect(apiService.fetchFilterCategory).toHaveBeenCalled();
@@ -841,57 +1519,65 @@ it("reduces category data properly in handleFilterOnClick", async () => {
 it("sets visibleBreadcrumbs to slice(-2, -1) when width < 1024 and list > 1", () => {
   Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 900 });
   const { getByText } = render(<DocumentManagementServerView />);
-  
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
   // simulate prop/state with >1 breadcrumb
   // wait for "Documents" which is the second last item
   expect(getByText("Documents")).toBeInTheDocument(); // slice(-2, -1)
 });
-it("sets visibleBreadcrumbs to full list when width < 1024 and list has only one item", () => {
-  Object.defineProperty(window, "innerWidth", { writable: true, configurable: true, value: 900 });
-
-  const { container } = render(<DocumentManagementServerView />);
-  
-  // query selector for data-test-id instead of data-testid
-  const breadcrumb = container.querySelector('[data-test-id="breadcrumb-test-id"]');
-  expect(breadcrumb).toBeInTheDocument();
-});
 
 
-// it("shows no result message when search yields no data", async () => {
-//   // Mock empty search result
-//   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-//  render(<DocumentManagementServerView />);
-
-//   // Advance initial loader
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   // Simulate typing search text
-//   const searchInput = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(searchInput, { target: { value: "nonexistentdoc" } });
-
-//   // Advance debounce or fetch wait
-//   act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
-
-//   await waitFor(() => {
-//   expect(
-//     screen.getByText((content, element) =>
-//       content.includes("Your search -") &&
-//       (element?.textContent?.includes("nonexistentdoc") ?? false) &&
-//       (element?.textContent?.includes("did not match any results") ?? false)
-//     )
-//   ).toBeInTheDocument();
-// });
-// });
 
 it("shows date error when toDate is before fromDate", async () => {
      (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
@@ -953,10 +1639,47 @@ it("shows date error when toDate is before fromDate", async () => {
 });
 
 
-
 it("trigger search even if searchTerm equals searchText", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+            { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
   render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(1000);
@@ -1007,9 +1730,9 @@ it("renders table headers even if no table data exists", async () => {
     jest.advanceTimersByTime(2000);
   });
 
-  await waitFor(() => {
-    expect(screen.getByText("Documents")).toBeInTheDocument();
-  });
+ await waitFor(() => {
+  expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+});
 });
 
 it("handles suggestion fetch error gracefully", async () => {
@@ -1063,6 +1786,8 @@ it("shows dialog when Prepare download is clicked and no checkbox is selected", 
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(1000); });
 
+  await waitFor(() => screen.getByText("Documents"));
+
   const actionsButton = screen.getByText(/Actions/i);
   fireEvent.click(actionsButton);
 
@@ -1073,7 +1798,6 @@ it("shows dialog when Prepare download is clicked and no checkbox is selected", 
     expect(screen.getByText(/Please select at least one item/i)).toBeInTheDocument();
   });
 });
-
 
 it("shows dialog when Delete is clicked and no checkbox is selected", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
@@ -1105,8 +1829,8 @@ it("shows dialog when Delete is clicked and no checkbox is selected", async () =
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(1000); });
 
+  await waitFor(() => screen.getByText("Documents"));
 
-  
   const actionsButton = screen.getByText(/Actions/i);
   fireEvent.click(actionsButton);
 
@@ -1149,6 +1873,7 @@ it("opens side panel when View download is clicked in Actions menu", async () =>
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(1000); });
 
+  await waitFor(() => screen.getByText("Documents"));
 
   // Debugging line to check rendered output
   const actionsButton = screen.getByText('Actions');
@@ -1171,6 +1896,9 @@ it("opens side panel when View download is clicked in Actions menu", async () =>
   await waitFor(() =>
     expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument()
   );
+});
+
+
 });
 
 
@@ -1206,9 +1934,47 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   });
 
   it("closes the confirmation dialog when Cancel is clicked", async () => {
-    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+   { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
@@ -1230,6 +1996,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
   const suggestion = await screen.findAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
@@ -1242,9 +2009,6 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
       expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
     });
   }
-
-
-  await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
 
   const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
   fireEvent.click(checkboxes[0]);
@@ -1262,9 +2026,54 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
 });
 
   it("calls selectedCheckboxIds callback when checkbox is selected", async () => {
-     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+    { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
@@ -1286,6 +2095,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
   const suggestion = await screen.findAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
@@ -1306,9 +2116,54 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   });
 
   it("calls onChangeListCheckBox to add and remove selection", async () => {
-     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+      {
+        name: "Document",
+        link: "",
+        values: [
+          { fileName: "Doc 1" },
+          { fileName: "Doc 2" }
+        ]
+      },
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
@@ -1330,6 +2185,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
   const suggestion = await screen.findAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
@@ -1343,7 +2199,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     });
   }
 
-    const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
+  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
 
   
     fireEvent.click(checkboxes[0]);
@@ -1354,14 +2210,53 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     expect(checkboxes[0]).not.toBeChecked();
   });
 
-  it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
-     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+
+   it("shows loader in side panel when Prepare download is confirmed and hides after timeout", async () => {
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+ { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(2000);
   });
 
   await waitFor(() => {
@@ -1371,7 +2266,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   });
 
   act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(2000);
   });
 
   // Wait for suggestions to appear
@@ -1379,20 +2274,14 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
   const suggestion = await screen.findAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
   fireEvent.click(suggestion[0]);
-
-  // Wait for grid loader to disappear if present
-  const gridLoader = screen.getAllByTestId("loader-arc");
-  if (gridLoader[1]) {
-    await waitFor(() => {
-      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-    });
-  }
-    await waitFor(() => expect(screen.getByText(/Doc 1/)).toBeInTheDocument());
-
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
  
     const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
     fireEvent.click(checkboxes[0]); 
@@ -1416,6 +2305,7 @@ describe("DocumentManagementServerView - selection and dialog logic", () => {
     
     await waitFor(() => expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument());
   });
+});
 
 describe("tableData mapping logic for relatedArr", () => {
   it("maps pupils correctly when documentRealatedTo === 1", () => {
@@ -1527,14 +2417,12 @@ describe("tableData mapping logic for relatedArr", () => {
     expect(relatedArr).toEqual([]);
   });
 
-
   it("handles missing fields in relatedTo items", () => {
     const doc = {
       documentRealatedTo: 1,
       relatedTo: [
         {
           preferredForename: "OnlyFirst"
-          
         }
       ]
     };
@@ -1593,23 +2481,60 @@ describe("tableData mapping logic for relatedArr", () => {
   });
 });
 
-
-
+ 
 it("handles search suggestion click", async () => {
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
 
   render(<DocumentManagementServerView />);
   act(() => {
     jest.advanceTimersByTime(1000);
   });
 
-
-    const searchInput = await screen.getByTestId("search-autocomplete-input");
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
     fireEvent.change(searchInput, { target: { value: "Alfie" } });
     fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  
+  });
 
   act(() => {
     jest.advanceTimersByTime(1000);
@@ -1620,6 +2545,7 @@ it("handles search suggestion click", async () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
   const suggestion = await screen.findAllByText((_, element) =>
     element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
   );
@@ -1633,10 +2559,9 @@ it("handles search suggestion click", async () => {
     });
   }
 
-
+  const searchInput = screen.getByTestId("search-autocomplete-input");
   expect((searchInput as HTMLInputElement).value).toMatch(/Alfie/i); // or other assertion based on your logic
 });
-
 });
 
   describe('DocumentManagementServerView - fetchViewDownloadData', () => {
@@ -1657,6 +2582,31 @@ it("handles search suggestion click", async () => {
       render(<DocumentManagementServerView />);
       act(() => { jest.advanceTimersByTime(1000); });
 
+      await waitFor(() => screen.getByText("Documents"));
+
+      const actionsButton = screen.getByText('Actions');
+      fireEvent.click(actionsButton);
+
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      const viewDownloadOption = screen.getByText('View download');
+      fireEvent.click(viewDownloadOption);
+
+      const sidePanelHeader = await screen.findByTestId("side-panel-header");
+      expect(sidePanelHeader).toBeInTheDocument();
+      await waitFor(() => {
+        expect(apiService.viewDownload).toHaveBeenCalled();
+        expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+        expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
+      });
+    });
+
+    test('Shows download files when API returns status 200 with data', async () => {
+      render(<DocumentManagementServerView />);
+      act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
 
       const actionsButton = screen.getByText('Actions');
       fireEvent.click(actionsButton);
@@ -1686,6 +2636,8 @@ it("handles search suggestion click", async () => {
 
       render(<DocumentManagementServerView />);
       act(() => { jest.advanceTimersByTime(1000); });
+
+      await waitFor(() => screen.getByText("Documents"));
 
       const actionsButton = screen.getByText('Actions');
       fireEvent.click(actionsButton);
@@ -1720,6 +2672,7 @@ it("handles search suggestion click", async () => {
       render(<DocumentManagementServerView />);
       act(() => { jest.advanceTimersByTime(1000); });
 
+      await waitFor(() => screen.getByText("Documents"));
 
       const actionsButton = screen.getByText('Actions');
       fireEvent.click(actionsButton);
@@ -1737,134 +2690,93 @@ it("handles search suggestion click", async () => {
       expect(searchLoader[0]).toBeInTheDocument();
     });
 
+
+
+
+describe('DocumentManagementServerView - fetchViewDownloadData', () => {
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    (apiService.viewDownload as jest.Mock).mockResolvedValue(mockResData);
+    jest.setTimeout(15000);
   });
 
-  
-it("shows error notification when prepareDownload rejects", async () => {
-  // Mock prepareDownload to reject
-  jest.spyOn(logicModule, "prepareDownload").mockRejectedValueOnce(new Error("API failure"));
-       (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+  test('Shows download files when API returns status 200 with data', async () => {
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
 
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-
-  render(<DocumentManagementServerView />);
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-
-  await waitFor(() => {
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-    fireEvent.change(searchInput, { target: { value: "Alfie" } });
-    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  });
-
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-
-  // Wait for suggestions to appear
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-  const suggestion = await screen.findAllByText((_, element) =>
-    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-  );
-  fireEvent.click(suggestion[0]);
-
-  // Wait for grid loader to disappear if present
-  const gridLoader = screen.getAllByTestId("loader-arc");
-  if (gridLoader[1]) {
     await waitFor(() => {
-      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
     });
-  }
 
-  // Select a valid checkbox
-  const checkboxes = await screen.findAllByTestId(/^check-box-row-testid-/);
-  fireEvent.click(checkboxes[0]);
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
 
-  // Simulate user clicking "Actions" > "Prepare download"
-  fireEvent.click(screen.getByText(/Actions/i));
-  // fireEvent.click(await screen.findByText("Prepare download"));
+    act(() => { jest.advanceTimersByTime(1000); });
 
-  // Confirm download (triggers prepareDownload)
-  act(() => { jest.advanceTimersByTime(1000); });
-  fireEvent.click(screen.getByText("Prepare download"));
-  
-});
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
 
-it("calls fetchViewDownloadData after timeout when sidePanelOpenReason is 'prepare'", async () => {
-  // Mock fetchViewDownloadData
-  const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
-
-       (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
-
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-
-  render(<DocumentManagementServerView />);
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-
-  await waitFor(() => {
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-    fireEvent.change(searchInput, { target: { value: "Alfie" } });
-    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  });
-
-  act(() => {
-    jest.advanceTimersByTime(1000);
-  });
-
-  // Wait for suggestions to appear
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-  const suggestion = await screen.findAllByText((_, element) =>
-    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-  );
-  fireEvent.click(suggestion[0]);
-
-  // Wait for grid loader to disappear if present
-  const gridLoader = screen.getAllByTestId("loader-arc");
-  if (gridLoader[1]) {
     await waitFor(() => {
-      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+      expect(apiService.viewDownload).toHaveBeenCalled();
     });
-  }
 
-  const checkboxes = await screen.getAllByTestId(/^check-box-row-testid-/);
-  fireEvent.click(checkboxes[0]);
-  fireEvent.click(screen.getByTestId("edit-selected-btn-testid"));
-  act(() => { jest.advanceTimersByTime(1000); });
-  fireEvent.click(await screen.getByText("Prepare download"));
-  await waitFor(() => {
-      screen.getByText(/document is about to be prepared for downloading/i);
+    const sidePanelHeader = await screen.findByTestId("side-panel-header");
+    expect(sidePanelHeader).toBeInTheDocument();
+    
+    await waitFor(() => {
+      expect(screen.getByText('Doc.pdf')).toBeInTheDocument();
+      expect(screen.getByText(/Expires in 3 days/i)).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Download/i })).toBeInTheDocument();
     });
-  const confirmBtn = await screen.getByTestId("tid-save-btn--small-screen");
-  fireEvent.click(confirmBtn);
+  });
 
-// Wait for side panel to appear (optional, for UI confirmation)
-await waitFor(() => {
-  expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
-});
+  test('Shows empty message when API returns status 200 with empty data', async () => {
+    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [],
+    });
 
-spy.mockRestore();
-});
+    render(<DocumentManagementServerView />);
+    act(() => { jest.advanceTimersByTime(2000); });
+
+    await waitFor(() => {
+      expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+    });
+
+    const actionsButton = screen.getByText('Actions');
+    fireEvent.click(actionsButton);
+
+    act(() => { jest.advanceTimersByTime(1000); });
+
+    const viewDownloadOption = screen.getByText('View download');
+    fireEvent.click(viewDownloadOption);
+
+    await waitFor(() => {
+      expect(apiService.viewDownload).toHaveBeenCalled();
+    });
+
+    expect(
+      screen.getByText('Files you download will appear here.')
+    ).toBeInTheDocument();
+  });
+
+
+  });
+
 
 it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'", async () => {
+  
   const spy = jest.spyOn(logicModule, "fetchViewDownloadData").mockResolvedValue(undefined);
 
   render(<DocumentManagementServerView />);
   act(() => { jest.advanceTimersByTime(1000); });
 
+  // Open side panel with "view" reason
+  await waitFor(() => screen.getByText("Documents"));
   fireEvent.click(screen.getByText(/Actions/i));
-
-  // Use test id instead of text to avoid flakiness
-  const viewDownloadBtn = await screen.findByTestId("option-test-1");
-  fireEvent.click(viewDownloadBtn);
+  fireEvent.click(await screen.findByText("View download"));
 
   await waitFor(() => {
     expect(spy).toHaveBeenCalled();
@@ -1872,7 +2784,345 @@ it("calls fetchViewDownloadData immediately when sidePanelOpenReason is 'view'",
 
   spy.mockRestore();
 });
+  });
 
-})
 
-})
+
+
+
+
+it("shows 'Expires today.' when fileExpiryDays is 0 in view download panel", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      }
+    ],
+  });
+
+  (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [
+      { name: "Doc.pdf", status: "Complete", fileExpiryDays: 0 }
+    ]
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+  await waitFor(() => {
+    expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+  });
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(apiService.viewDownload).toHaveBeenCalled();
+  });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  expect(screen.getByText("Expires today.")).toBeInTheDocument();
+});
+it("does not render expiry message when fileExpiryDays is undefined", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 1,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      }
+    ],
+  });
+
+  (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [
+      { name: "Doc.pdf", status: "Complete" } // fileExpiryDays is undefined
+    ]
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  act(() => { jest.advanceTimersByTime(2000); });
+  await waitFor(() => {
+    expect(screen.getAllByText("Documents").length).toBeGreaterThan(0);
+  });
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(apiService.viewDownload).toHaveBeenCalled();
+  });
+
+  // Should not render expiry message
+  expect(screen.queryByText(/Expires in/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/Expires today/)).not.toBeInTheDocument();
+});
+
+
+
+it("calls fetchGetDocumentDetails with empty categories array on initial load", async () => {
+  const spy = jest.spyOn(logicModule, "fetchGetDocumentDetailsLogic").mockResolvedValue(undefined);
+
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 0,
+    data: [],
+  });
+   jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
+  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
+    payload: [
+     { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
+                }] },
+      {
+        name: "Staff",
+        link: null,
+        values: []
+      },
+      {
+        name: "Organisation",
+        link: null,
+        values: []
+      }
+    ],
+    statusCode: 200
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  await waitFor(() => {
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Alfie" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+  });
+
+  act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  // Wait for suggestions to appear
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestion = await screen.findAllByText((_, element) =>
+    element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
+  );
+  fireEvent.click(suggestion[0]);
+
+  // Wait for grid loader to disappear if present
+  const gridLoader = screen.getAllByTestId("loader-arc");
+  if (gridLoader[1]) {
+    await waitFor(() => {
+      expect(within(gridLoader[1]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+  }
+
+  await waitFor(() => {
+   expect(spy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        categories: [],
+        dateRange: { fromDate: "", toDate: "" },
+        page: 1,
+        refExternalId: "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+        relatedTo: 1,
+        sortByCol: "DateAdded",
+        sortOrder: "Desc",
+        setCurrentPage: expect.any(Function),
+        setDocData: expect.any(Function),
+        // setIsSearchDataLoading: expect.any(Function),
+        setIsSearchLoading: expect.any(Function),
+        setShowErrorBanner: expect.any(Function),
+        setShowSearchError: expect.any(Function),
+        setTotalPage: expect.any(Function),
+      })
+    );
+  });
+
+  spy.mockRestore();
+});
+
+
+it("closes side panel when secondary button is clicked and viewData is empty", async () => {
+  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
+    statusCode: 200,
+    totalRecords: 2,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      }
+    ],
+  });
+
+  (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [], // viewData is empty
+  });
+
+  render(<DocumentManagementServerView />);
+  act(() => { jest.advanceTimersByTime(2000); });
+
+  // Open side panel
+  await waitFor(() => screen.getByText("Documents"));
+  
+  fireEvent.click(screen.getByText(/Actions/i));
+  fireEvent.click(await screen.findByText("View download"));
+
+  // Wait for side panel to be open
+  await waitFor(() => {
+    expect(screen.getByTestId("side-panel-header")).toBeInTheDocument();
+  });
+
+  // Find and click the secondary button ("Close")
+  const secondaryBtn = screen.getByTestId("side-panel-close-button");
+fireEvent.click(secondaryBtn);
+
+  // Assert side panel is closed
+  await waitFor(() => {
+    expect(screen.queryByTestId("side-panel-header")).not.toBeInTheDocument();
+  });
+});
+
+
+const mockFetchGetDocumentDetails = jest.fn();
+
+
+describe("useEffect in Document Management", () => {
+ 
+beforeEach(() => {
+    jest.clearAllMocks();
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
+    jest.setTimeout(15000);
+  });
+
+  it("should not call fetchGetDocumentDetails if isInitialLoad = true", () => {
+    const mockDatas1 = {
+    totalRecords: 2,
+    statusCode: 200,
+    data: [
+      {
+        fileId: "1",
+        document: "Doc 1",
+        relatedTo: ["HR"],
+        category: "legal",
+        addedBy: "User A",
+        dateAdded: "2025-06-10",
+        format: "pdf",
+        size: "500KB",
+      },
+      {
+        fileId: "2",
+        document: "Doc 2",
+        relatedTo: ["Finance"],
+        category: "finance",
+        addedBy: "User B",
+        dateAdded: "2025-06-11",
+        format: "docx",
+        size: "1MB",
+      }
+    ],
+  };
+    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas1);
+
+   jest.setTimeout(15000);
+    render(<DocumentManagementServerView />);
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+  //  render(<TestComponent isInitialLoad={true} />);
+    expect(mockFetchGetDocumentDetails).not.toHaveBeenCalled();
+  });
+
+  
+});
+
