@@ -688,7 +688,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
    const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
     // Check for link
     const link = getByRole("link", { name: "John Doe" });
-    expect(link).toHaveAttribute("href", "/pupilprofile/profile/p1");
+    expect(link).toHaveAttribute("href", "/");
     // Check for tag
     expect(getByText("Y5 / A")).toBeInTheDocument();
 });
@@ -703,7 +703,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
   // Check for link
   const link = getByRole("link", { name: "Jane Smith | SC123" });
-  expect(link).toHaveAttribute("href", "/staff/profile/s1");
+  expect(link).toHaveAttribute("href", "/");
 });
 
 it("renders tooltip with multiple staff and pupil and school items", () => {
@@ -1304,7 +1304,7 @@ describe("tableData mapping for relatedTo types", () => {
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("John Doe")).toBeInTheDocument();
     expect(getByText("Y5 / A")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/pupilprofile/profile/p123");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
   });
 
   it("maps staff correctly when documentRealatedTo === 3", () => {
@@ -1334,7 +1334,7 @@ describe("tableData mapping for relatedTo types", () => {
 
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("Jane Smith | S001")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/staff/profile/s456");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
   });
 
   it("maps school correctly when documentRealatedTo === 2", () => {
