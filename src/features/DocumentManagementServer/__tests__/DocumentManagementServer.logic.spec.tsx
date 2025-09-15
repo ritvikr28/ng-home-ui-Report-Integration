@@ -921,34 +921,31 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false);
+    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false, true);
     expect(result).toBe(
-      'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
+      'No data to display.'
     );
   });
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
-    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
+    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true, true);
     expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
-    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false);
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false, false);
     expect(result).toBeUndefined();
   });
 
-  it('returns undefined when searchText is empty and no error banner', () => {
-    const result = getResultNotFoundMsg('', { data: [] }, '', false);
-    expect(result).toBeUndefined();
-  });
   it('returns "No data to display" when not searching and no data', () => {
   const result = getResultNotFoundMsg(
     "", // searchText is empty
     { statusCode: 200, data: [] }, // docData has empty array
     "", // searchTerm
-    false // showErrorBanner
+    false, // showErrorBanner
+    false // isSearching
   );
-  expect(result).toBe("No data to display.");
+  expect(result).toEqual("Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.");
 });
 });
 

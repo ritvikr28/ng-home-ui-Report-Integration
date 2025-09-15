@@ -152,18 +152,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }, [docData]);
 
     useEffect(() => {
-    const fetchInitialData = async () => {
-        setIsLoading(true);
-        const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-        const dataFetch = fetchGetDocumentDetails(currentPage, [], sortBy, sortDirection);
-        // Fetch categories
-        
-        await Promise.all([minLoaderTime, dataFetch]);
-        setIsLoading(false);
-        setIsInitialLoad(false);
-    };
-
-    fetchInitialData();
 
       fetchCategory().then((res) => {
     const map: Record<string, number> = {};
@@ -176,13 +164,11 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
 
     useEffect(() => {
-   
-        if (!isInitialLoad) {
-            const allRegistrationIds = getAllRegistrationIds(selectedFormats);
-            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-        }
-        setIsSearchTriggered(false)
-    }, [currentPage,searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo]);
+  if (isSearchTriggered && searchText) {
+    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+  }
+}, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
 useEffect(() => {
   // Only run when opening the side panel for "prepare"
@@ -307,59 +293,52 @@ const selectedDocs = buildSelectedDocs(
       }
 
     const getEmptyStateMsg = () => {
-    if (showErrorBanner) return "Information unavailable.";
-    if (isLoading || issearchDataLoading || isSearchLoading) return undefined; // Hide banner while loading
+  if (showErrorBanner) return "Information unavailable.";
+  if (isLoading || issearchDataLoading || isSearchLoading) return undefined;
 
-    // Show "No data to display." only if search is triggered and no data
-    if (
-        isSearchTriggered &&
-        docData &&
-        docData?.statusCode === 200 &&
-        Array.isArray(docData?.data) &&
-        docData?.data.length === 0
-    ) {
-        return "No data to display.";
-    }
+  // Initial state: no search yet
+  if (!isSearchTriggered && !searchText) {
+    return "Use the search bar to search pupil, staff or organisation.";
+  }
 
-    if (!isSearchTriggered && showSearchError) return "Information unavailable.";
-    return "Documents will appear here once they are uploaded.";
+  // After search, no results
+  if (
+    isSearchTriggered &&
+    docData &&
+    docData?.statusCode === 200 &&
+    Array.isArray(docData?.data) &&
+    docData?.data.length === 0
+  ) {
+    return "No data to display.";
+  }
+
+  if (!isSearchTriggered && showSearchError) return "Information unavailable.";
+  return "Documents will appear here once they are uploaded.";
 };
 
     const getTableHeaders = () => {
-        if (tableData?.length > 0 || showErrorBanner) {
-            return getTableHeadersData;
-        }
-        if ((isSearchTriggered || searchText || docData)) {
-
-            return getTableHeadersData;
-        }
-        return [];
+        return getTableHeadersData;
     };
 
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
-        setIsSearchTriggered(true);
-        setCurrentPage(1);
+        setSearchText("");
+        setIsSearchTriggered(false);
         setShowSearchError(false);
         setIsSearchLoading(false);
-        setSearchText("");
-};
+        setDocData(null);
+        setSelectedCategories([]);
+        setSelectedFormats([]);
+        setDateRange({ fromDate: "", toDate: "" });
+        setSelectedDateRange({ fromDate: "", toDate: "" });
+        setSortBy("DateAdded");
+        setSortDirection("Desc");
+        setCurrentPage(1);
+        setIsFilterDialogOpen(false);
+        
+        };
 
-    const handleSearchEnter = (event: React.KeyboardEvent<Element>) => {
-        if (event.key === "Enter") {
-            const keyword = searchTerm?.trim()?.toLowerCase();
-            if(keyword !== searchText) {
-            setSearchTerm(keyword);
-            setSearchText(keyword);
-            setIsSearchTriggered(true);
-            setIsSearchDataLoading(true);
-        }
-        setIsSearchLoading(false);
-        setIsShowAutoSuggest(false); 
-        // setSuggestions([]);
-    }
-    }
 
     const handleTagClose = (
   e: React.SyntheticEvent,
@@ -423,7 +402,7 @@ const selectedDocs = buildSelectedDocs(
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
-    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner);
+    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
 
@@ -568,7 +547,7 @@ const renderViewDownloadContent = () => {
                         </div>
                         }
                  
-                        {hasFetched && <div className="grid-wrapper">
+                   <div className="grid-wrapper">
                             <ControlledList
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
@@ -706,7 +685,10 @@ const renderViewDownloadContent = () => {
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
-                                isShowdynamictableNoMsg={Boolean((searchText && !docData?.data?.length) || showErrorBanner || (docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) && !isSearchTriggered)}
+                                isShowdynamictableNoMsg={
+                                    (!isSearchTriggered && !searchText) ||
+                                    (isSearchTriggered && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0)
+                                }
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
                                 searchHeadingText="Search by document or related to name"
@@ -717,10 +699,11 @@ const renderViewDownloadContent = () => {
                                 searchIsLoader={isSearchLoading}
                                 isSearchHideClearIcon={searchTerm.length === 0}
                                 onKeyUpLenght={2}
-                                searchDebouncerTreshold={1000}
+                                searchDebouncerTreshold={0}
                                 searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
+                                    setIsSearchTriggered(true);
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
@@ -730,8 +713,6 @@ const renderViewDownloadContent = () => {
                                     showSearchError ? ValidationTextLevel.Warning : undefined
                                 }
 
-
-                                onSearchKeyDown={handleSearchEnter}
                                 searchOnCloseHandle={handleSearchClose}
                                 secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
@@ -786,17 +767,20 @@ const renderViewDownloadContent = () => {
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
                                     <>
-                                        <Button
-                                            className="filter-btn"
-                                            dataTestId="filter-btn"
-                                            color={ButtonColor.Utility}
-                                            size={ButtonSize.Small}
-                                            iconPosition={ButtonIconPosition.Right}
-                                            iconName="filter"
-                                            onClick={handleFilterOnClick}
-                                        > Filter</Button>
+                                            <Button
+                                                className="filter-btn"
+                                                dataTestId="filter-btn"
+                                                color={ButtonColor.Utility}
+                                                size={ButtonSize.Small}
+                                                iconPosition={ButtonIconPosition.Right}
+                                                iconName="filter"
+                                                onClick={() => {
+                                                    if (isSearchTriggered) {
+                                                    handleFilterOnClick();
+                                                    }
+                                                }}> Filter</Button>
 
-                                        <FilterDialog
+                                            <FilterDialog
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title="Filter by"
@@ -868,7 +852,7 @@ const renderViewDownloadContent = () => {
                                 onOverflowTagClose ={()=>{}}
                                 isShowFourthElement={false}
                             />
-                        </div>}
+                        </div>
                     </div>
                 </GridItem>
             </Grid>
