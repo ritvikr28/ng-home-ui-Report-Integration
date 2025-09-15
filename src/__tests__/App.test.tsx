@@ -164,20 +164,4 @@ describe("App i18n and error handling coverage", () => {
     });
     window.removeEventListener("localstorage-change", eventListener);
   });
-
-  // New test: Language changes on localstorage-change event
-  it("updates langCode on localstorage-change event", async () => {
-    renderWithHistory(history);
-    act(() => {
-      const event = new Event("localstorage-change");
-      // @ts-ignore
-      event.key = "i18nextLng";
-      // @ts-ignore
-      event.newValue = "cy";
-      window.dispatchEvent(event);
-    });
-    await waitFor(() => {
-      expect(localStorage.getItem("i18nextLng")).toBe("cy");
-    });
-  });
 });

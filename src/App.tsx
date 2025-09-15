@@ -15,56 +15,32 @@ import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+// Supported languages
+const supportedLangs = ["en", "cy"] as const;
 
-// Patch localStorage.setItem to dispatch custom event in same tab
-const patchLocalStorage = () => {
-  const originalSetItem = localStorage.setItem;
-  localStorage.setItem = function (key, value) {
-    const event = new Event("localstorage-change");
-    // @ts-ignore
-    event.key = key;
-    // @ts-ignore
-    event.newValue = value;
-    window.dispatchEvent(event);
-    originalSetItem.apply(this, [key, value]);
-  };
-};
+// Helper to resolve language preference
+function getPreferredLang(): string {
+  const stored = localStorage.getItem("i18nextLng");
+  if (stored && supportedLangs.includes(stored as any)) {
+    return stored;
+  }
+
+  const browserLang = navigator.language?.split("-")[0].toLowerCase();
+  return supportedLangs.includes(browserLang as any) ? browserLang : "en";
+}
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
   const [initialized, setInitialized] = useState(false);
-  const [langCode, setLangCode] = useState<string>(
-    localStorage.getItem("i18nextLng") ||
-    navigator.language.split("-")[0] ||
-    "en"
-  );
+  const [langCode] = useState<string>(getPreferredLang());
 
-  useEffect(() => {
-    patchLocalStorage();
-
-    const handleStorageChange = (event: any) => {
-      if (event.key === "i18nextLng" && event.newValue) {
-        setLangCode(event.newValue);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange); // cross-tab
-    window.addEventListener("localstorage-change", handleStorageChange); // same-tab
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("localstorage-change", handleStorageChange);
-    };
-  }, []);
-
-  // Reinitialize IntlProvider whenever langCode changes
   useEffect(() => {
     const initI18n = async () => {
       try {
         localStorage.setItem("i18nextLng", langCode);
-
+        console.log("Initializing i18n with language:", langCode);
         await IntlProvider.init({
           translation: {
             en: {
