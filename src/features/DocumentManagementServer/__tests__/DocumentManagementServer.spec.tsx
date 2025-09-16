@@ -146,7 +146,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -169,35 +169,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     fireEvent.click(screen.getByText("Category"));
   });
     
-  // (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  // jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  // (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-
-  // render(<DocumentManagementServerView />);
-
-  // // type search query
-  // const input = await screen.findByTestId("search-autocomplete-input");
-  // fireEvent.change(input, { target: { value: "Alfie" } });
-  // fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
-  // // wait for suggestion to show up
-  // const searchLoader = screen.getAllByTestId("loader-arc");
-  // await waitFor(() => {
-  //   expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  // });
-
-  // const suggestionNode = await screen.getAllByText("Alfie");
-
-  // // click suggestion
-  // fireEvent.click(suggestionNode[0]);
-
-  // // verify document is displayed
-  // await waitFor(() => {
-  //   expect(screen.getByText("Doc1")).toBeInTheDocument();
-  // });
-  //   fireEvent.click(screen.getByTestId("filter-btn"));
-  //   await waitFor(() => expect(Logic.fetchCategory).toHaveBeenCalled());
-  // });
 
   it("shows NoSelectionDialog when no item selected for prepare download", () => {
     render(<DocumentManagementServerView />);
@@ -250,7 +221,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       fireEvent.click(screen.getByText("Actions"));
       fireEvent.click(screen.getByText("View download"));
 
-    await waitFor(() => expect(screen.getByText("File3")).toBeInTheDocument());
+    expect(await screen.findByText("File3")).toBeInTheDocument();
   });
 
   it("shows error banner when showErrorBanner is set", async () => {
@@ -271,7 +242,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -301,7 +272,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -393,7 +364,7 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -404,8 +375,9 @@ describe("Additional tests to increase coverage", () => {
   });
 
   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-    fireEvent.click(screen.getByText("Actions"));
-    fireEvent.click(screen.getByTestId("option-test-0"));
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
+    fireEvent.click(option);
 
 
     fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
@@ -440,7 +412,7 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -486,7 +458,7 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
@@ -525,7 +497,7 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  const suggestionNode = await screen.getAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
