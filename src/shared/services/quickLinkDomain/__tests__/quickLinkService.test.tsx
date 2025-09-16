@@ -135,14 +135,12 @@ describe("QuickLink Service tests", () => {
         const spy = jest.spyOn(service, "get").mockImplementation(() => Promise.resolve(axiosResponse));
         await FetchQuickLinkData(role);
         expect(spy).toHaveBeenCalledWith(
-          expect.stringContaining("languageCode=fr-FR"),
+          expect.stringContaining("languageCode=en-US"),
           expect.anything()
         );
         spy.mockRestore();
       });
-
       test("should handle missing navigator.language (fallback to en-US and not throw)", async () => {
-        // Remove navigator.language
         Object.defineProperty(global, "navigator", {
           value: {},
           configurable: true,
@@ -151,10 +149,14 @@ describe("QuickLink Service tests", () => {
 
         const spy = jest.spyOn(service, "get").mockImplementation(() => Promise.resolve(axiosResponse));
         const result = await FetchQuickLinkData(role);
-        expect(result).toBeNull();
-        expect(spy).not.toHaveBeenCalled();
+        expect(spy).toHaveBeenCalledWith(
+          expect.stringContaining("languageCode=en-US"),
+          expect.anything()
+        );
+        expect(result).toEqual({ status: 200, response: mockApiResponse });
         spy.mockRestore();
       });
+
     });
   });
 
