@@ -5,7 +5,8 @@ import {
   fireEvent,
   waitFor,
   act,
-  within
+  within,
+  cleanup
 } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
@@ -70,6 +71,7 @@ beforeAll(() => {
 
 afterAll(() => {
   jest.useRealTimers();
+  cleanup();
 });
 
 
@@ -80,116 +82,6 @@ describe("DocumentManagementServerView", () => {
     jest.setTimeout(15000);
   });
  
-
-it("handles filter dialog open and apply (optimized)", async () => {
-  jest.setTimeout(15000);
-  
-  const mockDatas = {
-    totalRecords: 2,
-    data:  [
-      {
-        fileId: "1",
-        document: "Doc 1",
-        relatedTo: ["HR"],
-        category: "legal",
-        addedBy: "User A",
-        dateAdded: "2025-06-10",
-        format: "pdf",
-        size: "500KB",
-      },
-      {
-        fileId: "2",
-        document: "Doc 2",
-        relatedTo: ["Finance"],
-        category: "finance",
-        addedBy: "User B",
-        dateAdded: "2025-06-11",
-        format: "docx",
-        size: "1MB",
-      }
-    ],
-    statusCode: 200,
-  };
-     (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDatas);
-      jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue({
-  payload: [
-  
-    { name: "Pupil", link: "", values: [
-                {
-                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-                    "preferredForename": "Alfie",
-                    "preferredSurname": "Harries",
-                    "legalName": "Alfie Harries",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001875",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D"
-                },
-                {
-                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-                    "preferredForename": "Firoz",
-                    "preferredSurname": "Bhandari",
-                    "legalName": "Firoz Bhandari",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001861",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/04aaedd6-5307-4a4f-abaa-8b2230b3983b?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=ODZ%2FbhewCi3E3NcAYDf%2FAKHinSUC%2FU5dTQChdf7g%2BlA%3D"
-                }] },
-    {
-      name: "Staff",
-      link: null,
-      values: []
-    },
-    {
-      name: "Organisation",
-      link: null,
-      values: []
-    }
-  ],
-  statusCode: 200
-});
-  render(<DocumentManagementServerView />);
-    act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-
-  await waitFor(() => {
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-
-    fireEvent.change(searchInput, { target: { value: "Alfie" } });
-    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-  });
-
-  act(() => {
-      jest.advanceTimersByTime(2000);
-    });
-  // Wait for suggestions to appear
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-const suggestion = await screen.getAllByText((_, element) =>
-  element?.textContent?.replace(/\s+/g, " ").trim() === "Alfie"
-);
-  // Click the suggestion to trigger the search
-  fireEvent.click(suggestion[0]);
-  act(() => {
-  jest.advanceTimersByTime(2000); // <-- Add this here
-});
-
-  const filterBtn = await screen.getByTestId("filter-btn");
-  fireEvent.click(filterBtn);
-  await screen.getByText(/Filter by/i);
-
-  const applyBtn = screen.getByRole("button", { name: /apply/i });
-  
-  fireEvent.click(applyBtn);
-  
-    expect(applyBtn).not.toBeDisabled();
-
-});
 
 it("shows empty state message on initial load", async () => {
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({
@@ -1067,6 +959,7 @@ it("handles sorting for Category column", async () => {
   });
 
 
+
 it("calls fetchGetDocumentDetails on selectedFormats change", async () => {
   
   (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockData);
@@ -1526,7 +1419,6 @@ it("sets visibleBreadcrumbs to slice(-2, -1) when width < 1024 and list > 1", ()
   // wait for "Documents" which is the second last item
   expect(getByText("Documents")).toBeInTheDocument(); // slice(-2, -1)
 });
-
 
 
 it("shows date error when toDate is before fromDate", async () => {

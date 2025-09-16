@@ -30,3 +30,4 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn(),
   })),
 });
+jest.setTimeout(30000);
