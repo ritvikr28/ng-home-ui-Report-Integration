@@ -15,32 +15,28 @@ import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
-// Supported languages
-const supportedLangs = ["en", "cy"] as const;
-
-// Helper to resolve language preference
-function getPreferredLang(): string {
-  const stored = localStorage.getItem("i18nextLng");
-  if (stored && supportedLangs.includes(stored as any)) {
-    return stored;
-  }
-
-  const browserLang = navigator.language?.split("-")[0].toLowerCase();
-  return supportedLangs.includes(browserLang as any) ? browserLang : "en";
-}
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
   const [initialized, setInitialized] = useState(false);
-  const [langCode] = useState<string>(getPreferredLang());
+
+  // Priority: dropdown (localStorage) → browser → fallback
+  const getInitialLang = () =>
+    localStorage.getItem("i18nextLng") ||
+    navigator.language.split("-")[0] ||
+    "en";
+
+  const [langCode] = useState<string>(getInitialLang);
 
   useEffect(() => {
     const initI18n = async () => {
       try {
+        console.log("[Lang Change] Setting i18nextLng in localStorage:", langCode);
+        // Always persist chosen lang in localStorage
         localStorage.setItem("i18nextLng", langCode);
-        console.log("Initializing i18n with language:", langCode);
+        console.log("[i18n Init] Initializing IntlProvider with lang:", langCode);
         await IntlProvider.init({
           translation: {
             en: {
@@ -55,7 +51,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             },
           },
         }).init({ lng: langCode });
-
+        console.log("[i18n Init] Successfully initialized with lang:", langCode);
         setInitialized(true);
       } catch (err) {
         console.error("Error initializing i18n:", err);
