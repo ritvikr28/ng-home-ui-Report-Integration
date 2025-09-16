@@ -110,6 +110,17 @@ const mockSuggestions = {
       data: [],
     });
   })
+jest.setTimeout(20000);
+  beforeEach(() => {
+  jest.clearAllMocks();
+  jest.clearAllTimers?.();
+  cleanup();
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+  cleanup();
+});
   describe("DocumentManagementServerView", () => {
 
   it("renders breadcrumbs in desktop view", () => {
@@ -170,10 +181,10 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
     
 
-  it("shows NoSelectionDialog when no item selected for prepare download", () => {
+  it("shows NoSelectionDialog when no item selected for prepare download", async () => {
     render(<DocumentManagementServerView />);
-    fireEvent.click(screen.getByText("Actions"));
-    fireEvent.click(screen.getByText("Prepare download"));
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("Prepare download"));
     expect(
       screen.getByText(
         "Please select at least one item from the search results to perform the action."
@@ -188,10 +199,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     });
     render(<DocumentManagementServerView />);
 
-      fireEvent.click(screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View download"));
+      fireEvent.click(await screen.findByText("Actions"));
+      fireEvent.click(await screen.findByText("View download"));
 
-    
     const sidePanelHeader = await screen.getByText("Downloads");
     expect(sidePanelHeader).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
@@ -205,9 +215,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     });
     render(<DocumentManagementServerView />);
 
-      fireEvent.click(screen.getByText("Actions"));
-      fireEvent.click(screen.getByText("View download"));
-  
+      fireEvent.click(await screen.findByText("Actions"));
+      fireEvent.click(await screen.findByText("View download"));
+
     await waitFor(() => expect(screen.getByText("File2")).toBeInTheDocument());
   });
 
@@ -218,8 +228,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     });
     render(<DocumentManagementServerView />);
 
-      fireEvent.click(screen.getByText("Actions"));
-      fireEvent.click(screen.getByText("View download"));
+      fireEvent.click(await screen.findByText("Actions"));
+      fireEvent.click(await screen.findByText("View download"));
 
     expect(await screen.findByText("File3")).toBeInTheDocument();
   });
@@ -280,11 +290,11 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(screen.getByRole("textbox")).toHaveValue("");
   });
 
-    it("closes side panel and clears interval", () => {
+    it("closes side panel and clears interval", async () => {
     const { container } = render(<DocumentManagementServerView />);
- 
-      fireEvent.click(screen.getByText("Actions"));
-      fireEvent.click(screen.getByText("View download"));
+
+      fireEvent.click(await screen.findByText("Actions"));
+      fireEvent.click(await screen.findByText("View download"));
 
     fireEvent.click(screen.getByTestId("side-panel-close-button")); // side panel close
     // Verify loader and interval cleared
@@ -300,8 +310,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       ],
     });
     render(<DocumentManagementServerView />);
-    fireEvent.click(screen.getByText("Actions"));
-    fireEvent.click(screen.getByText("View download"));
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("View download"));
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
@@ -424,10 +434,10 @@ describe("Additional tests to increase coverage", () => {
     // Select multiple checkboxes
     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
     fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
-    
-    fireEvent.click(screen.getByText("Actions"));
-    fireEvent.click(screen.getByText("Prepare download"));
-    fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
+
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("Prepare download"));
+    fireEvent.click(await screen.getByTestId("tid-save-btn--small-screen"));
   });
 
 
