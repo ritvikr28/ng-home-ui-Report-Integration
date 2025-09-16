@@ -75,7 +75,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
      const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
-    const [failedFileName, setFailedFileName] = useState<string | null>(null);
+    const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
     const categoryArr = getCategoryArr(selectedFormats);
@@ -456,10 +456,9 @@ const handleApply = () => {
 
 useEffect(() => {
   if (viewData && viewData.length > 0) {
-    const cancelledFile = viewData.find(item => item.status?.toLowerCase() === 'cancel');
-    if (cancelledFile) {
-      setPrepareDownloadError(true);
-      setFailedFileName(cancelledFile.name || null);
+    const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
+    if (cancelledFiles.length > 0) {
+      setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
     }
   }
 }, [viewData]);
@@ -764,12 +763,12 @@ const renderViewDownloadContent = () => {
                                         { failedFileName && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
-                                            title="Unable to prepare for download"
-                                            message={`A technical issue has prevented us from preparing '${failedFileName}' for download. Please try again later. If the issue persists please get in touch with our support team.`}
+                                            title="Unable to prepare [document/documents] for download"
+                                            message={`A technical issue has prevented us from preparing ${failedFileName.join(", ")} for download. Please try again later. If the issue persists please get in touch with our support team.`}
                                             autoclose
                                             onClickClose={() => {
                                             setPrepareDownloadError(false);
-                                            setFailedFileName(null);
+                                            setFailedFileName([]);
                                             }}
                                         />
                                         )}
