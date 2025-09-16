@@ -1,11 +1,11 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within } from "@testing-library/react";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
+import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
-import * as apiService from "../ApiService";
 
 
-jest.mock("../apiService", () => ({
+jest.mock("../ApiService", () => ({
   fetchFilterCategory: jest.fn(),
   viewDownload: jest.fn(),
   prepareAndDownloadFile: jest.fn(),
@@ -24,7 +24,7 @@ jest.mock("../DocumentManagementServer.logic", () => {
   };
 });
 
-jest.mock("../apiService", () => ({
+jest.mock("../ApiService", () => ({
   fetchDocumentDetails: jest.fn(),
   fetchDMSSuggestions: jest.fn(),
   fetchFilterCategory: jest.fn(),
@@ -106,7 +106,7 @@ const mockSuggestions = {
       ({ setDocData }: any) => setDocData(mockDocData)
     );
     (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [],
     });
@@ -132,9 +132,9 @@ const mockSuggestions = {
 
 it("shows suggestions and triggers search when user clicks a suggestion", async () => {
 
-  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
   render(<DocumentManagementServerView />);
 
@@ -174,9 +174,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
 
   it("opens and applies filter", async () => {
     
-  (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
   render(<DocumentManagementServerView />);
 
@@ -216,9 +216,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("opens confirmation dialog when items selected", async () => {
-     (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
   render(<DocumentManagementServerView />);
 
@@ -253,7 +253,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("renders download view panel with complete file", async () => {
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [{ name: "File1", status: "complete", fileExpiryDays: 2 }],
     });
@@ -270,7 +270,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("renders in-progress downloads", async () => {
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [{ name: "File2", status: "inprogress" }],
     });
@@ -283,7 +283,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("renders initiated downloads", async () => {
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [{ name: "File3", status: "initiated" }],
     });
@@ -296,9 +296,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("shows error banner when showErrorBanner is set", async () => {
-     (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
 
   render(<DocumentManagementServerView />);
 
@@ -326,9 +326,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("resets state on search close", async () => {
-       (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
+       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
 
   render(<DocumentManagementServerView />);
 
@@ -363,7 +363,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   it("renders side panel files with expiry 0 or undefined", async () => {
-    (apiService.viewDownload as jest.Mock).mockResolvedValue({
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
@@ -409,11 +409,11 @@ describe("Additional tests to increase coverage", () => {
 
 
   it("shows error notifications for failed prepareDownload", async () => {
-     (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue([500]);
-  (apiService.viewDownload as jest.Mock).mockResolvedValue({
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
@@ -456,11 +456,11 @@ describe("Additional tests to increase coverage", () => {
   });
 
   it("handles multiple files for email notification", async () => {
-    (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
-  (apiService.viewDownload as jest.Mock).mockResolvedValue({
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
@@ -511,9 +511,9 @@ describe("Additional tests to increase coverage", () => {
   });
 
   it("handles date filter validation error", async () => {
-       (apiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
   render(<DocumentManagementServerView />);
 
@@ -548,11 +548,11 @@ describe("Additional tests to increase coverage", () => {
   });
 
   it("renders empty states for showErrorBanner and showSearchError", async () => {
-    (apiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
+    (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
       ({ setShowErrorBanner }: any) => setShowErrorBanner(true)
     );
-    jest.spyOn(apiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+    jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
 
   render(<DocumentManagementServerView />);
 
