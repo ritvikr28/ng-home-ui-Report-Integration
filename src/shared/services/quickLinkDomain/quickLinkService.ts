@@ -13,8 +13,14 @@ export const FetchQuickLinkData:(role: string) => Promise<{
   status: number;
   response: IQuickLinkApiResponse[] } | null> = async () => {
     try {
+      let userLanguage: string;
         const languageCode = localStorage.getItem("i18nextLng") || navigator.language;
-        const userLanguage = languageCode.includes("en") ? "en-US": languageCode;
+        if (languageCode == null || languageCode === undefined || languageCode === "") {
+          userLanguage = navigator.language;
+        }
+        else {
+          userLanguage = languageCode.includes("en") ? "en-US" : "cy";
+        }
         const responseData: AxiosResponse<IQuickLinkApiResponse[]> = await service.get(
            `v2/quicklink?languageCode=${userLanguage}`,
           buildApplicationUrl(apiUrls)
