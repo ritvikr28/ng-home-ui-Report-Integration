@@ -110,7 +110,7 @@ const mockSuggestions = {
       data: [],
     });
   })
-jest.setTimeout(20000);
+jest.setTimeout(10000);
   beforeEach(() => {
   jest.clearAllMocks();
   jest.clearAllTimers?.();
