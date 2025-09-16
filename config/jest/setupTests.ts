@@ -30,4 +30,4 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: jest.fn(),
   })),
 });
-jest.setTimeout(30000);
+jest.setTimeout(12000); // Set a higher timeout value as change in implementation of DMS has resulted in longer execution time for test cases
