@@ -9,7 +9,7 @@ import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
-     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "/";
+     const href = item?.referenceExternalId ? `/staff/profile/${item.referenceExternalId}` : "/";
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
@@ -20,7 +20,7 @@ export function renderRelatedToItem(item: any) {
     );
   }
   if (item.type === "pupil") {
-     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "/";
+     const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
