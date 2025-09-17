@@ -39,7 +39,7 @@ export const breadcrumbActionsList = [
 const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading] = useState<boolean>(false);
+    
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -49,7 +49,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isInitialLoad] = useState(true);
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
@@ -296,7 +295,7 @@ const selectedDocs = buildSelectedDocs(
 
     const getEmptyStateMsg = () => {
   if (showErrorBanner) return "Information unavailable.";
-  if (isLoading || issearchDataLoading || isSearchLoading) return undefined;
+  if (issearchDataLoading || isSearchLoading) return undefined;
 
   // Initial state: no search yet
   if (!isSearchTriggered && !searchText) {
@@ -554,7 +553,7 @@ const renderViewDownloadContent = () => {
                                 isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
-                                sortAscFirst={!isInitialLoad}
+                                sortAscFirst={false}
                                 isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -841,10 +840,10 @@ const renderViewDownloadContent = () => {
                                 isSidePanelOpen={isSidePanelOpen}
                                 handleCloseSidePanel={handleCloseSidePanel}
                                 isShowAutoSuggest
-                                isLoaderForFilterandTable={isLoading}
+                                isLoaderForFilterandTable={false}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
-                                isSearchShowLoading={isLoading}
+                                isSearchShowLoading={false}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
                                 searchTagList = { searchTagList}
