@@ -407,7 +407,6 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage,
   setShowSearchError,
   setShowErrorBanner,
-  setHasFetched,
   setIsSearchLoading,
   setIsSearchDataLoading,
 }: {
@@ -423,7 +422,6 @@ export async function fetchGetDocumentDetailsLogic({
   setTotalPage: (v: number) => void;
   setShowSearchError: (v: boolean) => void;
   setShowErrorBanner: (v: boolean) => void;
-  setHasFetched: (v: boolean) => void;
   setIsSearchLoading: (v: boolean) => void;
   setIsSearchDataLoading: (v: boolean) => void;
 }) {
@@ -451,7 +449,6 @@ export async function fetchGetDocumentDetailsLogic({
     } else {
       setShowSearchError(true);
     }
-    setHasFetched(true);
   } catch (err) {
     console.error("Error fetching document details:", err);
     setShowSearchError(true);
@@ -651,18 +648,18 @@ export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
   searchTerm: string,
-  showErrorBanner: boolean
+  showErrorBanner: boolean,
+  isSearchTriggered: boolean
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
   }
-  // Show search message if search is performed and no results
+  // Show "No data to display" only if searching and no data
   if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
-  }
-  // Show "No data to display" only if not searching and no data
-  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return "No data to display.";
+  }
+  if (!isSearchTriggered && !searchText) {
+    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
   }
   return undefined;
 };
