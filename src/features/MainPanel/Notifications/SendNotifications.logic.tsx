@@ -58,25 +58,27 @@ export function connectWebSocket({
   };
 }
 
-export async function handleLogin({
-  API_BASE,
-  userId,
-  password,
-  setToken,
-}: {
-  API_BASE: string;
-  userId: string;
-  password: string;
-  setToken: (token: string) => void;
-}) {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, password }),
-  });
-  const data = await res.json();
-  if (data.token) setToken(data.token);
-}
+// export async function handleLogin({
+//   API_BASE,
+//   userId,
+//   password,
+//   setToken,
+// }: {
+//   API_BASE: string;
+//   userId: string;
+//   password: string;
+//   setToken: (token: string) => void;
+// }) {
+//   // const res = await fetch(`${API_BASE}/auth/login`, {
+//   //   method: "POST",
+//   //   headers: { "Content-Type": "application/json" },
+//   //   body: JSON.stringify({ userId, password }),
+//   // });
+//   const authToken = await authService.getIdToken();
+//   console.log("Auth Token:", authToken);
+//   const data = await res.json();
+//   if (data.token) setToken(authService.getIdToken);
+// }
 
 export async function handleSendNotification({
   API_BASE,
