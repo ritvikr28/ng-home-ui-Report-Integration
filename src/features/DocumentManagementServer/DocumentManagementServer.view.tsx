@@ -56,8 +56,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
-    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
-        useState(breadcrumbActionsList);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
@@ -77,17 +76,17 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    const categoryArr = getCategoryArr(selectedFormats);
+    
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
+    const categoryArr = getCategoryArr(selectedFormats);
+    const searchTagListRaw = [
+    ...categoryArr
+    ];
 
-const searchTagListRaw = [
-  ...categoryArr
-];
-
-const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+    const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -100,17 +99,17 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
-    id: doc?.fileId,
-    Document: doc?.document,
-    Relatedto: mapRelatedArr(doc) || "",
-    Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-    Addedby: doc?.addedBy || "",
-    "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-    Format: doc?.format,
-    Size: doc?.size,
-    isShowCheckBox: true
-}));
-}
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: mapRelatedArr(doc) || "",
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+            Format: doc?.format,
+            Size: doc?.size,
+            isShowCheckBox: true
+        }));
+        }
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -129,8 +128,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     }, [isMobileView]);
 
     useEffect(() => {
+    const grid = document.querySelector('.grid-wrapper');
+    if (grid) {
+        (grid as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
         window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage]);
+    }
+}, [currentPage]);
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -328,7 +332,8 @@ const selectedDocs = buildSelectedDocs(
         setSortDirection("Desc");
         setCurrentPage(1);
         setIsFilterDialogOpen(false);
-        
+        setTotalPage(0);
+        setSelectedCheckBoxIds([]);
         };
 
 
@@ -347,6 +352,7 @@ const selectedDocs = buildSelectedDocs(
     setSelectedCategories,
     setSelectedFormats
   );
+  setCurrentPage(1);
 };
     useEffect(() => {
         const handleResize = () => {
