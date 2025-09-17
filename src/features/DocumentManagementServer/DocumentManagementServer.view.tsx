@@ -323,66 +323,6 @@ const selectedDocs = buildSelectedDocs(
         return [];
     };
 
-// const handleDownload = async (item: { fileId: any; application: any; section: any; fileName: any }) => {
-//     const { application, section, fileName } = item;
-//     const fileID = item.fileId.toUpperCase();
-//     try {
-//         const response = await downloadFile(fileID, application, section);
-//             if (response) {
-//                 console.log('Download response received:', response);
-//                 // Create a blob URL and trigger download
-//                 const url = window.URL.createObjectURL(response);
-//                 console.log('Generated download URL:', url);
-//                 const a = document.createElement('a');
-//                 a.href = url;
-//                 a.download = fileName || 'downloaded-file.zip';
-//                 document.body.appendChild(a);
-//                 a.click();
-//                 setTimeout(() => {
-//                     window.URL.revokeObjectURL(url);
-//                     document.body.removeChild(a);
-//                 }, 100);
-//             } else {
-//                 console.error('Download failed: No data received');
-//             }
-//     } catch (error) {
-//         console.error('Download failed:', error);
-//     }
-// };
-const handleDownload = async ({
-  fileId,
-  application,
-  section,
-  fileName
-}: {
-  fileId: string;
-  application: string;
-  section: string;
-  fileName: string;
-}) => {
-  try {
-    // Call the API to get the file blob
-    const blob = await downloadFile(application, section, fileId);
-
-    // Create a URL for the blob
-    const url = window.URL.createObjectURL(blob);
-
-    // Create a temporary anchor element to trigger download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName || "download";
-    document.body.appendChild(a);
-    a.click();
-
-    // Clean up
-    a.remove();
-    window.URL.revokeObjectURL(url);
-  } catch (error) {
-    // Handle error (show notification, etc.)
-    console.error("Download failed", error);
-  }
-};
-
 const fileDownload = async (
   fileId: string,
   fileName: string,
@@ -396,49 +336,15 @@ const fileDownload = async (
     link.href = url;
     link.download = `${fileName}`;
 
-    const triggerElem = document.getElementById("file-download-" + fileId);
-    if (triggerElem && triggerElem.parentElement) {
-      triggerElem.parentElement.appendChild(link);
-      link.click();
-      window.URL.revokeObjectURL(url);
-      triggerElem.parentElement.removeChild(link);
-    } else {
-      // fallback: append to body
-      document.body.appendChild(link);
-      link.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(link);
-    }
+    document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
+    link.click();
+    window.URL.revokeObjectURL(url);
+    document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
   } catch (error) {
     console.error("Error downloading file:", error);
   }
 };
 
-// const fileDownload = async (fileId:string, fileName:string, applicationName:string, sectionName:string) => {
-//   try {
-//     const blob = await downloadFile(applicationName, sectionName, fileId);
-//     const url = window.URL.createObjectURL(blob);
-//     const link = document.createElement("a");
-//     link.href = url;
-//     link.download = fileName || "download";
-//     // Append to the parent of the trigger element
-//     const trigger = document.getElementById("file-download-" + fileId);
-//     if (trigger && trigger.parentElement) {
-//       trigger.parentElement.appendChild(link);
-//       link.click();
-//       window.URL.revokeObjectURL(url);
-//       trigger.parentElement.removeChild(link);
-//     } else {
-//       // fallback: append to body
-//       document.body.appendChild(link);
-//       link.click();
-//       window.URL.revokeObjectURL(url);
-//       document.body.removeChild(link);
-//     }
-//   } catch (error) {
-//     console.error("Error downloading file:", error);
-//   }
-// };
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
     const handleSearchClose = () => {

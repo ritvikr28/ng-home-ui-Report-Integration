@@ -147,7 +147,7 @@ export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> =
 };
 
 
-const fileDownloadInstance: AxiosInstance = axios.create({
+const fileDownloadInstance: AxiosInstance = axios.create({ 
   baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
   responseType: "blob",
   headers: {
@@ -164,9 +164,8 @@ export const downloadFile: (
   isSection?: string,
   fileId?: string
 ) => {
-  const response = await fileDownloadInstance.get(
-    `/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`
-  );
+  const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
+  const response = await fileDownloadInstance.get(url);
   return response.data;
 };
 
