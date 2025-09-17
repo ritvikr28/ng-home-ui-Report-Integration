@@ -9,7 +9,7 @@ import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
   if (item.type === "staff") {
-     const href = item?.staffId ? `/staff/profile/${item.staffId}` : "/";
+     const href = item?.referenceExternalId ? `/staff/profile/${item.referenceExternalId}` : "/";
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
@@ -21,7 +21,7 @@ export function renderRelatedToItem(item: any) {
   }
   if (item.type === "pupil") {
      const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "/";
-    const pupilYear = item?.isLeaver?.toLowerCase() === "leaver" ? `(${item?.year || "-"}) ${item?.reg ? ` / (${item.reg})` : ""}`
+     const pupilYear = item?.isLeaver?.toLowerCase() === "leaver" ? `(${item?.year || "-"}) ${item?.reg ? ` / (${item.reg})` : ""}`
      : `${item.year}${item.reg ? ` / ${item.reg}` : ""}`;
     return (
       <>
@@ -677,20 +677,17 @@ export const getResultNotFoundMsg = (
   searchTerm: string,
   showErrorBanner: boolean,
   isSearchTriggered: boolean
-  
 ): string | undefined => {
   if (showErrorBanner) {
     return "Information unavailable.";
   }
-
-  if (isSearchTriggered && searchTerm && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-    return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+  // Show "No data to display" only if searching and no data
+  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return "No data to display.";
   }
-
-  if (!searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+  if (!isSearchTriggered && !searchText) {
     return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
   }
-  
   return undefined;
 };
  

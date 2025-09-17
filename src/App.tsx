@@ -16,55 +16,27 @@ import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 
-// Patch localStorage.setItem to dispatch custom event in same tab
-const patchLocalStorage = () => {
-  const originalSetItem = localStorage.setItem;
-  localStorage.setItem = function (key, value) {
-    const event = new Event("localstorage-change");
-    // @ts-ignore
-    event.key = key;
-    // @ts-ignore
-    event.newValue = value;
-    window.dispatchEvent(event);
-    originalSetItem.apply(this, [key, value]);
-  };
-};
-
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
   const [initialized, setInitialized] = useState(false);
-  const [langCode, setLangCode] = useState<string>(
+
+  // Priority: dropdown (localStorage) → browser → fallback
+  const getInitialLang = () =>
     localStorage.getItem("i18nextLng") ||
     navigator.language.split("-")[0] ||
-    "en"
-  );
+    "en";
 
-  useEffect(() => {
-    patchLocalStorage();
+  const [langCode] = useState<string>(getInitialLang);
 
-    const handleStorageChange = (event: any) => {
-      if (event.key === "i18nextLng" && event.newValue) {
-        setLangCode(event.newValue);
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange); // cross-tab
-    window.addEventListener("localstorage-change", handleStorageChange); // same-tab
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-      window.removeEventListener("localstorage-change", handleStorageChange);
-    };
-  }, []);
-
-  // Reinitialize IntlProvider whenever langCode changes
   useEffect(() => {
     const initI18n = async () => {
       try {
+        console.log("[Lang Change] Setting i18nextLng in localStorage:", langCode);
+        // Always persist chosen lang in localStorage
         localStorage.setItem("i18nextLng", langCode);
-
+        console.log("[i18n Init] Initializing IntlProvider with lang:", langCode);
         await IntlProvider.init({
           translation: {
             en: {
@@ -79,7 +51,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             },
           },
         }).init({ lng: langCode });
-
+        console.log("[i18n Init] Successfully initialized with lang:", langCode);
         setInitialized(true);
       } catch (err) {
         console.error("Error initializing i18n:", err);
