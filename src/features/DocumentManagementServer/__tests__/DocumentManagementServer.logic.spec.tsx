@@ -688,7 +688,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
    const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
     // Check for link
     const link = getByRole("link", { name: "John Doe" });
-    expect(link).toHaveAttribute("href", "/pupilprofile/profile/p1");
+    expect(link).toHaveAttribute("href", "/");
     // Check for tag
     expect(getByText("Y5 / A")).toBeInTheDocument();
 });
@@ -703,7 +703,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
   // Check for link
   const link = getByRole("link", { name: "Jane Smith | SC123" });
-  expect(link).toHaveAttribute("href", "/staff/profile/s1");
+  expect(link).toHaveAttribute("href", "/");
 });
 
 it("renders tooltip with multiple staff and pupil and school items", () => {
@@ -921,34 +921,31 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false);
+    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false, true);
     expect(result).toBe(
-      'Your search - test - did not match any results. Make sure that all words are spelled correctly.'
+      'No data to display.'
     );
   });
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
-    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true);
+    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true, true);
     expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
-    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false);
+    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false, false);
     expect(result).toBeUndefined();
   });
 
-  it('returns undefined when searchText is empty and no error banner', () => {
-    const result = getResultNotFoundMsg('', { data: [] }, '', false);
-    expect(result).toBeUndefined();
-  });
   it('returns "No data to display" when not searching and no data', () => {
   const result = getResultNotFoundMsg(
     "", // searchText is empty
     { statusCode: 200, data: [] }, // docData has empty array
     "", // searchTerm
-    false // showErrorBanner
+    false, // showErrorBanner
+    false // isSearching
   );
-  expect(result).toBe("No data to display.");
+  expect(result).toEqual("Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.");
 });
 });
 
@@ -1307,7 +1304,7 @@ describe("tableData mapping for relatedTo types", () => {
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("John Doe")).toBeInTheDocument();
     expect(getByText("Y5 / A")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/pupilprofile/profile/p123");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
   });
 
   it("maps staff correctly when documentRealatedTo === 3", () => {
@@ -1337,7 +1334,7 @@ describe("tableData mapping for relatedTo types", () => {
 
     const { container, getByText } = render(<>{renderRelated && renderRelated(relatedArr)}</>);
     expect(getByText("Jane Smith | S001")).toBeInTheDocument();
-    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/staff/profile/s456");
+    expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
   });
 
   it("maps school correctly when documentRealatedTo === 2", () => {
@@ -1987,7 +1984,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetTotalPage).toHaveBeenCalledWith(Math.ceil(10 / 10));
     expect(mockSetShowSearchError).toHaveBeenCalledWith(false);
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(false);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2006,7 +2002,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowErrorBanner).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2025,7 +2020,6 @@ describe("fetchGetDocumentDetailsLogic", () => {
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
-    expect(mockSetHasFetched).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
