@@ -546,7 +546,7 @@ const renderViewDownloadContent = () => {
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
-                                isShowSubHeading={true}
+                                isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
