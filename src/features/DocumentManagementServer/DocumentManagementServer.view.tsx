@@ -546,7 +546,7 @@ const renderViewDownloadContent = () => {
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
-                                isShowSubHeading={false}
+                                isShowSubHeading={true}
                                 isSorting
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
@@ -685,7 +685,7 @@ const renderViewDownloadContent = () => {
                                 }
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
-                                searchHeadingText="Search by document or related to name"
+                                searchHeadingText="Search by pupil, staff or school name"
                                 searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=" "
@@ -757,7 +757,7 @@ const renderViewDownloadContent = () => {
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
-                                subHeadingText=""
+                                subHeadingText="Bulk download or delete documents for pupils, staff members, or the school."
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
                                     <>
