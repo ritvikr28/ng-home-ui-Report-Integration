@@ -694,7 +694,12 @@ export const getResultNotFoundMsg = (
   return undefined;
 };
  
- 
+ export function getCompletedPartitionKeys(viewData: Array<{ status?: string; partitionKey?: string }>): string[] {
+  return viewData
+    .filter(item => item.status?.toLowerCase() === 'complete')
+    .map(item => item.partitionKey ?? "")
+    // .filter((pk): pk is string => !!pk);
+}
  
  
 export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>

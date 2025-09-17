@@ -439,3 +439,27 @@
     width: 99% !important;
 }
   }
+
+
+
+.essui.animationmsg {
+    // bottom: 48px;
+    left: 75%;
+    margin-left: -237px;
+    min-width: 472px;
+    position: fixed;
+    text-align: center;
+    transform: -50%,-50%;
+    z-index: 1;
+}
+
+@media (max-width: 600px) {
+  .essui.animationmsg {
+    left: 50%;
+    margin-left: 0;
+    min-width: 90vw;
+    max-width: 98vw;
+    box-sizing: border-box;
+    transform: translate(-50%, 0);
+  }
+}

@@ -1,5 +1,8 @@
+
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
-import { AxiosResponse } from "axios";
+import { AxiosInstance, AxiosResponse } from "axios";
+import axios from "axios";
+import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
@@ -113,6 +116,24 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
+
+export const clearAllFiles = async (partitionKeys: string[]): Promise<any> => {
+  try {
+    const url = `validation/api/v1/file/clearall`;
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const payload = { request: { partitionKey: partitionKeys } };
+    const responseData: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
+    console.log("clearAllFiles response status:", responseData?.status); // Log status code
+    if (responseData?.status === 200) {
+      return responseData?.data;
+    }
+    return null;
+  } catch (err: any) {
+    console.error("Error clearing all files:", err);
+    console.log("clearAllFiles error status:", err?.response?.status); // Log error status code
+    return err?.response?.data;
+  }
+};
 export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
@@ -124,3 +145,28 @@ export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> =
     return {};
   }
 };
+
+
+const fileDownloadInstance: AxiosInstance = axios.create({
+  baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
+  responseType: "blob",
+  headers: {
+    Authorization: `Bearer ${authService.getAuthTokens()}` 
+  }
+});
+
+export const downloadFile: (
+  isApplication?: string,
+  isSection?: string,
+  fileId?: string
+) => Promise<Blob> = async (
+  isApplication?: string,
+  isSection?: string,
+  fileId?: string
+) => {
+  const response = await fileDownloadInstance.get(
+    `/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`
+  );
+  return response.data;
+};
+

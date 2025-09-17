@@ -78,6 +78,45 @@ describe('fetchDocumentDetails', () => {
 });
 
 describe('fetchDMSSuggestions', () => {
+describe('clearAllFiles', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const partitionKeys = ['key1', 'key2'];
+  const mockResponse: AxiosResponse = {
+    data: { success: true },
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {},
+  };
+
+  test('should return data when response status is 200', async () => {
+    jest.spyOn(service, 'post').mockResolvedValueOnce(mockResponse);
+    const { clearAllFiles } = await import('../ApiService');
+    const result = await clearAllFiles(partitionKeys);
+    expect(result).toEqual({ success: true });
+    expect(service.post).toHaveBeenCalledTimes(1);
+  });
+
+  test('should return null when response status is not 200', async () => {
+    const mockFailureResponse = { ...mockResponse, status: 404 };
+    jest.spyOn(service, 'post').mockResolvedValueOnce(mockFailureResponse);
+    const { clearAllFiles } = await import('../ApiService');
+    const result = await clearAllFiles(partitionKeys);
+    expect(result).toBeNull();
+  });
+
+  test('should return error data when exception is thrown', async () => {
+    const errorData = { error: 'Failed' };
+    const error = { response: { data: errorData, status: 500 } };
+    jest.spyOn(service, 'post').mockRejectedValueOnce(error);
+    const { clearAllFiles } = await import('../ApiService');
+    const result = await clearAllFiles(partitionKeys);
+    expect(result).toEqual(errorData);
+  });
+});
   afterEach(() => {
     jest.clearAllMocks();
   });
