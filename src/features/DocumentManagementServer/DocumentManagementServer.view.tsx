@@ -61,7 +61,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-
+    const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState<boolean>(false);
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -117,14 +117,27 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
-        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement;
-        if (mainPanel) {
-            mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+    // Try desktop main panel first
+    let scrolled = false;
+    const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
+    if (mainPanel && typeof mainPanel.scrollTo === "function" && mainPanel.offsetParent !== null) {
+        mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        scrolled = true;
+    }
+    // If not desktop, try mobile grid wrapper
+    if (!scrolled) {
+        const grid = document.querySelector('.grid-wrapper') as HTMLElement | null;
+        if (grid && typeof grid.scrollIntoView === "function" && grid.offsetParent !== null) {
+            grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            scrolled = true;
         }
-    }, [currentPage]);
- 
+    }
+    // Fallback to window scroll
+    if (!scrolled) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}, [currentPage]);
+
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
@@ -193,7 +206,6 @@ useEffect(() => {
 
     return () => clearTimeout(timer);
   }
-  // For "view", call immediately
   if (isSidePanelOpen && sidePanelOpenReason === "view") {
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
@@ -335,8 +347,16 @@ const selectedDocs = buildSelectedDocs(
         setIsFilterDialogOpen(false);
         setTotalPage(0);
         setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
+        
         };
 
+        useEffect(() => {
+            if (isClearSelectedCheckbox) {
+                setIsClearSelectedCheckbox(false);
+            }
+        }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
   e: React.SyntheticEvent,
@@ -598,6 +618,7 @@ const renderViewDownloadContent = () => {
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
+                                isClearSelectedCheckbox={isClearSelectedCheckbox}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
                                     }}
@@ -625,6 +646,7 @@ const renderViewDownloadContent = () => {
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
                                     }}
+                                
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -740,7 +762,7 @@ const renderViewDownloadContent = () => {
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
                                         )}
-                                        { failedFileName && (
+                                        { failedFileName.length > 0 && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
                                             title="Unable to prepare [document/documents] for download"
