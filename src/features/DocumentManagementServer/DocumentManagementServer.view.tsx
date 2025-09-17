@@ -68,7 +68,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
-        const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
      const [prepareDownloadError, setPrepareDownloadError] = useState(false);
@@ -88,8 +88,6 @@ const searchTagListRaw = [
 ];
 
 const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
-
-    const [isShowAutoSuggest] = useState(true);   
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -835,7 +833,7 @@ const renderViewDownloadContent = () => {
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
                                 handleCloseSidePanel={handleCloseSidePanel}
-                                isShowAutoSuggest={isShowAutoSuggest}
+                                isShowAutoSuggest
                                 isLoaderForFilterandTable={isLoading}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
