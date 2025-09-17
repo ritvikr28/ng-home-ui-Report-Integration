@@ -118,6 +118,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
+        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement;
+        if (mainPanel) {
+            mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [currentPage]);
+ 
+    useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
             return () => {
@@ -127,14 +136,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         return () => { };
     }, [isMobileView]);
 
-    useEffect(() => {
-    const grid = document.querySelector('.grid-wrapper');
-    if (grid) {
-        (grid as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-}, [currentPage]);
+
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
