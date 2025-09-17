@@ -39,7 +39,7 @@ export const breadcrumbActionsList = [
 const DocumentManagementServerView: () => JSX.Element = () => {
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading] = useState<boolean>(false);
+    
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -49,15 +49,13 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isInitialLoad] = useState(true);
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
-    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
-        useState(breadcrumbActionsList);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
@@ -74,20 +72,20 @@ const DocumentManagementServerView: () => JSX.Element = () => {
      const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
-    const [failedFileName, setFailedFileName] = useState<string | null>(null);
+    const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    const categoryArr = getCategoryArr(selectedFormats);
+    
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
+    const categoryArr = getCategoryArr(selectedFormats);
+    const searchTagListRaw = [
+    ...categoryArr
+    ];
 
-const searchTagListRaw = [
-  ...categoryArr
-];
-
-const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+    const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
@@ -100,17 +98,17 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
-    id: doc?.fileId,
-    Document: doc?.document,
-    Relatedto: mapRelatedArr(doc) || "",
-    Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-    Addedby: doc?.addedBy || "",
-    "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-    Format: doc?.format,
-    Size: doc?.size,
-    isShowCheckBox: true
-}));
-}
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: mapRelatedArr(doc) || "",
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+            Format: doc?.format,
+            Size: doc?.size,
+            isShowCheckBox: true
+        }));
+        }
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -118,6 +116,15 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
+    useEffect(() => {
+        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement;
+        if (mainPanel) {
+            mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [currentPage]);
+ 
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
@@ -128,9 +135,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         return () => { };
     }, [isMobileView]);
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage]);
+
 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
@@ -290,7 +295,7 @@ const selectedDocs = buildSelectedDocs(
 
     const getEmptyStateMsg = () => {
   if (showErrorBanner) return "Information unavailable.";
-  if (isLoading || issearchDataLoading || isSearchLoading) return undefined;
+  if (issearchDataLoading || isSearchLoading) return undefined;
 
   // Initial state: no search yet
   if (!isSearchTriggered && !searchText) {
@@ -328,7 +333,8 @@ const selectedDocs = buildSelectedDocs(
         setSortDirection("Desc");
         setCurrentPage(1);
         setIsFilterDialogOpen(false);
-        
+        setTotalPage(0);
+        setSelectedCheckBoxIds([]);
         };
 
 
@@ -347,6 +353,7 @@ const selectedDocs = buildSelectedDocs(
     setSelectedCategories,
     setSelectedFormats
   );
+  setCurrentPage(1);
 };
     useEffect(() => {
         const handleResize = () => {
@@ -427,10 +434,9 @@ const handleApply = () => {
 
 useEffect(() => {
   if (viewData && viewData.length > 0) {
-    const cancelledFile = viewData.find(item => item.status?.toLowerCase() === 'cancel');
-    if (cancelledFile) {
-      setPrepareDownloadError(true);
-      setFailedFileName(cancelledFile.name || null);
+    const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
+    if (cancelledFiles.length > 0) {
+      setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
     }
   }
 }, [viewData]);
@@ -547,7 +553,7 @@ const renderViewDownloadContent = () => {
                                 isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
-                                sortAscFirst={!isInitialLoad}
+                                sortAscFirst={false}
                                 isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -737,12 +743,12 @@ const renderViewDownloadContent = () => {
                                         { failedFileName && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
-                                            title="Unable to prepare for download"
-                                            message={`A technical issue has prevented us from preparing '${failedFileName}' for download. Please try again later. If the issue persists please get in touch with our support team.`}
+                                            title="Unable to prepare [document/documents] for download"
+                                            message={`A technical issue has prevented us from preparing ${failedFileName.join(", ")} for download. Please try again later. If the issue persists please get in touch with our support team.`}
                                             autoclose
                                             onClickClose={() => {
                                             setPrepareDownloadError(false);
-                                            setFailedFileName(null);
+                                            setFailedFileName([]);
                                             }}
                                         />
                                         )}
@@ -834,10 +840,10 @@ const renderViewDownloadContent = () => {
                                 isSidePanelOpen={isSidePanelOpen}
                                 handleCloseSidePanel={handleCloseSidePanel}
                                 isShowAutoSuggest
-                                isLoaderForFilterandTable={isLoading}
+                                isLoaderForFilterandTable={false}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
-                                isSearchShowLoading={isLoading}
+                                isSearchShowLoading={false}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
                                 searchTagList = { searchTagList}

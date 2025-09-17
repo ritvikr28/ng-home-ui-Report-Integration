@@ -852,7 +852,7 @@ export function buildSelectedDocs(
   const fromDate = selectedDocs[0]?.fromDate ?? "";
   const toDate = selectedDocs[0]?.toDate ?? "";
 
-  const currentDateTime = new Date().toISOString();
+  const currentDateTime = new Date().toLocaleString('sv-SE').replace(' ', 'T');
   return [
     {
       request: {
@@ -917,11 +917,10 @@ export function validateAndApplyFilter({
       fromDate: selectedDateRange?.fromDate ?? "",
       toDate: selectedDateRange?.toDate ?? ""
     });
-    setTimeout(() => {
       setSelectedFormats(selectedCategories);
       setIsFilterDialogOpen(false);
       setIsFilterLoading(false);
-    }, 500);
+  
   }
   setCurrentPage(1);
 }

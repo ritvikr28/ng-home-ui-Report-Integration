@@ -336,15 +336,19 @@ describe("Additional tests to increase coverage", () => {
     fireEvent.click(screen.getByTestId("search-close--icon-btn")); // triggers handleSearchClose
   });
 
-  // it("removes a tag and updates filters", () => {
-  //   render(<DocumentManagementServerView />);
-  //   act(() => {
-  //     Logic.handleTagCloseLogic = jest.fn();
-  //   });
-  //   fireEvent.click(screen.getByTestId("search-tag-close-btn")); // assuming a test id exists for tags
-  //   expect(Logic.handleTagCloseLogic).toHaveBeenCalled();
-  // });
-
+ it("shows NoSelectionDialog when no item selected for delete", async () => {
+  render(<DocumentManagementServerView />);
+  // Open the actions menu
+  fireEvent.click(await screen.findByText("Actions"));
+  // Click the Delete option
+  fireEvent.click(await screen.findByText("Delete"));
+  // Assert the dialog is shown
+  expect(
+    screen.getByText(
+      "Please select at least one item from the search results to perform the action."
+    )
+  ).toBeInTheDocument();
+});
 
 
   it("shows error notifications for failed prepareDownload", async () => {

@@ -2064,7 +2064,7 @@ describe("buildSelectedDocs", () => {
   });
 
  it("returns correct request object for valid input", () => {
-  const mockDate = new Date("2025-09-11T09:46:57.985Z");
+  const mockDate = new Date("2025-09-11T15:16:57");
   
   // Mock system time to fixed date
   jest.useFakeTimers().setSystemTime(mockDate);
@@ -2102,7 +2102,7 @@ describe("buildSelectedDocs", () => {
         fileDetails: [
           { fileId: "1", registrationId: 123 }
         ],
-        currentDateTime: mockDate.toISOString()
+        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
       }
     }
   ]);

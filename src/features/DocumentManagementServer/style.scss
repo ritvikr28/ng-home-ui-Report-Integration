@@ -193,6 +193,10 @@
 
 
 .grid-wrapper {
+
+  .sorting-column-flex, .sorting-column-flex span:first-child {
+    text-transform: none !important;
+}
   .essui-loader {
     width: 98%;
     height: auto;
