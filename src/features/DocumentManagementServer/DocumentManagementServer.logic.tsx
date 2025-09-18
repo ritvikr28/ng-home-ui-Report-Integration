@@ -218,8 +218,8 @@ anyComponent: (e: any) => (
   columnWidth: "180px",
   isColumnSorting: true,
   anyComponent: (e: any) => {
-    const shouldTruncate = 12;
-    const value = e?.length > shouldTruncate ? truncatedString(e, shouldTruncate)?.truncated : "";
+    // const shouldTruncate = 12;
+    const value = e?.length > 12 ? truncatedString(e, 12)?.truncated : "";
     if (!value) return (
       <div style={{ display: "flex" }}>
         <span className="document-text document-column">{e}</span>
@@ -692,7 +692,6 @@ export const getResultNotFoundMsg = (
   return viewData
     .filter(item => item.status?.toLowerCase() === 'complete')
     .map(item => item.partitionKey ?? "")
-    // .filter((pk): pk is string => !!pk);
 }
  
  

@@ -94,7 +94,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
  
     let tableData: tableDataProps[] = [];
-    if (showErrorBanner || showSearchError || !docData?.data?.length) {
+
+        if (showErrorBanner) {
+        tableData = [];
+        } else if (showSearchError || !docData?.data?.length) {
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
@@ -137,19 +140,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [currentPage]);
- 
-    useEffect(() => {
-        const handleResize = () => {
-            setVisibleBreadcrumbs(
-                window.innerWidth < 1024 && breadcrumbActionsList.length > 1
-                    ? breadcrumbActionsList.slice(-2, -1)
-                    : breadcrumbActionsList
-            );
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     useEffect(() => {
         if (!isMobileView) {
@@ -198,7 +188,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
         if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-    setShowToastNotification(false); 
+            setShowToastNotification(false); 
             setIsSidePanelLoader(true); 
 
             // Wait for 2 seconds before calling view download API
@@ -664,7 +654,6 @@ const handleApply = () => {
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
-                               
                                 errorActionListItem={[
                                     {
                                         action: 'Secondary Text',

@@ -37,7 +37,6 @@ export const fetchDocumentDetails = async ({
 
     const responseData: AxiosResponse<DocumentBasicDetails> =
       await service.post(url, payload, { baseURL: baseUrl });
-    console.log("fetchDocumentDetails response status:", responseData?.status);
     if (responseData?.status === 200) {
       return responseData?.data;
     }
@@ -126,7 +125,6 @@ export const clearAllFiles = async (payload: { request: { partitionKey: string[]
     return responseData?.status;
   } catch (error: any) {
     console.error("clearAllFiles error:", error);
-    console.log("clearAllFiles error status:", error?.response?.status);
     if (error?.response?.status) {
       return error.response.status;
     }

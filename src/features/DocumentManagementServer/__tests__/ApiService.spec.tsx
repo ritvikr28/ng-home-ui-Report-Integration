@@ -314,6 +314,15 @@ describe('fetchFilterCategory', () => {
     );
     consoleSpy.mockRestore();
   });
+
+  
+  test('should return partitionKey if all branches fail', async () => {
+    jest.spyOn(service, 'post').mockRejectedValueOnce({}); // No error.response.status
+    const { clearAllFiles } = await import('../ApiService');
+    const payload = { request: { partitionKey: ['key1', 'key2'] } };
+    const result = await clearAllFiles(payload);
+    expect(result).toEqual(['key1', 'key2']);
+  });
 });
 
 describe('viewDownload', () => {

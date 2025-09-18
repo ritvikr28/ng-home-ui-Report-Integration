@@ -582,50 +582,7 @@ describe('onConfirm (Clear all downloads)', () => {
 });
 
 describe('onClickSidePnlSecondaryBtn', () => {
-  it('should set dialog type and show confirm dialog if hasCompletedFiles is true', () => {
-    const setDialogType = jest.fn();
-    const setShowConfirmDialog = jest.fn();
-    const setIsSidePanelOpen = jest.fn();
-    const hasCompletedFiles = true;
-
-    const onClick = () => {
-      if (hasCompletedFiles) {
-        setDialogType('clearAll');
-        setShowConfirmDialog(true);
-      } else {
-        setIsSidePanelOpen(false);
-      }
-    };
-
-    onClick();
-    expect(setDialogType).toHaveBeenCalledWith('clearAll');
-    expect(setShowConfirmDialog).toHaveBeenCalledWith(true);
-    expect(setIsSidePanelOpen).not.toHaveBeenCalled();
-  });
-
-  it('should close side panel if hasCompletedFiles is false', () => {
-    const setDialogType = jest.fn();
-    const setShowConfirmDialog = jest.fn();
-    const setIsSidePanelOpen = jest.fn();
-    const hasCompletedFiles = false;
-
-    const onClick = () => {
-      if (hasCompletedFiles) {
-        setDialogType('clearAll');
-        setShowConfirmDialog(true);
-      } else {
-        setIsSidePanelOpen(false);
-      }
-    };
-
-    onClick();
-    expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
-    expect(setDialogType).not.toHaveBeenCalled();
-    expect(setShowConfirmDialog).not.toHaveBeenCalled();
-  });
-
   it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
- 
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
     status: 200,
     data: [{ name: "File1", status: "complete" }],

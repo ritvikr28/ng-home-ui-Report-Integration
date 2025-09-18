@@ -33,7 +33,8 @@ import {
   fetchGetDocumentDetailsLogic,
   buildSelectedDocs,
   getReferenceMappingForSearchedPerson,
-  handleClearAllConfirm
+  handleClearAllConfirm,
+  getCompletedPartitionKeys
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -704,6 +705,64 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
   // Check for link
   const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/");
+});
+
+it("renders staff related item with referenceExternalId (profile link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "staff",
+    name: "Jane Smith",
+    staffId: "s1",
+    staffCode: "SC123",
+    referenceExternalId: "abc123"
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/staff/profile/abc123");
+});
+
+it("renders staff related item without referenceExternalId (fallback link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "staff",
+    name: "Jane Smith",
+    staffId: "s1",
+    staffCode: "SC123"
+    // referenceExternalId missing
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/");
+});
+
+it("renders pupil related item with referenceExternalId (profile link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "pupil",
+    name: "John Doe",
+    pupilId: "p1",
+    year: "Y5",
+    reg: "A",
+    referenceExternalId: "pupil123"
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "John Doe" });
+  expect(link).toHaveAttribute("href", "/pupilprofile/profile/pupil123");
+});
+
+it("renders pupil related item without referenceExternalId (fallback link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "pupil",
+    name: "John Doe",
+    pupilId: "p1",
+    year: "Y5",
+    reg: "A"
+    // referenceExternalId missing
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "John Doe" });
   expect(link).toHaveAttribute("href", "/");
 });
 
@@ -2195,12 +2254,12 @@ describe('handleClearAllConfirm', () => {
   let downloadPollingIntervalRef: any;
   let setClearAllError: jest.Mock;
   let setShowConfirmDialog: jest.Mock;
-  let getCompletedPartitionKeys: jest.Mock;
+  let getCompletedPartitionKeysMock: jest.Mock;
 
   beforeEach(() => {
     clearAllFiles = jest.fn();
     setShowToastNotification = jest.fn();
-  fetchViewDownloadDataMock = jest.fn();
+    fetchViewDownloadDataMock = jest.fn();
     setIsSidePanelLoader = jest.fn();
     setViewData = jest.fn();
     setHasFetchedViewDownload = jest.fn();
@@ -2208,7 +2267,7 @@ describe('handleClearAllConfirm', () => {
     downloadPollingIntervalRef = { current: null };
     setClearAllError = jest.fn();
     setShowConfirmDialog = jest.fn();
-    getCompletedPartitionKeys = jest.fn().mockReturnValue(completedPartitionKeys);
+    getCompletedPartitionKeysMock = jest.fn().mockReturnValue(completedPartitionKeys);
   });
 
   it('shows toast and refreshes data on 204', async () => {
@@ -2217,7 +2276,7 @@ describe('handleClearAllConfirm', () => {
       viewData,
       clearAllFiles,
       setShowToastNotification,
-  fetchViewDownloadData: fetchViewDownloadDataMock,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
       setIsSidePanelLoader,
       setViewData,
       setHasFetchedViewDownload,
@@ -2225,10 +2284,10 @@ describe('handleClearAllConfirm', () => {
       downloadPollingIntervalRef,
       setClearAllError,
       setShowConfirmDialog,
-      getCompletedPartitionKeys,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
     });
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
-  expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
+    expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
       showLoader: false,
       setIsSidePanelLoader,
       viewDownload,
@@ -2244,7 +2303,7 @@ describe('handleClearAllConfirm', () => {
       viewData,
       clearAllFiles,
       setShowToastNotification,
-  fetchViewDownloadData: fetchViewDownloadDataMock,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
       setIsSidePanelLoader,
       setViewData,
       setHasFetchedViewDownload,
@@ -2252,11 +2311,11 @@ describe('handleClearAllConfirm', () => {
       downloadPollingIntervalRef,
       setClearAllError,
       setShowConfirmDialog,
-      getCompletedPartitionKeys,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
-  expect(fetchViewDownloadDataMock).not.toHaveBeenCalled();
+    expect(fetchViewDownloadDataMock).not.toHaveBeenCalled();
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
 
@@ -2266,7 +2325,7 @@ describe('handleClearAllConfirm', () => {
       viewData,
       clearAllFiles,
       setShowToastNotification,
-  fetchViewDownloadData: fetchViewDownloadDataMock,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
       setIsSidePanelLoader,
       setViewData,
       setHasFetchedViewDownload,
@@ -2274,10 +2333,130 @@ describe('handleClearAllConfirm', () => {
       downloadPollingIntervalRef,
       setClearAllError,
       setShowConfirmDialog,
-      getCompletedPartitionKeys,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).toHaveBeenCalledWith(false);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
+
+  it('calls setViewData and setHasFetchedViewDownload via setViewData callback in fetchViewDownloadData', async () => {
+    clearAllFiles.mockResolvedValue(204);
+    // We want to capture the setViewData callback passed to fetchViewDownloadData
+    let setViewDataCb: any = null;
+    fetchViewDownloadDataMock.mockImplementation((args: any) => {
+      setViewDataCb = args.setViewData;
+    });
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+    });
+    // Now call the callback and check the mocks
+    const testData = [{ id: 1, status: 'complete' }];
+    setViewDataCb(testData);
+    expect(setViewData).toHaveBeenCalledWith(testData);
+    expect(setHasFetchedViewDownload).toHaveBeenCalledWith(true);
+  });
 });
+
+
+describe('getCompletedPartitionKeys', () => {
+  it('returns partitionKeys for items with status complete (case-insensitive)', () => {
+    const data = [
+      { status: 'Complete', partitionKey: 'pk1' },
+      { status: 'complete', partitionKey: 'pk2' },
+      { status: 'COMPLETE', partitionKey: 'pk3' },
+      { status: 'incomplete', partitionKey: 'pk4' },
+      { status: 'pending', partitionKey: 'pk5' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual(['pk1', 'pk2', 'pk3']);
+  });
+
+  it('returns empty string for missing partitionKey', () => {
+    const data = [
+      { status: 'complete' },
+      { status: 'complete', partitionKey: undefined }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual(['', '']);
+  });
+
+  it('returns empty array if no items are complete', () => {
+    const data = [
+      { status: 'pending', partitionKey: 'pk1' },
+      { status: 'incomplete', partitionKey: 'pk2' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual([]);
+  });
+
+  it('handles empty input array', () => {
+    expect(getCompletedPartitionKeys([])).toEqual([]);
+  });
+
+  it('handles missing status', () => {
+    const data = [
+      { partitionKey: 'pk1' },
+      { status: undefined, partitionKey: 'pk2' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual([]);
+  });
+});
+
+describe("Added by column anyComponent", () => {
+  const addedByColumn = getTableHeadersData.find(h => h.text === "Added by");
+
+  test("renders plain value if length <= 12", () => {
+    const value = "ShortName";
+    const { container, getByText } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
+    expect(getByText("ShortName")).toBeInTheDocument();
+    // Should not render tooltip
+    expect(container.querySelector('[data-testid="tooltip-addedby"]')).toBeNull();
+  });
+
+  test("renders nothing if value is null or undefined", () => {
+    const { container } = render(<>{addedByColumn?.anyComponent?.(null)}</>);
+    // Should render an empty span inside a flex div, not a truly empty DOM element
+    const span = container.querySelector('.document-text.document-column');
+    expect(span).toBeInTheDocument();
+    expect(span).toHaveTextContent("");
+    const { container: container2 } = render(<>{addedByColumn?.anyComponent?.(undefined)}</>);
+    const span2 = container2.querySelector('.document-text.document-column');
+    expect(span2).toBeInTheDocument();
+    expect(span2).toHaveTextContent("");
+  });
+
+  test("renders plain value if length <= 12", () => {
+  const value = "ShortName";
+  const { container, getByText } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
+  expect(getByText("ShortName")).toBeInTheDocument();
+  expect(container.querySelector('[data-testid="tooltip-addedby"]')).toBeNull();
+});
+
+  it("renders truncated value with tooltip if string length > 10", () => {
+    expect(addedByColumn).toBeDefined();
+    expect(addedByColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{addedByColumn!.anyComponent!(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 12));
+  });
+
+  it("renders truncated value with tooltip if array first value length > 10", () => {
+    expect(addedByColumn).toBeDefined();
+    expect(addedByColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{addedByColumn!.anyComponent!([longValue, "other"])}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 12));
+  });
+});
+
+
+
