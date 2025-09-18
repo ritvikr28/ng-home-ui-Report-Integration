@@ -32,7 +32,8 @@ import {
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
   buildSelectedDocs,
-  getReferenceMappingForSearchedPerson
+  getReferenceMappingForSearchedPerson,
+  handleClearAllConfirm
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1391,6 +1392,7 @@ describe("tableData mapping for relatedTo types", () => {
 describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
     const doc = {
+      isLeaver: "",
       documentRealatedTo: 1,
       relatedTo: [
         {
@@ -1409,7 +1411,8 @@ describe('mapRelatedArr', () => {
         name: 'Ben Smith',
         year: 'Year 1',
         reg: 'A',
-        referenceExternalId: '123'
+        referenceExternalId: '123',
+        isLeaver: ''
       }
     ]);
   });
@@ -2102,7 +2105,7 @@ describe("buildSelectedDocs", () => {
         fileDetails: [
           { fileId: "1", registrationId: 123 }
         ],
-        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+   currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
       }
     }
   ]);
@@ -2176,5 +2179,105 @@ describe("getReferenceMappingForSearchedPerson", () => {
     }
   ]);
   jest.restoreAllMocks();
+  });
+});
+
+describe('handleClearAllConfirm', () => {
+  const viewData = [{ partitionKey: 'key1', status: 'complete' }];
+  const completedPartitionKeys = ['key1'];
+  let clearAllFiles: jest.Mock;
+  let setShowToastNotification: jest.Mock;
+  let fetchViewDownloadDataMock: jest.Mock;
+  let setIsSidePanelLoader: jest.Mock;
+  let setViewData: jest.Mock;
+  let setHasFetchedViewDownload: jest.Mock;
+  let viewDownload: jest.Mock;
+  let downloadPollingIntervalRef: any;
+  let setClearAllError: jest.Mock;
+  let setShowConfirmDialog: jest.Mock;
+  let getCompletedPartitionKeys: jest.Mock;
+
+  beforeEach(() => {
+    clearAllFiles = jest.fn();
+    setShowToastNotification = jest.fn();
+  fetchViewDownloadDataMock = jest.fn();
+    setIsSidePanelLoader = jest.fn();
+    setViewData = jest.fn();
+    setHasFetchedViewDownload = jest.fn();
+    viewDownload = jest.fn();
+    downloadPollingIntervalRef = { current: null };
+    setClearAllError = jest.fn();
+    setShowConfirmDialog = jest.fn();
+    getCompletedPartitionKeys = jest.fn().mockReturnValue(completedPartitionKeys);
+  });
+
+  it('shows toast and refreshes data on 204', async () => {
+    clearAllFiles.mockResolvedValue(204);
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+  fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys,
+    });
+    expect(setShowToastNotification).toHaveBeenCalledWith(true);
+  expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
+      showLoader: false,
+      setIsSidePanelLoader,
+      viewDownload,
+      downloadPollingIntervalRef,
+    }));
+    expect(setClearAllError).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('shows error when clearAllFiles returns non-204', async () => {
+    clearAllFiles.mockResolvedValue(500);
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+  fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys,
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
+  expect(fetchViewDownloadDataMock).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('shows error and hides toast on exception', async () => {
+    clearAllFiles.mockRejectedValue(new Error('fail'));
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+  fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys,
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).toHaveBeenCalledWith(false);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
 });

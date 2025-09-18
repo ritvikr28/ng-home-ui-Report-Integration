@@ -3,17 +3,14 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload } from "./ApiService"
+import { viewDownload ,clearAllFiles} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
-import { clearAllFiles } from "./ApiService"
-import { getCompletedPartitionKeys } from "./DocumentManagementServer.logic";
-import { downloadFile } from "./ApiService"
  
 export const breadcrumbActionsList = [
     {
@@ -39,8 +36,6 @@ export const breadcrumbActionsList = [
 ]
  
 const DocumentManagementServerView: () => JSX.Element = () => {
-    // Dialog type state for dynamic confirmation dialogs
-    // const [dialogType, setDialogType] = useState<"prepareDownload" | "clearAll" | null>(null);
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
@@ -68,7 +63,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-    const [tableKey, setTableKey] = useState(0);
 
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
@@ -135,16 +129,6 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
- 
-        // useEffect(() => {
-        // if (showToastNotification) {
-        //     const timer = setTimeout(() => {
-        //     setShowToastNotification(false);
-        //     }, 9000); // 9 seconds
-
-        //     return () => clearTimeout(timer);
-        // }
-        // }, [showToastNotification]);
 
     useEffect(() => {
         if (!isMobileView) {
@@ -195,6 +179,7 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 useEffect(() => {
   // Only run when opening the side panel for "prepare"
   if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+    setShowToastNotification(false); 
     setIsSidePanelLoader(true); 
 
     const timer = setTimeout(() => {
@@ -214,6 +199,7 @@ useEffect(() => {
   }
   // For "view", call immediately
   if (isSidePanelOpen && sidePanelOpenReason === "view") {
+    setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
       showLoader: false,
@@ -297,7 +283,7 @@ const selectedDocs = buildSelectedDocs(
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }else{
-                // setDialogType("prepareDownload");
+                setDialogType("prepareDownload");
                 setShowConfirmDialog(true);
             }
         }
@@ -336,29 +322,6 @@ const selectedDocs = buildSelectedDocs(
   if (!isSearchTriggered && showSearchError) return "Information unavailable.";
   return "Documents will appear here once they are uploaded.";
 };
-
-const fileDownload = async (
-  fileId: string,
-  fileName: string,
-  application: string,
-  sectionName: string
-) => {
-  try {
-    const blob = await downloadFile(application, sectionName, fileId);
-    const url = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `${fileName}`;
-
-    document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
-    link.click();
-    window.URL.revokeObjectURL(url);
-    document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
-  } catch (error) {
-    console.error("Error downloading file:", error);
-  }
-};
-
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
@@ -399,31 +362,6 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
   );
  
 }
-// useEffect(() => {
-//     setIsLoading(true);
-//         const minLoaderTime = new Promise((resolve) => setTimeout(resolve, 1000));
-//         const dataFetch = Promise.resolve();
-//   if (searchText) {
-//     setIsSearchDataLoading(true);
-//     fetchGetDocumentDetails(
-//       currentPage,
-//       getAllRegistrationIds(selectedFormats),
-//       sortBy,
-//       sortDirection
-//     );
-//     setIsInitialLoad(false);
-//   } else {
-//       setDocData({ statusCode: 200, data: [], totalRecords: 0 });
-//     }
-//     Promise.all([minLoaderTime, dataFetch]).then(() => setIsLoading(false));
-//      fetchCategory().then((res) => {
-//     const map: Record<string, number> = {};
-//     res.forEach((cat: any) => {
-//       map[cat.application] = cat.registrationId;
-//     });
-//     setCategoryRegistrationMap(map);
-//      });
-//     }, [searchText, currentPage, selectedFormats, sortBy, sortDirection]);
 
     const NotificationMsgBannerObject = [
         {
@@ -495,7 +433,7 @@ useEffect(() => {
       setFailedFileName(cancelledFile.name || null);
     }
   }
-}, [viewData, dialogType]);
+}, [viewData, dialogType, showToastNotification]);
 
 const handleCloseSidePanel = () => {
   closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
@@ -530,28 +468,15 @@ const renderViewDownloadContent = () => {
                     return null;
                     })()}
               </div>
-                            {isComplete && (
-    <Button
-        className="viewDownloadBtn"
-        id={`file-download-${item.fileId}`}
-        onClick={() =>
-            fileDownload(
-                item.fileId?.toUpperCase(),
-                item.name ?? "",
-                item.application,
-                item.section
-            )
-        }
-    >
-        Download
-    </Button>
-)}
-              {(isInProgress || isInitiated) && (
-                <span className="inProgressLoader">
-                  <Loader loaderType={LoaderType.Circular} />
-                </span>
-              )}
-            </div>
+                {isComplete && (
+                    <Button className="viewDownloadBtn">Download</Button>
+                )}
+                {(isInProgress || isInitiated) && (
+                    <span className="inProgressLoader">
+                    <Loader loaderType={LoaderType.Circular} />
+                    </span>
+                )}
+                </div>
           );
         })}
       </>
@@ -798,7 +723,7 @@ const renderViewDownloadContent = () => {
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
-                                sidePanelShowNotification={true}
+                                sidePanelShowNotification={false}
                                 // sidePanelNotificationMessage="Downloads cleared"
                                 // sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
                                 //     Please try again. If the issue persists, please get in touch with our support team.
@@ -852,7 +777,7 @@ const renderViewDownloadContent = () => {
                                             <Notification
                                                 status={NotificationStatus.SUCCESSTOAST}
                                                 title="Downloads cleared"
-                                                // autoclose
+                                                autoclose
                                                 onClickClose={() => setShowToastNotification(false)}
                                             />
                                         )}
@@ -911,21 +836,20 @@ const renderViewDownloadContent = () => {
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
-                                                const completedPartitionKeys = getCompletedPartitionKeys(viewData);
-                                                try {
-                                                    const response = await clearAllFiles(completedPartitionKeys);
-                                                    if (response && response.status === 204) {
-                                                        // setShowToastNotification(true);
-                                                    } else {
-                                                        setShowToastNotification(true);
-                                                        setClearAllError(true);
-                                                    }
-                                                } catch (error) {
-                                                    setClearAllError(true);
-                                                    setShowToastNotification(false)
-                                                }
-                                                setShowConfirmDialog(false);
-                                                // setShowToastNotification(false);
+                                                await handleClearAllConfirm({
+                                                    viewData,
+                                                    clearAllFiles,
+                                                    setShowToastNotification,
+                                                    fetchViewDownloadData,
+                                                    setIsSidePanelLoader,
+                                                    setViewData,
+                                                    setHasFetchedViewDownload,
+                                                    viewDownload,
+                                                    downloadPollingIntervalRef,
+                                                    setClearAllError,
+                                                    setShowConfirmDialog,
+                                                    getCompletedPartitionKeys,
+                                                });
                                             },
                                             template: DialogTemplate.Confirmation
                                         }

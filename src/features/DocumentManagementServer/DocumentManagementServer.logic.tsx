@@ -20,21 +20,18 @@ export function renderRelatedToItem(item: any) {
     );
   }
   if (item.type === "pupil") {
-     const href = item?.pupilId ? `/pupilprofile/profile/${item.pupilId}` : "/";
-     const pupilYear = item?.isLeaver?.toLowerCase() === "leaver" ? `(${item?.year || "-"}) ${item?.reg ? ` / (${item.reg})` : ""}`
-     : `${item.year}${item.reg ? ` / ${item.reg}` : ""}`;
+      const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-       
-        {(item?.year || item?.reg) && <Tag
+       <Tag
           dataTestId="name"
           id="name"
           className="relatedto-tag"
-          text={pupilYear || ""}
-        />}
+          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
+        />
       </>
     );
   }
@@ -886,7 +883,7 @@ export function buildSelectedDocs(
   const fromDate = selectedDocs[0]?.fromDate ?? "";
   const toDate = selectedDocs[0]?.toDate ?? "";
 
-  const currentDateTime = new Date().toISOString();
+  const currentDateTime = new Date().toLocaleString('sv-SE').replace(' ', 'T');
   return [
     {
       request: {
@@ -998,5 +995,59 @@ export const debouncedFetchSuggestions = debounce(
   },
   5
 );
+
+export async function handleClearAllConfirm({
+  viewData: clearAllViewData,
+  clearAllFiles,
+  setShowToastNotification,
+  fetchViewDownloadData: clearAllFetchViewDownloadData,
+  setIsSidePanelLoader,
+  setViewData: clearAllSetViewData,
+  setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload,
+  viewDownload: clearAllViewDownload,
+  downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+  setClearAllError,
+  setShowConfirmDialog,
+  getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+}: {
+  viewData: any[],
+  clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
+  setShowToastNotification: (v: boolean) => void,
+  fetchViewDownloadData: (args: any) => void,
+  setIsSidePanelLoader: (v: boolean) => void,
+  setViewData: (v: any) => void,
+  setHasFetchedViewDownload: (v: boolean) => void,
+  viewDownload: any,
+  downloadPollingIntervalRef: any,
+  setClearAllError: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  getCompletedPartitionKeys: (viewData: any[]) => string[],
+}) {
+  const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
+  setIsSidePanelLoader(true);
+  try {
+    const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+    if (response === 204) {
+      setShowToastNotification(true);
+      clearAllFetchViewDownloadData({
+        showLoader: false,
+        setIsSidePanelLoader,
+        setViewData: (data: any) => {
+          clearAllSetViewData(data);
+          clearAllSetHasFetchedViewDownload(true);
+        },
+        viewDownload: clearAllViewDownload,
+        downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+      });
+    } else {
+      setClearAllError(true);
+    }
+  } catch (error) {
+    setClearAllError(true);
+    setShowToastNotification(false);
+  }
+  setIsSidePanelLoader(false);
+  setShowConfirmDialog(false);
+}
 
 

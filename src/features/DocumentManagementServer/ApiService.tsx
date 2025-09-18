@@ -1,7 +1,6 @@
 
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
-import { AxiosInstance, AxiosResponse } from "axios";
-import axios from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
@@ -38,10 +37,11 @@ export const fetchDocumentDetails = async ({
 
     const responseData: AxiosResponse<DocumentBasicDetails> =
       await service.post(url, payload, { baseURL: baseUrl });
+    console.log("fetchDocumentDetails response status:", responseData?.status);
     if (responseData?.status === 200) {
       return responseData?.data;
     }
-     return null;
+    return null;
   } catch (err: any) {
     return err?.response?.data ;
   }
@@ -117,23 +117,23 @@ export const viewDownload = async (): Promise<any> => {
 };
 
 
-export const clearAllFiles = async (partitionKeys: string[]): Promise<any> => {
+export const clearAllFiles = async (payload: { request: { partitionKey: string[] } }): Promise<any> => {
   try {
-    const url = `validation/api/v1/file/clearall`;
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const payload = { request: { partitionKey: partitionKeys } };
+    const url = `validation/api/v1/file/clearall`;
     const responseData: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
-    console.log("clearAllFiles response status:", responseData?.status); // Log status code
-    if (responseData?.status === 200) {
-      return responseData?.data;
+    console.log("clearAllFiles response status:", responseData?.status);
+    return responseData?.status;
+  } catch (error: any) {
+    console.error("clearAllFiles error:", error);
+    console.log("clearAllFiles error status:", error?.response?.status);
+    if (error?.response?.status) {
+      return error.response.status;
     }
-    return null;
-  } catch (err: any) {
-    console.error("Error clearing all files:", err);
-    console.log("clearAllFiles error status:", err?.response?.status); // Log error status code
-    return err?.response?.data;
   }
+  return payload?.request?.partitionKey;
 };
+
 export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
@@ -151,7 +151,7 @@ const fileDownloadInstance: AxiosInstance = axios.create({
   baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
   responseType: "blob",
   headers: {
-    Authorization: `Bearer ${authService.getAuthTokens()}` 
+    Authorization: `Bearer ${authService.getAuthTokens()}`
   }
 });
 

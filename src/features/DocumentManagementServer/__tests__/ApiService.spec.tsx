@@ -1,8 +1,10 @@
+
 import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
 import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile } from '../ApiService';
+import * as ApiService from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -92,29 +94,29 @@ describe('clearAllFiles', () => {
     config: {},
   };
 
-  test('should return data when response status is 200', async () => {
+  test('should return status code when response status is 200', async () => {
     jest.spyOn(service, 'post').mockResolvedValueOnce(mockResponse);
     const { clearAllFiles } = await import('../ApiService');
-    const result = await clearAllFiles(partitionKeys);
-    expect(result).toEqual({ success: true });
+    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    expect(result).toBe(200);
     expect(service.post).toHaveBeenCalledTimes(1);
   });
 
-  test('should return null when response status is not 200', async () => {
+  test('should return status code when response status is not 200', async () => {
     const mockFailureResponse = { ...mockResponse, status: 404 };
     jest.spyOn(service, 'post').mockResolvedValueOnce(mockFailureResponse);
     const { clearAllFiles } = await import('../ApiService');
-    const result = await clearAllFiles(partitionKeys);
-    expect(result).toBeNull();
+    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    expect(result).toBe(404);
   });
 
-  test('should return error data when exception is thrown', async () => {
+  test('should return error status code when exception is thrown', async () => {
     const errorData = { error: 'Failed' };
     const error = { response: { data: errorData, status: 500 } };
     jest.spyOn(service, 'post').mockRejectedValueOnce(error);
     const { clearAllFiles } = await import('../ApiService');
-    const result = await clearAllFiles(partitionKeys);
-    expect(result).toEqual(errorData);
+    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    expect(result).toBe(500);
   });
 });
   afterEach(() => {
@@ -454,5 +456,41 @@ describe("prepareAndDownloadFile", () => {
     const result = await prepareAndDownloadFile(payload);
     expect(result).toBe(400);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+  });
+});
+
+
+describe('downloadFile', () => {
+  let getSpy: jest.SpyInstance;
+  const mockBlob = new Blob(['test content'], { type: 'application/pdf' });
+
+  beforeEach(() => {
+    getSpy = jest.spyOn((ApiService as any).fileDownloadInstance, 'get');
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+    getSpy.mockRestore();
+  });
+
+  it('should call fileDownloadInstance.get with correct url and return blob', async () => {
+    getSpy.mockResolvedValueOnce({ data: mockBlob });
+    const { downloadFile } = await import('../ApiService');
+    const result = await downloadFile('app', 'section', 'file123');
+    expect(result).toBe(mockBlob);
+    expect(getSpy).toHaveBeenCalledWith('validation/api/v1/file?FileId=file123&Application=app&Section=section');
+  });
+
+  it('should call fileDownloadInstance.get with undefined params if not provided', async () => {
+    getSpy.mockResolvedValueOnce({ data: mockBlob });
+    const { downloadFile } = await import('../ApiService');
+    await downloadFile();
+    expect(getSpy).toHaveBeenCalledWith('validation/api/v1/file?FileId=undefined&Application=undefined&Section=undefined');
+  });
+
+  it('should throw error if fileDownloadInstance.get fails', async () => {
+    getSpy.mockRejectedValueOnce(new Error('Download failed'));
+    const { downloadFile } = await import('../ApiService');
+    await expect(downloadFile('app', 'section', 'file123')).rejects.toThrow('Download failed');
   });
 });
