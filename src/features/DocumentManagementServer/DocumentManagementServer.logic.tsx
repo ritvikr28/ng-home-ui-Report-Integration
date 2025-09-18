@@ -948,11 +948,10 @@ export function validateAndApplyFilter({
       fromDate: selectedDateRange?.fromDate ?? "",
       toDate: selectedDateRange?.toDate ?? ""
     });
-    setTimeout(() => {
       setSelectedFormats(selectedCategories);
       setIsFilterDialogOpen(false);
       setIsFilterLoading(false);
-    }, 500);
+  
   }
   setCurrentPage(1);
 }

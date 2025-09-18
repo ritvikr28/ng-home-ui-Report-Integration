@@ -2105,7 +2105,7 @@ describe("buildSelectedDocs", () => {
         fileDetails: [
           { fileId: "1", registrationId: 123 }
         ],
-   currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
       }
     }
   ]);
