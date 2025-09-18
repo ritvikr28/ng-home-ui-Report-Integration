@@ -12,6 +12,7 @@ import { viewDownload ,clearAllFiles} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
+
 export const breadcrumbActionsList = [
     {
         active: false,
@@ -63,7 +64,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-
+    const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState<boolean>(false);
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -344,24 +345,46 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         
         };
 
+        useEffect(() => {
+            if (isClearSelectedCheckbox) {
+                setIsClearSelectedCheckbox(false);
+            }
+        }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number }
-) => {
-  handleTagCloseLogic(
-    e,
-    text,
-    closeObj,
-    setSelectedDateRange,
-    setDateRange,
-    setIsDateError,
-    setSelectedCategories,
-    setSelectedFormats
-  );
- 
-}
+    ) => {
+    handleTagCloseLogic(
+        e,
+        text,
+        closeObj,
+        setSelectedDateRange,
+        setDateRange,
+        setIsDateError,
+        setSelectedCategories,
+        setSelectedFormats
+    );
+    setCurrentPage(1);
+    };
+    useEffect(() => {
+        const handleResize = () => {
+            if (window.innerWidth < 1024) {
+                // md and below
+                if (breadcrumbActionsList.length > 1) {
+                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-2, -1));
+                } else {
+                    setVisibleBreadcrumbs(breadcrumbActionsList);
+                }
+            } else {
+                setVisibleBreadcrumbs(breadcrumbActionsList);
+            }
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [breadcrumbActionsList]);
 
     const NotificationMsgBannerObject = [
         {
@@ -408,11 +431,7 @@ const handleApply = () => {
 };
 
  
-   const handleFilterOnClick = () => {
-    if (!searchTerm || searchTerm.trim().length === 0) {
-        // Optionally, show a notification or message to the user here
-        return;
-    }
+    const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
@@ -423,7 +442,7 @@ const handleApply = () => {
             setSelectedCategories(selectedFormats);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
-};
+    };
 
 useEffect(() => {
   if (viewData && viewData.length > 0) {
@@ -433,7 +452,7 @@ useEffect(() => {
       setFailedFileName(cancelledFile.name || null);
     }
   }
-}, [viewData, dialogType, showToastNotification]);
+}, [viewData]);
 
 const handleCloseSidePanel = () => {
   closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);

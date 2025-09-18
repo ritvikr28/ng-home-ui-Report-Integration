@@ -635,7 +635,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
 await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
 fireEvent.click(screen.getByTestId('secondary-button'));
   
-  expect(await screen.findByText("Clear all downloads?")).toBeInTheDocument();
+  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
 });
 
 it("closes side panel when clicking 'Close' with no completed files", async () => {

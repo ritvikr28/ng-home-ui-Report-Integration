@@ -147,7 +147,7 @@ export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> =
 };
 
 
-const fileDownloadInstance: AxiosInstance = axios.create({ 
+export const fileDownloadInstance: AxiosInstance = axios.create({ 
   baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
   responseType: "blob",
   headers: {
