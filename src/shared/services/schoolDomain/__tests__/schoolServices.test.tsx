@@ -428,26 +428,26 @@ describe("Fetch group member details tests", () => {
       expect(result).toBeNull();
     });
 })
- 
-describe("Fetch staff time table event details tests", () => {
-  test("should return staff time table event details", async () => {
-    jest
-          .spyOn(service, "get")
-          .mockImplementation(() => Promise.resolve(mockStaffResponse));
-          const staffDataResponse:any = await FetchStaffTimeTableEventsData();
-        await waitFor(() => {
-          expect(staffDataResponse.status).toBe(200);    
-          expect(staffDataResponse.responseData).toBe(mockStaffTimeTableEventsResponseWithSixRecords);      
-        });
-    });
 
-    test("should return null when an error occurs", async () => {
-      (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
-  
-      const result = await FetchStaffTimeTableEventsData();
-  
-      expect(result).toBeNull();
+
+describe("FetchStaffTimeTableEventsData", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("returns status and responseData on success", async () => {
+    const mockData = [{ externalId: "1" }];
+    (service.get as jest.Mock) = jest.fn().mockResolvedValue({
+      status: 200,
+      data: mockData
     });
- 
- 
-})
+    const result = await FetchStaffTimeTableEventsData();
+    expect(result).toEqual({ status: 200, responseData: mockData });
+  });
+
+  it("returns null on error", async () => {
+    (service.get as jest.Mock) = jest.fn().mockRejectedValue(new Error("fail"));
+    const result = await FetchStaffTimeTableEventsData();
+    expect(result).toBeNull();
+  });
+});

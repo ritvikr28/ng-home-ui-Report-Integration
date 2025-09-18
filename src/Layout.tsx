@@ -19,8 +19,7 @@ import {
   Route,
   BrowserRouter as Router,
   useHistory,
-  Redirect,
-  Link
+  Redirect
 } from "react-router-dom";
 import {
   Header,
@@ -39,6 +38,7 @@ import {
   ErrorActionListItem,
   Grid,
   GridItem,
+  Link,
   Loader,
   LoaderType,
   useMediaQuery
@@ -438,6 +438,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
                 target="_blank"
                 {...rel}
               >
+      
                 <ActionCard
                   className="primary-text"
                   dataTestId="what-new-test-id"
