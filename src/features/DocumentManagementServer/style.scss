@@ -111,6 +111,7 @@
     }
 
     #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box{
+      margin-top: 10px;
       ul li{
         padding-left: 8px !important;
         svg{
@@ -119,6 +120,7 @@
       }
       span.group-heading{
         margin-left: 50px !important;
+        padding-bottom: 9px !important;
       }
     }
 
