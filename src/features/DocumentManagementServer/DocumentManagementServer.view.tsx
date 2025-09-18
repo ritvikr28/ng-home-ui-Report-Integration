@@ -161,8 +161,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
  
     useEffect(() => {
-        if (docData?.totalRecords) {
-            setTotalPage(Math.ceil(docData.totalRecords / pageSizeNumber));
+        if (docData && docData?.totalRecords) {
+            const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
+            setTotalPage(totalPages);
         }
     }, [docData]);
 
