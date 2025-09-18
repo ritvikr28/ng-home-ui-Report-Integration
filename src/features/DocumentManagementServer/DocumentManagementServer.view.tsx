@@ -754,23 +754,19 @@ const handleApply = () => {
                                     if (hasCompletedFiles) {
                                         setDialogType("clearAll");
                                         setShowConfirmDialog(true);
-                                        // setShowToastNotification(true);
                                     } else {
                                         setIsSidePanelOpen(false);
 
                                     }
                                 }}
-                                // secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
-                                // onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
-                                // sidePanelNotificationMessage="Downloads cleared"
-                                // sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                                //     Please try again. If the issue persists, please get in touch with our support team.
-                                //     We appreciate your patience and understanding during this time."
-                                // sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
+                                sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
+                                    Please try again. If the issue persists, please get in touch with our support team.
+                                    We appreciate your patience and understanding during this time."
+                                sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
                                 sidePanelNotificationTitle="Unable to Download"
                                  addEditTemplateChild={
                                     <>
@@ -926,7 +922,7 @@ const handleApply = () => {
                                 }
                                 titleConfirmation={dialogType === "clearAll" ? "Clear all downloads?" : "Prepare Download?"}
                                 isOpenConfirmationDialog={showConfirmDialog}
-                                // showToastNotification={showToastNotification}
+                                showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
                                 toastNotificationAutoclose={true}
                                 toastNotificationTitle="Downloads cleared successfully!"
