@@ -195,7 +195,20 @@
   padding-right: 5px;
 }
 
+.dms-layout {
+  // ...existing code...
 
+  .essui.animationmsg {
+    // bottom: 48px;
+    left: 75%;
+    margin-left: -237px;
+    min-width: 472px;
+    position: fixed;
+    text-align: center;
+    transform: -50%,-50%;
+    z-index: 1;
+  }
+}
 
 
 .grid-wrapper {
@@ -451,21 +464,8 @@
 }
   }
 
-
-
-.essui.animationmsg {
-    // bottom: 48px;
-    left: 75%;
-    margin-left: -237px;
-    min-width: 472px;
-    position: fixed;
-    text-align: center;
-    transform: -50%,-50%;
-    z-index: 1;
-}
-
 @media (max-width: 600px) {
-  .essui.animationmsg {
+  .dms-layout .essui.animationmsg {
     left: 50%;
     margin-left: 0;
     min-width: 90vw;
