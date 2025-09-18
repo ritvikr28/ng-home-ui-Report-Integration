@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Loader, LoaderType } from "@essnextgen/ui-kit";
-import { FetchRegisterEventData } from "../../../../../shared/services/registersDomain/registerEventsDetails";
+import { FetchStaffTimetableAndRegisterDetails } from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "./TakeRegisterEvent.view";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import "./carousalstyle.scss";
@@ -25,11 +25,16 @@ const TakeRegisterEvent: ({ isOpen, setIsOpen }: any) => JSX.Element = ({
   ] = useState<boolean>(true);
 
   const fetchRegisterEventDetails: () => Promise<void> = async () => {
-    setIsError(true);
+    setIsError(false);
     setRegisterEventApiData(null);
     try {
-      const RegisterEventDetails: IRegistersDetails[] | null =
-        await FetchRegisterEventData();
+      const apiResponse = await FetchStaffTimetableAndRegisterDetails();
+      if (!apiResponse || !apiResponse.payload || !Array.isArray(apiResponse.payload.registerDetailResponse)) {
+        setIsError(true);
+        setLoader(false);
+        return;
+      }
+      const RegisterEventDetails: IRegistersDetails[] | null = apiResponse?.payload?.registerDetailResponse;
       setRegisterEventApiData(RegisterEventDetails);
       setIsError(false);
       setLoader(false);
