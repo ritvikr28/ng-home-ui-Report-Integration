@@ -12,6 +12,11 @@ const SIMSIDAdminMainPanelView: React.FC<ISIMSIDAdminMainPanelViewProps> = ({ is
   <div className={isOpen ? " " : "welcome-user-simsid-fixed welcome-user-simsid-large"}>
     <Grid dataTestId="SIMSID-Admin-View">
       <GridItem className="simsid-main-panel-container-simsid-admin">
+        {enableNotification &&
+          <div className={isOpen ? 'notification-open-panel' : 'notification-simsid'}>
+            <NotificationView setDisableNotification={setDisableNotification} />
+          </div>
+        }
         <div className="simsid-sidebtn"> {!isOpen && (
           <GridItem className="c-clear-padding">
             <button
@@ -25,17 +30,11 @@ const SIMSIDAdminMainPanelView: React.FC<ISIMSIDAdminMainPanelViewProps> = ({ is
             </button>
           </GridItem>
         )}
-
           <WelcomeUser
             isSchoolNameToBeDisplayed={false}
             isOpen={isOpen}
           />
         </div>
-        {enableNotification &&
-          <div className={isOpen ? 'notification-open-panel' : 'notification-simsid'}>
-            <NotificationView setDisableNotification={setDisableNotification} />
-          </div>
-        }
         <div className='simsupdate-simsid-admin'><SIMSupdatesView isOpen={isOpen} /> </div>
       </GridItem>
     </Grid>

@@ -1,11 +1,10 @@
 import {
   render,
   screen,
-  fireEvent,
+  fireEvent
 } from "@testing-library/react";
 import { EventCardStatus } from "@essnextgen/ui-kit";
 import { EventContainerView } from "../EventContainer.view";
-import { IStaffTimeTableEventsResponse } from "../../../../../../shared/model/SchoolDomain/responsemodels";
 
 describe("EventContainer", () => {
   beforeEach(() => {

@@ -1,10 +1,8 @@
 import { render, screen, waitFor } from "@testing-library/react";
-import EventContainer from "./EventContainer.logic";
+import EventContainer, { formatStaffName, formatCoverStaffName } from "./EventContainer.logic";
 import * as registerService from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import * as staffService from "../../../../../shared/services/staffDomain/staffServices";
 
-import { formatStaffName } from "./EventContainer.logic";
-import { formatCoverStaffName } from "./EventContainer.logic";
 describe("formatCoverStaffName", () => {
   const baseEventData = {
     externalId: "evt1",

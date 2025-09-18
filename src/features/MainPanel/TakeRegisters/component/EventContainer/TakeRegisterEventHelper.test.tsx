@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import * as helper from "./TakeRegisterEventHelper";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";

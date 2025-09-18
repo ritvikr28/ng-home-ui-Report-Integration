@@ -1,5 +1,5 @@
 import React from "react";
-import { RenderResult, act, fireEvent, render } from "@testing-library/react";
+import { RenderResult, fireEvent, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ActionCard } from "@essnextgen/ui-kit";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";

@@ -4,6 +4,7 @@ import { service } from "../../utils/api-service";
 import apiUrls from "../../hook/ApiConfig.json";
 import { IRegistersDetails } from "../../model/RegisterDomain/responsemodels";
 import { IStaffTimeTableEventsResponse } from "../../model/SchoolDomain/responsemodels";
+
 export interface IStaffTimetableAndRegisterDetailsResponse {
   errors: any;
   payload: {

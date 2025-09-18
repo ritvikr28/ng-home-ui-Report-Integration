@@ -1,6 +1,6 @@
-import { AxiosResponse } from "axios";
 import { waitFor } from "@testing-library/react";
 import { service } from "../../../utils";
+import { FetchStaffTimetableAndRegisterDetails } from "../registerEventsDetails";
 
 const mockTakeRegisterData = [
   {
@@ -179,18 +179,9 @@ const mockTakeRegisterData = [
   }
 ];
 
-const axiosResponse: AxiosResponse = {
-  data: mockTakeRegisterData,
-  status: 200,
-  statusText: "OK",
-  config: {},
-  headers: {},
-};
-
 describe("RegisterEventDetails test", () => {
+
   test("fetches register event data successfully when status is 200 and response is not null", async () => {
-    // Import the function here to avoid hoisting issues
-    const { FetchStaffTimetableAndRegisterDetails } = require("../registerEventsDetails");
     jest.spyOn(service, "get").mockImplementation(() => Promise.resolve({
       data: {
         payload: {
@@ -213,7 +204,6 @@ describe("RegisterEventDetails test", () => {
   });
 
   test("should return null when an error occurs", async () => {
-    const { FetchStaffTimetableAndRegisterDetails } = require("../registerEventsDetails");
     jest.spyOn(service, "get").mockRejectedValue(new Error("Network Error"));
     const result = await FetchStaffTimetableAndRegisterDetails();
     await waitFor(() => {
