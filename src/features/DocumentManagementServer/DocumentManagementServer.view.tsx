@@ -61,7 +61,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-
+    const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState<boolean>(false);
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -117,14 +117,27 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
-        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement;
-        if (mainPanel) {
+    // Try desktop main panel first
+        let scrolled = false;
+        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
+        if (mainPanel && typeof mainPanel.scrollTo === "function" && mainPanel.offsetParent !== null) {
             mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
+            scrolled = true;
+        }
+        // If not desktop, try mobile grid wrapper
+        if (!scrolled) {
+            const grid = document.querySelector('.grid-wrapper') as HTMLElement | null;
+            if (grid && typeof grid.scrollIntoView === "function" && grid.offsetParent !== null) {
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                scrolled = true;
+            }
+        }
+        // Fallback to window scroll
+        if (!scrolled) {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     }, [currentPage]);
- 
+
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
@@ -156,13 +169,13 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
 
       fetchCategory().then((res) => {
-    const map: Record<string, number> = {};
-    res.forEach((cat: any) => {
-      map[cat.application] = cat.registrationId;
+        const map: Record<string, number> = {};
+        res.forEach((cat: any) => {
+        map[cat.application] = cat.registrationId;
+        });
+        setCategoryRegistrationMap(map);
     });
-    setCategoryRegistrationMap(map);
-  });
-}, []);
+    }, []);
 
 
     useEffect(() => {
@@ -172,20 +185,20 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
-useEffect(() => {
-  // Only run when opening the side panel for "prepare"
-  if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-    setIsSidePanelLoader(true); // Show loader immediately
+    useEffect(() => {
+        // Only run when opening the side panel for "prepare"
+        if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+            setIsSidePanelLoader(true); // Show loader immediately
 
-    // Wait for 2 seconds before calling view download API
-    const timer = setTimeout(() => {
-      fetchViewDownloadData({
-        showLoader: false, 
-        setIsSidePanelLoader,
-        setViewData: (data) => {
-    setViewData(data);
-    setHasFetchedViewDownload(true);
-  },
+            // Wait for 2 seconds before calling view download API
+            const timer = setTimeout(() => {
+            fetchViewDownloadData({
+                showLoader: false, 
+                setIsSidePanelLoader,
+                setViewData: (data) => {
+            setViewData(data);
+            setHasFetchedViewDownload(true);
+        },
         viewDownload,
         downloadPollingIntervalRef,
       });
@@ -193,7 +206,6 @@ useEffect(() => {
 
     return () => clearTimeout(timer);
   }
-  // For "view", call immediately
   if (isSidePanelOpen && sidePanelOpenReason === "view") {
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
@@ -211,30 +223,30 @@ useEffect(() => {
 }, [isSidePanelOpen, sidePanelOpenReason]);
 
     const fetchGetDocumentDetails = (
-  page: number,
-  categories: number[],
-  sortByCol: string = sortBy,
-  sortOrder = sortDirection,
-  refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRealatedTo
-) => {
-  fetchGetDocumentDetailsLogic({
-    page,
-    categories,
-    sortByCol,
-    sortOrder,
-    dateRange,
-    refExternalId,
-    relatedTo,
-    setDocData,
-    setCurrentPage,
-    setTotalPage,
-    setShowSearchError,
-    setShowErrorBanner,
-    setIsSearchLoading,
-    setIsSearchDataLoading,
-  });
-};
+    page: number,
+    categories: number[],
+    sortByCol: string = sortBy,
+    sortOrder = sortDirection,
+    refExternalId: string = searchRefExternalId,
+    relatedTo: number = documentRealatedTo
+    ) => {
+    fetchGetDocumentDetailsLogic({
+        page,
+        categories,
+        sortByCol,
+        sortOrder,
+        dateRange,
+        refExternalId,
+        relatedTo,
+        setDocData,
+        setCurrentPage,
+        setTotalPage,
+        setShowSearchError,
+        setShowErrorBanner,
+        setIsSearchLoading,
+        setIsSearchDataLoading,
+    });
+    };
 
 const selectedDocs = buildSelectedDocs(
   selectedCheckBoxIds,
@@ -335,26 +347,34 @@ const selectedDocs = buildSelectedDocs(
         setIsFilterDialogOpen(false);
         setTotalPage(0);
         setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
+        
         };
 
+        useEffect(() => {
+            if (isClearSelectedCheckbox) {
+                setIsClearSelectedCheckbox(false);
+            }
+        }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number }
-) => {
-  handleTagCloseLogic(
-    e,
-    text,
-    closeObj,
-    setSelectedDateRange,
-    setDateRange,
-    setIsDateError,
-    setSelectedCategories,
-    setSelectedFormats
-  );
-  setCurrentPage(1);
-};
+    ) => {
+    handleTagCloseLogic(
+        e,
+        text,
+        closeObj,
+        setSelectedDateRange,
+        setDateRange,
+        setIsDateError,
+        setSelectedCategories,
+        setSelectedFormats
+    );
+    setCurrentPage(1);
+    };
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -430,66 +450,66 @@ const handleApply = () => {
             setSelectedCategories(selectedFormats);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
-};
+    };
 
-useEffect(() => {
-  if (viewData && viewData.length > 0) {
-    const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
-    if (cancelledFiles.length > 0) {
-      setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
+    useEffect(() => {
+    if (viewData && viewData.length > 0) {
+        const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
+        if (cancelledFiles.length > 0) {
+        setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
+        }
     }
-  }
-}, [viewData]);
+    }, [viewData]);
 
-const handleCloseSidePanel = () => {
-  closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
-};
+    const handleCloseSidePanel = () => {
+    closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
+    };
 
-const renderViewDownloadContent = () => {
-  if (isSidePanelLoader) {
-    return <Loader loaderType={LoaderType.Circular} />;
-  }
-  if (hasFetchedViewDownload && viewData?.length === 0) {
-    return <p>Files you download will appear here.</p>;
-  }
-  if (viewData?.length > 0) {
-    return (
-      <>
-        <p>Prepared downloads will expire after 5 days</p>
-        {viewData.map((item, index) => {
-          const isComplete = item?.status?.toLowerCase() === 'complete';
-          const isInProgress = item?.status?.toLowerCase() === 'inprogress';
-          const isInitiated = item?.status?.toLowerCase() === 'initiated';
-          return (
-            <div className="viewDownloadDetails" key={index}>
-              <div className="fileDetails">
-                <p>{item?.name}</p>
-                {isComplete && item?.fileExpiryDays !== undefined && (() => {
-                    if (item.fileExpiryDays > 0) {
-                        return <span>Expires in {item.fileExpiryDays} days.</span>;
-                    }
-                    if (item.fileExpiryDays === 0) {
-                        return <span>Expires today.</span>;
-                    }
-                    return null;
-                    })()}
-              </div>
-              {isComplete && (
-                <Button className="viewDownloadBtn">Download</Button>
-              )}
-              {(isInProgress || isInitiated) && (
-                <span className="inProgressLoader">
-                  <Loader loaderType={LoaderType.Circular} />
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </>
-    );
-  }
-  return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
-};
+    const renderViewDownloadContent = () => {
+    if (isSidePanelLoader) {
+        return <Loader loaderType={LoaderType.Circular} />;
+    }
+    if (hasFetchedViewDownload && viewData?.length === 0) {
+        return <p>Files you download will appear here.</p>;
+    }
+    if (viewData?.length > 0) {
+        return (
+        <>
+            <p>Prepared downloads will expire after 5 days</p>
+            {viewData.map((item, index) => {
+            const isComplete = item?.status?.toLowerCase() === 'complete';
+            const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+            const isInitiated = item?.status?.toLowerCase() === 'initiated';
+            return (
+                <div className="viewDownloadDetails" key={index}>
+                <div className="fileDetails">
+                    <p>{item?.name}</p>
+                    {isComplete && item?.fileExpiryDays !== undefined && (() => {
+                        if (item.fileExpiryDays > 0) {
+                            return <span>Expires in {item.fileExpiryDays} days.</span>;
+                        }
+                        if (item.fileExpiryDays === 0) {
+                            return <span>Expires today.</span>;
+                        }
+                        return null;
+                        })()}
+                </div>
+                {isComplete && (
+                    <Button className="viewDownloadBtn">Download</Button>
+                )}
+                {(isInProgress || isInitiated) && (
+                    <span className="inProgressLoader">
+                    <Loader loaderType={LoaderType.Circular} />
+                    </span>
+                )}
+                </div>
+            );
+            })}
+        </>
+        );
+    }
+    return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
+    };
     return (<>
         <>
             <Grid className="dms-layout">
@@ -598,6 +618,7 @@ const renderViewDownloadContent = () => {
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
+                                isClearSelectedCheckbox={isClearSelectedCheckbox}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
                                     }}
@@ -625,6 +646,7 @@ const renderViewDownloadContent = () => {
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
                                     }}
+                                
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -740,7 +762,7 @@ const renderViewDownloadContent = () => {
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
                                         )}
-                                        { failedFileName && (
+                                        { failedFileName.length > 0 && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
                                             title="Unable to prepare [document/documents] for download"
