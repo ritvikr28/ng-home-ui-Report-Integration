@@ -1,4 +1,3 @@
-
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
@@ -17,6 +16,7 @@ jest.mock("../DocumentManagementServer.logic", () => {
   return {
     __esModule: true,
     ...original,
+    fileDownload: jest.fn(),
     fetchGetDocumentDetailsLogic: jest.fn(),
     prepareDownload: jest.fn(),
     reduceCategories: jest.fn(),
@@ -626,7 +626,7 @@ describe('Clear all downloads onConfirm logic', () => {
   const getCompletedPartitionKeys = jest.fn();
   const clearAllFiles = jest.fn();
 
-  const viewData = [{ partitionKey: 'key1', status: 'complete' }];
+  // const viewData = [{ partitionKey: 'key1', status: 'complete' }];
   const completedPartitionKeys = ['key1'];
 
   beforeEach(() => {
@@ -691,5 +691,60 @@ describe('Clear all downloads onConfirm logic', () => {
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).toHaveBeenCalledWith(false);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+});
+
+// import * as Logic from "../DocumentManagementServer.logic";
+// import * as ApiService from "../ApiService";
+// import { render, fireEvent, waitFor, screen } from "@testing-library/react";
+// import DocumentManagementServerView from "../DocumentManagementServer.view";
+
+
+
+describe("Download button in side panel", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [{ fileId: "f1", name: "File1", status: "complete", fileExpiryDays: 2 }],
+    });
+  });
+
+  it("calls fileDownload and handles success", async () => {
+    (Logic.fileDownload as jest.Mock).mockResolvedValue({ success: true });
+
+    render(<DocumentManagementServerView />);
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("View download"));
+
+    await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText("Download"));
+
+    await waitFor(() => {
+      expect(Logic.fileDownload).toHaveBeenCalledWith(
+        "F1", 
+        "File1",
+        undefined, 
+        undefined, 
+        undefined  
+      );
+    });
+
+    expect(screen.queryByText(/Unable to download file/i)).not.toBeInTheDocument();
+  });
+
+  it("shows error notification if fileDownload fails", async () => {
+    (Logic.fileDownload as jest.Mock).mockResolvedValue({ success: false });
+
+    render(<DocumentManagementServerView />);
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.findByText("View download"));
+    await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
+
+    fireEvent.click(screen.getByText("Download"));
+
+    // Error notification should appear
+    expect(await screen.findByText(/Unable to download file/i)).toBeInTheDocument();
   });
 });

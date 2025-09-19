@@ -2458,5 +2458,92 @@ describe("Added by column anyComponent", () => {
   });
 });
 
+describe('fileDownload', () => {
+  let originalCreateElement: typeof document.createElement;
+  let originalGetElementById: typeof document.getElementById;
+  let mockLink: any;
+  let parent: any;
+  let mockDownloadFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockLink = {
+      click: jest.fn(),
+      set href(val) { this.hrefValue = val; },
+      get href() { return this.hrefValue; },
+      set download(val) { this.downloadValue = val; },
+      get download() { return this.downloadValue; },
+    };
+    parent = {
+      appendChild: jest.fn(),
+      removeChild: jest.fn(),
+    };
+    originalCreateElement = document.createElement;
+    document.createElement = jest.fn(() => mockLink);
+    originalGetElementById = document.getElementById;
+    document.getElementById = jest.fn(() => ({ parentElement: parent }) as unknown as HTMLElement);
+    window.URL.createObjectURL = jest.fn(() => 'blob:url');
+    window.URL.revokeObjectURL = jest.fn();
+  mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
+  });
+
+  afterEach(() => {
+    document.createElement = originalCreateElement;
+    document.getElementById = originalGetElementById;
+    jest.clearAllMocks();
+  });
+
+  it('downloads zip file using sasUrl', async () => {
+    const sasUrl = 'https://example.com/file.zip';
+    const result = await logicModule.fileDownload(
+      '00000000-0000-0000-0000-000000000000',
+      'test.zip',
+      '',
+      '',
+      sasUrl
+    );
+    expect(mockLink.href).toBe(sasUrl);
+    expect(mockLink.download).toBe('test.zip');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+    expect(result.success).toBe(true);
+  });
+
+  it('downloads blob file using downloadFile', async () => {
+    const fakeBlob = new Blob(['test']);
+    mockDownloadFile.mockResolvedValueOnce(fakeBlob);
+    const result = await logicModule.fileDownload(
+      'file-123',
+      'test.txt',
+      'app',
+      'section',
+      undefined
+    );
+    expect(mockDownloadFile).toHaveBeenCalledWith('app', 'section', 'file-123');
+    expect(mockLink.href).toBe('blob:url');
+    expect(mockLink.download).toBe('test.txt');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:url');
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+    expect(result.success).toBe(true);
+  });
+
+  it('returns error and logs if exception thrown', async () => {
+    document.createElement = jest.fn(() => { throw new Error('fail'); });
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    const result = await logicModule.fileDownload(
+      'file-err',
+      'err.txt',
+      'app',
+      'section',
+      undefined
+    );
+    expect(result.success).toBe(false);
+    expect(errorSpy).toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
+});
+
 
 

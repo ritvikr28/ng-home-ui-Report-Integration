@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles, downloadFile} from "./ApiService"
+import { viewDownload ,clearAllFiles } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -336,41 +336,6 @@ const selectedDocs = buildSelectedDocs(
   return "Documents will appear here once they are uploaded.";
 };
 
-const fileDownload = async (
-    fileId: string,
-    fileName: string,
-    application: string,
-    sectionName: string,
-    sasUrl?: string
-) => {
-    try {
-        const isZipFile =
-            (!application && !sectionName && fileId === "00000000-0000-0000-0000-000000000000" && sasUrl);
-        if (isZipFile) {
-            // Direct download using sasUrl
-            const link = document.createElement("a");
-            link.href = sasUrl!;
-            link.download = fileName;
-            document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
-            link.click();
-            document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
-        } else {
-            const blob = await downloadFile(application, sectionName, fileId);
-            const url = window.URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `${fileName}`;
-            document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
-            link.click();
-            window.URL.revokeObjectURL(url);
-            document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
-        }
-        setDownloadError(false);
-    } catch (error) {
-        setDownloadError(true);
-        console.error("Error downloading file:", error);
-    }
-};
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
@@ -834,9 +799,7 @@ const handleApply = () => {
                                             <Notification
                                                 status={NotificationStatus.WARNING}
                                                 title="Unable to download file"
-                                                message={
-                                                    "A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
-                                                }
+                                                message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
                                                 autoclose={false}
                                                 onClickClose={() => setDownloadError(false)}
                                             />
@@ -920,27 +883,27 @@ const handleApply = () => {
                                      dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
-                                            contentText: "Clear all downloads?\nThis action will remove all files 'Completed' from the Download panel.",
+                                            contentText: "This action will remove all files 'Completed' from the Download panel.",
                                             isNotificationanner: false,
                                             notificationTitle: "",
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
-                                                const completedPartitionKeys = getCompletedPartitionKeys(viewData);
-                                                try {
-                                                    const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
-                                                    if (response === 204) {
-                                                        setIsSidePanelLoader(false);
-                                                        setShowToastNotification(true);
-                                                    } else {
-                                                        setClearAllError(true);
-                                                    }
-                                                } catch (error) {
-                                                    setClearAllError(true);
-                                                    setShowToastNotification(false)
-                                                }
-                                                setShowConfirmDialog(false);
+                                                await handleClearAllConfirm({
+                                                    viewData,
+                                                    clearAllFiles,
+                                                    setShowToastNotification,
+                                                    fetchViewDownloadData,
+                                                    setIsSidePanelLoader,
+                                                    setViewData,
+                                                    setHasFetchedViewDownload,
+                                                    viewDownload,
+                                                    downloadPollingIntervalRef,
+                                                    setClearAllError,
+                                                    setShowConfirmDialog,
+                                                    getCompletedPartitionKeys,
+                                                });
                                             },
                                             template: DialogTemplate.Confirmation
                                         }
