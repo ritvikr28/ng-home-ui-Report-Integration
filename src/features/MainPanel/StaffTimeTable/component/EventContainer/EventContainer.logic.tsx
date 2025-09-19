@@ -16,7 +16,7 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import { FetchStaffTimeTableEventsData } from "../../../../../shared/services/schoolDomain/schoolServices";
+import { FetchStaffTimetableAndRegisterDetails } from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
@@ -66,19 +66,12 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
   useTranslation();
 
   useEffect(() => {
-    const fetchStaffTimeTableEvents: () => Promise<void> = async () => {
+    const fetchStaffTimeTableEvents = async () => {
       /* istanbul ignore next */
       try {
-        const {
-          status: responseStatus,
-          responseData
-        }: {
-          status: number | null;
-          responseData: IStaffTimeTableEventsResponse[] | null;
-        } = (await FetchStaffTimeTableEventsData()) ?? {
-          status: null,
-          responseData: null
-        };
+        const response = await FetchStaffTimetableAndRegisterDetails();
+        const responseStatus = response?.status ?? null;
+        const responseData: IStaffTimeTableEventsResponse[] | null = response?.payload?.staffTimetableEventsResponse ?? null;
         if (
           /* istanbul ignore next */
           responseStatus !== undefined &&
@@ -129,7 +122,6 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       }
     };
     setLoader(true);
-
     fetchStaffTimeTableEvents();
   }, []);
 
@@ -219,7 +211,7 @@ const formatRoomCode: (
   return roomCode;
 };
 
-const formatStaffName = async (
+export const formatStaffName = async (
   eventTimeData: IStaffTimeTableEventsResponse
 ): Promise<string> => {
   const {
@@ -251,7 +243,7 @@ const formatStaffName = async (
   return `${supervisors[0].forename} ${supervisors[0].surname}`;
 };
 
-const formatCoverStaffName = async (
+export const formatCoverStaffName = async (
   eventTimeData: IStaffTimeTableEventsResponse
 ): Promise<string> => {
   const {
