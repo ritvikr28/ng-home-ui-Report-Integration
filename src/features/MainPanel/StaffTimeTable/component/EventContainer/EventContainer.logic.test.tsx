@@ -106,7 +106,8 @@ const mockEvent = {
   originalStaffExternalID: "S1",
   coveringStaffExternalID: "S2",
   isCovered: false,
-  isCovering: false
+  isCovering: false,
+  subjectColor: "primary"
 };
 
 
