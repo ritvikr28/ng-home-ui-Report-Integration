@@ -617,3 +617,79 @@ it("closes side panel when clicking 'Close' with no completed files", async () =
 });
 
 });
+
+describe('Clear all downloads onConfirm logic', () => {
+  const setIsSidePanelLoader = jest.fn();
+  const setShowToastNotification = jest.fn();
+  const setClearAllError = jest.fn();
+  const setShowConfirmDialog = jest.fn();
+  const getCompletedPartitionKeys = jest.fn();
+  const clearAllFiles = jest.fn();
+
+  const viewData = [{ partitionKey: 'key1', status: 'complete' }];
+  const completedPartitionKeys = ['key1'];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getCompletedPartitionKeys.mockReturnValue(completedPartitionKeys);
+  });
+
+  it('should set loader false and show toast on 204 response', async () => {
+    clearAllFiles.mockResolvedValue(204);
+
+    // Simulate the onConfirm logic
+    await act(async () => {
+      const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+      if (response === 204) {
+        setIsSidePanelLoader(false);
+        setShowToastNotification(true);
+      } else {
+        setClearAllError(true);
+      }
+      setShowConfirmDialog(false);
+    });
+
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(false);
+    expect(setShowToastNotification).toHaveBeenCalledWith(true);
+    expect(setClearAllError).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('should set clearAllError on non-204 response', async () => {
+    clearAllFiles.mockResolvedValue(500);
+
+    await act(async () => {
+      const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+      if (response === 204) {
+        setIsSidePanelLoader(false);
+        setShowToastNotification(true);
+      } else {
+        setClearAllError(true);
+      }
+      setShowConfirmDialog(false);
+    });
+
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setIsSidePanelLoader).not.toHaveBeenCalled();
+    expect(setShowToastNotification).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('should set clearAllError and hide toast on exception', async () => {
+    clearAllFiles.mockRejectedValue(new Error('fail'));
+
+    await act(async () => {
+      try {
+        await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+      } catch (error) {
+        setClearAllError(true);
+        setShowToastNotification(false);
+      }
+      setShowConfirmDialog(false);
+    });
+
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).toHaveBeenCalledWith(false);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+});

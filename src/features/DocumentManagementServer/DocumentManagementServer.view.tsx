@@ -8,7 +8,7 @@ import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles} from "./ApiService"
+import { viewDownload ,clearAllFiles, downloadFile} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -75,6 +75,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
+    const [downloadError, setDownloadError] = useState<boolean>(false);
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
@@ -189,7 +190,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
         if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-            setShowToastNotification(false); 
+            // setShowToastNotification(false); 
             setIsSidePanelLoader(true); 
 
             // Wait for 2 seconds before calling view download API
@@ -208,7 +209,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     return () => clearTimeout(timer);
   }
-  if (isSidePanelOpen && sidePanelOpenReason === "view") {
+  if (isSidePanelOpen && sidePanelOpenReason === "view" ) {
     setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
@@ -217,13 +218,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       setViewData: (data) => {
         setViewData(data);
         setHasFetchedViewDownload(true);
+        // setShowToastNotification(true)
     },
       viewDownload,
       downloadPollingIntervalRef,
+      
     });
   }
   return undefined;
-}, [isSidePanelOpen, sidePanelOpenReason]);
+}, [isSidePanelOpen, sidePanelOpenReason, showToastNotification]);
 
     const fetchGetDocumentDetails = (
     page: number,
@@ -331,6 +334,42 @@ const selectedDocs = buildSelectedDocs(
 
   if (!isSearchTriggered && showSearchError) return "Information unavailable.";
   return "Documents will appear here once they are uploaded.";
+};
+
+const fileDownload = async (
+    fileId: string,
+    fileName: string,
+    application: string,
+    sectionName: string,
+    sasUrl?: string
+) => {
+    try {
+        const isZipFile =
+            (!application && !sectionName && fileId === "00000000-0000-0000-0000-000000000000" && sasUrl);
+        if (isZipFile) {
+            // Direct download using sasUrl
+            const link = document.createElement("a");
+            link.href = sasUrl!;
+            link.download = fileName;
+            document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
+            link.click();
+            document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
+        } else {
+            const blob = await downloadFile(application, sectionName, fileId);
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `${fileName}`;
+            document.getElementById("file-download-" + fileId)?.parentElement?.appendChild(link);
+            link.click();
+            window.URL.revokeObjectURL(url);
+            document.getElementById("file-download-" + fileId)?.parentElement?.removeChild(link);
+        }
+        setDownloadError(false);
+    } catch (error) {
+        setDownloadError(true);
+        console.error("Error downloading file:", error);
+    }
 };
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
@@ -499,15 +538,28 @@ const handleApply = () => {
                         return null;
                         })()}
                 </div>
-                {isComplete && (
-                    <Button className="viewDownloadBtn">Download</Button>
-                )}
-                {(isInProgress || isInitiated) && (
-                    <span className="inProgressLoader">
-                    <Loader loaderType={LoaderType.Circular} />
-                    </span>
-                )}
-                </div>
+                            {isComplete && (
+    <Button
+        className="viewDownloadBtn"
+        id={`file-download-${item.fileId}`}
+        onClick={() =>
+            fileDownload(
+                item.fileId?.toUpperCase(),
+                item.name ?? "",
+                item.application,
+                item.section,
+                item.sasUrl
+            )}
+    >
+        Download
+    </Button>
+)}
+              {(isInProgress || isInitiated) && (
+                <span className="inProgressLoader">
+                  <Loader loaderType={LoaderType.Circular} />
+                </span>
+              )}
+            </div>
             );
             })}
         </>
@@ -778,6 +830,17 @@ const handleApply = () => {
                                                 onClickClose={() => setPrepareDownloadError(false)}
                                             />
                                         )}
+                                        {downloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to download file"
+                                                message={
+                                                    "A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
+                                                }
+                                                autoclose={false}
+                                                onClickClose={() => setDownloadError(false)}
+                                            />
+                                        )}
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
@@ -854,7 +917,7 @@ const handleApply = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
-                                    dialogType === "clearAll"
+                                     dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
                                             contentText: "Clear all downloads?\nThis action will remove all files 'Completed' from the Download panel.",
@@ -864,20 +927,20 @@ const handleApply = () => {
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
-                                                await handleClearAllConfirm({
-                                                    viewData,
-                                                    clearAllFiles,
-                                                    setShowToastNotification,
-                                                    fetchViewDownloadData,
-                                                    setIsSidePanelLoader,
-                                                    setViewData,
-                                                    setHasFetchedViewDownload,
-                                                    viewDownload,
-                                                    downloadPollingIntervalRef,
-                                                    setClearAllError,
-                                                    setShowConfirmDialog,
-                                                    getCompletedPartitionKeys,
-                                                });
+                                                const completedPartitionKeys = getCompletedPartitionKeys(viewData);
+                                                try {
+                                                    const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+                                                    if (response === 204) {
+                                                        setIsSidePanelLoader(false);
+                                                        setShowToastNotification(true);
+                                                    } else {
+                                                        setClearAllError(true);
+                                                    }
+                                                } catch (error) {
+                                                    setClearAllError(true);
+                                                    setShowToastNotification(false)
+                                                }
+                                                setShowConfirmDialog(false);
                                             },
                                             template: DialogTemplate.Confirmation
                                         }

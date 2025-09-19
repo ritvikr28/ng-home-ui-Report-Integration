@@ -68,15 +68,16 @@ export interface Category{
   section: string[];
 };
 
- export interface ViewDownloadItem {
-        name?: string;
-        status?: string;
-        fileExpiryDays?: number;
-        partitionKey?: string;
-        fileId: string;
-    application: string;
-    section: string;
-    }
+export interface ViewDownloadItem {
+  name?: string;
+  status?: string;
+  fileExpiryDays?: number;
+  partitionKey?: string;
+  fileId: string;
+  application: string;
+  section: string;
+  sasUrl?: string;
+}
 
 export interface DocumentPrepareDownload {
   fileId: string;
