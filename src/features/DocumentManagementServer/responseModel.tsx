@@ -74,8 +74,8 @@ export interface Category{
         fileExpiryDays?: number;
         partitionKey?: string;
         fileId: string;
-    application: string;
-    section: string;
+        application: string;
+        section: string;
     }
 
 export interface DocumentPrepareDownload {
