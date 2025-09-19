@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import TakeRegisterEvent from "./TakeRegisterEvent.logic";
 import * as registerService from "../../../../../shared/services/registersDomain/registerEventsDetails";
+import { StaffTimetableAndRegisterDetailsProvider } from "../../../../../shared/context/StaffTimetableAndRegisterDetailsContext";
 
 jest.mock("../../../../../shared/services/registersDomain/registerEventsDetails");
 
@@ -15,7 +16,11 @@ describe("TakeRegisterEvent", () => {
   });
 
   it("renders loader initially", () => {
-    render(<TakeRegisterEvent isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <TakeRegisterEvent isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
 
@@ -23,7 +28,11 @@ describe("TakeRegisterEvent", () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockResolvedValue({
       payload: { registerDetailResponse: mockRegisterDetails }
     });
-    render(<TakeRegisterEvent isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <TakeRegisterEvent isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
     });
@@ -31,7 +40,11 @@ describe("TakeRegisterEvent", () => {
 
   it("renders error state when API fails", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
-    render(<TakeRegisterEvent isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <TakeRegisterEvent isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
     });
@@ -39,7 +52,11 @@ describe("TakeRegisterEvent", () => {
 
   it("renders error state when API returns invalid data", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockResolvedValue({ payload: {} });
-    render(<TakeRegisterEvent isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <TakeRegisterEvent isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
     });

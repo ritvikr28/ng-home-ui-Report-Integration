@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./style.scss";
 import {
   EventCard,
@@ -16,7 +16,7 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import { FetchStaffTimetableAndRegisterDetails } from "../../../../../shared/services/registersDomain/registerEventsDetails";
+import { useStaffTimetableAndRegisterDetails } from "../../../../../shared/context/StaffTimetableAndRegisterDetailsContext";
 import { EventContainerView } from "./EventContainer.view";
 import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/SchoolDomain/responsemodels";
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
@@ -24,116 +24,55 @@ import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
 import { envConfig } from "../../../../../shared/utils";
 
-const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
-  isOpen
-}: any) => {
-  const [isError, setIsError]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-  const [schoolEventsData, setSchoolEventsData]: [
-    IStaffTimeTableEventsResponse[],
-    React.Dispatch<React.SetStateAction<IStaffTimeTableEventsResponse[]>>
-  ] = useState<IStaffTimeTableEventsResponse[]>([]);
-  const [selectedItem, setSelectedItem]: [
-    string,
-    React.Dispatch<React.SetStateAction<string>>
-  ] = useState<string>("");
-  const [status, setStatus]: [
-    number,
-    React.Dispatch<React.SetStateAction<number>>
-  ] = useState<number>(0);
-  const [isOpenPanel, setIsOpenPanel]: [
-    Record<string, boolean>,
-    React.Dispatch<React.SetStateAction<Record<string, boolean>>>
-  ] = useState<Record<string, boolean>>({});
-  const [isLoader, setLoader]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-  const [staffNames, setStaffNames]: [
-    Record<string, string>,
-    React.Dispatch<React.SetStateAction<Record<string, string>>>
-  ] = useState<Record<string, string>>({});
-  const [coverStaffNames, setCoverStaffNames]: [
-    Record<string, string>,
-    React.Dispatch<React.SetStateAction<Record<string, string>>>
-  ] = useState<Record<string, string>>({});
+const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any) => {
+  const { data, isLoading, isError } = useStaffTimetableAndRegisterDetails();
+  const [selectedItem, setSelectedItem] = useState<string>("");
+  const [isOpenPanel, setIsOpenPanel] = useState<Record<string, boolean>>({});
+  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
+  const [coverStaffNames, setCoverStaffNames] = useState<Record<string, string>>({});
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1117px)"
   );
-  const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
-  useEffect(() => {
-    const fetchStaffTimeTableEvents = async () => {
-      /* istanbul ignore next */
-      try {
-        const response = await FetchStaffTimetableAndRegisterDetails();
-        const responseStatus = response?.status ?? null;
-        const responseData: IStaffTimeTableEventsResponse[] | null = response?.payload?.staffTimetableEventsResponse ?? null;
-        if (
-          /* istanbul ignore next */
-          responseStatus !== undefined &&
-          responseStatus !== null &&
-          responseData !== undefined &&
-          responseData !== null
-        ) {
-          /* istanbul ignore next */
-          setStatus(responseStatus);
-          setIsError(false);
-          setSchoolEventsData(responseData);
-          setLoader(false);
-
-          if (responseData.length > 0) {
-            setSelectedItem(responseData[0].externalId);
-          }
-
-          const staffNamePromises: Promise<string>[] = responseData.map(
-            (eventData: IStaffTimeTableEventsResponse) =>
-              formatStaffName(eventData)
-          );
-
-          const coverStaffNamePromises: Promise<string>[] = responseData.map(
-            (eventData: IStaffTimeTableEventsResponse) =>
-              formatCoverStaffName(eventData)
-          );
-
-          const resolvedStaffNames: string[] = await Promise.all(
-            staffNamePromises
-          );
-          const resolvedCoverStaffNames: string[] = await Promise.all(
-            coverStaffNamePromises
-          );
-          const staffNamesMap: Record<string, string> = {};
-          const coverStaffNamesMap: Record<string, string> = {};
-
-          responseData.forEach((eventData, index) => {
-            staffNamesMap[eventData.externalId] = resolvedStaffNames[index];
-            coverStaffNamesMap[eventData.externalId] =
-              resolvedCoverStaffNames[index];
-          });
-          setStaffNames(staffNamesMap);
-          setCoverStaffNames(coverStaffNamesMap);
-        }
-      } catch (error) {
-        setIsError(true);
-        setLoader(true);
+  React.useEffect(() => {
+    if (data && data.status && data.payload?.staffTimetableEventsResponse) {
+      const responseData = data.payload.staffTimetableEventsResponse;
+      if (responseData.length > 0) {
+        setSelectedItem(responseData[0].externalId);
       }
-    };
-    setLoader(true);
-    fetchStaffTimeTableEvents();
-  }, []);
+      const staffNamePromises: Promise<string>[] = responseData.map(
+        (eventData: IStaffTimeTableEventsResponse) => formatStaffName(eventData)
+      );
+      const coverStaffNamePromises: Promise<string>[] = responseData.map(
+        (eventData: IStaffTimeTableEventsResponse) => formatCoverStaffName(eventData)
+      );
+      Promise.all(staffNamePromises).then((resolvedStaffNames) => {
+        const staffNamesMap: Record<string, string> = {};
+        responseData.forEach((eventData, index) => {
+          staffNamesMap[eventData.externalId] = resolvedStaffNames[index];
+        });
+        setStaffNames(staffNamesMap);
+      });
+      Promise.all(coverStaffNamePromises).then((resolvedCoverStaffNames) => {
+        const coverStaffNamesMap: Record<string, string> = {};
+        responseData.forEach((eventData, index) => {
+          coverStaffNamesMap[eventData.externalId] = resolvedCoverStaffNames[index];
+        });
+        setCoverStaffNames(coverStaffNamesMap);
+      });
+    }
+  }, [data]);
 
-  if (isError || (status !== 200 && status !== 204 && status !== 0)) {
+  if (isError || (data && data.status !== 200 && data.status !== 204 && data.status !== 0)) {
     return null;
   }
 
-  if (status === 204 && (!schoolEventsData || schoolEventsData.length === 0)) {
+  if (data && data.status === 204 && (!data.payload?.staffTimetableEventsResponse || data.payload.staffTimetableEventsResponse.length === 0)) {
     return renderNoEventsCard(t);
   }
 
-  if (isLoader) {
+  if (isLoading) {
     return (
       <Loader
         dataTestId="staff-data-loader"
@@ -143,12 +82,14 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({
       />
     );
   }
+
+  const schoolEventsData = data?.payload?.staffTimetableEventsResponse || [];
   return returnEventContainer({
     schoolEventsData,
     isOpen,
     isOpenPanel,
     selectedItem,
-    isLoader,
+    isLoader: isLoading,
     setIsOpenPanel,
     setSelectedItem,
     staffNames,
