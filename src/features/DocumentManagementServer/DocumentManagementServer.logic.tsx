@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
-import { Category, FetchViewDownloadDataParams } from "./responseModel";
+ import { Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -20,13 +20,13 @@ export function renderRelatedToItem(item: any) {
     );
   }
   if (item.type === "pupil") {
-     const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
+      const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
     return (
       <>
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-        <Tag
+       <Tag
           dataTestId="name"
           id="name"
           className="relatedto-tag"
@@ -38,7 +38,7 @@ export function renderRelatedToItem(item: any) {
   // School or other types
   return <span>{item.name}</span>;
 };
-
+ 
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
@@ -50,6 +50,7 @@ export function mapRelatedArr(doc: any): any[] {
         year: pupil.currentYearGroup || "",
         reg: pupil.currentPrimaryClass || "",
         referenceExternalId: pupil.learnerExternalId || "",
+        isLeaver:pupil?.onRollState || ""
       }));
     } else if (doc.documentRealatedTo === 3) {
       // Staff
@@ -70,7 +71,7 @@ export function mapRelatedArr(doc: any): any[] {
   }
   return relatedArr;
 }
-
+ 
 export const getTableHeadersData: {
   text: string;
   isShow: boolean;
@@ -187,7 +188,7 @@ anyComponent: (e: any) => (
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
-
+ 
       isColumnSorting: true,
       columnWidth: "144px",
       anyComponent: (e: any) => {
@@ -209,14 +210,37 @@ anyComponent: (e: any) => (
         );
       }
     },
-    {
-      text: "Added by",
-      isShow: true,
-      showValAs: ShowValAs.Text,
-      headerTxtTrunctLength: 50,
-      columnWidth: "180px",
-      isColumnSorting: true,
-    },
+   {
+  text: "Added by",
+  isShow: true,
+  showValAs: ShowValAs.CustomeComponent,
+  headerTxtTrunctLength: 50,
+  columnWidth: "180px",
+  isColumnSorting: true,
+  anyComponent: (e: any) => {
+    // const shouldTruncate = 12;
+    const value = e?.length > 12 ? truncatedString(e, 12)?.truncated : "";
+    if (!value) return (
+      <div style={{ display: "flex" }}>
+        <span className="document-text document-column">{e}</span>
+      </div>
+    );
+    return (
+      <div style={{ display: "flex" }}>
+        <Tooltip
+          dataTestId="tooltip-addedby"
+          content={<span>{e}</span>}
+          align={TooltipAlign.Center}
+          position={TooltipPosition.Bottom}
+        >
+          <div className="tooltip-content document-text">
+            <span>{value}</span>
+          </div>
+        </Tooltip>
+      </div>
+    );
+  }
+},
     {
       text: "Date added",
       isShow: true,
@@ -298,7 +322,7 @@ export const handlePageChange = (
   setIsSearchDataLoading(true);
   setCurrentPage(page);
 };
-
+ 
 // Breadcrumb logic
 export const onBreadcrumbClick = (path: string) => {
   window.location.assign(path);
@@ -310,8 +334,8 @@ export const onBreadcrumbClick = (path: string) => {
     clickLocation: "breadcrumb"
   });
 };
-
-// Suggestion item click logic
+ 
+ 
 export const handleSuggestionClick = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
@@ -319,7 +343,7 @@ export const handleSuggestionClick = async (
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
   setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>
 ) => {
-  if (!item || !item.name) return;
+   if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
   setDocumentRelatedTo(relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0);
@@ -334,17 +358,17 @@ export const handleSuggestionClick = async (
   }
   setSearchRefExternalId(refExternalId || "");
 };
-
+ 
 // Has items check
 export const hasItems = (suggestions: Suggestion[]): boolean =>
   suggestions?.some(({ values }) => values?.length > 0);
-
+ 
 // Search input change logic
 export const handleSearchChange = (
   e: React.ChangeEvent<HTMLInputElement>,
   categoryId: number[] | null,
   fromDate: string,
-  toDate: string, 
+  toDate: string,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
@@ -352,17 +376,17 @@ export const handleSearchChange = (
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
-
+ 
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
     return;
   }
-
+ 
   setIsSearchLoading(true);
   setSuggestions([]);
-
+ 
   debouncedFetchSuggestions(
     value,
     categoryId,
@@ -373,7 +397,7 @@ export const handleSearchChange = (
     setShowSearchError
   );
 };
-
+ 
 export const loadSuggestions = async (
   text: string,
   fromDate: string,
@@ -408,12 +432,12 @@ export async function fetchGetDocumentDetailsLogic({
   setShowSearchError,
   setShowErrorBanner,
   setIsSearchLoading,
-  setIsSearchDataLoading,
+  setIsSearchDataLoading
 }: {
   page: number;
   categories: number[];
   sortByCol: string;
-  sortOrder: string; // <-- Add type here
+  sortOrder: string; 
   dateRange: { fromDate?: string; toDate?: string };
   refExternalId: string;
   relatedTo: number;
@@ -506,7 +530,7 @@ export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) =
   });
   return visibleTags;
 };
-
+ 
 export const getCategoryArr = (selectedFormats: any[]) =>
   selectedFormats?.map((cat: any) => ({
     text: cat?.text,
@@ -516,10 +540,10 @@ export const getCategoryArr = (selectedFormats: any[]) =>
       id: cat?.data?.registrationId,
     },
   })) || [];
-
+ 
   export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
   if (!dateRange.fromDate && !dateRange.toDate) return [];
-
+ 
   let text = "";
   if (dateRange.fromDate && dateRange.toDate) {
     text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
@@ -528,7 +552,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
   } else if (dateRange.toDate) {
     text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
   }
-
+ 
   return [
     {
       text,
@@ -537,7 +561,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     }
   ];
 };
-
+ 
 export const handleTagCloseLogic = (
   e: React.SyntheticEvent,
   text: string,
@@ -558,7 +582,7 @@ export const handleTagCloseLogic = (
     setDateRange({ fromDate: "", toDate: "" });
     setIsDateError(false);
   }
-
+ 
   // Remove category/format tag
   setSelectedCategories(prev =>
     prev.filter(item => item.text !== closeObj.name && item.data !== closeObj.name)
@@ -633,7 +657,7 @@ export const fetchViewDownloadData = async ({
     setIsSidePanelLoader(false);
   }
 };
-
+ 
 export const fetchCategory = async (): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory();
@@ -643,7 +667,7 @@ export const fetchCategory = async (): Promise<any[]> => {
     return [];
   }
 }
-
+ 
 export const getResultNotFoundMsg = (
   searchText: string,
   docData: any,
@@ -663,9 +687,15 @@ export const getResultNotFoundMsg = (
   }
   return undefined;
 };
-
-
-export const getAllRegistrationIds = (selectedFormats: any[]): any[] => 
+ 
+ export function getCompletedPartitionKeys(viewData: Array<{ status?: string; partitionKey?: string }>): string[] {
+  return viewData
+    .filter(item => item.status?.toLowerCase() === 'complete')
+    .map(item => item.partitionKey ?? "")
+}
+ 
+ 
+export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
      selectedFormats?.flatMap(item => {
         const regId = item?.data?.registrationId;
         if (Array.isArray(regId)) {
@@ -694,7 +724,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
           let props: ISearchItemProp = {};
           let icon: JSX.Element | undefined;
           let value: JSX.Element | string | undefined;
-
+ 
           switch (category?.name) {
             case "Pupil":
               text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
@@ -792,7 +822,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
     })
   );
 };
-
+ 
 
 export const prepareDownload = async (payload: { request: any }[]) => {
   const statuses = await Promise.all(
@@ -802,7 +832,7 @@ export const prepareDownload = async (payload: { request: any }[]) => {
 };
   export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
   suggestions.filter(s => s?.values.length > 0);
-
+ 
 function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
   let timeout: ReturnType<typeof setTimeout>;
   return function (this: any, ...args: Parameters<T>) {
@@ -810,7 +840,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
-
+ 
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
@@ -963,5 +993,59 @@ export const debouncedFetchSuggestions = debounce(
   },
   5
 );
+
+export async function handleClearAllConfirm({
+  viewData: clearAllViewData,
+  clearAllFiles,
+  setShowToastNotification,
+  fetchViewDownloadData: clearAllFetchViewDownloadData,
+  setIsSidePanelLoader,
+  setViewData: clearAllSetViewData,
+  setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload,
+  viewDownload: clearAllViewDownload,
+  downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+  setClearAllError,
+  setShowConfirmDialog,
+  getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+}: {
+  viewData: any[],
+  clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
+  setShowToastNotification: (v: boolean) => void,
+  fetchViewDownloadData: (args: any) => void,
+  setIsSidePanelLoader: (v: boolean) => void,
+  setViewData: (v: any) => void,
+  setHasFetchedViewDownload: (v: boolean) => void,
+  viewDownload: any,
+  downloadPollingIntervalRef: any,
+  setClearAllError: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  getCompletedPartitionKeys: (viewData: any[]) => string[],
+}) {
+  const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
+  setIsSidePanelLoader(true);
+  try {
+    const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+    if (response === 204) {
+      setShowToastNotification(true);
+      clearAllFetchViewDownloadData({
+        showLoader: false,
+        setIsSidePanelLoader,
+        setViewData: (data: any) => {
+          clearAllSetViewData(data);
+          clearAllSetHasFetchedViewDownload(true);
+        },
+        viewDownload: clearAllViewDownload,
+        downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+      });
+    } else {
+      setClearAllError(true);
+    }
+  } catch (error) {
+    setClearAllError(true);
+    setShowToastNotification(false);
+  }
+  setIsSidePanelLoader(false);
+  setShowConfirmDialog(false);
+}
 
 

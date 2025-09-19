@@ -1,3 +1,4 @@
+
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
@@ -517,4 +518,102 @@ describe("Additional tests to increase coverage", () => {
   fireEvent.click(suggestionNode[0]);
   expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
   });
+});
+
+describe('onConfirm (Clear all downloads)', () => {
+  const setShowToastNotification = jest.fn();
+  const setClearAllError = jest.fn();
+  const setShowConfirmDialog = jest.fn();
+  const setIsSidePanelLoader = jest.fn();
+  const setViewData = jest.fn();
+  const setHasFetchedViewDownload = jest.fn();
+  const fetchViewDownloadData = jest.fn();
+  const viewDownload = jest.fn();
+  const downloadPollingIntervalRef = { current: null };
+  const completedPartitionKeys = ['key1', 'key2'];
+  // const viewData = [{ partitionKey: 'key1', status: 'complete' }, { partitionKey: 'key2', status: 'complete' }];
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('shows error when clearAllFiles returns non-204', async () => {
+    const clearAllFiles = jest.fn().mockResolvedValue(500);
+    await act(async () => {
+      const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+      if (response === 204) {
+        setShowToastNotification(true);
+        fetchViewDownloadData({
+          showLoader: false,
+          setIsSidePanelLoader,
+          setViewData: (data: any) => {
+            setViewData(data);
+            setHasFetchedViewDownload(true);
+          },
+          viewDownload,
+          downloadPollingIntervalRef,
+        });
+      } else {
+        setClearAllError(true);
+      }
+      setShowConfirmDialog(false);
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).not.toHaveBeenCalled();
+    expect(fetchViewDownloadData).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('shows error and hides toast on exception', async () => {
+    const clearAllFiles = jest.fn().mockRejectedValue(new Error('fail'));
+    await act(async () => {
+      try {
+        await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+      } catch (error) {
+        setClearAllError(true);
+        setShowToastNotification(false);
+      }
+      setShowConfirmDialog(false);
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).toHaveBeenCalledWith(false);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+});
+
+describe('onClickSidePnlSecondaryBtn', () => {
+  it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [{ name: "File1", status: "complete" }],
+  });
+  render(<DocumentManagementServerView />);
+
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("View download"));
+
+await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
+fireEvent.click(screen.getByTestId('secondary-button'));
+  
+  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
+});
+
+it("closes side panel when clicking 'Close' with no completed files", async () => {
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [{ name: "File1", status: "inprogress" }],
+  });
+  const {container} = render(<DocumentManagementServerView />);
+
+  console.log(container.innerHTML);
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("View download"));
+  
+  fireEvent.click(screen.getByTestId("side-panel-close-button"));
+  
+  await waitFor(() => {
+    expect(screen.queryByText("Downloads")).not.toBeInTheDocument();
+  });
+});
+
 });

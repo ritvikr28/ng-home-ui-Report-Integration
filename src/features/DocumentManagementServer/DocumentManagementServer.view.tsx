@@ -1,17 +1,17 @@
 /// <reference types="node" />
 import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload } from "./ApiService"
+import { viewDownload ,clearAllFiles} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
-
+ 
 
 export const breadcrumbActionsList = [
     {
@@ -35,8 +35,9 @@ export const breadcrumbActionsList = [
         path: ''
     }
 ]
-
+ 
 const DocumentManagementServerView: () => JSX.Element = () => {
+    const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
     
@@ -69,9 +70,11 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
-     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [clearAllError, setClearAllError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
+    const [showToastNotification, setShowToastNotification] = useState(false);
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
@@ -89,7 +92,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
-
+ 
     let tableData: tableDataProps[] = [];
 
         if (showErrorBanner) {
@@ -113,7 +116,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
-
+ 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
@@ -141,24 +144,22 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
-            return () => {
-                document.body.classList.remove("no-scroll");
-            };
+            return () => document.body.classList.remove("no-scroll");
         }
-        return () => { };
+        return () => {};
     }, [isMobileView]);
+ 
 
-
-
+ 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
-
+ 
     useEffect(() => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
-
-
+ 
+ 
     useEffect(() => {
         if (docData && docData?.totalRecords) {
             const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
@@ -188,7 +189,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
         if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-            setIsSidePanelLoader(true); // Show loader immediately
+            setShowToastNotification(false); 
+            setIsSidePanelLoader(true); 
 
             // Wait for 2 seconds before calling view download API
             const timer = setTimeout(() => {
@@ -207,6 +209,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     return () => clearTimeout(timer);
   }
   if (isSidePanelOpen && sidePanelOpenReason === "view") {
+    setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
       showLoader: false,
@@ -267,33 +270,34 @@ const selectedDocs = buildSelectedDocs(
     case "Format":
       apiColumnName = "Format";
       break;
-      case "Size":
+    case "Size":
       apiColumnName = "Size";
       break;
-      case "Category":
-      apiColumnName = "Category";   
-        break;
+    case "Category":
+      apiColumnName = "Category";
+      break;
     default:
-        return;
-    }
-        let newDirection = "Asc";
-        if (sortBy === apiColumnName) {
-            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-            }
-
-        setSortBy(apiColumnName);
-        setSortDirection(newDirection);
-      };
-
-      const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
+      return;
+  }
+  let newDirection = "Asc";
+  if (sortBy === apiColumnName) {
+    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+  }
+ 
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+};
+ 
+   const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }else{
+                setDialogType("prepareDownload");
                 setShowConfirmDialog(true);
             }
-        } 
-        
+        }
+       
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
@@ -304,7 +308,7 @@ const selectedDocs = buildSelectedDocs(
             setIsSidePanelOpen(true);
         }
       }
-
+ 
     const getEmptyStateMsg = () => {
   if (showErrorBanner) return "Information unavailable.";
   if (issearchDataLoading || isSearchLoading) return undefined;
@@ -328,6 +332,8 @@ const selectedDocs = buildSelectedDocs(
   if (!isSearchTriggered && showSearchError) return "Information unavailable.";
   return "Documents will appear here once they are uploaded.";
 };
+
+const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
     const handleSearchClose = () => {
         setSearchInput("");
@@ -393,8 +399,6 @@ const selectedDocs = buildSelectedDocs(
         return () => window.removeEventListener("resize", handleResize);
     }, [breadcrumbActionsList]);
 
-
-
     const NotificationMsgBannerObject = [
         {
             isShow: showErrorBanner,
@@ -439,7 +443,8 @@ const handleApply = () => {
   });
 };
 
-   const handleFilterOnClick = () => {
+ 
+    const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
@@ -513,7 +518,7 @@ const handleApply = () => {
     return (<>
         <>
             <Grid className="dms-layout">
-                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog} 
+                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog}
                 message="Please select at least one item from the search results to perform the action."/>}
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
@@ -537,7 +542,7 @@ const handleApply = () => {
                             value: `${window.location.href}/documents`,
                         }}
                     />
-
+ 
                     {isMobileView && <Breadcrumbs
                         breadcrumbActions={visibleBreadcrumbs}
                         className="essui-Breadcrumbs"
@@ -552,7 +557,7 @@ const handleApply = () => {
                             marginBottom: 16,
                             width: "100%"
                         }}
-
+ 
                     >
                         {!isMobileView && <div>
                             <Breadcrumbs
@@ -700,7 +705,7 @@ const handleApply = () => {
                                 paginationDefaultPage={1}
                                 paginationPage={currentPage}
                                 paginationOnChange={onPageChange}
-                                isPagination
+                                isPagination={tableData.length > 0}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
@@ -734,8 +739,16 @@ const handleApply = () => {
                                 }
 
                                 searchOnCloseHandle={handleSearchClose}
-                                secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
-                                onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
+                                secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
+                                onClickSidePnlSecondaryBtn={() => {
+                                    if (hasCompletedFiles) {
+                                        setDialogType("clearAll");
+                                        setShowConfirmDialog(true);
+                                    } else {
+                                        setIsSidePanelOpen(false);
+
+                                    }
+                                }}
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
@@ -743,17 +756,28 @@ const handleApply = () => {
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
                                     Please try again. If the issue persists, please get in touch with our support team.
                                     We appreciate your patience and understanding during this time."
-                                sidePanelNotificationStatus={NotificationStatus.WARNING}
+                                sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
                                 sidePanelNotificationTitle="Unable to Download"
-                                addEditTemplateChild={
+                                 addEditTemplateChild={
                                     <>
-                                        {prepareDownloadError && <Notification
-                                            status={NotificationStatus.WARNING}
-                                            title="Unable to prepare [document/documents] for download"
-                                            message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
-                                            autoclose
-                                            onClickClose={() => setPrepareDownloadError(false)}
-                                        />} 
+                                        {clearAllError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to clear downloads"
+                                                message="A technical issue has prevented us from clearing the downloads. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setClearAllError(false)}
+                                            />
+                                        )}
+                                        {prepareDownloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setPrepareDownloadError(false)}
+                                            />
+                                        )}
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
@@ -776,10 +800,18 @@ const handleApply = () => {
                                         )}
                                         <div className="viewDownloadWrap">
                                            {renderViewDownloadContent()}
-                                            </div>
+                                        </div>
+                                        { showToastNotification && (
+                                            <Notification
+                                                status={NotificationStatus.SUCCESSTOAST}
+                                                title="Downloads cleared"
+                                                autoclose
+                                                onClickClose={() => setShowToastNotification(false)}
+                                            />
+                                        )}
                                     </>
                                 }
-
+                                 
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
@@ -822,41 +854,68 @@ const handleApply = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
-                                    {
-                                        cancelText: "Cancel",
-                                        contentText: "",
-                                                isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
-                                                notificationStatus: NotificationStatus.WARNING,
-                                        okText: 'Prepare download',
-                                        onCancel: (): void => {setShowConfirmDialog(false)},
-                                       onConfirm: (): void => {
-                                        setPrepareDownloadError(false);
-                                        setIsSidePanelLoader(true);
-                                        setSidePanelOpenReason("prepare");
-                                        setIsSidePanelOpen(true);
-
-                                        prepareDownload(selectedDocs)
-                                            .then((statuses) => {
-                                            if (statuses.some((status: number) => status !== 204)) {
-                                                setPrepareDownloadError(true);
-                                            } else if (selectedCheckBoxIds.length > 1) {
-                                                setShowEmailNotification(true);
-                                                 }
-                                            })
-                                            .catch(() => {
-                                            setIsSidePanelLoader(false);
-                                            setPrepareDownloadError(true);
-                                            });
-                                        },
-                                                template: DialogTemplate.Confirmation
-                                    }
+                                    dialogType === "clearAll"
+                                        ? {
+                                            cancelText: "Keep all",
+                                            contentText: "Clear all downloads?\nThis action will remove all files 'Completed' from the Download panel.",
+                                            isNotificationanner: false,
+                                            notificationTitle: "",
+                                            notificationStatus: NotificationStatus.WARNING,
+                                            okText: "Clear all",
+                                            onCancel: (): void => { setShowConfirmDialog(false); },
+                                            onConfirm: async (): Promise<void> => {
+                                                await handleClearAllConfirm({
+                                                    viewData,
+                                                    clearAllFiles,
+                                                    setShowToastNotification,
+                                                    fetchViewDownloadData,
+                                                    setIsSidePanelLoader,
+                                                    setViewData,
+                                                    setHasFetchedViewDownload,
+                                                    viewDownload,
+                                                    downloadPollingIntervalRef,
+                                                    setClearAllError,
+                                                    setShowConfirmDialog,
+                                                    getCompletedPartitionKeys,
+                                                });
+                                            },
+                                            template: DialogTemplate.Confirmation
+                                        }
+                                        : {
+                                            cancelText: "Cancel",
+                                            contentText: "",
+                                            isNotificationanner: true,
+                                            notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
+                                            notificationStatus: NotificationStatus.WARNING,
+                                            okText: 'Prepare download',
+                                            onCancel: (): void => {setShowConfirmDialog(false); },
+                                            onConfirm: (): void => {
+                                                setPrepareDownloadError(false);
+                                                setIsSidePanelLoader(true);
+                                                setSidePanelOpenReason("prepare");
+                                                setIsSidePanelOpen(true);
+                                                prepareDownload(selectedDocs)
+                                                    .then((statuses) => {
+                                                        if (statuses.some((status: number) => status !== 204)) {
+                                                            setPrepareDownloadError(true);
+                                                        } else if (selectedCheckBoxIds.length > 1) {
+                                                            setShowEmailNotification(true);
+                                                        }
+                                                    })
+                                                    .catch(() => {
+                                                        setIsSidePanelLoader(false);
+                                                        setPrepareDownloadError(true);
+                                                    });
+                                            },
+                                            template: DialogTemplate.Confirmation
+                                        }
                                 }
-                                titleConfirmation="Prepare Download?"
+                                titleConfirmation={dialogType === "clearAll" ? "Clear all downloads?" : "Prepare Download?"}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationTitle=""
+                                toastNotificationAutoclose={true}
+                                toastNotificationTitle="Downloads cleared successfully!"
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
@@ -880,5 +939,3 @@ const handleApply = () => {
     </>)
 }
 export default DocumentManagementServerView
-
-
