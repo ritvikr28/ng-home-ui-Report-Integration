@@ -1001,7 +1001,7 @@ export async function handleClearAllConfirm({
   setShowToastNotification,
   fetchViewDownloadData: clearAllFetchViewDownloadData,
   setIsSidePanelLoader,
-  setViewData: clearAllSetViewData,
+  setViewData,
   setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload,
   viewDownload: clearAllViewDownload,
   downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
@@ -1026,15 +1026,14 @@ export async function handleClearAllConfirm({
   setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+
     if (response === 204) {
+      setViewData([]);
       setShowToastNotification(true);
       clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
-        setViewData: (data: any) => {
-          clearAllSetViewData(data);
-          clearAllSetHasFetchedViewDownload(true);
-        },
+        setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
       });
@@ -1059,9 +1058,8 @@ export const fileDownload = async (
 ) => {
   try {
     const isZipFile =
-      (!application && !sectionName && fileId === "00000000-0000-0000-0000-000000000000" && sasUrl);
+      (!application && !sectionName && sasUrl);
     if (isZipFile) {
-      // Direct download using sasUrl
       const link = document.createElement("a");
       link.href = sasUrl!;
       link.download = fileName;

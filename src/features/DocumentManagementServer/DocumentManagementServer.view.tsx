@@ -190,7 +190,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
         if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-            // setShowToastNotification(false); 
+            setShowToastNotification(false); 
             setIsSidePanelLoader(true); 
 
             // Wait for 2 seconds before calling view download API
@@ -226,7 +226,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
   }
   return undefined;
-}, [isSidePanelOpen, sidePanelOpenReason, showToastNotification]);
+}, [isSidePanelOpen, sidePanelOpenReason]);
 
     const fetchGetDocumentDetails = (
     page: number,
@@ -478,7 +478,7 @@ const handleApply = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification) {
         return <p>Files you download will appear here.</p>;
     }
     if (viewData?.length > 0) {
@@ -824,10 +824,7 @@ const handleApply = () => {
                                             }}
                                         />
                                         )}
-                                        <div className="viewDownloadWrap">
-                                           {renderViewDownloadContent()}
-                                        </div>
-                                        { showToastNotification && (
+                                         { showToastNotification && (
                                             <Notification
                                                 status={NotificationStatus.SUCCESSTOAST}
                                                 title="Downloads cleared"
@@ -835,6 +832,17 @@ const handleApply = () => {
                                                 onClickClose={() => setShowToastNotification(false)}
                                             />
                                         )}
+                                        <div className="viewDownloadWrap">
+                                           {renderViewDownloadContent()}
+                                        </div>
+                                        {/* { showToastNotification && (
+                                            <Notification
+                                                status={NotificationStatus.SUCCESSTOAST}
+                                                title="Downloads cleared"
+                                                autoclose
+                                                onClickClose={() => setShowToastNotification(false)}
+                                            />
+                                        )} */}
                                     </>
                                 }
                                  
