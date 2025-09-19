@@ -474,7 +474,7 @@ const handleApply = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification) {
         return <p>Files you download will appear here.</p>;
     }
     if (viewData?.length > 0) {
@@ -857,7 +857,7 @@ const handleApply = () => {
                                     dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
-                                            contentText: "Clear all downloads?\nThis action will remove all files 'Completed' from the Download panel.",
+                                            contentText: "This action will remove all files 'Completed' from the Download panel.",
                                             isNotificationanner: false,
                                             notificationTitle: "",
                                             notificationStatus: NotificationStatus.WARNING,

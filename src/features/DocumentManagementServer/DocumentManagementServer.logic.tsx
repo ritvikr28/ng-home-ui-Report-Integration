@@ -1000,8 +1000,7 @@ export async function handleClearAllConfirm({
   setShowToastNotification,
   fetchViewDownloadData: clearAllFetchViewDownloadData,
   setIsSidePanelLoader,
-  setViewData: clearAllSetViewData,
-  setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload,
+  setViewData,
   viewDownload: clearAllViewDownload,
   downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
   setClearAllError,
@@ -1023,17 +1022,17 @@ export async function handleClearAllConfirm({
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
+ setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+
     if (response === 204) {
+      setViewData([]);
       setShowToastNotification(true);
       clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
-        setViewData: (data: any) => {
-          clearAllSetViewData(data);
-          clearAllSetHasFetchedViewDownload(true);
-        },
+        setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
       });

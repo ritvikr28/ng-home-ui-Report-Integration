@@ -2339,34 +2339,6 @@ describe('handleClearAllConfirm', () => {
     expect(setShowToastNotification).toHaveBeenCalledWith(false);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
-
-  it('calls setViewData and setHasFetchedViewDownload via setViewData callback in fetchViewDownloadData', async () => {
-    clearAllFiles.mockResolvedValue(204);
-    // We want to capture the setViewData callback passed to fetchViewDownloadData
-    let setViewDataCb: any = null;
-    fetchViewDownloadDataMock.mockImplementation((args: any) => {
-      setViewDataCb = args.setViewData;
-    });
-    await handleClearAllConfirm({
-      viewData,
-      clearAllFiles,
-      setShowToastNotification,
-      fetchViewDownloadData: fetchViewDownloadDataMock,
-      setIsSidePanelLoader,
-      setViewData,
-      setHasFetchedViewDownload,
-      viewDownload,
-      downloadPollingIntervalRef,
-      setClearAllError,
-      setShowConfirmDialog,
-      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
-    });
-    // Now call the callback and check the mocks
-    const testData = [{ id: 1, status: 'complete' }];
-    setViewDataCb(testData);
-    expect(setViewData).toHaveBeenCalledWith(testData);
-    expect(setHasFetchedViewDownload).toHaveBeenCalledWith(true);
-  });
 });
 
 
