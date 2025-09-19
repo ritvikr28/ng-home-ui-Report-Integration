@@ -195,7 +195,18 @@
   padding-right: 5px;
 }
 
+.dms-layout {
 
+  .essui.animationmsg {
+    left: 75%;
+    margin-left: -237px;
+    min-width: 472px;
+    position: fixed;
+    text-align: center;
+    transform: -50%,-50%;
+    z-index: 1;
+  }
+}
 
 
 .grid-wrapper {
@@ -450,3 +461,14 @@
     width: 99% !important;
 }
   }
+
+@media (max-width: 600px) {
+  .dms-layout .essui.animationmsg {
+    left: 50%;
+    margin-left: 0;
+    min-width: 90vw;
+    max-width: 98vw;
+    box-sizing: border-box;
+    transform: translate(-50%, 0);
+  }
+}

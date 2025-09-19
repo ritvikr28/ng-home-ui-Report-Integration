@@ -1,5 +1,7 @@
+
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
-import { AxiosResponse } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
+import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
 import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
@@ -38,7 +40,7 @@ export const fetchDocumentDetails = async ({
     if (responseData?.status === 200) {
       return responseData?.data;
     }
-     return null;
+    return null;
   } catch (err: any) {
     return err?.response?.data ;
   }
@@ -113,6 +115,23 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
+
+export const clearAllFiles = async (payload: { request: { partitionKey: string[] } }): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `validation/api/v1/file/clearall`;
+    const responseData: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
+    console.log("clearAllFiles response status:", responseData?.status);
+    return responseData?.status;
+  } catch (error: any) {
+    console.error("clearAllFiles error:", error);
+    if (error?.response?.status) {
+      return error.response.status;
+    }
+  }
+  return payload?.request?.partitionKey;
+};
+
 export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
@@ -124,3 +143,27 @@ export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> =
     return {};
   }
 };
+
+
+export const fileDownloadInstance: AxiosInstance = axios.create({ 
+  baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
+  responseType: "blob",
+  headers: {
+    Authorization: `Bearer ${authService.getAuthTokens()}`
+  }
+});
+
+export const downloadFile: (
+  isApplication?: string,
+  isSection?: string,
+  fileId?: string
+) => Promise<Blob> = async (
+  isApplication?: string,
+  isSection?: string,
+  fileId?: string
+) => {
+  const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
+  const response = await fileDownloadInstance.get(url);
+  return response.data;
+};
+
