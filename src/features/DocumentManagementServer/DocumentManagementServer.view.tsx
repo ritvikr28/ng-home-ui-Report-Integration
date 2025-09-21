@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, mapToBulkDeletePayload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles} from "./ApiService"
+import { viewDownload ,clearAllFiles, deleteFiles} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -78,26 +78,35 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    
+    const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
+    const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
     ];
 
+    const mockDeleteFiles = async (payload: any): Promise<number> => {
+  // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Return 204 for success, or any other status for error
+    // Toggle this for testing:
+    return 204; // or return 500 for error
+    };
+
     const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+    
+    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
  
     let tableData: tableDataProps[] = [];
 
-        if (showErrorBanner) {
-        tableData = [];
-        } else if (showSearchError || !docData?.data?.length) {
+        if (showSearchError || !docData?.data?.length) {
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
@@ -181,7 +190,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     useEffect(() => {
   if (isSearchTriggered && searchText) {
-    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
     fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -301,6 +309,9 @@ const selectedDocs = buildSelectedDocs(
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
+            } else {
+                setDialogType("delete");
+                setShowConfirmDialog(true);
             }
         }
         else if ((selectedItem?.value?.toLowerCase() === "view download")) {
@@ -405,10 +416,19 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             variant: "warning",
             title: "Information unavailable",
             message:
-                "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+            "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
             autoclose: true
-        }
-    ]
+        },
+        {
+            isShow: showDeleteErrorBanner,
+            variant: "warning",
+            title: `Unable to delete [document/documents]`,
+            message:
+            "A technical issue has stopped us from deleting the document. Please try again later. If the issue persists, please get in touch with our support team.",
+            autoclose: false,
+            onClickClose: () => setShowDeleteErrorBanner(false)
+    }
+    ];
 
     useEffect(() => {
     if (searchTerm?.length > 1) {
@@ -428,6 +448,38 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
+
+    const handleBulkDelete = async () => {
+        setShowDeleteSuccessToast(false);
+    const payload = mapToBulkDeletePayload(
+        allSelectedDocs.map(doc => ({
+        ...doc,
+        externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+        })),
+        allRegistrationIds,
+        dateRange.fromDate,
+        dateRange.toDate,
+        searchRefExternalId,
+        documentRealatedTo
+    );
+    try {
+        const status = await mockDeleteFiles(payload); 
+        if (status === 204) {
+        setShowToastNotification(true);
+        setShowConfirmDialog(false);
+        setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
+        setShowDeleteErrorBanner(false);
+        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+        setShowDeleteSuccessToast(true);
+        } else {
+        setShowDeleteErrorBanner(true);
+        }
+    } catch (err) {
+        setShowDeleteErrorBanner(true);
+    }
+    };
 
 const handleApply = () => {
   validateAndApplyFilter({
@@ -517,6 +569,16 @@ const handleApply = () => {
     };
     return (<>
         <>
+            <div className="clc-dms-delete-toast">
+                {showDeleteSuccessToast && (
+                    <Notification
+                        status={NotificationStatus.SUCCESSTOAST}
+                        title="Documents deleted"
+                        autoclose
+                        hideCloseButton
+                    />
+                )}
+            </div>
             <Grid className="dms-layout">
                 {showDialog && <NoSelectionDialog setShowDialog={setShowDialog}
                 message="Please select at least one item from the search results to perform the action."/>}
@@ -881,6 +943,25 @@ const handleApply = () => {
                                             },
                                             template: DialogTemplate.Confirmation
                                         }
+                                        : dialogType === "delete"
+                                            ? {
+                                                cancelText: "Cancel",
+                                                contentText: "",
+                                                isNotificationanner: true,
+                                                notificationTitle: `${allSelectedDocs?.length} document${allSelectedDocs?.length > 1 ? "s are" : " is"} about to be deleted forever.`,
+                                                notificationStatus: NotificationStatus.WARNING,
+                                                okText: 'Delete',
+                                                onCancel: (): void => { setShowConfirmDialog(false); },
+                                                onConfirm: (): void => {
+                                                    handleBulkDelete();
+                                                    setShowConfirmDialog(false);
+                                                    setSelectedCheckBoxIds([]);
+                                                    setAllSelectedDocs([]);
+                                                    setIsClearSelectedCheckbox(true);
+                                                    // Optionally show a toast notification
+                                                },
+                                                template: DialogTemplate.Confirmation
+                                            }
                                         : {
                                             cancelText: "Cancel",
                                             contentText: "",
@@ -910,7 +991,11 @@ const handleApply = () => {
                                             template: DialogTemplate.Confirmation
                                         }
                                 }
-                                titleConfirmation={dialogType === "clearAll" ? "Clear all downloads?" : "Prepare Download?"}
+                                titleConfirmation={dialogType === "clearAll"
+                                                    ? "Clear all downloads?"
+                                                    : dialogType === "delete"
+                                                    ? "Delete Document(s)?"
+                                                    : "Prepare Download?"}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

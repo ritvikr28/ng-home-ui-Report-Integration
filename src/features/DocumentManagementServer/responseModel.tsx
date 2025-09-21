@@ -103,6 +103,23 @@ export interface PrepareDownloadRequest {
   fileDetails: DocumentPrepareDownload[];
 }
 
+export interface deleteDocumentRequest {
+  selectAll: boolean;
+  categoryId: number[];
+  fromDate: string;
+  toDate: string;
+  referenceExternalIds: string[];
+  documentRealatedTo: number;
+  fileDetails: deleteDocumentFilesDetails[];
+
+}
+
+export interface deleteDocumentFilesDetails {
+  fileId: string;
+  registrationId: number;
+  externalId: string;
+}
+
 export interface FetchViewDownloadDataParams {
   showLoader?: boolean;
   setIsSidePanelLoader: React.Dispatch<React.SetStateAction<boolean>>;

@@ -3,7 +3,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
-import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
+import { deleteDocumentRequest, DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 
 export const fetchDocumentDetails = async ({
@@ -92,6 +92,22 @@ export const prepareAndDownloadFile = async (payload: { request: any }) => {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/preparedownload`;
     const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
+
+    return responseData?.status; 
+  } catch (error: any) {
+   
+    if (error?.response?.status) {
+      return error.response.status;
+    }
+  }
+  return payload?.request?.status; 
+};
+
+export const deleteFiles = async (payload: { request: any }) => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/bulkdelete`;
+    const responseData: AxiosResponse<deleteDocumentRequest> = await service.post(url, payload, { baseURL: baseUrl });
 
     return responseData?.status; 
   } catch (error: any) {

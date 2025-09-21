@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
- import { Category, FetchViewDownloadDataParams } from "./responseModel";
+ import { Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -898,6 +898,33 @@ export function buildSelectedDocs(
       },
     }
   ];
+}
+
+export function mapToBulkDeletePayload(
+  selectedDocs: { fileId: string; registrationId: number, externalId: string }[],
+  categoryId: any[],
+  fromDate: string,
+  toDate: string,
+  referenceExternalId: string,
+  documentRealatedTo: number
+): { request: deleteDocumentRequest } {
+  const fileDetails: deleteDocumentFilesDetails[] = selectedDocs.map(doc => ({
+    fileId: doc.fileId,
+    registrationId: doc.registrationId,
+    externalId: doc.externalId, 
+  }));
+
+  return {
+    request: {
+      selectAll: false,
+      categoryId,
+      fromDate,
+      toDate,
+      referenceExternalIds: [referenceExternalId],
+      documentRealatedTo,
+      fileDetails,
+    }
+  };
 }
 
 export function validateAndApplyFilter({
