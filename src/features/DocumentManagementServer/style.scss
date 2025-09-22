@@ -60,6 +60,12 @@
 
 .dms-layout {
 
+.essui-side-panel-heading {
+    align-items: center;
+    display: flex;
+    padding: 11px 2px 3px!important;
+}
+
   .grid-wrapper {
     .filter-tool-view .filter-btn {
       margin-right: 8px;
@@ -223,6 +229,7 @@
   }
 
 
+
   .essui-loader .essui-loader-spin {
     margin-top: inherit;
   }
@@ -312,6 +319,17 @@
     color: #2177c2;
     font-size: 16px;
   }
+  .cancelDownloadBtn{
+    background-color: #ffffff;
+    color: #2177c2;
+    font-size: 16px;
+  }
+
+  .inProgressLoader {
+  display: flex;
+  align-items: center;
+  gap: 11px; 
+}
 }
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:360px) and (max-width:599.9px) {
@@ -330,6 +348,7 @@
     }
   }
 }
+
 
 // --------------------------390px to 767px-----------------
 @media (min-width: 390px) and (max-width: 767.9px) {

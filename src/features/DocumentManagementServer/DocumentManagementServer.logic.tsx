@@ -1,7 +1,8 @@
+
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
  import { Category, FetchViewDownloadDataParams } from "./responseModel";
@@ -1048,3 +1049,35 @@ export async function handleClearAllConfirm({
 }
 
 
+export const fileDownload = async (
+  fileId: string,
+  fileName: string,
+  application: string,
+  sectionName: string,
+  sasUrl?: string
+) => {
+  const isZipFile = (!application && !sectionName && sasUrl);
+  try {
+    if (isZipFile) {
+      const link = document.createElement("a");
+      link.href = sasUrl!;
+      link.download = fileName;
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+      link.click();
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+    } else {
+      const blob = await downloadFile(application, sectionName, fileId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `${fileName}`;
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+    }
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    throw error;
+  }
+};

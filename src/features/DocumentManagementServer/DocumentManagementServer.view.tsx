@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles} from "./ApiService"
+import { viewDownload ,clearAllFiles } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -40,7 +40,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -75,6 +74,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
+    const [downloadError, setDownloadError] = useState<boolean>(false);
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
@@ -208,7 +208,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     return () => clearTimeout(timer);
   }
-  if (isSidePanelOpen && sidePanelOpenReason === "view") {
+  if (isSidePanelOpen && sidePanelOpenReason === "view" ) {
     setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
@@ -220,6 +220,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     },
       viewDownload,
       downloadPollingIntervalRef,
+      
     });
   }
   return undefined;
@@ -332,6 +333,7 @@ const selectedDocs = buildSelectedDocs(
   if (!isSearchTriggered && showSearchError) return "Information unavailable.";
   return "Documents will appear here once they are uploaded.";
 };
+
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
@@ -474,7 +476,7 @@ const handleApply = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification && !showToastNotification) {
         return <p>Files you download will appear here.</p>;
     }
     if (viewData?.length > 0) {
@@ -499,12 +501,30 @@ const handleApply = () => {
                         return null;
                         })()}
                 </div>
-                {isComplete && (
-                    <Button className="viewDownloadBtn">Download</Button>
-                )}
+               {isComplete && (
+                   <Button
+                       className="viewDownloadBtn"
+                       id={`file-download-${item.fileId}`}
+                       onClick={async () => {
+                           try {
+                               await fileDownload(
+                                   item.fileId?.toUpperCase(),
+                                   item.name ?? "",
+                                   item.application,
+                                   item.section,
+                                   item.sasUrl
+                               );
+                           } catch (error) {
+                               setDownloadError(true);
+                           }
+                       }}
+                   >
+                       Download
+                   </Button>
+               )}
                 {(isInProgress || isInitiated) && (
                     <span className="inProgressLoader">
-                    <Loader loaderType={LoaderType.Circular} />
+                        <Loader loaderType={LoaderType.Circular} />
                     </span>
                 )}
                 </div>
@@ -778,6 +798,15 @@ const handleApply = () => {
                                                 onClickClose={() => setPrepareDownloadError(false)}
                                             />
                                         )}
+                                        {downloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to download file"
+                                                message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setDownloadError(false)}
+                                            />
+                                        )}
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
@@ -798,10 +827,7 @@ const handleApply = () => {
                                             }}
                                         />
                                         )}
-                                        <div className="viewDownloadWrap">
-                                           {renderViewDownloadContent()}
-                                        </div>
-                                        { showToastNotification && (
+                                         { showToastNotification && (
                                             <Notification
                                                 status={NotificationStatus.SUCCESSTOAST}
                                                 title="Downloads cleared"
@@ -809,6 +835,9 @@ const handleApply = () => {
                                                 onClickClose={() => setShowToastNotification(false)}
                                             />
                                         )}
+                                        <div className="viewDownloadWrap">
+                                           {renderViewDownloadContent()}
+                                        </div>
                                     </>
                                 }
                                  
@@ -854,16 +883,17 @@ const handleApply = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
-                                    dialogType === "clearAll"
+                                     dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
-                                            contentText: "This action will remove all files 'Completed' from the Download panel.",
+                                            contentText: "This action will remove all files 'Completed' from the Downloads panel.",
                                             isNotificationanner: false,
                                             notificationTitle: "",
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
+                                                setClearAllError(false);
                                                 await handleClearAllConfirm({
                                                     viewData,
                                                     clearAllFiles,
