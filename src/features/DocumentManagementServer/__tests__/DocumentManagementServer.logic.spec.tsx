@@ -1,6 +1,6 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
 import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
@@ -218,6 +218,29 @@ describe("formatSuggestions", () => {
       id: "o1"
     });
   });
+
+it('renders pupil image with correct class', async () => {
+  const payload = [{
+    name: 'Pupil',
+    values: [{
+      preferredForename: 'John',
+      preferredSurname: 'Doe',
+      legalName: 'John Doe',
+      imagePath: 'http://example.com/image.jpg',
+      currentYearGroup: 'Y1',
+      currentPrimaryClass: 'A',
+      pupilId: '123'
+    }]
+  }];
+
+  const suggestions = await formatSuggestions(payload);
+  // Render the icon part of the suggestion
+  render(<>{suggestions[0].values[0].icon}</>);
+  const img = screen.getByAltText('Pupil Photo');
+  expect(img).toBeInTheDocument();
+  expect(img).toHaveClass('dms-search__profile-icon');
+  expect(img).toHaveAttribute('src', 'http://example.com/image.jpg');
+});
 
   it("formats default category", async () => {
     const input = [
@@ -2480,7 +2503,7 @@ describe('fileDownload', () => {
     expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
     expect(mockLink.click).toHaveBeenCalled();
     expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
-    expect(result.success).toBe(true);
+    // No result.success to check, as fileDownload returns void
   });
 
   it('downloads blob file using downloadFile', async () => {
@@ -2500,23 +2523,21 @@ describe('fileDownload', () => {
     expect(mockLink.click).toHaveBeenCalled();
     expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:url');
     expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
-    expect(result.success).toBe(true);
+    // expect(result.success).toBe(true);
   });
 
-  it('returns error and logs if exception thrown', async () => {
-    document.createElement = jest.fn(() => { throw new Error('fail'); });
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const result = await logicModule.fileDownload(
-      'file-err',
-      'err.txt',
-      'app',
-      'section',
-      undefined
-    );
-    expect(result.success).toBe(false);
-    expect(errorSpy).toHaveBeenCalled();
-    errorSpy.mockRestore();
-  });
+  it('throws and logs if exception thrown', async () => {
+  document.createElement = jest.fn(() => { throw new Error('fail'); });
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  await expect(logicModule.fileDownload(
+    'file-err',
+    'file.txt',
+    'app',
+    'section'
+  )).rejects.toThrow('fail');
+  expect(errorSpy).toHaveBeenCalled();
+  errorSpy.mockRestore();
+});
 });
 
 

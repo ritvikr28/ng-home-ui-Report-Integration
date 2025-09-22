@@ -40,7 +40,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    
+    const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -503,28 +503,47 @@ const handleApply = () => {
                         return null;
                         })()}
                 </div>
-                            {isComplete && (
-    <Button
-        className="viewDownloadBtn"
-        id={`file-download-${item.fileId}`}
-        onClick={() =>
-            fileDownload(
-                item.fileId?.toUpperCase(),
-                item.name ?? "",
-                item.application,
-                item.section,
-                item.sasUrl
-            )}
-    >
-        Download
-    </Button>
-)}
-              {(isInProgress || isInitiated) && (
-                <span className="inProgressLoader">
-                  <Loader loaderType={LoaderType.Circular} />
-                </span>
-              )}
-            </div>
+               {isComplete && (
+                     downloadingFileId === item.fileId ? (
+                       <span className="inProgressLoader">
+                           <Loader loaderType={LoaderType.Circular} />
+                           <Button
+                            className="cancelDownloadBtn"
+                            onClick={() => setDownloadingFileId(null)}
+                            >
+                            Cancel
+                            </Button>
+                       </span>
+                   ) : (
+                       <Button
+                           className="viewDownloadBtn"
+                           id={`file-download-${item.fileId}`}
+                           onClick={async () => {
+                               setDownloadingFileId(item.fileId);
+                               try {
+                                await fileDownload(
+                                    item.fileId?.toUpperCase(),
+                                    item.name ?? "",
+                                    item.application,
+                                    item.section,
+                                    item.sasUrl
+                                );
+                                } catch (error) {
+                                setDownloadError(true);
+                                }
+                                setDownloadingFileId(null);
+                            }}
+                            >
+                            Download
+                            </Button>
+                        )
+                        )}
+                {(isInProgress || isInitiated) && (
+                    <span className="inProgressLoader">
+                        <Loader loaderType={LoaderType.Circular} />
+                    </span>
+                )}
+                </div>
             );
             })}
         </>

@@ -518,6 +518,7 @@ describe("Additional tests to increase coverage", () => {
   fireEvent.click(suggestionNode[0]);
   expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
   });
+
 });
 
 describe('onConfirm (Clear all downloads)', () => {
@@ -531,8 +532,6 @@ describe('onConfirm (Clear all downloads)', () => {
   const viewDownload = jest.fn();
   const downloadPollingIntervalRef = { current: null };
   const completedPartitionKeys = ['key1', 'key2'];
-  // const viewData = [{ partitionKey: 'key1', status: 'complete' }, { partitionKey: 'key2', status: 'complete' }];
-
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -606,7 +605,7 @@ it("closes side panel when clicking 'Close' with no completed files", async () =
   const {container} = render(<DocumentManagementServerView />);
 
   console.log(container.innerHTML);
-  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.getByText("Actions"));
   fireEvent.click(await screen.findByText("View download"));
   
   fireEvent.click(screen.getByTestId("side-panel-close-button"));
@@ -626,7 +625,6 @@ describe('Clear all downloads onConfirm logic', () => {
   const getCompletedPartitionKeys = jest.fn();
   const clearAllFiles = jest.fn();
 
-  // const viewData = [{ partitionKey: 'key1', status: 'complete' }];
   const completedPartitionKeys = ['key1'];
 
   beforeEach(() => {
@@ -760,4 +758,64 @@ describe('Clear all downloads onConfirm logic', () => {
 //     // Error notification should appear
 //     expect(await screen.findByText(/Unable to download file/i)).toBeInTheDocument();
 //   });
+// });
+
+// jest.mock("../DocumentManagementServer.logic", () => {
+//   const original = jest.requireActual("../DocumentManagementServer.logic");
+//   return {
+//     __esModule: true,
+//     ...original,
+//     fileDownload: jest.fn(),
+//     fetchGetDocumentDetailsLogic: jest.fn(),
+//     prepareDownload: jest.fn(),
+//     reduceCategories: jest.fn(),
+//     fetchCategory: jest.fn(),
+//     debouncedFetchSuggestions: jest.fn(),
+//   };
+// });
+// jest.mock("../ApiService", () => ({
+//   fetchDocumentDetails: jest.fn(),
+//   fetchDMSSuggestions: jest.fn(),
+//   fetchFilterCategory: jest.fn(),
+//   prepareAndDownloadFile: jest.fn(),
+//   viewDownload: jest.fn(),
+//   fetchStaffProfilePhoto: jest.fn(),
+// }));
+
+// describe("Download button logic", () => {
+//   beforeEach(() => {
+//     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+//       status: 200,
+//       data: [{ fileId: "f1", name: "File1", status: "complete", fileExpiryDays: 2 }],
+//     });
+//     (Logic.fileDownload as jest.Mock).mockImplementation(() => new Promise<void>(res => setTimeout(() => res(), 100)));
+//   });
+
+//   // it("shows loader when download is in progress and calls fileDownload", async () => {
+//   //   jest.setTimeout(10000);
+//   //   render(<DocumentManagementServerView />);
+//   //   fireEvent.click(await screen.getByText("Actions"));
+//   //   fireEvent.click(await screen.getByText("View download"));
+
+//   //   await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
+
+//   //   // Click Download
+//   //   fireEvent.click(screen.getByText("Download"));
+
+//   //   // Loader should appear
+//   //   expect(screen.getAllByTestId("loader-arc").length).toBeGreaterThan(0);
+
+//   //   // fileDownload should be called
+//   //   await waitFor(() => {
+//   //     expect(Logic.fileDownload).toHaveBeenCalledWith(
+//   //       "F1",
+//   //       "File1",
+//   //       undefined,
+//   //       undefined,
+//   //       undefined
+//   //     );
+//   //   });
+//   // });
+
+ 
 // });

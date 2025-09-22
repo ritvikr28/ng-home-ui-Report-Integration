@@ -312,6 +312,17 @@
     color: #2177c2;
     font-size: 16px;
   }
+  .cancelDownloadBtn{
+    background-color: #ffffff;
+    color: #2177c2;
+    font-size: 16px;
+  }
+
+  .inProgressLoader {
+  display: flex;
+  align-items: center;
+  gap: 11px; 
+}
 }
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:360px) and (max-width:599.9px) {

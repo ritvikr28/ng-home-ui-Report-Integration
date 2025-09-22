@@ -1002,7 +1002,7 @@ export async function handleClearAllConfirm({
   fetchViewDownloadData: clearAllFetchViewDownloadData,
   setIsSidePanelLoader,
   setViewData,
-  setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload,
+  // setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload, // removed unused param
   viewDownload: clearAllViewDownload,
   downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
   setClearAllError,
@@ -1056,30 +1056,28 @@ export const fileDownload = async (
   sectionName: string,
   sasUrl?: string
 ) => {
+  const isZipFile = (!application && !sectionName && sasUrl);
   try {
-    const isZipFile =
-      (!application && !sectionName && sasUrl);
     if (isZipFile) {
       const link = document.createElement("a");
       link.href = sasUrl!;
       link.download = fileName;
-  document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
-  link.click();
-  document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+      link.click();
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
     } else {
       const blob = await downloadFile(application, sectionName, fileId);
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
       link.download = `${fileName}`;
-  document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
-  link.click();
-  window.URL.revokeObjectURL(url);
-  document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+      link.click();
+      window.URL.revokeObjectURL(url);
+      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
     }
-    return { success: true };
   } catch (error) {
     console.error("Error downloading file:", error);
-    return { success: false, error };
+    throw error;
   }
 };
