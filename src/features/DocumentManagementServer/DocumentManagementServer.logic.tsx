@@ -1023,6 +1023,7 @@ export async function handleClearAllConfirm({
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
+ setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
 

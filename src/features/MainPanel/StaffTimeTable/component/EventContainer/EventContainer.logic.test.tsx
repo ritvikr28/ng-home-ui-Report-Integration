@@ -1,5 +1,6 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import EventContainer, { formatStaffName, formatCoverStaffName } from "./EventContainer.logic";
+import { StaffTimetableAndRegisterDetailsProvider } from "../../../../../shared/context/StaffTimetableAndRegisterDetailsContext";
 import * as registerService from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import * as staffService from "../../../../../shared/services/staffDomain/staffServices";
 
@@ -105,7 +106,8 @@ const mockEvent = {
   originalStaffExternalID: "S1",
   coveringStaffExternalID: "S2",
   isCovered: false,
-  isCovering: false
+  isCovering: false,
+  subjectColor: "primary"
 };
 
 
@@ -187,7 +189,11 @@ beforeEach(() => {
 });
 
   it("renders loader initially", () => {
-    render(<EventContainer isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <EventContainer isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
 
@@ -197,7 +203,11 @@ beforeEach(() => {
       payload: { staffTimetableEventsResponse: [mockEvent] }
     });
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue({ payload: [{ externalId: "S1", forename: "John", surname: "Doe" }] });
-    render(<EventContainer isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <EventContainer isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
     });
@@ -206,7 +216,11 @@ beforeEach(() => {
 
   it("renders nothing on error", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
-    render(<EventContainer isOpen={true} />);
+    render(
+      <StaffTimetableAndRegisterDetailsProvider>
+        <EventContainer isOpen={true} />
+      </StaffTimetableAndRegisterDetailsProvider>
+    );
     await waitFor(() => {
       // Should render nothing
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();

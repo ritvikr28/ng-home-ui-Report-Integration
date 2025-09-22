@@ -2362,8 +2362,6 @@ describe('handleClearAllConfirm', () => {
     expect(setShowToastNotification).toHaveBeenCalledWith(false);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
-
-  // No longer relevant: setViewData and setHasFetchedViewDownload are called directly, not via fetchViewDownloadData
 });
 
 

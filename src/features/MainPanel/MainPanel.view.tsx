@@ -8,6 +8,7 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
+import { StaffTimetableAndRegisterDetailsProvider } from "../../shared/context/StaffTimetableAndRegisterDetailsContext";
 import "./style.scss";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
@@ -112,22 +113,24 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         </GridItem>
       </Grid>
 
-      {authService.isAuthorised(
-        requiredStaffTimeTablePermissions,
-        MatchPermissions.all
-      ) &&
-        isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
-      {authService.isAuthorised(
-        requiredRegisterPermissions,
-        MatchPermissions.all
-      ) && (
-        <>
-          <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-          <div className="new-divider-spacing">
-            <Divider />
-          </div>
-        </>
-      )}
+      <StaffTimetableAndRegisterDetailsProvider>
+        {authService.isAuthorised(
+          requiredStaffTimeTablePermissions,
+          MatchPermissions.all
+        ) &&
+          isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
+        {authService.isAuthorised(
+          requiredRegisterPermissions,
+          MatchPermissions.all
+        ) && (
+          <>
+            <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+            <div className="new-divider-spacing">
+              <Divider />
+            </div>
+          </>
+        )}
+      </StaffTimetableAndRegisterDetailsProvider>
       {authService.isAuthorised(
         requiredPupilProfilePermissions,
         MatchPermissions.all

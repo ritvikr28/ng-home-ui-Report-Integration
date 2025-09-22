@@ -476,7 +476,7 @@ const handleApply = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification && !showToastNotification) {
         return <p>Files you download will appear here.</p>;
     }
     if (viewData?.length > 0) {
