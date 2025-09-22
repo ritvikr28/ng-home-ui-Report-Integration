@@ -893,6 +893,7 @@ const handleApply = () => {
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
+                                                setClearAllError(false);
                                                 await handleClearAllConfirm({
                                                     viewData,
                                                     clearAllFiles,
