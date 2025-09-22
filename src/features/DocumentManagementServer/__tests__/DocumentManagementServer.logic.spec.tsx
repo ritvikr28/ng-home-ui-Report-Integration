@@ -2491,7 +2491,7 @@ describe('fileDownload', () => {
 
   it('downloads zip file using sasUrl', async () => {
     const sasUrl = 'https://example.com/file.zip';
-    const result = await logicModule.fileDownload(
+    await logicModule.fileDownload(
       '00000000-0000-0000-0000-000000000000',
       'test.zip',
       '',
@@ -2503,13 +2503,12 @@ describe('fileDownload', () => {
     expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
     expect(mockLink.click).toHaveBeenCalled();
     expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
-    // No result.success to check, as fileDownload returns void
   });
 
   it('downloads blob file using downloadFile', async () => {
     const fakeBlob = new Blob(['test']);
     mockDownloadFile.mockResolvedValueOnce(fakeBlob);
-    const result = await logicModule.fileDownload(
+    await logicModule.fileDownload(
       'file-123',
       'test.txt',
       'app',
@@ -2523,7 +2522,6 @@ describe('fileDownload', () => {
     expect(mockLink.click).toHaveBeenCalled();
     expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:url');
     expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
-    // expect(result.success).toBe(true);
   });
 
   it('throws and logs if exception thrown', async () => {

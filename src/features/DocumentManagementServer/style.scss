@@ -60,6 +60,12 @@
 
 .dms-layout {
 
+.essui-side-panel-heading {
+    align-items: center;
+    display: flex;
+    padding: 11px 2px 3px!important;
+}
+
   .grid-wrapper {
     .filter-tool-view .filter-btn {
       margin-right: 8px;
@@ -223,6 +229,7 @@
   }
 
 
+
   .essui-loader .essui-loader-spin {
     margin-top: inherit;
   }
@@ -341,6 +348,7 @@
     }
   }
 }
+
 
 // --------------------------390px to 767px-----------------
 @media (min-width: 390px) and (max-width: 767.9px) {

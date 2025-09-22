@@ -1002,7 +1002,6 @@ export async function handleClearAllConfirm({
   fetchViewDownloadData: clearAllFetchViewDownloadData,
   setIsSidePanelLoader,
   setViewData,
-  // setHasFetchedViewDownload: clearAllSetHasFetchedViewDownload, // removed unused param
   viewDownload: clearAllViewDownload,
   downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
   setClearAllError,

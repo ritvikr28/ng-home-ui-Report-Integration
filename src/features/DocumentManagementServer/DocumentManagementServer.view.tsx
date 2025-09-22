@@ -40,7 +40,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [downloadingFileId, setDownloadingFileId] = useState<string | null>(null);
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -218,7 +217,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       setViewData: (data) => {
         setViewData(data);
         setHasFetchedViewDownload(true);
-        // setShowToastNotification(true)
     },
       viewDownload,
       downloadPollingIntervalRef,
@@ -504,40 +502,26 @@ const handleApply = () => {
                         })()}
                 </div>
                {isComplete && (
-                     downloadingFileId === item.fileId ? (
-                       <span className="inProgressLoader">
-                           <Loader loaderType={LoaderType.Circular} />
-                           <Button
-                            className="cancelDownloadBtn"
-                            onClick={() => setDownloadingFileId(null)}
-                            >
-                            Cancel
-                            </Button>
-                       </span>
-                   ) : (
-                       <Button
-                           className="viewDownloadBtn"
-                           id={`file-download-${item.fileId}`}
-                           onClick={async () => {
-                               setDownloadingFileId(item.fileId);
-                               try {
-                                await fileDownload(
-                                    item.fileId?.toUpperCase(),
-                                    item.name ?? "",
-                                    item.application,
-                                    item.section,
-                                    item.sasUrl
-                                );
-                                } catch (error) {
-                                setDownloadError(true);
-                                }
-                                setDownloadingFileId(null);
-                            }}
-                            >
-                            Download
-                            </Button>
-                        )
-                        )}
+                   <Button
+                       className="viewDownloadBtn"
+                       id={`file-download-${item.fileId}`}
+                       onClick={async () => {
+                           try {
+                               await fileDownload(
+                                   item.fileId?.toUpperCase(),
+                                   item.name ?? "",
+                                   item.application,
+                                   item.section,
+                                   item.sasUrl
+                               );
+                           } catch (error) {
+                               setDownloadError(true);
+                           }
+                       }}
+                   >
+                       Download
+                   </Button>
+               )}
                 {(isInProgress || isInitiated) && (
                     <span className="inProgressLoader">
                         <Loader loaderType={LoaderType.Circular} />
@@ -819,7 +803,7 @@ const handleApply = () => {
                                                 status={NotificationStatus.WARNING}
                                                 title="Unable to download file"
                                                 message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
-                                                autoclose={false}
+                                                autoclose
                                                 onClickClose={() => setDownloadError(false)}
                                             />
                                         )}
@@ -854,14 +838,6 @@ const handleApply = () => {
                                         <div className="viewDownloadWrap">
                                            {renderViewDownloadContent()}
                                         </div>
-                                        {/* { showToastNotification && (
-                                            <Notification
-                                                status={NotificationStatus.SUCCESSTOAST}
-                                                title="Downloads cleared"
-                                                autoclose
-                                                onClickClose={() => setShowToastNotification(false)}
-                                            />
-                                        )} */}
                                     </>
                                 }
                                  
@@ -910,7 +886,7 @@ const handleApply = () => {
                                      dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
-                                            contentText: "This action will remove all files 'Completed' from the Download panel.",
+                                            contentText: "This action will remove all files 'Completed' from the Downloads panel.",
                                             isNotificationanner: false,
                                             notificationTitle: "",
                                             notificationStatus: NotificationStatus.WARNING,
