@@ -518,11 +518,6 @@ describe("Additional tests to increase coverage", () => {
   expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
   });
 
-it("Delete dialog cancel button works", async () => {
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  render(<DocumentManagementServerView />);
-});
  
 describe('onClickSidePnlSecondaryBtn', () => {
   it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
