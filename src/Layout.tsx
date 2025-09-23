@@ -434,6 +434,24 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
             <GridItem sm={12} lg md={12} className="what-new-sims">
               <Link
                 dataTestId="link1"
+                href="https://fast.wistia.com/embed/channel/3q9dzfvekg"
+                target="_blank"
+                {...rel}
+              >
+      
+                <ActionCard
+                  className="primary-text"
+                  dataTestId="what-new-videos-test-id"
+                  id="action-card"
+                  onClickActionCard={() => onCardClick()}
+                  primaryText={t("discoverMore.primaryvideotext")}
+                  secondaryText={t("discoverMore.secondaryvideotext")}
+                />
+              </Link>
+            </GridItem>
+            <GridItem sm={12} lg md={12} className="what-new-sims">
+              <Link
+                dataTestId="link2"
                 href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
                 target="_blank"
                 {...rel}

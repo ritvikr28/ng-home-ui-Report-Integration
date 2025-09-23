@@ -361,7 +361,9 @@
     "primarytext":"What's new?",
     "secondarytext":"Get the latest on SIMS Next Gen - new releases, sign up for early access, and find out what's new.",
     "primarytextsimsnextgen": "The SIMS Next Gen roadmap",
-    "secondarytextsimsnextgen": "Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap."
+    "secondarytextsimsnextgen": "Discover what's on the horizon and how we are enhancing SIMS on the Next Gen roadmap.",
+    "primaryvideotext":"What’s new videos",
+    "secondaryvideotext":"Showcasing the latest modules and features - helping you get the most out of your new cloud MIS."
   },
   "homeStaffTimeTableEventTiles" :
   {

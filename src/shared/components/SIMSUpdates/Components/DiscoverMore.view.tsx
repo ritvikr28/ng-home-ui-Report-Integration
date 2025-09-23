@@ -54,9 +54,26 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
       </Grid>
 
       <Grid className={"new-footer-actioncards c-clear-padding"}>
-        <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
+         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link1"
+            href="https://fast.wistia.com/embed/channel/3q9dzfvekg"
+            target="_blank"
+            {...rel}
+          >
+            <ActionCard
+              className="primary-text"
+              dataTestId="what-new-videos-test-id"
+              id="action-card"
+              onClickActionCard={() => onCardClick()}
+              primaryText={t("discoverMore.primaryvideotext")}
+              secondaryText= {t("discoverMore.secondaryvideotext")} 
+            />
+          </Link>
+        </GridItem>
+        <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
+          <Link
+            dataTestId="link2"
             href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
             target="_blank"
             {...rel}
@@ -73,7 +90,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
         </GridItem>
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
-            dataTestId="link2"
+            dataTestId="link3"
             href="https://help.parentpaygroup.com/csm/en/%25short_descr?id=copy_of_kb_article_view_1&sysparm_article=KB0012256"
             target="_blank"
             {...rel}
