@@ -795,7 +795,7 @@ const handleApply = () => {
                                         {downloadError && (
                                             <Notification
                                                 status={NotificationStatus.WARNING}
-                                                title="Unable to download file"
+                                                title="Unable to download"
                                                 message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
                                                 autoclose
                                                 onClickClose={() => setDownloadError(false)}

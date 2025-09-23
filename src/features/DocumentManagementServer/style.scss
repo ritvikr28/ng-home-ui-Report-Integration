@@ -8,6 +8,18 @@
   width: 100%;
   overflow-x: hidden;
 
+.essui-notification--warning {
+    background-color: #ffeee0;
+    border-left-color: #a86500;
+    margin-bottom: 24px;
+}
+
+.essui-notification--highlight {
+    background-color: #ebf1ff;
+    border-left-color: #2177c2;
+    margin-bottom: 24px;
+}
+
   .side-width {
     padding: 0;
     height: 100%;
