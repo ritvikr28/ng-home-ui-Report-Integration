@@ -16,7 +16,8 @@ export const fetchActiveConnectionCount = async ({
       setActiveConnectionCount(count);
     }
   } catch (err) {
-    setActiveConnectionCount(0);
+    // setActiveConnectionCount(0);
+    console.log("Error fetching active connection count:", err);
   }
 };
 
