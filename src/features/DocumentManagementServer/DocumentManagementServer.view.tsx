@@ -613,7 +613,7 @@ const handleApply = () => {
                                         value: "Inactive"
                                     }
                                 ]}
-                                isShowCheckboxCol = {true}
+                                isShowCheckboxCol
                                 editSelectedBtnTitle="Actions"
                                 editSelectedOptions={[
                                     {

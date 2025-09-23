@@ -1,4 +1,5 @@
-import { connectWebSocket, handleLogin, handleSendNotification } from "../SendNotifications.logic";
+import { connectWebSocket, handleSendNotification } from "../SendNotifications.logic";
+import { API_BASE } from "../SendNotifications.view";
 
 describe("connectWebSocket", () => {
   let originalWebSocket: any;
@@ -54,6 +55,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
     expect(setWsStatus).not.toHaveBeenCalled();
     expect(global.WebSocket).not.toHaveBeenCalled();
@@ -68,6 +70,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
     expect(setWsStatus).toHaveBeenCalledWith("connecting");
     expect(wsRef.current).toBe(mockSocket);
@@ -82,11 +85,15 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
-    // Simulate onopen
+    mockSocket.send.mockClear();
     mockSocket.onopen();
     expect(setWsStatus).toHaveBeenCalledWith("connected");
     expect(reconnectAttempts.current).toBe(0);
+    expect(mockSocket.send).toHaveBeenCalledWith(
+      JSON.stringify({ type: "auth", token })
+    );
   });
 
   it("handles onmessage event", () => {
@@ -98,6 +105,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
     setMessages.mockImplementation((fn) => fn(["old"]));
     mockSocket.onmessage({ data: "new" });
@@ -105,25 +113,26 @@ describe("connectWebSocket", () => {
   });
 
   it("handles onclose and triggers reconnect if attempts < 10", () => {
-  jest.useFakeTimers();
-  connectWebSocket({
-    token,
-    setWsStatus,
-    wsRef,
-    setMessages,
-    reconnectAttempts,
-    reconnectTimeout,
-    WS_BASE,
+    jest.useFakeTimers();
+    connectWebSocket({
+      token,
+      setWsStatus,
+      wsRef,
+      setMessages,
+      reconnectAttempts,
+      reconnectTimeout,
+      WS_BASE,
+      setActiveConnectionCount: jest.fn(),
+    });
+    reconnectAttempts.current = 0;
+    mockSocket.onclose();
+    expect(setWsStatus).toHaveBeenCalledWith("disconnected");
+    expect(setWsStatus).toHaveBeenCalledWith("reconnecting");
+    expect(typeof reconnectTimeout.current).toBe("number");
+    expect(reconnectAttempts.current).toBe(1);
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
-  reconnectAttempts.current = 0;
-  mockSocket.onclose();
-  expect(setWsStatus).toHaveBeenCalledWith("disconnected");
-  expect(setWsStatus).toHaveBeenCalledWith("reconnecting");
-  expect(typeof reconnectTimeout.current).toBe("number"); 
-  expect(reconnectAttempts.current).toBe(1);
-  jest.runOnlyPendingTimers();
-  jest.useRealTimers();
-});
 
   it("does not reconnect if attempts >= 10", () => {
     connectWebSocket({
@@ -134,6 +143,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
     reconnectAttempts.current = 10;
     mockSocket.onclose();
@@ -150,63 +160,14 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount: jest.fn(),
     });
     mockSocket.onerror();
     expect(mockSocket.close).toHaveBeenCalled();
   });
 });
 
-describe("handleLogin", () => {
-  const API_BASE = "http://api";
-  const userId = "user";
-  const password = "pass";
-  let setToken: jest.Mock;
-
-  beforeEach(() => {
-    setToken = jest.fn();
-    global.fetch = jest.fn();
-  });
-
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  it("calls setToken if token is present in response", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      json: async () => ({ token: "abc123" }),
-    });
-
-    await handleLogin({ API_BASE, userId, password, setToken });
-    expect(global.fetch).toHaveBeenCalledWith(
-      `${API_BASE}/auth/login`,
-      expect.objectContaining({
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, password }),
-      })
-    );
-    expect(setToken).toHaveBeenCalledWith("abc123");
-  });
-
-  it("does not call setToken if token is missing", async () => {
-    (global.fetch as jest.Mock).mockResolvedValue({
-      json: async () => ({}),
-    });
-
-    await handleLogin({ API_BASE, userId, password, setToken });
-    expect(setToken).not.toHaveBeenCalled();
-  });
-
-  it("throws if fetch fails", async () => {
-    (global.fetch as jest.Mock).mockRejectedValue(new Error("fail"));
-    await expect(
-      handleLogin({ API_BASE, userId, password, setToken })
-    ).rejects.toThrow("fail");
-  });
-});
-
 describe("handleSendNotification", () => {
-  const API_BASE = "http://api";
   const token = "abc123";
   const notification = { type: "info", message: "Hello", roles: ["admin"], userIds: ["u1"] };
 
@@ -221,7 +182,10 @@ describe("handleSendNotification", () => {
   it("calls fetch with correct arguments", async () => {
     (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
 
-    await handleSendNotification({ API_BASE, token, notification });
+    await handleSendNotification({
+      token,
+      notification,
+    });
 
     expect(global.fetch).toHaveBeenCalledWith(
       `${API_BASE}/notification/send`,
@@ -240,7 +204,7 @@ describe("handleSendNotification", () => {
     (global.fetch as jest.Mock).mockRejectedValue(new Error("fail"));
 
     await expect(
-      handleSendNotification({ API_BASE, token, notification })
+      handleSendNotification({ token:"", notification:"" })
     ).rejects.toThrow("fail");
   });
 });

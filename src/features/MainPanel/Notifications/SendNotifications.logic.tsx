@@ -1,7 +1,26 @@
 import type { MutableRefObject, Dispatch, SetStateAction } from "react";
+import { API_BASE } from "./SendNotifications.view";
 /* eslint-disable no-param-reassign */
 
-export function connectWebSocket({
+interface FetchActiveConnectionCountProps {
+  setActiveConnectionCount: Dispatch<SetStateAction<number>>;
+}
+
+export const fetchActiveConnectionCount = async ({
+  setActiveConnectionCount,
+}: FetchActiveConnectionCountProps): Promise<void> => {
+  try {
+    const res = await fetch(`${API_BASE}/api/websocket-status/active-count`);
+    if (res.ok) {
+      const count: number = await res.json();
+      setActiveConnectionCount(count);
+    }
+  } catch (err) {
+    setActiveConnectionCount(0);
+  }
+};
+
+export async function connectWebSocket({
   token,
   setWsStatus,
   wsRef,
@@ -9,6 +28,7 @@ export function connectWebSocket({
   reconnectAttempts,
   reconnectTimeout,
   WS_BASE,
+  setActiveConnectionCount
 }: {
   token: string;
   setWsStatus: (status: string) => void;
@@ -17,16 +37,34 @@ export function connectWebSocket({
   reconnectAttempts: MutableRefObject<number>;
   reconnectTimeout: MutableRefObject<ReturnType<typeof setTimeout> | null>;
   WS_BASE: string;
+  setActiveConnectionCount: Dispatch<SetStateAction<number>>;
 }) {
   if (!token) return;
   setWsStatus("connecting");
-  const socket = new WebSocket(`${WS_BASE}?access_token=${token}`);
+  const socket = new WebSocket(`${WS_BASE}`);
   wsRef.current = socket;
 
   socket.onopen = () => {
     setWsStatus("connected");
+    fetchActiveConnectionCount({ setActiveConnectionCount });
     reconnectAttempts.current = 0;
+    try {
+      const authMessage = { type: "auth", token };
+      // eslint-disable-next-line no-console
+      console.log("auth send", authMessage);
+      socket.send(JSON.stringify(authMessage));
+    } catch (_) {
+      // swallow send errors; socket.onerror/onclose will handle lifecycle
+    }
+
   };
+
+
+  // socket.addEventListener('message', (event) => {
+  //   // Handle the message event here if needed
+  //   setMessages((prev) => [...prev, event.data]);
+
+  // });
 
   socket.onmessage = (event) => {
     setMessages((prev) => [...prev, event.data]);
@@ -47,6 +85,7 @@ export function connectWebSocket({
           reconnectAttempts,
           reconnectTimeout,
           WS_BASE,
+          setActiveConnectionCount
         });
       }, delay);
       reconnectAttempts.current += 1;
@@ -81,11 +120,11 @@ export function connectWebSocket({
 // }
 
 export async function handleSendNotification({
-  API_BASE,
+  // API_BASE,
   token,
   notification,
 }: {
-  API_BASE: string;
+  // API_BASE: string;
   token: string;
   notification: any;
 }) {

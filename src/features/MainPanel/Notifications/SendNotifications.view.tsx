@@ -2,10 +2,10 @@
 /// <reference types="node" />
 import { useState, useRef, useEffect } from "react";
 import "./style.scss";
-import { connectWebSocket, handleSendNotification } from "./SendNotifications.logic";
 import { authService } from "@essnextgen/auth-ui";
+import { connectWebSocket, fetchActiveConnectionCount, handleSendNotification } from "./SendNotifications.logic";
 
-const API_BASE = "https://dev.home.sims.co.uk/web"; // Change to your backend URL
+export const API_BASE = "https://dev.home.sims.co.uk/web"; // Change to your backend URL
 const WS_BASE = "wss://dev.home.sims.co.uk/web/ws"; // Change to your websocket endpoint
 
 export const SendNotification = () => {
@@ -58,27 +58,28 @@ export const SendNotification = () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
+      setActiveConnectionCount
     });
   };
   // Clean up on unmount
-  // useEffect(() => {
-  //   if (wsRef.current) wsRef.current.close();
-  //   if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
-  // }, []);
+  useEffect(() => {
+    if (wsRef.current) wsRef.current.close();
+    if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
+  }, []);
 
-  // Auto-connect when token changes
-  // useEffect(() => {
-  //   // if (token) {
-  //     handleConnect();
-  //   // }
-  //   // eslint-disable-next-line
-  // }, []);
+  // Auto-connect when token becomes available
+  useEffect(() => {
+    if (wsStatus === "disconnected") {
+      console.log("if condition Auto connecting websocket...");
+      handleConnect();
+    }
+  }, []);
 
 
   useEffect(() => {
-    fetchActiveConnectionCount(); // initial fetch
+    fetchActiveConnectionCount({ setActiveConnectionCount }); // initial fetch
     // const interval = setInterval(
-    fetchActiveConnectionCount
+    // fetchActiveConnectionCount
     // , 3000); // fetch every 5 seconds
     // return () => clearInterval(interval);
   }, []);
@@ -86,24 +87,14 @@ export const SendNotification = () => {
   // Send notification
   const handleSendNotificationClick = async () => {
     await handleSendNotification({
-      API_BASE,
+      // API_BASE,
       token,
       notification,
     });
   };
 
   // Get active websocket connections
-  const fetchActiveConnectionCount = async () => {
-    try {
-      const res = await fetch(`${API_BASE}/api/websocket-status/active-count`);
-      if (res.ok) {
-        const count = await res.json();
-        setActiveConnectionCount(count);
-      }
-    } catch (err) {
-      setActiveConnectionCount(0);
-    }
-  };
+
 
   // useEffect(() => {
   //   handleLoginClick();
