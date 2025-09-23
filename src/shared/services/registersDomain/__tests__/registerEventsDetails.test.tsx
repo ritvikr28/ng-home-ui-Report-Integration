@@ -1,8 +1,6 @@
-import { AxiosResponse } from "axios";
 import { waitFor } from "@testing-library/react";
 import { service } from "../../../utils";
-import { FetchRegisterEventData } from "../registerEventsDetails";
-
+import { FetchStaffTimetableAndRegisterDetails } from "../registerEventsDetails";
 
 const mockTakeRegisterData = [
   {
@@ -181,48 +179,35 @@ const mockTakeRegisterData = [
   }
 ];
 
-const axiosResponse: AxiosResponse = {
-  data: mockTakeRegisterData,
-  status: 200,
-  statusText: "OK",
-  config: {},
-  headers: {},
-};
-
 describe("RegisterEventDetails test", () => {
-  test("fetches register event data successfully", async () => {
-    jest
-      .spyOn(service, "get")
-      .mockImplementation(() => Promise.resolve(axiosResponse));
-    const registerData: any = await FetchRegisterEventData();
 
+  test("fetches register event data successfully when status is 200 and response is not null", async () => {
+    jest.spyOn(service, "get").mockImplementation(() => Promise.resolve({
+      data: {
+        payload: {
+          registerDetailResponse: mockTakeRegisterData,
+          staffTimetableEventsResponse: null
+        },
+        errors: null,
+        status: 200
+      },
+      status: 200,
+      statusText: "OK",
+      config: {},
+      headers: {},
+    }));
+    const response: any = await FetchStaffTimetableAndRegisterDetails();
     await waitFor(() => {
-      expect(registerData).toBe(mockTakeRegisterData);
+      expect(response).not.toBeNull();
+      expect(response.payload?.registerDetailResponse).toBe(mockTakeRegisterData);
     });
   });
 
-  test("handles null response correctly", async () => {
-    jest.spyOn(service, "get").mockImplementation(() =>
-      Promise.resolve({
-        data: null,
-        status: 204,
-        statusText: "OK",
-        config: {},
-        headers: {},
-      })
-    );
-
-    const registerData: any = await FetchRegisterEventData();
-    await waitFor(() => {
-      expect(registerData).toBeNull();
-    });
-  });
   test("should return null when an error occurs", async () => {
-    (service.get as jest.Mock).mockRejectedValue(new Error("Network Error"));
-
-    const result = await FetchRegisterEventData();
-
-    expect(result).toBeNull();
+    jest.spyOn(service, "get").mockRejectedValue(new Error("Network Error"));
+    const result = await FetchStaffTimetableAndRegisterDetails();
+    await waitFor(() => {
+      expect(result).toBeNull();
+    });
   });
-
 });

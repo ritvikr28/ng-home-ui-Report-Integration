@@ -1,17 +1,17 @@
 /// <reference types="node" />
 import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor, ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload } from "./ApiService"
+import { viewDownload ,clearAllFiles } from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
-
+ 
 
 export const breadcrumbActionsList = [
     {
@@ -35,11 +35,11 @@ export const breadcrumbActionsList = [
         path: ''
     }
 ]
-
+ 
 const DocumentManagementServerView: () => JSX.Element = () => {
+    const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    const [isLoading] = useState<boolean>(false);
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -49,21 +49,19 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isInitialLoad] = useState(true);
     const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
-    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
-        useState(breadcrumbActionsList);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList);
     const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
     const [isFilterLoading, setIsFilterLoading] = useState<boolean>(false);
-
+    const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState<boolean>(false);
     const [isSidePanelLoader, setIsSidePanelLoader] = useState(false);
     const [showDialog, setShowDialog] = useState(false);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -71,27 +69,30 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
-     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [clearAllError, setClearAllError] = useState(false);
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
-    const [failedFileName, setFailedFileName] = useState<string | null>(null);
+    const [showToastNotification, setShowToastNotification] = useState(false);
+    const [downloadError, setDownloadError] = useState<boolean>(false);
+    const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    const categoryArr = getCategoryArr(selectedFormats);
+    
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
 
+    const categoryArr = getCategoryArr(selectedFormats);
+    const searchTagListRaw = [
+    ...categoryArr
+    ];
 
-const searchTagListRaw = [
-  ...categoryArr
-];
-
-const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+    const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
-
+ 
     let tableData: tableDataProps[] = [];
 
         if (showErrorBanner) {
@@ -100,47 +101,65 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
-    id: doc?.fileId,
-    Document: doc?.document,
-    Relatedto: mapRelatedArr(doc) || "",
-    Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-    Addedby: doc?.addedBy || "",
-    "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-    Format: doc?.format,
-    Size: doc?.size,
-    isShowCheckBox: true
-}));
-}
+            id: doc?.fileId,
+            Document: doc?.document,
+            Relatedto: mapRelatedArr(doc) || "",
+            Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
+            Addedby: doc?.addedBy || "",
+            "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
+            Format: doc?.format,
+            Size: doc?.size,
+            isShowCheckBox: true
+        }));
+        }
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
-
+ 
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+    useEffect(() => {
+    // Try desktop main panel first
+        let scrolled = false;
+        const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
+        if (mainPanel && typeof mainPanel.scrollTo === "function" && mainPanel.offsetParent !== null) {
+            mainPanel.scrollTo({ top: 0, behavior: 'smooth' });
+            scrolled = true;
+        }
+        // If not desktop, try mobile grid wrapper
+        if (!scrolled) {
+            const grid = document.querySelector('.grid-wrapper') as HTMLElement | null;
+            if (grid && typeof grid.scrollIntoView === "function" && grid.offsetParent !== null) {
+                grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                scrolled = true;
+            }
+        }
+        // Fallback to window scroll
+        if (!scrolled) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [currentPage]);
 
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
-            return () => {
-                document.body.classList.remove("no-scroll");
-            };
+            return () => document.body.classList.remove("no-scroll");
         }
-        return () => { };
+        return () => {};
     }, [isMobileView]);
+ 
 
-    useEffect(() => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, [currentPage]);
-
+ 
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
-
+ 
     useEffect(() => {
         setIsOpen(!isMobileView);
     }, [!isMobileView]);
-
-
+ 
+ 
     useEffect(() => {
         if (docData && docData?.totalRecords) {
             const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
@@ -151,13 +170,13 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     useEffect(() => {
 
       fetchCategory().then((res) => {
-    const map: Record<string, number> = {};
-    res.forEach((cat: any) => {
-      map[cat.application] = cat.registrationId;
+        const map: Record<string, number> = {};
+        res.forEach((cat: any) => {
+        map[cat.application] = cat.registrationId;
+        });
+        setCategoryRegistrationMap(map);
     });
-    setCategoryRegistrationMap(map);
-  });
-}, []);
+    }, []);
 
 
     useEffect(() => {
@@ -167,20 +186,21 @@ const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
-useEffect(() => {
-  // Only run when opening the side panel for "prepare"
-  if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-    setIsSidePanelLoader(true); // Show loader immediately
+    useEffect(() => {
+        // Only run when opening the side panel for "prepare"
+        if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+            setShowToastNotification(false); 
+            setIsSidePanelLoader(true); 
 
-    // Wait for 2 seconds before calling view download API
-    const timer = setTimeout(() => {
-      fetchViewDownloadData({
-        showLoader: false, 
-        setIsSidePanelLoader,
-        setViewData: (data) => {
-    setViewData(data);
-    setHasFetchedViewDownload(true);
-  },
+            // Wait for 2 seconds before calling view download API
+            const timer = setTimeout(() => {
+            fetchViewDownloadData({
+                showLoader: false, 
+                setIsSidePanelLoader,
+                setViewData: (data) => {
+            setViewData(data);
+            setHasFetchedViewDownload(true);
+        },
         viewDownload,
         downloadPollingIntervalRef,
       });
@@ -188,8 +208,8 @@ useEffect(() => {
 
     return () => clearTimeout(timer);
   }
-  // For "view", call immediately
-  if (isSidePanelOpen && sidePanelOpenReason === "view") {
+  if (isSidePanelOpen && sidePanelOpenReason === "view" ) {
+    setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
       showLoader: false,
@@ -200,44 +220,39 @@ useEffect(() => {
     },
       viewDownload,
       downloadPollingIntervalRef,
+      
     });
   }
   return undefined;
 }, [isSidePanelOpen, sidePanelOpenReason]);
 
     const fetchGetDocumentDetails = (
-  page: number,
-  categories: number[],
-  sortByCol: string = sortBy,
-  sortOrder = sortDirection,
-  refExternalId: string = searchRefExternalId,
-  relatedTo: number = documentRealatedTo
-) => {
-  fetchGetDocumentDetailsLogic({
-    page,
-    categories,
-    sortByCol,
-    sortOrder,
-    dateRange,
-    refExternalId,
-    relatedTo,
-    setDocData,
-    setCurrentPage,
-    setTotalPage,
-    setShowSearchError,
-    setShowErrorBanner,
-    setIsSearchLoading,
-    setIsSearchDataLoading,
-  });
-};
+    page: number,
+    categories: number[],
+    sortByCol: string = sortBy,
+    sortOrder = sortDirection,
+    refExternalId: string = searchRefExternalId,
+    relatedTo: number = documentRealatedTo
+    ) => {
+    fetchGetDocumentDetailsLogic({
+        page,
+        categories,
+        sortByCol,
+        sortOrder,
+        dateRange,
+        refExternalId,
+        relatedTo,
+        setDocData,
+        setCurrentPage,
+        setTotalPage,
+        setShowSearchError,
+        setShowErrorBanner,
+        setIsSearchLoading,
+        setIsSearchDataLoading,
+    });
+    };
 
-const selectedDocs = buildSelectedDocs(
-  selectedCheckBoxIds,
-  docData,
-  categoryRegistrationMap,
-  searchRefExternalId,
-  documentRealatedTo
-);
+
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
@@ -250,33 +265,34 @@ const selectedDocs = buildSelectedDocs(
     case "Format":
       apiColumnName = "Format";
       break;
-      case "Size":
+    case "Size":
       apiColumnName = "Size";
       break;
-      case "Category":
-      apiColumnName = "Category";   
-        break;
+    case "Category":
+      apiColumnName = "Category";
+      break;
     default:
-        return;
-    }
-        let newDirection = "Asc";
-        if (sortBy === apiColumnName) {
-            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-            }
-
-        setSortBy(apiColumnName);
-        setSortDirection(newDirection);
-      };
-
-      const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
+      return;
+  }
+  let newDirection = "Asc";
+  if (sortBy === apiColumnName) {
+    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+  }
+ 
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
+};
+ 
+   const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
             }else{
+                setDialogType("prepareDownload");
                 setShowConfirmDialog(true);
             }
-        } 
-        
+        }
+       
         else if (selectedItem.value === "Delete") {
             if(selectedCheckBoxIds?.length === 0){
                 setShowDialog(true);
@@ -287,10 +303,10 @@ const selectedDocs = buildSelectedDocs(
             setIsSidePanelOpen(true);
         }
       }
-
+ 
     const getEmptyStateMsg = () => {
   if (showErrorBanner) return "Information unavailable.";
-  if (isLoading || issearchDataLoading || isSearchLoading) return undefined;
+  if (issearchDataLoading || isSearchLoading) return undefined;
 
   // Initial state: no search yet
   if (!isSearchTriggered && !searchText) {
@@ -312,6 +328,9 @@ const selectedDocs = buildSelectedDocs(
   return "Documents will appear here once they are uploaded.";
 };
 
+
+const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
+
     const handleSearchClose = () => {
         setSearchInput("");
         setSearchTerm("");
@@ -328,26 +347,36 @@ const selectedDocs = buildSelectedDocs(
         setSortDirection("Desc");
         setCurrentPage(1);
         setIsFilterDialogOpen(false);
+        setTotalPage(0);
+        setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
         
         };
 
+        useEffect(() => {
+            if (isClearSelectedCheckbox) {
+                setIsClearSelectedCheckbox(false);
+            }
+        }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number }
-) => {
-  handleTagCloseLogic(
-    e,
-    text,
-    closeObj,
-    setSelectedDateRange,
-    setDateRange,
-    setIsDateError,
-    setSelectedCategories,
-    setSelectedFormats
-  );
-};
+    ) => {
+    handleTagCloseLogic(
+        e,
+        text,
+        closeObj,
+        setSelectedDateRange,
+        setDateRange,
+        setIsDateError,
+        setSelectedCategories,
+        setSelectedFormats
+    );
+    setCurrentPage(1);
+    };
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth < 1024) {
@@ -365,8 +394,6 @@ const selectedDocs = buildSelectedDocs(
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [breadcrumbActionsList]);
-
-
 
     const NotificationMsgBannerObject = [
         {
@@ -412,7 +439,8 @@ const handleApply = () => {
   });
 };
 
-   const handleFilterOnClick = () => {
+ 
+    const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
         fetchCategory()
             .then((res) => {
@@ -423,71 +451,88 @@ const handleApply = () => {
             setSelectedCategories(selectedFormats);
         }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
-};
+    };
 
-useEffect(() => {
-  if (viewData && viewData.length > 0) {
-    const cancelledFile = viewData.find(item => item.status?.toLowerCase() === 'cancel');
-    if (cancelledFile) {
-      setPrepareDownloadError(true);
-      setFailedFileName(cancelledFile.name || null);
+    useEffect(() => {
+    if (viewData && viewData.length > 0) {
+        const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
+        if (cancelledFiles.length > 0) {
+        setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
+        }
     }
-  }
-}, [viewData]);
+    }, [viewData]);
 
-const handleCloseSidePanel = () => {
-  closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
-};
+    const handleCloseSidePanel = () => {
+    closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
+    };
 
-const renderViewDownloadContent = () => {
-  if (isSidePanelLoader) {
-    return <Loader loaderType={LoaderType.Circular} />;
-  }
-  if (hasFetchedViewDownload && viewData?.length === 0) {
-    return <p>Files you download will appear here.</p>;
-  }
-  if (viewData?.length > 0) {
-    return (
-      <>
-        <p>Prepared downloads will expire after 5 days</p>
-        {viewData.map((item, index) => {
-          const isComplete = item?.status?.toLowerCase() === 'complete';
-          const isInProgress = item?.status?.toLowerCase() === 'inprogress';
-          const isInitiated = item?.status?.toLowerCase() === 'initiated';
-          return (
-            <div className="viewDownloadDetails" key={index}>
-              <div className="fileDetails">
-                <p>{item?.name}</p>
-                {isComplete && item?.fileExpiryDays !== undefined && (() => {
-                    if (item.fileExpiryDays > 0) {
-                        return <span>Expires in {item.fileExpiryDays} days.</span>;
-                    }
-                    if (item.fileExpiryDays === 0) {
-                        return <span>Expires today.</span>;
-                    }
-                    return null;
-                    })()}
-              </div>
-              {isComplete && (
-                <Button className="viewDownloadBtn">Download</Button>
-              )}
-              {(isInProgress || isInitiated) && (
-                <span className="inProgressLoader">
-                  <Loader loaderType={LoaderType.Circular} />
-                </span>
-              )}
-            </div>
-          );
-        })}
-      </>
-    );
-  }
-  return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
-};
+    const renderViewDownloadContent = () => {
+    if (isSidePanelLoader) {
+        return <Loader loaderType={LoaderType.Circular} />;
+    }
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification && !showToastNotification) {
+        return <p>Files you download will appear here.</p>;
+    }
+    if (viewData?.length > 0) {
+        return (
+        <>
+            <p>Prepared downloads will expire after 5 days</p>
+            {viewData.map((item, index) => {
+            const isComplete = item?.status?.toLowerCase() === 'complete';
+            const isInProgress = item?.status?.toLowerCase() === 'inprogress';
+            const isInitiated = item?.status?.toLowerCase() === 'initiated';
+            return (
+                <div className="viewDownloadDetails" key={index}>
+                <div className="fileDetails">
+                    <p>{item?.name}</p>
+                    {isComplete && item?.fileExpiryDays !== undefined && (() => {
+                        if (item.fileExpiryDays > 0) {
+                            return <span>Expires in {item.fileExpiryDays} days.</span>;
+                        }
+                        if (item.fileExpiryDays === 0) {
+                            return <span>Expires today.</span>;
+                        }
+                        return null;
+                        })()}
+                </div>
+               {isComplete && (
+                   <Button
+                       className="viewDownloadBtn"
+                       id={`file-download-${item.fileId}`}
+                       onClick={async () => {
+                           try {
+                               await fileDownload(
+                                   item.fileId?.toUpperCase(),
+                                   item.name ?? "",
+                                   item.application,
+                                   item.section,
+                                   item.sasUrl
+                               );
+                           } catch (error) {
+                               setDownloadError(true);
+                           }
+                       }}
+                   >
+                       Download
+                   </Button>
+               )}
+                {(isInProgress || isInitiated) && (
+                    <span className="inProgressLoader">
+                        <Loader loaderType={LoaderType.Circular} />
+                    </span>
+                )}
+                </div>
+            );
+            })}
+        </>
+        );
+    }
+    return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
+    };
     return (<>
         <>
             <Grid className="dms-layout">
-                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog} 
+                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog}
                 message="Please select at least one item from the search results to perform the action."/>}
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
@@ -511,7 +556,7 @@ const renderViewDownloadContent = () => {
                             value: `${window.location.href}/documents`,
                         }}
                     />
-
+ 
                     {isMobileView && <Breadcrumbs
                         breadcrumbActions={visibleBreadcrumbs}
                         className="essui-Breadcrumbs"
@@ -526,7 +571,7 @@ const renderViewDownloadContent = () => {
                             marginBottom: 16,
                             width: "100%"
                         }}
-
+ 
                     >
                         {!isMobileView && <div>
                             <Breadcrumbs
@@ -547,7 +592,7 @@ const renderViewDownloadContent = () => {
                                 isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
-                                sortAscFirst={!isInitialLoad}
+                                sortAscFirst={false}
                                 isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -592,6 +637,7 @@ const renderViewDownloadContent = () => {
                                 onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
+                                isClearSelectedCheckbox={isClearSelectedCheckbox}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
                                     }}
@@ -619,6 +665,7 @@ const renderViewDownloadContent = () => {
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
                                     }}
+                                
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
@@ -672,7 +719,7 @@ const renderViewDownloadContent = () => {
                                 paginationDefaultPage={1}
                                 paginationPage={currentPage}
                                 paginationOnChange={onPageChange}
-                                isPagination
+                                isPagination={tableData.length > 0}
                                 paginationMinCountToHideNextPreviousBtn={0}
                                 emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
                                 emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
@@ -706,8 +753,16 @@ const renderViewDownloadContent = () => {
                                 }
 
                                 searchOnCloseHandle={handleSearchClose}
-                                secondaryButtonTitle={viewData?.length ? "Clear all" : "Close"}
-                                onClickSidePnlSecondaryBtn={() => !viewData?.length && setIsSidePanelOpen(false)}
+                                secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
+                                onClickSidePnlSecondaryBtn={() => {
+                                    if (hasCompletedFiles) {
+                                        setDialogType("clearAll");
+                                        setShowConfirmDialog(true);
+                                    } else {
+                                        setIsSidePanelOpen(false);
+
+                                    }
+                                }}
                                 isShowSecondaryBtn={true}
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
@@ -715,17 +770,37 @@ const renderViewDownloadContent = () => {
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
                                     Please try again. If the issue persists, please get in touch with our support team.
                                     We appreciate your patience and understanding during this time."
-                                sidePanelNotificationStatus={NotificationStatus.WARNING}
+                                sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
                                 sidePanelNotificationTitle="Unable to Download"
-                                addEditTemplateChild={
+                                 addEditTemplateChild={
                                     <>
-                                        {prepareDownloadError && <Notification
-                                            status={NotificationStatus.WARNING}
-                                            title="Unable to prepare [document/documents] for download"
-                                            message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
-                                            autoclose
-                                            onClickClose={() => setPrepareDownloadError(false)}
-                                        />} 
+                                        {clearAllError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to clear downloads"
+                                                message="A technical issue has prevented us from clearing the downloads. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setClearAllError(false)}
+                                            />
+                                        )}
+                                        {prepareDownloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setPrepareDownloadError(false)}
+                                            />
+                                        )}
+                                        {downloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to download"
+                                                message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setDownloadError(false)}
+                                            />
+                                        )}
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
@@ -734,24 +809,32 @@ const renderViewDownloadContent = () => {
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
                                         )}
-                                        { failedFileName && (
+                                        { failedFileName.length > 0 && (
                                         <Notification
                                             status={NotificationStatus.WARNING}
-                                            title="Unable to prepare for download"
-                                            message={`A technical issue has prevented us from preparing '${failedFileName}' for download. Please try again later. If the issue persists please get in touch with our support team.`}
+                                            title="Unable to prepare [document/documents] for download"
+                                            message={`A technical issue has prevented us from preparing ${failedFileName.join(", ")} for download. Please try again later. If the issue persists please get in touch with our support team.`}
                                             autoclose
                                             onClickClose={() => {
                                             setPrepareDownloadError(false);
-                                            setFailedFileName(null);
+                                            setFailedFileName([]);
                                             }}
                                         />
                                         )}
+                                         { showToastNotification && (
+                                            <Notification
+                                                status={NotificationStatus.SUCCESSTOAST}
+                                                title="Downloads cleared"
+                                                autoclose
+                                                onClickClose={() => setShowToastNotification(false)}
+                                            />
+                                        )}
                                         <div className="viewDownloadWrap">
                                            {renderViewDownloadContent()}
-                                            </div>
+                                        </div>
                                     </>
                                 }
-
+                                 
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
                                 sidePanelTitle="Downloads"
@@ -794,50 +877,86 @@ const renderViewDownloadContent = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
-                                    {
-                                        cancelText: "Cancel",
-                                        contentText: "",
-                                                isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
-                                                notificationStatus: NotificationStatus.WARNING,
-                                        okText: 'Prepare download',
-                                        onCancel: (): void => {setShowConfirmDialog(false)},
-                                       onConfirm: (): void => {
-                                        setPrepareDownloadError(false);
-                                        setIsSidePanelLoader(true);
-                                        setSidePanelOpenReason("prepare");
-                                        setIsSidePanelOpen(true);
+                                     dialogType === "clearAll"
+                                        ? {
+                                            cancelText: "Keep all",
+                                            contentText: "This action will remove all files 'Completed' from the Downloads panel.",
+                                            isNotificationanner: false,
+                                            notificationTitle: "",
+                                            notificationStatus: NotificationStatus.WARNING,
+                                            okText: "Clear all",
+                                            onCancel: (): void => { setShowConfirmDialog(false); },
+                                            onConfirm: async (): Promise<void> => {
+                                                setClearAllError(false);
+                                                await handleClearAllConfirm({
+                                                    viewData,
+                                                    clearAllFiles,
+                                                    setShowToastNotification,
+                                                    fetchViewDownloadData,
+                                                    setIsSidePanelLoader,
+                                                    setViewData,
+                                                    setHasFetchedViewDownload,
+                                                    viewDownload,
+                                                    downloadPollingIntervalRef,
+                                                    setClearAllError,
+                                                    setShowConfirmDialog,
+                                                    getCompletedPartitionKeys,
+                                                });
+                                            },
+                                            template: DialogTemplate.Confirmation
+                                        }
+                                        : {
+                                            cancelText: "Cancel",
+                                            contentText: "",
+                                            isNotificationanner: true,
+                                            notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
+                                            notificationStatus: NotificationStatus.WARNING,
+                                            okText: 'Prepare download',
+                                            onCancel: (): void => {setShowConfirmDialog(false); },
+                                            onConfirm: (): void => {
+                                                setPrepareDownloadError(false);
+                                                setIsSidePanelLoader(true);
+                                                setSidePanelOpenReason("prepare");
+                                                setIsSidePanelOpen(true);
+                                                const selectedDocs = buildSelectedDocs(
+                                                    selectedCheckBoxIds,
+                                                    docData,
+                                                    categoryRegistrationMap,
+                                                    searchRefExternalId,
+                                                    documentRealatedTo
+                                                );
 
-                                        prepareDownload(selectedDocs)
-                                            .then((statuses) => {
-                                            if (statuses.some((status: number) => status !== 204)) {
-                                                setPrepareDownloadError(true);
-                                            } else if (selectedCheckBoxIds.length > 1) {
-                                                setShowEmailNotification(true);
-                                                 }
-                                            })
-                                            .catch(() => {
-                                            setIsSidePanelLoader(false);
-                                            setPrepareDownloadError(true);
-                                            });
-                                        },
-                                                template: DialogTemplate.Confirmation
-                                    }
+                                                prepareDownload(selectedDocs)
+                                                    .then((statuses) => {
+                                                        if (statuses.some((status: number) => status !== 204)) {
+                                                            setPrepareDownloadError(true);
+                                                        } else if (selectedCheckBoxIds.length > 1) {
+                                                            setShowEmailNotification(true);
+                                                        }
+                                                    })
+                                                    .catch(() => {
+                                                        setIsSidePanelLoader(false);
+                                                        setPrepareDownloadError(true);
+                                                    });
+                                            },
+                                            template: DialogTemplate.Confirmation
+                                        }
                                 }
-                                titleConfirmation="Prepare Download?"
+                                titleConfirmation={dialogType === "clearAll" ? "Clear all downloads?" : "Prepare Download?"}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationTitle=""
+                                toastNotificationAutoclose={true}
+                                toastNotificationTitle="Downloads cleared successfully!"
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
                                 isSidePanelOpen={isSidePanelOpen}
                                 handleCloseSidePanel={handleCloseSidePanel}
                                 isShowAutoSuggest
-                                isLoaderForFilterandTable={isLoading}
+                                isLoaderForFilterandTable={false}
                                 loaderFilterText="Please Wait..."
                                 isShowErrorPage={!!showSearchError}
-                                isSearchShowLoading={isLoading}
+                                isSearchShowLoading={false}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
                                 searchTagList = { searchTagList}
@@ -852,5 +971,3 @@ const renderViewDownloadContent = () => {
     </>)
 }
 export default DocumentManagementServerView
-
-

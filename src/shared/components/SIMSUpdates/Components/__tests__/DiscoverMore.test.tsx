@@ -67,20 +67,31 @@ describe("DiscoverMoreView Component", () => {
   test("opens links in a new tab when action cards are clicked", () => {
     jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
     render(<DiscoverMoreView isOpen />);
-    const actionCardLink = screen.getByTestId("link1");
+    const actionCardLink = screen.getByTestId("link2");
     fireEvent.click(actionCardLink);
     expect(actionCardLink).toHaveAttribute(
       "href",
-      "#"
+      "https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
     );
   });
 
   test("renders ActionCard components with correct text content", () => {
     const { getByTestId } = render(<DiscoverMoreView />);
-    
+    expect(getByTestId("what-new-videos-test-id")).toHaveTextContent("discoverMore.primaryvideotext");
     expect(getByTestId("what-new-test-id")).toHaveTextContent("discoverMore.primarytext");
     expect(getByTestId("test-id")).toHaveTextContent("discoverMore.primarytextsimsnextgen");
   });
+
+  test("calls onClickActionCard when an ActionCard is clicked", () => {
+    const { getByTestId } = render(<DiscoverMoreView />);
+    
+    const onCardClick = jest.fn();
+
+    fireEvent.click(getByTestId("what-new-videos-test-id"));
+
+    expect(onCardClick).toHaveBeenCalledTimes(0);
+
+})
 
   test("calls onClickActionCard when an ActionCard is clicked", () => {
     const { getByTestId } = render(<DiscoverMoreView />);

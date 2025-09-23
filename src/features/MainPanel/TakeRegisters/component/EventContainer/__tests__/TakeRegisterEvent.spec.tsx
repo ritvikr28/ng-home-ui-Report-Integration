@@ -1,11 +1,8 @@
 import React from "react";
-import { RenderResult, act, fireEvent, render } from "@testing-library/react";
+import { RenderResult, fireEvent, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ActionCard } from "@essnextgen/ui-kit";
-import TakeRegisterEvent from "../TakeRegisterEvent.logic";
-import { FetchRegisterEventData } from "../../../../../../shared/services/registersDomain/registerEventsDetails";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
-
 
 const mockTakeRegisterData = [
   {
@@ -160,34 +157,13 @@ jest.mock(
   })
 );
 
-const setIsError = jest.fn();
-
-test("fetches data on component mount", async () => {
-  (FetchRegisterEventData as jest.Mock).mockReturnValue(mockTakeRegisterData);
-  await act(async () => {
-    setIsError(false);
-    render(<TakeRegisterEvent isOpen={undefined} />);
-  });
-  expect(setIsError).toHaveBeenCalledWith(false);
-  expect(FetchRegisterEventData).toHaveBeenCalledTimes(1);
-});
-
-test("fetches null data on component mount", async () => {
-  (FetchRegisterEventData as jest.Mock).mockReturnValue([]);
-  await act(async () => {
-    render(<TakeRegisterEvent isOpen={undefined} />);
-  });
-
-  expect(FetchRegisterEventData).toHaveBeenCalledTimes(2);
-});
-
 test("should render the Action Card", () => {
   const { getByTestId }: RenderResult = render(
     <ActionCard
       dataTestId="test-id"
       primaryText="PrimaryText"
       secondaryText="SecondaryText"
-      onClickActionCard={() => {}}
+      onClickActionCard={() => { }}
     />
   );
   expect(getByTestId("test-id")).toBeInTheDocument();
@@ -207,29 +183,29 @@ test("renders without errors", () => {
 test("render tile on basis of time", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
   const setCurrentSlide = jest.fn();
-  const useStateMock:any = (init:any) => [init, setCurrentSlide];
+  const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
 
   const { container } = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}     
-      isOpen 
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen
     />
   );
   expect(container).toBeTruthy();
   expect(setCurrentSlide).toHaveBeenCalled();
-  expect(setCurrentSlide).toHaveBeenCalledWith(5);  
+  expect(setCurrentSlide).toHaveBeenCalledWith(5);
 });
 
 test("render second tile as first", () => {
-   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
+  jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
   const setCurrentSlide = jest.fn();
-  const useStateMock:any = (init:any) => [init, setCurrentSlide];
+  const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { container }:any = render(
+  const { container }: any = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -241,25 +217,25 @@ test("render second tile as first", () => {
 });
 
 test.skip("renders No registers today", () => {
-  const { getByText,getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByText, getByTestId }: any = render(
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen />
   );
   fireEvent.click(getByTestId("no-test-id"));
-  expect(getByText("No registers today")).toBeInTheDocument(); 
+  expect(getByText("No registers today")).toBeInTheDocument();
 
 });
 
 test.skip("click the previous button should render previous tile", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
-  const setCurrentSlide:any = jest.fn();
-  const useStateMock:any = () => [5, setCurrentSlide];
+  const setCurrentSlide: any = jest.fn();
+  const useStateMock: any = () => [5, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { getByTestId }:any = render(
+  const { getByTestId }: any = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}  
-      isOpen={false}   
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen={false}
     />
   );
   expect(getByTestId("btn-previous")).not.toBeDisabled();
@@ -270,15 +246,15 @@ test.skip("click the previous button should render previous tile", () => {
 
 test.skip("click the next button should render next tile", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
-  const setCurrentSlide:any = jest.fn();
-  const useStateMock:any = () => [1, setCurrentSlide];
+  const setCurrentSlide: any = jest.fn();
+  const useStateMock: any = () => [1, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
   const { getByTestId } = render(
     <TakeRegisterEventView
       apiError={false}
-      apiRegsiterEventData={mockTakeRegisterData}  
-      isOpen   
+      apiRegsiterEventData={mockTakeRegisterData}
+      isOpen
     />
   );
   expect(getByTestId("btn-next")).not.toBeDisabled();
@@ -288,8 +264,8 @@ test.skip("click the next button should render next tile", () => {
 });
 
 test("disables the previous button when api returns null", () => {
-  const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByTestId }: any = render(
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen />
   );
   const previousButton = getByTestId("btn-previous");
 
@@ -297,20 +273,10 @@ test("disables the previous button when api returns null", () => {
 });
 
 test("disables the next button when api returns null", () => {
-  const { getByTestId }:any = render(
-    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen/>
+  const { getByTestId }: any = render(
+    <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen />
   );
   const nextButton = getByTestId("btn-next");
 
   expect(nextButton).toBeDisabled();
-});
-
-test("handles errors during data fetching", async () => {
-  (FetchRegisterEventData as jest.Mock).mockRejectedValue(mockTakeRegisterData);
-
-  await act(async () => {
-    setIsError(true);
-    render(<TakeRegisterEvent isOpen={undefined} />);
-  });
-  expect(setIsError).toHaveBeenCalledWith(true);
 });

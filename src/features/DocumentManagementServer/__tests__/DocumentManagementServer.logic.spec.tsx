@@ -1,6 +1,6 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
 import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
@@ -32,7 +32,9 @@ import {
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
   buildSelectedDocs,
-  getReferenceMappingForSearchedPerson
+  getReferenceMappingForSearchedPerson,
+  handleClearAllConfirm,
+  getCompletedPartitionKeys
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -216,6 +218,29 @@ describe("formatSuggestions", () => {
       id: "o1"
     });
   });
+
+it('renders pupil image with correct class', async () => {
+  const payload = [{
+    name: 'Pupil',
+    values: [{
+      preferredForename: 'John',
+      preferredSurname: 'Doe',
+      legalName: 'John Doe',
+      imagePath: 'http://example.com/image.jpg',
+      currentYearGroup: 'Y1',
+      currentPrimaryClass: 'A',
+      pupilId: '123'
+    }]
+  }];
+
+  const suggestions = await formatSuggestions(payload);
+  // Render the icon part of the suggestion
+  render(<>{suggestions[0].values[0].icon}</>);
+  const img = screen.getByAltText('Pupil Photo');
+  expect(img).toBeInTheDocument();
+  expect(img).toHaveClass('dms-search__profile-icon');
+  expect(img).toHaveAttribute('src', 'http://example.com/image.jpg');
+});
 
   it("formats default category", async () => {
     const input = [
@@ -703,6 +728,64 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
   // Check for link
   const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/");
+});
+
+it("renders staff related item with referenceExternalId (profile link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "staff",
+    name: "Jane Smith",
+    staffId: "s1",
+    staffCode: "SC123",
+    referenceExternalId: "abc123"
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/staff/profile/abc123");
+});
+
+it("renders staff related item without referenceExternalId (fallback link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "staff",
+    name: "Jane Smith",
+    staffId: "s1",
+    staffCode: "SC123"
+    // referenceExternalId missing
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "Jane Smith | SC123" });
+  expect(link).toHaveAttribute("href", "/");
+});
+
+it("renders pupil related item with referenceExternalId (profile link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "pupil",
+    name: "John Doe",
+    pupilId: "p1",
+    year: "Y5",
+    reg: "A",
+    referenceExternalId: "pupil123"
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "John Doe" });
+  expect(link).toHaveAttribute("href", "/pupilprofile/profile/pupil123");
+});
+
+it("renders pupil related item without referenceExternalId (fallback link)", () => {
+  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const elem = [{
+    type: "pupil",
+    name: "John Doe",
+    pupilId: "p1",
+    year: "Y5",
+    reg: "A"
+    // referenceExternalId missing
+  }];
+  const { getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
+  const link = getByRole("link", { name: "John Doe" });
   expect(link).toHaveAttribute("href", "/");
 });
 
@@ -1391,6 +1474,7 @@ describe("tableData mapping for relatedTo types", () => {
 describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
     const doc = {
+      isLeaver: "",
       documentRealatedTo: 1,
       relatedTo: [
         {
@@ -1409,7 +1493,8 @@ describe('mapRelatedArr', () => {
         name: 'Ben Smith',
         year: 'Year 1',
         reg: 'A',
-        referenceExternalId: '123'
+        referenceExternalId: '123',
+        isLeaver: ''
       }
     ]);
   });
@@ -2064,7 +2149,7 @@ describe("buildSelectedDocs", () => {
   });
 
  it("returns correct request object for valid input", () => {
-  const mockDate = new Date("2025-09-11T09:46:57.985Z");
+  const mockDate = new Date("2025-09-11T15:16:57");
   
   // Mock system time to fixed date
   jest.useFakeTimers().setSystemTime(mockDate);
@@ -2102,7 +2187,7 @@ describe("buildSelectedDocs", () => {
         fileDetails: [
           { fileId: "1", registrationId: 123 }
         ],
-        currentDateTime: mockDate.toISOString()
+        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
       }
     }
   ]);
@@ -2178,3 +2263,278 @@ describe("getReferenceMappingForSearchedPerson", () => {
   jest.restoreAllMocks();
   });
 });
+
+describe('handleClearAllConfirm', () => {
+  const viewData = [{ partitionKey: 'key1', status: 'complete' }];
+  const completedPartitionKeys = ['key1'];
+  let clearAllFiles: jest.Mock;
+  let setShowToastNotification: jest.Mock;
+  let fetchViewDownloadDataMock: jest.Mock;
+  let setIsSidePanelLoader: jest.Mock;
+  let setViewData: jest.Mock;
+  let setHasFetchedViewDownload: jest.Mock;
+  let viewDownload: jest.Mock;
+  let downloadPollingIntervalRef: any;
+  let setClearAllError: jest.Mock;
+  let setShowConfirmDialog: jest.Mock;
+  let getCompletedPartitionKeysMock: jest.Mock;
+
+  beforeEach(() => {
+    clearAllFiles = jest.fn();
+    setShowToastNotification = jest.fn();
+    fetchViewDownloadDataMock = jest.fn();
+    setIsSidePanelLoader = jest.fn();
+    setViewData = jest.fn();
+    setHasFetchedViewDownload = jest.fn();
+    viewDownload = jest.fn();
+    downloadPollingIntervalRef = { current: null };
+    setClearAllError = jest.fn();
+    setShowConfirmDialog = jest.fn();
+    getCompletedPartitionKeysMock = jest.fn().mockReturnValue(completedPartitionKeys);
+  });
+
+  it('shows toast and refreshes data on 204', async () => {
+    clearAllFiles.mockResolvedValue(204);
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+    });
+    expect(setShowToastNotification).toHaveBeenCalledWith(true);
+    expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
+      showLoader: false,
+      setIsSidePanelLoader,
+      viewDownload,
+      downloadPollingIntervalRef,
+    }));
+    expect(setClearAllError).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('shows error when clearAllFiles returns non-204', async () => {
+    clearAllFiles.mockResolvedValue(500);
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
+    expect(fetchViewDownloadDataMock).not.toHaveBeenCalled();
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it('shows error and hides toast on exception', async () => {
+    clearAllFiles.mockRejectedValue(new Error('fail'));
+    await handleClearAllConfirm({
+      viewData,
+      clearAllFiles,
+      setShowToastNotification,
+      fetchViewDownloadData: fetchViewDownloadDataMock,
+      setIsSidePanelLoader,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setClearAllError,
+      setShowConfirmDialog,
+      getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+    });
+    expect(setClearAllError).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).toHaveBeenCalledWith(false);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+});
+
+
+describe('getCompletedPartitionKeys', () => {
+  it('returns partitionKeys for items with status complete (case-insensitive)', () => {
+    const data = [
+      { status: 'Complete', partitionKey: 'pk1' },
+      { status: 'complete', partitionKey: 'pk2' },
+      { status: 'COMPLETE', partitionKey: 'pk3' },
+      { status: 'incomplete', partitionKey: 'pk4' },
+      { status: 'pending', partitionKey: 'pk5' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual(['pk1', 'pk2', 'pk3']);
+  });
+
+  it('returns empty string for missing partitionKey', () => {
+    const data = [
+      { status: 'complete' },
+      { status: 'complete', partitionKey: undefined }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual(['', '']);
+  });
+
+  it('returns empty array if no items are complete', () => {
+    const data = [
+      { status: 'pending', partitionKey: 'pk1' },
+      { status: 'incomplete', partitionKey: 'pk2' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual([]);
+  });
+
+  it('handles empty input array', () => {
+    expect(getCompletedPartitionKeys([])).toEqual([]);
+  });
+
+  it('handles missing status', () => {
+    const data = [
+      { partitionKey: 'pk1' },
+      { status: undefined, partitionKey: 'pk2' }
+    ];
+    expect(getCompletedPartitionKeys(data)).toEqual([]);
+  });
+});
+
+describe("Added by column anyComponent", () => {
+  const addedByColumn = getTableHeadersData.find(h => h.text === "Added by");
+
+  test("renders plain value if length <= 12", () => {
+    const value = "ShortName";
+    const { container, getByText } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
+    expect(getByText("ShortName")).toBeInTheDocument();
+    // Should not render tooltip
+    expect(container.querySelector('[data-testid="tooltip-addedby"]')).toBeNull();
+  });
+
+  test("renders nothing if value is null or undefined", () => {
+    const { container } = render(<>{addedByColumn?.anyComponent?.(null)}</>);
+    // Should render an empty span inside a flex div, not a truly empty DOM element
+    const span = container.querySelector('.document-text.document-column');
+    expect(span).toBeInTheDocument();
+    expect(span).toHaveTextContent("");
+    const { container: container2 } = render(<>{addedByColumn?.anyComponent?.(undefined)}</>);
+    const span2 = container2.querySelector('.document-text.document-column');
+    expect(span2).toBeInTheDocument();
+    expect(span2).toHaveTextContent("");
+  });
+
+  test("renders plain value if length <= 12", () => {
+  const value = "ShortName";
+  const { container, getByText } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
+  expect(getByText("ShortName")).toBeInTheDocument();
+  expect(container.querySelector('[data-testid="tooltip-addedby"]')).toBeNull();
+});
+
+  it("renders truncated value with tooltip if string length > 10", () => {
+    expect(addedByColumn).toBeDefined();
+    expect(addedByColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{addedByColumn!.anyComponent!(longValue)}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 12));
+  });
+
+  it("renders truncated value with tooltip if array first value length > 10", () => {
+    expect(addedByColumn).toBeDefined();
+    expect(addedByColumn?.anyComponent).toBeDefined();
+    const longValue = "averylongsizename";
+    const { container } = render(<>{addedByColumn!.anyComponent!([longValue, "other"])}</>);
+    expect(container).toHaveTextContent(longValue.substring(0, 12));
+  });
+});
+
+describe('fileDownload', () => {
+  let originalCreateElement: typeof document.createElement;
+  let originalGetElementById: typeof document.getElementById;
+  let mockLink: any;
+  let parent: any;
+  let mockDownloadFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockLink = {
+      click: jest.fn(),
+      set href(val) { this.hrefValue = val; },
+      get href() { return this.hrefValue; },
+      set download(val) { this.downloadValue = val; },
+      get download() { return this.downloadValue; },
+    };
+    parent = {
+      appendChild: jest.fn(),
+      removeChild: jest.fn(),
+    };
+    originalCreateElement = document.createElement;
+    document.createElement = jest.fn(() => mockLink);
+    originalGetElementById = document.getElementById;
+    document.getElementById = jest.fn(() => ({ parentElement: parent }) as unknown as HTMLElement);
+    window.URL.createObjectURL = jest.fn(() => 'blob:url');
+    window.URL.revokeObjectURL = jest.fn();
+  mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
+  });
+
+  afterEach(() => {
+    document.createElement = originalCreateElement;
+    document.getElementById = originalGetElementById;
+    jest.clearAllMocks();
+  });
+
+  it('downloads zip file using sasUrl', async () => {
+    const sasUrl = 'https://example.com/file.zip';
+    await logicModule.fileDownload(
+      '00000000-0000-0000-0000-000000000000',
+      'test.zip',
+      '',
+      '',
+      sasUrl
+    );
+    expect(mockLink.href).toBe(sasUrl);
+    expect(mockLink.download).toBe('test.zip');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it('downloads blob file using downloadFile', async () => {
+    const fakeBlob = new Blob(['test']);
+    mockDownloadFile.mockResolvedValueOnce(fakeBlob);
+    await logicModule.fileDownload(
+      'file-123',
+      'test.txt',
+      'app',
+      'section',
+      undefined
+    );
+    expect(mockDownloadFile).toHaveBeenCalledWith('app', 'section', 'file-123');
+    expect(mockLink.href).toBe('blob:url');
+    expect(mockLink.download).toBe('test.txt');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:url');
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it('throws and logs if exception thrown', async () => {
+  document.createElement = jest.fn(() => { throw new Error('fail'); });
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  await expect(logicModule.fileDownload(
+    'file-err',
+    'file.txt',
+    'app',
+    'section'
+  )).rejects.toThrow('fail');
+  expect(errorSpy).toHaveBeenCalled();
+  errorSpy.mockRestore();
+});
+});
+
+
+
