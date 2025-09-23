@@ -927,6 +927,76 @@ export function mapToBulkDeletePayload(
   };
 }
 
+export const handleBulkDeleteLogic = async ({
+  allSelectedDocs,
+  docData,
+  allRegistrationIds,
+  dateRange,
+  searchRefExternalId,
+  documentRealatedTo,
+  currentPage,
+  sortBy,
+  sortDirection,
+  setShowToastNotification,
+  setShowConfirmDialog,
+  setSelectedCheckBoxIds,
+  setAllSelectedDocs,
+  setIsClearSelectedCheckbox,
+  setShowDeleteErrorBanner,
+  setShowDeleteSuccessToast,
+  fetchGetDocumentDetails,
+  mockDeleteFiles
+}: {
+  allSelectedDocs: { fileId: string; registrationId: number }[],
+  docData: any,
+  allRegistrationIds: any[],
+  dateRange: { fromDate: string; toDate: string },
+  searchRefExternalId: string,
+  documentRealatedTo: number,
+  currentPage: number,
+  sortBy: string,
+  sortDirection: string,
+  setShowToastNotification: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  setSelectedCheckBoxIds: (v: string[]) => void,
+  setAllSelectedDocs: (v: any[]) => void,
+  setIsClearSelectedCheckbox: (v: boolean) => void,
+  setShowDeleteErrorBanner: (v: boolean) => void,
+  setShowDeleteSuccessToast: (v: boolean) => void,
+  fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
+  mockDeleteFiles: (payload: any) => Promise<number>
+}) => {
+  setShowDeleteSuccessToast(false);
+  const payload = mapToBulkDeletePayload(
+    allSelectedDocs.map(doc => ({
+      ...doc,
+      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+    })),
+    allRegistrationIds,
+    dateRange.fromDate,
+    dateRange.toDate,
+    searchRefExternalId,
+    documentRealatedTo
+  );
+  try {
+    const status = await mockDeleteFiles(payload);
+    if (status === 204) {
+      setShowToastNotification(true);
+      setShowConfirmDialog(false);
+      setSelectedCheckBoxIds([]);
+      setAllSelectedDocs([]);
+      setIsClearSelectedCheckbox(true);
+      setShowDeleteErrorBanner(false);
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+      setShowDeleteSuccessToast(true);
+    } else {
+      setShowDeleteErrorBanner(true);
+    }
+  } catch (err) {
+    setShowDeleteErrorBanner(true);
+  }
+};
+
 export function validateAndApplyFilter({
   selectedDateRange,
   isDateError,

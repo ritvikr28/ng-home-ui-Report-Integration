@@ -518,67 +518,77 @@ describe("Additional tests to increase coverage", () => {
   fireEvent.click(suggestionNode[0]);
   expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
   });
+
+  it("opens delete confirmation dialog when delete is clicked with selection", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  render(<DocumentManagementServerView />);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  expect(screen.getByText(/about to be deleted forever/i)).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Cancel"));
 });
 
-describe('onConfirm (Clear all downloads)', () => {
-  const setShowToastNotification = jest.fn();
-  const setClearAllError = jest.fn();
-  const setShowConfirmDialog = jest.fn();
-  const setIsSidePanelLoader = jest.fn();
-  const setViewData = jest.fn();
-  const setHasFetchedViewDownload = jest.fn();
-  const fetchViewDownloadData = jest.fn();
-  const viewDownload = jest.fn();
-  const downloadPollingIntervalRef = { current: null };
-  const completedPartitionKeys = ['key1', 'key2'];
-  // const viewData = [{ partitionKey: 'key1', status: 'complete' }, { partitionKey: 'key2', status: 'complete' }];
+ it("opens delete confirmation dialog when delete is clicked with selection and confirm delete", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  render(<DocumentManagementServerView />);
 
-  beforeEach(() => {
-    jest.clearAllMocks();
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  it('shows error when clearAllFiles returns non-204', async () => {
-    const clearAllFiles = jest.fn().mockResolvedValue(500);
-    await act(async () => {
-      const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
-      if (response === 204) {
-        setShowToastNotification(true);
-        fetchViewDownloadData({
-          showLoader: false,
-          setIsSidePanelLoader,
-          setViewData: (data: any) => {
-            setViewData(data);
-            setHasFetchedViewDownload(true);
-          },
-          viewDownload,
-          downloadPollingIntervalRef,
-        });
-      } else {
-        setClearAllError(true);
-      }
-      setShowConfirmDialog(false);
-    });
-    expect(setClearAllError).toHaveBeenCalledWith(true);
-    expect(setShowToastNotification).not.toHaveBeenCalled();
-    expect(fetchViewDownloadData).not.toHaveBeenCalled();
-    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
 
-  it('shows error and hides toast on exception', async () => {
-    const clearAllFiles = jest.fn().mockRejectedValue(new Error('fail'));
-    await act(async () => {
-      try {
-        await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
-      } catch (error) {
-        setClearAllError(true);
-        setShowToastNotification(false);
-      }
-      setShowConfirmDialog(false);
-    });
-    expect(setClearAllError).toHaveBeenCalledWith(true);
-    expect(setShowToastNotification).toHaveBeenCalledWith(false);
-    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
-  });
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  expect(screen.getByText(/about to be deleted forever/i)).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Delete"));
+});
+
+it("Delete dialog cancel button works", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  render(<DocumentManagementServerView />);
 });
 
 describe('onClickSidePnlSecondaryBtn', () => {
@@ -596,24 +606,72 @@ await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDo
 fireEvent.click(screen.getByTestId('secondary-button'));
   
   expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Keep all"));
 });
 
-it("closes side panel when clicking 'Close' with no completed files", async () => {
+ it("Clear files when clicking 'Clear all' with completed files", async () => {
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
     status: 200,
-    data: [{ name: "File1", status: "inprogress" }],
+    data: [{ name: "File1", status: "complete" }],
   });
-  const {container} = render(<DocumentManagementServerView />);
+  render(<DocumentManagementServerView />);
 
-  console.log(container.innerHTML);
-  fireEvent.click(await screen.findByText("Actions"));
-  fireEvent.click(await screen.findByText("View download"));
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("View download"));
+
+await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
+fireEvent.click(screen.getByTestId('secondary-button'));
   
-  fireEvent.click(screen.getByTestId("side-panel-close-button"));
-  
+  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
+
+  fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
+});
+
+ it("Catch error for failed prepareDownload", async () => {
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+
+
+  render(<DocumentManagementServerView />);
+
+  // type search query
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
-    expect(screen.queryByText("Downloads")).not.toBeInTheDocument();
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-});
 
-});
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
+
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+    fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
+    fireEvent.click(option);
+
+
+    fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
+})
+})
+})

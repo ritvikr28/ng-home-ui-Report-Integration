@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, mapToBulkDeletePayload } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, mapToBulkDeletePayload, handleBulkDeleteLogic } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -449,37 +449,27 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
 
-    const handleBulkDelete = async () => {
-        setShowDeleteSuccessToast(false);
-    const payload = mapToBulkDeletePayload(
-        allSelectedDocs.map(doc => ({
-        ...doc,
-        externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-        })),
-        allRegistrationIds,
-        dateRange.fromDate,
-        dateRange.toDate,
-        searchRefExternalId,
-        documentRealatedTo
-    );
-    try {
-        const status = await mockDeleteFiles(payload); 
-        if (status === 204) {
-        setShowToastNotification(true);
-        setShowConfirmDialog(false);
-        setSelectedCheckBoxIds([]);
-        setAllSelectedDocs([]);
-        setIsClearSelectedCheckbox(true);
-        setShowDeleteErrorBanner(false);
-        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-        setShowDeleteSuccessToast(true);
-        } else {
-        setShowDeleteErrorBanner(true);
-        }
-    } catch (err) {
-        setShowDeleteErrorBanner(true);
-    }
-    };
+    const handleBulkDelete = () =>
+        handleBulkDeleteLogic({
+            allSelectedDocs,
+            docData,
+            allRegistrationIds,
+            dateRange,
+            searchRefExternalId,
+            documentRealatedTo,
+            currentPage,
+            sortBy,
+            sortDirection,
+            setShowToastNotification,
+            setShowConfirmDialog,
+            setSelectedCheckBoxIds,
+            setAllSelectedDocs,
+            setIsClearSelectedCheckbox,
+            setShowDeleteErrorBanner,
+            setShowDeleteSuccessToast,
+            fetchGetDocumentDetails,
+            mockDeleteFiles
+        });
 
 const handleApply = () => {
   validateAndApplyFilter({
