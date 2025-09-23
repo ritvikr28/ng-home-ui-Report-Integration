@@ -252,13 +252,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
-const selectedDocs = buildSelectedDocs(
-  selectedCheckBoxIds,
-  docData,
-  categoryRegistrationMap,
-  searchRefExternalId,
-  documentRealatedTo
-);
+
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
@@ -924,6 +918,14 @@ const handleApply = () => {
                                                 setIsSidePanelLoader(true);
                                                 setSidePanelOpenReason("prepare");
                                                 setIsSidePanelOpen(true);
+                                                const selectedDocs = buildSelectedDocs(
+                                                    selectedCheckBoxIds,
+                                                    docData,
+                                                    categoryRegistrationMap,
+                                                    searchRefExternalId,
+                                                    documentRealatedTo
+                                                );
+
                                                 prepareDownload(selectedDocs)
                                                     .then((statuses) => {
                                                         if (statuses.some((status: number) => status !== 204)) {
