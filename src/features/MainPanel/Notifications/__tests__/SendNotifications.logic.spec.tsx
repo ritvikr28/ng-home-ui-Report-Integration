@@ -1,4 +1,4 @@
-import { connectWebSocket, handleSendNotification } from "../SendNotifications.logic";
+import { connectWebSocket, handleSendNotification, fetchActiveConnectionCount } from "../SendNotifications.logic";
 import { API_BASE } from "../SendNotifications.view";
 
 describe("connectWebSocket", () => {
@@ -9,6 +9,7 @@ describe("connectWebSocket", () => {
   let reconnectAttempts: { current: number };
   let reconnectTimeout: { current: any };
   let wsRef: { current: any };
+  let setActiveConnectionCount: jest.Mock;
   const WS_BASE = "ws://test";
   const token = "abc123";
 
@@ -19,6 +20,7 @@ describe("connectWebSocket", () => {
   beforeEach(() => {
     setWsStatus = jest.fn();
     setMessages = jest.fn();
+    setActiveConnectionCount = jest.fn();
     reconnectAttempts = { current: 0 };
     reconnectTimeout = { current: null };
     wsRef = { current: null };
@@ -76,7 +78,7 @@ describe("connectWebSocket", () => {
     expect(wsRef.current).toBe(mockSocket);
   });
 
-  it("handles onopen event", () => {
+  it("handles onopen event and sends auth message", () => {
     connectWebSocket({
       token,
       setWsStatus,
@@ -85,7 +87,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
-      setActiveConnectionCount: jest.fn(),
+      setActiveConnectionCount,
     });
     mockSocket.send.mockClear();
     mockSocket.onopen();
@@ -94,9 +96,10 @@ describe("connectWebSocket", () => {
     expect(mockSocket.send).toHaveBeenCalledWith(
       JSON.stringify({ type: "auth", token })
     );
+    expect(setActiveConnectionCount).not.toHaveBeenCalled();
   });
 
-  it("handles onmessage event", () => {
+  it("handles onmessage event and updates messages", () => {
     connectWebSocket({
       token,
       setWsStatus,
@@ -105,7 +108,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
-      setActiveConnectionCount: jest.fn(),
+      setActiveConnectionCount,
     });
     setMessages.mockImplementation((fn) => fn(["old"]));
     mockSocket.onmessage({ data: "new" });
@@ -122,7 +125,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
-      setActiveConnectionCount: jest.fn(),
+      setActiveConnectionCount,
     });
     reconnectAttempts.current = 0;
     mockSocket.onclose();
@@ -143,7 +146,7 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
-      setActiveConnectionCount: jest.fn(),
+      setActiveConnectionCount,
     });
     reconnectAttempts.current = 10;
     mockSocket.onclose();
@@ -160,10 +163,27 @@ describe("connectWebSocket", () => {
       reconnectAttempts,
       reconnectTimeout,
       WS_BASE,
-      setActiveConnectionCount: jest.fn(),
+      setActiveConnectionCount,
     });
     mockSocket.onerror();
     expect(mockSocket.close).toHaveBeenCalled();
+  });
+
+  it("does not throw if socket.send fails in onopen", () => {
+    connectWebSocket({
+      token,
+      setWsStatus,
+      wsRef,
+      setMessages,
+      reconnectAttempts,
+      reconnectTimeout,
+      WS_BASE,
+      setActiveConnectionCount,
+    });
+    mockSocket.send.mockImplementation(() => {
+      throw new Error("fail");
+    });
+    expect(() => mockSocket.onopen()).not.toThrow();
   });
 });
 
@@ -204,7 +224,51 @@ describe("handleSendNotification", () => {
     (global.fetch as jest.Mock).mockRejectedValue(new Error("fail"));
 
     await expect(
-      handleSendNotification({ token:"", notification:"" })
+      handleSendNotification({ token: "", notification: "" })
     ).rejects.toThrow("fail");
+  });
+
+  it("does not throw if fetch resolves but not ok", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: false });
+    await expect(
+      handleSendNotification({ token, notification })
+    ).resolves.toBeUndefined();
+  });
+});
+
+describe("fetchActiveConnectionCount", () => {
+  let setActiveConnectionCount: jest.Mock;
+
+  beforeEach(() => {
+    setActiveConnectionCount = jest.fn();
+    global.fetch = jest.fn();
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it("sets active connection count if fetch ok", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => 5,
+    });
+    await fetchActiveConnectionCount({ setActiveConnectionCount });
+    expect(setActiveConnectionCount).toHaveBeenCalledWith(5);
+  });
+
+  it("does not set active connection count if fetch not ok", async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: false,
+      json: async () => 0,
+    });
+    await fetchActiveConnectionCount({ setActiveConnectionCount });
+    expect(setActiveConnectionCount).not.toHaveBeenCalled();
+  });
+
+  it("handles fetch error gracefully", async () => {
+    (global.fetch as jest.Mock).mockRejectedValue(new Error("fail"));
+    await expect(fetchActiveConnectionCount({ setActiveConnectionCount })).resolves.toBeUndefined();
+    expect(setActiveConnectionCount).not.toHaveBeenCalled();
   });
 });
