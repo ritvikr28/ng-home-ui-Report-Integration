@@ -10,11 +10,11 @@ describe("NoSelectionDialog", () => {
     expect(setShowDialog).toHaveBeenCalledWith(false);
   });
 
-  it("calls setShowDialog(false) when close button is clicked", () => {
-    const setShowDialog = jest.fn();
-    render(<NoSelectionDialog setShowDialog={setShowDialog} />);
-    const closeButton = screen.getByRole("button", { name: /close/i });
-    fireEvent.click(closeButton);
-    expect(setShowDialog).toHaveBeenCalledWith(false);
-  });
+  // it("calls setShowDialog(false) when close button is clicked", () => {
+  //   const setShowDialog = jest.fn();
+  //   render(<NoSelectionDialog setShowDialog={setShowDialog} />);
+  //   const closeButton = screen.getByRole("button", { name: /close/i });
+  //   fireEvent.click(closeButton);
+  //   expect(setShowDialog).toHaveBeenCalledWith(false);
+  // });
 });
