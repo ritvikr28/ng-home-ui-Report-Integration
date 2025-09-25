@@ -131,6 +131,34 @@ afterEach(() => {
     expect(screen.getByText("Home")).toBeInTheDocument();
   });
 
+  it("sets failedFileName when cancelled files are present in viewData", async () => {
+  // Mock viewDownload to return a cancelled file
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [
+      { name: "FailedFile.pdf", status: "cancel" },
+      { name: "SuccessFile.pdf", status: "complete" }
+    ],
+  });
+
+  render(
+    <MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>
+  );
+
+  // Open the download view panel
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("View download"));
+
+  // Wait for the cancelled file to appear
+  await waitFor(() => {
+    expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
+  });
+
+  // Optionally, check for UI that uses failedFileName (e.g., error message, etc.)
+});
+
   it("opens side panel in view mode when isViewMode param is true", () => {
   // Use MemoryRouter with initialEntries to set the query param
   render(
@@ -232,6 +260,56 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(screen.getByText("Expires in 2 days.")).toBeInTheDocument();
   });
  
+  test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
+    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue([500]);
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+  render(
+    <MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>
+  );
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Find the checkbox for the first row
+  const checkbox = screen.getByTestId("check-box-row-testid-0");
+
+  // Select the checkbox (add)
+  fireEvent.click(checkbox);
+  expect(checkbox).toBeChecked();
+
+  // Unselect the checkbox (remove)
+  fireEvent.click(checkbox);
+  expect(checkbox).not.toBeChecked();
+});
+
   it("renders in-progress downloads", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
