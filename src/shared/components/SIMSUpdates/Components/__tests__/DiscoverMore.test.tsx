@@ -1,18 +1,18 @@
 import { render, screen, fireEvent } from "@testing-library/react";
-import DiscoverMoreView from "../DiscoverMore.view";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import DiscoverMoreView from "../DiscoverMore.view";
 
 const mediaQuery = require("@essnextgen/ui-kit");
 jest.mock("@essnextgen/ui-flagr", () => ({
-  hasFeaturePermission: jest.fn(),
+  hasFeaturePermission: jest.fn()
 }));
 describe("DiscoverMoreView Component", () => {
   beforeAll(() => {
     Object.defineProperty(window, "location", {
       value: {
-        href: "about:blank",
+        href: "about:blank"
       },
-      writable: true,
+      writable: true
     });
   });
 

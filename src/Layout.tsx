@@ -4,7 +4,7 @@ import React, {
   lazy,
   LazyExoticComponent,
   FC,
-  useState,
+  useState
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -12,21 +12,21 @@ import {
   Auth,
   authService,
   MatchPermissions,
-  Permission,
+  Permission
 } from "@essnextgen/auth-ui";
 import {
   Switch,
   Route,
   BrowserRouter as Router,
   useHistory,
-  Redirect,
+  Redirect
 } from "react-router-dom";
 import {
   Header,
   IApplicationMenu,
   ApplicationConfig,
   IModulePermission,
-  SchoolGroupRedirect,
+  SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import {
   ActionCard,
@@ -41,11 +41,11 @@ import {
   Link,
   Loader,
   LoaderType,
-  useMediaQuery,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import {
   useTranslation,
-  UseTranslationResponse,
+  UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
 
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
@@ -61,7 +61,7 @@ import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAcces
 import UAM from "./features/AdminConsole/UAM.view";
 import {
   isOrganisationInVariant,
-  isOrganisationInVariantForAnyOrAll,
+  isOrganisationInVariantForAnyOrAll
 } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
@@ -110,7 +110,7 @@ export const getMenus: (
 };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
   const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
@@ -148,7 +148,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       code: x.appCode,
       canView: true,
       linkText: t(`slices.${x.appCode}.linkText`),
-      link: t(`slices.${x.appCode}.link`),
+      link: t(`slices.${x.appCode}.link`)
     }));
   };
   /* eslint-enable */
@@ -204,11 +204,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   );
 
   const requiredSystemStatusViewPermission: Permission[] = [
-    { Securable: "NG.AlertEmails.List", Operation: "View" },
+    { Securable: "NG.AlertEmails.List", Operation: "View" }
   ];
   const requiredSystemStatusUpdatePermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "Update" },
-    { Securable: "NG.AlertEmails.List", Operation: "Write" },
+    { Securable: "NG.AlertEmails.List", Operation: "Write" }
   ];
   const canViewSystemStatus = authService.isAuthorised(
     requiredSystemStatusViewPermission,
@@ -448,10 +448,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<
         </GridItem>
         <GridItem sm={12} md={12} lg={12} xl={12} xxl={12}>
           <Grid className="action-card-container-closeview sims-ng">
-            {hasFeaturePermission(
-              `${envConfig.APPLICATION}`,
-              "VideoTile"
-            ) && (
+            {hasFeaturePermission(`${envConfig.APPLICATION}`, "VideoTile") && (
               <GridItem sm={12} lg md={12} className="what-new-sims">
                 <Link
                   dataTestId="link1"
