@@ -3,6 +3,7 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import DiscoverMoreView from "../DiscoverMore.view";
 
 const mediaQuery = require("@essnextgen/ui-kit");
+
 jest.mock("@essnextgen/ui-flagr", () => ({
   hasFeaturePermission: jest.fn()
 }));
@@ -113,3 +114,4 @@ describe("DiscoverMoreView Component", () => {
     expect(onActionCardClick).toHaveBeenCalledTimes(0);
   });
 });
+
