@@ -12,6 +12,8 @@ import { SectionTitle } from "../../SectionTitle/SectionTitle";
 /* eslint-disable */
 import "../style.scss"
 import { UseTranslationResponse, useTranslation } from "@essnextgen/ui-intl-kit";
+import { envConfig } from "../../../utils";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
   useTranslation();
@@ -54,7 +56,10 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
       </Grid>
 
       <Grid className={"new-footer-actioncards c-clear-padding"}>
-         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
+        {hasFeaturePermission(
+              `${envConfig.APPLICATION}`,
+              "VideoTile"
+            ) && ( <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link1"
             href="https://fast.wistia.com/embed/channel/3q9dzfvekg"
@@ -70,7 +75,8 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               secondaryText= {t("discoverMore.secondaryvideotext")} 
             />
           </Link>
-        </GridItem>
+        </GridItem>)}
+        
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link2"
