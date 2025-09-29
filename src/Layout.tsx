@@ -110,7 +110,7 @@ export const getMenus: (
 };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
   const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
@@ -122,7 +122,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-
 
   const menuFilterHandler: (menus: IApplicationMenu[]) => IApplicationMenu[] = (
     menus: IApplicationMenu[]
@@ -149,7 +148,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       code: x.appCode,
       canView: true,
       linkText: t(`slices.${x.appCode}.linkText`),
-      link: t(`slices.${x.appCode}.link`),
+      link: t(`slices.${x.appCode}.link`)
     }));
   };
   /* eslint-enable */
@@ -220,7 +219,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-
   const sendNotificationFlagr: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SendNotification"
@@ -257,9 +255,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             component={
               isServiceInitiated
                 ? renderHomePage(
-                  hasNewHomePagePermission,
-                  isRenderSimsConnectedBanner
-                )
+                    hasNewHomePagePermission,
+                    isRenderSimsConnectedBanner
+                  )
                 : EmptyComponent
             }
           />
@@ -299,7 +297,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
-          {sendNotificationFlagr && (<ProtectedRoute exact path="/notification" component={SendNotification} />)}
+          {sendNotificationFlagr && (
+            <ProtectedRoute
+              exact
+              path="/notification"
+              component={SendNotification}
+            />
+          )}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact
@@ -359,17 +363,21 @@ const renderHomePage: (
   hasNewHomePagePermission: boolean,
   isRenderSimsConnectedBanner: boolean
 ) => {
-    if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
-      return () => <HomePageForSimsConnectedNormalUser isRenderSimsConnectedBanner={isRenderSimsConnectedBanner} />;
-    }
-    if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
-      return SIMSIDAdminPageView;
-    }
-    if (hasNewHomePagePermission) {
-      return NewHomepageView;
-    }
-    return UnAuthorisedAccess;
-  };
+  if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
+    return () => (
+      <HomePageForSimsConnectedNormalUser
+        isRenderSimsConnectedBanner={isRenderSimsConnectedBanner}
+      />
+    );
+  }
+  if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+    return SIMSIDAdminPageView;
+  }
+  if (hasNewHomePagePermission) {
+    return NewHomepageView;
+  }
+  return UnAuthorisedAccess;
+};
 
 /* eslint-enable */
 /* istanbul ignore next */
@@ -378,7 +386,9 @@ const EmptyComponent: () => JSX.Element = () => (
 );
 
 /* istanbul ignore next */
-const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNormalUserProps> = ({ isRenderSimsConnectedBanner }) => {
+const HomePageForSimsConnectedNormalUser: React.FC<
+  HomePageForSimsConnectedNormalUserProps
+> = ({ isRenderSimsConnectedBanner }) => {
   const rel: any = { rel: "noopener noreferrer" };
   const onCardClick: () => void = () => {};
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -400,45 +410,71 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
             <SIMSConnectedLauncher />
           </GridItem>
         )}
-        <GridItem sm={12} md={12} lg={12} xl={12} xxl={12} className="welcome-heading-container">
+        <GridItem
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          xxl={12}
+          className="welcome-heading-container"
+        >
           <div>
-            <span className="welcome-heading">{t("HomePageForSimsConnectedNormalUser.welcomeToSims")}</span>
+            <span className="welcome-heading">
+              {t("HomePageForSimsConnectedNormalUser.welcomeToSims")}
+            </span>
           </div>
         </GridItem>
-        <GridItem sm md lg >
-          <Grid className="new-sims-uppersection sims-next-gen-update-wrapper" >
-              <GridItem sm md lg className="new-sims-uppersection">
-                <SectionTitle title={t("discoverMore.simsupdatetext")} />
-              </GridItem>
+        <GridItem sm md lg>
+          <Grid className="new-sims-uppersection sims-next-gen-update-wrapper">
+            <GridItem sm md lg className="new-sims-uppersection">
+              <SectionTitle title={t("discoverMore.simsupdatetext")} />
+            </GridItem>
 
-              <GridItem sm md lg className="new-sims-discoverbtn">
-                <Button
-                  color={ButtonColor.Secondary}
-                  dataTestId="btn-save"
-                  onClick={onButtonClick}
-                  size={ButtonSize.Small}
-                >
-                  <span className="new-discoverbtn-style">
-                    {
-                      isMobileView
-                      ? t("discoverMore.mobilesimsupdatetext")
-                      : t("discoverMore.mobilesimsupdatemoretext")
-                    }
-                  </span>
-                </Button>
-              </GridItem>
+            <GridItem sm md lg className="new-sims-discoverbtn">
+              <Button
+                color={ButtonColor.Secondary}
+                dataTestId="btn-save"
+                onClick={onButtonClick}
+                size={ButtonSize.Small}
+              >
+                <span className="new-discoverbtn-style">
+                  {isMobileView
+                    ? t("discoverMore.mobilesimsupdatetext")
+                    : t("discoverMore.mobilesimsupdatemoretext")}
+                </span>
+              </Button>
+            </GridItem>
           </Grid>
         </GridItem>
         <GridItem sm={12} md={12} lg={12} xl={12} xxl={12}>
           <Grid className="action-card-container-closeview sims-ng">
+            {hasFeaturePermission(`${envConfig.APPLICATION}`, "VideoTile") && (
+              <GridItem sm={12} lg md={12} className="what-new-sims">
+                <Link
+                  dataTestId="link1"
+                  href="https://fast.wistia.com/embed/channel/3q9dzfvekg"
+                  target="_blank"
+                  {...rel}
+                >
+                  <ActionCard
+                    className="primary-text"
+                    dataTestId="what-new-videos-test-id"
+                    id="action-card"
+                    onClickActionCard={() => onCardClick()}
+                    primaryText={t("discoverMore.primaryvideotext")}
+                    secondaryText={t("discoverMore.secondaryvideotext")}
+                  />
+                </Link>
+              </GridItem>
+            )}
+
             <GridItem sm={12} lg md={12} className="what-new-sims">
               <Link
-                dataTestId="link1"
+                dataTestId="link2"
                 href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
                 target="_blank"
                 {...rel}
               >
-      
                 <ActionCard
                   className="primary-text"
                   dataTestId="what-new-test-id"
@@ -449,12 +485,7 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
                 />
               </Link>
             </GridItem>
-            <GridItem
-              sm={12}
-              lg
-              md={12}
-              className="what-new-sims action-card"
-            >
+            <GridItem sm={12} lg md={12} className="what-new-sims action-card">
               <Link
                 dataTestId="link2"
                 href="https://help.parentpaygroup.com/csm/en/%25short_descr?id=copy_of_kb_article_view_1&sysparm_article=KB0012256"
@@ -474,10 +505,16 @@ const HomePageForSimsConnectedNormalUser: React.FC<HomePageForSimsConnectedNorma
           </Grid>
         </GridItem>
         <GridItem sm={12} md lg={12}>
-          <ErrorActionList description={t("HomePageForSimsConnectedNormalUser.needAccessToSimsNextGen")}>
+          <ErrorActionList
+            description={t(
+              "HomePageForSimsConnectedNormalUser.needAccessToSimsNextGen"
+            )}
+          >
             <ErrorActionListItem
               iconName="information"
-              title={t("HomePageForSimsConnectedNormalUser.contactYourAdministrator")}
+              title={t(
+                "HomePageForSimsConnectedNormalUser.contactYourAdministrator"
+              )}
             >
               {t("HomePageForSimsConnectedNormalUser.subHeadingPartOne")}
               <br />
