@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import React, { useState, useEffect } from "react"
+import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
@@ -87,6 +88,16 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const searchTagListRaw = [
     ...categoryArr
     ];
+
+    const location = useLocation();
+    
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("isViewDownload") === "true") {
+            setSidePanelOpenReason("view");
+            setIsSidePanelOpen(true);
+        }
+    }, [location.search]);
 
     const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
 

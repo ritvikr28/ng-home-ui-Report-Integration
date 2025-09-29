@@ -1,5 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
@@ -122,14 +123,52 @@ afterEach(() => {
   cleanup();
 });
   describe("DocumentManagementServerView", () => {
- 
+  
   it("renders breadcrumbs in desktop view", () => {
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     expect(screen.getByText("Home")).toBeInTheDocument();
   });
+
+  it("sets failedFileName when cancelled files are present in viewData", async () => {
+  // Mock viewDownload to return a cancelled file
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [
+      { name: "FailedFile.pdf", status: "cancel" },
+      { name: "SuccessFile.pdf", status: "complete" }
+    ],
+  });
+
+  render(
+    <MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>
+  );
+
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("View download"));
+
+  await waitFor(() => {
+    expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
+  });
+
+});
+
+  it("opens side panel in view mode when isViewDownload param is true", () => {
+  render(
+    <MemoryRouter initialEntries={["/?isViewDownload=true"]}>
+      <DocumentManagementServerView />
+    </MemoryRouter>
+  );
+  expect(screen.getByText("Downloads")).toBeInTheDocument();
+});
  
   it("renders empty state before search", () => {
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     act(() => {
       jest.advanceTimersByTime(2000);
     });
@@ -143,9 +182,11 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
- 
-  render(<DocumentManagementServerView />);
- 
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
@@ -171,7 +212,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
  
  
   it("handles sorting on multiple columns", () => {
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
    
     fireEvent.click(screen.getByText("Date added"));
     fireEvent.click(screen.getByText("Document"));
@@ -182,7 +225,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
    
  
   it("shows NoSelectionDialog when no item selected for prepare download", async () => {
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     fireEvent.click(await screen.findByText("Actions"));
     fireEvent.click(await screen.findByText("Prepare download"));
     expect(
@@ -197,7 +242,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       status: 200,
       data: [{ name: "File1", status: "complete", fileExpiryDays: 2 }],
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
       fireEvent.click(await screen.findByText("Actions"));
       fireEvent.click(await screen.findByText("View download"));
@@ -208,12 +255,64 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(screen.getByText("Expires in 2 days.")).toBeInTheDocument();
   });
  
+  test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
+    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue([500]);
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+  render(
+    <MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>
+  );
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Find the checkbox for the first row
+  const checkbox = screen.getByTestId("check-box-row-testid-0");
+
+  // Select the checkbox (add)
+  fireEvent.click(checkbox);
+  expect(checkbox).toBeChecked();
+
+  // Unselect the checkbox (remove)
+  fireEvent.click(checkbox);
+  expect(checkbox).not.toBeChecked();
+});
+
   it("renders in-progress downloads", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [{ name: "File2", status: "inprogress" }],
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
       fireEvent.click(await screen.findByText("Actions"));
       fireEvent.click(await screen.findByText("View download"));
@@ -226,7 +325,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       status: 200,
       data: [{ name: "File3", status: "initiated" }],
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
       fireEvent.click(await screen.findByText("Actions"));
       fireEvent.click(await screen.findByText("View download"));
@@ -238,9 +339,11 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
      (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
- 
-  render(<DocumentManagementServerView />);
- 
+
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
@@ -268,9 +371,11 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
- 
-  render(<DocumentManagementServerView />);
- 
+
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
@@ -291,7 +396,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
  
     it("closes side panel and clears interval", async () => {
-    const { container } = render(<DocumentManagementServerView />);
+    const { container } = render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
       fireEvent.click(await screen.findByText("Actions"));
       fireEvent.click(await screen.findByText("View download"));
@@ -309,7 +416,9 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
         { name: "FileUndefined", status: "complete" }
       ],
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     fireEvent.click(await screen.findByText("Actions"));
     fireEvent.click(await screen.findByText("View download"));
     await waitFor(() => {
@@ -324,20 +433,26 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     act(() => {
       global.dispatchEvent(new Event("resize"));
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     expect(screen.getByText("Document Management Server")).toBeInTheDocument();
   });
 });
  
 describe("Additional tests to increase coverage", () => {
   it("clears search input and resets state", async () => {
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
     fireEvent.change(screen.getByTestId("search-autocomplete-input"), { target: { value: "Test" } });
     fireEvent.click(screen.getByTestId("search-close--icon-btn")); // triggers handleSearchClose
   });
  
  it("shows NoSelectionDialog when no item selected for delete", async () => {
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
   // Open the actions menu
   fireEvent.click(await screen.findByText("Actions"));
   // Click the Delete option
@@ -365,7 +480,9 @@ describe("Additional tests to increase coverage", () => {
     });
  
  
-  render(<DocumentManagementServerView />);
+ render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
@@ -413,7 +530,9 @@ describe("Additional tests to increase coverage", () => {
     });
  
  
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
@@ -450,7 +569,9 @@ describe("Additional tests to increase coverage", () => {
     act(() => {
       global.dispatchEvent(new Event("resize"));
     });
-    render(<DocumentManagementServerView />);
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>)
     expect(screen.getByText("Document Management Server")).toBeInTheDocument();
   });
  
@@ -459,7 +580,9 @@ describe("Additional tests to increase coverage", () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
  
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
@@ -498,7 +621,9 @@ describe("Additional tests to increase coverage", () => {
     );
     jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
  
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
@@ -525,7 +650,9 @@ describe('onClickSidePnlSecondaryBtn', () => {
     status: 200,
     data: [{ name: "File1", status: "complete" }],
   });
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   fireEvent.click(await screen.getByText("Actions"));
   fireEvent.click(await screen.getByText("View download"));
@@ -543,7 +670,9 @@ fireEvent.click(screen.getByTestId('secondary-button'));
     status: 200,
     data: [{ name: "File1", status: "complete" }],
   });
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   fireEvent.click(await screen.getByText("Actions"));
   fireEvent.click(await screen.getByText("View download"));
@@ -570,7 +699,9 @@ fireEvent.click(screen.getByTestId('secondary-button'));
     });
  
  
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
  
   // type search query
   const input = await screen.findByTestId("search-autocomplete-input");
