@@ -93,7 +93,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     
     useEffect(() => {
         const params = new URLSearchParams(location.search);
-        if (params.get("isViewMode") === "true") {
+        if (params.get("isViewDownload") === "true") {
             setSidePanelOpenReason("view");
             setIsSidePanelOpen(true);
         }

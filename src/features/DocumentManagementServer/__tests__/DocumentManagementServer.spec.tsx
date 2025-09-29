@@ -159,10 +159,10 @@ afterEach(() => {
   // Optionally, check for UI that uses failedFileName (e.g., error message, etc.)
 });
 
-  it("opens side panel in view mode when isViewMode param is true", () => {
+  it("opens side panel in view mode when isViewDownload param is true", () => {
   // Use MemoryRouter with initialEntries to set the query param
   render(
-    <MemoryRouter initialEntries={["/?isViewMode=true"]}>
+    <MemoryRouter initialEntries={["/?isViewDownload=true"]}>
       <DocumentManagementServerView />
     </MemoryRouter>
   );
