@@ -147,26 +147,21 @@ afterEach(() => {
     </MemoryRouter>
   );
 
-  // Open the download view panel
   fireEvent.click(await screen.findByText("Actions"));
   fireEvent.click(await screen.findByText("View download"));
 
-  // Wait for the cancelled file to appear
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
   });
 
-  // Optionally, check for UI that uses failedFileName (e.g., error message, etc.)
 });
 
   it("opens side panel in view mode when isViewDownload param is true", () => {
-  // Use MemoryRouter with initialEntries to set the query param
   render(
     <MemoryRouter initialEntries={["/?isViewDownload=true"]}>
       <DocumentManagementServerView />
     </MemoryRouter>
   );
-  // You can check for side panel open state by looking for an element that only appears when the panel is open
   expect(screen.getByText("Downloads")).toBeInTheDocument();
 });
  
