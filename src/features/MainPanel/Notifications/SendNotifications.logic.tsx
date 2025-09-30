@@ -69,13 +69,19 @@ export async function connectWebSocket({
   // });
 
   socket.onmessage = (event) => {
-    console.log("Message from server:", event.data);
-    setMessages((prev) => [...prev, event.data]);
+    const parsedData = JSON.parse(event.data);
+    
+    if (parsedData.type !== "activeCount") {
+      setMessages((prev) => [...prev, event.data]);
+    }
+    const msg = JSON.parse(event.data);
+    if (msg.type === "activeCount") {
+      setActiveConnectionCount(msg.count);
+    }
   };
 
   socket.onclose = () => {
     setWsStatus("disconnected");
-    // Reconnect with exponential backoff
     if (token && reconnectAttempts.current < 10) {
       setWsStatus("reconnecting");
       const delay = Math.min(1000 * 2 ** reconnectAttempts.current, 30000);
