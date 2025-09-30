@@ -4,28 +4,31 @@ import { useState, useRef, useEffect } from "react";
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { connectWebSocket, fetchActiveConnectionCount, handleSendNotification } from "./SendNotifications.logic";
+import { socket } from "../../../Layout";
 
-export const API_BASE = "https://dev.home.sims.co.uk/web"; // Change to your backend URL
-const WS_BASE = "wss://dev.home.sims.co.uk/web/ws"; // Change to your websocket endpoint
 
 export const SendNotification = () => {
   const [token, setToken] = useState("");
   const [messages, setMessages] = useState<string[]>([]);
   const [activeConnectionCount, setActiveConnectionCount] = useState(0);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  wsRef.current = socket;
+
 
   const [notification, setNotification] = useState<{
     type: string;
     message: string;
-    roles: string[];
+    rolesIds: string[];
     userIds: string[];
   }>({
-    type: "alert",
+    type: "",
     message: "",
-    roles: [],
+    rolesIds: [],
     userIds: [],
   });
+  const [message, setMessage] = useState("");
   const [wsStatus, setWsStatus] = useState("disconnected"); // "connecting", "connected", "reconnecting", "disconnected"
-  const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttempts = useRef(0);
   // eslint-disable-next-line
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -49,7 +52,7 @@ export const SendNotification = () => {
 
   // Manual connect button
   const handleConnect = () => {
-    reconnectAttempts.current = 0;
+
     connectWebSocket({
       token,
       setWsStatus,
@@ -57,7 +60,6 @@ export const SendNotification = () => {
       setMessages,
       reconnectAttempts,
       reconnectTimeout,
-      WS_BASE,
       setActiveConnectionCount
     });
   };
@@ -67,38 +69,38 @@ export const SendNotification = () => {
     if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
   }, []);
 
-  // Auto-connect when token becomes available
-  useEffect(() => {
-    if (wsStatus === "disconnected") {
-      console.log("if condition Auto connecting websocket...");
-      handleConnect();
-    }
-  }, []);
-
 
   useEffect(() => {
     fetchActiveConnectionCount({ setActiveConnectionCount }); // initial fetch
-    // const interval = setInterval(
-    // fetchActiveConnectionCount
-    // , 3000); // fetch every 5 seconds
-    // return () => clearInterval(interval);
   }, []);
 
   // Send notification
   const handleSendNotificationClick = async () => {
+    // Update notification state with the latest message only when sending
+    const updatedNotification = { ...notification, message };
+    setNotification(updatedNotification);
     await handleSendNotification({
-      // API_BASE,
       token,
-      notification,
+      notification: updatedNotification,
+      message
     });
   };
 
-  // Get active websocket connections
+
+  useEffect(() => {
+
+    if (wsRef.current) wsRef.current.close();
+    if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
+  }, []);
+
+  useEffect(() => {
+    if (token && wsStatus === "disconnected") {
+      handleConnect();
+    }
+    // eslint-disable-next-line
+  }, [token]);
 
 
-  // useEffect(() => {
-  //   handleLoginClick();
-  // }, []);
 
   const userName = authService.getUsername();
   const userOrgId = authService.getOrgId();
@@ -108,18 +110,6 @@ export const SendNotification = () => {
     <div className="notification-app-container">
       <h2>Demo Notification App</h2>
       <div>
-        {/* <input
-          placeholder="User ID"
-          value={userId}
-          onChange={(e) => setUserId(e.target.value)}
-        />
-        <input
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="button" onClick={handleLoginClick}>Login</button> */}
         {token && (
           <span style={{ marginLeft: 10 }}>
             {userName} Logged in!<br /><br />
@@ -129,9 +119,9 @@ export const SendNotification = () => {
         )}
       </div>
       <div style={{ marginTop: 20 }}>
-        <button type="button" onClick={() => handleConnect()} disabled={!token || wsStatus === "connected" || wsStatus === "connecting"}>
+        {/* <button type="button" onClick={() => handleConnect()} disabled={!token || wsStatus === "connected" || wsStatus === "connecting"}>
           Connect WebSocket
-        </button>
+        </button> */}
         <span style={{ marginLeft: 10 }}>
           WebSocket Status: <b>{wsStatus}</b>
         </span>
@@ -152,18 +142,18 @@ export const SendNotification = () => {
         />
         <input
           placeholder="Message"
-          value={notification.message}
-          onChange={(e) =>
-            setNotification({ ...notification, message: e.target.value })
-          }
+          value={message}
+          onChange={(e) => {
+            setMessage(e.target.value)
+          }}
         />
         <input
           placeholder="Roles (comma separated)"
-          value={notification.roles.join(",")}
+          value={notification.rolesIds.join(",")}
           onChange={(e) =>
             setNotification({
               ...notification,
-              roles: e.target.value.split(",").map((r) => r.trim()).filter(Boolean),
+              rolesIds: e.target.value.split(",").map((r) => r.trim()).filter(Boolean),
             })
           }
         />
@@ -197,5 +187,3 @@ export const SendNotification = () => {
     </div>
   );
 }
-
-export default SendNotification;
