@@ -70,7 +70,8 @@ import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
-import SendNotification from "./features/MainPanel/Notifications/SendNotifications.view";
+import { SendNotification } from "./features/MainPanel/Notifications/SendNotifications.view";
+import { WS_BASE } from "./features/MainPanel/Notifications/SendNotifications.logic";
 
 interface HomePageForSimsConnectedNormalUserProps {
   isRenderSimsConnectedBanner: boolean;
@@ -91,6 +92,8 @@ declare global {
     sharedStorage: any;
   }
 }
+
+export const socket = new WebSocket(`${WS_BASE}`);
 
 export const getMenus: (
   data: IModulePermission[],

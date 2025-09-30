@@ -1,6 +1,9 @@
-import type { MutableRefObject, Dispatch, SetStateAction } from "react";
-import { API_BASE } from "./SendNotifications.view";
+import { type MutableRefObject, type Dispatch, type SetStateAction } from "react";
 /* eslint-disable no-param-reassign */
+
+export const API_BASE = "https://dev.home.sims.co.uk/web"; // Change to your backend URL
+export const WS_BASE = "wss://dev.home.sims.co.uk/web/ws"; // Change to your websocket endpoint
+
 
 interface FetchActiveConnectionCountProps {
   setActiveConnectionCount: Dispatch<SetStateAction<number>>;
@@ -28,7 +31,6 @@ export async function connectWebSocket({
   setMessages,
   reconnectAttempts,
   reconnectTimeout,
-  WS_BASE,
   setActiveConnectionCount
 }: {
   token: string;
@@ -37,7 +39,6 @@ export async function connectWebSocket({
   setMessages: Dispatch<SetStateAction<string[]>>;
   reconnectAttempts: MutableRefObject<number>;
   reconnectTimeout: MutableRefObject<ReturnType<typeof setTimeout> | null>;
-  WS_BASE: string;
   setActiveConnectionCount: Dispatch<SetStateAction<number>>;
 }) {
   if (!token) return;
@@ -68,6 +69,7 @@ export async function connectWebSocket({
   // });
 
   socket.onmessage = (event) => {
+    console.log("Message from server:", event.data);
     setMessages((prev) => [...prev, event.data]);
   };
 
@@ -85,7 +87,6 @@ export async function connectWebSocket({
           setMessages,
           reconnectAttempts,
           reconnectTimeout,
-          WS_BASE,
           setActiveConnectionCount
         });
       }, delay);
@@ -98,36 +99,16 @@ export async function connectWebSocket({
   };
 }
 
-// export async function handleLogin({
-//   API_BASE,
-//   userId,
-//   password,
-//   setToken,
-// }: {
-//   API_BASE: string;
-//   userId: string;
-//   password: string;
-//   setToken: (token: string) => void;
-// }) {
-//   // const res = await fetch(`${API_BASE}/auth/login`, {
-//   //   method: "POST",
-//   //   headers: { "Content-Type": "application/json" },
-//   //   body: JSON.stringify({ userId, password }),
-//   // });
-//   const authToken = await authService.getIdToken();
-//   console.log("Auth Token:", authToken);
-//   const data = await res.json();
-//   if (data.token) setToken(authService.getIdToken);
-// }
-
 export async function handleSendNotification({
   // API_BASE,
   token,
   notification,
+  message
 }: {
   // API_BASE: string;
   token: string;
   notification: any;
+  message: string;
 }) {
   await fetch(`${API_BASE}/notification/send`, {
     method: "POST",
@@ -135,6 +116,6 @@ export async function handleSendNotification({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify(notification),
+    body: JSON.stringify({ ...notification, message }),
   });
 }
