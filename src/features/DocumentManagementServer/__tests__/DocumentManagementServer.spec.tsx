@@ -252,7 +252,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     const sidePanelHeader = await screen.getByText("Downloads");
     expect(sidePanelHeader).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
-    expect(screen.getByText("Expires in 2 days.")).toBeInTheDocument();
+    expect(screen.getByText("Expires in 2 day(s).")).toBeInTheDocument();
   });
  
   test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
@@ -424,6 +424,26 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
+      expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+    });
+  });
+
+    it("renders side panel files with expiry 0 or undefined", async () => {
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 1 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("View download"));
+    await waitFor(() => {
+      expect(screen.getByText("FileZero")).toBeInTheDocument();
+      expect(screen.getByText("Expires in 1 day(s).")).toBeInTheDocument();
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
