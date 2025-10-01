@@ -191,7 +191,7 @@ beforeEach(() => {
   it("renders loader initially", () => {
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <EventContainer isOpen={true} />
+        <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
@@ -205,7 +205,7 @@ beforeEach(() => {
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue({ payload: [{ externalId: "S1", forename: "John", surname: "Doe" }] });
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <EventContainer isOpen={true} />
+        <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
@@ -218,7 +218,7 @@ beforeEach(() => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <EventContainer isOpen={true} />
+        <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
