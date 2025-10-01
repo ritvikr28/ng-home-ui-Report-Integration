@@ -774,7 +774,7 @@ const handleApply = () => {
 
                                     }
                                 }}
-                                isShowSecondaryBtn={true}
+                                isShowSecondaryBtn
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
@@ -957,7 +957,7 @@ const handleApply = () => {
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationAutoclose={true}
+                                toastNotificationAutoclose
                                 toastNotificationTitle="Downloads cleared successfully!"
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
