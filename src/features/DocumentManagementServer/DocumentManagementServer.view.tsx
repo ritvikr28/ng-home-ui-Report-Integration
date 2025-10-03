@@ -1,5 +1,6 @@
 /// <reference types="node" />
 import React, { useState, useEffect } from "react"
+import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
@@ -79,15 +80,18 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
-
+    const [tableKey, setTableKey] = useState(0);
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
     ];
+
+    const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
 
     const location = useLocation();
     
@@ -193,7 +197,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
   if (isSearchTriggered && searchText) {
     const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+    setIsInitialLoad(true);
     fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
@@ -362,7 +368,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
         setIsClearSelectedCheckbox(true);
-        
+        setIsInitialLoad(true);
+        setTableKey(prev => prev + 1);
         };
 
         useEffect(() => {
@@ -498,10 +505,10 @@ const handleApply = () => {
                     <p>{item?.name}</p>
                     {isComplete && item?.fileExpiryDays !== undefined && (() => {
                         if (item.fileExpiryDays > 0) {
-                            return <span>Expires in {item.fileExpiryDays} days.</span>;
+                            return <span>{t("DocumentManagementServer.ExpiresInDays", { days: item.fileExpiryDays })}</span>;
                         }
                         if (item.fileExpiryDays === 0) {
-                            return <span>Expires today.</span>;
+                            return <span>{t("DocumentManagementServer.ExpiresToday")}</span>;
                         }
                         return null;
                         })()}
@@ -597,13 +604,14 @@ const handleApply = () => {
                  
                    <div className="grid-wrapper">
                             <ControlledList
+                                key={tableKey}
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
                                 isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
-                                sortAscFirst={false}
+                                sortAscFirst={!isInitialLoad}
                                 isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -720,7 +728,7 @@ const handleApply = () => {
                                     }
                                 ]}
                                 groupTagsEnabled
-                                headingText="Documents"
+                                headingText={t("DocumentManagementServer.headingText")}
                                 id="controlled-list"
                                 isBreadCrumbEnable={false}
                                 isOnCloseSidepnl
@@ -848,8 +856,8 @@ const handleApply = () => {
                                  
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
-                                sidePanelTitle="Downloads"
-                                subHeadingText="Bulk download or delete documents for pupils, staff members, or the school."
+                                sidePanelTitle={t("DocumentManagementServer.sidePanelTitle")}
+                                subHeadingText={t("DocumentManagementServer.subHeadingText")}
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
                                     <>
