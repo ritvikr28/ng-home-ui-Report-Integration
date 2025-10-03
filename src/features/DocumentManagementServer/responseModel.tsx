@@ -108,10 +108,14 @@ export interface deleteDocumentRequest {
   categoryId: number[];
   fromDate: string;
   toDate: string;
-  referenceExternalIds: string[];
-  documentRealatedTo: number;
+  referenceDetails: referenceDetails;
   fileDetails: deleteDocumentFilesDetails[];
 
+}
+
+export interface referenceDetails {
+  referenceExternalIds: string[];
+  documentRealatedTo: number;
 }
 
 export interface deleteDocumentFilesDetails {

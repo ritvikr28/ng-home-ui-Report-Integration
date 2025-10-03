@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
- import { Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams } from "./responseModel";
+ import { Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams, referenceDetails } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -900,29 +900,39 @@ export function buildSelectedDocs(
   ];
 }
 
-export function mapToBulkDeletePayload(
-  selectedDocs: { fileId: string; registrationId: number, externalId: string }[],
-  categoryId: any[],
-  fromDate: string,
-  toDate: string,
-  referenceExternalId: string,
-  documentRealatedTo: number
-): { request: deleteDocumentRequest } {
-  const fileDetails: deleteDocumentFilesDetails[] = selectedDocs.map(doc => ({
-    fileId: doc.fileId,
-    registrationId: doc.registrationId,
-    externalId: doc.externalId, 
-  }));
-
+export function mapToBulkDeletePayload({
+  isSelectAll = false,
+  categoryIds = [],
+  fromDate = "",
+  toDate = "",
+  referenceExternalIds = [],
+  documentRelatedTo = 0,
+  fileDetails = [],
+  excludedFileIds = []
+}: {
+  isSelectAll?: boolean;
+  categoryIds?: number[];
+  fromDate?: string;
+  toDate?: string;
+  referenceExternalIds?: string[];
+  documentRelatedTo?: number;
+  fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
+  excludedFileIds?: { fileId: string; externalId: string }[];
+}) {
   return {
     request: {
-      selectAll: false,
-      categoryId,
-      fromDate,
-      toDate,
-      referenceExternalIds: [referenceExternalId],
-      documentRealatedTo,
+      isSelectAll,
+      bulkDeleteCriteria: {
+        categoryIds,
+        fromDate,
+        toDate,
+        referenceDetails: {
+          referenceExternalIds,
+          documentRelatedTo
+        }
+      },
       fileDetails,
+      excludedFileIds
     }
   };
 }
@@ -945,7 +955,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
   fetchGetDocumentDetails,
-  mockDeleteFiles
+  deleteFiles
 }: {
   allSelectedDocs: { fileId: string; registrationId: number }[],
   docData: any,
@@ -964,22 +974,24 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
-  mockDeleteFiles: (payload: any) => Promise<number>
+  deleteFiles: (payload: any) => Promise<number>
 }) => {
   setShowDeleteSuccessToast(false);
-  const payload = mapToBulkDeletePayload(
-    allSelectedDocs.map(doc => ({
-      ...doc,
-      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-    })),
-    allRegistrationIds,
-    dateRange.fromDate,
-    dateRange.toDate,
-    searchRefExternalId,
-    documentRealatedTo
-  );
+  const payload = mapToBulkDeletePayload({
+  isSelectAll: false,
+  categoryIds: allRegistrationIds,
+  fromDate: dateRange.fromDate,
+  toDate: dateRange.toDate,
+  referenceExternalIds: [searchRefExternalId],
+  documentRelatedTo: documentRealatedTo,
+  fileDetails: allSelectedDocs.map(doc => ({
+    ...doc,
+    externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+  })),
+  excludedFileIds: [] 
+});
   try {
-    const status = await mockDeleteFiles(payload);
+    const status = await deleteFiles(payload);
     if (status === 204) {
       setShowToastNotification(true);
       setShowConfirmDialog(false);

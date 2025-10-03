@@ -107,17 +107,26 @@ export const deleteFiles = async (payload: { request: any }) => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/bulkdelete`;
-    const responseData: AxiosResponse<deleteDocumentRequest> = await service.post(url, payload, { baseURL: baseUrl });
+    const responseData: AxiosResponse<deleteDocumentRequest> = await axios.delete(
+  `${baseUrl}${url}`,
+  {
+    data: payload,
+    headers: {
+      "Content-Type": "application/json-patch+json",
+      Authorization: `Bearer ${authService.getAuthTokens()}`
+    }
+  }
+);
 
-    return responseData?.status; 
+    return responseData?.status;
   } catch (error: any) {
-   
     if (error?.response?.status) {
       return error.response.status;
     }
   }
-  return payload?.request?.status; 
+  return payload?.request?.status;
 };
+
 
 export const viewDownload = async (): Promise<any> => {
   try {
