@@ -318,6 +318,20 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
 
+    const headerCheckbox = await screen.findByTestId("checkmark-check-box-row-testid");
+
+    // Check the header checkbox
+    fireEvent.click(headerCheckbox);
+    await waitFor(() => {
+      expect(headerCheckbox).toHaveAttribute("aria-checked", "true");
+    });
+
+    // Uncheck the header checkbox
+    fireEvent.click(headerCheckbox);
+    await waitFor(() => {
+      expect(headerCheckbox).toHaveAttribute("aria-checked", "false");
+    });
+
   // Find the checkbox for the first row
   const checkbox = screen.getByTestId("check-box-row-testid-0");
 

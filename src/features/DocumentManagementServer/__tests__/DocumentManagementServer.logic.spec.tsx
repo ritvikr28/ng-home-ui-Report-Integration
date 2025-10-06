@@ -2129,71 +2129,194 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = { Legal: 1, Finance: 2 };
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
   });
 
-  it("returns empty array if no matching document for selected ID", () => {
-    const docData = { data: [{ fileId: "2", registrationId: 123 }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
-  });
+  it("returns correct request object for valid input", () => {
+    const mockDate = new Date("2025-09-11T15:16:57");
 
-  it("returns empty array if matching document has undefined registrationId", () => {
-    const docData = { data: [{ fileId: "1", registrationId: undefined }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
-  });
+    // Mock system time to fixed date
+    jest.useFakeTimers().setSystemTime(mockDate);
 
- it("returns correct request object for valid input", () => {
-  const mockDate = new Date("2025-09-11T15:16:57");
-  
-  // Mock system time to fixed date
-  jest.useFakeTimers().setSystemTime(mockDate);
+    const docData = {
+      data: [{
+        fileId: "1",
+        registrationId: 123,
+        relatedTo: [{ learnerExternalId: "ext1" }],
+        documentRealatedTo: 1,
+        category: "Legal",
+        fromDate: "2025-01-01",
+        toDate: "2025-01-02",
+        externalId: "ext2"
+      }]
+    };
 
-  const docData = {
-    data: [{
-      fileId: "1",
-      registrationId: 123,
-      relatedTo: [{ learnerExternalId: "ext1" }],
-      documentRealatedTo: 1,
-      category: "Legal",
-      fromDate: "2025-01-01",
-      toDate: "2025-01-02"
-    }]
-  };
+    const excludedIdDetails = ["2"];
+    const isHeaderBoxChecked = true;
 
-  const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap, "ext1", 1);
+    const resultWithExcluded = buildSelectedDocs(
+      ["1"],
+      docData,
+      categoryRegistrationMap,
+      "ext1",
+      1,
+      excludedIdDetails,
+      isHeaderBoxChecked
+    );
 
-  expect(result).toEqual([
-    {
-      request: {
-        selectAll: false,
-        downloadCriteria: {
-          referenceMappingDetails: [
-            {
-              referenceExternalId: "ext1",
-              documentRealatedTo: 1,
-              relatedTo: [{ learnerExternalId: "ext1" }]
-            }
-          ],
-          categoryId: [1],
-          fromDate: "2025-01-01",
-          toDate: "2025-01-02"
-        },
-        fileDetails: [
-          { fileId: "1", registrationId: 123 }
-        ],
-        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+    expect(resultWithExcluded).toEqual([
+      {
+        request: {
+          selectAll: true,
+          downloadCriteria: {
+            referenceMappingDetails: [
+              {
+                referenceExternalId: "ext1",
+                documentRealatedTo: 1,
+                relatedTo: [{ learnerExternalId: "ext1" }]
+              }
+            ],
+            categoryId: [],
+            fromDate: "",
+            toDate: ""
+          },
+          fileDetails: [],
+          excludedFileDetails: [],
+          currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+        }
       }
-    }
-  ]);
+    ]);
 
-  jest.useRealTimers();
-});
+    jest.useRealTimers();
+  });
+
+  it("returns excludedIdDetails when isHeaderBoxChecked is true, excludedIdDetails.length > 0, and less than totalRecords", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" },
+        { fileId: "2", registrationId: 456, category: "Finance" }
+      ],
+      totalRecords: 5
+    };
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([
+      { fileId: "1", registrationId: 123, externalId: undefined },
+      { fileId: "2", registrationId: 456, externalId: undefined }
+    ]);
+  });
+
+  it("returns empty array when isHeaderBoxChecked is false", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ],
+      totalRecords: 2
+    };
+    const selectedCheckBoxIds = ["1"];
+    const excludedCheckBoxIds = ["1"];
+    const isHeaderBoxChecked = false;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when excludedIdDetails.length === 0", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ],
+      totalRecords: 1
+    };
+    const selectedCheckBoxIds: string[] = [];
+    const excludedCheckBoxIds: string[] = [];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when excludedIdDetails.length >= totalRecords", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" },
+        { fileId: "2", registrationId: 456, category: "Finance" }
+      ],
+      totalRecords: 2
+    };
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when docData.totalRecords is undefined", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ]
+      // totalRecords is missing
+    };
+    const selectedCheckBoxIds = ["1"];
+    const excludedCheckBoxIds = ["1"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
 });
 
 describe("getReferenceMappingForSearchedPerson", () => {
