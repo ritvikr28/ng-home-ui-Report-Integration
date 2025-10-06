@@ -1,3 +1,4 @@
+
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -5,7 +6,31 @@ import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
  
- 
+ jest.mock("@essnextgen/ui-intl-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-intl-kit"),
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (key === "DocumentManagementServer.ExpiresInDays") {
+        // Handle pluralization if needed
+        return `Expires in ${options?.count ?? options?.days ?? "?"} day(s).`;
+      }
+      if (key === "DocumentManagementServer.ExpiresToday") {
+        return "Expires today.";
+      }
+      if (key === "DocumentManagementServer.headingText") {
+        return "Documents";
+      }
+      if (key === "DocumentManagementServer.sidePanelTitle") {
+        return "Downloads";
+      }
+      if (key === "DocumentManagementServer.subHeadingText") {
+        return "Bulk download or delete documents for pupils, staff members, or the school.";
+      }
+      return key;
+    }
+  })
+}));
+
 jest.mock("../ApiService", () => ({
   fetchFilterCategory: jest.fn(),
   viewDownload: jest.fn(),
@@ -252,7 +277,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     const sidePanelHeader = await screen.getByText("Downloads");
     expect(sidePanelHeader).toBeInTheDocument();
     await waitFor(() => expect(screen.getByText("File1")).toBeInTheDocument());
-    expect(screen.getByText("Expires in 2 days.")).toBeInTheDocument();
+    expect(screen.getByText("Expires in 2 day(s).")).toBeInTheDocument();
   });
  
   test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
@@ -424,6 +449,26 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
+      expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+    });
+  });
+
+    it("renders side panel files with expiry 0 or undefined", async () => {
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 1 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("View download"));
+    await waitFor(() => {
+      expect(screen.getByText("FileZero")).toBeInTheDocument();
+      expect(screen.getByText("Expires in 1 day(s).")).toBeInTheDocument();
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
