@@ -418,5 +418,12 @@
     "contactYourAdministrator": "Cysylltwch â'ch gweinyddwr",
     "subHeadingPartOne": "Efallai nad oes gennych y caniatâd cywir, neu efallai nad oes gan eich sefydliad drwydded ar gyfer y cynnyrch hwn.",
     "subHeadingPartTwo": "Cysylltwch â'ch gweinyddwr i wirio'ch mynediad neu i gael cymorth."
-  }  
+  },
+  "DocumentManagementServer": {
+    "headingText": "Documents",
+    "subHeadingText": "Bulk download or delete documents for pupils, staff members, or the school.",
+    "sidePanelTitle": "Downloads",
+    "ExpiresInDays": "Expires in {{days}} day(s).",
+    "ExpiresToday": "Expires today."
+  }
 }

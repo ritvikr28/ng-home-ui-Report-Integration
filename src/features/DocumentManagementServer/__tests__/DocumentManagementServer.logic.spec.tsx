@@ -1,6 +1,6 @@
 import React from "react";
 import { act } from "@testing-library/react-hooks";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
 import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
@@ -218,6 +218,29 @@ describe("formatSuggestions", () => {
       id: "o1"
     });
   });
+
+it('renders pupil image with correct class', async () => {
+  const payload = [{
+    name: 'Pupil',
+    values: [{
+      preferredForename: 'John',
+      preferredSurname: 'Doe',
+      legalName: 'John Doe',
+      imagePath: 'http://example.com/image.jpg',
+      currentYearGroup: 'Y1',
+      currentPrimaryClass: 'A',
+      pupilId: '123'
+    }]
+  }];
+
+  const suggestions = await formatSuggestions(payload);
+  // Render the icon part of the suggestion
+  render(<>{suggestions[0].values[0].icon}</>);
+  const img = screen.getByAltText('Pupil Photo');
+  expect(img).toBeInTheDocument();
+  expect(img).toHaveClass('dms-search__profile-icon');
+  expect(img).toHaveAttribute('src', 'http://example.com/image.jpg');
+});
 
   it("formats default category", async () => {
     const input = [
@@ -2106,71 +2129,194 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = { Legal: 1, Finance: 2 };
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
   });
 
-  it("returns empty array if no matching document for selected ID", () => {
-    const docData = { data: [{ fileId: "2", registrationId: 123 }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
-  });
+  it("returns correct request object for valid input", () => {
+    const mockDate = new Date("2025-09-11T15:16:57");
 
-  it("returns empty array if matching document has undefined registrationId", () => {
-    const docData = { data: [{ fileId: "1", registrationId: undefined }] };
-    expect(buildSelectedDocs(["1"], docData, categoryRegistrationMap, "", 0)).toEqual([]);
-  });
+    // Mock system time to fixed date
+    jest.useFakeTimers().setSystemTime(mockDate);
 
- it("returns correct request object for valid input", () => {
-  const mockDate = new Date("2025-09-11T15:16:57");
-  
-  // Mock system time to fixed date
-  jest.useFakeTimers().setSystemTime(mockDate);
+    const docData = {
+      data: [{
+        fileId: "1",
+        registrationId: 123,
+        relatedTo: [{ learnerExternalId: "ext1" }],
+        documentRealatedTo: 1,
+        category: "Legal",
+        fromDate: "2025-01-01",
+        toDate: "2025-01-02",
+        externalId: "ext2"
+      }]
+    };
 
-  const docData = {
-    data: [{
-      fileId: "1",
-      registrationId: 123,
-      relatedTo: [{ learnerExternalId: "ext1" }],
-      documentRealatedTo: 1,
-      category: "Legal",
-      fromDate: "2025-01-01",
-      toDate: "2025-01-02"
-    }]
-  };
+    const excludedIdDetails = ["2"];
+    const isHeaderBoxChecked = true;
 
-  const result = buildSelectedDocs(["1"], docData, categoryRegistrationMap, "ext1", 1);
+    const resultWithExcluded = buildSelectedDocs(
+      ["1"],
+      docData,
+      categoryRegistrationMap,
+      "ext1",
+      1,
+      excludedIdDetails,
+      isHeaderBoxChecked
+    );
 
-  expect(result).toEqual([
-    {
-      request: {
-        selectAll: false,
-        downloadCriteria: {
-          referenceMappingDetails: [
-            {
-              referenceExternalId: "ext1",
-              documentRealatedTo: 1,
-              relatedTo: [{ learnerExternalId: "ext1" }]
-            }
-          ],
-          categoryId: [1],
-          fromDate: "2025-01-01",
-          toDate: "2025-01-02"
-        },
-        fileDetails: [
-          { fileId: "1", registrationId: 123 }
-        ],
-        currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+    expect(resultWithExcluded).toEqual([
+      {
+        request: {
+          selectAll: true,
+          downloadCriteria: {
+            referenceMappingDetails: [
+              {
+                referenceExternalId: "ext1",
+                documentRealatedTo: 1,
+                relatedTo: [{ learnerExternalId: "ext1" }]
+              }
+            ],
+            categoryId: [],
+            fromDate: "",
+            toDate: ""
+          },
+          fileDetails: [],
+          excludedFileDetails: [],
+          currentDateTime: mockDate.toLocaleString("sv-SE", { hour12: false }).replace(" ", "T")
+        }
       }
-    }
-  ]);
+    ]);
 
-  jest.useRealTimers();
-});
+    jest.useRealTimers();
+  });
+
+  it("returns excludedIdDetails when isHeaderBoxChecked is true, excludedIdDetails.length > 0, and less than totalRecords", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" },
+        { fileId: "2", registrationId: 456, category: "Finance" }
+      ],
+      totalRecords: 5
+    };
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([
+      { fileId: "1", registrationId: 123, externalId: undefined },
+      { fileId: "2", registrationId: 456, externalId: undefined }
+    ]);
+  });
+
+  it("returns empty array when isHeaderBoxChecked is false", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ],
+      totalRecords: 2
+    };
+    const selectedCheckBoxIds = ["1"];
+    const excludedCheckBoxIds = ["1"];
+    const isHeaderBoxChecked = false;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when excludedIdDetails.length === 0", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ],
+      totalRecords: 1
+    };
+    const selectedCheckBoxIds: string[] = [];
+    const excludedCheckBoxIds: string[] = [];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when excludedIdDetails.length >= totalRecords", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" },
+        { fileId: "2", registrationId: 456, category: "Finance" }
+      ],
+      totalRecords: 2
+    };
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
+
+  it("returns empty array when docData.totalRecords is undefined", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" }
+      ]
+      // totalRecords is missing
+    };
+    const selectedCheckBoxIds = ["1"];
+    const excludedCheckBoxIds = ["1"];
+    const isHeaderBoxChecked = true;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      "",
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked
+    );
+    expect(result[0].request.excludedFileDetails).toEqual([]);
+  });
 });
 
 describe("getReferenceMappingForSearchedPerson", () => {
@@ -2428,6 +2574,89 @@ describe("Added by column anyComponent", () => {
     const { container } = render(<>{addedByColumn!.anyComponent!([longValue, "other"])}</>);
     expect(container).toHaveTextContent(longValue.substring(0, 12));
   });
+});
+
+describe('fileDownload', () => {
+  let originalCreateElement: typeof document.createElement;
+  let originalGetElementById: typeof document.getElementById;
+  let mockLink: any;
+  let parent: any;
+  let mockDownloadFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockLink = {
+      click: jest.fn(),
+      set href(val) { this.hrefValue = val; },
+      get href() { return this.hrefValue; },
+      set download(val) { this.downloadValue = val; },
+      get download() { return this.downloadValue; },
+    };
+    parent = {
+      appendChild: jest.fn(),
+      removeChild: jest.fn(),
+    };
+    originalCreateElement = document.createElement;
+    document.createElement = jest.fn(() => mockLink);
+    originalGetElementById = document.getElementById;
+    document.getElementById = jest.fn(() => ({ parentElement: parent }) as unknown as HTMLElement);
+    window.URL.createObjectURL = jest.fn(() => 'blob:url');
+    window.URL.revokeObjectURL = jest.fn();
+  mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
+  });
+
+  afterEach(() => {
+    document.createElement = originalCreateElement;
+    document.getElementById = originalGetElementById;
+    jest.clearAllMocks();
+  });
+
+  it('downloads zip file using sasUrl', async () => {
+    const sasUrl = 'https://example.com/file.zip';
+    await logicModule.fileDownload(
+      '00000000-0000-0000-0000-000000000000',
+      'test.zip',
+      '',
+      '',
+      sasUrl
+    );
+    expect(mockLink.href).toBe(sasUrl);
+    expect(mockLink.download).toBe('test.zip');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it('downloads blob file using downloadFile', async () => {
+    const fakeBlob = new Blob(['test']);
+    mockDownloadFile.mockResolvedValueOnce(fakeBlob);
+    await logicModule.fileDownload(
+      'file-123',
+      'test.txt',
+      'app',
+      'section',
+      undefined
+    );
+    expect(mockDownloadFile).toHaveBeenCalledWith('app', 'section', 'file-123');
+    expect(mockLink.href).toBe('blob:url');
+    expect(mockLink.download).toBe('test.txt');
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(window.URL.revokeObjectURL).toHaveBeenCalledWith('blob:url');
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it('throws and logs if exception thrown', async () => {
+  document.createElement = jest.fn(() => { throw new Error('fail'); });
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  await expect(logicModule.fileDownload(
+    'file-err',
+    'file.txt',
+    'app',
+    'section'
+  )).rejects.toThrow('fail');
+  expect(errorSpy).toHaveBeenCalled();
+  errorSpy.mockRestore();
+});
 });
 
 

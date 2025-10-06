@@ -18,7 +18,7 @@ describe("TakeRegisterEvent", () => {
   it("renders loader initially", () => {
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <TakeRegisterEvent isOpen={true} />
+        <TakeRegisterEvent isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
@@ -30,7 +30,7 @@ describe("TakeRegisterEvent", () => {
     });
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <TakeRegisterEvent isOpen={true} />
+        <TakeRegisterEvent isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
@@ -42,7 +42,7 @@ describe("TakeRegisterEvent", () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <TakeRegisterEvent isOpen={true} />
+        <TakeRegisterEvent isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
@@ -54,7 +54,7 @@ describe("TakeRegisterEvent", () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockResolvedValue({ payload: {} });
     render(
       <StaffTimetableAndRegisterDetailsProvider>
-        <TakeRegisterEvent isOpen={true} />
+        <TakeRegisterEvent isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
