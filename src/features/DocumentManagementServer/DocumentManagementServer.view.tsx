@@ -365,7 +365,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setShowConfirmDialog(false);
     return;
   }
-  // If there is at least one available file, show confirmation dialog
+
   if (available > 0) {
     setShowConfirmDialog(true);
     setShowRestrictedDeleteDialog(false);
@@ -1141,7 +1141,7 @@ const handleApply = () => {
                                                     .then((statuses) => {
                                                         if (statuses.some((status: number) => status !== 204)) {
                                                             setPrepareDownloadError(true);
-                                                        } else if (totalSelectedCount > 1) {
+                                                        } else if (selectedCheckBoxIds.length > 1) {
                                                             setShowEmailNotification(true);
                                                         }
                                                     })
