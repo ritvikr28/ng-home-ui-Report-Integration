@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
@@ -69,6 +69,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
+    const [excludedCheckBoxIds, setExcludedCheckBoxIds] = useState<string[]>([]);
+    const [isHeaderBoxChecked, setIsHeaderBoxChecked] = useState<boolean>(false);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
@@ -310,10 +312,24 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
 };
- 
+
+    const { totalSelectedCount, totalCountMessage } = useMemo(() => {
+        const excludedCount = excludedCheckBoxIds.length || 0;
+        const isAllSelected = isHeaderBoxChecked && excludedCount === 0;
+        const computedTotalSelectedCount = (() => {
+            if (!docData?.totalRecords) return 0;
+            if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
+            return allSelectedDocs?.length || 0;
+        })();
+        const plural = computedTotalSelectedCount > 1 ? "documents are" : "document is";
+        const totalCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
+        return { totalSelectedCount: computedTotalSelectedCount, totalCountMessage: totalCountMsg };
+
+    }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
+
    const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
         if (selectedItem.value === "Prepare download") {
-            if(selectedCheckBoxIds?.length === 0){
+            if(totalSelectedCount === 0){
                 setShowDialog(true);
             }else{
                 setDialogType("prepareDownload");
@@ -322,7 +338,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         }
        
         else if (selectedItem.value === "Delete") {
-            if(selectedCheckBoxIds?.length === 0){
+            if(totalSelectedCount === 0){
                 setShowDialog(true);
             } else {
                 setDialogType("delete");
@@ -384,6 +400,10 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setIsClearSelectedCheckbox(true);
         setIsInitialLoad(true);
         setTableKey(prev => prev + 1);
+        setIsHeaderBoxChecked(false);
+        setSelectedCheckBoxIds([]);
+        setExcludedCheckBoxIds([]);
+        setAllSelectedDocs([]);
         };
 
         useEffect(() => {
@@ -526,8 +546,18 @@ const handleApply = () => {
     }, [viewData]);
 
     const handleCloseSidePanel = () => {
-    closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
+        closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
     };
+
+    const handleOnChangeAllCheckBox = (e: any) => {
+        const isChecked = e.target.checked;
+        setIsHeaderBoxChecked(isChecked);
+        if (!isChecked) {
+            setSelectedCheckBoxIds([]);
+            setExcludedCheckBoxIds([]);
+            setAllSelectedDocs([]);
+        }
+    }
 
     const renderViewDownloadContent = () => {
     if (isSidePanelLoader) {
@@ -712,10 +742,15 @@ const handleApply = () => {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
+                                isAllSelectedAcrossPagination={true}
+                                totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
-                                    }}
-
+                                }}
+                                setExcludedCheckBoxIds={(ids: string[]) => {
+                                        setExcludedCheckBoxIds(ids);
+                                }}
+                                onChangeAllCheckBox={(e: any) => handleOnChangeAllCheckBox(e)}
                                 onChangeListCheckBox={(index: number, id: string) => {
                                         const updatedCheckBoxIds = [...selectedCheckBoxIds];
                                         const doc = docData?.data?.find((d: any) => d.fileId === id);
@@ -1002,7 +1037,7 @@ const handleApply = () => {
                                             cancelText: "Cancel",
                                             contentText: "",
                                             isNotificationanner: true,
-                                            notificationTitle: `${allSelectedDocs?.length} ${allSelectedDocs?.length > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
+                                            notificationTitle: totalCountMessage,
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: 'Prepare download',
                                             onCancel: (): void => {setShowConfirmDialog(false); },
@@ -1016,14 +1051,16 @@ const handleApply = () => {
                                                     docData,
                                                     categoryRegistrationMap,
                                                     searchRefExternalId,
-                                                    documentRealatedTo
+                                                    documentRealatedTo,
+                                                    excludedCheckBoxIds,
+                                                    isHeaderBoxChecked
                                                 );
 
                                                 prepareDownload(selectedDocs)
                                                     .then((statuses) => {
                                                         if (statuses.some((status: number) => status !== 204)) {
                                                             setPrepareDownloadError(true);
-                                                        } else if (selectedCheckBoxIds.length > 1) {
+                                                        } else if (totalSelectedCount > 1) {
                                                             setShowEmailNotification(true);
                                                         }
                                                     })

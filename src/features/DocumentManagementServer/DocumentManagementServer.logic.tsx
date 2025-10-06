@@ -847,23 +847,31 @@ export function buildSelectedDocs(
   docData: any,
   categoryRegistrationMap: Record<string, number>,
   searchRefExternalId: string,
-  documentRealatedTo: number
+  documentRealatedTo: number,
+  excludedCheckBoxIds: string[],
+  isHeaderBoxChecked: boolean
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
+  if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
   // Gather all valid docs
   const selectedDocs = docData.data.filter(
-    (d: any) => selectedCheckBoxIds.includes(d.fileId) && d.registrationId !== undefined
+    (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  // If no valid docs, return empty array
-  if (selectedDocs.length === 0) return [];
 
   // Merge fileDetails
-  const fileDetails = selectedDocs.map((doc: any) => ({
+  const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
     fileId: doc.fileId,
     registrationId: doc.registrationId,
-  }));
+    externalId: doc.externalId
+  })) : [];
+
+  const excludedIdDetails = (isHeaderBoxChecked && selectedDocs.length > 0) ? selectedDocs.map((doc: any) => ({
+    fileId: doc.fileId,
+    registrationId: doc.registrationId,
+    externalId: doc.externalId
+  })) : [];
 
   // Merge referenceMappingDetails
  const referenceMappingDetails = getReferenceMappingForSearchedPerson({
@@ -887,7 +895,7 @@ export function buildSelectedDocs(
   return [
     {
       request: {
-        selectAll: false,
+        selectAll: !!isHeaderBoxChecked,
         downloadCriteria: {
           referenceMappingDetails,
           categoryId,
@@ -895,8 +903,14 @@ export function buildSelectedDocs(
           toDate,
         },
         fileDetails,
-        currentDateTime
-      },
+        excludedFileDetails:
+          isHeaderBoxChecked &&
+          excludedIdDetails.length > 0 &&
+          excludedIdDetails.length < (docData?.totalRecords ?? 0)
+            ? excludedIdDetails
+            : [],
+        currentDateTime,
+      }
     }
   ];
 }
@@ -1088,6 +1102,7 @@ export const debouncedFetchSuggestions = debounce(
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
+    setSearchLoading(true);
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload ?? [];
