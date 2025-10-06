@@ -313,7 +313,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortDirection(newDirection);
 };
 
-    const { totalSelectedCount, totalCountMessage } = useMemo(() => {
+    const { totalSelectedCount, prepareCountMessage, deleteCountMessage } = useMemo(() => {
         const excludedCount = excludedCheckBoxIds.length || 0;
         const isAllSelected = isHeaderBoxChecked && excludedCount === 0;
         const computedTotalSelectedCount = (() => {
@@ -322,8 +322,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             return allSelectedDocs?.length || 0;
         })();
         const plural = computedTotalSelectedCount > 1 ? "documents are" : "document is";
-        const totalCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
-        return { totalSelectedCount: computedTotalSelectedCount, totalCountMessage: totalCountMsg };
+        const prepareCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
+        const deleteCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be deleted forever.`;
+        return { totalSelectedCount: computedTotalSelectedCount, prepareCountMessage: prepareCountMsg, deleteCountMessage: deleteCountMsg };
 
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
@@ -506,6 +507,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             setShowDeleteSuccessToast,
             fetchGetDocumentDetails,
             deleteFiles,
+            excludedCheckBoxIds,
+            isHeaderBoxChecked
         });
 
 const handleApply = () => {
@@ -1019,7 +1022,7 @@ const handleApply = () => {
                                                 cancelText: "Cancel",
                                                 contentText: "",
                                                 isNotificationanner: true,
-                                                notificationTitle: `${allSelectedDocs?.length} document${allSelectedDocs?.length > 1 ? "s are" : " is"} about to be deleted forever.`,
+                                                notificationTitle: deleteCountMessage,
                                                 notificationStatus: NotificationStatus.WARNING,
                                                 okText: 'Delete',
                                                 onCancel: (): void => { setShowConfirmDialog(false); },
@@ -1037,7 +1040,7 @@ const handleApply = () => {
                                             cancelText: "Cancel",
                                             contentText: "",
                                             isNotificationanner: true,
-                                            notificationTitle: totalCountMessage,
+                                            notificationTitle: prepareCountMessage,
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: 'Prepare download',
                                             onCancel: (): void => {setShowConfirmDialog(false); },

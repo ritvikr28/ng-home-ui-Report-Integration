@@ -923,7 +923,7 @@ export function mapToBulkDeletePayload({
   referenceExternalIds = [],
   documentRelatedTo = 0,
   fileDetails = [],
-  excludedFileIds = []
+  excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
   categoryIds?: number[];
@@ -932,7 +932,7 @@ export function mapToBulkDeletePayload({
   referenceExternalIds?: string[];
   documentRelatedTo?: number;
   fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
-  excludedFileIds?: { fileId: string; externalId: string }[];
+  excludedFileDetails?: { fileId: string; externalId: string }[];
 }) {
   return {
     request: {
@@ -947,7 +947,7 @@ export function mapToBulkDeletePayload({
         }
       },
       fileDetails,
-      excludedFileIds
+      excludedFileDetails
     }
   };
 }
@@ -970,7 +970,9 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
   fetchGetDocumentDetails,
-  deleteFiles
+  deleteFiles,
+  excludedCheckBoxIds,
+  isHeaderBoxChecked
 }: {
   allSelectedDocs: { fileId: string; registrationId: number }[],
   docData: any,
@@ -989,22 +991,33 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
-  deleteFiles: (payload: any) => Promise<number>
+  deleteFiles: (payload: any) => Promise<number>,
+  excludedCheckBoxIds: string[],
+  isHeaderBoxChecked: boolean
+
 }) => {
+
+
+
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
-  isSelectAll: false,
-  categoryIds: allRegistrationIds,
-  fromDate: dateRange.fromDate,
-  toDate: dateRange.toDate,
-  referenceExternalIds: [searchRefExternalId],
-  documentRelatedTo: documentRealatedTo,
-  fileDetails: allSelectedDocs.map(doc => ({
-    ...doc,
-    externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-  })),
-  excludedFileIds: [] 
-});
+    isSelectAll: !!isHeaderBoxChecked,
+    categoryIds: allRegistrationIds,
+    fromDate: dateRange.fromDate,
+    toDate: dateRange.toDate,
+    referenceExternalIds: [searchRefExternalId],
+    documentRelatedTo: documentRealatedTo,
+    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length ? [] : allSelectedDocs.map(doc => ({
+      ...doc,
+      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+    })),
+    excludedFileDetails:
+      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0) ?
+        allSelectedDocs.map(doc => ({
+          ...doc,
+          externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+        })) : []
+  });
   try {
     const status = await deleteFiles(payload);
     if (status === 204) {
