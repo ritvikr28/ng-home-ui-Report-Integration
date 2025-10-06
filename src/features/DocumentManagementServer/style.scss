@@ -138,6 +138,11 @@
     min-width: 148px;
   }
 
+  .essui-notification{
+        width: -webkit-fill-available !important;
+        margin-bottom: 20px;
+  }
+
   .essui-dialog {
   max-height: 90vh; /* or use calc(100vh - some padding) */
   overflow: auto;

@@ -131,3 +131,21 @@ export interface FetchViewDownloadDataParams {
   viewDownload: () => Promise<any>;
   downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
 }
+
+export interface ValidationFileDetail {
+  fileId: string;
+  registrationId: number;
+  externalId: string;
+}
+
+export interface BuildValidationPayloadParams {
+  isSelectAll?: boolean;
+  userActivity?: string;
+  categoryIds?: number[];
+  fromDate?: string;
+  toDate?: string;
+  referenceExternalIds?: string[];
+  documentRelatedTo?: number;
+  fileDetails?: ValidationFileDetail[];
+  excludedFileDetails?: ValidationFileDetail[];
+}

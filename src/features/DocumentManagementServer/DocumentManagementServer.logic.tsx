@@ -4,7 +4,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
- import { Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams, referenceDetails } from "./responseModel";
+ import { BuildValidationPayloadParams, Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams, referenceDetails } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -1157,3 +1157,33 @@ export async function handleClearAllConfirm({
 }
 
 
+
+export const buildValidationPayload = ({
+  isSelectAll = false,
+  userActivity = "bulkdelete",
+  categoryIds = [],
+  fromDate = "",
+  toDate = "",
+  referenceExternalIds = [],
+  documentRelatedTo = 0,
+  fileDetails = [],
+  excludedFileDetails = []
+}: BuildValidationPayloadParams) => {
+  return {
+    request: {
+      isSelectAll,
+      userActivity,
+      validationCriteria: {
+        categoryIds,
+        fromDate,
+        toDate,
+        referenceDetails: {
+          referenceExternalIds,
+          documentRelatedTo
+        }
+      },
+      fileDetails,
+      excludedFileDetails
+    }
+  };
+};

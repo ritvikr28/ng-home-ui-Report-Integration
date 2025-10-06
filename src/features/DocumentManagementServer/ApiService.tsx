@@ -140,6 +140,17 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
+export const validation = async (payload: { request: any }): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/getfilevalidation`;
+    const response: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
+    return response;
+  } catch (err) {
+    console.error("Error fetching view downloads data:", err);
+    return {};
+  }
+};
 
 export const clearAllFiles = async (payload: { request: { partitionKey: string[] } }): Promise<any> => {
   try {
