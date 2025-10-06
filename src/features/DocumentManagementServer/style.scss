@@ -8,6 +8,18 @@
   width: 100%;
   overflow-x: hidden;
 
+.essui-notification--warning {
+    background-color: #ffeee0;
+    border-left-color: #a86500;
+    margin-bottom: 24px;
+}
+
+.essui-notification--highlight {
+    background-color: #ebf1ff;
+    border-left-color: #2177c2;
+    margin-bottom: 24px;
+}
+
   .side-width {
     padding: 0;
     height: 100%;
@@ -59,6 +71,12 @@
 
 
 .dms-layout {
+
+.essui-side-panel-heading {
+    align-items: center;
+    display: flex;
+    padding: 11px 2px 3px!important;
+}
 
   .grid-wrapper {
     .filter-tool-view .filter-btn {
@@ -226,6 +244,7 @@
   }
 
 
+
   .essui-loader .essui-loader-spin {
     margin-top: inherit;
   }
@@ -315,6 +334,17 @@
     color: #2177c2;
     font-size: 16px;
   }
+  .cancelDownloadBtn{
+    background-color: #ffffff;
+    color: #2177c2;
+    font-size: 16px;
+  }
+
+  .inProgressLoader {
+  display: flex;
+  align-items: center;
+  gap: 11px; 
+}
 }
 // -------------------------768px to 1024px-------------------------------
 @media screen and (min-width:360px) and (max-width:599.9px) {
@@ -333,6 +363,7 @@
     }
   }
 }
+
 
 // --------------------------390px to 767px-----------------
 @media (min-width: 390px) and (max-width: 767.9px) {

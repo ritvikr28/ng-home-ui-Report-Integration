@@ -1,9 +1,11 @@
 /// <reference types="node" />
 import React, { useState, useEffect } from "react"
+import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, handleBulkDeleteLogic } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -40,7 +42,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
-    
     const [searchInput, setSearchInput] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
@@ -75,6 +76,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
+    const [downloadError, setDownloadError] = useState<boolean>(false);
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
@@ -84,6 +86,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
 
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [tableKey, setTableKey] = useState(0);
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
@@ -96,6 +100,19 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     // Toggle this for testing:
     return 204; // or return 500 for error
     };
+
+    const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
+
+    const location = useLocation();
+    
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get("isViewDownload") === "true") {
+            setSidePanelOpenReason("view");
+            setIsSidePanelOpen(true);
+        }
+    }, [location.search]);
 
     const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
     
@@ -190,7 +207,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     useEffect(() => {
   if (isSearchTriggered && searchText) {
+    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+    setIsInitialLoad(true);
     fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
@@ -216,7 +236,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     return () => clearTimeout(timer);
   }
-  if (isSidePanelOpen && sidePanelOpenReason === "view") {
+  if (isSidePanelOpen && sidePanelOpenReason === "view" ) {
     setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
@@ -228,6 +248,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     },
       viewDownload,
       downloadPollingIntervalRef,
+      
     });
   }
   return undefined;
@@ -259,13 +280,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
-const selectedDocs = buildSelectedDocs(
-  selectedCheckBoxIds,
-  docData,
-  categoryRegistrationMap,
-  searchRefExternalId,
-  documentRealatedTo
-);
+
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
@@ -344,6 +359,7 @@ const selectedDocs = buildSelectedDocs(
   return "Documents will appear here once they are uploaded.";
 };
 
+
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
 
     const handleSearchClose = () => {
@@ -366,7 +382,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
         setIsClearSelectedCheckbox(true);
-        
+        setIsInitialLoad(true);
+        setTableKey(prev => prev + 1);
         };
 
         useEffect(() => {
@@ -516,7 +533,7 @@ const handleApply = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification && !showToastNotification) {
         return <p>Files you download will appear here.</p>;
     }
     if (viewData?.length > 0) {
@@ -533,20 +550,38 @@ const handleApply = () => {
                     <p>{item?.name}</p>
                     {isComplete && item?.fileExpiryDays !== undefined && (() => {
                         if (item.fileExpiryDays > 0) {
-                            return <span>Expires in {item.fileExpiryDays} days.</span>;
+                            return <span>{t("DocumentManagementServer.ExpiresInDays", { days: item.fileExpiryDays })}</span>;
                         }
                         if (item.fileExpiryDays === 0) {
-                            return <span>Expires today.</span>;
+                            return <span>{t("DocumentManagementServer.ExpiresToday")}</span>;
                         }
                         return null;
                         })()}
                 </div>
-                {isComplete && (
-                    <Button className="viewDownloadBtn">Download</Button>
-                )}
+               {isComplete && (
+                   <Button
+                       className="viewDownloadBtn"
+                       id={`file-download-${item.fileId}`}
+                       onClick={async () => {
+                           try {
+                               await fileDownload(
+                                   item.fileId?.toUpperCase(),
+                                   item.name ?? "",
+                                   item.application,
+                                   item.section,
+                                   item.sasUrl
+                               );
+                           } catch (error) {
+                               setDownloadError(true);
+                           }
+                       }}
+                   >
+                       Download
+                   </Button>
+               )}
                 {(isInProgress || isInitiated) && (
                     <span className="inProgressLoader">
-                    <Loader loaderType={LoaderType.Circular} />
+                        <Loader loaderType={LoaderType.Circular} />
                     </span>
                 )}
                 </div>
@@ -624,13 +659,14 @@ const handleApply = () => {
                  
                    <div className="grid-wrapper">
                             <ControlledList
+                                key={tableKey}
                                 isMobileViewBreadcrumb
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
                                 isShowSubHeading
                                 isSorting
                                 sortByDefault={false}
-                                sortAscFirst={false}
+                                sortAscFirst={!isInitialLoad}
                                 isIconRightAligned
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
@@ -651,7 +687,7 @@ const handleApply = () => {
                                         value: "Inactive"
                                     }
                                 ]}
-                                isShowCheckboxCol = {true}
+                                isShowCheckboxCol
                                 editSelectedBtnTitle="Actions"
                                 editSelectedOptions={[
                                     {
@@ -747,7 +783,7 @@ const handleApply = () => {
                                     }
                                 ]}
                                 groupTagsEnabled
-                                headingText="Documents"
+                                headingText={t("DocumentManagementServer.headingText")}
                                 id="controlled-list"
                                 isBreadCrumbEnable={false}
                                 isOnCloseSidepnl
@@ -801,7 +837,7 @@ const handleApply = () => {
 
                                     }
                                 }}
-                                isShowSecondaryBtn={true}
+                                isShowSecondaryBtn
                                 isShowPrimaryBtn={false}
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
@@ -830,6 +866,15 @@ const handleApply = () => {
                                                 onClickClose={() => setPrepareDownloadError(false)}
                                             />
                                         )}
+                                        {downloadError && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to download"
+                                                message="A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team."
+                                                autoclose
+                                                onClickClose={() => setDownloadError(false)}
+                                            />
+                                        )}
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
@@ -850,10 +895,7 @@ const handleApply = () => {
                                             }}
                                         />
                                         )}
-                                        <div className="viewDownloadWrap">
-                                           {renderViewDownloadContent()}
-                                        </div>
-                                        { showToastNotification && (
+                                         { showToastNotification && (
                                             <Notification
                                                 status={NotificationStatus.SUCCESSTOAST}
                                                 title="Downloads cleared"
@@ -861,13 +903,16 @@ const handleApply = () => {
                                                 onClickClose={() => setShowToastNotification(false)}
                                             />
                                         )}
+                                        <div className="viewDownloadWrap">
+                                           {renderViewDownloadContent()}
+                                        </div>
                                     </>
                                 }
                                  
                                 isSidePanelLoader={isSidePanelLoader}
                                 sidePanelSubTitle=""
-                                sidePanelTitle="Downloads"
-                                subHeadingText="Bulk download or delete documents for pupils, staff members, or the school."
+                                sidePanelTitle={t("DocumentManagementServer.sidePanelTitle")}
+                                subHeadingText={t("DocumentManagementServer.subHeadingText")}
                                 tableBodyData={tableData?.length > 0 ? tableData : []}
                                 filterCustumeElem2={
                                     <>
@@ -906,16 +951,17 @@ const handleApply = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={
-                                    dialogType === "clearAll"
+                                     dialogType === "clearAll"
                                         ? {
                                             cancelText: "Keep all",
-                                            contentText: "This action will remove all files 'Completed' from the Download panel.",
+                                            contentText: "This action will remove all files 'Completed' from the Downloads panel.",
                                             isNotificationanner: false,
                                             notificationTitle: "",
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: "Clear all",
                                             onCancel: (): void => { setShowConfirmDialog(false); },
                                             onConfirm: async (): Promise<void> => {
+                                                setClearAllError(false);
                                                 await handleClearAllConfirm({
                                                     viewData,
                                                     clearAllFiles,
@@ -965,6 +1011,14 @@ const handleApply = () => {
                                                 setIsSidePanelLoader(true);
                                                 setSidePanelOpenReason("prepare");
                                                 setIsSidePanelOpen(true);
+                                                const selectedDocs = buildSelectedDocs(
+                                                    selectedCheckBoxIds,
+                                                    docData,
+                                                    categoryRegistrationMap,
+                                                    searchRefExternalId,
+                                                    documentRealatedTo
+                                                );
+
                                                 prepareDownload(selectedDocs)
                                                     .then((statuses) => {
                                                         if (statuses.some((status: number) => status !== 204)) {
@@ -989,7 +1043,7 @@ const handleApply = () => {
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
-                                toastNotificationAutoclose={true}
+                                toastNotificationAutoclose
                                 toastNotificationTitle="Downloads cleared successfully!"
                                 isShowOverflowMenuCol={false}
                                 isShowFirstElement
