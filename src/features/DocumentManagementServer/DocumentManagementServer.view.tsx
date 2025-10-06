@@ -7,7 +7,7 @@ import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, 
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
+import { Category, tableDataProps, ValidationFileDetail, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
@@ -280,6 +280,19 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
+     const { totalSelectedCount, totalCountMessage } = useMemo(() => {
+        const excludedCount = excludedCheckBoxIds.length || 0;
+        const isAllSelected = isHeaderBoxChecked && excludedCount === 0;
+        const computedTotalSelectedCount = (() => {
+            if (!docData?.totalRecords) return 0;
+            if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
+            return allSelectedDocs?.length || 0;
+        })();
+        const plural = computedTotalSelectedCount > 1 ? "documents are" : "document is";
+        const totalCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
+        return { totalSelectedCount: computedTotalSelectedCount, totalCountMessage: totalCountMsg };
+    }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
+
 
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
@@ -311,6 +324,36 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortDirection(newDirection);
 };
  
+const isSelectAll = isHeaderBoxChecked;
+const excludedFileDetails = isHeaderBoxChecked
+  ? excludedCheckBoxIds
+      .map(id => {
+        const doc = docData?.data.find((d: any) => d.fileId === id);
+        if (!doc) return undefined;
+        return {
+          fileId: doc.fileId,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId || ""
+        };
+      })
+      .filter((item): item is ValidationFileDetail => !!item)
+  : [];
+
+const fileDetails = (isHeaderBoxChecked && excludedFileDetails.length > 0) || isSelectAll
+  ? [] 
+  : isHeaderBoxChecked
+    ? docData?.data
+        .filter((doc: any) => !excludedCheckBoxIds.includes(doc.fileId))
+        .map((doc: any) => ({
+          ...doc,
+          externalId: doc.externalId || ""
+        }))
+    : allSelectedDocs.map(doc => ({
+        ...doc,
+        externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+      }));
+
+
 const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedItem: ISelectedItem) => {
     setShowConfirmDialog(false);
     setShowRestrictedDeleteDialog(false);
@@ -318,22 +361,19 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setIsDialogLoading(true);
 
   if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
-    if (selectedCheckBoxIds?.length === 0) {
+    if (totalSelectedCount === 0) {
       setShowDialog(true);
     } else {
       const validationPayload = buildValidationPayload({
-        isSelectAll: false,
+        isSelectAll: isSelectAll,
         userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
         categoryIds: allRegistrationIds,
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: [searchRefExternalId],
         documentRelatedTo: documentRealatedTo,
-        fileDetails: allSelectedDocs.map(doc => ({
-          ...doc,
-          externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-        })),
-        excludedFileDetails: []
+        fileDetails: fileDetails,
+        excludedFileDetails: excludedFileDetails
       });
 
       const result = await validation(validationPayload);
@@ -1118,7 +1158,9 @@ const handleApply = () => {
                                                 : `All ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`)
                                             : "",
                                             isNotificationanner: true,
-                                            notificationTitle: `${availableFileCount} ${availableFileCount > 1 ? "documents are " : "document is "} about to be prepared for downloading.`,
+                                            notificationTitle: availableFileCount === 1
+                                                ? `${availableFileCount} document is about to be prepared for downloading.`
+                                                : `All ${availableFileCount} documents are about to be prepared for downloading.`,
                                             notificationStatus: NotificationStatus.WARNING,
                                             okText: 'Prepare download',
                                             onCancel: (): void => {setShowConfirmDialog(false); },
@@ -1141,7 +1183,7 @@ const handleApply = () => {
                                                     .then((statuses) => {
                                                         if (statuses.some((status: number) => status !== 204)) {
                                                             setPrepareDownloadError(true);
-                                                        } else if (selectedCheckBoxIds.length > 1) {
+                                                        } else if (totalSelectedCount > 1) {
                                                             setShowEmailNotification(true);
                                                         }
                                                     })

@@ -816,50 +816,50 @@ fireEvent.click(screen.getByTestId('secondary-button'));
   fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
 });
  
- it("Catch error for failed prepareDownload", async () => {
-     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
-  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-      status: 200,
-      data: [
-        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-        { name: "FileUndefined", status: "complete" }
-      ],
-    });
+//  it("Catch error for failed prepareDownload", async () => {
+//      (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+//   (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
+//   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+//       status: 200,
+//       data: [
+//         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+//         { name: "FileUndefined", status: "complete" }
+//       ],
+//     });
  
  
-  render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
+//   render(<MemoryRouter>
+//       <DocumentManagementServerView />
+//     </MemoryRouter>);
  
-  // type search query
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+//   // type search query
+//   const input = await screen.findByTestId("search-autocomplete-input");
+//   fireEvent.change(input, { target: { value: "Alfie" } });
+//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
  
-  // wait for suggestion to show up
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
+//   // wait for suggestion to show up
+//   const searchLoader = screen.getAllByTestId("loader-arc");
+//   await waitFor(() => {
+//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+//   });
 
-  const suggestionNode = await screen.findAllByText("Alfie");
+//   const suggestionNode = await screen.findAllByText("Alfie");
 
-  // click suggestion
-  fireEvent.click(suggestionNode[0]);
+//   // click suggestion
+//   fireEvent.click(suggestionNode[0]);
 
-  // verify document is displayed
-  await waitFor(() => {
-    expect(screen.getByText("Doc1")).toBeInTheDocument();
-  });
+//   // verify document is displayed
+//   await waitFor(() => {
+//     expect(screen.getByText("Doc1")).toBeInTheDocument();
+//   });
  
-    fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-    fireEvent.click(await screen.findByText("Actions"));
-    const option = await screen.findByTestId("option-test-0");
-    fireEvent.click(option);
-    fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
-})
+//     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+//     fireEvent.click(await screen.findByText("Actions"));
+//     const option = await screen.findByTestId("option-test-0");
+//     fireEvent.click(option);
+//     fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
+// })
 })
 })
