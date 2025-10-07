@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
@@ -7,7 +7,7 @@ import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, 
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps, ValidationFileDetail, ViewDownloadItem } from "./responseModel"
+import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
@@ -80,7 +80,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showToastNotification, setShowToastNotification] = useState(false);
     const [downloadError, setDownloadError] = useState<boolean>(false);
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
-    const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
+    const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number, externalId: string }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
     const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
@@ -95,6 +95,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isDialogLoading, setIsDialogLoading] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tableKey, setTableKey] = useState(0);
+    const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
@@ -105,14 +106,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because they are being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because they are being prepared for download. Please try again later.`
         );
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            `${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
+            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
         );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
@@ -297,7 +298,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
-     const { totalSelectedCount } = useMemo(() => {
+     useEffect(() => {
         const excludedCount = excludedCheckBoxIds.length || 0;
         const computedTotalSelectedCount = (() => {
             if (!docData?.totalRecords) return 0;
@@ -310,7 +311,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
             return allSelectedDocs?.length || 0;
         })();
-        return { totalSelectedCount: computedTotalSelectedCount };
+        setTotalSelectedCount(computedTotalSelectedCount);
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
 
@@ -344,24 +345,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortDirection(newDirection);
 };
  
-const excludedFileDetails = isHeaderBoxChecked
-  ? excludedCheckBoxIds
-      .map(id => {
-        const doc = docData?.data.find((d: any) => d.fileId === id);
-        if (!doc) return undefined;
-        return {
-          fileId: doc.fileId,
-          registrationId: doc.registrationId,
-          externalId: doc.externalId || ""
-        };
-      })
-      .filter((item): item is ValidationFileDetail => !!item)
-  : [];
-
-    const fileDetails = isHeaderBoxChecked  ? [] : allSelectedDocs.map(doc => ({
-            ...doc,
-            externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-        }));
 
 
 const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedItem: ISelectedItem) => {
@@ -369,23 +352,24 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setShowRestrictedDeleteDialog(false);
     setShowRestrictedPrepareDialog(false);
     setIsDialogLoading(true);
+    if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
+        if (totalSelectedCount === 0) {
+            setShowDialog(true);
+        } else {
 
-
-  if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
-    if (totalSelectedCount === 0) {
-      setShowDialog(true);
-    } else {
-      const validationPayload = buildValidationPayload({
-        isSelectAll: !!isHeaderBoxChecked,
-        userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
-        categoryIds: allRegistrationIds,
-        fromDate: dateRange.fromDate,
-        toDate: dateRange.toDate,
-        referenceExternalIds: [searchRefExternalId],
-        documentRelatedTo: documentRealatedTo,
-        fileDetails,
-        excludedFileDetails
-      });
+            const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
+            const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
+            const validationPayload = buildValidationPayload({
+                isSelectAll: !!isHeaderBoxChecked,
+                userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
+                categoryIds: allRegistrationIds,
+                fromDate: dateRange.fromDate,
+                toDate: dateRange.toDate,
+                referenceExternalIds: [searchRefExternalId],
+                documentRelatedTo: documentRealatedTo,
+                fileDetails,
+                excludedFileDetails
+            });
 
       const result = await validation(validationPayload);
       setIsDialogLoading(false);
@@ -482,9 +466,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setIsInitialLoad(true);
         setTableKey(prev => prev + 1);
         setIsHeaderBoxChecked(false);
-        setSelectedCheckBoxIds([]);
         setExcludedCheckBoxIds([]);
-        setAllSelectedDocs([]);
         };
 
         useEffect(() => {
@@ -645,11 +627,12 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s are" : " is"} about to be deleted forever.`,
+      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s are" : " is"} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false); },
-      onConfirm: (): void => {
-        handleBulkDelete();
+      onConfirm: async (): Promise<void> => {
+        setIsDialogLoading(true)
+        await handleBulkDelete();
         setShowConfirmDialog(false);
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
@@ -674,7 +657,7 @@ switch (dialogType) {
       notificationTitle:
         availableFileCount === 1
           ? `${availableFileCount} document is about to be prepared for downloading.`
-          : `${availableFileCount} documents are about to be prepared for downloading.`,
+          : `${availableFileCount === docData?.totalRecords ? 'All ' : ''}  ${availableFileCount} documents are about to be prepared for downloading.`,
       notificationStatus: NotificationStatus.WARNING,
       okText: "Prepare download",
       onCancel: (): void => { setShowConfirmDialog(false); },
@@ -837,12 +820,12 @@ switch (dialogType) {
                                 if (restrictedFileCount > 0) {
                                 return restrictedFileCount === 1
                                     ? `${restrictedFileCount} document cannot be deleted because it is being prepared for download. Please try again later.`
-                                    : `${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
+                                    : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
-                                    : `${alreadyDeletedFileCount} documents are already deleted.`;
+                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents are already deleted.`;
                                 }
                                 return "";
                             })()
@@ -850,7 +833,7 @@ switch (dialogType) {
                         message={
                             (() => {
                                 if (restrictedFileCount > 0 && alreadyDeletedFileCount > 0) {
-                                return `${alreadyDeletedFileCount} file${alreadyDeletedFileCount !== 1 ? "s" : ""} are already deleted.`;
+                                return `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} file${alreadyDeletedFileCount !== 1 ? "s" : ""} are already deleted.`;
                                 }
                                 return "";
                             })()
@@ -866,7 +849,7 @@ switch (dialogType) {
                         notificationTitle={
                         alreadyDeletedFileCount === 1
                             ? `This document cannot be downloaded as it has already been deleted.`
-                            : `${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
+                            : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
                         }
                         loading={isDialogLoading}
                     />
@@ -1000,11 +983,11 @@ switch (dialogType) {
                                                     if (!prev.some(item => item.fileId === id)) {
                                                         return [
                                                             ...prev,
-                                                            { fileId: id, registrationId: Number(doc.registrationId) } // Ensure number type
+                                                            { fileId: id, registrationId: Number(doc.registrationId), externalId: doc.externalId || "" } 
                                                         ];
                                                     }
                                                     return prev;
-                                                }); 
+                                                });
                                             }
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
