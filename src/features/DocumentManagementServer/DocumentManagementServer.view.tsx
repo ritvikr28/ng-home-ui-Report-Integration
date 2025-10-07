@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import React, { useState, useEffect, useMemo } from "react"
+import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
@@ -95,6 +95,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isDialogLoading, setIsDialogLoading] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tableKey, setTableKey] = useState(0);
+    const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
@@ -297,7 +298,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
-     const { totalSelectedCount } = useMemo(() => {
+     useEffect(() => {
         const excludedCount = excludedCheckBoxIds.length || 0;
         const computedTotalSelectedCount = (() => {
             if (!docData?.totalRecords) return 0;
@@ -310,7 +311,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
             return allSelectedDocs?.length || 0;
         })();
-        return { totalSelectedCount: computedTotalSelectedCount };
+        setTotalSelectedCount(computedTotalSelectedCount);
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
 
