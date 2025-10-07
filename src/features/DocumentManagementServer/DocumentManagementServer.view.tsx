@@ -627,7 +627,7 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s are" : " is"} will be gone forever once deleted.`,
+      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false); },
       onConfirm: async (): Promise<void> => {
