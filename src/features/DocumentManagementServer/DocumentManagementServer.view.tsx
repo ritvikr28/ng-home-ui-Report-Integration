@@ -280,17 +280,20 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
-     const { totalSelectedCount, totalCountMessage } = useMemo(() => {
+     const { totalSelectedCount } = useMemo(() => {
         const excludedCount = excludedCheckBoxIds.length || 0;
-        const isAllSelected = isHeaderBoxChecked && excludedCount === 0;
         const computedTotalSelectedCount = (() => {
             if (!docData?.totalRecords) return 0;
+            if(docData?.totalRecords === excludedCount) {
+                setIsHeaderBoxChecked(false);
+                setAllSelectedDocs([]);
+                setExcludedCheckBoxIds([]);
+                return 0;
+            }
             if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
             return allSelectedDocs?.length || 0;
         })();
-        const plural = computedTotalSelectedCount > 1 ? "documents are" : "document is";
-        const totalCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
-        return { totalSelectedCount: computedTotalSelectedCount, totalCountMessage: totalCountMsg };
+        return { totalSelectedCount: computedTotalSelectedCount };
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
 
@@ -324,7 +327,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortDirection(newDirection);
 };
  
-const isSelectAll = isHeaderBoxChecked;
 const excludedFileDetails = isHeaderBoxChecked
   ? excludedCheckBoxIds
       .map(id => {
@@ -339,19 +341,10 @@ const excludedFileDetails = isHeaderBoxChecked
       .filter((item): item is ValidationFileDetail => !!item)
   : [];
 
-const fileDetails = (isHeaderBoxChecked && excludedFileDetails.length > 0) || isSelectAll
-  ? [] 
-  : isHeaderBoxChecked
-    ? docData?.data
-        .filter((doc: any) => !excludedCheckBoxIds.includes(doc.fileId))
-        .map((doc: any) => ({
-          ...doc,
-          externalId: doc.externalId || ""
-        }))
-    : allSelectedDocs.map(doc => ({
-        ...doc,
-        externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-      }));
+    const fileDetails = isHeaderBoxChecked  ? [] : allSelectedDocs.map(doc => ({
+            ...doc,
+            externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+        }));
 
 
 const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedItem: ISelectedItem) => {
@@ -365,7 +358,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
       setShowDialog(true);
     } else {
       const validationPayload = buildValidationPayload({
-        isSelectAll: isSelectAll,
+        isSelectAll: !!isHeaderBoxChecked,
         userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
         categoryIds: allRegistrationIds,
         fromDate: dateRange.fromDate,
@@ -884,7 +877,7 @@ const handleApply = () => {
                                                         ];
                                                     }
                                                     return prev;
-                                                });
+                                                }); 
                                             }
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
