@@ -1,9 +1,9 @@
 
 import '@testing-library/jest-dom';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation } from '../ApiService';
 import * as ApiService from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
@@ -501,5 +501,84 @@ describe('downloadFile', () => {
     getSpy.mockRejectedValueOnce(new Error('Download failed'));
     const { downloadFile } = await import('../ApiService');
     await expect(downloadFile('app', 'section', 'file123')).rejects.toThrow('Download failed');
+  });
+});
+
+describe("validation API", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
+  const mockPayload = { request: { foo: "bar" } };
+
+  it("returns response on success", async () => {
+    const mockResponse = { data: { valid: true }, status: 200 };
+    (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await validation(mockPayload);
+    expect(result).toBe(mockResponse);
+    expect(service.post).toHaveBeenCalledWith(
+      "/validation/api/v1/file/getfilevalidation",
+      mockPayload,
+      { baseURL: PLATFORM_BASEURLS }
+    );
+  });
+
+  it("returns empty object and logs error on failure", async () => {
+    const error = new Error("Network error");
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+
+    const result = await validation(mockPayload);
+    expect(result).toEqual({});
+    expect(consoleSpy).toHaveBeenCalledWith(
+      "Error fetching view downloads data:",
+      error
+    );
+    consoleSpy.mockRestore();
+  });
+});
+
+describe("deleteFiles API", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
+  const mockPayload = { request: { foo: "bar" } };
+  axios.delete = jest.fn();
+
+  it("returns status on success", async () => {
+    const mockResponse = { status: 204 };
+    (axios.delete as jest.Mock).mockResolvedValueOnce(mockResponse);
+
+    const result = await deleteFiles(mockPayload);
+    expect(result).toBe(204);
+    expect(axios.delete).toHaveBeenCalledWith(
+      `${PLATFORM_BASEURLS}/validation/api/v1/file/bulkdelete`,
+      {
+        data: mockPayload,
+        headers: {
+          "Content-Type": "application/json-patch+json",
+          Authorization: expect.any(String),
+        },
+      }
+    );
+  });
+
+  it("returns error status from error.response.status", async () => {
+    const error = { response: { status: 401 } };
+    (axios.delete as jest.Mock).mockRejectedValueOnce(error);
+
+    const result = await deleteFiles(mockPayload);
+    expect(result).toBe(401);
+  });
+
+  it("returns payload.request.status if error has no response.status", async () => {
+    (axios.delete as jest.Mock).mockRejectedValueOnce(new Error("fail"));
+
+    const payloadWithStatus = { request: { foo: "bar", status: 400 } };
+    const result = await deleteFiles(payloadWithStatus);
+    expect(result).toBe(400);
   });
 });

@@ -5,12 +5,12 @@ import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
+import { Category, tableDataProps, ValidationFileDetail, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles } from "./ApiService"
+import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
@@ -82,15 +82,41 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [failedFileName, setFailedFileName] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs] = useState<{ fileId: string, registrationId: number }[]>([]);
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
+    const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
+    const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
+     const [restrictedFileCount, setRestrictedFileCount] = useState(0); 
+    const [alreadyDeletedFileCount, setAlreadyDeletedFileCount] = useState(0);
+    const [availableFileCount, setAvailableFileCount] = useState(0);
+    const [showRestrictedDeleteDialog, setShowRestrictedDeleteDialog] = useState(false);
+    const [showRestrictedPrepareDialog, setShowRestrictedPrepareDialog] = useState(false);
+    const [isDialogLoading, setIsDialogLoading] = useState(false);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tableKey, setTableKey] = useState(0);
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
     ];
+
+
+        const messages = [];
+ 
+        if (restrictedFileCount > 0) {
+        messages.push(
+            `${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because they are being prepared for download. Please try again later.`
+        );
+        
+        }
+        
+        if (alreadyDeletedFileCount > 0) {
+        messages.push(
+            `${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
+        );
+        }
+        const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
+ 
 
     const { t }: UseTranslationResponse<"translation", undefined> =
         useTranslation();
@@ -106,15 +132,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     }, [location.search]);
 
     const searchTagList = getVisibleTagsWithSummary(searchTagListRaw, 3);
+    
+    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
 
     const onPageChange = (event: any, page: number) =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
  
     let tableData: tableDataProps[] = [];
 
-        if (showErrorBanner) {
-        tableData = [];
-        } else if (showSearchError || !docData?.data?.length) {
+        if (showSearchError || !docData?.data?.length) {
         tableData = [];
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
@@ -198,9 +224,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     useEffect(() => {
   if (isSearchTriggered && searchText) {
-    const allRegistrationIds = getAllRegistrationIds(selectedFormats);
+    const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
-    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection);
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -271,6 +297,22 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
+     const { totalSelectedCount } = useMemo(() => {
+        const excludedCount = excludedCheckBoxIds.length || 0;
+        const computedTotalSelectedCount = (() => {
+            if (!docData?.totalRecords) return 0;
+            if(docData?.totalRecords === excludedCount) {
+                setIsHeaderBoxChecked(false);
+                setAllSelectedDocs([]);
+                setExcludedCheckBoxIds([]);
+                return 0;
+            }
+            if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
+            return allSelectedDocs?.length || 0;
+        })();
+        return { totalSelectedCount: computedTotalSelectedCount };
+    }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
+
 
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
@@ -301,41 +343,94 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
 };
+ 
+const excludedFileDetails = isHeaderBoxChecked
+  ? excludedCheckBoxIds
+      .map(id => {
+        const doc = docData?.data.find((d: any) => d.fileId === id);
+        if (!doc) return undefined;
+        return {
+          fileId: doc.fileId,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId || ""
+        };
+      })
+      .filter((item): item is ValidationFileDetail => !!item)
+  : [];
 
-    const { totalSelectedCount, totalCountMessage } = useMemo(() => {
-        const excludedCount = excludedCheckBoxIds.length || 0;
-        const isAllSelected = isHeaderBoxChecked && excludedCount === 0;
-        const computedTotalSelectedCount = (() => {
-            if (!docData?.totalRecords) return 0;
-            if (isHeaderBoxChecked) return docData.totalRecords - excludedCount;
-            return allSelectedDocs?.length || 0;
-        })();
-        const plural = computedTotalSelectedCount > 1 ? "documents are" : "document is";
-        const totalCountMsg = `${isAllSelected && computedTotalSelectedCount > 1 ? "All " : ""}${computedTotalSelectedCount} ${plural} about to be prepared for downloading.`;
-        return { totalSelectedCount: computedTotalSelectedCount, totalCountMessage: totalCountMsg };
+    const fileDetails = isHeaderBoxChecked  ? [] : allSelectedDocs.map(doc => ({
+            ...doc,
+            externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+        }));
 
-    }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
-   const handleEditSelectedOverFlowMenu = (e:React.SyntheticEvent, selectedItem: ISelectedItem)=>{
-        if (selectedItem.value === "Prepare download") {
-            if(totalSelectedCount === 0){
-                setShowDialog(true);
-            }else{
-                setDialogType("prepareDownload");
-                setShowConfirmDialog(true);
-            }
-        }
-       
-        else if (selectedItem.value === "Delete") {
-            if(totalSelectedCount === 0){
-                setShowDialog(true);
-            }
-        }
-        else if ((selectedItem?.value?.toLowerCase() === "view download")) {
-            setSidePanelOpenReason("view");
-            setIsSidePanelOpen(true);
-        }
-      }
+const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedItem: ISelectedItem) => {
+    setShowConfirmDialog(false);
+    setShowRestrictedDeleteDialog(false);
+    setShowRestrictedPrepareDialog(false);
+    setIsDialogLoading(true);
+
+
+  if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
+    if (totalSelectedCount === 0) {
+      setShowDialog(true);
+    } else {
+      const validationPayload = buildValidationPayload({
+        isSelectAll: !!isHeaderBoxChecked,
+        userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
+        categoryIds: allRegistrationIds,
+        fromDate: dateRange.fromDate,
+        toDate: dateRange.toDate,
+        referenceExternalIds: [searchRefExternalId],
+        documentRelatedTo: documentRealatedTo,
+        fileDetails,
+        excludedFileDetails
+      });
+
+      const result = await validation(validationPayload);
+      setIsDialogLoading(false);
+
+      const restricted = result?.data?.restrictedFileCount ?? 0;
+      const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
+      const available = result?.data?.availableFileCount ?? 0;
+
+    setRestrictedFileCount(restricted);
+    setAlreadyDeletedFileCount(alreadyDeleted);
+    setAvailableFileCount(available);
+
+    setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
+
+    if (
+      selectedItem.value === "Prepare download" &&
+      available === 0 &&
+      alreadyDeleted > 0
+    ) {
+      setShowRestrictedPrepareDialog(true);
+      setShowConfirmDialog(false);
+      return;
+    }
+    
+      if (selectedItem.value === "Delete") {
+  if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+    setShowRestrictedDeleteDialog(true);
+    setShowConfirmDialog(false);
+    return;
+  }
+
+  if (available > 0) {
+    setShowConfirmDialog(true);
+    setShowRestrictedDeleteDialog(false);
+    return;
+  }
+}
+
+      setShowConfirmDialog(true);
+    }
+  } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
+    setSidePanelOpenReason("view");
+    setIsSidePanelOpen(true);
+  }
+};
  
     const getEmptyStateMsg = () => {
   if (showErrorBanner) return "Information unavailable.";
@@ -439,10 +534,19 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             variant: "warning",
             title: "Information unavailable",
             message:
-                "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+            "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
             autoclose: true
-        }
-    ]
+        },
+        {
+            isShow: showDeleteErrorBanner,
+            variant: "warning",
+            title: `Unable to delete [document/documents]`,
+            message:
+            "A technical issue has stopped us from deleting the document. Please try again later. If the issue persists, please get in touch with our support team.",
+            autoclose: false,
+            onClickClose: () => setShowDeleteErrorBanner(false)
+    }
+    ];
 
     useEffect(() => {
     if (searchTerm?.length > 1) {
@@ -463,6 +567,30 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
 
+    const handleBulkDelete = () =>
+        handleBulkDeleteLogic({
+            allSelectedDocs,
+            docData,
+            allRegistrationIds,
+            dateRange,
+            searchRefExternalId,
+            documentRealatedTo,
+            currentPage,
+            sortBy,
+            sortDirection,
+            setShowToastNotification,
+            setShowConfirmDialog,
+            setSelectedCheckBoxIds,
+            setAllSelectedDocs,
+            setIsClearSelectedCheckbox,
+            setShowDeleteErrorBanner,
+            setShowDeleteSuccessToast,
+            fetchGetDocumentDetails,
+            deleteFiles,
+            excludedCheckBoxIds,
+            isHeaderBoxChecked
+        });
+
 const handleApply = () => {
   validateAndApplyFilter({
     selectedDateRange,
@@ -478,6 +606,111 @@ const handleApply = () => {
 };
 
  
+let dialogConfig;
+
+switch (dialogType) {
+  case "clearAll":
+    dialogConfig = {
+      cancelText: "Keep all",
+      contentText: "This action will remove all files 'Completed' from the Downloads panel.",
+      isNotificationanner: false,
+      notificationTitle: "",
+      notificationStatus: NotificationStatus.WARNING,
+      okText: "Clear all",
+      onCancel: (): void => { setShowConfirmDialog(false); },
+      onConfirm: async (): Promise<void> => {
+        setClearAllError(false);
+        await handleClearAllConfirm({
+          viewData,
+          clearAllFiles,
+          setShowToastNotification,
+          fetchViewDownloadData,
+          setIsSidePanelLoader,
+          setViewData,
+          setHasFetchedViewDownload,
+          viewDownload,
+          downloadPollingIntervalRef,
+          setClearAllError,
+          setShowConfirmDialog,
+          getCompletedPartitionKeys,
+        });
+      },
+      template: DialogTemplate.Confirmation,
+    };
+    break;
+
+  case "delete":
+    dialogConfig = {
+      cancelText: "Keep it",
+      okText: "Delete",
+      contentText,
+      isNotificationanner: true,
+      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s are" : " is"} about to be deleted forever.`,
+      notificationStatus: NotificationStatus.WARNING,
+      onCancel: (): void => { setShowConfirmDialog(false); },
+      onConfirm: (): void => {
+        handleBulkDelete();
+        setShowConfirmDialog(false);
+        setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
+      },
+      template: DialogTemplate.Confirmation,
+    };
+    break;
+
+  default:
+    dialogConfig = {
+      cancelText: "Cancel",
+      contentText: (() => {
+            if (alreadyDeletedFileCount > 0) {
+                return alreadyDeletedFileCount === 1
+                ? `${alreadyDeletedFileCount} document cannot be downloaded as it has already been deleted.`
+                : `All ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`;
+            }
+            return "";
+            })(),
+      isNotificationanner: true,
+      notificationTitle:
+        availableFileCount === 1
+          ? `${availableFileCount} document is about to be prepared for downloading.`
+          : `All ${availableFileCount} documents are about to be prepared for downloading.`,
+      notificationStatus: NotificationStatus.WARNING,
+      okText: "Prepare download",
+      onCancel: (): void => { setShowConfirmDialog(false); },
+      onConfirm: (): void => {
+        setPrepareDownloadError(false);
+        setIsSidePanelLoader(true);
+        setSidePanelOpenReason("prepare");
+        setIsSidePanelOpen(true);
+        const selectedDocs = buildSelectedDocs(
+          selectedCheckBoxIds,
+          docData,
+          categoryRegistrationMap,
+          searchRefExternalId,
+          documentRealatedTo,
+          excludedCheckBoxIds,
+          isHeaderBoxChecked
+        );
+
+        prepareDownload(selectedDocs)
+          .then((statuses) => {
+            if (statuses.some((status: number) => status !== 204)) {
+              setPrepareDownloadError(true);
+            } else if (totalSelectedCount > 1) {
+              setShowEmailNotification(true);
+            }
+          })
+          .catch(() => {
+            setIsSidePanelLoader(false);
+            setPrepareDownloadError(true);
+          });
+      },
+      template: DialogTemplate.Confirmation,
+    };
+}
+
+
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
         fetchCategory()
@@ -579,9 +812,66 @@ const handleApply = () => {
     };
     return (<>
         <>
+            <div className="clc-dms-delete-toast">
+                {showDeleteSuccessToast && (
+                    <Notification
+                        status={NotificationStatus.SUCCESSTOAST}
+                        title="Documents deleted"
+                        autoclose
+                        hideCloseButton
+                    />
+                )}
+            </div>
             <Grid className="dms-layout">
-                {showDialog && <NoSelectionDialog setShowDialog={setShowDialog}
+                {showDialog && 
+                <NoSelectionDialog setShowDialog={setShowDialog}
+                title="No items selected"
                 message="Please select at least one item from the search results to perform the action."/>}
+
+                {showRestrictedDeleteDialog && (
+                    <NoSelectionDialog
+                        setShowDialog={setShowRestrictedDeleteDialog}
+                        title="Documents cannot be deleted"
+                        notificationTitle={
+                            (() => {
+                                if (restrictedFileCount > 0) {
+                                return restrictedFileCount === 1
+                                    ? `${restrictedFileCount} document cannot be deleted because it is being prepared for download. Please try again later.`
+                                    : `All ${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
+                                }
+                                if (alreadyDeletedFileCount > 0) {
+                                return alreadyDeletedFileCount === 1
+                                    ? `This document has already been deleted.`
+                                    : `All ${alreadyDeletedFileCount} documents are already deleted.`;
+                                }
+                                return "";
+                            })()
+                            }
+                        message={
+                            (() => {
+                                if (restrictedFileCount > 0 && alreadyDeletedFileCount > 0) {
+                                return `${alreadyDeletedFileCount} file${alreadyDeletedFileCount !== 1 ? "s" : ""} are already deleted.`;
+                                }
+                                return "";
+                            })()
+                        }
+                        loading={isDialogLoading}
+                    />
+                    )}
+
+                {showRestrictedPrepareDialog && (
+                    <NoSelectionDialog
+                        setShowDialog={setShowRestrictedPrepareDialog}
+                        title="Documents cannot be downloaded"
+                        notificationTitle={
+                        alreadyDeletedFileCount === 1
+                            ? `This document cannot be downloaded as it has already been deleted.`
+                            : `All ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
+                        }
+                        loading={isDialogLoading}
+                    />
+                )}
+
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>
                     {!isOpen && (
                         <Button
@@ -714,7 +1004,7 @@ const handleApply = () => {
                                                         ];
                                                     }
                                                     return prev;
-                                                });
+                                                }); 
                                             }
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
@@ -930,75 +1220,8 @@ const handleApply = () => {
                                 tableFirstColumnWidth="10px"
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
-                                templatePropsConfirmation={
-                                     dialogType === "clearAll"
-                                        ? {
-                                            cancelText: "Keep all",
-                                            contentText: "This action will remove all files 'Completed' from the Downloads panel.",
-                                            isNotificationanner: false,
-                                            notificationTitle: "",
-                                            notificationStatus: NotificationStatus.WARNING,
-                                            okText: "Clear all",
-                                            onCancel: (): void => { setShowConfirmDialog(false); },
-                                            onConfirm: async (): Promise<void> => {
-                                                setClearAllError(false);
-                                                await handleClearAllConfirm({
-                                                    viewData,
-                                                    clearAllFiles,
-                                                    setShowToastNotification,
-                                                    fetchViewDownloadData,
-                                                    setIsSidePanelLoader,
-                                                    setViewData,
-                                                    setHasFetchedViewDownload,
-                                                    viewDownload,
-                                                    downloadPollingIntervalRef,
-                                                    setClearAllError,
-                                                    setShowConfirmDialog,
-                                                    getCompletedPartitionKeys,
-                                                });
-                                            },
-                                            template: DialogTemplate.Confirmation
-                                        }
-                                        : {
-                                            cancelText: "Cancel",
-                                            contentText: "",
-                                            isNotificationanner: true,
-                                            notificationTitle: totalCountMessage,
-                                            notificationStatus: NotificationStatus.WARNING,
-                                            okText: 'Prepare download',
-                                            onCancel: (): void => {setShowConfirmDialog(false); },
-                                            onConfirm: (): void => {
-                                                setPrepareDownloadError(false);
-                                                setIsSidePanelLoader(true);
-                                                setSidePanelOpenReason("prepare");
-                                                setIsSidePanelOpen(true);
-                                                const selectedDocs = buildSelectedDocs(
-                                                    selectedCheckBoxIds,
-                                                    docData,
-                                                    categoryRegistrationMap,
-                                                    searchRefExternalId,
-                                                    documentRealatedTo,
-                                                    excludedCheckBoxIds,
-                                                    isHeaderBoxChecked
-                                                );
-
-                                                prepareDownload(selectedDocs)
-                                                    .then((statuses) => {
-                                                        if (statuses.some((status: number) => status !== 204)) {
-                                                            setPrepareDownloadError(true);
-                                                        } else if (totalSelectedCount > 1) {
-                                                            setShowEmailNotification(true);
-                                                        }
-                                                    })
-                                                    .catch(() => {
-                                                        setIsSidePanelLoader(false);
-                                                        setPrepareDownloadError(true);
-                                                    });
-                                            },
-                                            template: DialogTemplate.Confirmation
-                                        }
-                                }
-                                titleConfirmation={dialogType === "clearAll" ? "Clear all downloads?" : "Prepare Download?"}
+                                templatePropsConfirmation={dialogConfig}
+                                titleConfirmation={getTitleConfirmation(dialogType)}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
