@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
- import { BuildValidationPayloadParams, Category, deleteDocumentFilesDetails, deleteDocumentRequest, FetchViewDownloadDataParams, referenceDetails } from "./responseModel";
+ import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -1197,8 +1197,8 @@ export const buildValidationPayload = ({
   documentRelatedTo = 0,
   fileDetails = [],
   excludedFileDetails = []
-}: BuildValidationPayloadParams) => {
-  return {
+}: BuildValidationPayloadParams) => ({
+  
     request: {
       isSelectAll,
       userActivity,
@@ -1214,8 +1214,16 @@ export const buildValidationPayload = ({
       fileDetails,
       excludedFileDetails
     }
-  };
-};export const fileDownload = async (
+  
+});
+
+export const getTitleConfirmation = (dialogType: string): string => {
+  if (dialogType === "clearAll") return "Clear all downloads?";
+  if (dialogType === "delete") return "Delete Document(s)?";
+  return "Prepare Download?";
+};
+
+export const fileDownload = async (
   fileId: string,
   fileName: string,
   application: string,

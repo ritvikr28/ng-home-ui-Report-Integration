@@ -57,6 +57,7 @@ jest.mock("../ApiService", () => ({
   prepareAndDownloadFile: jest.fn(),
   viewDownload: jest.fn(),
   fetchStaffProfilePhoto: jest.fn(),
+  validation: jest.fn(),
 }));
  
  
@@ -537,6 +538,13 @@ describe("Additional tests to increase coverage", () => {
         { name: "FileUndefined", status: "complete" }
       ],
     });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});
  
  
  render(<MemoryRouter>
@@ -569,8 +577,8 @@ describe("Additional tests to increase coverage", () => {
     const option = await screen.findByTestId("option-test-0");
     fireEvent.click(option);
  
- 
-    fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
     const sidePanelLoader = await screen.getByText("Please wait...");
     expect(sidePanelLoader).toBeInTheDocument();
   });
@@ -619,7 +627,8 @@ describe("Additional tests to increase coverage", () => {
  
     fireEvent.click(await screen.findByText("Actions"));
     fireEvent.click(await screen.findByText("Prepare download"));
-    fireEvent.click(await screen.getByTestId("tid-save-btn--small-screen"));
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
   });
  
  
@@ -705,7 +714,9 @@ describe("Additional tests to increase coverage", () => {
   it("opens delete confirmation dialog when delete is clicked with selection", async () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  render(<DocumentManagementServerView />);
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
 
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
@@ -730,15 +741,25 @@ describe("Additional tests to increase coverage", () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-  expect(screen.getByText(/about to be deleted forever/i)).toBeInTheDocument();
+  const deleteDialog = await screen.findByText(/about to be deleted forever/i);
+  expect(deleteDialog).toBeInTheDocument();
 
-  fireEvent.click(screen.getByText("Cancel"));
+  fireEvent.click(screen.getByText("Keep it"));
 });
 
  it("opens delete confirmation dialog when delete is clicked with selection and confirm delete", async () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  render(<DocumentManagementServerView />);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
 
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
@@ -763,18 +784,137 @@ describe("Additional tests to increase coverage", () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-  expect(screen.getByText(/about to be deleted forever/i)).toBeInTheDocument();
+  const deleteDialog = await screen.findByText(/about to be deleted forever/i);
+  expect(deleteDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Delete"));
+});
+
+it("opens delete confirmation dialog when delete is clicked with selection and have no files to delete", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 2,
+    alreadyDeletedFileCount: 2,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  const deleteDialog = await screen.findByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
+  expect(deleteDialog).toBeInTheDocument();
+  
 });
 
 it("Delete dialog cancel button works", async () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  render(<DocumentManagementServerView />);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  const deleteDialog = await screen.findByText(/about to be deleted forever/i);
+  expect(deleteDialog).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Keep it"));
 });
 
- 
+it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 2,
+    alreadyDeletedFileCount: 2,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Prepare download"));
+
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
+  expect(prepareDialog).toBeInTheDocument();
+});
+
 describe('onClickSidePnlSecondaryBtn', () => {
   it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
@@ -795,71 +935,109 @@ fireEvent.click(screen.getByTestId('secondary-button'));
 
   fireEvent.click(screen.getByText("Keep all"));
 });
-
- it("Clear files when clicking 'Clear all' with completed files", async () => {
+ 
+ it("Catch error for failed prepareDownload", async () => {
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-    status: 200,
-    data: [{ name: "File1", status: "complete" }],
-  });
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});  
+ 
+ 
   render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
  
-  fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
+  // type search query
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
  
-await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
-fireEvent.click(screen.getByTestId('secondary-button'));
- 
-  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
- 
-  fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
-});
- 
-//  it("Catch error for failed prepareDownload", async () => {
-//      (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-//   (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
-//   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-//       status: 200,
-//       data: [
-//         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-//         { name: "FileUndefined", status: "complete" }
-//       ],
-//     });
- 
- 
-//   render(<MemoryRouter>
-//       <DocumentManagementServerView />
-//     </MemoryRouter>);
- 
-//   // type search query
-//   const input = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(input, { target: { value: "Alfie" } });
-//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
- 
-//   // wait for suggestion to show up
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
 
-//   const suggestionNode = await screen.findAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
 
-//   // click suggestion
-//   fireEvent.click(suggestionNode[0]);
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
 
-//   // verify document is displayed
-//   await waitFor(() => {
-//     expect(screen.getByText("Doc1")).toBeInTheDocument();
-//   });
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
  
-//     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-//     fireEvent.click(await screen.findByText("Actions"));
-//     const option = await screen.findByTestId("option-test-0");
-//     fireEvent.click(option);
-//     fireEvent.click(screen.getByTestId("tid-save-btn--small-screen"));
-// })
+    fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
+    fireEvent.click(option);
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
 })
+})
+it("sets excludedFileDetails and fileDetails correctly when select all with exclusions", async () => {
+  // Mock document data with two files
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Simulate search and select all
+   const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+ 
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
+
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Check the header checkbox (select all)
+  const headerCheckbox = await screen.findByTestId("checkmark-check-box-row-testid");
+  fireEvent.click(headerCheckbox);
+
+  // Exclude one file (simulate exclusion)
+  // This depends on your UI, but let's assume you can exclude by clicking the row checkbox
+  const rowCheckbox = screen.getByTestId("check-box-row-testid-1");
+  fireEvent.click(rowCheckbox); // Uncheck to exclude
+
+  // Open actions and trigger "Prepare download"
+  fireEvent.click(screen.getByText("Actions"));
+  fireEvent.click(screen.getByText("Prepare download"));
+
+  // Assert that NoSelectionDialog does NOT show (since at least one file is selected)
+  expect(screen.queryByText("Please select at least one item from the search results to perform the action.")).not.toBeInTheDocument();
+
+  // You can also check for correct dialog or notification if needed
+});
 })

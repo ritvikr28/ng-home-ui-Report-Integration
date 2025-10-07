@@ -1,6 +1,5 @@
 import React from "react";
-import { Button, Dialog, DialogContent, DialogFooter, NotificationStatus } from "@essnextgen/ui-kit";
-import { Notification } from "@essnextgen/ui-kit"; // Ensure Notification is imported as a React component
+import { Button, Dialog, DialogContent, DialogFooter, NotificationStatus, Notification, Loader, LoaderType } from "@essnextgen/ui-kit";
 // import './style.scss'
 
 interface INoSelectionDialogProps {
@@ -8,41 +7,59 @@ interface INoSelectionDialogProps {
   message?: string;
   title?: string;
   notificationTitle?: string;
+  loading?: boolean;
 }
 
 const NoSelectionDialog = (props: INoSelectionDialogProps) => {
-    const { setShowDialog, message, title, notificationTitle } = props;
-    return(
-        <Dialog
-            dataTestId="test-id"
-            id="no-selection-dialog-id"
-            title={title}
-            onClose={() => setShowDialog(false)}
-            className="no-selection-dialog-footer"
-            
-            >
-              {notificationTitle && (
-                    <Notification
-                      status={NotificationStatus.WARNING}
-                      title={notificationTitle}
-                      hideCloseButton
-                    />
-                  )}
-            <DialogContent>
-                {message}
-            </DialogContent>
-                <DialogFooter>
-                   <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
-                             Okay
-                           </Button>
-                </DialogFooter>
-            </Dialog>
-    )
+  const { setShowDialog, message, title, notificationTitle, loading } = props;
+  if (loading) {
+  return (
+    <Dialog
+      dataTestId="test-id"
+      id="no-selection-dialog-id"
+      onClose={() => setShowDialog(false)}
+      className="no-selection-dialog-footer"
+    >
+      <DialogContent>
+        <div style={{ textAlign: "center", padding: "2rem" }}>
+          <Loader loaderType={LoaderType.Circular} />
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
 }
-
-NoSelectionDialog.defaultProps = {
-  message: "", 
+  return (
+    <Dialog
+      dataTestId="test-id"
+      id="no-selection-dialog-id"
+      title={title}
+      onClose={() => setShowDialog(false)}
+      className="no-selection-dialog-footer"
+    >
+      {notificationTitle && (
+        <Notification
+          status={NotificationStatus.WARNING}
+          title={notificationTitle}
+          hideCloseButton
+        />
+      )}
+      <DialogContent>
+        {message}
+      </DialogContent>
+      <DialogFooter>
+        <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
+          Okay
+        </Button>
+      </DialogFooter>
+    </Dialog>
+  );
 };
 
+NoSelectionDialog.defaultProps = {
+  message: "",
+  title: "",
+  notificationTitle: "",
+  loading: false,
+};
 
 export default NoSelectionDialog;
