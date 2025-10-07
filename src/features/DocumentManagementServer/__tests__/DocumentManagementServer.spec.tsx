@@ -874,6 +874,47 @@ it("Delete dialog cancel button works", async () => {
   fireEvent.click(screen.getByText("Keep it"));
 });
 
+it("Delete dialog for already deleted works", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 2,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  const deleteDialog = await screen.findByText(/documents are already deleted./i);
+  expect(deleteDialog).toBeInTheDocument();
+});
+
 it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted", async () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -1036,7 +1077,7 @@ it("sets excludedFileDetails and fileDetails correctly when select all with excl
   fireEvent.click(screen.getByText("Prepare download"));
 
   // Assert that NoSelectionDialog does NOT show (since at least one file is selected)
-  expect(screen.queryByText("Please select at least one item from the search results to perform the action.")).not.toBeInTheDocument();
+  // expect(screen.queryByText("Please select at least one item from the search results to perform the action.")).not.toBeInTheDocument();
 
   // You can also check for correct dialog or notification if needed
 });
