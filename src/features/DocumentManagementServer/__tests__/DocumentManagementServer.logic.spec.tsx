@@ -34,7 +34,9 @@ import {
   buildSelectedDocs,
   getReferenceMappingForSearchedPerson,
   handleClearAllConfirm,
-  getCompletedPartitionKeys
+  getCompletedPartitionKeys,
+  handleBulkDeleteLogic,
+  getTitleConfirmation
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -2657,6 +2659,328 @@ describe('fileDownload', () => {
   expect(errorSpy).toHaveBeenCalled();
   errorSpy.mockRestore();
 });
+});
+
+describe("handleBulkDeleteLogic", () => {
+  let setShowToastNotification: jest.Mock;
+  let setShowConfirmDialog: jest.Mock;
+  let setSelectedCheckBoxIds: jest.Mock;
+  let setAllSelectedDocs: jest.Mock;
+  let setIsClearSelectedCheckbox: jest.Mock;
+  let setShowDeleteErrorBanner: jest.Mock;
+  let setShowDeleteSuccessToast: jest.Mock;
+  let fetchGetDocumentDetails: jest.Mock;
+  let deleteFiles: jest.Mock;
+
+  const docData = {
+    data: [
+      { fileId: "1", registrationId: 101, externalId: "ext1" },
+      { fileId: "2", registrationId: 102, externalId: "ext2" }
+    ],
+    totalRecords: 2
+  };
+
+  const allSelectedDocs = [
+    { fileId: "1", registrationId: 101 },
+    { fileId: "2", registrationId: 102 }
+  ];
+
+  const allRegistrationIds = [101, 102];
+  const dateRange = { fromDate: "2025-01-01", toDate: "2025-01-02" };
+  const searchRefExternalId = "ref1";
+  const documentRealatedTo = 1;
+  const currentPage = 1;
+  const sortBy = "Document";
+  const sortDirection = "Asc";
+  const excludedCheckBoxIds = ["2"];
+
+  beforeEach(() => {
+    setShowToastNotification = jest.fn();
+    setShowConfirmDialog = jest.fn();
+    setSelectedCheckBoxIds = jest.fn();
+    setAllSelectedDocs = jest.fn();
+    setIsClearSelectedCheckbox = jest.fn();
+    setShowDeleteErrorBanner = jest.fn();
+    setShowDeleteSuccessToast = jest.fn();
+    fetchGetDocumentDetails = jest.fn();
+    deleteFiles = jest.fn();
+  });
+
+  it("should handle successful delete (status 204) with select all unchecked", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: [],
+      isHeaderBoxChecked: false
+    });
+
+    expect(setShowToastNotification).toHaveBeenCalledWith(true);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+    expect(setSelectedCheckBoxIds).toHaveBeenCalledWith([]);
+    expect(setAllSelectedDocs).toHaveBeenCalledWith([]);
+    expect(setIsClearSelectedCheckbox).toHaveBeenCalledWith(true);
+    expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
+    expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+    expect(setShowDeleteSuccessToast).toHaveBeenCalledWith(true);
+  });
+
+  it("should handle successful delete (status 204) with select all checked and exclusions", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked: true
+    });
+
+    expect(setShowToastNotification).toHaveBeenCalledWith(true);
+    expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
+    expect(setSelectedCheckBoxIds).toHaveBeenCalledWith([]);
+    expect(setAllSelectedDocs).toHaveBeenCalledWith([]);
+    expect(setIsClearSelectedCheckbox).toHaveBeenCalledWith(true);
+    expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
+    expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+    expect(setShowDeleteSuccessToast).toHaveBeenCalledWith(true);
+  });
+
+  it("should handle deleteFiles returning non-204 status", async () => {
+    deleteFiles.mockResolvedValue(400);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked: false
+    });
+
+    expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
+    expect(setShowDeleteSuccessToast).not.toHaveBeenCalledWith(true);
+  });
+
+  it("should handle deleteFiles throwing an error", async () => {
+    deleteFiles.mockRejectedValue(new Error("fail"));
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked: false
+    });
+
+    expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
+    expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
+    expect(setShowDeleteSuccessToast).not.toHaveBeenCalledWith(true);
+  });
+
+  it("should send empty fileDetails when select all is checked", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: [],
+      isHeaderBoxChecked: true
+    });
+
+    // fileDetails should be empty in payload
+    const callPayload = deleteFiles.mock.calls[0][0];
+    expect(callPayload.request.fileDetails).toEqual([]);
+  });
+
+  it("should send fileDetails when select all is unchecked and docs are selected", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: [],
+      isHeaderBoxChecked: false
+    });
+
+    const callPayload = deleteFiles.mock.calls[0][0];
+    expect(callPayload.request.fileDetails.length).toBe(2);
+    expect(callPayload.request.fileDetails[0]).toMatchObject({ fileId: "1", registrationId: 101, externalId: "ext1" });
+    expect(callPayload.request.fileDetails[1]).toMatchObject({ fileId: "2", registrationId: 102, externalId: "ext2" });
+  });
+
+  it("should send excludedFileDetails when select all is checked and exclusions exist", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: ["2"],
+      isHeaderBoxChecked: true
+    });
+
+    const callPayload = deleteFiles.mock.calls[0][0];
+    expect(callPayload.request.excludedFileDetails.length).toBe(2);
+    expect(callPayload.request.excludedFileDetails[0]).toMatchObject({ fileId: "1", registrationId: 101, externalId: "ext1" });
+    expect(callPayload.request.excludedFileDetails[1]).toMatchObject({ fileId: "2", registrationId: 102, externalId: "ext2" });
+  });
+
+  it("should send empty excludedFileDetails when select all is unchecked", async () => {
+    deleteFiles.mockResolvedValue(204);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: [],
+      isHeaderBoxChecked: false
+    });
+
+    const callPayload = deleteFiles.mock.calls[0][0];
+    expect(callPayload.request.excludedFileDetails).toEqual([]);
+  });
+  
+});
+
+describe("getTitleConfirmation", () => {
+  it('returns "Clear all downloads?" for "clearAll"', () => {
+    expect(getTitleConfirmation("clearAll")).toBe("Clear all downloads?");
+  });
+
+  it('returns "Delete Document(s)?" for "delete"', () => {
+    expect(getTitleConfirmation("delete")).toBe("Delete Document(s)?");
+  });
+
+  it('returns "Prepare Download?" for other values', () => {
+    expect(getTitleConfirmation("prepare")).toBe("Prepare Download?");
+    expect(getTitleConfirmation("anythingElse")).toBe("Prepare Download?");
+    expect(getTitleConfirmation("")).toBe("Prepare Download?");
+  });
 });
 
 
