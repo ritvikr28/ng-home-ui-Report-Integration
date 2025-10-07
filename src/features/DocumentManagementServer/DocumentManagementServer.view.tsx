@@ -666,7 +666,7 @@ switch (dialogType) {
             if (alreadyDeletedFileCount > 0) {
                 return alreadyDeletedFileCount === 1
                 ? `${alreadyDeletedFileCount} document cannot be downloaded as it has already been deleted.`
-                : `All ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`;
+                : `${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`;
             }
             return "";
             })(),
@@ -674,7 +674,7 @@ switch (dialogType) {
       notificationTitle:
         availableFileCount === 1
           ? `${availableFileCount} document is about to be prepared for downloading.`
-          : `All ${availableFileCount} documents are about to be prepared for downloading.`,
+          : `${availableFileCount} documents are about to be prepared for downloading.`,
       notificationStatus: NotificationStatus.WARNING,
       okText: "Prepare download",
       onCancel: (): void => { setShowConfirmDialog(false); },
@@ -837,12 +837,12 @@ switch (dialogType) {
                                 if (restrictedFileCount > 0) {
                                 return restrictedFileCount === 1
                                     ? `${restrictedFileCount} document cannot be deleted because it is being prepared for download. Please try again later.`
-                                    : `All ${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
+                                    : `${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
-                                    : `All ${alreadyDeletedFileCount} documents are already deleted.`;
+                                    : `${alreadyDeletedFileCount} documents are already deleted.`;
                                 }
                                 return "";
                             })()
@@ -866,7 +866,7 @@ switch (dialogType) {
                         notificationTitle={
                         alreadyDeletedFileCount === 1
                             ? `This document cannot be downloaded as it has already been deleted.`
-                            : `All ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
+                            : `${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
                         }
                         loading={isDialogLoading}
                     />
