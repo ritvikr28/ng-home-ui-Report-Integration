@@ -466,9 +466,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setIsInitialLoad(true);
         setTableKey(prev => prev + 1);
         setIsHeaderBoxChecked(false);
-        setSelectedCheckBoxIds([]);
         setExcludedCheckBoxIds([]);
-        setAllSelectedDocs([]);
         };
 
         useEffect(() => {
@@ -632,8 +630,9 @@ switch (dialogType) {
       notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s are" : " is"} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false); },
-      onConfirm: (): void => {
-        handleBulkDelete();
+      onConfirm: async (): Promise<void> => {
+        setIsDialogLoading(true)
+        await handleBulkDelete();
         setShowConfirmDialog(false);
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
@@ -984,11 +983,11 @@ switch (dialogType) {
                                                     if (!prev.some(item => item.fileId === id)) {
                                                         return [
                                                             ...prev,
-                                                            { fileId: id, registrationId: Number(doc.registrationId), externalId: doc.externalId || "" }
+                                                            { fileId: id, registrationId: Number(doc.registrationId), externalId: doc.externalId || "" } 
                                                         ];
                                                     }
                                                     return prev;
-                                                }); 
+                                                });
                                             }
                                         }
                                         setSelectedCheckBoxIds(updatedCheckBoxIds);
