@@ -7,7 +7,7 @@ import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, 
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps, ValidationFileDetail, ViewDownloadItem } from "./responseModel"
+import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
@@ -357,8 +357,8 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
             setShowDialog(true);
         } else {
 
-            let excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
-            let fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
+            const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
+            const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
             const validationPayload = buildValidationPayload({
                 isSelectAll: !!isHeaderBoxChecked,
                 userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
