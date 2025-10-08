@@ -173,8 +173,8 @@ afterEach(() => {
     </MemoryRouter>
   );
 
-  fireEvent.click(await screen.findByText("Actions"));
-  fireEvent.click(await screen.findByText("View download"));
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("View download"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -411,8 +411,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    fireEvent.click(await screen.findByText("Actions"));
-    fireEvent.click(await screen.findByText("View download"));
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("View download"));
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
@@ -557,8 +557,8 @@ describe("Additional tests to increase coverage", () => {
     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
     fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
  
-    fireEvent.click(await screen.findByText("Actions"));
-    fireEvent.click(await screen.findByText("Prepare download"));
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("Prepare download"));
     const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
     fireEvent.click(saveBtn);
   });
@@ -723,10 +723,7 @@ it("opens delete confirmation dialog when delete is clicked with selection and h
 
   fireEvent.click(screen.getByText("Delete"));
 
-  act(() => {
-    jest.advanceTimersByTime(2000);
-  });
-  const deleteDialog = await screen.getByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
+  const deleteDialog = await screen.findByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
   expect(deleteDialog).toBeInTheDocument();
   
 });
