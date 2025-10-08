@@ -96,6 +96,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tableKey, setTableKey] = useState(0);
     const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
+    const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
+
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
@@ -351,12 +353,12 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setShowConfirmDialog(false);
     setShowRestrictedDeleteDialog(false);
     setShowRestrictedPrepareDialog(false);
-    setIsDialogLoading(true);
+    // setIsDialogLoading(true);
     if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
         if (totalSelectedCount === 0) {
             setShowDialog(true);
         } else {
-
+            setIsDialogLoading(true);
             const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
             const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
             const validationPayload = buildValidationPayload({
@@ -372,7 +374,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
             });
 
       const result = await validation(validationPayload);
-      setIsDialogLoading(false);
+    //   setIsDialogLoading(false);
 
       const restricted = result?.data?.restrictedFileCount ?? 0;
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
@@ -383,7 +385,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setAvailableFileCount(available);
 
     setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
-
+    setIsDialogLoading(false);        
     if (
       selectedItem.value === "Prepare download" &&
       available === 0 &&
@@ -395,13 +397,16 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     }
     
       if (selectedItem.value === "Delete") {
+    setIsDialogLoading(true);
   if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+    setIsDialogLoading(false);
     setShowRestrictedDeleteDialog(true);
     setShowConfirmDialog(false);
     return;
   }
 
   if (available > 0) {
+    setIsDialogLoading(false);
     setShowConfirmDialog(true);
     setShowRestrictedDeleteDialog(false);
     return;
@@ -631,8 +636,9 @@ switch (dialogType) {
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false); },
       onConfirm: async (): Promise<void> => {
-        setIsDialogLoading(true)
+        setIsDialogLoading(true);
         await handleBulkDelete();
+        setIsDialogLoading(false);
         setShowConfirmDialog(false);
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
@@ -1080,6 +1086,8 @@ switch (dialogType) {
                                 }
 
                                 searchOnCloseHandle={handleSearchClose}
+                                isGlobalLoader={isDialogLoading}
+                                isGlobalLoaderModel={isGlobalLoaderModel}
                                 secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => {
                                     if (hasCompletedFiles) {
