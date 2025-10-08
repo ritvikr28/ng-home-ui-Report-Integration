@@ -173,8 +173,8 @@ afterEach(() => {
     </MemoryRouter>
   );
 
-  fireEvent.click(await screen.findByText("Actions"));
-  fireEvent.click(await screen.findByText("View download"));
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("View download"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -557,8 +557,8 @@ describe("Additional tests to increase coverage", () => {
     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
     fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
  
-    fireEvent.click(await screen.findByText("Actions"));
-    fireEvent.click(await screen.findByText("Prepare download"));
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("Prepare download"));
     const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
     fireEvent.click(saveBtn);
   });

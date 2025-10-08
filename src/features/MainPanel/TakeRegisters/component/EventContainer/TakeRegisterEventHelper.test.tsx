@@ -1,14 +1,16 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import * as helper from "./TakeRegisterEventHelper";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
-jest.mock("react-multi-carousel", () => {
-  const React = require("react");
-  return {
+
+jest.mock("react-multi-carousel", () => ({
+  
     __esModule: true,
     default: React.forwardRef((props: any, ref: any) => {
-      if (ref && typeof ref === "object") {        
-        ref.current = ref.current || {
+      const localRef = ref
+      if (localRef && typeof localRef === "object") {
+        localRef.current = localRef.current || {
           next: jest.fn(),
           previous: jest.fn(),
           goToSlide: jest.fn()
@@ -16,14 +18,14 @@ jest.mock("react-multi-carousel", () => {
       }
       return <div data-testid="carousel">{props.children}</div>;
     })
-  };
-});
+
+}));
 
 jest.mock("@essnextgen/ui-kit", () => ({
   __esModule: true,
   // Render a simple button-like component that exposes texts and click
   ActionCard: ({ dataTestId, primaryText, secondaryText, tagText, onClickActionCard }: any) => (
-    <button data-testid={dataTestId} onClick={onClickActionCard}>
+    <button type="button" data-testid={dataTestId} onClick={onClickActionCard}>
       <span>{primaryText}</span>
       {secondaryText && <span>{secondaryText}</span>}
       {tagText && <span>{tagText}</span>}
