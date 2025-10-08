@@ -21,7 +21,7 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
       className="no-selection-dialog-footer"
     >
       <DialogContent>
-        <div style={{ textAlign: "center", padding: "2rem" }}>
+        <div style={{ height: '200px' }}>
           <Loader loaderType={LoaderType.Circular} />
         </div>
       </DialogContent>

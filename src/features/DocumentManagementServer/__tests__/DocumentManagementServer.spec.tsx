@@ -723,7 +723,10 @@ it("opens delete confirmation dialog when delete is clicked with selection and h
 
   fireEvent.click(screen.getByText("Delete"));
 
-  const deleteDialog = await screen.findByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+  const deleteDialog = await screen.getByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
   expect(deleteDialog).toBeInTheDocument();
   
 });
