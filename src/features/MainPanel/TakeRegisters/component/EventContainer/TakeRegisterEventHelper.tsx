@@ -95,12 +95,14 @@ export const renderCarousel: (
           id={`action-card${index}`}
           onClickActionCard={() => handleRegisterClick(item)}
           primaryText={getPrimaryText(item, isMediumscreen)}
+          secondaryText={getSecondaryText(item)}
           tagText={
             item.isCompleted
               ? t("takeregister.completed")
               : t("takeregister.ready")
           }
           isShowTag
+          isTagLeftAligned={true}
           tagColor={
             item.isCompleted ? TagColor.Success : TagColor.Outstanding
           }
@@ -274,6 +276,27 @@ export const getSlidesToShow = (): number => {
   return 3;
 };
 
+export const filterAndSortRegisterData: (data: IRegistersDetails[]) => IRegistersDetails[] = (data) => {
+  if (!Array.isArray(data)) return [];
+  
+  return data
+    .filter((item) => item.eventDescription && 
+             item.eventStart && 
+             item.eventEnd &&
+             item.eventDescription.trim() !== '' &&
+             item.eventStart.trim() !== '' &&
+             item.eventEnd.trim() !== '')
+    .sort((a, b) => {
+      try {
+        const dateA = new Date(a.eventStart).getTime();
+        const dateB = new Date(b.eventStart).getTime();
+        return dateA - dateB;
+      } catch {
+        return 0;
+      }
+    });
+};
+
 export const calculateNextSlide: (
   currentSlide: number,
   totalLength: number
@@ -291,11 +314,34 @@ export const getPrimaryText: (
   item: IRegistersDetails,
   isMediumscreen: boolean
 ) => string = (item, isMediumscreen) => {
-  const text = `${item.group?.shortName} ${item.room ? ` | ${item.room.roomName}` : ''}`; 
+  const text = `${item.group?.shortName || ''}${item.room ? ` | ${item.room.roomName}` : ''}`;
 
   if (isMediumscreen && text.length > 16) {
     return `${text.substring(0, 16)}...`;
   }
 
   return text;
+};
+
+export const getSecondaryText: (
+  item: IRegistersDetails
+) => string = (item) => {  
+  const formatTime = (dateTimeString: string): string => {
+    try {
+      const date = new Date(dateTimeString);
+      return date.toLocaleTimeString('en-GB', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        hour12: false 
+      });
+    } catch {
+      return '';
+    }
+  };
+
+  const startTime = item.eventStart ? formatTime(item.eventStart) : '';
+  const endTime = item.eventEnd ? formatTime(item.eventEnd) : '';
+  const timePeriod = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
+  
+  return `${item.eventDescription || ''}${timePeriod}`;
 };
