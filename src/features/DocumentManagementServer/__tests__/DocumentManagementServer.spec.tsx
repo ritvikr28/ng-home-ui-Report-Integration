@@ -411,8 +411,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    fireEvent.click(await screen.findByText("Actions"));
-    fireEvent.click(await screen.findByText("View download"));
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("View download"));
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();

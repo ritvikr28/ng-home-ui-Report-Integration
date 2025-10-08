@@ -92,10 +92,13 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [availableFileCount, setAvailableFileCount] = useState(0);
     const [showRestrictedDeleteDialog, setShowRestrictedDeleteDialog] = useState(false);
     const [showRestrictedPrepareDialog, setShowRestrictedPrepareDialog] = useState(false);
+    const [isPreDialogLoading, setIsPreDialogLoading] = useState(false);
     const [isDialogLoading, setIsDialogLoading] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [tableKey, setTableKey] = useState(0);
     const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
+    const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
+
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
     ...categoryArr
@@ -351,12 +354,12 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setShowConfirmDialog(false);
     setShowRestrictedDeleteDialog(false);
     setShowRestrictedPrepareDialog(false);
-    setIsDialogLoading(true);
     if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
         if (totalSelectedCount === 0) {
             setShowDialog(true);
         } else {
-
+            setShowRestrictedDeleteDialog(true);
+            setIsPreDialogLoading(true);
             const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
             const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
             const validationPayload = buildValidationPayload({
@@ -372,7 +375,6 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
             });
 
       const result = await validation(validationPayload);
-      setIsDialogLoading(false);
 
       const restricted = result?.data?.restrictedFileCount ?? 0;
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
@@ -382,13 +384,14 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     setAlreadyDeletedFileCount(alreadyDeleted);
     setAvailableFileCount(available);
 
-    setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
-
+    setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");  
+    setIsPreDialogLoading(false); 
+    setShowRestrictedDeleteDialog(false);  
     if (
       selectedItem.value === "Prepare download" &&
       available === 0 &&
       alreadyDeleted > 0
-    ) {
+    ) { 
       setShowRestrictedPrepareDialog(true);
       setShowConfirmDialog(false);
       return;
@@ -396,12 +399,14 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
     
       if (selectedItem.value === "Delete") {
   if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+    setIsDialogLoading(false);
     setShowRestrictedDeleteDialog(true);
     setShowConfirmDialog(false);
     return;
   }
 
   if (available > 0) {
+    setIsDialogLoading(false);
     setShowConfirmDialog(true);
     setShowRestrictedDeleteDialog(false);
     return;
@@ -631,8 +636,10 @@ switch (dialogType) {
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false); },
       onConfirm: async (): Promise<void> => {
-        setIsDialogLoading(true)
+        setIsDialogLoading(true);
+        setIsGlobalLoaderModel(true);
         await handleBulkDelete();
+        setIsDialogLoading(false);
         setShowConfirmDialog(false);
         setSelectedCheckBoxIds([]);
         setAllSelectedDocs([]);
@@ -838,7 +845,7 @@ switch (dialogType) {
                                 return "";
                             })()
                         }
-                        loading={isDialogLoading}
+                        loading={isPreDialogLoading}
                     />
                     )}
 
@@ -851,7 +858,7 @@ switch (dialogType) {
                             ? `This document cannot be downloaded as it has already been deleted.`
                             : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
                         }
-                        loading={isDialogLoading}
+                        loading={isPreDialogLoading}
                     />
                 )}
 
@@ -1080,6 +1087,8 @@ switch (dialogType) {
                                 }
 
                                 searchOnCloseHandle={handleSearchClose}
+                                isGlobalLoader={isDialogLoading}
+                                isGlobalLoaderModel={isGlobalLoaderModel}
                                 secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => {
                                     if (hasCompletedFiles) {
