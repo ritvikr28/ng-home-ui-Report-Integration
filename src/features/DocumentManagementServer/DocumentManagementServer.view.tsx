@@ -98,7 +98,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [tableKey, setTableKey] = useState(0);
     const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
     const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
-    const [isAllSelectedAcrossPagination, setIsAllSelectedAcrossPagination] = useState<boolean>(false);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
@@ -741,43 +740,39 @@ switch (dialogType) {
 const handleOnChangeCheckBox = (index: number, id: string) => {
     const doc = docData?.data?.find((d: any) => d.fileId === id);
 
+    setSelectedCheckBoxIds((prevSelectedIds) => {
+        const updatedCheckBoxIds = [...prevSelectedIds];
+        if (updatedCheckBoxIds.includes(id)) {
+            // Remove the ID if it's already selected
+            return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
+        }
+        // Add the ID if it's not selected
+        return [...updatedCheckBoxIds, id];
+    });
 
-        setSelectedCheckBoxIds((prevSelectedIds) => {
-            const updatedCheckBoxIds = [...prevSelectedIds];
-            if (updatedCheckBoxIds.includes(id)) {
-                // Remove the ID if it's already selected
-                return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
-            } else {
-                // Add the ID if it's not selected
-                return [...updatedCheckBoxIds, id];
+    setAllSelectedDocs((prevSelectedDocs) => {
+        if (doc) {
+            const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
+            if (isAlreadySelected) {
+                // Remove the document if it's already selected
+                return prevSelectedDocs.filter((item) => item.fileId !== id);
             }
-        });
-
-        setAllSelectedDocs((prevSelectedDocs) => {
-            if (doc) {
-                const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
-                if (isAlreadySelected) {
-                    // Remove the document if it's already selected
-                    return prevSelectedDocs.filter((item) => item.fileId !== id);
-                } else {
-                    // Add the document if it's not selected
-                    return [
-                        ...prevSelectedDocs,
-                        {
-                            fileId: id,
-                            registrationId: Number(doc.registrationId),
-                            externalId: doc.externalId || "",
-                        },
-                    ];
+            // Add the document if it's not selected
+            return [
+                ...prevSelectedDocs,
+                {
+                    fileId: id,
+                    registrationId: Number(doc.registrationId),
+                    externalId: doc.externalId || "",
                 }
-            }
-            return prevSelectedDocs;
-        });
-    
+            ];
+        }
+        return prevSelectedDocs;
+    });
 };
 
 useEffect(() => {
-    if (isAllSelectedAcrossPagination && isHeaderBoxChecked) {
+    if ( isHeaderBoxChecked) {
         // When "Select All Across Pagination" is enabled, use excludedCheckBoxIds
         const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
         const excludedIdsForCurrentPage = excludedCheckBoxIds.filter((id) =>
@@ -794,9 +789,25 @@ useEffect(() => {
             .filter((doc) => currentPageIds.includes(doc.fileId))
             .map((doc) => doc.fileId);
 
-        setSelectedCheckBoxIds(allSelectedDocs.map(doc => doc.fileId).flat());
+        setSelectedCheckBoxIds(selectedIdsForCurrentPage);
     }
-}, [currentPage, docData, allSelectedDocs, excludedCheckBoxIds, isAllSelectedAcrossPagination]);
+}, [currentPage, docData, allSelectedDocs, excludedCheckBoxIds]);
+
+const getDialogTitle = () => {
+    if (restrictedFileCount > 0) {
+        return restrictedFileCount === 1
+            ? "Document cannot be deleted"
+            : "Documents cannot be deleted";
+    }
+
+    if (alreadyDeletedFileCount > 0) {
+        return alreadyDeletedFileCount === 1
+            ? "Document already deleted"
+            : "Documents already deleted";
+    }
+
+    return ""; // Default case if no conditions are met
+};
 
     const renderViewDownloadContent = () => {
     if (isSidePanelLoader) {
@@ -877,20 +888,13 @@ useEffect(() => {
                 {showDialog && 
                 <NoSelectionDialog setShowDialog={setShowDialog}
                 title="No items selected"
-                message="Please select at least one item from the search results to perform the action."/>}
+                message="Please select at least one item from the search results to perform the action." 
+                onClose={() => {} }/>}
 
                 {showRestrictedDeleteDialog && (
                     <NoSelectionDialog
                         setShowDialog={setShowRestrictedDeleteDialog}
-                        title={
-                            restrictedFileCount > 0
-                                ? restrictedFileCount === 1
-                                    ? "Document cannot be deleted"
-                                    : "Documents cannot be deleted"
-                                : alreadyDeletedFileCount === 1
-                                ? "Document already deleted"
-                                : "Documents already deleted"
-                        }
+                        title={getDialogTitle()}
                         notificationTitle={
                             (() => {
                                 if (restrictedFileCount > 0) {
@@ -1290,7 +1294,7 @@ useEffect(() => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
-                                titleConfirmation={getTitleConfirmation(dialogType)}
+                                titleConfirmation={getTitleConfirmation(dialogType, availableFileCount)}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

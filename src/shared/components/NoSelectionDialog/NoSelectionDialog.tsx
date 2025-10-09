@@ -8,7 +8,7 @@ interface INoSelectionDialogProps {
   title?: string;
   notificationTitle?: string;
   loading?: boolean;
-  onClose?: () => void;
+  onClose: () => void;
 }
 
 const NoSelectionDialog = (props: INoSelectionDialogProps) => {
