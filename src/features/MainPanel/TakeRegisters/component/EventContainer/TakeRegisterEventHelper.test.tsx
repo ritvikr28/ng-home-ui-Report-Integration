@@ -4,6 +4,12 @@ import * as helper from "./TakeRegisterEventHelper";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
 
+jest.mock("@essnextgen/ui-flagr", () => ({
+  __esModule: true,
+  hasFeaturePermission: jest.fn().mockReturnValue(true)
+}));
+
+
 jest.mock("react-multi-carousel", () => ({
   
     __esModule: true,
