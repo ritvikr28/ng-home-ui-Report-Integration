@@ -809,6 +809,8 @@ it("Delete dialog for already deleted works", async () => {
 
   const deleteDialog = await screen.findByText(/documents are already deleted./i);
   expect(deleteDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
 });
 
 it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted", async () => {
@@ -848,8 +850,10 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
   fireEvent.click(screen.getByText("Prepare download"));
 
-  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
 });
 
 describe('onClickSidePnlSecondaryBtn', () => {

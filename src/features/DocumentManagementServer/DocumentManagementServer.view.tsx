@@ -529,7 +529,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             variant: "warning",
             title: `Unable to delete [document/documents]`,
             message:
-            "A technical issue has stopped us from deleting the document. Please try again later. If the issue persists, please get in touch with our support team.",
+            `A technical issue has stopped us from deleting the ${availableFileCount === 1 ? "document" : "documents"}. Please try again later. If the issue persists, please get in touch with our support team.`,
             autoclose: false,
             onClickClose: () => setShowDeleteErrorBanner(false)
     }
@@ -727,7 +727,7 @@ switch (dialogType) {
         closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
     };
 
-    const handleOnChangeAllCheckBox = (e: any) => {
+   const handleOnChangeAllCheckBox = (e: any) => {
         const isChecked = e.target.checked;
         setIsHeaderBoxChecked(isChecked);
         if (!isChecked) {
@@ -736,6 +736,78 @@ switch (dialogType) {
             setAllSelectedDocs([]);
         }
     }
+    
+const handleOnChangeCheckBox = (index: number, id: string) => {
+    const doc = docData?.data?.find((d: any) => d.fileId === id);
+
+    setSelectedCheckBoxIds((prevSelectedIds) => {
+        const updatedCheckBoxIds = [...prevSelectedIds];
+        if (updatedCheckBoxIds.includes(id)) {
+            // Remove the ID if it's already selected
+            return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
+        }
+        // Add the ID if it's not selected
+        return [...updatedCheckBoxIds, id];
+    });
+
+    setAllSelectedDocs((prevSelectedDocs) => {
+        if (doc) {
+            const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
+            if (isAlreadySelected) {
+                // Remove the document if it's already selected
+                return prevSelectedDocs.filter((item) => item.fileId !== id);
+            }
+            // Add the document if it's not selected
+            return [
+                ...prevSelectedDocs,
+                {
+                    fileId: id,
+                    registrationId: Number(doc.registrationId),
+                    externalId: doc.externalId || "",
+                }
+            ];
+        }
+        return prevSelectedDocs;
+    });
+};
+
+useEffect(() => {
+    if ( isHeaderBoxChecked) {
+        // When "Select All Across Pagination" is enabled, use excludedCheckBoxIds
+        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
+        const excludedIdsForCurrentPage = excludedCheckBoxIds.filter((id) =>
+            currentPageIds.includes(id)
+        );
+
+        setSelectedCheckBoxIds(
+            currentPageIds.filter((id: string) => !excludedIdsForCurrentPage.includes(id))
+        );
+    } else {
+        // When "Select All Across Pagination" is disabled, use selectedCheckBoxIds
+        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
+        const selectedIdsForCurrentPage = allSelectedDocs
+            .filter((doc) => currentPageIds.includes(doc.fileId))
+            .map((doc) => doc.fileId);
+
+        setSelectedCheckBoxIds(selectedIdsForCurrentPage);
+    }
+}, [currentPage, docData, allSelectedDocs, excludedCheckBoxIds]);
+
+const getDialogTitle = () => {
+    if (restrictedFileCount > 0) {
+        return restrictedFileCount === 1
+            ? "Document cannot be deleted"
+            : "Documents cannot be deleted";
+    }
+
+    if (alreadyDeletedFileCount > 0) {
+        return alreadyDeletedFileCount === 1
+            ? "Document already deleted"
+            : "Documents already deleted";
+    }
+
+    return ""; // Default case if no conditions are met
+};
 
     const renderViewDownloadContent = () => {
     if (isSidePanelLoader) {
@@ -806,7 +878,7 @@ switch (dialogType) {
                 {showDeleteSuccessToast && (
                     <Notification
                         status={NotificationStatus.SUCCESSTOAST}
-                        title="Documents deleted"
+                        title={availableFileCount === 1 ? "Document deleted" : "Documents deleted"}
                         autoclose
                         hideCloseButton
                     />
@@ -816,12 +888,13 @@ switch (dialogType) {
                 {showDialog && 
                 <NoSelectionDialog setShowDialog={setShowDialog}
                 title="No items selected"
-                message="Please select at least one item from the search results to perform the action."/>}
+                message="Please select at least one item from the search results to perform the action." 
+                onClose={() => {} }/>}
 
                 {showRestrictedDeleteDialog && (
                     <NoSelectionDialog
                         setShowDialog={setShowRestrictedDeleteDialog}
-                        title="Documents cannot be deleted"
+                        title={getDialogTitle()}
                         notificationTitle={
                             (() => {
                                 if (restrictedFileCount > 0) {
@@ -846,19 +919,49 @@ switch (dialogType) {
                             })()
                         }
                         loading={isPreDialogLoading}
+                        onClose={() => {
+                            if (alreadyDeletedFileCount > 0) {
+                                fetchGetDocumentDetails(
+                                    currentPage,
+                                    getAllRegistrationIds(selectedFormats),
+                                    sortBy,
+                                    sortDirection,
+                                    searchRefExternalId,
+                                    documentRealatedTo
+                                );
+                                 setSelectedCheckBoxIds([]);
+                                setAllSelectedDocs([]);
+                                setIsClearSelectedCheckbox(true);
+                            }
+                        }}
                     />
                     )}
 
                 {showRestrictedPrepareDialog && (
                     <NoSelectionDialog
                         setShowDialog={setShowRestrictedPrepareDialog}
-                        title="Documents cannot be downloaded"
+                        title={alreadyDeletedFileCount === 1 ? "Document cannot be downloaded" : "Documents cannot be downloaded"}
                         notificationTitle={
                         alreadyDeletedFileCount === 1
                             ? `This document cannot be downloaded as it has already been deleted.`
-                            : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`
+                            : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have been deleted.`
                         }
                         loading={isPreDialogLoading}
+                        onClose={() => {
+                            if (alreadyDeletedFileCount > 0) {
+                                fetchGetDocumentDetails(
+                                    currentPage,
+                                    getAllRegistrationIds(selectedFormats),
+                                    sortBy,
+                                    sortDirection,
+                                    searchRefExternalId,
+                                    documentRealatedTo
+                                );
+                                setSelectedCheckBoxIds([]);
+                                setAllSelectedDocs([]);
+                                setIsClearSelectedCheckbox(true);
+                            }
+                        }}
                     />
                 )}
 
@@ -967,7 +1070,7 @@ switch (dialogType) {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
-                                isAllSelectedAcrossPagination={true}
+                                isAllSelectedAcrossPagination={false}
                                 totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
@@ -976,29 +1079,7 @@ switch (dialogType) {
                                         setExcludedCheckBoxIds(ids);
                                 }}
                                 onChangeAllCheckBox={(e: any) => handleOnChangeAllCheckBox(e)}
-                                onChangeListCheckBox={(index: number, id: string) => {
-                                        const updatedCheckBoxIds = [...selectedCheckBoxIds];
-                                        const doc = docData?.data?.find((d: any) => d.fileId === id);
-
-                                        if (updatedCheckBoxIds.includes(id)) {
-                                            updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
-                                            setAllSelectedDocs(prev => prev.filter(item => item.fileId !== id));
-                                        } else {
-                                            updatedCheckBoxIds.push(id);
-                                            if (doc && doc.registrationId !== undefined) {
-                                                setAllSelectedDocs(prev => {
-                                                    if (!prev.some(item => item.fileId === id)) {
-                                                        return [
-                                                            ...prev,
-                                                            { fileId: id, registrationId: Number(doc.registrationId), externalId: doc.externalId || "" } 
-                                                        ];
-                                                    }
-                                                    return prev;
-                                                });
-                                            }
-                                        }
-                                        setSelectedCheckBoxIds(updatedCheckBoxIds);
-                                    }}
+                                onChangeListCheckBox={handleOnChangeCheckBox}
                                 
                                 emptyStateMsg={getEmptyStateMsg()}
                                 emptybtnTitle="Add Type"
@@ -1213,7 +1294,7 @@ switch (dialogType) {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
-                                titleConfirmation={getTitleConfirmation(dialogType)}
+                                titleConfirmation={getTitleConfirmation(dialogType, availableFileCount)}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

@@ -1217,9 +1217,11 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (dialogType: string): string => {
+export const getTitleConfirmation = (dialogType: string, availableFileCount: number): string => {
   if (dialogType === "clearAll") return "Clear all downloads?";
-  if (dialogType === "delete") return "Delete Document(s)?";
+  if (dialogType === "delete") {
+        return availableFileCount === 1 ? "Delete Document?" : "Delete Documents?";
+  }
   return "Prepare Download?";
 };
 
