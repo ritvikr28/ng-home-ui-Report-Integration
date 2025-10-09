@@ -8,10 +8,11 @@ interface INoSelectionDialogProps {
   title?: string;
   notificationTitle?: string;
   loading?: boolean;
+  onClose?: () => void;
 }
 
 const NoSelectionDialog = (props: INoSelectionDialogProps) => {
-  const { setShowDialog, message, title, notificationTitle, loading } = props;
+  const { setShowDialog, message, title, notificationTitle, loading, onClose } = props;
   if (loading) {
   return (
     <Dialog
@@ -33,7 +34,10 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
       dataTestId="test-id"
       id="no-selection-dialog-id"
       title={title}
-      onClose={() => setShowDialog(false)}
+      onClose={() => {
+        setShowDialog(false);
+        if (onClose) onClose();
+      }}
       className="no-selection-dialog-footer"
     >
       {notificationTitle && (
@@ -47,7 +51,10 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
         {message}
       </DialogContent>
       <DialogFooter>
-        <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
+        <Button dataTestId="close-btn" onClick={() => {
+            setShowDialog(false);
+            if (onClose) onClose();
+          }}>
           Okay
         </Button>
       </DialogFooter>
