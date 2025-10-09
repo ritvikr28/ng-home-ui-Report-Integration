@@ -5,7 +5,7 @@ import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
- import { Category, FetchViewDownloadDataParams } from "./responseModel";
+ import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 
 export function renderRelatedToItem(item: any) {
@@ -847,23 +847,31 @@ export function buildSelectedDocs(
   docData: any,
   categoryRegistrationMap: Record<string, number>,
   searchRefExternalId: string,
-  documentRealatedTo: number
+  documentRealatedTo: number,
+  excludedCheckBoxIds: string[],
+  isHeaderBoxChecked: boolean
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
+  if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
   // Gather all valid docs
   const selectedDocs = docData.data.filter(
-    (d: any) => selectedCheckBoxIds.includes(d.fileId) && d.registrationId !== undefined
+    (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  // If no valid docs, return empty array
-  if (selectedDocs.length === 0) return [];
 
   // Merge fileDetails
-  const fileDetails = selectedDocs.map((doc: any) => ({
+  const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
     fileId: doc.fileId,
     registrationId: doc.registrationId,
-  }));
+    externalId: doc.externalId
+  })) : [];
+
+  const excludedIdDetails = (isHeaderBoxChecked && selectedDocs.length > 0) ? selectedDocs.map((doc: any) => ({
+    fileId: doc.fileId,
+    registrationId: doc.registrationId,
+    externalId: doc.externalId
+  })) : [];
 
   // Merge referenceMappingDetails
  const referenceMappingDetails = getReferenceMappingForSearchedPerson({
@@ -887,7 +895,7 @@ export function buildSelectedDocs(
   return [
     {
       request: {
-        selectAll: false,
+        selectAll: !!isHeaderBoxChecked,
         downloadCriteria: {
           referenceMappingDetails,
           categoryId,
@@ -895,11 +903,139 @@ export function buildSelectedDocs(
           toDate,
         },
         fileDetails,
-        currentDateTime
-      },
+        excludedFileDetails:
+          isHeaderBoxChecked &&
+          excludedIdDetails.length > 0 &&
+          excludedIdDetails.length < (docData?.totalRecords ?? 0)
+            ? excludedIdDetails
+            : [],
+        currentDateTime,
+      }
     }
   ];
 }
+
+export function mapToBulkDeletePayload({
+  isSelectAll = false,
+  categoryIds = [],
+  fromDate = "",
+  toDate = "",
+  referenceExternalIds = [],
+  documentRelatedTo = 0,
+  fileDetails = [],
+  excludedFileDetails = []
+}: {
+  isSelectAll?: boolean;
+  categoryIds?: number[];
+  fromDate?: string;
+  toDate?: string;
+  referenceExternalIds?: string[];
+  documentRelatedTo?: number;
+  fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
+  excludedFileDetails?: { fileId: string; externalId: string }[];
+}) {
+  return {
+    request: {
+      isSelectAll,
+      bulkDeleteCriteria: {
+        categoryIds,
+        fromDate,
+        toDate,
+        referenceDetails: {
+          referenceExternalIds,
+          documentRelatedTo
+        }
+      },
+      fileDetails,
+      excludedFileDetails
+    }
+  };
+}
+
+export const handleBulkDeleteLogic = async ({
+  allSelectedDocs,
+  docData,
+  allRegistrationIds,
+  dateRange,
+  searchRefExternalId,
+  documentRealatedTo,
+  currentPage,
+  sortBy,
+  sortDirection,
+  setShowToastNotification,
+  setShowConfirmDialog,
+  setSelectedCheckBoxIds,
+  setAllSelectedDocs,
+  setIsClearSelectedCheckbox,
+  setShowDeleteErrorBanner,
+  setShowDeleteSuccessToast,
+  fetchGetDocumentDetails,
+  deleteFiles,
+  excludedCheckBoxIds,
+  isHeaderBoxChecked
+}: {
+  allSelectedDocs: { fileId: string; registrationId: number }[],
+  docData: any,
+  allRegistrationIds: any[],
+  dateRange: { fromDate: string; toDate: string },
+  searchRefExternalId: string,
+  documentRealatedTo: number,
+  currentPage: number,
+  sortBy: string,
+  sortDirection: string,
+  setShowToastNotification: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  setSelectedCheckBoxIds: (v: string[]) => void,
+  setAllSelectedDocs: (v: any[]) => void,
+  setIsClearSelectedCheckbox: (v: boolean) => void,
+  setShowDeleteErrorBanner: (v: boolean) => void,
+  setShowDeleteSuccessToast: (v: boolean) => void,
+  fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
+  deleteFiles: (payload: any) => Promise<number>,
+  excludedCheckBoxIds: string[],
+  isHeaderBoxChecked: boolean
+
+}) => {
+
+
+
+  setShowDeleteSuccessToast(false);
+  const payload = mapToBulkDeletePayload({
+    isSelectAll: !!isHeaderBoxChecked,
+    categoryIds: allRegistrationIds,
+    fromDate: dateRange.fromDate,
+    toDate: dateRange.toDate,
+    referenceExternalIds: [searchRefExternalId],
+    documentRelatedTo: documentRealatedTo,
+    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length ? [] : allSelectedDocs.map(doc => ({
+      ...doc,
+      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+    })),
+    excludedFileDetails:
+      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0) ?
+        allSelectedDocs.map(doc => ({
+          ...doc,
+          externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+        })) : []
+  });
+  try {
+    const status = await deleteFiles(payload);
+    if (status === 204) {
+      setShowToastNotification(true);
+      setShowConfirmDialog(false);
+      setSelectedCheckBoxIds([]);
+      setAllSelectedDocs([]);
+      setIsClearSelectedCheckbox(true);
+      setShowDeleteErrorBanner(false);
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+      setShowDeleteSuccessToast(true);
+    } else {
+      setShowDeleteErrorBanner(true);
+    }
+  } catch (err) {
+    setShowDeleteErrorBanner(true);
+  }
+};
 
 export function validateAndApplyFilter({
   selectedDateRange,
@@ -979,6 +1115,7 @@ export const debouncedFetchSuggestions = debounce(
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowError: React.Dispatch<React.SetStateAction<boolean>>
   ) => {
+    setSearchLoading(true);
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
       const values = response?.payload ?? [];
@@ -1048,6 +1185,43 @@ export async function handleClearAllConfirm({
   setShowConfirmDialog(false);
 }
 
+
+
+export const buildValidationPayload = ({
+  isSelectAll = false,
+  userActivity = "bulkdelete",
+  categoryIds = [],
+  fromDate = "",
+  toDate = "",
+  referenceExternalIds = [],
+  documentRelatedTo = 0,
+  fileDetails = [],
+  excludedFileDetails = []
+}: BuildValidationPayloadParams) => ({
+  
+    request: {
+      isSelectAll,
+      userActivity,
+      validationCriteria: {
+        categoryIds,
+        fromDate,
+        toDate,
+        referenceDetails: {
+          referenceExternalIds,
+          documentRelatedTo
+        }
+      },
+      fileDetails,
+      excludedFileDetails
+    }
+  
+});
+
+export const getTitleConfirmation = (dialogType: string): string => {
+  if (dialogType === "clearAll") return "Clear all downloads?";
+  if (dialogType === "delete") return "Delete Document(s)?";
+  return "Prepare Download?";
+};
 
 export const fileDownload = async (
   fileId: string,

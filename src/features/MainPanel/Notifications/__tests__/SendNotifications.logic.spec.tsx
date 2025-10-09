@@ -175,6 +175,40 @@ describe("connectWebSocket", () => {
     });
     expect(() => mockSocket.onopen()).not.toThrow();
   });
+  it("handles onmessage event and updates messages for non-activeCount type", () => {
+  connectWebSocket({
+    token,
+    setWsStatus,
+    wsRef,
+    setMessages,
+    reconnectAttempts,
+    reconnectTimeout,
+    setActiveConnectionCount,
+  });
+  // Simulate a message that is NOT activeCount
+  const message = JSON.stringify({ type: "info", data: "hello" });
+  mockSocket.onmessage({ data: message });
+  expect(setMessages).toHaveBeenCalledWith(expect.any(Function));
+  expect(setActiveConnectionCount).not.toHaveBeenCalled();
+});
+
+it("handles onmessage event and updates active connection count for activeCount type", () => {
+  connectWebSocket({
+    token,
+    setWsStatus,
+    wsRef,
+    setMessages,
+    reconnectAttempts,
+    reconnectTimeout,
+    setActiveConnectionCount,
+  });
+  // Simulate a message that IS activeCount
+  const message = JSON.stringify({ type: "activeCount", count: 7 });
+  mockSocket.onmessage({ data: message });
+  expect(setActiveConnectionCount).toHaveBeenCalledWith(7);
+  // Should NOT call setMessages for activeCount
+  expect(setMessages).not.toHaveBeenCalled();
+});
 });
 
 describe("handleSendNotification", () => {
@@ -225,6 +259,7 @@ describe("handleSendNotification", () => {
       handleSendNotification({ token, notification, message: "Test message" })
     ).resolves.toBeUndefined();
   });
+  
 });
 
 describe("fetchActiveConnectionCount", () => {
@@ -262,4 +297,5 @@ describe("fetchActiveConnectionCount", () => {
     await expect(fetchActiveConnectionCount({ setActiveConnectionCount })).resolves.toBeUndefined();
     expect(setActiveConnectionCount).not.toHaveBeenCalled();
   });
+  
 });

@@ -3,7 +3,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
-import { DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
+import { deleteDocumentRequest, DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 
 export const fetchDocumentDetails = async ({
@@ -103,6 +103,31 @@ export const prepareAndDownloadFile = async (payload: { request: any }) => {
   return payload?.request?.status; 
 };
 
+export const deleteFiles = async (payload: { request: any }) => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/bulkdelete`;
+    const responseData: AxiosResponse<deleteDocumentRequest> = await axios.delete(
+  `${baseUrl}${url}`,
+  {
+    data: payload,
+    headers: {
+      "Content-Type": "application/json-patch+json",
+      Authorization: `Bearer ${authService.getAuthTokens()}`
+    }
+  }
+);
+
+    return responseData?.status;
+  } catch (error: any) {
+    if (error?.response?.status) {
+      return error.response.status;
+    }
+  }
+  return payload?.request?.status;
+};
+
+
 export const viewDownload = async (): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
@@ -115,6 +140,17 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
+export const validation = async (payload: { request: any }): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/getfilevalidation`;
+    const response: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
+    return response;
+  } catch (err) {
+    console.error("Error fetching view downloads data:", err);
+    return {};
+  }
+};
 
 export const clearAllFiles = async (payload: { request: { partitionKey: string[] } }): Promise<any> => {
   try {

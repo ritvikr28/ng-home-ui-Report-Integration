@@ -20,7 +20,7 @@
     envConfig
   } from "../../../../../shared/utils";
   import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
-  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide } from "./TakeRegisterEventHelper";
+  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData } from "./TakeRegisterEventHelper";
 
 
 
@@ -35,6 +35,10 @@
     const [currentSlide, setCurrentSlide]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(apiRegsiterEventData && apiRegsiterEventData.length > 0 ? 0 : 0);
     const [carouselData, setCarouselData]: [typeof responsive, React.Dispatch<React.SetStateAction<typeof responsive>>] = useState<typeof responsive>(responsive);
 
+    const filteredAndSortedData = React.useMemo(() => 
+      filterAndSortRegisterData(apiRegsiterEventData || [])
+    , [apiRegsiterEventData]);
+
     useEffect(() => {
       /* eslint-disable */
       setCarouselData(isOpen ? responsive : iscloseresponsive);
@@ -44,16 +48,16 @@
 
     const isMediumscreen: boolean = useMediaQuery("(min-width:1439.9px)");
     useEffect(() => {
-      if (!apiRegsiterEventData?.length || effectTriggered || !carouselRef?.current) return;
+      if (!filteredAndSortedData?.length || effectTriggered || !carouselRef?.current) return;
 
       setEffectTriggered(true);
 
       setDefaultAndCurrentSlide(
         carouselRef,
-        apiRegsiterEventData,
+        filteredAndSortedData,
         setCurrentSlide
       );
-    }, [apiRegsiterEventData, effectTriggered]);
+    }, [filteredAndSortedData, effectTriggered]);
 
     return (
       <>
@@ -80,7 +84,7 @@
               /* eslint-disable */
               disabled={isButtonDisabled(
                 "previous",
-                apiRegsiterEventData ?? null,
+                filteredAndSortedData ?? null,
                 currentSlide
               )}
             /* eslint-enable */
@@ -92,13 +96,13 @@
               color={ButtonColor.Utility}
               iconName="chevron--right"
               ariaLabel="carousel-right-btn"
-              onClick={() => nextSlide(carouselRef, apiRegsiterEventData ?? null, setCurrentSlide)}
+              onClick={() => nextSlide(carouselRef, filteredAndSortedData ?? null, setCurrentSlide)}
               size={ButtonSize.Small}
               type="button"
               /* eslint-disable */
               disabled={isButtonDisabled(
                 "next",
-                apiRegsiterEventData ?? null,
+                filteredAndSortedData ?? null,
                 currentSlide
               )}
             />
@@ -106,9 +110,9 @@
         </Grid>
         <div>
           {apiError === false &&
-            ((apiRegsiterEventData ?? []).length > 0
+            (filteredAndSortedData.length > 0
               ? renderCarousel(
-                  apiRegsiterEventData ?? [],
+                  filteredAndSortedData,
                   isMediumscreen,
                   carouselRef,
                   carouselData,

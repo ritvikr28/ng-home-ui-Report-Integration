@@ -104,10 +104,49 @@ export interface PrepareDownloadRequest {
   fileDetails: DocumentPrepareDownload[];
 }
 
+export interface deleteDocumentRequest {
+  selectAll: boolean;
+  categoryId: number[];
+  fromDate: string;
+  toDate: string;
+  referenceDetails: referenceDetails;
+  fileDetails: deleteDocumentFilesDetails[];
+
+}
+
+export interface referenceDetails {
+  referenceExternalIds: string[];
+  documentRealatedTo: number;
+}
+
+export interface deleteDocumentFilesDetails {
+  fileId: string;
+  registrationId: number;
+  externalId: string;
+}
+
 export interface FetchViewDownloadDataParams {
   showLoader?: boolean;
   setIsSidePanelLoader: React.Dispatch<React.SetStateAction<boolean>>;
   setViewData: React.Dispatch<React.SetStateAction<any[]>>;
   viewDownload: () => Promise<any>;
   downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
+}
+
+export interface ValidationFileDetail {
+  fileId: string;
+  registrationId: number;
+  externalId: string;
+}
+
+export interface BuildValidationPayloadParams {
+  isSelectAll?: boolean;
+  userActivity?: string;
+  categoryIds?: number[];
+  fromDate?: string;
+  toDate?: string;
+  referenceExternalIds?: string[];
+  documentRelatedTo?: number;
+  fileDetails?: ValidationFileDetail[];
+  excludedFileDetails?: ValidationFileDetail[];
 }
