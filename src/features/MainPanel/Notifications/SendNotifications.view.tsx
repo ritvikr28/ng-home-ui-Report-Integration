@@ -46,9 +46,9 @@ export const SendNotification = () => {
   // // Connect to WebSocket with JWT and handle reconnection
 
   useEffect(() => {
-    const idToken = window.sessionStorage.getItem("ACCESS_TOKEN") || "";
-    setToken(idToken || "");
-  }, [token]);
+    const accessToken = window.sessionStorage.getItem("ACCESS_TOKEN") || "";
+    setToken(accessToken || "");
+  }, []);
 
   // Manual connect button
   const handleConnect = () => {
@@ -169,7 +169,6 @@ export const SendNotification = () => {
         />
         <button
           onClick={handleSendNotificationClick}
-          disabled={!token}
           style={{ marginLeft: 10 }}
           type="button"
         >

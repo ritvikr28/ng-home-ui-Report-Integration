@@ -76,10 +76,4 @@ describe("SendNotification", () => {
       );
     });
   });
-
-  it("disables send button when token is missing", () => {
-    window.sessionStorage.removeItem("ACCESS_TOKEN");
-    render(<SendNotification />);
-    expect(screen.getByRole("button", { name: /Send/i })).toBeDisabled();
-  });
 });
