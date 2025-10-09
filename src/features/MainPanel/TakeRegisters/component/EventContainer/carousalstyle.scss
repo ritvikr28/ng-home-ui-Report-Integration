@@ -60,7 +60,7 @@
 }
 
 #no-more-register-id {
-  min-height: 93px;
+  min-height: 130px;
 }
 
 @media (min-width: 1440px) {
@@ -177,7 +177,7 @@
 }
 
 .noregister .main-text {
-  margin-bottom: 28px;
+  margin-bottom: 66px;
 }
 
 @media only screen and (min-width: 767px) {
@@ -185,4 +185,12 @@
     max-width: 261px;
     min-height: 93px;
   }
+}
+
+.reg-css-old #no-more-register-id {
+  min-height: 93px;
+}
+
+.reg-css-old .noregister .main-text {
+  margin-bottom: 28px;
 }

@@ -20,7 +20,7 @@
     envConfig
   } from "../../../../../shared/utils";
   import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
-  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData } from "./TakeRegisterEventHelper";
+  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData, showRegisterSecondaryTextFlag } from "./TakeRegisterEventHelper";
 
 
 
@@ -36,8 +36,10 @@
     const [carouselData, setCarouselData]: [typeof responsive, React.Dispatch<React.SetStateAction<typeof responsive>>] = useState<typeof responsive>(responsive);
 
     const filteredAndSortedData = React.useMemo(() => 
-      filterAndSortRegisterData(apiRegsiterEventData || [])
-    , [apiRegsiterEventData]);
+      showRegisterSecondaryTextFlag
+        ? filterAndSortRegisterData(apiRegsiterEventData || [])
+        : (apiRegsiterEventData || [])
+      , [apiRegsiterEventData, showRegisterSecondaryTextFlag]);
 
     useEffect(() => {
       /* eslint-disable */
