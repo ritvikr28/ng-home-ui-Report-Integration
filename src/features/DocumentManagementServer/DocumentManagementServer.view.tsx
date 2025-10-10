@@ -109,7 +109,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because they are being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
         );
         
         }
@@ -634,7 +634,21 @@ switch (dialogType) {
       isNotificationanner: true,
       notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
-      onCancel: (): void => { setShowConfirmDialog(false); },
+      onCancel: (): void => { setShowConfirmDialog(false);
+         if (alreadyDeletedFileCount > 0) {
+            fetchGetDocumentDetails(
+                currentPage,
+                getAllRegistrationIds(selectedFormats),
+                sortBy,
+                sortDirection,
+                searchRefExternalId,
+                documentRealatedTo
+            );
+            setSelectedCheckBoxIds([]);
+            setAllSelectedDocs([]);
+            setIsClearSelectedCheckbox(true);
+        }
+       },
       onConfirm: async (): Promise<void> => {
         setIsDialogLoading(true);
         setIsGlobalLoaderModel(true);
@@ -655,7 +669,7 @@ switch (dialogType) {
       contentText: (() => {
             if (alreadyDeletedFileCount > 0) {
                 return alreadyDeletedFileCount === 1
-                ? `${alreadyDeletedFileCount} document cannot be downloaded as it has already been deleted.`
+                ? `${alreadyDeletedFileCount} document cannot be downloaded as it has been deleted.`
                 : `${alreadyDeletedFileCount} documents cannot be downloaded as they have already been deleted.`;
             }
             return "";
@@ -667,7 +681,21 @@ switch (dialogType) {
           : `${availableFileCount === docData?.totalRecords ? 'All ' : ''}  ${availableFileCount} documents are about to be prepared for downloading.`,
       notificationStatus: NotificationStatus.WARNING,
       okText: "Prepare download",
-      onCancel: (): void => { setShowConfirmDialog(false); },
+      onCancel: (): void => { setShowConfirmDialog(false); 
+         if (alreadyDeletedFileCount > 0) {
+            fetchGetDocumentDetails(
+                currentPage,
+                getAllRegistrationIds(selectedFormats),
+                sortBy,
+                sortDirection,
+                searchRefExternalId,
+                documentRealatedTo
+            );
+            setSelectedCheckBoxIds([]);
+            setAllSelectedDocs([]);
+            setIsClearSelectedCheckbox(true);
+        }
+      },
       onConfirm: (): void => {
         setPrepareDownloadError(false);
         setIsSidePanelLoader(true);
@@ -806,7 +834,7 @@ const getDialogTitle = () => {
             : "Documents already deleted";
     }
 
-    return ""; // Default case if no conditions are met
+    return "";
 };
 
     const renderViewDownloadContent = () => {
@@ -943,7 +971,7 @@ const getDialogTitle = () => {
                         title={alreadyDeletedFileCount === 1 ? "Document cannot be downloaded" : "Documents cannot be downloaded"}
                         notificationTitle={
                         alreadyDeletedFileCount === 1
-                            ? `This document cannot be downloaded as it has already been deleted.`
+                            ? `This document cannot be downloaded as it has been deleted.`
                             : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have been deleted.`
                         }
                         loading={isPreDialogLoading}
