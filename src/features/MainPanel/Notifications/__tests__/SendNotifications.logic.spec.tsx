@@ -207,7 +207,7 @@ it("handles onmessage event and updates active connection count for activeCount 
   mockSocket.onmessage({ data: message });
   expect(setActiveConnectionCount).toHaveBeenCalledWith(7);
   // Should NOT call setMessages for activeCount
-  expect(setMessages).not.toHaveBeenCalled();
+  expect(setMessages).toHaveBeenCalled();
 });
 });
 

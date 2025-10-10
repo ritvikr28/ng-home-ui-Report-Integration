@@ -734,7 +734,7 @@ it("Delete dialog cancel button works", async () => {
   (ApiService.validation as jest.Mock).mockResolvedValue({
   data: {
     restrictedFileCount: 0,
-    alreadyDeletedFileCount: 0,
+    alreadyDeletedFileCount: 2,
     availableFileCount: 2,
   }
 });
@@ -809,6 +809,8 @@ it("Delete dialog for already deleted works", async () => {
 
   const deleteDialog = await screen.findByText(/documents are already deleted./i);
   expect(deleteDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
 });
 
 it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted", async () => {
@@ -848,8 +850,10 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
   fireEvent.click(screen.getByText("Prepare download"));
 
-  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
 });
 
 describe('onClickSidePnlSecondaryBtn', () => {
@@ -976,5 +980,48 @@ it("sets excludedFileDetails and fileDetails correctly when select all with excl
   // expect(screen.queryByText("Please select at least one item from the search results to perform the action.")).not.toBeInTheDocument();
 
   // You can also check for correct dialog or notification if needed
+});
+
+it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted and clicking Cancel button triggers grid reload", async () => {
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 2,
+    alreadyDeletedFileCount: 2,
+    availableFileCount: 2,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Prepare download"));
+  
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
+  expect(prepareDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Cancel"));
 });
 })

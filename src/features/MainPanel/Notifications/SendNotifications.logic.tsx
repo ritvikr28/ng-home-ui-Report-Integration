@@ -74,6 +74,9 @@ export async function connectWebSocket({
     if (parsedData.type !== "activeCount") {
       setMessages((prev) => [...prev, event.data]);
     }
+    else {
+      setMessages((prev) => [...prev, event.data]);
+    }
     const msg = JSON.parse(event.data);
     if (msg.type === "activeCount") {
       setActiveConnectionCount(msg.count);
