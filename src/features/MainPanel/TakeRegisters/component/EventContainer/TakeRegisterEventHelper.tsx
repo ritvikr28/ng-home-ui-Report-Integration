@@ -9,7 +9,7 @@ import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/re
 import { responsive } from "./carousel";
 import "./carousalstyle.scss";
 
-export const showRegisterSecondaryTextFlag: boolean = hasFeaturePermission(
+export const getShowRegisterSecondaryTextFlag: () => boolean = () => hasFeaturePermission(
   `${envConfig.APPLICATION}`,
   "RegisterSecondaryText"
 );
@@ -83,7 +83,7 @@ export const renderCarousel: (
     keyBoardControl
     customTransition="all .5"
     transitionDuration={50}
-    containerClass={showRegisterSecondaryTextFlag ? "carousel-container reg-css-new" : "carousel-container reg-css-old"}
+    containerClass={getShowRegisterSecondaryTextFlag() ? "carousel-container reg-css-new" : "carousel-container reg-css-old"}
     removeArrowOnDeviceType={["tablet", "mobile"]}
     itemClass="carousel-item-padding-40-px"
   >
@@ -346,7 +346,7 @@ export const getSecondaryText: (
   const endTime = item.eventEnd ? formatTime(item.eventEnd) : '';
   const timePeriod = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
   
-  return showRegisterSecondaryTextFlag
+  return getShowRegisterSecondaryTextFlag()
     ? `${item.eventDescription || ''}${timePeriod}`
     : '';
 };
