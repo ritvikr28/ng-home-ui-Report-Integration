@@ -1197,6 +1197,7 @@ const getDialogTitle = () => {
 
                                 searchOnCloseHandle={handleSearchClose}
                                 isGlobalLoader={isDialogLoading}
+                                globalLoaderText="Please wait..."
                                 isGlobalLoaderModel={isGlobalLoaderModel}
                                 secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => {
