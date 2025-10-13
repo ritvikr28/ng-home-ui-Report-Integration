@@ -771,10 +771,8 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
     setSelectedCheckBoxIds((prevSelectedIds) => {
         const updatedCheckBoxIds = [...prevSelectedIds];
         if (updatedCheckBoxIds.includes(id)) {
-            // Remove the ID if it's already selected
             return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
         }
-        // Add the ID if it's not selected
         return [...updatedCheckBoxIds, id];
     });
 
@@ -782,44 +780,21 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
         if (doc) {
             const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
             if (isAlreadySelected) {
-                // Remove the document if it's already selected
+                
                 return prevSelectedDocs.filter((item) => item.fileId !== id);
             }
-            // Add the document if it's not selected
             return [
                 ...prevSelectedDocs,
                 {
                     fileId: id,
                     registrationId: Number(doc.registrationId),
-                    externalId: doc.externalId || "",
+                    externalId: doc.externalId,
                 }
             ];
         }
         return prevSelectedDocs;
     });
 };
-
-useEffect(() => {
-    if ( isHeaderBoxChecked) {
-        // When "Select All Across Pagination" is enabled, use excludedCheckBoxIds
-        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
-        const excludedIdsForCurrentPage = excludedCheckBoxIds.filter((id) =>
-            currentPageIds.includes(id)
-        );
-
-        setSelectedCheckBoxIds(
-            currentPageIds.filter((id: string) => !excludedIdsForCurrentPage.includes(id))
-        );
-    } else {
-        // When "Select All Across Pagination" is disabled, use selectedCheckBoxIds
-        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
-        const selectedIdsForCurrentPage = allSelectedDocs
-            .filter((doc) => currentPageIds.includes(doc.fileId))
-            .map((doc) => doc.fileId);
-
-        setSelectedCheckBoxIds(selectedIdsForCurrentPage);
-    }
-}, [currentPage, docData, allSelectedDocs, excludedCheckBoxIds]);
 
 const getDialogTitle = () => {
     if (restrictedFileCount > 0) {
@@ -1214,7 +1189,7 @@ const getDialogTitle = () => {
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                                    Please try again. If the issue persists, please get in touch with our support team.
+                                    Please try again. If the issue persists please get in touch with our support team.
                                     We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
                                 sidePanelNotificationTitle="Unable to Download"
