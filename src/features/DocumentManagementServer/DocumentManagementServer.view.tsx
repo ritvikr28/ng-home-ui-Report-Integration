@@ -109,7 +109,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted currently ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
         );
         
         }
@@ -927,8 +927,8 @@ const getDialogTitle = () => {
                             (() => {
                                 if (restrictedFileCount > 0) {
                                 return restrictedFileCount === 1
-                                    ? `${restrictedFileCount} document cannot be deleted because it is being prepared for download. Please try again later.`
-                                    : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
+                                    ? `This document cannot be deleted as it is currently being prepared for download . Please try again later.`
+                                    : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted as they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
