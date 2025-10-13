@@ -489,5 +489,11 @@
     "sidePanelTitle": "Downloads",
     "ExpiresInDays": "Expires in {{days}} day(s).",
     "ExpiresToday": "Expires today."
+  },
+  "Filter": {
+    "relatedToHeading": "Select related to pupil, staff or school",
+    "pupilSearchHeading": "Pupil",
+    "staffSearchHeading": "Staff",
+    "schoolSearchHeading": "School"
   }
 }

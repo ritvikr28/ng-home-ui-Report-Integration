@@ -372,6 +372,7 @@ const handleDateChange = (
         </div>
       ) : (
         <>
+      <FormLabel>{t("")}</FormLabel>
       <FormLabel>{t("Category")}</FormLabel>
       <Dropdown
         dataTestId={`${dataTestId}-categories`}
@@ -393,29 +394,29 @@ const handleDateChange = (
               : "")
           }));
 
-    // Calculate new index for dateRange: count how many items from prev before dateRange are still in newItems
-    let insertIndex = newItems.length;
-    if (dateRangeItem && dateRangeIndex > 0) {
-      const prevBeforeDate = prev.slice(0, dateRangeIndex).map(i => i.data);
-      insertIndex = newItems.findIndex(i => !prevBeforeDate.includes(i.data));
-      if (insertIndex === -1) insertIndex = newItems.length;
-      else insertIndex = newItems.filter(i => prevBeforeDate.includes(i.data)).length;
-    } else if (dateRangeItem) {
-      insertIndex = 0;
-    }
+          // Calculate new index for dateRange: count how many items from prev before dateRange are still in newItems
+          let insertIndex = newItems.length;
+          if (dateRangeItem && dateRangeIndex > 0) {
+            const prevBeforeDate = prev.slice(0, dateRangeIndex).map(i => i.data);
+            insertIndex = newItems.findIndex(i => !prevBeforeDate.includes(i.data));
+            if (insertIndex === -1) insertIndex = newItems.length;
+            else insertIndex = newItems.filter(i => prevBeforeDate.includes(i.data)).length;
+          } else if (dateRangeItem) {
+            insertIndex = 0;
+          }
 
-    // Insert dateRange at calculated index
-    if (dateRangeItem) {
-      const safeDateRangeItem = {
-        ...dateRangeItem,
-        text: dateRangeItem.text ?? ""
-      };
-      newItems.splice(insertIndex, 0, safeDateRangeItem);
-    }
-    return newItems;
-  });
-}}
-  selectedItems={selectedCategories.filter(item => item.data?.type !== "dateRange")}
+          // Insert dateRange at calculated index
+          if (dateRangeItem) {
+            const safeDateRangeItem = {
+              ...dateRangeItem,
+              text: dateRangeItem.text ?? ""
+            };
+            newItems.splice(insertIndex, 0, safeDateRangeItem);
+          }
+          return newItems;
+        });
+      }}
+        selectedItems={selectedCategories.filter(item => item.data?.type !== "dateRange")}
       >
         {availableCategories
           .slice()
