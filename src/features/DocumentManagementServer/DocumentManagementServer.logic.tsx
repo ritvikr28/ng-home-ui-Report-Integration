@@ -974,7 +974,7 @@ export const handleBulkDeleteLogic = async ({
   excludedCheckBoxIds,
   isHeaderBoxChecked
 }: {
-  allSelectedDocs: { fileId: string; registrationId: number }[],
+  allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
   docData: any,
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
@@ -1007,16 +1007,23 @@ export const handleBulkDeleteLogic = async ({
     toDate: dateRange.toDate,
     referenceExternalIds: [searchRefExternalId],
     documentRelatedTo: documentRealatedTo,
-    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length ? [] : allSelectedDocs.map(doc => ({
-      ...doc,
-      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
+  ? []
+  : allSelectedDocs.map(doc => ({
+      fileId: doc.fileId,
+      registrationId: doc.registrationId,
+      externalId: doc.externalId,
     })),
     excludedFileDetails:
-      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0) ?
-        allSelectedDocs.map(doc => ({
-          ...doc,
-          externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-        })) : []
+  isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
+    ? excludedCheckBoxIds.map(fileId => {
+        const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+        return {
+          fileId,
+          externalId: matchingDoc?.externalId ?? "",
+        };
+      })
+    : []
   });
   try {
     const status = await deleteFiles(payload);
