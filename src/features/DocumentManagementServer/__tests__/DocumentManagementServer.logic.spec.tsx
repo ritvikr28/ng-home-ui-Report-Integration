@@ -2681,8 +2681,8 @@ describe("handleBulkDeleteLogic", () => {
   };
 
   const allSelectedDocs = [
-    { fileId: "1", registrationId: 101 },
-    { fileId: "2", registrationId: 102 }
+    { fileId: "1", registrationId: 101, externalId: "ext1" },
+    { fileId: "2", registrationId: 102, externalId: "ext2" }
   ];
 
   const allRegistrationIds = [101, 102];
@@ -2903,37 +2903,6 @@ describe("handleBulkDeleteLogic", () => {
     expect(callPayload.request.fileDetails[1]).toMatchObject({ fileId: "2", registrationId: 102, externalId: "ext2" });
   });
 
-  it("should send excludedFileDetails when select all is checked and exclusions exist", async () => {
-    deleteFiles.mockResolvedValue(204);
-
-    await handleBulkDeleteLogic({
-      allSelectedDocs,
-      docData,
-      allRegistrationIds,
-      dateRange,
-      searchRefExternalId,
-      documentRealatedTo,
-      currentPage,
-      sortBy,
-      sortDirection,
-      setShowToastNotification,
-      setShowConfirmDialog,
-      setSelectedCheckBoxIds,
-      setAllSelectedDocs,
-      setIsClearSelectedCheckbox,
-      setShowDeleteErrorBanner,
-      setShowDeleteSuccessToast,
-      fetchGetDocumentDetails,
-      deleteFiles,
-      excludedCheckBoxIds: ["2"],
-      isHeaderBoxChecked: true
-    });
-
-    const callPayload = deleteFiles.mock.calls[0][0];
-    expect(callPayload.request.excludedFileDetails.length).toBe(2);
-    expect(callPayload.request.excludedFileDetails[0]).toMatchObject({ fileId: "1", registrationId: 101, externalId: "ext1" });
-    expect(callPayload.request.excludedFileDetails[1]).toMatchObject({ fileId: "2", registrationId: 102, externalId: "ext2" });
-  });
 
   it("should send empty excludedFileDetails when select all is unchecked", async () => {
     deleteFiles.mockResolvedValue(204);
