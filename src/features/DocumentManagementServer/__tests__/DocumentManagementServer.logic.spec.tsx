@@ -2021,7 +2021,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
     sortByCol: "Document",
     sortOrder: "Asc",
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
-    refExternalId: "org123",
+    refExternalId: ["org123"],
     relatedTo: 1,
     setDocData: mockSetDocData,
     setCurrentPage: mockSetCurrentPage,
@@ -2131,15 +2131,15 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = { Legal: 1, Finance: 2 };
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, undefined as any, false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, "", 0, null as any, false)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, "", 0, ["2"], false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false)).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2168,7 +2168,7 @@ describe("buildSelectedDocs", () => {
       ["1"],
       docData,
       categoryRegistrationMap,
-      "ext1",
+      ["ext1"],
       1,
       excludedIdDetails,
       isHeaderBoxChecked
@@ -2216,7 +2216,7 @@ describe("buildSelectedDocs", () => {
       selectedCheckBoxIds,
       docData,
       categoryRegistrationMap,
-      "",
+      [""],
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked
@@ -2242,7 +2242,7 @@ describe("buildSelectedDocs", () => {
       selectedCheckBoxIds,
       docData,
       categoryRegistrationMap,
-      "",
+      [""] ,
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked
@@ -2265,7 +2265,7 @@ describe("buildSelectedDocs", () => {
       selectedCheckBoxIds,
       docData,
       categoryRegistrationMap,
-      "",
+      [""],
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked
@@ -2289,7 +2289,7 @@ describe("buildSelectedDocs", () => {
       selectedCheckBoxIds,
       docData,
       categoryRegistrationMap,
-      "",
+      [""],
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked
@@ -2312,7 +2312,7 @@ describe("buildSelectedDocs", () => {
       selectedCheckBoxIds,
       docData,
       categoryRegistrationMap,
-      "",
+      [""],
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked
@@ -2325,13 +2325,13 @@ describe("getReferenceMappingForSearchedPerson", () => {
   it("returns empty array if docData.data is not an array", () => {
     expect(getReferenceMappingForSearchedPerson({
       docData: { data: undefined },
-      searchRefExternalId: "ext1",
+      searchRefExternalId: ["ext1"],
       documentRealatedTo: 1,
     })).toEqual([]);
 
     expect(getReferenceMappingForSearchedPerson({
       docData: { data: null },
-      searchRefExternalId: "ext1",
+      searchRefExternalId: ["ext1"],
       documentRealatedTo: 1,
     })).toEqual([]);
   });
@@ -2344,7 +2344,7 @@ describe("getReferenceMappingForSearchedPerson", () => {
     };
     expect(getReferenceMappingForSearchedPerson({
       docData,
-      searchRefExternalId: "ext1",
+      searchRefExternalId: ["ext1"],
       documentRealatedTo: 1,
     })).toEqual([]);
   });
@@ -2357,7 +2357,7 @@ describe("getReferenceMappingForSearchedPerson", () => {
     };
     expect(getReferenceMappingForSearchedPerson({
       docData,
-      searchRefExternalId: "ext1",
+      searchRefExternalId: ["ext1"],
       documentRealatedTo: 1,
     })).toEqual([]);
   });
@@ -2376,7 +2376,7 @@ describe("getReferenceMappingForSearchedPerson", () => {
   ]);
   expect(getReferenceMappingForSearchedPerson({
     docData,
-    searchRefExternalId: "ext1",
+    searchRefExternalId: ["ext1"],
     documentRealatedTo: 1,
   })).toEqual([
     {
@@ -2687,7 +2687,7 @@ describe("handleBulkDeleteLogic", () => {
 
   const allRegistrationIds = [101, 102];
   const dateRange = { fromDate: "2025-01-01", toDate: "2025-01-02" };
-  const searchRefExternalId = "ref1";
+  const searchRefExternalId = ["ref1"];
   const documentRealatedTo = 1;
   const currentPage = 1;
   const sortBy = "Document";

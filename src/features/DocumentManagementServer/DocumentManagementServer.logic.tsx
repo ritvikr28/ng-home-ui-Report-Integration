@@ -342,22 +342,22 @@ export const handleSuggestionClick = async (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
-  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>
 ) => {
    if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
   setDocumentRelatedTo(relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0);
 
-  let refExternalId = "";
+  let refExternalId: string[] = [];
   if (item.categoryName === "Pupil") {
-    refExternalId = item?.learnerExternalId;
+    refExternalId = [item?.learnerExternalId];
   } else if (item.categoryName === "Staff") {
-    refExternalId = item?.externalId;
+    refExternalId = [item?.externalId];
   } else if (item.categoryName === "Organisation") {
-    refExternalId = item?.organisationId;
+    refExternalId = [item?.organisationId];
   }
-  setSearchRefExternalId(refExternalId || "");
+  setSearchRefExternalId(refExternalId || []);
 };
  
 // Has items check
@@ -440,7 +440,7 @@ export async function fetchGetDocumentDetailsLogic({
   sortByCol: string;
   sortOrder: string; 
   dateRange: { fromDate?: string; toDate?: string };
-  refExternalId: string;
+  refExternalId: string[];
   relatedTo: number;
   setDocData: (v: any) => void;
   setCurrentPage: (v: number) => void;
@@ -488,7 +488,7 @@ export function getReferenceMappingForSearchedPerson({
   documentRealatedTo,
 }: {
   docData: any,
-  searchRefExternalId: string,
+  searchRefExternalId: string[],
   documentRealatedTo: number,
 }) {
   if (!Array.isArray(docData?.data)) return [];
@@ -846,7 +846,7 @@ export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
   categoryRegistrationMap: Record<string, number>,
-  searchRefExternalId: string,
+  searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean
@@ -978,7 +978,7 @@ export const handleBulkDeleteLogic = async ({
   docData: any,
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
-  searchRefExternalId: string,
+  searchRefExternalId: string[],
   documentRealatedTo: number,
   currentPage: number,
   sortBy: string,
@@ -1005,7 +1005,7 @@ export const handleBulkDeleteLogic = async ({
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
-    referenceExternalIds: [searchRefExternalId],
+    referenceExternalIds: searchRefExternalId,
     documentRelatedTo: documentRealatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
