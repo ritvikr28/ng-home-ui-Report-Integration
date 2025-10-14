@@ -499,15 +499,19 @@ export function getReferenceMappingForSearchedPerson({
   if (!doc) return [];
 
   const relatedArr = mapRelatedArr(doc);
+  // Fix: check if any item's referenceExternalId is in searchRefExternalId array
   const relatedItem = relatedArr.find(
-    (item: any) => item?.referenceExternalId === searchRefExternalId
+    (item: any) => searchRefExternalId.includes(item?.referenceExternalId)
   );
   if (!relatedItem) return [];
 
+  // Fix: filter relatedTo items whose externalId matches any in searchRefExternalId
   const matchedRelatedTo = Array.isArray(doc.relatedTo)
     ? doc.relatedTo.filter(
         (r: any) =>
-          (r.learnerExternalId || r.externalId || r.organisationId) === searchRefExternalId
+          searchRefExternalId.includes(
+            r.learnerExternalId || r.externalId || r.organisationId
+          )
       )
     : doc.relatedTo;
 

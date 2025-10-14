@@ -472,7 +472,7 @@ describe("handleSuggestionClick", () => {
     );
     expect(setSearchTerm).toHaveBeenCalledWith("John Doe");
     expect(setSearchText).toHaveBeenCalledWith("John Doe");
-    expect(setSearchRefExternalId).toHaveBeenCalledWith("pupil-123");
+    expect(setSearchRefExternalId).toHaveBeenCalledWith(["pupil-123"]);
     await handleSuggestionClick(
       {
         name: "John Doe",
@@ -484,7 +484,7 @@ describe("handleSuggestionClick", () => {
       setDocumentRelatedTo,
       setSearchRefExternalId
     );
-    expect(setSearchRefExternalId).toHaveBeenCalledWith("staff-123");
+    expect(setSearchRefExternalId).toHaveBeenCalledWith(["staff-123"]);
     await handleSuggestionClick(
       {
         name: "John Doe",
@@ -496,7 +496,7 @@ describe("handleSuggestionClick", () => {
       setDocumentRelatedTo,
       setSearchRefExternalId
     );
-    expect(setSearchRefExternalId).toHaveBeenCalledWith("organisation-123");
+    expect(setSearchRefExternalId).toHaveBeenCalledWith(["organisation-123"]);
 
   });
 
