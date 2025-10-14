@@ -765,7 +765,7 @@ it("Delete dialog for already deleted works", async () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-  const deleteDialog = await screen.findByText(/documents are already deleted./i);
+  const deleteDialog = await screen.findByText(/documents have already been deleted./i);
   expect(deleteDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Okay"));

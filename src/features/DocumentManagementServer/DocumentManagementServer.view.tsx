@@ -109,14 +109,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted currently ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted as ${restrictedFileCount !== 1 ? "they are" : "it is"} currently being prepared for download. Please try again later.`
         );
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
+            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} have already been deleted.`
         );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
@@ -908,7 +908,7 @@ const getDialogTitle = () => {
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
-                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents are already deleted.`;
+                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents have already been deleted.`;
                                 }
                                 return "";
                             })()
