@@ -23,7 +23,7 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
     >
       <DialogContent>
         <div style={{ height: '200px' }}>
-          <Loader loaderType={LoaderType.Circular} />
+          <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />
         </div>
       </DialogContent>
     </Dialog>
