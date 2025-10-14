@@ -1129,7 +1129,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  5
+  500
 );
 
 export async function handleClearAllConfirm({

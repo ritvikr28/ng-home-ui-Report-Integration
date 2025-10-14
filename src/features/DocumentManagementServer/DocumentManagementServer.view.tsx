@@ -51,7 +51,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(true);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
@@ -380,45 +380,45 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
       const available = result?.data?.availableFileCount ?? 0;
 
-    setRestrictedFileCount(restricted);
-    setAlreadyDeletedFileCount(alreadyDeleted);
-    setAvailableFileCount(available);
+            setRestrictedFileCount(restricted);
+            setAlreadyDeletedFileCount(alreadyDeleted);
+            setAvailableFileCount(available);
 
-    setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");  
-    setIsPreDialogLoading(false); 
-    setShowRestrictedDeleteDialog(false);  
-    if (
-      selectedItem.value === "Prepare download" &&
-      available === 0 &&
-      alreadyDeleted > 0
-    ) { 
-      setShowRestrictedPrepareDialog(true);
-      setShowConfirmDialog(false);
-      return;
+            setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");  
+            setIsPreDialogLoading(false); 
+            setShowRestrictedDeleteDialog(false);  
+            if (
+            selectedItem.value === "Prepare download" &&
+            available === 0 &&
+            alreadyDeleted > 0
+            ) { 
+            setShowRestrictedPrepareDialog(true);
+            setShowConfirmDialog(false);
+            return;
+            }
+            
+            if (selectedItem.value === "Delete") {
+        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+            setIsDialogLoading(false);
+            setShowRestrictedDeleteDialog(true);
+            setShowConfirmDialog(false);
+            return;
+        }
+
+        if (available > 0) {
+            setIsDialogLoading(false);
+            setShowConfirmDialog(true);
+            setShowRestrictedDeleteDialog(false);
+            return;
+        }
     }
-    
-      if (selectedItem.value === "Delete") {
-  if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
-    setIsDialogLoading(false);
-    setShowRestrictedDeleteDialog(true);
-    setShowConfirmDialog(false);
-    return;
-  }
 
-  if (available > 0) {
-    setIsDialogLoading(false);
-    setShowConfirmDialog(true);
-    setShowRestrictedDeleteDialog(false);
-    return;
-  }
-}
-
-      setShowConfirmDialog(true);
+        setShowConfirmDialog(true);
+        }
+    } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
+        setSidePanelOpenReason("view");
+        setIsSidePanelOpen(true);
     }
-  } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
-    setSidePanelOpenReason("view");
-    setIsSidePanelOpen(true);
-  }
 };
  
     const getEmptyStateMsg = () => {
@@ -481,21 +481,21 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
-  e: React.SyntheticEvent,
-  text: string,
-  closeObj: { name?: string; id?: string | number }
-    ) => {
-    handleTagCloseLogic(
-        e,
-        text,
-        closeObj,
-        setSelectedDateRange,
-        setDateRange,
-        setIsDateError,
-        setSelectedCategories,
-        setSelectedFormats
-    );
-    setCurrentPage(1);
+        e: React.SyntheticEvent,
+        text: string,
+        closeObj: { name?: string; id?: string | number }
+            ) => {
+            handleTagCloseLogic(
+                e,
+                text,
+                closeObj,
+                setSelectedDateRange,
+                setDateRange,
+                setIsDateError,
+                setSelectedCategories,
+                setSelectedFormats
+            );
+            setCurrentPage(1);
     };
     useEffect(() => {
         const handleResize = () => {
@@ -1303,7 +1303,7 @@ const getDialogTitle = () => {
                                             <FilterDialog
                                             availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
-                                            title="Filter by"
+                                            title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}

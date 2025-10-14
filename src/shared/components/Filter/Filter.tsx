@@ -10,13 +10,18 @@ import {
   ButtonSize,
   ValidationTextLevel,
   Loader,
-  LoaderType
+  LoaderType,
+  Search,
+  ISearchItemProp,
+  Suggestion
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
+import { relatedToEnum } from "../../../../public/Constants";
+import { filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -57,6 +62,11 @@ const FilterDialog = ({
   const [fromDate, setFromDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
   const [toDate, setToDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
   const [wasApplied, setWasApplied] = useState(false);
+  const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
+  const [showSearchError, setShowSearchError] = useState<boolean>(false);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -75,7 +85,10 @@ const clearAll = () => {
   setSelectedDateRange({ fromDate: "", toDate: "" });
 };
 
-
+const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
+  text: key,
+  value: value,
+}));
 
 useEffect(() => {
   const hasFrom = !!selectedDateRange.fromDate;
@@ -352,7 +365,35 @@ const handleDateChange = (
       setWasApplied(true);
       handleApply();
   };
-    
+
+   useEffect(() => {
+  console.log("Search Term:", searchTerm); // Debugging log
+  if (searchTerm?.length > 1) {
+    handleSearchChange(
+      { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
+      getAllRegistrationIds(selectedCategories),
+      selectedDateRange?.fromDate,
+      selectedDateRange?.toDate,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+    console.log("Fetching suggestions for:", suggestions); // Debugging log
+  }
+}, [searchTerm, selectedCategories, selectedDateRange]);
+
+  const filteredSuggestions = filterNonEmptySuggestions(suggestions);
+useEffect(() => {
+  if (filteredSuggestions.length > 0) {
+    console.log("Suggestions updated, showing dropdown:", filteredSuggestions);
+    setShowSearchError(false); // Clear any previous errors
+  } else if (!isSearchLoading) {
+    console.log("No suggestions available");
+    setShowSearchError(true); // Show error if no suggestions and not loading
+  }
+}, [suggestions, isSearchLoading]);
+
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -372,68 +413,141 @@ const handleDateChange = (
         </div>
       ) : (
         <>
-      <FormLabel>{t("")}</FormLabel>
-      <FormLabel>{t("Category")}</FormLabel>
-      <Dropdown
-        dataTestId={`${dataTestId}-categories`}
-        isFixedMultiSelect
-        multiSelect
-        isScrollbarVisible
-      onSelectMultiple={(_, items) => {
-      setSelectedCategories(prev => {
-        // Find the previous index of dateRange
-        const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
-        const dateRangeItem = prev[dateRangeIndex];
-
-        // Remove dateRange from new selection
-        const newItems = items.filter(item => item.data?.type !== "dateRange")
-          .map(item => ({
-            ...item,
-            text: item.text || (typeof item.data === "string"
-              ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
-              : "")
-          }));
-
-          // Calculate new index for dateRange: count how many items from prev before dateRange are still in newItems
-          let insertIndex = newItems.length;
-          if (dateRangeItem && dateRangeIndex > 0) {
-            const prevBeforeDate = prev.slice(0, dateRangeIndex).map(i => i.data);
-            insertIndex = newItems.findIndex(i => !prevBeforeDate.includes(i.data));
-            if (insertIndex === -1) insertIndex = newItems.length;
-            else insertIndex = newItems.filter(i => prevBeforeDate.includes(i.data)).length;
-          } else if (dateRangeItem) {
-            insertIndex = 0;
-          }
-
-          // Insert dateRange at calculated index
-          if (dateRangeItem) {
-            const safeDateRangeItem = {
-              ...dateRangeItem,
-              text: dateRangeItem.text ?? ""
-            };
-            newItems.splice(insertIndex, 0, safeDateRangeItem);
-          }
-          return newItems;
-        });
-      }}
-        selectedItems={selectedCategories.filter(item => item.data?.type !== "dateRange")}
-      >
-        {availableCategories
-          .slice()
-          .sort((a, b) => a.application.localeCompare(b.application))
-          .map((category) => (
+      <FormLabel>{t("Filter.relatedToHeading")}</FormLabel>
+        <Dropdown
+          className="dms-related-to-dropdown"
+          dataTestId={`${dataTestId}-related-to`}
+          isScrollbarVisible
+          selectedItem={selectedRelatedTo}
+          onSelect={(e, item: ISelectedItem) => {
+            setSelectedRelatedTo(item);
+          }}
+        >
+          {relatedTo.map((item) => (
             <DropdownItem
-              key={category.application}
-              data={category}
-              id={category.application}
-              text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-              value={category.application}
-              isSelected={selectedCategories.some((item) => item.data === category.application)}
+              key={item.value}
+              data={item}
+              id={item.value.toString()}
+              text={item.text}
+              value={item.value.toString()}
             >
-              {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+              {item.text}
             </DropdownItem>
           ))}
-      </Dropdown>
+        </Dropdown>
+
+        {selectedRelatedTo && (
+          <>
+            <Search
+                  className="dms-related-to-search"
+                  dataTestId={`${dataTestId}-search`}
+                  placeholderText={`${selectedRelatedTo.text} name`} 
+                  titleText={`${selectedRelatedTo.text}`}
+                  isFixedMultiSelect
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  existingValues={[searchTerm]}
+                  keyUpHandler={() => {}}
+                  isShowListBox={suggestions.length > 0 || isSearchLoading || showSearchError}
+                  headingText={`${t("Filter.selectEntity")} ${selectedRelatedTo.text}s`}
+                  onCloseHandle={ () => {
+                    setSearchTerm("")
+                  }
+
+                   }
+                  isListBox
+                  isCommaSeparted
+                  getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
+                  onItemClick={(item: ISearchItemProp | null) => {
+                    setSearchTerm(item?.text || "")
+                  }} 
+                  suggestions={filteredSuggestions}
+                  isLoader={isSearchLoading}
+                  onChange={(e: any) =>   
+                    handleSearchChange(
+                      e,
+                      getAllRegistrationIds(selectedCategories),
+                      selectedDateRange?.fromDate,
+                      selectedDateRange?.toDate,
+                      setSearchTerm,
+                      setSuggestions,
+                      setShowSearchError,
+                      setIsSearchLoading
+                    )
+                  }
+                  onFocus={() => {
+                    setSuggestions(suggestions)
+                  }
+                  }
+                  
+                              />
+          </>
+        )}
+          
+            {selectedRelatedTo && (
+              <>
+          <FormLabel>{t("Category")}</FormLabel>
+        <Dropdown
+          dataTestId={`${dataTestId}-categories`}
+          isFixedMultiSelect
+          multiSelect
+          isScrollbarVisible
+          selectedItems={selectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
+          onSelectMultiple={(_, items) => {
+            setSelectedCategories((prev) => {
+              const dateRangeIndex = prev.findIndex((item) => item.data?.type === "dateRange");
+              const dateRangeItem = prev[dateRangeIndex];
+
+              const newItems = items
+                .filter((item) => item.data?.type !== "dateRange")
+                .map((item) => ({
+                  ...item,
+                  text:
+                    item.text ||
+                    (typeof item.data === "string"
+                      ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+                      : ""),
+                }));
+
+              let insertIndex = newItems.length;
+              if (dateRangeItem && dateRangeIndex > 0) {
+                const prevBeforeDate = prev.slice(0, dateRangeIndex).map((i) => i.data);
+                insertIndex = newItems.findIndex((i) => !prevBeforeDate.includes(i.data));
+                if (insertIndex === -1) insertIndex = newItems.length;
+                else insertIndex = newItems.filter((i) => prevBeforeDate.includes(i.data)).length;
+              } else if (dateRangeItem) {
+                insertIndex = 0;
+              }
+
+              if (dateRangeItem) {
+                const safeDateRangeItem = {
+                  ...dateRangeItem,
+                  text: dateRangeItem.text ?? "",
+                };
+                newItems.splice(insertIndex, 0, safeDateRangeItem);
+              }
+              return newItems;
+            });
+          }}
+        >
+          {availableCategories
+            .slice()
+            .sort((a, b) => a.application.localeCompare(b.application))
+            .map((category) => (
+              <DropdownItem
+                key={category.application}
+                data={category}
+                id={category.application}
+                text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+                value={category.application}
+                isSelected={selectedCategories.some((item) => item.data === category.application)}
+              >
+                {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+              </DropdownItem>
+            ))}
+        </Dropdown>
+      </>
+        )}
 
       <div className="dms-filter-dialog-date">
         <FormLabel className="date-added">{t("Date added")}</FormLabel>

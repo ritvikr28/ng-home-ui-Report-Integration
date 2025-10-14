@@ -491,9 +491,11 @@
     "ExpiresToday": "Expires today."
   },
   "Filter": {
+    "heading": "Advanced Search",
     "relatedToHeading": "Select related to pupil, staff or school",
     "pupilSearchHeading": "Pupil",
     "staffSearchHeading": "Staff",
-    "schoolSearchHeading": "School"
+    "schoolSearchHeading": "School",
+    "selectEntity": "Select upto 5"
   }
 }
