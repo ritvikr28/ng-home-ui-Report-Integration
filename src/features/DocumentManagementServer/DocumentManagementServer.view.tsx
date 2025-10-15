@@ -632,7 +632,7 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
+      notificationTitle: `${availableFileCount === docData?.totalRecords ? 'All ' : ''}  ${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
          if (alreadyDeletedFileCount > 0) {

@@ -2128,7 +2128,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
 });
 
 describe("buildSelectedDocs", () => {
-  const categoryRegistrationMap = { Legal: 1, Finance: 2 };
+  const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
     expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false)).toEqual([]);
@@ -2182,11 +2182,11 @@ describe("buildSelectedDocs", () => {
             referenceMappingDetails: [
               {
                 referenceExternalId: "ext1",
-                documentRealatedTo: 1,
-                relatedTo: [{ learnerExternalId: "ext1" }]
+                relatedTo: { learnerExternalId: "ext1" }
               }
             ],
-            categoryId: [],
+            documentRealatedTo: 1,
+            categoryIds: [1,2],
             fromDate: "",
             toDate: ""
           },
