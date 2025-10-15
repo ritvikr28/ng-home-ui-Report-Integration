@@ -373,7 +373,8 @@ export const handleSearchChange = (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  documentRelatedTo?: number,
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
@@ -395,7 +396,8 @@ export const handleSearchChange = (
     toDate,
     setIsSearchLoading,
     setSuggestions,
-    setShowSearchError
+    setShowSearchError,
+    documentRelatedTo
   );
 };
  
@@ -1046,7 +1048,9 @@ export function validateAndApplyFilter({
   setSelectedFormats,
   selectedCategories,
   setIsFilterDialogOpen,
-  setCurrentPage
+  setCurrentPage,
+  referenceExternalIds,
+  setReferenceExternalIds,
 }: {
   selectedDateRange: { fromDate?: string; toDate?: string };
   isDateError: boolean;
@@ -1057,6 +1061,8 @@ export function validateAndApplyFilter({
   selectedCategories: any;
   setIsFilterDialogOpen: (v: boolean) => void;
   setCurrentPage: (v: number) => void;
+  referenceExternalIds: string[];
+  setReferenceExternalIds: (v: string[]) => void;
 }) {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
@@ -1087,6 +1093,7 @@ export function validateAndApplyFilter({
       setSelectedFormats(selectedCategories);
       setIsFilterDialogOpen(false);
       setIsFilterLoading(false);
+      setReferenceExternalIds(referenceExternalIds ?? []);
   
   }
   setCurrentPage(1);
@@ -1113,11 +1120,12 @@ export const debouncedFetchSuggestions = debounce(
     toDate: string,
     setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>,
+    documentRelatedTo?: number | string
   ) => {
     setSearchLoading(true);
     try {
-      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
+      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
       const values = response?.payload ?? [];
       const suggestions = await formatSuggestions(values);
       setSuggestions(suggestions);

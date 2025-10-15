@@ -588,7 +588,9 @@ const handleApply = () => {
     setSelectedFormats,
     selectedCategories,
     setIsFilterDialogOpen,
-    setCurrentPage
+    setCurrentPage,
+    searchRefExternalId,
+    setSearchRefExternalId,
   });
 };
 
