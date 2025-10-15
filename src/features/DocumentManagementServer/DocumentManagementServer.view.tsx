@@ -704,7 +704,7 @@ switch (dialogType) {
         const selectedDocs = buildSelectedDocs(
           selectedCheckBoxIds,
           docData,
-          categoryRegistrationMap,
+          allRegistrationIds,
           searchRefExternalId,
           documentRealatedTo,
           excludedCheckBoxIds,

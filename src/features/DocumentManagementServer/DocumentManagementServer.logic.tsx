@@ -849,7 +849,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
-  categoryRegistrationMap: Record<string, number>,
+  categoryIds: number[],
   searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
@@ -862,7 +862,6 @@ export function buildSelectedDocs(
   const selectedDocs = docData.data.filter(
     (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
   );
-
 
   // Merge fileDetails
   const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
@@ -877,19 +876,20 @@ export function buildSelectedDocs(
     externalId: doc.externalId
   })) : [];
 
-  // Merge referenceMappingDetails
- const referenceMappingDetails = getReferenceMappingForSearchedPerson({
+  // Build referenceMappingDetails with relatedTo as a single object
+  let referenceMappingDetails: any[] = [];
+if (searchRefExternalId.length > 0) {
+  referenceMappingDetails = getReferenceMappingForSearchedPerson({
     docData,
     searchRefExternalId,
-    documentRealatedTo,
-  });
-
-
-  // Use categoryId from the first doc (or merge if needed)
-  const categoryId =
-    selectedDocs.length > 0 && categoryRegistrationMap[selectedDocs[0]?.category]
-      ? [categoryRegistrationMap[selectedDocs[0]?.category]]
-      : [];
+    documentRealatedTo
+  }).map(mapping => ({
+    referenceExternalId: mapping.referenceExternalId,
+    relatedTo: Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
+      ? mapping.relatedTo[0]
+      : mapping.relatedTo
+  }));
+}
 
   // Use fromDate/toDate from the first doc (or merge if needed)
   const fromDate = selectedDocs[0]?.fromDate ?? "";
@@ -900,9 +900,11 @@ export function buildSelectedDocs(
     {
       request: {
         selectAll: !!isHeaderBoxChecked,
+        currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
-          categoryId,
+          documentRealatedTo,
+          categoryIds,
           fromDate,
           toDate,
         },
@@ -913,12 +915,10 @@ export function buildSelectedDocs(
           excludedIdDetails.length < (docData?.totalRecords ?? 0)
             ? excludedIdDetails
             : [],
-        currentDateTime,
       }
     }
   ];
 }
-
 export function mapToBulkDeletePayload({
   isSelectAll = false,
   categoryIds = [],
