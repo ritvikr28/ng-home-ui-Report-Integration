@@ -849,7 +849,7 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
-  categoryIds: number[],
+  categoryId: number[],
   searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
@@ -904,7 +904,7 @@ if (searchRefExternalId.length > 0) {
         downloadCriteria: {
           referenceMappingDetails,
           documentRealatedTo,
-          categoryIds,
+          categoryId,
           fromDate,
           toDate,
         },
@@ -921,7 +921,7 @@ if (searchRefExternalId.length > 0) {
 }
 export function mapToBulkDeletePayload({
   isSelectAll = false,
-  categoryIds = [],
+  categoryId = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -930,7 +930,7 @@ export function mapToBulkDeletePayload({
   excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
-  categoryIds?: number[];
+  categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];
@@ -942,7 +942,7 @@ export function mapToBulkDeletePayload({
     request: {
       isSelectAll,
       bulkDeleteCriteria: {
-        categoryIds,
+        categoryId,
         fromDate,
         toDate,
         referenceDetails: {
@@ -1006,7 +1006,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
-    categoryIds: allRegistrationIds,
+    categoryId: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
@@ -1201,7 +1201,7 @@ export async function handleClearAllConfirm({
 export const buildValidationPayload = ({
   isSelectAll = false,
   userActivity = "bulkdelete",
-  categoryIds = [],
+  categoryId = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -1214,7 +1214,7 @@ export const buildValidationPayload = ({
       isSelectAll,
       userActivity,
       validationCriteria: {
-        categoryIds,
+        categoryId,
         fromDate,
         toDate,
         referenceDetails: {
