@@ -2186,7 +2186,7 @@ describe("buildSelectedDocs", () => {
               }
             ],
             documentRealatedTo: 1,
-            categoryIds: [1,2],
+            categoryId: [1,2],
             fromDate: "",
             toDate: ""
           },
