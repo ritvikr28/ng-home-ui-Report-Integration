@@ -30,7 +30,7 @@ export const fetchDocumentDetails = async ({
         toDate,
         sortBy,
         sortDirection,
-        referenceExternalId: "40ac853f-4724-4b2a-94ca-70966ecd9c5a",
+        referenceExternalId,
         documentRealatedTo
       },
     };

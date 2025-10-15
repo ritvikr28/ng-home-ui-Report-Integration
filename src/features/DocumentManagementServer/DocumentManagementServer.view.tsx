@@ -75,7 +75,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [clearAllError, setClearAllError] = useState(false);
-    const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
     const [downloadError, setDownloadError] = useState<boolean>(false);
@@ -221,7 +220,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         res.forEach((cat: any) => {
         map[cat.application] = cat.registrationId;
         });
-        setCategoryRegistrationMap(map);
     });
     }, []);
 
