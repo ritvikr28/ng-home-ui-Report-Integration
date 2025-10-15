@@ -14,7 +14,7 @@ export const fetchDocumentDetails = async ({
   toDate = '',
   sortBy = 'DateAdded',
   sortDirection = 'Desc',
-  referenceExternalId = '',
+  referenceExternalId = [],
   documentRealatedTo = 0
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
