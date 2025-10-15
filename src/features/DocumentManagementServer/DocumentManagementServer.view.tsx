@@ -75,7 +75,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [clearAllError, setClearAllError] = useState(false);
-    const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
     const [downloadError, setDownloadError] = useState<boolean>(false);
@@ -85,7 +84,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
-    const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
+    const [searchRefExternalId, setSearchRefExternalId] = useState<string[]>([]);
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
      const [restrictedFileCount, setRestrictedFileCount] = useState(0); 
     const [alreadyDeletedFileCount, setAlreadyDeletedFileCount] = useState(0);
@@ -109,14 +108,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted currently ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted as ${restrictedFileCount !== 1 ? "they are" : "it is"} currently being prepared for download. Please try again later.`
         );
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
+            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} have already been deleted.`
         );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
@@ -221,7 +220,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         res.forEach((cat: any) => {
         map[cat.application] = cat.registrationId;
         });
-        setCategoryRegistrationMap(map);
     });
     }, []);
 
@@ -280,7 +278,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     categories: number[],
     sortByCol: string = sortBy,
     sortOrder = sortDirection,
-    refExternalId: string = searchRefExternalId,
+    refExternalId: string[] = searchRefExternalId,
     relatedTo: number = documentRealatedTo
     ) => {
     fetchGetDocumentDetailsLogic({
@@ -368,7 +366,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
                 categoryIds: allRegistrationIds,
                 fromDate: dateRange.fromDate,
                 toDate: dateRange.toDate,
-                referenceExternalIds: [searchRefExternalId],
+                referenceExternalIds: searchRefExternalId,
                 documentRelatedTo: documentRealatedTo,
                 fileDetails,
                 excludedFileDetails
@@ -632,7 +630,7 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
+      notificationTitle: `${availableFileCount === docData?.totalRecords ? 'All ' : ''}  ${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
          if (alreadyDeletedFileCount > 0) {
@@ -704,7 +702,7 @@ switch (dialogType) {
         const selectedDocs = buildSelectedDocs(
           selectedCheckBoxIds,
           docData,
-          categoryRegistrationMap,
+          allRegistrationIds,
           searchRefExternalId,
           documentRealatedTo,
           excludedCheckBoxIds,
@@ -908,7 +906,7 @@ const getDialogTitle = () => {
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
-                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents are already deleted.`;
+                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents have already been deleted.`;
                                 }
                                 return "";
                             })()
