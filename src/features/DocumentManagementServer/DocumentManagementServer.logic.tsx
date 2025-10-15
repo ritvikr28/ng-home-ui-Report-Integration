@@ -2,7 +2,7 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
  import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
@@ -1241,17 +1241,25 @@ export const fileDownload = async (
   fileName: string,
   application: string,
   sectionName: string,
-  sasUrl?: string
+  blobName?: string
 ) => {
-  const isZipFile = (!application && !sectionName && sasUrl);
+  const isZipFile = (!application && !sectionName && blobName);
   try {
     if (isZipFile) {
-      const link = document.createElement("a");
-      link.href = sasUrl!;
-      link.download = fileName;
-      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
-      link.click();
-      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+        const response = await bulkDownload(blobName!);
+        console.log(response.payload);
+        if (response?.payload && blobName) { // Use the SAS URL directly to avoid CORS errors const url = response.payload; console.log("------------", url); const link = document.createElement("a"); link.href = url; link.download = ${fileName}; document.getElementById(file-download-${fileId})?.parentElement?.appendChild(link); link.click(); document.getElementById(file-download-${fileId})?.parentElement?.removeChild(link); } else { throw new Error("Bulk download failed: No file URL returned."); }else {
+          const url = response.payload;
+          console.log("------------", url);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${fileName}`;
+          document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+          link.click();
+          document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+        } else {
+          throw new Error("Bulk download failed: No file URL returned.");
+      }
     } else {
       const blob = await downloadFile(application, sectionName, fileId);
       const url = window.URL.createObjectURL(blob);
