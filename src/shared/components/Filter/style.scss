@@ -59,6 +59,13 @@
 
 .dms-related-to-dropdown{
     margin-bottom: 40px !important;
+    
+      .essui-validation-text {
+        margin-top: 10px;
+      }
+      #search-autocomplete .search-input{
+        margin-bottom: 10px !important;
+      }
   }
 
 .dms-related-to-search{
@@ -69,6 +76,12 @@
     font-weight: normal !important;
     margin-top: 8px !important;
   }
+   .search-input{
+        display: table !important;
+      }
+    .essui-validation-text {
+      margin-top: 10px;
+    }
 }
 
 .dms-filter-dialog{

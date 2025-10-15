@@ -13,7 +13,9 @@ import {
   LoaderType,
   Search,
   ISearchItemProp,
-  Suggestion
+  Suggestion,
+  TextInputSize,
+  SelectedItem
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
@@ -67,6 +69,10 @@ const FilterDialog = ({
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const [showSearchError, setShowSearchError] = useState<boolean>(false);
+  const [relatedToError, setRelatedToError] = useState<string>("");
+  const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -355,7 +361,14 @@ const handleDateChange = (
   setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue });
 };
 
-      const handleApplyWrapper = () => {
+  const handleApplyWrapper = () => {
+
+      if (!selectedRelatedTo) {
+        setRelatedToError("Pupil, Staff, or School is required.");
+        return;
+      } else {
+        setRelatedToError("");
+      }
       
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       if (fromDateError || toDateError || isDateError) {
@@ -383,7 +396,16 @@ const handleDateChange = (
   }
 }, [searchTerm, selectedCategories, selectedDateRange]);
 
-  const filteredSuggestions = filterNonEmptySuggestions(suggestions);
+  const filteredSuggestions = filterNonEmptySuggestions(suggestions).map((group, groupIdx) => ({
+  ...group,
+  values: group.values.map((item, idx) => ({
+    ...item,
+    props: {
+      ...item.props,
+      id: item.props?.id ?? `${item.text}-${groupIdx}-${idx}` // Ensure unique id
+    }
+  }))
+}));
 useEffect(() => {
   if (filteredSuggestions.length > 0) {
     console.log("Suggestions updated, showing dropdown:", filteredSuggestions);
@@ -421,7 +443,10 @@ useEffect(() => {
           selectedItem={selectedRelatedTo}
           onSelect={(e, item: ISelectedItem) => {
             setSelectedRelatedTo(item);
+            setRelatedToError("");
           }}
+          validationText={relatedToError}
+          validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
         >
           {relatedTo.map((item) => (
             <DropdownItem
@@ -444,11 +469,13 @@ useEffect(() => {
                   placeholderText={`${selectedRelatedTo.text} name`} 
                   titleText={`${selectedRelatedTo.text}`}
                   isFixedMultiSelect
+                  isSearchWithId
+                  size={TextInputSize.Large}
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
                   existingValues={[searchTerm]}
                   keyUpHandler={() => {}}
-                  isShowListBox={suggestions.length > 0 || isSearchLoading || showSearchError}
+                  isShowListBox={isDropdownOpen}
                   headingText={`${t("Filter.selectEntity")} ${selectedRelatedTo.text}s`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
@@ -459,7 +486,12 @@ useEffect(() => {
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
+                    
                     setSearchTerm(item?.text || "")
+                    if (tagListArray.length < 5 && item) {
+                      setTagListArray([...tagListArray, item as SelectedItem]);
+                    }
+                    setIsDropdownOpen(true)
                   }} 
                   suggestions={filteredSuggestions}
                   isLoader={isSearchLoading}
@@ -479,6 +511,12 @@ useEffect(() => {
                     setSuggestions(suggestions)
                   }
                   }
+                  isNotificationShow={false}
+                  validationTextForTagList={`${selectedRelatedTo.text} already added`}
+                  validationTextForLimit={`${selectedRelatedTo.text} list limit reached`}
+                  validationTextLevelForTagList={ValidationTextLevel.Warning}
+                  addLimit={5}
+                  tagListValueArray={tagListArray}
                   
                               />
           </>
