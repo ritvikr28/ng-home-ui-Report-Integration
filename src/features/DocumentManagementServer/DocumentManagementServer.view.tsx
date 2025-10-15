@@ -587,8 +587,8 @@ const handleApply = () => {
     selectedCategories,
     setIsFilterDialogOpen,
     setCurrentPage,
-    searchRefExternalId,
-    setSearchRefExternalId,
+    referenceExternalIds: searchRefExternalId,
+    setReferenceExternalIds: setSearchRefExternalId,
   });
 };
 
@@ -734,6 +734,7 @@ switch (dialogType) {
         fetchCategory()
             .then((res) => {
             const categories = reduceCategories(res);
+            console.log("Fetched categories:", categories);
             setAvailableCategories(categories);
             });
         if (selectedFormats) {

@@ -393,7 +393,7 @@ const handleDateChange = (
       setIsSearchLoading,
       selectedRelatedTo?.value ? Number(selectedRelatedTo.value) : 2
     );
-    console.log("Fetching suggestions for:", suggestions); // Debugging log
+    console.log("Fetching suggestions for:", suggestions, availableCategories); // Debugging log
   }
 }, [searchTerm, selectedCategories, selectedDateRange]);
 
