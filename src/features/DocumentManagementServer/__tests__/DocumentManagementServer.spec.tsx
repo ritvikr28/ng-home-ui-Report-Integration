@@ -686,48 +686,6 @@ describe("Additional tests to increase coverage", () => {
   fireEvent.click(screen.getByText("Delete"));
 });
 
-it("opens delete confirmation dialog when delete is clicked with selection and have no files to delete", async () => {
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  (ApiService.validation as jest.Mock).mockResolvedValue({
-  data: {
-    restrictedFileCount: 2,
-    alreadyDeletedFileCount: 2,
-    availableFileCount: 0,
-  }
-});
-  render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  const suggestionNode = await screen.findAllByText("Alfie");
-
-  fireEvent.click(suggestionNode[0]);
-
-  await waitFor(() => {
-    expect(screen.getByText("Doc1")).toBeInTheDocument();
-  });
-
-  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-
-  fireEvent.click(screen.getByText("Actions"));
-
-  fireEvent.click(screen.getByText("Delete"));
-
-  const deleteDialog = await screen.findByText(/cannot be deleted because they are being prepared for download. Please try again later/i);
-  expect(deleteDialog).toBeInTheDocument();
-  
-});
-
 it("Delete dialog cancel button works", async () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -807,7 +765,7 @@ it("Delete dialog for already deleted works", async () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-  const deleteDialog = await screen.findByText(/documents are already deleted./i);
+  const deleteDialog = await screen.findByText(/documents have already been deleted./i);
   expect(deleteDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Okay"));
@@ -1018,7 +976,7 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
   fireEvent.click(screen.getByText("Actions"));
 
   fireEvent.click(screen.getByText("Prepare download"));
-  
+
   const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
 

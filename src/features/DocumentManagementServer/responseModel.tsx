@@ -40,7 +40,7 @@ export interface DocumentManagementServerProps {
   toDate?: string;
   sortBy?: string;
   sortDirection?: string;
-  referenceExternalId?: string;
+  referenceExternalId?: string[];
   documentRealatedTo?: number;
 }
 

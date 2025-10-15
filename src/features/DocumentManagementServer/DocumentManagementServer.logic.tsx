@@ -342,22 +342,22 @@ export const handleSuggestionClick = async (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
-  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string>>
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>
 ) => {
    if (!item || !item.name) return;
   setSearchTerm(item.name);
   setSearchText(item.name);
   setDocumentRelatedTo(relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0);
 
-  let refExternalId = "";
+  let refExternalId: string[] = [];
   if (item.categoryName === "Pupil") {
-    refExternalId = item?.learnerExternalId;
+    refExternalId = [item?.learnerExternalId];
   } else if (item.categoryName === "Staff") {
-    refExternalId = item?.externalId;
+    refExternalId = [item?.externalId];
   } else if (item.categoryName === "Organisation") {
-    refExternalId = item?.organisationId;
+    refExternalId = [item?.organisationId];
   }
-  setSearchRefExternalId(refExternalId || "");
+  setSearchRefExternalId(refExternalId || []);
 };
  
 // Has items check
@@ -442,7 +442,7 @@ export async function fetchGetDocumentDetailsLogic({
   sortByCol: string;
   sortOrder: string; 
   dateRange: { fromDate?: string; toDate?: string };
-  refExternalId: string;
+  refExternalId: string[];
   relatedTo: number;
   setDocData: (v: any) => void;
   setCurrentPage: (v: number) => void;
@@ -490,7 +490,7 @@ export function getReferenceMappingForSearchedPerson({
   documentRealatedTo,
 }: {
   docData: any,
-  searchRefExternalId: string,
+  searchRefExternalId: string[],
   documentRealatedTo: number,
 }) {
   if (!Array.isArray(docData?.data)) return [];
@@ -501,15 +501,19 @@ export function getReferenceMappingForSearchedPerson({
   if (!doc) return [];
 
   const relatedArr = mapRelatedArr(doc);
+  // Fix: check if any item's referenceExternalId is in searchRefExternalId array
   const relatedItem = relatedArr.find(
-    (item: any) => item?.referenceExternalId === searchRefExternalId
+    (item: any) => searchRefExternalId.includes(item?.referenceExternalId)
   );
   if (!relatedItem) return [];
 
+  // Fix: filter relatedTo items whose externalId matches any in searchRefExternalId
   const matchedRelatedTo = Array.isArray(doc.relatedTo)
     ? doc.relatedTo.filter(
         (r: any) =>
-          (r.learnerExternalId || r.externalId || r.organisationId) === searchRefExternalId
+          searchRefExternalId.includes(
+            r.learnerExternalId || r.externalId || r.organisationId
+          )
       )
     : doc.relatedTo;
 
@@ -847,8 +851,8 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
-  categoryRegistrationMap: Record<string, number>,
-  searchRefExternalId: string,
+  categoryIds: number[],
+  searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean
@@ -860,7 +864,6 @@ export function buildSelectedDocs(
   const selectedDocs = docData.data.filter(
     (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
   );
-
 
   // Merge fileDetails
   const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
@@ -875,19 +878,20 @@ export function buildSelectedDocs(
     externalId: doc.externalId
   })) : [];
 
-  // Merge referenceMappingDetails
- const referenceMappingDetails = getReferenceMappingForSearchedPerson({
+  // Build referenceMappingDetails with relatedTo as a single object
+  let referenceMappingDetails: any[] = [];
+if (searchRefExternalId.length > 0) {
+  referenceMappingDetails = getReferenceMappingForSearchedPerson({
     docData,
     searchRefExternalId,
-    documentRealatedTo,
-  });
-
-
-  // Use categoryId from the first doc (or merge if needed)
-  const categoryId =
-    selectedDocs.length > 0 && categoryRegistrationMap[selectedDocs[0]?.category]
-      ? [categoryRegistrationMap[selectedDocs[0]?.category]]
-      : [];
+    documentRealatedTo
+  }).map(mapping => ({
+    referenceExternalId: mapping.referenceExternalId,
+    relatedTo: Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
+      ? mapping.relatedTo[0]
+      : mapping.relatedTo
+  }));
+}
 
   // Use fromDate/toDate from the first doc (or merge if needed)
   const fromDate = selectedDocs[0]?.fromDate ?? "";
@@ -898,9 +902,11 @@ export function buildSelectedDocs(
     {
       request: {
         selectAll: !!isHeaderBoxChecked,
+        currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
-          categoryId,
+          documentRealatedTo,
+          categoryIds,
           fromDate,
           toDate,
         },
@@ -911,12 +917,10 @@ export function buildSelectedDocs(
           excludedIdDetails.length < (docData?.totalRecords ?? 0)
             ? excludedIdDetails
             : [],
-        currentDateTime,
       }
     }
   ];
 }
-
 export function mapToBulkDeletePayload({
   isSelectAll = false,
   categoryIds = [],
@@ -976,11 +980,11 @@ export const handleBulkDeleteLogic = async ({
   excludedCheckBoxIds,
   isHeaderBoxChecked
 }: {
-  allSelectedDocs: { fileId: string; registrationId: number }[],
+  allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
   docData: any,
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
-  searchRefExternalId: string,
+  searchRefExternalId: string[],
   documentRealatedTo: number,
   currentPage: number,
   sortBy: string,
@@ -1007,18 +1011,25 @@ export const handleBulkDeleteLogic = async ({
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
-    referenceExternalIds: [searchRefExternalId],
+    referenceExternalIds: searchRefExternalId,
     documentRelatedTo: documentRealatedTo,
-    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length ? [] : allSelectedDocs.map(doc => ({
-      ...doc,
-      externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
+    fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
+  ? []
+  : allSelectedDocs.map(doc => ({
+      fileId: doc.fileId,
+      registrationId: doc.registrationId,
+      externalId: doc.externalId,
     })),
     excludedFileDetails:
-      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0) ?
-        allSelectedDocs.map(doc => ({
-          ...doc,
-          externalId: docData?.data.find((d: any) => d.fileId === doc.fileId)?.externalId || ""
-        })) : []
+  isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
+    ? excludedCheckBoxIds.map(fileId => {
+        const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+        return {
+          fileId,
+          externalId: matchingDoc?.externalId ?? "",
+        };
+      })
+    : []
   });
   try {
     const status = await deleteFiles(payload);

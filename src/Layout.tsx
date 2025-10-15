@@ -81,6 +81,11 @@ const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
 
+export const sendNotificationFlagr: boolean = hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "SendNotification"
+);
+
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
@@ -222,10 +227,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-  const sendNotificationFlagr: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "SendNotification"
-  );
+
   console.log("Feature Flag - SendNotification:", sendNotificationFlagr)
 
   return (

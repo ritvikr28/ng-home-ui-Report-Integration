@@ -75,7 +75,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
     const [clearAllError, setClearAllError] = useState(false);
-    const [categoryRegistrationMap, setCategoryRegistrationMap] = useState<Record<string, number>>({});
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
     const [downloadError, setDownloadError] = useState<boolean>(false);
@@ -85,7 +84,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
-    const [searchRefExternalId, setSearchRefExternalId] = useState<string>("");
+    const [searchRefExternalId, setSearchRefExternalId] = useState<string[]>([]);
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
      const [restrictedFileCount, setRestrictedFileCount] = useState(0); 
     const [alreadyDeletedFileCount, setAlreadyDeletedFileCount] = useState(0);
@@ -109,14 +108,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted because ${restrictedFileCount !== 1 ? "they are" : "it is"} being prepared for download. Please try again later.`
+            `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted as ${restrictedFileCount !== 1 ? "they are" : "it is"} currently being prepared for download. Please try again later.`
         );
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} ${alreadyDeletedFileCount === 1 ? "is" : "are"} already deleted.`
+            `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} have already been deleted.`
         );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
@@ -221,7 +220,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         res.forEach((cat: any) => {
         map[cat.application] = cat.registrationId;
         });
-        setCategoryRegistrationMap(map);
     });
     }, []);
 
@@ -280,7 +278,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     categories: number[],
     sortByCol: string = sortBy,
     sortOrder = sortDirection,
-    refExternalId: string = searchRefExternalId,
+    refExternalId: string[] = searchRefExternalId,
     relatedTo: number = documentRealatedTo
     ) => {
     fetchGetDocumentDetailsLogic({
@@ -368,7 +366,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
                 categoryIds: allRegistrationIds,
                 fromDate: dateRange.fromDate,
                 toDate: dateRange.toDate,
-                referenceExternalIds: [searchRefExternalId],
+                referenceExternalIds: searchRefExternalId,
                 documentRelatedTo: documentRealatedTo,
                 fileDetails,
                 excludedFileDetails
@@ -634,7 +632,7 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
+      notificationTitle: `${availableFileCount === docData?.totalRecords ? 'All ' : ''}  ${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
          if (alreadyDeletedFileCount > 0) {
@@ -706,7 +704,7 @@ switch (dialogType) {
         const selectedDocs = buildSelectedDocs(
           selectedCheckBoxIds,
           docData,
-          categoryRegistrationMap,
+          allRegistrationIds,
           searchRefExternalId,
           documentRealatedTo,
           excludedCheckBoxIds,
@@ -773,10 +771,8 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
     setSelectedCheckBoxIds((prevSelectedIds) => {
         const updatedCheckBoxIds = [...prevSelectedIds];
         if (updatedCheckBoxIds.includes(id)) {
-            // Remove the ID if it's already selected
             return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
         }
-        // Add the ID if it's not selected
         return [...updatedCheckBoxIds, id];
     });
 
@@ -784,44 +780,21 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
         if (doc) {
             const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
             if (isAlreadySelected) {
-                // Remove the document if it's already selected
+                
                 return prevSelectedDocs.filter((item) => item.fileId !== id);
             }
-            // Add the document if it's not selected
             return [
                 ...prevSelectedDocs,
                 {
                     fileId: id,
                     registrationId: Number(doc.registrationId),
-                    externalId: doc.externalId || "",
+                    externalId: doc.externalId,
                 }
             ];
         }
         return prevSelectedDocs;
     });
 };
-
-useEffect(() => {
-    if ( isHeaderBoxChecked) {
-        // When "Select All Across Pagination" is enabled, use excludedCheckBoxIds
-        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
-        const excludedIdsForCurrentPage = excludedCheckBoxIds.filter((id) =>
-            currentPageIds.includes(id)
-        );
-
-        setSelectedCheckBoxIds(
-            currentPageIds.filter((id: string) => !excludedIdsForCurrentPage.includes(id))
-        );
-    } else {
-        // When "Select All Across Pagination" is disabled, use selectedCheckBoxIds
-        const currentPageIds = docData?.data?.map((doc: any) => doc.fileId) || [];
-        const selectedIdsForCurrentPage = allSelectedDocs
-            .filter((doc) => currentPageIds.includes(doc.fileId))
-            .map((doc) => doc.fileId);
-
-        setSelectedCheckBoxIds(selectedIdsForCurrentPage);
-    }
-}, [currentPage, docData, allSelectedDocs, excludedCheckBoxIds]);
 
 const getDialogTitle = () => {
     if (restrictedFileCount > 0) {
@@ -929,13 +902,13 @@ const getDialogTitle = () => {
                             (() => {
                                 if (restrictedFileCount > 0) {
                                 return restrictedFileCount === 1
-                                    ? `${restrictedFileCount} document cannot be deleted because it is being prepared for download. Please try again later.`
-                                    : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted because they are being prepared for download. Please try again later.`;
+                                    ? `This document cannot be deleted as it is currently being prepared for download . Please try again later.`
+                                    : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted as they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
-                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents are already deleted.`;
+                                    : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents have already been deleted.`;
                                 }
                                 return "";
                             })()
@@ -1199,6 +1172,7 @@ const getDialogTitle = () => {
 
                                 searchOnCloseHandle={handleSearchClose}
                                 isGlobalLoader={isDialogLoading}
+                                globalLoaderText="Please wait..."
                                 isGlobalLoaderModel={isGlobalLoaderModel}
                                 secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
                                 onClickSidePnlSecondaryBtn={() => {
@@ -1215,7 +1189,7 @@ const getDialogTitle = () => {
                                 showConfirmDialog={showConfirmDialog}
                                 sidePanelShowNotification={false}
                                 sidePanelNotificationMessage="A technical issue at our end has stopped us from [action].
-                                    Please try again. If the issue persists, please get in touch with our support team.
+                                    Please try again. If the issue persists please get in touch with our support team.
                                     We appreciate your patience and understanding during this time."
                                 sidePanelNotificationStatus={NotificationStatus.SUCCESSTOAST}
                                 sidePanelNotificationTitle="Unable to Download"

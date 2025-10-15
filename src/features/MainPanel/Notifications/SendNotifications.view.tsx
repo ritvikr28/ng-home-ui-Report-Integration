@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
 import { connectWebSocket, fetchActiveConnectionCount, handleSendNotification } from "./SendNotifications.logic";
-import { socket } from "../../../Layout";
+import { sendNotificationFlagr, socket } from "../../../Layout";
 
 
 export const SendNotification = () => {
@@ -94,7 +94,7 @@ export const SendNotification = () => {
   }, []);
 
   useEffect(() => {
-    if (token && wsStatus === "disconnected") {
+    if (token && wsStatus === "disconnected" && sendNotificationFlagr) {
       handleConnect();
     }
     // eslint-disable-next-line
