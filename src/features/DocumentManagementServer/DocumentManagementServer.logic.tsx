@@ -1247,10 +1247,8 @@ export const fileDownload = async (
   try {
     if (isZipFile) {
         const response = await bulkDownload(blobName!);
-        console.log(response.payload);
-        if (response?.payload && blobName) { // Use the SAS URL directly to avoid CORS errors const url = response.payload; console.log("------------", url); const link = document.createElement("a"); link.href = url; link.download = ${fileName}; document.getElementById(file-download-${fileId})?.parentElement?.appendChild(link); link.click(); document.getElementById(file-download-${fileId})?.parentElement?.removeChild(link); } else { throw new Error("Bulk download failed: No file URL returned."); }else {
+        if (response?.payload && blobName) { 
           const url = response.payload;
-          console.log("------------", url);
           const link = document.createElement("a");
           link.href = url;
           link.download = `${fileName}`;
