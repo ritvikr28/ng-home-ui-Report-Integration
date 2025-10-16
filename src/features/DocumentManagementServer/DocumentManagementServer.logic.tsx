@@ -375,10 +375,15 @@ export const handleSearchChange = (
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
   setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
   documentRelatedTo?: number,
+  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
- 
+
+  if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
+    setResetFilterSearch(true);
+  }
+
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
@@ -388,6 +393,7 @@ export const handleSearchChange = (
  
   setIsSearchLoading(true);
   setSuggestions([]);
+  setShowSearchError(false);
  
   debouncedFetchSuggestions(
     value,
@@ -665,9 +671,9 @@ export const fetchViewDownloadData = async ({
   }
 };
  
-export const fetchCategory = async (): Promise<any[]> => {
+export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
-    const response = await fetchFilterCategory();
+    const response = await fetchFilterCategory(documentRealatedTo);
     return response ?? [];
   } catch (err) {
     console.error("Error fetching categories:", err);
@@ -1135,11 +1141,13 @@ export const debouncedFetchSuggestions = debounce(
     documentRelatedTo?: number | string
   ) => {
     setSearchLoading(true);
+    setShowError(false);
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
       const values = response?.payload ?? [];
       const suggestions = await formatSuggestions(values);
       setSuggestions(suggestions);
+      setShowError(suggestions?.length === 0);
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);
@@ -1148,7 +1156,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  500
+  3000
 );
 
 export async function handleClearAllConfirm({

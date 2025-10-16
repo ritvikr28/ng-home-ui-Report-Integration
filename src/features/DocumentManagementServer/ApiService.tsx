@@ -79,10 +79,11 @@ export const fetchDMSSuggestions = async (
   }
 };
 
-export const fetchFilterCategory = async (): Promise<any> => {
+export const fetchFilterCategory = async (documentRealatedTo: number | null): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/applicationregistration`;
+    const param = documentRealatedTo !== null ? `?DocumentRealatedTo=${encodeURIComponent(documentRealatedTo)}` : '';
+    const url = `/validation/api/v1/applicationregistration${param}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response?.data;
   } catch (err) {

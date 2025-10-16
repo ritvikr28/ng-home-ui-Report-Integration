@@ -496,6 +496,7 @@
     "pupilSearchHeading": "Pupil",
     "staffSearchHeading": "Staff",
     "schoolSearchHeading": "School",
-    "selectEntity": "Select upto 5"
+    "selectEntity": "Select upto 5",
+    "informationUnavailable": "Information unavailable"
   }
 }

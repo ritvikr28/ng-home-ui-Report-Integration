@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
 import "./style.scss"
@@ -97,6 +97,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [tableKey, setTableKey] = useState(0);
     const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
     const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
+    const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
+    const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const searchTagListRaw = [
@@ -215,7 +217,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     useEffect(() => {
 
-      fetchCategory().then((res) => {
+      fetchCategory(null).then((res) => {
         const map: Record<string, number> = {};
         res.forEach((cat: any) => {
         map[cat.application] = cat.registrationId;
@@ -228,7 +230,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   if (isSearchTriggered && searchText) {
     const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
-    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection);
+    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+     if (isSearchTriggered) {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+    }
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -512,6 +517,11 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [breadcrumbActionsList]);
+    useEffect(() => {
+  if (isSearchTriggered) {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+  }
+}, [isSearchTriggered, searchRefExternalId, selectedFormats, currentPage, dateRange, selectedFormats, sortBy, sortDirection, documentRealatedTo]);
 
     const NotificationMsgBannerObject = [
         {
@@ -576,7 +586,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isHeaderBoxChecked
         });
 
-const handleApply = () => {
+const handleApply = (referenceExternalIds: string[], categories?: ISelectedItem[]) => {
+  const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
     selectedDateRange,
     isDateError,
@@ -584,15 +595,23 @@ const handleApply = () => {
     setIsFilterLoading,
     setDateRange,
     setSelectedFormats,
-    selectedCategories,
+    selectedCategories: appliedCategories,
     setIsFilterDialogOpen,
     setCurrentPage,
-    referenceExternalIds: searchRefExternalId,
+    referenceExternalIds,
     setReferenceExternalIds: setSearchRefExternalId,
   });
+  setSelectedCategories(appliedCategories);
+  setSelectedFormats(appliedCategories);
+    if(referenceExternalIds.length > 0){
+        setSearchInput("");
+        setSearchTerm("");
+        setSearchText("");
+        setTableKey(prev => prev + 1);
+    }
+  setIsSearchTriggered(true);
 };
 
- 
 let dialogConfig;
 
 switch (dialogType) {
@@ -731,16 +750,8 @@ switch (dialogType) {
 
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
-        fetchCategory()
-            .then((res) => {
-            const categories = reduceCategories(res);
-            console.log("Fetched categories:", categories);
-            setAvailableCategories(categories);
-            });
-        if (selectedFormats) {
-            setSelectedCategories(selectedFormats);
-        }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
+        setTagListArray(tagListArray)
     };
 
     useEffect(() => {
@@ -874,6 +885,8 @@ const getDialogTitle = () => {
         </>
         );
     }
+
+
     return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
     };
     return (<>
@@ -1160,8 +1173,13 @@ const getDialogTitle = () => {
                                 searchDebouncerTreshold={0}
                                 searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
+                                    setTagListArray([]);
+                                    setSelectedCategories([]);
+                                    setDateRange({ fromDate: "", toDate: "" });
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
                                     setIsSearchTriggered(true);
+                                    setSelectedFormats([]);
+                                    setSelectedCategories([]);
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
@@ -1272,13 +1290,10 @@ const getDialogTitle = () => {
                                                 iconPosition={ButtonIconPosition.Right}
                                                 iconName="filter"
                                                 onClick={() => {
-                                                    if (isSearchTriggered) {
                                                     handleFilterOnClick();
-                                                    }
-                                                }}> Filter</Button>
+                                                }}> {t("Filter.heading")}</Button>
 
                                             <FilterDialog
-                                            availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
                                             title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
@@ -1291,6 +1306,12 @@ const getDialogTitle = () => {
                                             isDateError={isDateError}
                                             setSelectedDateRange={setSelectedDateRange}
                                             selectedDateRange={selectedDateRange}
+                                            setReferenceExternalIds={setSearchRefExternalId}
+                                            setDocumentRelatedTo={setDocumentRelatedTo}
+                                            selectedRelatedTo={selectedRelatedTo}
+                                            setSelectedRelatedTo={setSelectedRelatedTo}
+                                            tagListArray={tagListArray}
+                                            setTagListArray={setTagListArray}
                                         />
                                     </>
                                 }

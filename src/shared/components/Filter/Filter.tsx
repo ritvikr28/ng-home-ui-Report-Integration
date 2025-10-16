@@ -23,30 +23,34 @@ import dayjs from "dayjs";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
-import { filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import { fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 
 interface FilterDialogProps {
   dataTestId?: string;
   title: string;
   isOpen: boolean;
-  availableCategories: Category[];
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: () => void;
+  handleApply: (referenceExternalIds: string[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
   setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string, toDate: string }>>
   selectedDateRange: { fromDate: string, toDate: string }
   isLoading?: boolean;
+  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>;
+  selectedRelatedTo: ISelectedItem | undefined;
+  setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
+  tagListArray: SelectedItem[];
+  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
 }
 
 const FilterDialog = ({
   dataTestId = "dms-filter-dialog",
   title,
   isOpen,
-  availableCategories,
   onClose,
   setSelectedCategories,
   selectedCategories,
@@ -56,7 +60,13 @@ const FilterDialog = ({
   setIsDateError,
   setSelectedDateRange,
   selectedDateRange,
-  isLoading
+  isLoading,
+  setReferenceExternalIds,
+  setDocumentRelatedTo,
+  selectedRelatedTo,
+  setSelectedRelatedTo,
+  tagListArray,
+  setTagListArray
 }: FilterDialogProps) => {
   const { t } = useTranslation();
   const [fromDateError, setFromDateError] = useState<string>("");
@@ -64,15 +74,18 @@ const FilterDialog = ({
   const [fromDate, setFromDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
   const [toDate, setToDate] = useState<{ day: string; month: string; year: string }>({ day: "", month: "", year: "" });
   const [wasApplied, setWasApplied] = useState(false);
-  const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const [showSearchError, setShowSearchError] = useState<boolean>(false);
-  const [relatedToError, setRelatedToError] = useState<string>("");
-  const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [relatedToError, setRelatedToError] = useState<string>("");
+  const [searchSelectionError, setSearchSelectionError] = useState<string>("");
+  const [localSelectedCategories, setLocalSelectedCategories] = useState<ISelectedItem[]>(selectedCategories);
+  const [localSelectedDateRange, setLocalSelectedDateRange] = useState<{ fromDate: string, toDate: string }>(selectedDateRange);
+  const [localTagListArray, setLocalTagListArray] = useState<SelectedItem[]>(tagListArray);
+  const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -82,14 +95,30 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
 };
 
 const clearAll = () => {
-  setSelectedCategories([]);
   resetDateState(setFromDate);
   resetDateState(setToDate);
   setFromDateError("");
   setToDateError("");
   setIsDateError(false);
-  setSelectedDateRange({ fromDate: "", toDate: "" });
+  setRelatedToError("");
+  setSearchTerm("");
+  setSuggestions([]);
+  setShowSearchError(false);
+
+  setLocalSelectedCategories([]);
+  setLocalSelectedDateRange({ fromDate: "", toDate: "" });
+  setLocalTagListArray([]);
+  setLocalSelectedRelatedTo(undefined);
 };
+
+useEffect(() => {
+  if (isOpen) {
+    setLocalSelectedCategories(selectedCategories);
+    setLocalSelectedDateRange(selectedDateRange);
+    setLocalTagListArray(tagListArray);
+    setLocalSelectedRelatedTo(selectedRelatedTo);
+  }
+}, [isOpen]);
 
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
   text: key,
@@ -139,6 +168,15 @@ useEffect(() => {
     if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.fromDate.split("-");
       setFromDate({ day, month, year })
+    }
+    setTagListArray(tagListArray);
+    if(tagListArray.length > 0) {
+      setIsDropdownOpen(true);
+    }
+    if (selectedRelatedTo && selectedRelatedTo.text && selectedRelatedTo.text.length > 0) {
+      fetchCategory(Number(selectedRelatedTo.value)).then((categories) => {
+        setAvailableCategories(categories);
+      });
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
@@ -197,7 +235,6 @@ useEffect(() => {
  
 useEffect(() => {
   if (!isOpen) {
-    // Return a no-op cleanup function for consistent return
     return () => {};
   }
 
@@ -211,6 +248,7 @@ useEffect(() => {
   return () => {
     window.removeEventListener("keydown", handleEsc);
   };
+  
 }, [isOpen, onClose]);
 
 
@@ -362,12 +400,22 @@ const handleDateChange = (
 };
 
   const handleApplyWrapper = () => {
-
-      if (!selectedRelatedTo) {
+      
+      if (!localSelectedRelatedTo) {
         setRelatedToError("Pupil, Staff, or School is required.");
         return;
       } else {
         setRelatedToError("");
+      }
+
+      if (
+        (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
+        localTagListArray.length === 0
+      ) {
+        setSearchSelectionError(`${localSelectedRelatedTo.text} is required`);
+        return;
+      } else {
+        setSearchSelectionError("");
       }
       
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
@@ -375,12 +423,28 @@ const handleDateChange = (
         setIsDateError(true);
         return;
       }
+
+      
+    setSelectedCategories(localSelectedCategories);
+    setSelectedDateRange(localSelectedDateRange);
+    setTagListArray(localTagListArray);
+    setSelectedRelatedTo(localSelectedRelatedTo);
+    setDocumentRelatedTo(Number(localSelectedRelatedTo?.value));
+
+      let ids: string[] = [];
+      if (localSelectedRelatedTo?.text === "Pupil") {
+        ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
+      } else if (localSelectedRelatedTo?.text === "Staff") {
+        ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
+      } else if (localSelectedRelatedTo?.text === "School" || localSelectedRelatedTo?.text === "Organisation") {
+        ids = localTagListArray.map(item => (item as any).organisationId).filter(Boolean);
+      }
+
+      handleApply(ids, localSelectedCategories)
       setWasApplied(true);
-      handleApply();
   };
 
    useEffect(() => {
-  console.log("Search Term:", searchTerm); // Debugging log
   if (searchTerm?.length > 1) {
     handleSearchChange(
       { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
@@ -391,10 +455,9 @@ const handleDateChange = (
       setSuggestions,
       setShowSearchError,
       setIsSearchLoading,
-      selectedRelatedTo?.value ? Number(selectedRelatedTo.value) : 2
+      localSelectedRelatedTo?.value ? Number(localSelectedRelatedTo.value) : undefined
     );
-    console.log("Fetching suggestions for:", suggestions, availableCategories); // Debugging log
-  }
+      }
 }, [searchTerm, selectedCategories, selectedDateRange]);
 
   const filteredSuggestions = filterNonEmptySuggestions(suggestions).map((group, groupIdx) => ({
@@ -403,20 +466,54 @@ const handleDateChange = (
     ...item,
     props: {
       ...item.props,
-      id: item.props?.id ?? `${item.text}-${groupIdx}-${idx}` // Ensure unique id
+      id: item.props?.id ?? `${item.text}-${groupIdx}-${idx}`
     }
   }))
 }));
-useEffect(() => {
-  if (filteredSuggestions.length > 0) {
-    console.log("Suggestions updated, showing dropdown:", filteredSuggestions);
-    setShowSearchError(false); // Clear any previous errors
-  } else if (!isSearchLoading) {
-    console.log("No suggestions available");
-    setShowSearchError(true); // Show error if no suggestions and not loading
-  }
-}, [suggestions, isSearchLoading]);
 
+function addUniqueTagItem({
+  item,
+  selectedRelatedTo,
+  tagListArray,
+  setTagListArray,
+  setReferenceExternalIds,
+  maxLimit = 5,
+}: {
+  item: ISearchItemProp | null;
+  selectedRelatedTo: ISelectedItem | undefined;
+  tagListArray: SelectedItem[];
+  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
+  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  maxLimit?: number;
+}) {
+  if (!item) return;
+
+  const idKey =
+    selectedRelatedTo?.text === "Pupil"
+      ? "learnerExternalId"
+      : selectedRelatedTo?.text === "Staff"
+      ? "externalId"
+      : "organisationId";
+
+  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
+
+  const alreadyExists = tagListArray.some(
+    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+  );
+
+  if (alreadyExists) {
+    return;
+  }
+
+  if (tagListArray.length < maxLimit) {
+    setTagListArray([...tagListArray, item as SelectedItem]);
+    if (item?.props?.externalId) {
+      setReferenceExternalIds((prev) =>
+        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+      );
+    }
+  }
+}
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -441,10 +538,18 @@ useEffect(() => {
           className="dms-related-to-dropdown"
           dataTestId={`${dataTestId}-related-to`}
           isScrollbarVisible
-          selectedItem={selectedRelatedTo}
+          selectedItem={localSelectedRelatedTo}
           onSelect={(e, item: ISelectedItem) => {
-            setSelectedRelatedTo(item);
+            setLocalSelectedRelatedTo(item);
             setRelatedToError("");
+            fetchCategory(Number(item.value)).then((categories) => {
+              setAvailableCategories(categories);
+            });
+            setLocalTagListArray([]);
+            setReferenceExternalIds([]);
+            setSearchTerm("");
+            setShowSearchError(false);
+            setIsDropdownOpen(false);
           }}
           validationText={relatedToError}
           validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
@@ -462,13 +567,13 @@ useEffect(() => {
           ))}
         </Dropdown>
 
-        {selectedRelatedTo && (
+        {(localSelectedRelatedTo?.text == 'Pupil' || localSelectedRelatedTo?.text == 'Staff') && (
           <>
             <Search
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
-                  placeholderText={`${selectedRelatedTo.text} name`} 
-                  titleText={`${selectedRelatedTo.text}`}
+                  placeholderText={`${localSelectedRelatedTo?.text} name`} 
+                  titleText={`${localSelectedRelatedTo?.text}`}
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
@@ -476,24 +581,27 @@ useEffect(() => {
                   setSearchTerm={setSearchTerm}
                   existingValues={[searchTerm]}
                   keyUpHandler={() => {}}
-                  isShowListBox={isDropdownOpen}
-                  headingText={`${t("Filter.selectEntity")} ${selectedRelatedTo.text}s`}
+                  isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
+                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
-
                    }
                   isListBox
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
-                    
-                    setSearchTerm(item?.text || "")
-                    if (tagListArray.length < 5 && item) {
-                      setTagListArray([...tagListArray, item as SelectedItem]);
-                    }
-                    setIsDropdownOpen(true)
-                  }} 
+                    setSearchTerm(item?.text || "");
+                    addUniqueTagItem({
+                      item,
+                      selectedRelatedTo: localSelectedRelatedTo,
+                      tagListArray: localTagListArray,
+                      setTagListArray: setLocalTagListArray,
+                      setReferenceExternalIds,
+                      maxLimit: 5,
+                    });
+                    setIsDropdownOpen(true);
+                  }}
                   suggestions={filteredSuggestions}
                   isLoader={isSearchLoading}
                   onChange={(e: any) =>   
@@ -513,17 +621,43 @@ useEffect(() => {
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={`${selectedRelatedTo.text} already added`}
-                  validationTextForLimit={`${selectedRelatedTo.text} list limit reached`}
+                  validationTextForTagList={`${localSelectedRelatedTo.text} already added`}
+                  validationTextForLimit={`${localSelectedRelatedTo.text} list limit reached`}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
+                  validationText={
+                    searchSelectionError
+                      ? searchSelectionError
+                      : showSearchError
+                      ? t("Filter.informationUnavailable")
+                      : ""
+                  }
+                  validationTextLevel={
+                    searchSelectionError
+                      ? ValidationTextLevel.Error
+                      : showSearchError
+                      ? ValidationTextLevel.Warning
+                      : undefined
+                  }
                   addLimit={5}
-                  tagListValueArray={tagListArray}
-                  
-                              />
+                  allowSearchIfError={!showSearchError}
+                  isCustomInputForAdded
+                  tagListValueArray={localTagListArray}
+                  onRemoveTag={(e, text, closeObj) => {
+                    if (!closeObj || typeof closeObj.id === "undefined") return;
+                    setLocalTagListArray(prev => {
+                      const updated = prev.filter(tag => tag.id !== closeObj.id);
+                      if (updated.length === 0) setIsDropdownOpen(false); // Hide box if no tags left
+                      return updated;
+                    });
+                    setReferenceExternalIds(prev =>
+                      prev.filter(id => id !== closeObj.id?.toString())
+                    );
+                  }}
+                />
           </>
         )}
           
-            {selectedRelatedTo && (
+            {localSelectedRelatedTo && (
               <>
           <FormLabel>{t("Category")}</FormLabel>
         <Dropdown
@@ -531,9 +665,9 @@ useEffect(() => {
           isFixedMultiSelect
           multiSelect
           isScrollbarVisible
-          selectedItems={selectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
+          selectedItems={localSelectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
           onSelectMultiple={(_, items) => {
-            setSelectedCategories((prev) => {
+            setLocalSelectedCategories((prev) => {
               const dateRangeIndex = prev.findIndex((item) => item.data?.type === "dateRange");
               const dateRangeItem = prev[dateRangeIndex];
 
@@ -579,7 +713,7 @@ useEffect(() => {
                 id={category.application}
                 text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
                 value={category.application}
-                isSelected={selectedCategories.some((item) => item.data === category.application)}
+                isSelected={localSelectedCategories.some((item) => item.data === category.application)}
               >
                 {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
               </DropdownItem>
