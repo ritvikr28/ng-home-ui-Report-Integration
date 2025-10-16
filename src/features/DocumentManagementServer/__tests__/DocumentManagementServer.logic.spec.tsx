@@ -2617,7 +2617,7 @@ describe('fileDownload', () => {
     const fileName = 'test.zip';
     const blobName = 'blob-zip';
     const payloadUrl = 'https://example.com/file.zip';
-    const mockBulkDownload = jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({ payload: payloadUrl });
+  const mockBulkDownload = jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({ payload: payloadUrl });
     // Simulate isZipFile logic by passing .zip fileName and blobName
     await logicModule.fileDownload(
       fileId,
@@ -2626,7 +2626,7 @@ describe('fileDownload', () => {
       '',
       blobName
     );
-    expect(mockBulkDownload).toHaveBeenCalledWith(blobName);
+    expect(mockBulkDownload).toHaveBeenCalledWith(blobName, fileName);
     expect(mockLink.href).toBe(payloadUrl);
     expect(mockLink.download).toBe(fileName);
     expect(parent.appendChild).toHaveBeenCalledWith(mockLink);

@@ -982,4 +982,90 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
   fireEvent.click(screen.getByText("Cancel"));
 });
+
+it("shows correct message when one document is already deleted in dialog", async () => {
+  // Mock validation to set alreadyDeletedFileCount = 1, availableFileCount = 0
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 1,
+      availableFileCount: 0,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+  // Select the checkbox for the first row
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  // Open actions and trigger Prepare download
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Prepare download"));
+  // Should show the single deleted document message
+  await waitFor(() => {
+  expect(screen.getByText(/cannot be downloaded as it has been deleted/)).toBeInTheDocument();
+});
+});
+
+it("shows correct notification when one document is available for download in dialog", async () => {
+  // Mock validation to set availableFileCount = 1, alreadyDeletedFileCount = 0
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 0,
+      availableFileCount: 1,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+  // Select the checkbox for the first row
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  // Open actions and trigger Prepare download
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Prepare download"));
+  // Should show the single available document message
+await waitFor(() => {
+  expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
+});
+})
 })
