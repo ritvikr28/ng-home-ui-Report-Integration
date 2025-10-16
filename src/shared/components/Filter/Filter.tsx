@@ -32,7 +32,7 @@ interface FilterDialogProps {
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: (referenceExternalIds: string[]) => void;
+  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
