@@ -76,7 +76,7 @@ export interface Category{
         fileId: string;
         application: string;
         section: string;
-        sasUrl?: string;
+        blobName?: string;
     }
 
 export interface DocumentPrepareDownload {
@@ -142,7 +142,7 @@ export interface ValidationFileDetail {
 export interface BuildValidationPayloadParams {
   isSelectAll?: boolean;
   userActivity?: string;
-  categoryIds?: number[];
+  categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];

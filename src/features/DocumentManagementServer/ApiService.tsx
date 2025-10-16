@@ -127,6 +127,18 @@ export const deleteFiles = async (payload: { request: any }) => {
   return payload?.request?.status;
 };
 
+export const bulkDownload = async (blobName: string): Promise<any> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodeURIComponent(blobName)}`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response.data;
+  } catch (err) {
+    console.error("Error in bulk download:", err);
+    return null;
+  }
+};
+
 
 export const viewDownload = async (): Promise<any> => {
   try {

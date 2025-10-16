@@ -363,7 +363,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
             const validationPayload = buildValidationPayload({
                 isSelectAll: !!isHeaderBoxChecked,
                 userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
-                categoryIds: allRegistrationIds,
+                categoryId: allRegistrationIds,
                 fromDate: dateRange.fromDate,
                 toDate: dateRange.toDate,
                 referenceExternalIds: searchRefExternalId,
@@ -850,7 +850,7 @@ const getDialogTitle = () => {
                                    item.name ?? "",
                                    item.application,
                                    item.section,
-                                   item.sasUrl
+                                   item.blobName
                                );
                            } catch (error) {
                                setDownloadError(true);
@@ -1146,7 +1146,7 @@ const getDialogTitle = () => {
                                 }
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
-                                searchHeadingText="Search by pupil, staff or school name"
+                                searchHeadingText="Search by pupil, staff, or school name"
                                 searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=" "
