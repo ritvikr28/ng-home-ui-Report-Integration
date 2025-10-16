@@ -13,8 +13,7 @@ export const SendNotification = () => {
   const [activeConnectionCount, setActiveConnectionCount] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
 
-  wsRef.current = socket;
-
+wsRef.current = sendNotificationFlagr ? socket : null;
 
   const [notification, setNotification] = useState<{
     type: string;
