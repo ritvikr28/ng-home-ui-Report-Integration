@@ -2612,20 +2612,46 @@ describe('fileDownload', () => {
     jest.clearAllMocks();
   });
 
-  it('downloads zip file using sasUrl', async () => {
-    const sasUrl = 'https://example.com/file.zip';
+  it('downloads zip file using SAS URL from bulkDownload', async () => {
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
+    const payloadUrl = 'https://example.com/file.zip';
+    const mockBulkDownload = jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({ payload: payloadUrl });
+    // Simulate isZipFile logic by passing .zip fileName and blobName
     await logicModule.fileDownload(
-      '00000000-0000-0000-0000-000000000000',
-      'test.zip',
+      fileId,
+      fileName,
       '',
       '',
-      sasUrl
+      blobName
     );
-    expect(mockLink.href).toBe(sasUrl);
-    expect(mockLink.download).toBe('test.zip');
+    expect(mockBulkDownload).toHaveBeenCalledWith(blobName);
+    expect(mockLink.href).toBe(payloadUrl);
+    expect(mockLink.download).toBe(fileName);
     expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
     expect(mockLink.click).toHaveBeenCalled();
     expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it('throws error if bulkDownload returns no payload', async () => {
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
+    jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({});
+    await expect(
+      logicModule.fileDownload(fileId, fileName, '', '', blobName)
+    ).rejects.toThrow('Bulk download failed: No file URL returned.');
+  });
+
+  it('throws error if bulkDownload throws', async () => {
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
+    jest.spyOn(ApiService, 'bulkDownload').mockRejectedValueOnce(new Error('fail'));
+    await expect(
+      logicModule.fileDownload(fileId, fileName, '', '', blobName)
+    ).rejects.toThrow('fail');
   });
 
   it('downloads blob file using downloadFile', async () => {

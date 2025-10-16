@@ -850,7 +850,7 @@ const getDialogTitle = () => {
                                    item.name ?? "",
                                    item.application,
                                    item.section,
-                                   item.sasUrl
+                                   item.blobName
                                );
                            } catch (error) {
                                setDownloadError(true);
