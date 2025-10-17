@@ -583,46 +583,6 @@ describe("deleteFiles API", () => {
   });
 });
 
-// describe('bulkDownload', () => {
-//   const mockBlobName = 'test_blob';
-//   const encodedBlobName = encodeURIComponent(mockBlobName);
-//   const expectedUrl = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodedBlobName}`;
-
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
-
-//   it('should return response data when API call is successful', async () => {
-//     const mockData = { success: true };
-//     (service.get as jest.Mock).mockResolvedValueOnce({ data: mockData });
-
-//     const result = await bulkDownload(mockBlobName);
-//     expect(result).toEqual(mockData);
-//     expect(service.get).toHaveBeenCalledWith(expectedUrl, expect.any(String));
-//   });
-
-//   it('should log error and return null when API call fails', async () => {
-//     const error = new Error('Network error');
-//     (service.get as jest.Mock).mockRejectedValueOnce(error);
-//     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-
-//     const result = await bulkDownload(mockBlobName);
-//     expect(result).toBeNull();
-//     expect(consoleSpy).toHaveBeenCalledWith('Error in bulk download:', error);
-//     consoleSpy.mockRestore();
-//   });
-
-//   it('should encode blobName correctly in the URL', async () => {
-//     (service.get as jest.Mock).mockResolvedValueOnce({ data: {} });
-//     await bulkDownload('blob name with spaces');
-//     expect(service.get).toHaveBeenCalledWith(
-//       `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=blob%20name%20with%20spaces`,
-//       expect.any(String)
-//     );
-//   });
-// });
-
-
 describe('bulkDownload', () => {
   const mockBlobName = 'test_blob';
   const mockFileName = 'test_file.txt';
