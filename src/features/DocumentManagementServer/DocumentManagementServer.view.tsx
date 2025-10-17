@@ -70,6 +70,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [excludedCheckBoxIds, setExcludedCheckBoxIds] = useState<string[]>([]);
+    const [prevSelectedDocs, setPrevSelectedDocs] = useState<string[]>([]);
     const [isHeaderBoxChecked, setIsHeaderBoxChecked] = useState<boolean>(false);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
@@ -229,6 +230,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
     fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection);
+    console.log(selectedCheckBoxIds)
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -470,6 +472,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setTableKey(prev => prev + 1);
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
+        setPrevSelectedDocs([]);
         };
 
         useEffect(() => {
@@ -586,7 +589,9 @@ const handleApply = () => {
     setSelectedFormats,
     selectedCategories,
     setIsFilterDialogOpen,
-    setCurrentPage
+    setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs
   });
 };
 
@@ -706,7 +711,8 @@ switch (dialogType) {
           searchRefExternalId,
           documentRealatedTo,
           excludedCheckBoxIds,
-          isHeaderBoxChecked
+          isHeaderBoxChecked,
+          allSelectedDocs
         );
 
         prepareDownload(selectedDocs)
@@ -758,31 +764,41 @@ switch (dialogType) {
         setIsHeaderBoxChecked(isChecked);
         if (!isChecked) {
             setSelectedCheckBoxIds([]);
-            setExcludedCheckBoxIds([]);
-            setAllSelectedDocs([]);
+                    setExcludedCheckBoxIds([]);
+
         }
+        setPrevSelectedDocs([])
+        setAllSelectedDocs([]);
+
     }
     
-const handleOnChangeCheckBox = (index: number, id: string) => {
+    const handleOnChangeCheckBox = (index: number, id: string) => {
+        const isAlreadySelectedIds = selectedCheckBoxIds?.includes(id);
+        if (isAlreadySelectedIds) {
+            setSelectedCheckBoxIds(selectedCheckBoxIds?.filter(exId => exId !== id));
+        } else {
+            setSelectedCheckBoxIds([...selectedCheckBoxIds, id]);
+        }
+
     const doc = docData?.data?.find((d: any) => d.fileId === id);
 
     setSelectedCheckBoxIds((prevSelectedIds) => {
         const updatedCheckBoxIds = [...prevSelectedIds];
-        if (updatedCheckBoxIds.includes(id)) {
-            return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
+        if (updatedCheckBoxIds?.includes(id)) {
+            return updatedCheckBoxIds?.filter((selectedId) => selectedId !== id);
         }
         return [...updatedCheckBoxIds, id];
     });
 
-    setAllSelectedDocs((prevSelectedDocs) => {
+    setAllSelectedDocs((prevDocs) => {
         if (doc) {
-            const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
+            const isAlreadySelected = prevDocs?.some((item) => item.fileId === id);
             if (isAlreadySelected) {
                 
-                return prevSelectedDocs.filter((item) => item.fileId !== id);
+                return prevDocs?.filter((item) => item.fileId !== id);
             }
             return [
-                ...prevSelectedDocs,
+                ...prevDocs,
                 {
                     fileId: id,
                     registrationId: Number(doc.registrationId),
@@ -790,7 +806,7 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
                 }
             ];
         }
-        return prevSelectedDocs;
+        return prevDocs;
     });
 };
 
@@ -810,6 +826,7 @@ const getDialogTitle = () => {
     return "";
 };
 
+console.log(excludedCheckBoxIds, selectedCheckBoxIds, allSelectedDocs)
     const renderViewDownloadContent = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
@@ -1071,10 +1088,14 @@ const getDialogTitle = () => {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
-                                isAllSelectedAcrossPagination={false}
+                                isAllSelectedAcrossPagination={true}
                                 totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
+                                }}
+                                prevselectedCheckboxIds={(ids: string[]) => {
+                                    const uniqueNewIds = ids.filter(id => !prevSelectedDocs.includes(id));
+                                    setPrevSelectedDocs([...prevSelectedDocs, ...uniqueNewIds]);
                                 }}
                                 setExcludedCheckBoxIds={(ids: string[]) => {
                                         setExcludedCheckBoxIds(ids);

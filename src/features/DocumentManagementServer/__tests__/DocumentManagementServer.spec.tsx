@@ -400,6 +400,23 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(container).toBeTruthy(); // minimal assertion
   });
  
+    it("renders expiry message for fileExpiryDays > 0", async () => {
+      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [
+          { name: "FileFuture", status: "complete", fileExpiryDays: 3 }
+        ],
+      });
+      render(<MemoryRouter>
+        <DocumentManagementServerView />
+      </MemoryRouter>);
+      fireEvent.click(await screen.getByText("Actions"));
+      fireEvent.click(await screen.getByText("View download"));
+      await waitFor(() => {
+        expect(screen.getByText("FileFuture")).toBeInTheDocument();
+        expect(screen.getByText("Expires in 3 day(s).")).toBeInTheDocument();
+      });
+    });
   it("renders side panel files with expiry 0 or undefined", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
@@ -419,6 +436,26 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
+  
+    it("does not render expiry message when fileExpiryDays is undefined", async () => {
+      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [
+          { name: "FileNoExpiry", status: "complete" }
+        ],
+      });
+      render(<MemoryRouter>
+        <DocumentManagementServerView />
+      </MemoryRouter>);
+      fireEvent.click(await screen.getByText("Actions"));
+      fireEvent.click(await screen.getByText("View download"));
+      await waitFor(() => {
+        expect(screen.getByText("FileNoExpiry")).toBeInTheDocument();
+        // Should NOT find expiry text
+        expect(screen.queryByText(/Expires in/)).not.toBeInTheDocument();
+        expect(screen.queryByText("Expires today.")).not.toBeInTheDocument();
+      });
+    });
  
   it("updates breadcrumbs on resize for mobile", () => {
     global.innerWidth = 500;
