@@ -25,13 +25,15 @@ describe("NoSelectionDialog", () => {
         title="Test Title"
         message="Test Message"
         notificationTitle="Test Notification"
-        onClose={jest.fn()} // Provide a mock onClose function
+        onClose={setShowDialog} // Provide a mock onClose function
       />
     );
     expect(screen.getByTestId("test-id")).toBeInTheDocument();
     expect(screen.queryByText("Test Title")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Message")).not.toBeInTheDocument();
     expect(screen.queryByText("Test Notification")).not.toBeInTheDocument();
+     fireEvent.click(screen.getByTestId("dialog-close-button"));
+    expect(setShowDialog).toHaveBeenCalledWith(false);
   });
 
   it("renders title, message, and notification when provided", () => {

@@ -1848,6 +1848,8 @@ describe("validateAndApplyFilter", () => {
   let setSelectedFormats: jest.Mock;
   let setIsFilterDialogOpen: jest.Mock;
   let setCurrentPage: jest.Mock;
+  let setAllSelectedDocs: jest.Mock;
+  let setExcludedCheckBoxIds: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -1857,6 +1859,8 @@ describe("validateAndApplyFilter", () => {
     setSelectedFormats = jest.fn();
     setIsFilterDialogOpen = jest.fn();
     setCurrentPage = jest.fn();
+    setAllSelectedDocs = jest.fn();
+    setExcludedCheckBoxIds = jest.fn();
   });
 
   afterEach(() => {
@@ -1873,7 +1877,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1889,7 +1895,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1905,7 +1913,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1921,7 +1931,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1937,7 +1949,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1953,7 +1967,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: [],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1969,7 +1985,9 @@ describe("validateAndApplyFilter", () => {
       setSelectedFormats,
       selectedCategories: ["cat1"],
       setIsFilterDialogOpen,
-      setCurrentPage
+      setCurrentPage,
+      setAllSelectedDocs,
+      setExcludedCheckBoxIds
     });
     expect(setIsFilterLoading).toHaveBeenCalledWith(true);
     expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
@@ -2131,15 +2149,15 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[])).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[])).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[])).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2171,7 +2189,8 @@ describe("buildSelectedDocs", () => {
       ["ext1"],
       1,
       excludedIdDetails,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      []
     );
 
     expect(resultWithExcluded).toEqual([
@@ -2187,8 +2206,8 @@ describe("buildSelectedDocs", () => {
             ],
             documentRealatedTo: 1,
             categoryId: [1,2],
-            fromDate: "",
-            toDate: ""
+            fromDate: "2025-01-01",
+            toDate: "2025-01-02"
           },
           fileDetails: [],
           excludedFileDetails: [],
@@ -2219,11 +2238,40 @@ describe("buildSelectedDocs", () => {
       [""],
       0,
       excludedCheckBoxIds,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }]
     );
     expect(result[0].request.excludedFileDetails).toEqual([
-      { fileId: "1", registrationId: 123, externalId: undefined },
-      { fileId: "2", registrationId: 456, externalId: undefined }
+      { fileId: "1", registrationId: 123, externalId: "ext1" },
+      { fileId: "2", registrationId: 456, externalId: "ext2" }
+    ]);
+  });
+
+  it("returns excludedIdDetails when isHeaderBoxChecked is true, excludedIdDetails.length > 0, and less than totalRecords", () => {
+    const docData = {
+      data: [
+        { fileId: "1", registrationId: 123, category: "Legal" },
+        { fileId: "2", registrationId: 456, category: "Finance" }
+      ],
+      totalRecords: 5
+    };
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = false;
+
+    const result = buildSelectedDocs(
+      selectedCheckBoxIds,
+      docData,
+      categoryRegistrationMap,
+      [""],
+      0,
+      excludedCheckBoxIds,
+      isHeaderBoxChecked,
+      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }]
+    );
+     expect(result[0].request.fileDetails).toEqual([
+      { fileId: "1", registrationId: 123, externalId: "ext1" },
+      { fileId: "2", registrationId: 456, externalId: "ext2" }
     ]);
   });
 
@@ -2245,7 +2293,8 @@ describe("buildSelectedDocs", () => {
       [""] ,
       0,
       excludedCheckBoxIds,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2268,7 +2317,8 @@ describe("buildSelectedDocs", () => {
       [""],
       0,
       excludedCheckBoxIds,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2292,7 +2342,8 @@ describe("buildSelectedDocs", () => {
       [""],
       0,
       excludedCheckBoxIds,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2315,7 +2366,8 @@ describe("buildSelectedDocs", () => {
       [""],
       0,
       excludedCheckBoxIds,
-      isHeaderBoxChecked
+      isHeaderBoxChecked,
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
