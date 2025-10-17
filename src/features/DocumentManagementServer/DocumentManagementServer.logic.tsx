@@ -1246,7 +1246,7 @@ export const fileDownload = async (
   const isZipFile = (!application && !sectionName && blobName);
   try {
     if (isZipFile) {
-        const response = await bulkDownload(blobName!);
+        const response = await bulkDownload(blobName!, fileName);
         if (response?.payload && blobName) { 
           const url = response.payload;
           const link = document.createElement("a");
