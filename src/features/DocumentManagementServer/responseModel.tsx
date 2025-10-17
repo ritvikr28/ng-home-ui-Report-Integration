@@ -142,7 +142,7 @@ export interface ValidationFileDetail {
 export interface BuildValidationPayloadParams {
   isSelectAll?: boolean;
   userActivity?: string;
-  categoryId?: number[];
+  categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];

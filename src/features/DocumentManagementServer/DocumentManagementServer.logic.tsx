@@ -1018,6 +1018,7 @@ export const handleBulkDeleteLogic = async ({
         return {
           fileId,
           externalId: matchingDoc?.externalId ?? "",
+          registrationId: matchingDoc?.registrationId ?? 0
         };
       })
     : []
@@ -1200,7 +1201,7 @@ export async function handleClearAllConfirm({
 export const buildValidationPayload = ({
   isSelectAll = false,
   userActivity = "bulkdelete",
-  categoryId = [],
+  categoryIds = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -1213,7 +1214,7 @@ export const buildValidationPayload = ({
       isSelectAll,
       userActivity,
       validationCriteria: {
-        categoryId,
+        categoryIds,
         fromDate,
         toDate,
         referenceDetails: {
