@@ -230,7 +230,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
     fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection);
-    console.log(selectedCheckBoxIds)
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -826,7 +825,6 @@ const getDialogTitle = () => {
     return "";
 };
 
-console.log(excludedCheckBoxIds, selectedCheckBoxIds, allSelectedDocs)
     const renderViewDownloadContent = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
