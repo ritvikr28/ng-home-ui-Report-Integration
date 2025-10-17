@@ -1018,6 +1018,7 @@ export const handleBulkDeleteLogic = async ({
         return {
           fileId,
           externalId: matchingDoc?.externalId ?? "",
+          registrationId: matchingDoc?.registrationId ?? 0
         };
       })
     : []
