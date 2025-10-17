@@ -400,6 +400,23 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     expect(container).toBeTruthy(); // minimal assertion
   });
  
+    it("renders expiry message for fileExpiryDays > 0", async () => {
+      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [
+          { name: "FileFuture", status: "complete", fileExpiryDays: 3 }
+        ],
+      });
+      render(<MemoryRouter>
+        <DocumentManagementServerView />
+      </MemoryRouter>);
+      fireEvent.click(await screen.getByText("Actions"));
+      fireEvent.click(await screen.getByText("View download"));
+      await waitFor(() => {
+        expect(screen.getByText("FileFuture")).toBeInTheDocument();
+        expect(screen.getByText("Expires in 3 day(s).")).toBeInTheDocument();
+      });
+    });
   it("renders side panel files with expiry 0 or undefined", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
@@ -419,6 +436,26 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
+  
+    it("does not render expiry message when fileExpiryDays is undefined", async () => {
+      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+        status: 200,
+        data: [
+          { name: "FileNoExpiry", status: "complete" }
+        ],
+      });
+      render(<MemoryRouter>
+        <DocumentManagementServerView />
+      </MemoryRouter>);
+      fireEvent.click(await screen.getByText("Actions"));
+      fireEvent.click(await screen.getByText("View download"));
+      await waitFor(() => {
+        expect(screen.getByText("FileNoExpiry")).toBeInTheDocument();
+        // Should NOT find expiry text
+        expect(screen.queryByText(/Expires in/)).not.toBeInTheDocument();
+        expect(screen.queryByText("Expires today.")).not.toBeInTheDocument();
+      });
+    });
  
   it("updates breadcrumbs on resize for mobile", () => {
     global.innerWidth = 500;
@@ -457,63 +494,6 @@ describe("Additional tests to increase coverage", () => {
   ).toBeInTheDocument();
 });
  
- 
-//   it("shows error notifications for failed prepareDownload", async () => {
-//      (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-//   (Logic.prepareDownload as jest.Mock).mockResolvedValue([500]);
-//   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-//       status: 200,
-//       data: [
-//         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-//         { name: "FileUndefined", status: "complete" }
-//       ],
-//     });
-//   (ApiService.validation as jest.Mock).mockResolvedValue({
-//   data: {
-//     restrictedFileCount: 0,
-//     alreadyDeletedFileCount: 0,
-//     availableFileCount: 2,
-//   }
-// });
- 
- 
-//  render(<MemoryRouter>
-//       <DocumentManagementServerView />
-//     </MemoryRouter>);
- 
-//   // type search query
-//   const input = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(input, { target: { value: "Alfie" } });
-//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
- 
-//   // wait for suggestion to show up
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
- 
-//   const suggestionNode = await screen.findAllByText("Alfie");
- 
-//   // click suggestion
-//   fireEvent.click(suggestionNode[0]);
- 
-//   // verify document is displayed
-//   await waitFor(() => {
-//     expect(screen.getByText("Doc1")).toBeInTheDocument();
-//   });
- 
-//   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-//     fireEvent.click(await screen.findByText("Actions"));
-//     const option = await screen.findByTestId("option-test-0");
-//     fireEvent.click(option);
- 
-//     const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
-//     fireEvent.click(saveBtn);
-//     const sidePanelLoader = await screen.getByText("Please wait...");
-//     expect(sidePanelLoader).toBeInTheDocument();
-//   });
  
   it("handles multiple files for email notification", async () => {
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);

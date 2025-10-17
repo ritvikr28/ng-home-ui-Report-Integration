@@ -853,28 +853,21 @@ export function buildSelectedDocs(
   searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
-  isHeaderBoxChecked: boolean
+  isHeaderBoxChecked: boolean,
+  allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
   // Gather all valid docs
   const selectedDocs = docData.data.filter(
-    (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
+    (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
   // Merge fileDetails
-  const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
-    fileId: doc.fileId,
-    registrationId: doc.registrationId,
-    externalId: doc.externalId
-  })) : [];
+  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
 
-  const excludedIdDetails = (isHeaderBoxChecked && selectedDocs.length > 0) ? selectedDocs.map((doc: any) => ({
-    fileId: doc.fileId,
-    registrationId: doc.registrationId,
-    externalId: doc.externalId
-  })) : [];
+  const excludedIdDetails = (isHeaderBoxChecked && allSelectedDocs?.length > 0) ? allSelectedDocs : [];
 
   // Build referenceMappingDetails with relatedTo as a single object
   let referenceMappingDetails: any[] = [];
@@ -1057,7 +1050,9 @@ export function validateAndApplyFilter({
   setSelectedFormats,
   selectedCategories,
   setIsFilterDialogOpen,
-  setCurrentPage
+  setCurrentPage,
+  setExcludedCheckBoxIds,
+  setAllSelectedDocs
 }: {
   selectedDateRange: { fromDate?: string; toDate?: string };
   isDateError: boolean;
@@ -1068,6 +1063,8 @@ export function validateAndApplyFilter({
   selectedCategories: any;
   setIsFilterDialogOpen: (v: boolean) => void;
   setCurrentPage: (v: number) => void;
+  setExcludedCheckBoxIds: (v: string[]) => void;
+  setAllSelectedDocs: (v: any[]) => void;
 }) {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
@@ -1101,6 +1098,8 @@ export function validateAndApplyFilter({
   
   }
   setCurrentPage(1);
+  setExcludedCheckBoxIds([]);
+  setAllSelectedDocs([]);
 }
 
 export function closeSidePanel(
