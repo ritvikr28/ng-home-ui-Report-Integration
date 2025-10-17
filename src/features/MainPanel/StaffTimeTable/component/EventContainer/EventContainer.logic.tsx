@@ -83,7 +83,22 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any
     );
   }
 
-  const schoolEventsData = data?.payload?.staffTimetableEventsResponse || [];
+  // Filter events for today (browser local date) and not ended yet (local time)
+  const now = new Date();
+  const schoolEventsData = (data?.payload?.staffTimetableEventsResponse || [])
+    .filter(event => {
+      const eventStart = new Date(event.eventStart);
+      const eventEnd = new Date(event.eventEnd);
+      return (
+        eventStart.getFullYear() === now.getFullYear() &&
+        eventStart.getMonth() === now.getMonth() &&
+        eventStart.getDate() === now.getDate() &&
+        eventEnd >= now
+      );
+    })
+    .sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime())
+    .slice(0, 6);
+    
   return returnEventContainer({
     schoolEventsData,
     isOpen,
