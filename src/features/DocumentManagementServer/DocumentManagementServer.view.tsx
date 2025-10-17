@@ -363,7 +363,7 @@ const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedIt
             const validationPayload = buildValidationPayload({
                 isSelectAll: !!isHeaderBoxChecked,
                 userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
-                categoryId: allRegistrationIds,
+                categoryIds: allRegistrationIds,
                 fromDate: dateRange.fromDate,
                 toDate: dateRange.toDate,
                 referenceExternalIds: searchRefExternalId,
