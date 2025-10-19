@@ -588,7 +588,7 @@ describe("Additional tests to increase coverage", () => {
     // Set invalid date range in state
      const fromDateInput = screen.getAllByPlaceholderText("DD");
   fireEvent.change(fromDateInput[0], { target: { value: "32" } });
-  fireEvent.click(screen.getByText("Apply"));
+  fireEvent.click(screen.getByText("Filter.applyFilters"));
  
  
     expect(screen.getByText(/invalid date/i)).toBeInTheDocument();

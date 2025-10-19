@@ -241,7 +241,6 @@ describe('clearAllFiles', () => {
 });
 
 describe('fetchFilterCategory', () => {
-  const mockUrl = '/validation/api/v1/applicationregistration';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -249,9 +248,11 @@ describe('fetchFilterCategory', () => {
 
   test('should return data when API call is successful', async () => {
     const mockData = { foo: 'bar' };
+    const mockUrl = '/validation/api/v1/applicationregistration?DocumentRealatedTo=1';
+
     (service.get as jest.Mock).mockResolvedValueOnce({ data: mockData });
 
-    const result = await fetchFilterCategory();
+    const result = await fetchFilterCategory(1);
     expect(result).toEqual(mockData);
     expect(service.get).toHaveBeenCalledWith(mockUrl, expect.anything());
   });
@@ -260,7 +261,7 @@ describe('fetchFilterCategory', () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     (service.get as jest.Mock).mockRejectedValueOnce(new Error('API error'));
 
-    const result = await fetchFilterCategory();
+    const result = await fetchFilterCategory(1);
     expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching DMS suggestions:',
@@ -272,7 +273,7 @@ describe('fetchFilterCategory', () => {
   test('should return undefined if response is undefined', async () => {
     (service.get as jest.Mock).mockResolvedValueOnce(undefined);
 
-    const result = await fetchFilterCategory();
+    const result = await fetchFilterCategory(1);
     expect(result).toBeUndefined();
   });
 });
@@ -282,31 +283,11 @@ describe('fetchFilterCategory', () => {
     jest.clearAllMocks();
   });
 
-  const mockUrl = '/validation/api/v1/applicationregistration';
-
-  test('should return data when API call is successful', async () => {
-    const mockData = { foo: 'bar' };
-
-    const mockResponse: AxiosResponse = {
-      data: mockData,
-      status: 200,
-      statusText: 'OK',
-      headers: {},
-      config: {},
-    };
-    jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
-
-    const result = await fetchFilterCategory();
-
-    expect(result).toEqual(mockData);
-    expect(service.get).toHaveBeenCalledWith(mockUrl, 'https://dev.platform.sims.co.uk');
-  });
-
   test('should return empty object and log error on failure', async () => {
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('API error'));
 
-    const result = await fetchFilterCategory();
+    const result = await fetchFilterCategory(1);
     expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching DMS suggestions:',

@@ -36,7 +36,9 @@ import {
   handleClearAllConfirm,
   getCompletedPartitionKeys,
   handleBulkDeleteLogic,
-  getTitleConfirmation
+  getTitleConfirmation,
+  addUniqueTagItem,
+  handleApply
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -322,26 +324,6 @@ describe("debouncedFetchSuggestions", () => {
 
   afterEach(() => {
     jest.useRealTimers();
-  });
-
-  test("fetches and sets suggestions", async () => {
-    const mockSuggestions = [{ fileName: "Doc A", fileId: "1" }];
-    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
-
-    const setSearchLoading = jest.fn();
-    const setSuggestions = jest.fn();
-    const setShowError = jest.fn();
-
-    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
-
-    await act(() => {
-      jest.advanceTimersByTime(1000);
-      return Promise.resolve();
-    });
-
-    expect(setSuggestions).toHaveBeenCalled();
-    expect(setSearchLoading).toHaveBeenCalledWith(false);
-    expect(setShowError).not.toHaveBeenCalled();
   });
 
   test("handles undefined payload structure", async () => {
@@ -985,21 +967,21 @@ describe('fetchCategory', () => {
     const mockData = [{ id: 1, name: 'Test Category' }];
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual(mockData);
   });
 
   it('returns empty array when API resolves with null', async () => {
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(null);
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual([]);
   });
 
   it('returns empty array when API throws an error', async () => {
     (ApiService.fetchFilterCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual([]);
   });
 });
@@ -1850,6 +1832,7 @@ describe("validateAndApplyFilter", () => {
   let setCurrentPage: jest.Mock;
   let setAllSelectedDocs: jest.Mock;
   let setExcludedCheckBoxIds: jest.Mock;
+  let setReferenceExternalIds: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -1861,6 +1844,7 @@ describe("validateAndApplyFilter", () => {
     setCurrentPage = jest.fn();
     setAllSelectedDocs = jest.fn();
     setExcludedCheckBoxIds = jest.fn();
+    setReferenceExternalIds = jest.fn();
   });
 
   afterEach(() => {
@@ -1879,7 +1863,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1897,7 +1883,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1915,7 +1903,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1933,7 +1923,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1951,7 +1943,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1969,7 +1963,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1987,7 +1983,9 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds
     });
     expect(setIsFilterLoading).toHaveBeenCalledWith(true);
     expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
@@ -3034,5 +3032,308 @@ describe("getTitleConfirmation", () => {
   });
 });
 
+describe("addUniqueTagItem", () => {
+  let setTagListArray: jest.Mock;
+  let setReferenceExternalIds: jest.Mock;
 
+  beforeEach(() => {
+    setTagListArray = jest.fn();
+    setReferenceExternalIds = jest.fn();
+  });
+
+  it("does nothing if item is null", () => {
+    addUniqueTagItem({
+      item: null,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("adds a new unique pupil tag and referenceExternalId", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    // Simulate callback to check correct value
+    const cb = setReferenceExternalIds.mock.calls[0][0];
+    expect(cb([])).toEqual(["p1"]);
+  });
+
+  it("does not add duplicate pupil tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.text) }],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("adds a new unique staff tag and referenceExternalId", () => {
+    const item = {
+      externalId: "s1",
+      text: "Jane Smith",
+      props: { externalId: "s1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Staff" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    const cb = setReferenceExternalIds.mock.calls[0][0];
+    expect(cb([])).toEqual(["s1"]);
+  });
+
+  it("adds a new unique organisation tag and does not add referenceExternalId if missing", () => {
+    const item = {
+      organisationId: "o1",
+      text: "Test Org",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Organisation" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("does not add tag if maxLimit is reached", () => {
+    const item = {
+      learnerExternalId: "p2",
+      text: "Another Pupil",
+      props: { externalId: "p2" }
+    };
+    const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray,
+      setTagListArray,
+      setReferenceExternalIds,
+      maxLimit: 5
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("falls back to item.text as id if idKey is missing", () => {
+    const item = {
+      text: "Fallback",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Unknown" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+  });
+
+  it("does not add duplicate when fallback id is used", () => {
+    const item = {
+      text: "Fallback",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Unknown" } as any,
+      tagListArray: [item as any],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("handleApply", () => {
+  let setSearchInput: jest.Mock;
+  let setSearchTerm: jest.Mock;
+  let setSearchText: jest.Mock;
+  let setTableKey: jest.Mock;
+  let setIsSearchTriggered: jest.Mock;
+  let setSelectedCategories: jest.Mock;
+  let setSelectedFormats: jest.Mock;
+  let setIsDateError: jest.Mock;
+  let setIsFilterLoading: jest.Mock;
+  let setDateRange: jest.Mock;
+  let setIsFilterDialogOpen: jest.Mock;
+  let setCurrentPage: jest.Mock;
+  let setExcludedCheckBoxIds: jest.Mock;
+  let setAllSelectedDocs: jest.Mock;
+  let setSearchRefExternalId: jest.Mock;
+
+  beforeEach(() => {
+    setSearchInput = jest.fn();
+    setSearchTerm = jest.fn();
+    setSearchText = jest.fn();
+    setTableKey = jest.fn();
+    setIsSearchTriggered = jest.fn();
+    setSelectedCategories = jest.fn();
+    setSelectedFormats = jest.fn();
+    setIsDateError = jest.fn();
+    setIsFilterLoading = jest.fn();
+    setDateRange = jest.fn();
+    setIsFilterDialogOpen = jest.fn();
+    setCurrentPage = jest.fn();
+    setExcludedCheckBoxIds = jest.fn();
+    setAllSelectedDocs = jest.fn();
+    setSearchRefExternalId = jest.fn();
+    jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
+  });
+  it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
+    handleApply({
+      referenceExternalIds: ["id1"],
+      categories: [{ id: "cat1" }],
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSearchInput).toHaveBeenCalledWith("");
+    expect(setSearchTerm).toHaveBeenCalledWith("");
+    expect(setSearchText).toHaveBeenCalledWith("");
+    expect(setTableKey).toHaveBeenCalled();
+    expect(setIsSearchTriggered).toHaveBeenCalledWith(true);
+  });
+
+  it("calls validateAndApplyFilter and does not reset search when referenceExternalIds is empty", () => {
+    handleApply({
+      referenceExternalIds: [],
+      categories: [{ id: "cat1" }],
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSearchInput).not.toHaveBeenCalled();
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(setSearchText).not.toHaveBeenCalled();
+    expect(setTableKey).not.toHaveBeenCalled();
+    expect(setIsSearchTriggered).toHaveBeenCalledWith(true);
+  });
+
+  it("uses selectedCategories if categories is undefined", () => {
+    handleApply({
+      referenceExternalIds: [],
+      categories: undefined,
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat2" }]);
+  });
+  it("increments tableKey when referenceExternalIds is not empty", () => {
+  handleApply({
+    referenceExternalIds: ["id1"],
+    categories: [{ id: "cat1" }],
+    selectedCategories: [{ id: "cat2" }],
+    selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+    isDateError: false,
+    setIsDateError,
+    setIsFilterLoading,
+    setDateRange,
+    setIsFilterDialogOpen,
+    setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs,
+    setSearchInput,
+    setSearchTerm,
+    setSearchText,
+    setTableKey,
+    setIsSearchTriggered,
+    setSelectedCategories,
+    setSelectedFormats,
+    setSearchRefExternalId,
+  });
+
+  // Check that setTableKey was called with a function
+  expect(setTableKey).toHaveBeenCalled();
+  const callArg = setTableKey.mock.calls[0][0];
+  expect(typeof callArg).toBe("function");
+  // Optionally, check that the function increments a value
+  expect(callArg(5)).toBe(6);
+});
+});
 

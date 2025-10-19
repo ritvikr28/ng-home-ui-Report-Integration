@@ -126,9 +126,9 @@ describe("FilterDialog", () => {
   it("renders with all form elements", () => {
     renderComponent();
     expect(screen.getByText("Filter.relatedToHeading")).toBeInTheDocument();
-    expect(screen.getByText("Date added")).toBeInTheDocument();
-    expect(screen.getByText("Clear all")).toBeInTheDocument();
-    expect(screen.getByText("Apply")).toBeInTheDocument();
+    expect(screen.getByText("Filter.dateHeading")).toBeInTheDocument();
+    expect(screen.getByText("Filter.clearFilters")).toBeInTheDocument();
+    expect(screen.getByText("Filter.applyFilters")).toBeInTheDocument();
   });
 
   it("selects a category via dropdown", async () => {
@@ -1215,4 +1215,20 @@ it("shows 'From date is required' error when From date is cleared but To date is
   // Assert error is shown
   expect(await screen.findByText("From date is required")).toBeInTheDocument();
 });
+
+it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
+  const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
+  renderComponent({
+    selectedRelatedTo: { text: "Staff", value: "2" },
+    tagListArray: [staffTag],
+  });
+
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+  await waitFor(() => {
+    // handleApply should be called with ["staff-123"] as the first argument
+    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything());
+  });
+});
+
 });

@@ -503,8 +503,14 @@ const handleDateChange = (
           onSelect={(e, item: ISelectedItem) => {
             setLocalSelectedRelatedTo(item);
             setRelatedToError("");
-            fetchCategory(Number(item.value)).then((categories) => {
-              setAvailableCategories(categories);
+            fetchCategory(Number(item.value))
+              .then((categories) => {
+                setAvailableCategories(categories);
+              })
+              .catch((error) => {
+                setAvailableCategories([]);
+                // Optionally log or show error
+                // console.error("Failed to fetch categories", error);
             });
             setLocalTagListArray([]);
             setReferenceExternalIds([]);

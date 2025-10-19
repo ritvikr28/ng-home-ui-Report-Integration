@@ -1336,3 +1336,73 @@ export function addUniqueTagItem({
     }
   }
 }
+
+export function handleApply({
+  referenceExternalIds,
+  categories,
+  selectedCategories,
+  selectedDateRange,
+  isDateError,
+  setIsDateError,
+  setIsFilterLoading,
+  setDateRange,
+  setIsFilterDialogOpen,
+  setCurrentPage,
+  setExcludedCheckBoxIds,
+  setAllSelectedDocs,
+  setSearchInput,
+  setSearchTerm,
+  setSearchText,
+  setTableKey,
+  setIsSearchTriggered,
+  setSelectedCategories,
+  setSelectedFormats,
+  setSearchRefExternalId,
+}: {
+  referenceExternalIds: string[],
+  categories?: any[],
+  selectedCategories: any[],
+  selectedDateRange: any,
+  isDateError: boolean,
+  setIsDateError: (v: boolean) => void,
+  setIsFilterLoading: (v: boolean) => void,
+  setDateRange: (v: any) => void,
+  setIsFilterDialogOpen: (v: boolean) => void,
+  setCurrentPage: (v: number) => void,
+  setExcludedCheckBoxIds: (v: string[]) => void,
+  setAllSelectedDocs: (v: any[]) => void,
+  setSearchInput: (v: string) => void,
+  setSearchTerm: (v: string) => void,
+  setSearchText: (v: string) => void,
+  setTableKey: (v: (prev: number) => number) => void,
+  setIsSearchTriggered: (v: boolean) => void,
+  setSelectedCategories: (v: any[]) => void,
+  setSelectedFormats: (v: any[]) => void,
+  setSearchRefExternalId: (v: string[]) => void,
+}) {
+  const appliedCategories = categories ?? selectedCategories;
+  validateAndApplyFilter({
+    selectedDateRange,
+    isDateError,
+    setIsDateError,
+    setIsFilterLoading,
+    setDateRange,
+    setSelectedFormats,
+    selectedCategories: appliedCategories,
+    setIsFilterDialogOpen,
+    setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs,
+    referenceExternalIds,
+    setReferenceExternalIds: setSearchRefExternalId,
+  });
+  setSelectedCategories(appliedCategories);
+  setSelectedFormats(appliedCategories);
+  if (referenceExternalIds.length > 0) {
+    setSearchInput("");
+    setSearchTerm("");
+    setSearchText("");
+    setTableKey((prev) => prev + 1);
+  }
+  setIsSearchTriggered(true);
+}
