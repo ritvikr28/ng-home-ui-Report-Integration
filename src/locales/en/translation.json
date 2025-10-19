@@ -497,6 +497,10 @@
     "staffSearchHeading": "Staff",
     "schoolSearchHeading": "School",
     "selectEntity": "Select upto 5",
-    "informationUnavailable": "Information unavailable"
+    "informationUnavailable": "Information unavailable",
+    "categoryHeading": "Category (optional)",
+    "dateHeading": "Date added (optional)",
+    "applyFilters": "Search",
+    "clearFilters": "Clear all"
   }
 }

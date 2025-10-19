@@ -587,14 +587,16 @@ export const handleTagCloseLogic = (
 ) => {
   // Detect date range tag by its name format
   if (
-    typeof closeObj.name === "string" &&
+  closeObj.id === "dateRange" ||
+  (typeof closeObj.name === "string" &&
     (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
       closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
-  ) {
-    setSelectedDateRange({ fromDate: "", toDate: "" });
-    setDateRange({ fromDate: "", toDate: "" });
-    setIsDateError(false);
-  }
+  )
+) {
+  setSelectedDateRange({ fromDate: "", toDate: "" });
+  setDateRange({ fromDate: "", toDate: "" });
+  setIsDateError(false);
+}
  
   // Remove category/format tag
   setSelectedCategories(prev =>
@@ -1156,7 +1158,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  3000
+  300
 );
 
 export async function handleClearAllConfirm({

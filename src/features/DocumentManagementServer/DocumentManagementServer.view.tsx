@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -101,8 +101,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
 
     const categoryArr = getCategoryArr(selectedFormats);
+    const dateTagArr = getDateTag(dateRange);
     const searchTagListRaw = [
-    ...categoryArr
+    ...categoryArr,
+    ...dateTagArr
     ];
 
 
@@ -227,16 +229,23 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
 
     useEffect(() => {
-  if (isSearchTriggered && searchText) {
+  if (!isFilterDialogOpen && isSearchTriggered && searchText) {
     const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
     fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
-     if (isSearchTriggered) {
+     if (!isFilterDialogOpen && isSearchTriggered) {
     fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
     }
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
+
+
+    useEffect(() => {
+        if (!isFilterDialogOpen && isSearchTriggered) {
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+        }
+    }, [isSearchTriggered, searchRefExternalId, selectedFormats, currentPage, dateRange, selectedFormats, sortBy, sortDirection, documentRealatedTo]);
 
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
@@ -475,6 +484,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setTableKey(prev => prev + 1);
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
+        setSelectedRelatedTo(undefined);
         };
 
         useEffect(() => {
@@ -517,11 +527,6 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, [breadcrumbActionsList]);
-    useEffect(() => {
-  if (isSearchTriggered) {
-    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
-  }
-}, [isSearchTriggered, searchRefExternalId, selectedFormats, currentPage, dateRange, selectedFormats, sortBy, sortDirection, documentRealatedTo]);
 
     const NotificationMsgBannerObject = [
         {
@@ -1180,6 +1185,7 @@ const getDialogTitle = () => {
                                     setIsSearchTriggered(true);
                                     setSelectedFormats([]);
                                     setSelectedCategories([]);
+                                    setSelectedRelatedTo(undefined);
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={

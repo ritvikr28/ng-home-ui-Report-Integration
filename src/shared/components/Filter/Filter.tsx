@@ -620,7 +620,7 @@ const handleDateChange = (
           
             {localSelectedRelatedTo && (
               <>
-          <FormLabel>{t("Category")}</FormLabel>
+          <FormLabel>{t("Filter.categoryHeading")}</FormLabel>
         <Dropdown
           dataTestId={`${dataTestId}-categories`}
           isFixedMultiSelect
@@ -684,7 +684,7 @@ const handleDateChange = (
         )}
 
       <div className="dms-filter-dialog-date">
-        <FormLabel className="date-added">{t("Date added")}</FormLabel>
+        <FormLabel className="date-added">{t("Filter.dateHeading")}</FormLabel>
         <div className="dms-filter-dialog-date-inputs">
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
@@ -730,7 +730,7 @@ const handleDateChange = (
           color={ButtonColor.Secondary}
           size={ButtonSize.Small}
         >
-          {t("Clear all")}
+          {t("Filter.clearFilters")}
         </Button>
         <Button
           dataTestId={`${dataTestId}-apply-btn`}
@@ -738,7 +738,7 @@ const handleDateChange = (
           color={ButtonColor.Primary}
           size={ButtonSize.Small}
         >
-          {t("Apply")}
+          {t("Filter.applyFilters")}
         </Button>
         </div>
         </>)}
