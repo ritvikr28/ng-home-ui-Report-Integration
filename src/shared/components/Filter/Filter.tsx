@@ -23,7 +23,7 @@ import dayjs from "dayjs";
 import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
-import { fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -362,7 +362,11 @@ const handleDateChange = (
         setIsDateError(true);
         return;
       }
-
+      if (!otherDate.day || !otherDate.month || !otherDate.year) {
+        setFromDateError("From date is required");
+        setIsDateError(true);
+        return;
+      }
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
       setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
       setIsDateError(true);
@@ -471,49 +475,6 @@ const handleDateChange = (
   }))
 }));
 
-function addUniqueTagItem({
-  item,
-  selectedRelatedTo,
-  tagListArray,
-  setTagListArray,
-  setReferenceExternalIds,
-  maxLimit = 5,
-}: {
-  item: ISearchItemProp | null;
-  selectedRelatedTo: ISelectedItem | undefined;
-  tagListArray: SelectedItem[];
-  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
-  maxLimit?: number;
-}) {
-  if (!item) return;
-
-  const idKey =
-    selectedRelatedTo?.text === "Pupil"
-      ? "learnerExternalId"
-      : selectedRelatedTo?.text === "Staff"
-      ? "externalId"
-      : "organisationId";
-
-  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
-
-  const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
-  );
-
-  if (alreadyExists) {
-    return;
-  }
-
-  if (tagListArray.length < maxLimit) {
-    setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId) {
-      setReferenceExternalIds((prev) =>
-        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
-      );
-    }
-  }
-}
   return (
     <Dialog
       className="dms-filter-dialog"

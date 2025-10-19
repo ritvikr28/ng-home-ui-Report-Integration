@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -1284,3 +1284,47 @@ export const fileDownload = async (
     throw error;
   }
 };
+
+export function addUniqueTagItem({
+  item,
+  selectedRelatedTo,
+  tagListArray,
+  setTagListArray,
+  setReferenceExternalIds,
+  maxLimit = 5,
+}: {
+  item: ISearchItemProp | null;
+  selectedRelatedTo: ISelectedItem | undefined;
+  tagListArray: SelectedItem[];
+  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
+  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  maxLimit?: number;
+}) {
+  if (!item) return;
+
+  const idKey =
+    selectedRelatedTo?.text === "Pupil"
+      ? "learnerExternalId"
+      : selectedRelatedTo?.text === "Staff"
+      ? "externalId"
+      : "organisationId";
+
+  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
+
+  const alreadyExists = tagListArray.some(
+    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+  );
+
+  if (alreadyExists) {
+    return;
+  }
+
+  if (tagListArray.length < maxLimit) {
+    setTagListArray([...tagListArray, item as SelectedItem]);
+    if (item?.props?.externalId) {
+      setReferenceExternalIds((prev) =>
+        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+      );
+    }
+  }
+}

@@ -51,7 +51,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSearchTriggered, setIsSearchTriggered] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>("");
     const [issearchDataLoading, setIsSearchDataLoading] = useState<boolean>(false);
-    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(true);
+    const [isFilterDialogOpen, setIsFilterDialogOpen] = useState<boolean>(false);
     const [selectedCategories, setSelectedCategories] = useState<ISelectedItem[]>([]);
     const [selectedFormats, setSelectedFormats] = useState<ISelectedItem[]>([]);
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
