@@ -76,7 +76,7 @@ export interface Category{
         fileId: string;
         application: string;
         section: string;
-        sasUrl?: string;
+        blobName?: string;
     }
 
 export interface DocumentPrepareDownload {

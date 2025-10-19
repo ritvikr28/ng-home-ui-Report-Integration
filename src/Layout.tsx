@@ -98,8 +98,12 @@ declare global {
   }
 }
 
-export const socket = new WebSocket(`${WS_BASE}`);
-
+export const socket = (() => {
+  if (sendNotificationFlagr) {
+    return new WebSocket(`${WS_BASE}`);
+  }
+  return null;
+})();
 export const getMenus: (
   data: IModulePermission[],
   globalMenus: IApplicationMenu[]

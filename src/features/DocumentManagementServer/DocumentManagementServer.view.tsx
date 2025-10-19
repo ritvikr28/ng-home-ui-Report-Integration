@@ -70,6 +70,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
     const [selectedCheckBoxIds, setSelectedCheckBoxIds] = useState<string[]>([]);
     const [excludedCheckBoxIds, setExcludedCheckBoxIds] = useState<string[]>([]);
+    const [prevSelectedDocs, setPrevSelectedDocs] = useState<string[]>([]);
     const [isHeaderBoxChecked, setIsHeaderBoxChecked] = useState<boolean>(false);
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
@@ -484,6 +485,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setTableKey(prev => prev + 1);
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
+        setPrevSelectedDocs([]);
         setSelectedRelatedTo(undefined);
         };
 
@@ -603,6 +605,8 @@ const handleApply = (referenceExternalIds: string[], categories?: ISelectedItem[
     selectedCategories: appliedCategories,
     setIsFilterDialogOpen,
     setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs,
     referenceExternalIds,
     setReferenceExternalIds: setSearchRefExternalId,
   });
@@ -732,7 +736,8 @@ switch (dialogType) {
           searchRefExternalId,
           documentRealatedTo,
           excludedCheckBoxIds,
-          isHeaderBoxChecked
+          isHeaderBoxChecked,
+          allSelectedDocs
         );
 
         prepareDownload(selectedDocs)
@@ -777,31 +782,41 @@ switch (dialogType) {
         setIsHeaderBoxChecked(isChecked);
         if (!isChecked) {
             setSelectedCheckBoxIds([]);
-            setExcludedCheckBoxIds([]);
-            setAllSelectedDocs([]);
+                    setExcludedCheckBoxIds([]);
+
         }
+        setPrevSelectedDocs([])
+        setAllSelectedDocs([]);
+
     }
     
-const handleOnChangeCheckBox = (index: number, id: string) => {
+    const handleOnChangeCheckBox = (index: number, id: string) => {
+        const isAlreadySelectedIds = selectedCheckBoxIds?.includes(id);
+        if (isAlreadySelectedIds) {
+            setSelectedCheckBoxIds(selectedCheckBoxIds?.filter(exId => exId !== id));
+        } else {
+            setSelectedCheckBoxIds([...selectedCheckBoxIds, id]);
+        }
+
     const doc = docData?.data?.find((d: any) => d.fileId === id);
 
     setSelectedCheckBoxIds((prevSelectedIds) => {
         const updatedCheckBoxIds = [...prevSelectedIds];
-        if (updatedCheckBoxIds.includes(id)) {
-            return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
+        if (updatedCheckBoxIds?.includes(id)) {
+            return updatedCheckBoxIds?.filter((selectedId) => selectedId !== id);
         }
         return [...updatedCheckBoxIds, id];
     });
 
-    setAllSelectedDocs((prevSelectedDocs) => {
+    setAllSelectedDocs((prevDocs) => {
         if (doc) {
-            const isAlreadySelected = prevSelectedDocs.some((item) => item.fileId === id);
+            const isAlreadySelected = prevDocs?.some((item) => item.fileId === id);
             if (isAlreadySelected) {
                 
-                return prevSelectedDocs.filter((item) => item.fileId !== id);
+                return prevDocs?.filter((item) => item.fileId !== id);
             }
             return [
-                ...prevSelectedDocs,
+                ...prevDocs,
                 {
                     fileId: id,
                     registrationId: Number(doc.registrationId),
@@ -809,7 +824,7 @@ const handleOnChangeCheckBox = (index: number, id: string) => {
                 }
             ];
         }
-        return prevSelectedDocs;
+        return prevDocs;
     });
 };
 
@@ -869,7 +884,7 @@ const getDialogTitle = () => {
                                    item.name ?? "",
                                    item.application,
                                    item.section,
-                                   item.sasUrl
+                                   item.blobName
                                );
                            } catch (error) {
                                setDownloadError(true);
@@ -1092,10 +1107,14 @@ const getDialogTitle = () => {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
-                                isAllSelectedAcrossPagination={false}
+                                isAllSelectedAcrossPagination={true}
                                 totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);
+                                }}
+                                prevselectedCheckboxIds={(ids: string[]) => {
+                                    const uniqueNewIds = ids.filter(id => !prevSelectedDocs.includes(id));
+                                    setPrevSelectedDocs([...prevSelectedDocs, ...uniqueNewIds]);
                                 }}
                                 setExcludedCheckBoxIds={(ids: string[]) => {
                                         setExcludedCheckBoxIds(ids);
@@ -1167,7 +1186,7 @@ const getDialogTitle = () => {
                                 }
                                 isMessageCenterAligned={false}
                                 dynamictableIconName={showSearchError && docData?.data?.length === 0 && searchText ? "warning--alt" : "information"}
-                                searchHeadingText="Search by pupil, staff or school name"
+                                searchHeadingText="Search by pupil, staff, or school name"
                                 searchTerm={searchInput}
                                 isShowSearch
                                 searchPlaceholderText=" "

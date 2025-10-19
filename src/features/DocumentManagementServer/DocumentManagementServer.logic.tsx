@@ -2,7 +2,7 @@
 import React from "react";
 import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
  import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
@@ -859,32 +859,25 @@ function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
   docData: any,
-  categoryIds: number[],
+  categoryId: number[],
   searchRefExternalId: string[],
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
-  isHeaderBoxChecked: boolean
+  isHeaderBoxChecked: boolean,
+  allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
   // Gather all valid docs
   const selectedDocs = docData.data.filter(
-    (d: any) => (isHeaderBoxChecked ? excludedCheckBoxIds : selectedCheckBoxIds)?.includes(d.fileId) && d.registrationId !== undefined
+    (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
   // Merge fileDetails
-  const fileDetails = !isHeaderBoxChecked && selectedDocs.length > 0 ? selectedDocs?.map((doc: any) => ({
-    fileId: doc.fileId,
-    registrationId: doc.registrationId,
-    externalId: doc.externalId
-  })) : [];
+  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
 
-  const excludedIdDetails = (isHeaderBoxChecked && selectedDocs.length > 0) ? selectedDocs.map((doc: any) => ({
-    fileId: doc.fileId,
-    registrationId: doc.registrationId,
-    externalId: doc.externalId
-  })) : [];
+  const excludedIdDetails = (isHeaderBoxChecked && allSelectedDocs?.length > 0) ? allSelectedDocs : [];
 
   // Build referenceMappingDetails with relatedTo as a single object
   let referenceMappingDetails: any[] = [];
@@ -914,7 +907,7 @@ if (searchRefExternalId.length > 0) {
         downloadCriteria: {
           referenceMappingDetails,
           documentRealatedTo,
-          categoryIds,
+          categoryId,
           fromDate,
           toDate,
         },
@@ -931,7 +924,7 @@ if (searchRefExternalId.length > 0) {
 }
 export function mapToBulkDeletePayload({
   isSelectAll = false,
-  categoryIds = [],
+  categoryId = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -940,7 +933,7 @@ export function mapToBulkDeletePayload({
   excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
-  categoryIds?: number[];
+  categoryId?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];
@@ -952,7 +945,7 @@ export function mapToBulkDeletePayload({
     request: {
       isSelectAll,
       bulkDeleteCriteria: {
-        categoryIds,
+        categoryId,
         fromDate,
         toDate,
         referenceDetails: {
@@ -1016,7 +1009,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
-    categoryIds: allRegistrationIds,
+    categoryId: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
@@ -1035,6 +1028,7 @@ export const handleBulkDeleteLogic = async ({
         return {
           fileId,
           externalId: matchingDoc?.externalId ?? "",
+          registrationId: matchingDoc?.registrationId ?? 0
         };
       })
     : []
@@ -1068,6 +1062,8 @@ export function validateAndApplyFilter({
   selectedCategories,
   setIsFilterDialogOpen,
   setCurrentPage,
+  setExcludedCheckBoxIds,
+  setAllSelectedDocs,
   referenceExternalIds,
   setReferenceExternalIds,
 }: {
@@ -1080,6 +1076,8 @@ export function validateAndApplyFilter({
   selectedCategories: any;
   setIsFilterDialogOpen: (v: boolean) => void;
   setCurrentPage: (v: number) => void;
+  setExcludedCheckBoxIds: (v: string[]) => void;
+  setAllSelectedDocs: (v: any[]) => void;
   referenceExternalIds: string[];
   setReferenceExternalIds: (v: string[]) => void;
 }) {
@@ -1116,6 +1114,8 @@ export function validateAndApplyFilter({
   
   }
   setCurrentPage(1);
+  setExcludedCheckBoxIds([]);
+  setAllSelectedDocs([]);
 }
 
 export function closeSidePanel(
@@ -1259,17 +1259,23 @@ export const fileDownload = async (
   fileName: string,
   application: string,
   sectionName: string,
-  sasUrl?: string
+  blobName?: string
 ) => {
-  const isZipFile = (!application && !sectionName && sasUrl);
+  const isZipFile = (!application && !sectionName && blobName);
   try {
     if (isZipFile) {
-      const link = document.createElement("a");
-      link.href = sasUrl!;
-      link.download = fileName;
-      document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
-      link.click();
-      document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+        const response = await bulkDownload(blobName!, fileName);
+        if (response?.payload && blobName) { 
+          const url = response.payload;
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `${fileName}`;
+          document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+          link.click();
+          document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
+        } else {
+          throw new Error("Bulk download failed: No file URL returned.");
+      }
     } else {
       const blob = await downloadFile(application, sectionName, fileId);
       const url = window.URL.createObjectURL(blob);

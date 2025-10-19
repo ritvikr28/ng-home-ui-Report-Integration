@@ -147,6 +147,10 @@ describe('layoutHelpers', () => {
       expect(result).toContainEqual(menus[1]); // admin always included
       expect(result).toContainEqual(menus[2]);
     });
+    it('returns empty array if menus and perms are empty', () => {
+      const result = layoutHelpers.getMenus([], []);
+      expect(result).toEqual([]);
+    });
   });
 
   describe('menuFilterHandler', () => {
@@ -154,6 +158,10 @@ describe('layoutHelpers', () => {
       const menus = [{ appCode: 'a', allowedRoles: '', isStandalone: false, appName: 'A' }];
       const t = jest.fn();
       expect(layoutHelpers.menuFilterHandler(menus as any, t)).toBe(menus);
+    });
+    it('returns empty array if menus is empty', () => {
+      const t = jest.fn();
+      expect(layoutHelpers.menuFilterHandler([], t)).toEqual([]);
     });
   });
 
@@ -168,6 +176,10 @@ describe('layoutHelpers', () => {
       expect(result.length).toBe(1);
       expect(result[0].appUrl).toBe('/b');
       expect(result[0].title).toBe('slices.b.title');
+    });
+    it('returns empty array if menus is empty', () => {
+      const t = jest.fn();
+      expect(layoutHelpers.filterAndMapModules([], t)).toEqual([]);
     });
   });
 });
