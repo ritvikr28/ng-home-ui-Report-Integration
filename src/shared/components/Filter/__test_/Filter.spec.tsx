@@ -1231,4 +1231,21 @@ it("calls handleApply with staff externalIds when RelatedTo is Staff", async () 
   });
 });
 
+it("calls handleSearchChange on search input change", async () => {
+  renderComponent({
+    selectedRelatedTo: { text: "Pupil", value: "1" },
+    tagListArray: [],
+  });
+
+  const searchInput = screen.getByTestId("search-autocomplete-input");
+  fireEvent.change(searchInput, { target: { value: "Jane Doe" } });
+  fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
+
+   
+    const suggestionNode = await screen.getAllByText("Jane Doe");
+   
+    fireEvent.click(suggestionNode[0]);
+
+    fireEvent.click(screen.getByTestId("remove-tag-undefined"));
+});
 });

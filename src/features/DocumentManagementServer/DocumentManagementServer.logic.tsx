@@ -1406,3 +1406,124 @@ export function handleApply({
   }
   setIsSearchTriggered(true);
 }
+
+export const handleEditSelectedOverFlowMenu = async ({
+  e,
+  selectedItem,
+  totalSelectedCount,
+  setShowDialog,
+  setShowConfirmDialog,
+  setShowRestrictedDeleteDialog,
+  setShowRestrictedPrepareDialog,
+  setIsPreDialogLoading,
+  isHeaderBoxChecked,
+  allSelectedDocs,
+  buildValidationPayload,
+  allRegistrationIds,
+  dateRange,
+  searchRefExternalId,
+  documentRealatedTo,
+  validation,
+  setRestrictedFileCount,
+  setAlreadyDeletedFileCount,
+  setAvailableFileCount,
+  setDialogType,
+  setIsDialogLoading,
+  setSidePanelOpenReason,
+  setIsSidePanelOpen,
+}: {
+  e: React.SyntheticEvent,
+  selectedItem: ISelectedItem,
+  totalSelectedCount: number,
+  setShowDialog: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  setShowRestrictedDeleteDialog: (v: boolean) => void,
+  setShowRestrictedPrepareDialog: (v: boolean) => void,
+  setIsPreDialogLoading: (v: boolean) => void,
+  isHeaderBoxChecked: boolean,
+  allSelectedDocs: any[],
+  buildValidationPayload: (args: any) => any,
+  allRegistrationIds: any[],
+  dateRange: { fromDate: string; toDate: string },
+  searchRefExternalId: string[],
+  documentRealatedTo: number,
+  validation: (payload: any) => Promise<any>,
+  setRestrictedFileCount: (v: number) => void,
+  setAlreadyDeletedFileCount: (v: number) => void,
+  setAvailableFileCount: (v: number) => void,
+  setDialogType: (v: string) => void,
+  setIsDialogLoading: (v: boolean) => void,
+  setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
+  setIsSidePanelOpen: (v: boolean) => void,
+}) => {
+  setShowConfirmDialog(false);
+  setShowRestrictedDeleteDialog(false);
+  setShowRestrictedPrepareDialog(false);
+
+  if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
+    if (totalSelectedCount === 0) {
+      setShowDialog(true);
+    } else {
+      setShowRestrictedDeleteDialog(true);
+      setIsPreDialogLoading(true);
+      const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
+      const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || [];
+      const validationPayload = buildValidationPayload({
+        isSelectAll: !!isHeaderBoxChecked,
+        userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
+        categoryIds: allRegistrationIds,
+        fromDate: dateRange.fromDate,
+        toDate: dateRange.toDate,
+        referenceExternalIds: searchRefExternalId,
+        documentRelatedTo: documentRealatedTo,
+        fileDetails,
+        excludedFileDetails,
+      });
+
+      const result = await validation(validationPayload);
+
+      const restricted = result?.data?.restrictedFileCount ?? 0;
+      const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
+      const available = result?.data?.availableFileCount ?? 0;
+
+      setRestrictedFileCount(restricted);
+      setAlreadyDeletedFileCount(alreadyDeleted);
+      setAvailableFileCount(available);
+
+      setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
+      setIsPreDialogLoading(false);
+      setShowRestrictedDeleteDialog(false);
+
+      if (
+        selectedItem.value === "Prepare download" &&
+        available === 0 &&
+        alreadyDeleted > 0
+      ) {
+        setShowRestrictedPrepareDialog(true);
+        setShowConfirmDialog(false);
+        return;
+      }
+
+      if (selectedItem.value === "Delete") {
+        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+          setIsDialogLoading(false);
+          setShowRestrictedDeleteDialog(true);
+          setShowConfirmDialog(false);
+          return;
+        }
+
+        if (available > 0) {
+          setIsDialogLoading(false);
+          setShowConfirmDialog(true);
+          setShowRestrictedDeleteDialog(false);
+          return;
+        }
+      }
+
+      setShowConfirmDialog(true);
+    }
+  } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
+    setSidePanelOpenReason("view");
+    setIsSidePanelOpen(true);
+  }
+};

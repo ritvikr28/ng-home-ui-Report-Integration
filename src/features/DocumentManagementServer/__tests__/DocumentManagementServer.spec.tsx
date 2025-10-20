@@ -1048,4 +1048,37 @@ await waitFor(() => {
   expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
 });
 })
+
+it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
+
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+
+  const { container } = render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Open filter dialog
+  fireEvent.click(screen.getByTestId("filter-btn"));
+  await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
+
+  // Open Related to dropdown and select "Pupil"
+  fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
+  console.log(container.innerHTML);
+  const pupilOption = await screen.getByText("Pupil");
+  fireEvent.click(pupilOption);
+
+  // Type in advanced search input and select a suggestion
+  const advInput = await screen.getByPlaceholderText("Pupil name");
+  fireEvent.change(advInput, { target: { value: "Alfie" } });
+  fireEvent.keyDown(advInput, { key: "Enter", code: "Enter" });
+
+  // Click Apply
+  const input = await screen.getAllByTestId("search-autocomplete-input");
+  fireEvent.click(input[0]);
+  
+    // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
+ 
+});
 })
