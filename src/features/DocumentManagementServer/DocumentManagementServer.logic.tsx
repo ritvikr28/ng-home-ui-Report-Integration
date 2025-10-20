@@ -1310,12 +1310,12 @@ export function addUniqueTagItem({
 }) {
   if (!item) return;
 
-  const idKey =
-    selectedRelatedTo?.text === "Pupil"
-      ? "learnerExternalId"
-      : selectedRelatedTo?.text === "Staff"
-      ? "externalId"
-      : "organisationId";
+  let idKey = "organisationId";
+if (selectedRelatedTo?.text === "Pupil") {
+  idKey = "learnerExternalId";
+} else if (selectedRelatedTo?.text === "Staff") {
+  idKey = "externalId";
+}
 
   const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
 
@@ -1408,7 +1408,6 @@ export function handleApply({
 }
 
 export const handleEditSelectedOverFlowMenu = async ({
-  e,
   selectedItem,
   totalSelectedCount,
   setShowDialog,
@@ -1418,7 +1417,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsPreDialogLoading,
   isHeaderBoxChecked,
   allSelectedDocs,
-  buildValidationPayload,
+  buildValidationPayload: buildValidationPayloadFn,
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
@@ -1468,7 +1467,7 @@ export const handleEditSelectedOverFlowMenu = async ({
       setIsPreDialogLoading(true);
       const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
       const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || [];
-      const validationPayload = buildValidationPayload({
+      const validationPayload = buildValidationPayloadFn({
         isSelectAll: !!isHeaderBoxChecked,
         userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
         categoryIds: allRegistrationIds,

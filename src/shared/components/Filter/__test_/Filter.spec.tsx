@@ -71,40 +71,51 @@ jest.mock("@essnextgen/ui-kit", () => {
         {children}
       </div>
     ),
-    Search: (props: any) => (
-  <section data-testid={props.dataTestId}>
-    {/* Render tags */}
-    {props.tagListValueArray?.map((tag: any) => (
-      <span key={tag.id} data-testid="search-tag">
-        {tag.text}
-        <button
-          aria-label={`Remove ${tag.text}`}
-          onClick={() => props.onRemoveTag?.({}, tag.text, tag)}
-          data-testid={`remove-tag-${tag.id}`}
-        >
-          x
-        </button>
-      </span>
-    ))}
-    {/* Render input */}
-    <input
-      data-testid="search-autocomplete-input"
-      value={props.searchTerm}
-      onChange={e => props.setSearchTerm(e.target.value)}
-    />
-    {/* Render suggestion if searchTerm exists */}
-    {props.searchTerm && (
-      <div
-        data-testid="search-suggestion"
-        onClick={() =>
-          props.onItemClick?.({ text: props.searchTerm, value: props.searchTerm })
-        }
-      >
-        {props.searchTerm}
-      </div>
-    )}
-  </section>
-),
+    /* eslint-disable react/require-default-props */
+    Search: ({
+      dataTestId,
+      tagListValueArray = [],
+      searchTerm = "",
+      setSearchTerm = () => {},
+      onRemoveTag = () => {},
+      onItemClick = () => {},
+    }: {
+      dataTestId: any;
+      tagListValueArray?: any[];
+      searchTerm?: string;
+      setSearchTerm?: (v: string) => void;
+      onRemoveTag?: any;
+      onItemClick?: any;
+    }) => (
+      <section data-testid={dataTestId}>
+        {tagListValueArray.map((tag: any) => (
+          <span key={tag.id} data-testid="search-tag">
+            {tag.text}
+            <button
+              type="button"
+              aria-label={`Remove ${tag.text}`}
+              onClick={() => onRemoveTag({}, tag.text, tag)}
+              data-testid={`remove-tag-${tag.id}`}
+            >
+              x
+            </button>
+          </span>
+        ))}
+        <input
+          data-testid="search-autocomplete-input"
+          value={searchTerm}
+          onChange={e => setSearchTerm(e.target.value)}
+        />
+        {searchTerm && (
+          <div
+            data-testid="search-suggestion"
+            onClick={() => onItemClick({ text: searchTerm, value: searchTerm })}
+          >
+            {searchTerm}
+          </div>
+        )}
+      </section>
+    ),
     DropdownItem: ({ text, ...props }: any) => (
       <div {...props}>{text}</div>
     ),

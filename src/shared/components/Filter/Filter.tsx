@@ -94,6 +94,22 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
+let validationText = "";
+if (searchSelectionError) {
+  validationText = searchSelectionError;
+} else if (showSearchError) {
+  validationText = t("Filter.informationUnavailable");
+}
+
+let validationTextLevel: ValidationTextLevel | undefined;
+if (searchSelectionError) {
+  validationTextLevel = ValidationTextLevel.Error;
+} else if (showSearchError) {
+  validationTextLevel = ValidationTextLevel.Warning;
+} else {
+  validationTextLevel = undefined;
+}
+
 const clearAll = () => {
   resetDateState(setFromDate);
   resetDateState(setToDate);
@@ -120,9 +136,9 @@ useEffect(() => {
   }
 }, [isOpen]);
 
-const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
-  text: key,
-  value: value,
+const relatedTo = Object.entries(relatedToEnum).map(([text, value]) => ({
+  text,
+  value,
 }));
 
 useEffect(() => {
@@ -403,14 +419,14 @@ const handleDateChange = (
   setSelectedDateRange({ fromDate: fromDateValue, toDate: toDateValue });
 };
 
+
   const handleApplyWrapper = () => {
       
       if (!localSelectedRelatedTo) {
         setRelatedToError("Pupil, Staff, or School is required.");
         return;
-      } else {
-        setRelatedToError("");
       }
+      setRelatedToError("");
 
       if (
         (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
@@ -418,9 +434,9 @@ const handleDateChange = (
       ) {
         setSearchSelectionError(`${localSelectedRelatedTo.text} is required`);
         return;
-      } else {
-        setSearchSelectionError("");
-      }
+      } 
+      setSearchSelectionError("");
+      
       
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       if (fromDateError || toDateError || isDateError) {
@@ -510,7 +526,7 @@ const handleDateChange = (
               .catch((error) => {
                 setAvailableCategories([]);
                 // Optionally log or show error
-                // console.error("Failed to fetch categories", error);
+                console.error("Failed to fetch categories", error);
             });
             setLocalTagListArray([]);
             setReferenceExternalIds([]);
@@ -534,7 +550,7 @@ const handleDateChange = (
           ))}
         </Dropdown>
 
-        {(localSelectedRelatedTo?.text == 'Pupil' || localSelectedRelatedTo?.text == 'Staff') && (
+        {(localSelectedRelatedTo?.text === 'Pupil' || localSelectedRelatedTo?.text === 'Staff') && (
           <>
             <Search
                   className="dms-related-to-search"
@@ -591,20 +607,8 @@ const handleDateChange = (
                   validationTextForTagList={`${localSelectedRelatedTo.text} already added`}
                   validationTextForLimit={`${localSelectedRelatedTo.text} list limit reached`}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
-                  validationText={
-                    searchSelectionError
-                      ? searchSelectionError
-                      : showSearchError
-                      ? t("Filter.informationUnavailable")
-                      : ""
-                  }
-                  validationTextLevel={
-                    searchSelectionError
-                      ? ValidationTextLevel.Error
-                      : showSearchError
-                      ? ValidationTextLevel.Warning
-                      : undefined
-                  }
+                  validationText={validationText}
+                  validationTextLevel={validationTextLevel}
                   addLimit={5}
                   allowSearchIfError={!showSearchError}
                   isCustomInputForAdded
@@ -671,7 +675,7 @@ const handleDateChange = (
           }}
         >
           {availableCategories
-            .slice()
+            ?.slice()
             .sort((a, b) => a.application.localeCompare(b.application))
             .map((category) => (
               <DropdownItem
