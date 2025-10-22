@@ -3,11 +3,11 @@ import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, reduceCategories, validateAndApplyFilter, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu } from "./DocumentManagementServer.logic"
 import "./style.scss"
-import { Category, tableDataProps, ViewDownloadItem } from "./responseModel"
+import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
@@ -58,7 +58,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
     const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList);
-    const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
@@ -98,10 +97,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [tableKey, setTableKey] = useState(0);
     const [totalSelectedCount, setTotalSelectedCount] = useState<number>(0);
     const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
+    const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
+    const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
 
     const categoryArr = getCategoryArr(selectedFormats);
+    const dateTagArr = getDateTag(dateRange);
     const searchTagListRaw = [
-    ...categoryArr
+    ...categoryArr,
+    ...dateTagArr
     ];
 
 
@@ -216,7 +219,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     useEffect(() => {
 
-      fetchCategory().then((res) => {
+      fetchCategory(null).then((res) => {
         const map: Record<string, number> = {};
         res.forEach((cat: any) => {
         map[cat.application] = cat.registrationId;
@@ -226,13 +229,23 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
 
     useEffect(() => {
-  if (isSearchTriggered && searchText) {
+  if (!isFilterDialogOpen && isSearchTriggered && searchText) {
     const allRegistrationId = getAllRegistrationIds(selectedFormats);
     setIsInitialLoad(true);
-    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection);
+    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+     if (!isFilterDialogOpen && isSearchTriggered) {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+    }
     setIsInitialLoad(false);
   }
 }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
+
+
+    useEffect(() => {
+        if (!isFilterDialogOpen && isSearchTriggered) {
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+        }
+    }, [isSearchTriggered, searchRefExternalId, selectedFormats, currentPage, dateRange, selectedFormats, sortBy, sortDirection, documentRealatedTo]);
 
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
@@ -349,75 +362,32 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
 
 
-const handleEditSelectedOverFlowMenu = async (e:React.SyntheticEvent, selectedItem: ISelectedItem) => {
-    setShowConfirmDialog(false);
-    setShowRestrictedDeleteDialog(false);
-    setShowRestrictedPrepareDialog(false);
-    if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
-        if (totalSelectedCount === 0) {
-            setShowDialog(true);
-        } else {
-            setShowRestrictedDeleteDialog(true);
-            setIsPreDialogLoading(true);
-            const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
-            const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || []
-            const validationPayload = buildValidationPayload({
-                isSelectAll: !!isHeaderBoxChecked,
-                userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
-                categoryIds: allRegistrationIds,
-                fromDate: dateRange.fromDate,
-                toDate: dateRange.toDate,
-                referenceExternalIds: searchRefExternalId,
-                documentRelatedTo: documentRealatedTo,
-                fileDetails,
-                excludedFileDetails
-            });
-
-      const result = await validation(validationPayload);
-
-      const restricted = result?.data?.restrictedFileCount ?? 0;
-      const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
-      const available = result?.data?.availableFileCount ?? 0;
-
-    setRestrictedFileCount(restricted);
-    setAlreadyDeletedFileCount(alreadyDeleted);
-    setAvailableFileCount(available);
-
-    setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");  
-    setIsPreDialogLoading(false); 
-    setShowRestrictedDeleteDialog(false);  
-    if (
-      selectedItem.value === "Prepare download" &&
-      available === 0 &&
-      alreadyDeleted > 0
-    ) { 
-      setShowRestrictedPrepareDialog(true);
-      setShowConfirmDialog(false);
-      return;
-    }
-    
-      if (selectedItem.value === "Delete") {
-  if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
-    setIsDialogLoading(false);
-    setShowRestrictedDeleteDialog(true);
-    setShowConfirmDialog(false);
-    return;
-  }
-
-  if (available > 0) {
-    setIsDialogLoading(false);
-    setShowConfirmDialog(true);
-    setShowRestrictedDeleteDialog(false);
-    return;
-  }
-}
-
-      setShowConfirmDialog(true);
-    }
-  } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
-    setSidePanelOpenReason("view");
-    setIsSidePanelOpen(true);
-  }
+const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISelectedItem) => {
+  handleEditSelectedOverFlowMenu({
+    e,
+    selectedItem,
+    totalSelectedCount,
+    setShowDialog,
+    setShowConfirmDialog,
+    setShowRestrictedDeleteDialog,
+    setShowRestrictedPrepareDialog,
+    setIsPreDialogLoading,
+    isHeaderBoxChecked,
+    allSelectedDocs,
+    buildValidationPayload,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    validation,
+    setRestrictedFileCount,
+    setAlreadyDeletedFileCount,
+    setAvailableFileCount,
+    setDialogType,
+    setIsDialogLoading,
+    setSidePanelOpenReason,
+    setIsSidePanelOpen,
+  });
 };
  
     const getEmptyStateMsg = () => {
@@ -472,6 +442,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
         setPrevSelectedDocs([]);
+        setSelectedRelatedTo(undefined);
         };
 
         useEffect(() => {
@@ -481,21 +452,21 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         }, [isClearSelectedCheckbox]);
 
     const handleTagClose = (
-  e: React.SyntheticEvent,
-  text: string,
-  closeObj: { name?: string; id?: string | number }
-    ) => {
-    handleTagCloseLogic(
-        e,
-        text,
-        closeObj,
-        setSelectedDateRange,
-        setDateRange,
-        setIsDateError,
-        setSelectedCategories,
-        setSelectedFormats
-    );
-    setCurrentPage(1);
+        e: React.SyntheticEvent,
+        text: string,
+        closeObj: { name?: string; id?: string | number }
+            ) => {
+            handleTagCloseLogic(
+                e,
+                text,
+                closeObj,
+                setSelectedDateRange,
+                setDateRange,
+                setIsDateError,
+                setSelectedCategories,
+                setSelectedFormats
+            );
+            setCurrentPage(1);
     };
     useEffect(() => {
         const handleResize = () => {
@@ -578,23 +549,31 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isHeaderBoxChecked
         });
 
-const handleApply = () => {
-  validateAndApplyFilter({
+const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[]) => {
+  handleApply({
+    referenceExternalIds,
+    categories,
+    selectedCategories,
     selectedDateRange,
     isDateError,
     setIsDateError,
     setIsFilterLoading,
     setDateRange,
     setSelectedFormats,
-    selectedCategories,
     setIsFilterDialogOpen,
     setCurrentPage,
     setExcludedCheckBoxIds,
-    setAllSelectedDocs
+    setAllSelectedDocs,
+    setSearchInput,
+    setSearchTerm,
+    setSearchText,
+    setTableKey,
+    setIsSearchTriggered,
+    setSelectedCategories,
+    setSearchRefExternalId,
   });
 };
 
- 
 let dialogConfig;
 
 switch (dialogType) {
@@ -734,15 +713,8 @@ switch (dialogType) {
 
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
-        fetchCategory()
-            .then((res) => {
-            const categories = reduceCategories(res);
-            setAvailableCategories(categories);
-            });
-        if (selectedFormats) {
-            setSelectedCategories(selectedFormats);
-        }
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
+        setTagListArray(tagListArray)
     };
 
     useEffect(() => {
@@ -886,6 +858,8 @@ const getDialogTitle = () => {
         </>
         );
     }
+
+
     return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
     };
     return (<>
@@ -1082,7 +1056,7 @@ const getDialogTitle = () => {
                                         value: 'Delete'
                                     }
                                 ]}
-                                onEditSelectedOverFlowMenu={handleEditSelectedOverFlowMenu}
+                                onEditSelectedOverFlowMenu={onEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
@@ -1176,8 +1150,14 @@ const getDialogTitle = () => {
                                 searchDebouncerTreshold={0}
                                 searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
+                                    setTagListArray([]);
+                                    setSelectedCategories([]);
+                                    setDateRange({ fromDate: "", toDate: "" });
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
                                     setIsSearchTriggered(true);
+                                    setSelectedFormats([]);
+                                    setSelectedCategories([]);
+                                    setSelectedRelatedTo(undefined);
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
@@ -1288,25 +1268,28 @@ const getDialogTitle = () => {
                                                 iconPosition={ButtonIconPosition.Right}
                                                 iconName="filter"
                                                 onClick={() => {
-                                                    if (isSearchTriggered) {
                                                     handleFilterOnClick();
-                                                    }
-                                                }}> Filter</Button>
+                                                }}> {t("Filter.heading")}</Button>
 
                                             <FilterDialog
-                                            availableCategories={availableCategories}
                                             isOpen={isFilterDialogOpen}
-                                            title="Filter by"
+                                            title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
                                             onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
-                                            handleApply={handleApply}
+                                            handleApply={handleApplyWrapper}
                                             isFilterDialogOpen={isFilterDialogOpen}
                                             setIsDateError={setIsDateError}
                                             isDateError={isDateError}
                                             setSelectedDateRange={setSelectedDateRange}
                                             selectedDateRange={selectedDateRange}
+                                            setReferenceExternalIds={setSearchRefExternalId}
+                                            setDocumentRelatedTo={setDocumentRelatedTo}
+                                            selectedRelatedTo={selectedRelatedTo}
+                                            setSelectedRelatedTo={setSelectedRelatedTo}
+                                            tagListArray={tagListArray}
+                                            setTagListArray={setTagListArray}
                                         />
                                     </>
                                 }

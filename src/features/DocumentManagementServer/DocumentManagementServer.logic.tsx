@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -373,11 +373,17 @@ export const handleSearchChange = (
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  documentRelatedTo?: number,
+  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const { value } = e.target;
   setSearchTerm(value);
- 
+
+  if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
+    setResetFilterSearch(true);
+  }
+
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);
@@ -387,6 +393,7 @@ export const handleSearchChange = (
  
   setIsSearchLoading(true);
   setSuggestions([]);
+  setShowSearchError(false);
  
   debouncedFetchSuggestions(
     value,
@@ -395,7 +402,8 @@ export const handleSearchChange = (
     toDate,
     setIsSearchLoading,
     setSuggestions,
-    setShowSearchError
+    setShowSearchError,
+    documentRelatedTo
   );
 };
  
@@ -579,14 +587,16 @@ export const handleTagCloseLogic = (
 ) => {
   // Detect date range tag by its name format
   if (
-    typeof closeObj.name === "string" &&
+  closeObj.id === "dateRange" ||
+  (typeof closeObj.name === "string" &&
     (closeObj.name.match(/^\d{2} \w{3} \d{4} to -$/) ||
       closeObj.name.match(/^\d{2} \w{3} \d{4} to \d{2} \w{3} \d{4}$/))
-  ) {
-    setSelectedDateRange({ fromDate: "", toDate: "" });
-    setDateRange({ fromDate: "", toDate: "" });
-    setIsDateError(false);
-  }
+  )
+) {
+  setSelectedDateRange({ fromDate: "", toDate: "" });
+  setDateRange({ fromDate: "", toDate: "" });
+  setIsDateError(false);
+}
  
   // Remove category/format tag
   setSelectedCategories(prev =>
@@ -663,9 +673,9 @@ export const fetchViewDownloadData = async ({
   }
 };
  
-export const fetchCategory = async (): Promise<any[]> => {
+export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
-    const response = await fetchFilterCategory();
+    const response = await fetchFilterCategory(documentRealatedTo);
     return response ?? [];
   } catch (err) {
     console.error("Error fetching categories:", err);
@@ -1053,7 +1063,9 @@ export function validateAndApplyFilter({
   setIsFilterDialogOpen,
   setCurrentPage,
   setExcludedCheckBoxIds,
-  setAllSelectedDocs
+  setAllSelectedDocs,
+  referenceExternalIds,
+  setReferenceExternalIds,
 }: {
   selectedDateRange: { fromDate?: string; toDate?: string };
   isDateError: boolean;
@@ -1066,6 +1078,8 @@ export function validateAndApplyFilter({
   setCurrentPage: (v: number) => void;
   setExcludedCheckBoxIds: (v: string[]) => void;
   setAllSelectedDocs: (v: any[]) => void;
+  referenceExternalIds: string[];
+  setReferenceExternalIds: (v: string[]) => void;
 }) {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
@@ -1096,6 +1110,7 @@ export function validateAndApplyFilter({
       setSelectedFormats(selectedCategories);
       setIsFilterDialogOpen(false);
       setIsFilterLoading(false);
+      setReferenceExternalIds(referenceExternalIds ?? []);
   
   }
   setCurrentPage(1);
@@ -1124,14 +1139,17 @@ export const debouncedFetchSuggestions = debounce(
     toDate: string,
     setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-    setShowError: React.Dispatch<React.SetStateAction<boolean>>
+    setShowError: React.Dispatch<React.SetStateAction<boolean>>,
+    documentRelatedTo?: number | string
   ) => {
     setSearchLoading(true);
+    setShowError(false);
     try {
-      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId);
+      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
       const values = response?.payload ?? [];
       const suggestions = await formatSuggestions(values);
       setSuggestions(suggestions);
+      setShowError(suggestions?.length === 0);
     } catch (err) {
       console.error("Autosuggest error:", err);
       setShowError(true);
@@ -1140,7 +1158,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  5
+  300
 );
 
 export async function handleClearAllConfirm({
@@ -1272,5 +1290,239 @@ export const fileDownload = async (
   } catch (error) {
     console.error("Error downloading file:", error);
     throw error;
+  }
+};
+
+export function addUniqueTagItem({
+  item,
+  selectedRelatedTo,
+  tagListArray,
+  setTagListArray,
+  setReferenceExternalIds,
+  maxLimit = 5,
+}: {
+  item: ISearchItemProp | null;
+  selectedRelatedTo: ISelectedItem | undefined;
+  tagListArray: SelectedItem[];
+  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
+  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  maxLimit?: number;
+}) {
+  if (!item) return;
+
+  let idKey = "organisationId";
+if (selectedRelatedTo?.text === "Pupil") {
+  idKey = "learnerExternalId";
+} else if (selectedRelatedTo?.text === "Staff") {
+  idKey = "externalId";
+}
+
+  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
+
+  const alreadyExists = tagListArray.some(
+    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+  );
+
+  if (alreadyExists) {
+    return;
+  }
+
+  if (tagListArray.length < maxLimit) {
+    setTagListArray([...tagListArray, item as SelectedItem]);
+    if (item?.props?.externalId) {
+      setReferenceExternalIds((prev) =>
+        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+      );
+    }
+  }
+}
+
+export function handleApply({
+  referenceExternalIds,
+  categories,
+  selectedCategories,
+  selectedDateRange,
+  isDateError,
+  setIsDateError,
+  setIsFilterLoading,
+  setDateRange,
+  setIsFilterDialogOpen,
+  setCurrentPage,
+  setExcludedCheckBoxIds,
+  setAllSelectedDocs,
+  setSearchInput,
+  setSearchTerm,
+  setSearchText,
+  setTableKey,
+  setIsSearchTriggered,
+  setSelectedCategories,
+  setSelectedFormats,
+  setSearchRefExternalId,
+}: {
+  referenceExternalIds: string[],
+  categories?: any[],
+  selectedCategories: any[],
+  selectedDateRange: any,
+  isDateError: boolean,
+  setIsDateError: (v: boolean) => void,
+  setIsFilterLoading: (v: boolean) => void,
+  setDateRange: (v: any) => void,
+  setIsFilterDialogOpen: (v: boolean) => void,
+  setCurrentPage: (v: number) => void,
+  setExcludedCheckBoxIds: (v: string[]) => void,
+  setAllSelectedDocs: (v: any[]) => void,
+  setSearchInput: (v: string) => void,
+  setSearchTerm: (v: string) => void,
+  setSearchText: (v: string) => void,
+  setTableKey: (v: (prev: number) => number) => void,
+  setIsSearchTriggered: (v: boolean) => void,
+  setSelectedCategories: (v: any[]) => void,
+  setSelectedFormats: (v: any[]) => void,
+  setSearchRefExternalId: (v: string[]) => void,
+}) {
+  const appliedCategories = categories ?? selectedCategories;
+  validateAndApplyFilter({
+    selectedDateRange,
+    isDateError,
+    setIsDateError,
+    setIsFilterLoading,
+    setDateRange,
+    setSelectedFormats,
+    selectedCategories: appliedCategories,
+    setIsFilterDialogOpen,
+    setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs,
+    referenceExternalIds,
+    setReferenceExternalIds: setSearchRefExternalId,
+  });
+  setSelectedCategories(appliedCategories);
+  setSelectedFormats(appliedCategories);
+  if (referenceExternalIds.length > 0) {
+    setSearchInput("");
+    setSearchTerm("");
+    setSearchText("");
+    setTableKey((prev) => prev + 1);
+  }
+  setIsSearchTriggered(true);
+}
+
+export const handleEditSelectedOverFlowMenu = async ({
+  selectedItem,
+  totalSelectedCount,
+  setShowDialog,
+  setShowConfirmDialog,
+  setShowRestrictedDeleteDialog,
+  setShowRestrictedPrepareDialog,
+  setIsPreDialogLoading,
+  isHeaderBoxChecked,
+  allSelectedDocs,
+  buildValidationPayload: buildValidationPayloadFn,
+  allRegistrationIds,
+  dateRange,
+  searchRefExternalId,
+  documentRealatedTo,
+  validation,
+  setRestrictedFileCount,
+  setAlreadyDeletedFileCount,
+  setAvailableFileCount,
+  setDialogType,
+  setIsDialogLoading,
+  setSidePanelOpenReason,
+  setIsSidePanelOpen,
+}: {
+  e: React.SyntheticEvent,
+  selectedItem: ISelectedItem,
+  totalSelectedCount: number,
+  setShowDialog: (v: boolean) => void,
+  setShowConfirmDialog: (v: boolean) => void,
+  setShowRestrictedDeleteDialog: (v: boolean) => void,
+  setShowRestrictedPrepareDialog: (v: boolean) => void,
+  setIsPreDialogLoading: (v: boolean) => void,
+  isHeaderBoxChecked: boolean,
+  allSelectedDocs: any[],
+  buildValidationPayload: (args: any) => any,
+  allRegistrationIds: any[],
+  dateRange: { fromDate: string; toDate: string },
+  searchRefExternalId: string[],
+  documentRealatedTo: number,
+  validation: (payload: any) => Promise<any>,
+  setRestrictedFileCount: (v: number) => void,
+  setAlreadyDeletedFileCount: (v: number) => void,
+  setAvailableFileCount: (v: number) => void,
+  setDialogType: (v: string) => void,
+  setIsDialogLoading: (v: boolean) => void,
+  setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
+  setIsSidePanelOpen: (v: boolean) => void,
+}) => {
+  setShowConfirmDialog(false);
+  setShowRestrictedDeleteDialog(false);
+  setShowRestrictedPrepareDialog(false);
+
+  if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
+    if (totalSelectedCount === 0) {
+      setShowDialog(true);
+    } else {
+      setShowRestrictedDeleteDialog(true);
+      setIsPreDialogLoading(true);
+      const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
+      const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || [];
+      const validationPayload = buildValidationPayloadFn({
+        isSelectAll: !!isHeaderBoxChecked,
+        userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
+        categoryIds: allRegistrationIds,
+        fromDate: dateRange.fromDate,
+        toDate: dateRange.toDate,
+        referenceExternalIds: searchRefExternalId,
+        documentRelatedTo: documentRealatedTo,
+        fileDetails,
+        excludedFileDetails,
+      });
+
+      const result = await validation(validationPayload);
+
+      const restricted = result?.data?.restrictedFileCount ?? 0;
+      const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
+      const available = result?.data?.availableFileCount ?? 0;
+
+      setRestrictedFileCount(restricted);
+      setAlreadyDeletedFileCount(alreadyDeleted);
+      setAvailableFileCount(available);
+
+      setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
+      setIsPreDialogLoading(false);
+      setShowRestrictedDeleteDialog(false);
+
+      if (
+        selectedItem.value === "Prepare download" &&
+        available === 0 &&
+        alreadyDeleted > 0
+      ) {
+        setShowRestrictedPrepareDialog(true);
+        setShowConfirmDialog(false);
+        return;
+      }
+
+      if (selectedItem.value === "Delete") {
+        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+          setIsDialogLoading(false);
+          setShowRestrictedDeleteDialog(true);
+          setShowConfirmDialog(false);
+          return;
+        }
+
+        if (available > 0) {
+          setIsDialogLoading(false);
+          setShowConfirmDialog(true);
+          setShowRestrictedDeleteDialog(false);
+          return;
+        }
+      }
+
+      setShowConfirmDialog(true);
+    }
+  } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
+    setSidePanelOpenReason("view");
+    setIsSidePanelOpen(true);
   }
 };
