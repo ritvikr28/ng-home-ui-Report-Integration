@@ -1267,7 +1267,7 @@ it("calls handleSearchChange on search input change", async () => {
 });
 
 it("sets error banner when search does not open", async () => {
-  renderComponent({
+  const { container } = renderComponent({
     selectedRelatedTo: { text: "Other", value: "11" },
     tagListArray: [],
     availableCategories: []
@@ -1279,6 +1279,7 @@ it("sets error banner when search does not open", async () => {
 
   // Now the notification should appear
   await waitFor(() => {
+    console.log(container.innerHTML);
     expect(screen.getByTestId("dms-filter-dialog-notification")).toBeInTheDocument();
   });
 });
