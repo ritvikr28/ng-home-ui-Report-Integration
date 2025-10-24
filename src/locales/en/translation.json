@@ -501,6 +501,8 @@
     "categoryHeading": "Category (optional)",
     "dateHeading": "Date added (optional)",
     "applyFilters": "Search",
-    "clearFilters": "Clear all"
+    "clearFilters": "Clear all",
+    "filterInfoHeading": "Information unavailable",
+    "filterInfoMessage": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team."
   }
 }

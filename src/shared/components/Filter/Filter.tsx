@@ -15,7 +15,9 @@ import {
   ISearchItemProp,
   Suggestion,
   TextInputSize,
-  SelectedItem
+  SelectedItem,
+  Notification,
+  NotificationStatus
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
@@ -86,6 +88,7 @@ const FilterDialog = ({
   const [localSelectedDateRange, setLocalSelectedDateRange] = useState<{ fromDate: string, toDate: string }>(selectedDateRange);
   const [localTagListArray, setLocalTagListArray] = useState<SelectedItem[]>(tagListArray);
   const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
+  const [relatedToSelected, setRelatedToSelected] = useState(false);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -501,6 +504,20 @@ const handleDateChange = (
       title={isLoading ? "" : title}
       
     >
+      <>
+       {relatedToSelected &&
+        (!localSelectedRelatedTo ||
+          !["Pupil", "Staff", "Organisation"].includes(localSelectedRelatedTo?.text ?? "")) ? (
+                <Notification
+                  className="dms-filter-notification"
+                  dataTestId={`${dataTestId}-notification`}
+                  status={NotificationStatus.WARNING}
+                  title={t("Filter.filterInfoHeading")}
+                  message={t("Filter.filterInfoMessage")}
+                />
+              ) : null}
+            </>
+
       {isLoading ? (
         <div className="filter-dialog-loader">
           <Loader 
@@ -519,6 +536,7 @@ const handleDateChange = (
           onSelect={(e, item: ISelectedItem) => {
             setLocalSelectedRelatedTo(item);
             setRelatedToError("");
+            setRelatedToSelected(true);
             fetchCategory(Number(item.value))
               .then((categories) => {
                 setAvailableCategories(categories);

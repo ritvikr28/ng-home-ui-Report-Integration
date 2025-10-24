@@ -50,6 +50,7 @@ jest.mock("@essnextgen/ui-kit", () => {
       <div>
         {/* Related To Dropdown */}
         {dataTestId === "dms-filter-dialog-related-to" && (
+          <>
           <button
             type="button"
             data-testid={dataTestId}
@@ -57,6 +58,11 @@ jest.mock("@essnextgen/ui-kit", () => {
           >
             Mock RelatedTo Dropdown
           </button>
+          <div data-testid="related-to-option" data-value="1" id="1">Pupil</div>
+          <div data-testid="related-to-option" data-value="2" id="2">Staff</div>
+          <div data-testid="related-to-option" data-value="3" id="3">Organisation</div>
+          <div data-testid="related-to-option" data-value="11" id="11">Other</div>
+        </>
         )}
         {/* Category Dropdown */}
         {dataTestId === "dms-filter-dialog-categories" && (
