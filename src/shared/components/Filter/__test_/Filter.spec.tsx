@@ -50,6 +50,7 @@ jest.mock("@essnextgen/ui-kit", () => {
       <div>
         {/* Related To Dropdown */}
         {dataTestId === "dms-filter-dialog-related-to" && (
+          <>
           <button
             type="button"
             data-testid={dataTestId}
@@ -57,6 +58,11 @@ jest.mock("@essnextgen/ui-kit", () => {
           >
             Mock RelatedTo Dropdown
           </button>
+          <div data-testid="related-to-option" data-value="1" id="1">Pupil</div>
+          <div data-testid="related-to-option" data-value="2" id="2">Staff</div>
+          <div data-testid="related-to-option" data-value="3" id="3">Organisation</div>
+          <div data-testid="related-to-option" data-value="11" id="11">Other</div>
+        </>
         )}
         {/* Category Dropdown */}
         {dataTestId === "dms-filter-dialog-categories" && (
@@ -1258,5 +1264,22 @@ it("calls handleSearchChange on search input change", async () => {
     fireEvent.click(suggestionNode[0]);
 
     fireEvent.click(screen.getByTestId("remove-tag-undefined"));
+});
+
+it("sets error banner when search does not open", async () => {
+  renderComponent({
+    selectedRelatedTo: { text: "Other", value: "11" },
+    tagListArray: [],
+    availableCategories: []
+  });
+
+  // Simulate user opening the RelatedTo dropdown and selecting "Other"
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+  fireEvent.click(screen.getByText("Other")); // This triggers onSelect with "Other"
+
+  // Now the notification should appear
+  await waitFor(() => {
+    expect(screen.getByTestId("dms-filter-dialog-notification")).toBeInTheDocument();
+  });
 });
 });
