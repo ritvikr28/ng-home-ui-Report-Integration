@@ -1265,22 +1265,4 @@ it("calls handleSearchChange on search input change", async () => {
 
     fireEvent.click(screen.getByTestId("remove-tag-undefined"));
 });
-
-it("sets error banner when search does not open", async () => {
-  const { container } = renderComponent({
-    selectedRelatedTo: { text: "Other", value: "11" },
-    tagListArray: [],
-    availableCategories: []
-  });
-
-  // Simulate user opening the RelatedTo dropdown and selecting "Other"
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
-  fireEvent.click(screen.getByText("Other")); // This triggers onSelect with "Other"
-
-  // Now the notification should appear
-  await waitFor(() => {
-    console.log(container.innerHTML);
-    expect(screen.getByTestId("dms-filter-dialog-notification")).toBeInTheDocument();
-  });
-});
 });

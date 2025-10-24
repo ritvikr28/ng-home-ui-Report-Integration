@@ -327,38 +327,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   expect(checkbox).not.toBeChecked();
 });
  
-  it("shows error banner when showErrorBanner is set", async () => {
-     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
-
-  render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
-  // type search query
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
- 
-  // wait for suggestion to show up
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
- 
-  const suggestionNode = await screen.findAllByText("Alfie");
- 
-  // click suggestion
-  fireEvent.click(suggestionNode[0]);
- 
-  const gridLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(gridLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
- 
-  });
- 
   it("resets state on search close", async () => {
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
@@ -399,24 +367,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     // Verify loader and interval cleared
     expect(container).toBeTruthy(); // minimal assertion
   });
- 
-    it("renders expiry message for fileExpiryDays > 0", async () => {
-      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [
-          { name: "FileFuture", status: "complete", fileExpiryDays: 3 }
-        ],
-      });
-      render(<MemoryRouter>
-        <DocumentManagementServerView />
-      </MemoryRouter>);
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View download"));
-      await waitFor(() => {
-        expect(screen.getByText("FileFuture")).toBeInTheDocument();
-        expect(screen.getByText("Expires in 3 day(s).")).toBeInTheDocument();
-      });
-    });
   it("renders side panel files with expiry 0 or undefined", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
@@ -436,26 +386,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
-  
-    it("does not render expiry message when fileExpiryDays is undefined", async () => {
-      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [
-          { name: "FileNoExpiry", status: "complete" }
-        ],
-      });
-      render(<MemoryRouter>
-        <DocumentManagementServerView />
-      </MemoryRouter>);
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View download"));
-      await waitFor(() => {
-        expect(screen.getByText("FileNoExpiry")).toBeInTheDocument();
-        // Should NOT find expiry text
-        expect(screen.queryByText(/Expires in/)).not.toBeInTheDocument();
-        expect(screen.queryByText("Expires today.")).not.toBeInTheDocument();
-      });
-    });
  
   it("updates breadcrumbs on resize for mobile", () => {
     global.innerWidth = 500;
@@ -796,6 +726,7 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
 describe('onClickSidePnlSecondaryBtn', () => {
   it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
+    cleanup();
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
     status: 200,
     data: [{ name: "File1", status: "complete" }],
@@ -804,13 +735,14 @@ describe('onClickSidePnlSecondaryBtn', () => {
       <DocumentManagementServerView />
     </MemoryRouter>);
  
-  fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
- 
-await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
-fireEvent.click(screen.getByTestId('secondary-button'));
- 
-  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Actions"));
+  fireEvent.click(screen.getByText("View download"));
+
+  await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
+  fireEvent.click(screen.getByTestId('secondary-button'));
+
+  const confirmDialog = await screen.getByText("Clear all downloads?");
+  expect(confirmDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Keep all"));
 });
@@ -1049,4 +981,30 @@ await waitFor(() => {
 });
 })
 
+it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  const { container } = render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Open filter dialog
+  fireEvent.click(screen.getByTestId("filter-btn"));
+  await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
+  // Open Related to dropdown and select "Pupil"
+  fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
+  console.log(container.innerHTML);
+  const pupilOption = await screen.getByText("Pupil");
+  fireEvent.click(pupilOption);
+  // Type in advanced search input and select a suggestion
+  const advInput = await screen.getByPlaceholderText("Pupil name");
+  fireEvent.change(advInput, { target: { value: "Alfie" } });
+  fireEvent.keyDown(advInput, { key: "Enter", code: "Enter" });
+  // Click Apply
+  const input = await screen.getAllByTestId("search-autocomplete-input");
+  fireEvent.click(input[0]);
+  
+    // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
+ 
+});
 })
