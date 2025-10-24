@@ -985,7 +985,7 @@ it("resets search input and increments tableKey when filter applied with referen
   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  const { container } = render(<MemoryRouter>
+  render(<MemoryRouter>
     <DocumentManagementServerView />
   </MemoryRouter>);
   // Open filter dialog
@@ -993,7 +993,6 @@ it("resets search input and increments tableKey when filter applied with referen
   await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
   // Open Related to dropdown and select "Pupil"
   fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
-  console.log(container.innerHTML);
   const pupilOption = await screen.getByText("Pupil");
   fireEvent.click(pupilOption);
   // Type in advanced search input and select a suggestion
