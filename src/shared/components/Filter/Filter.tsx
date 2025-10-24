@@ -582,6 +582,7 @@ const handleDateChange = (
                   setSearchTerm={setSearchTerm}
                   existingValues={[searchTerm]}
                   keyUpHandler={() => {}}
+                  onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
                   headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
                   onCloseHandle={ () => {
