@@ -874,17 +874,14 @@ export function buildSelectedDocs(
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
-  // ✅ Gather all valid selected docs
   const selectedDocs = docData.data.filter(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  // ✅ Merge fileDetails or excluded details
   const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
   const excludedIdDetails =
     isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
-  // ✅ Build reference mapping (filtered + deduplicated)
   let referenceMappingDetails: any[] = [];
 
   if (searchRefExternalId.length > 0) {
@@ -894,7 +891,6 @@ export function buildSelectedDocs(
       documentRealatedTo,
     });
 
-    // Deduplicate by referenceExternalId
     const uniqueMappingsMap = new Map<string, any>();
 
     rawMappings.forEach((mapping) => {
