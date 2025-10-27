@@ -463,7 +463,7 @@ const handleDateChange = (
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
       } else if (localSelectedRelatedTo?.text === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
-      } else if (localSelectedRelatedTo?.text === "Organisation") {
+      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
       }

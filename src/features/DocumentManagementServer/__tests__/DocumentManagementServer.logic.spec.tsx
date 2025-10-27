@@ -38,7 +38,8 @@ import {
   handleBulkDeleteLogic,
   getTitleConfirmation,
   addUniqueTagItem,
-  handleApply
+  handleApply,
+  handleEditSelectedOverFlowMenu
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -2196,12 +2197,7 @@ describe("buildSelectedDocs", () => {
         request: {
           selectAll: true,
           downloadCriteria: {
-            referenceMappingDetails: [
-              {
-                referenceExternalId: "ext1",
-                relatedTo: { learnerExternalId: "ext1" }
-              }
-            ],
+            referenceMappingDetails: [],
             documentRealatedTo: 1,
             categoryId: [1,2],
             fromDate: "2025-01-01",
@@ -3337,3 +3333,121 @@ describe("handleApply", () => {
 });
 });
 
+describe("handleEditSelectedOverFlowMenu", () => {
+  const getMocks = () => ({
+    setShowDialog: jest.fn(),
+    setShowConfirmDialog: jest.fn(),
+    setShowRestrictedDeleteDialog: jest.fn(),
+    setShowRestrictedPrepareDialog: jest.fn(),
+    setIsPreDialogLoading: jest.fn(),
+    setRestrictedFileCount: jest.fn(),
+    setAlreadyDeletedFileCount: jest.fn(),
+    setAvailableFileCount: jest.fn(),
+    setDialogType: jest.fn(),
+    setIsDialogLoading: jest.fn(),
+    setSidePanelOpenReason: jest.fn(),
+    setIsSidePanelOpen: jest.fn(),
+    buildValidationPayload: jest.fn((args) => args),
+    validation: jest.fn(async () => ({
+      data: {
+        restrictedFileCount: 1,
+        alreadyDeletedFileCount: 2,
+        availableFileCount: 3,
+      }
+    })),
+  });
+
+  const baseArgs = {
+    e: {} as React.SyntheticEvent,
+    selectedItem: { value: "Prepare download" },
+    totalSelectedCount: 1,
+    isHeaderBoxChecked: false,
+    allSelectedDocs: [{ fileId: "1" }],
+    allRegistrationIds: [1, 2],
+    dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+    searchRefExternalId: ["ref1"],
+    documentRealatedTo: 1,
+  };
+
+  it("shows dialog if nothing selected", async () => {
+    const mocks = getMocks();
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      totalSelectedCount: 0,
+    });
+    expect(mocks.setShowDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalled();
+  });
+
+  it("shows restricted prepare dialog if available=0 and alreadyDeleted>0 for Prepare download", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 1, availableFileCount: 0 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Prepare download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowRestrictedPrepareDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows restricted delete dialog if available=0 and restricted>0 for Delete", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 1, alreadyDeletedFileCount: 0, availableFileCount: 0 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Delete" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows confirm dialog if available>0 for Delete", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 2 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Delete" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows confirm dialog for Prepare download if available>0", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 1 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Prepare download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+  });
+
+  it("opens side panel for view download", async () => {
+    const mocks = getMocks();
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "View download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setSidePanelOpenReason).toHaveBeenCalledWith("view");
+    expect(mocks.setIsSidePanelOpen).toHaveBeenCalledWith(true);
+  });
+});
