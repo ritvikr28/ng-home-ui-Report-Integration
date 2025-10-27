@@ -26,6 +26,7 @@ import "./style.scss";
 import { Category } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import { getUserOrganisation } from "../../utils";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -459,8 +460,9 @@ const handleDateChange = (
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
       } else if (localSelectedRelatedTo?.text === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
-      } else if (localSelectedRelatedTo?.text === "School" || localSelectedRelatedTo?.text === "Organisation") {
-        ids = localTagListArray.map(item => (item as any).organisationId).filter(Boolean);
+      } else if (localSelectedRelatedTo?.text === "Organisation") {
+        const orgId = getUserOrganisation();
+        ids = orgId ? [orgId] : [];
       }
 
       handleApply(ids, localSelectedCategories)
