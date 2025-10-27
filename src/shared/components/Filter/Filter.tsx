@@ -129,6 +129,9 @@ const clearAll = () => {
   setLocalSelectedDateRange({ fromDate: "", toDate: "" });
   setLocalTagListArray([]);
   setLocalSelectedRelatedTo(undefined);
+  setRelatedToSelected(false);
+  setRelatedToError("");
+  setSearchSelectionError("");
 };
 
 useEffect(() => {
@@ -509,7 +512,7 @@ const handleDateChange = (
       <>
        {relatedToSelected &&
         (!localSelectedRelatedTo ||
-          !["Pupil", "Staff", "Organisation"].includes(localSelectedRelatedTo?.text ?? "")) ? (
+          !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "")) ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -553,6 +556,7 @@ const handleDateChange = (
             setSearchTerm("");
             setShowSearchError(false);
             setIsDropdownOpen(false);
+            setSearchSelectionError("");
           }}
           validationText={relatedToError}
           validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
@@ -562,10 +566,10 @@ const handleDateChange = (
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.text}
+              text={item.text === "Organisation" ? "School" : item.text}
               value={item.value.toString()}
             >
-              {item.text}
+              {item.text === "Organisation" ? "School" : item.text}
             </DropdownItem>
           ))}
         </Dropdown>

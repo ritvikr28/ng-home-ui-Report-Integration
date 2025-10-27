@@ -1265,8 +1265,6 @@ const getDialogTitle = () => {
                                                 dataTestId="filter-btn"
                                                 color={ButtonColor.Utility}
                                                 size={ButtonSize.Small}
-                                                iconPosition={ButtonIconPosition.Right}
-                                                iconName="filter"
                                                 onClick={() => {
                                                     handleFilterOnClick();
                                                 }}> {t("Filter.heading")}</Button>
