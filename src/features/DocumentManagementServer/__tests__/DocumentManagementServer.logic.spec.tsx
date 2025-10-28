@@ -434,6 +434,29 @@ describe("handleSearchChange", () => {
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
 });
+it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch is a function", () => {
+  const event = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
+  const setSearchTerm = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
+  const setResetFilterSearch = jest.fn();
+
+  handleSearchChange(
+    event,
+    [],
+    "",
+    "",
+    setSearchTerm,
+    setSuggestions,
+    setShowSearchError,
+    setIsSearchLoading,
+    1,
+    setResetFilterSearch // <-- pass the function here
+  );
+
+  expect(setResetFilterSearch).toHaveBeenCalledWith(true);
+});
 });
 
 describe("handleSuggestionClick", () => {
