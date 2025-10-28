@@ -425,5 +425,20 @@
     "sidePanelTitle": "Downloads",
     "ExpiresInDays": "Expires in {{days}} day(s).",
     "ExpiresToday": "Expires today."
+  },
+  "Filter": {
+    "heading": "Advanced Search",
+    "relatedToHeading": "Select related to pupil, staff or school",
+    "pupilSearchHeading": "Pupil",
+    "staffSearchHeading": "Staff",
+    "schoolSearchHeading": "School",
+    "selectEntity": "Select upto 5",
+    "informationUnavailable": "Information unavailable",
+    "categoryHeading": "Category (optional)",
+    "dateHeading": "Date added (optional)",
+    "applyFilters": "Search",
+    "clearFilters": "Clear all",
+    "filterInfoHeading": "Information unavailable",
+    "filterInfoMessage": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team."
   }
 }

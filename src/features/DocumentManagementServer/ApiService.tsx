@@ -50,7 +50,8 @@ export const fetchDMSSuggestions = async (
   searchText: string,
   fromDate: string,
   toDate: string,
-  categoryId: number[] | null
+  categoryId: number[] | null,
+  documentRelatedTo?: number | string
 ): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
@@ -61,7 +62,10 @@ export const fetchDMSSuggestions = async (
         ? categoryId.map(id => `AutoCompleteRequest.CategoryId=${encodeURIComponent(id)}`)
         : []),
       fromDate ? `AutoCompleteRequest.FromDate=${encodeURIComponent(fromDate)}` : "",
-      toDate ? `AutoCompleteRequest.ToDate=${encodeURIComponent(toDate)}` : ""
+      toDate ? `AutoCompleteRequest.ToDate=${encodeURIComponent(toDate)}` : "",
+      documentRelatedTo !== undefined && documentRelatedTo !== null
+        ? `AutoCompleteRequest.DocumentRelatedTo=${encodeURIComponent(documentRelatedTo)}`
+        : ""
     ]
       .filter(Boolean)
       .join("&");
@@ -75,10 +79,11 @@ export const fetchDMSSuggestions = async (
   }
 };
 
-export const fetchFilterCategory = async (): Promise<any> => {
+export const fetchFilterCategory = async (documentRealatedTo: number | null): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/applicationregistration`;
+    const param = documentRealatedTo !== null ? `?DocumentRealatedTo=${encodeURIComponent(documentRealatedTo)}` : '';
+    const url = `/validation/api/v1/applicationregistration${param}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response?.data;
   } catch (err) {
@@ -127,10 +132,10 @@ export const deleteFiles = async (payload: { request: any }) => {
   return payload?.request?.status;
 };
 
-export const bulkDownload = async (blobName: string): Promise<any> => {
+export const bulkDownload = async (blobName: string, fileName: string): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodeURIComponent(blobName)}`;
+    const url = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodeURIComponent(blobName)}${fileName ? `&BulkDownloadRequest.FileName=${encodeURIComponent(fileName)}` : ""}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response.data;
   } catch (err) {
