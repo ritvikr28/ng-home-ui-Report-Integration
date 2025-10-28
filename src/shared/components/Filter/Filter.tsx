@@ -605,6 +605,7 @@ const handleDateChange = (
                       maxLimit: 5,
                     });
                     setIsDropdownOpen(true);
+                    setSearchSelectionError("");
                   }}
                   suggestions={filteredSuggestions}
                   isLoader={isSearchLoading}
