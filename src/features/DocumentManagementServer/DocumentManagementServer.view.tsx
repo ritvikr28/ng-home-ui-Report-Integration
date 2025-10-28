@@ -974,7 +974,7 @@ const getDialogTitle = () => {
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
                             text: "Documents",
-                            value: `${window.location.href}/documents`,
+                            value: window.location.href,
                         }}
                     />
  
