@@ -364,6 +364,8 @@
     .filter-tool-view {
       .filter-btn {
         margin-top: 0% !important;
+        justify-content: flex-start;
+        contain: content;
       }
     }
   }
@@ -387,6 +389,8 @@
 
       .filter-btn {
         margin-top: 0% !important;
+        justify-content: flex-start;
+        contain: content;
       }
     }
     
@@ -417,6 +421,8 @@
 
       .filter-btn {
         width: 94%;
+        justify-content: flex-start;
+        contain: content;
       }
 
       .tag-list-container {
