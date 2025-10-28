@@ -1276,7 +1276,7 @@ const getDialogTitle = () => {
                                             isOpen={isFilterDialogOpen}
                                             title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
-                                            onClose={() => setIsFilterDialogOpen(false)}
+                                            onClose={() => {setIsFilterDialogOpen(false)}}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
                                             handleApply={handleApplyWrapper}

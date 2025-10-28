@@ -505,7 +505,10 @@ const handleDateChange = (
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
-      onClose={onClose}
+      onClose={() => {
+        setRelatedToSelected(false);
+        onClose();
+      }}
       title={isLoading ? "" : title}
       
     >
