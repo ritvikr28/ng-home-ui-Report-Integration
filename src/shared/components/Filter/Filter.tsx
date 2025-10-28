@@ -505,7 +505,10 @@ const handleDateChange = (
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
-      onClose={onClose}
+      onClose={() => {
+        setRelatedToSelected(false);
+        onClose();
+      }}
       title={isLoading ? "" : title}
       
     >
@@ -609,6 +612,7 @@ const handleDateChange = (
                       maxLimit: 5,
                     });
                     setIsDropdownOpen(true);
+                    setSearchSelectionError("");
                   }}
                   suggestions={filteredSuggestions}
                   isLoader={isSearchLoading}
