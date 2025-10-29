@@ -1153,6 +1153,12 @@ const getDialogTitle = () => {
                                     setTagListArray([]);
                                     setSelectedCategories([]);
                                     setDateRange({ fromDate: "", toDate: "" });
+                                    setSelectedCheckBoxIds([]);
+                                    setAllSelectedDocs([]);
+                                    setIsClearSelectedCheckbox(true);
+                                    setIsHeaderBoxChecked(false);
+                                    setExcludedCheckBoxIds([]);
+                                    setTableKey(prev => prev + 1);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
                                     setIsSearchTriggered(true);
                                     setSelectedFormats([]);
