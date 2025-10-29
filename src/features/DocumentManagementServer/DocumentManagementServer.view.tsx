@@ -893,6 +893,9 @@ const getDialogTitle = () => {
                                     : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted as they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
+                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1) {
+                                        return "All selected documents have already been deleted.";
+                                    }
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
                                     : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents have already been deleted.`;
@@ -974,7 +977,7 @@ const getDialogTitle = () => {
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
                             text: "Documents",
-                            value: `${window.location.href}/documents`,
+                            value: window.location.href,
                         }}
                     />
  
@@ -1279,7 +1282,7 @@ const getDialogTitle = () => {
                                             isOpen={isFilterDialogOpen}
                                             title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
-                                            onClose={() => setIsFilterDialogOpen(false)}
+                                            onClose={() => {setIsFilterDialogOpen(false)}}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
                                             handleApply={handleApplyWrapper}
