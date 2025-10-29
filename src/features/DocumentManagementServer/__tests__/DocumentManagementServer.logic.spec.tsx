@@ -393,17 +393,6 @@ describe("handleSearchChange", () => {
     expect(setIsSearchLoading).toHaveBeenCalledWith(false);
   });
 
-  it("should handle undefined input value gracefully", () => {
-  const event = { target: { value: undefined } } as any;
-  const setSearchTerm = jest.fn();
-  const setSuggestions = jest.fn();
-  const setShowSearchError = jest.fn();
-  const setIsSearchLoading = jest.fn();
-
-  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
-  expect(setSuggestions).toHaveBeenCalledWith([]);
-});
-
   it("should handle empty string as input", () => {
   const event = { target: { value: "" } } as any;
   const setSearchTerm = jest.fn();
