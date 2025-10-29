@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, ButtonIconPosition, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu } from "./DocumentManagementServer.logic"
 import "./style.scss"
@@ -893,6 +893,9 @@ const getDialogTitle = () => {
                                     : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted as they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {
+                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1) {
+                                        return "All selected documents have already been deleted.";
+                                    }
                                 return alreadyDeletedFileCount === 1
                                     ? `This document has already been deleted.`
                                     : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents have already been deleted.`;
@@ -974,7 +977,7 @@ const getDialogTitle = () => {
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
                             text: "Documents",
-                            value: `${window.location.href}/documents`,
+                            value: window.location.href,
                         }}
                     />
  
@@ -1265,8 +1268,6 @@ const getDialogTitle = () => {
                                                 dataTestId="filter-btn"
                                                 color={ButtonColor.Utility}
                                                 size={ButtonSize.Small}
-                                                iconPosition={ButtonIconPosition.Right}
-                                                iconName="filter"
                                                 onClick={() => {
                                                     handleFilterOnClick();
                                                 }}> {t("Filter.heading")}</Button>
@@ -1275,7 +1276,7 @@ const getDialogTitle = () => {
                                             isOpen={isFilterDialogOpen}
                                             title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
-                                            onClose={() => setIsFilterDialogOpen(false)}
+                                            onClose={() => {setIsFilterDialogOpen(false)}}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
                                             handleApply={handleApplyWrapper}

@@ -84,8 +84,13 @@
     }
 }
 
+.dms-layout .essui-dialog{
+  overflow-x: hidden !important;
+}
+
 .dms-filter-dialog{
   overflow-y: scroll;
+  overflow-x: hidden;
 
   .filter-dialog-loader{
     align-self: center;
@@ -93,6 +98,12 @@
     .essui-loader{
       width: auto;
     }
+
+
+  }
+  #suggestions-wrapper {
+    padding: 0px 0px !important;
+    margin-top: 10px;
   }
 }
 

@@ -501,36 +501,41 @@ export function getReferenceMappingForSearchedPerson({
 }) {
   if (!Array.isArray(docData?.data)) return [];
 
-  const doc = docData.data.find(
+  // Get all documents matching the related type
+  const relatedDocs = docData.data.filter(
     (d: any) => d.documentRealatedTo === documentRealatedTo
   );
-  if (!doc) return [];
 
-  const relatedArr = mapRelatedArr(doc);
-  // Fix: check if any item's referenceExternalId is in searchRefExternalId array
-  const relatedItem = relatedArr.find(
-    (item: any) => searchRefExternalId.includes(item?.referenceExternalId)
-  );
-  if (!relatedItem) return [];
+  if (!relatedDocs?.length) return [];
 
-  // Fix: filter relatedTo items whose externalId matches any in searchRefExternalId
-  const matchedRelatedTo = Array.isArray(doc.relatedTo)
-    ? doc.relatedTo.filter(
-        (r: any) =>
-          searchRefExternalId.includes(
-            r.learnerExternalId || r.externalId || r.organisationId
+  const referenceMapping: any[] = [];
+
+  relatedDocs.forEach((doc: any) => {
+    const relatedArr = mapRelatedArr(doc);
+    const matchedRelatedArr = relatedArr.filter((item: any) =>
+      searchRefExternalId.includes(item?.referenceExternalId)
+    );
+
+    matchedRelatedArr.forEach((relatedItem: any) => {
+      const matchedRelatedTo = Array.isArray(doc.relatedTo)
+        ? doc.relatedTo.filter((r: any) =>
+            searchRefExternalId.includes(
+              r.learnerExternalId || r.externalId || r.organisationId
+            )
           )
-      )
-    : doc.relatedTo;
+        : doc.relatedTo;
 
-  return [
-    {
-      referenceExternalId: relatedItem.referenceExternalId,
-      relatedTo: matchedRelatedTo,
-      documentRealatedTo: doc.documentRealatedTo,
-    }
-  ];
+      referenceMapping.push({
+        referenceExternalId: relatedItem.referenceExternalId,
+        relatedTo: matchedRelatedTo,
+        documentRealatedTo: doc.documentRealatedTo,
+      });
+    });
+  });
+
+  return referenceMapping;
 }
+
 
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
@@ -864,41 +869,62 @@ export function buildSelectedDocs(
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
-  allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[]
+  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
-  // Gather all valid docs
   const selectedDocs = docData.data.filter(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  // Merge fileDetails
   const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
+  const excludedIdDetails =
+    isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
-  const excludedIdDetails = (isHeaderBoxChecked && allSelectedDocs?.length > 0) ? allSelectedDocs : [];
-
-  // Build referenceMappingDetails with relatedTo as a single object
   let referenceMappingDetails: any[] = [];
-if (searchRefExternalId.length > 0) {
-  referenceMappingDetails = getReferenceMappingForSearchedPerson({
-    docData,
-    searchRefExternalId,
-    documentRealatedTo
-  }).map(mapping => ({
-    referenceExternalId: mapping.referenceExternalId,
-    relatedTo: Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
-      ? mapping.relatedTo[0]
-      : mapping.relatedTo
-  }));
-}
 
-  // Use fromDate/toDate from the first doc (or merge if needed)
+  if (searchRefExternalId.length > 0) {
+    const rawMappings = getReferenceMappingForSearchedPerson({
+      docData,
+      searchRefExternalId,
+      documentRealatedTo,
+    });
+
+    const uniqueMappingsMap = new Map<string, any>();
+
+    rawMappings.forEach((mapping) => {
+      const id = mapping.referenceExternalId;
+      if (!uniqueMappingsMap.has(id)) {
+        uniqueMappingsMap.set(id, {
+          referenceExternalId: id,
+          relatedTo:
+            Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
+              ? mapping.relatedTo[0]
+              : mapping.relatedTo,
+        });
+      }
+    });
+
+    referenceMappingDetails = Array.from(uniqueMappingsMap.values());
+  }
+
+  if (selectedDocs.length > 0 && referenceMappingDetails.length > 0) {
+    const validIds = new Set(selectedDocs.map((d: { externalId: any; learnerExternalId: any;  }) => d.externalId || d.learnerExternalId));
+    referenceMappingDetails = referenceMappingDetails.filter((m) =>
+      validIds.has(m.referenceExternalId)
+    );
+  }
+
+  referenceMappingDetails = Array.from(
+    new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+  );
+
   const fromDate = selectedDocs[0]?.fromDate ?? "";
   const toDate = selectedDocs[0]?.toDate ?? "";
 
-  const currentDateTime = new Date().toLocaleString('sv-SE').replace(' ', 'T');
+  const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
+
   return [
     {
       request: {
@@ -918,10 +944,11 @@ if (searchRefExternalId.length > 0) {
           excludedIdDetails.length < (docData?.totalRecords ?? 0)
             ? excludedIdDetails
             : [],
-      }
+      },
     }
   ];
 }
+
 export function mapToBulkDeletePayload({
   isSelectAll = false,
   categoryId = [],

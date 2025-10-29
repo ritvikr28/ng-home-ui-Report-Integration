@@ -2,6 +2,7 @@ import React from "react";
 import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import dayjs from "dayjs";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
+import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
 
 
@@ -127,6 +128,12 @@ jest.mock("@essnextgen/ui-kit", () => {
     ),
   };
 });
+
+jest.mock("../../../../features/DocumentManagementServer/DocumentManagementServer.logic", () => ({
+  ...jest.requireActual("../../.././../features/DocumentManagementServer/DocumentManagementServer.logic"),
+  handleSearchChange: jest.fn(),
+  getAllRegistrationIds: jest.fn(() => []),
+}));
 
 const renderComponent = (props = {}) =>
   render(<FilterDialog {...defaultProps} {...props} />);
@@ -1265,4 +1272,56 @@ it("calls handleSearchChange on search input change", async () => {
 
     fireEvent.click(screen.getByTestId("remove-tag-undefined"));
 });
+
+  it("sets showSearchError to true when invalid search input is entered", async () => {
+    const setShowSearchErrorMock = jest.fn();
+
+    jest
+      .spyOn(logic, "handleSearchChange")
+      .mockImplementation(
+        (
+          _e,
+          _ids,
+          _from,
+          _to,
+          _setSearchTerm,
+          _setSuggestions,
+          setShowSearchError
+        ) => {
+          setShowSearchError(true);
+          setShowSearchErrorMock(true);
+        }
+      );
+
+    render(
+      <FilterDialog
+        title="Filter"
+        isOpen
+        onClose={jest.fn()}
+        handleApply={jest.fn()}
+        isFilterDialogOpen
+        setSelectedCategories={jest.fn()}
+        selectedCategories={[]}
+        setIsDateError={jest.fn()}
+        isDateError={false}
+        setSelectedDateRange={jest.fn()}
+        selectedDateRange={{ fromDate: "", toDate: "" }}
+        setReferenceExternalIds={jest.fn()}
+        setDocumentRelatedTo={jest.fn()}
+        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        setSelectedRelatedTo={jest.fn()}
+        tagListArray={[]}
+        setTagListArray={jest.fn()}
+      />
+    );
+
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "error" } });
+
+    await waitFor(() => {
+      expect(setShowSearchErrorMock).toHaveBeenCalledWith(true);
+    });
+  });
+
+
 });

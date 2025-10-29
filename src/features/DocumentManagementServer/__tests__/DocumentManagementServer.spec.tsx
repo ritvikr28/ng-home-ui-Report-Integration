@@ -1006,4 +1006,55 @@ it("resets search input and increments tableKey when filter applied with referen
     // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
  
 });
+
+it("shows 'All selected documents have already been deleted.' when all selected are already deleted", async () => {
+  // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 2,
+      availableFileCount: 0,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Select the checkboxes for both rows (simulate selecting multiple docs)
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
+
+  // Open actions and trigger Delete
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Delete"));
+
+  // Should show the "All selected documents have already been deleted." message
+  await waitFor(() => {
+    expect(screen.getByText("All selected documents have already been deleted.")).toBeInTheDocument();
+  });
+});
 })
