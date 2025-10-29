@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import singleSpaReact from "single-spa-react";
 import singleSpaLeakedGlobals from "single-spa-leaked-globals";
 import { fetchConfigData, SetupEnvConfig } from "./ConfigHelper";
+import packageJson from "../../package.json";
 
 // SetupEnvConfig();
 const initializeVariable:()=>void=async()=>{
@@ -12,14 +13,22 @@ const initializeVariable:()=>void=async()=>{
 
 const App = lazy(() => import("../App"));
 
+const appVersions = {
+  uiKit: packageJson.dependencies["@essnextgen/ui-kit"],
+  uiApplicationKit: packageJson.dependencies["@essnextgen/ui-application-kit"],
+  authUi: packageJson.dependencies["@essnextgen/auth-ui"]
+};
+
 const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
   const [globarvar, setglobarvar]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = React.useState<boolean>(false);
-  useEffect(() => {    
-    console.log('UI-Application kit (Home):^1.1.6');
-    console.log('UI-kit(Home):"^0.24.1');
+  useEffect(() => {
+    console.log('UI-Application kit (Home):^1.2.0');
+    console.log('UI-kit(Home):"^0.24.9');
+
+    console.log('App Versions:', appVersions);
     (async () => {
       try {          
         await initializeVariable(); 
@@ -38,8 +47,9 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
 )  
 };
 
-console.log('UI-Application kit (Home):^1.1.5');
-console.log('UI-kit(Home):^0.24.0');
+console.log('UI-Application kit (Home):^1.2.0');
+console.log('UI-kit(Home):^0.24.9');
+console.log('App Versions:', appVersions);
 
 const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({
   globalVariableNames: [
