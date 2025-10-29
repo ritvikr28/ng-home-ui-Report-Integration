@@ -1015,7 +1015,7 @@ const getDialogTitle = () => {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
                                 isShowSubHeading
-                                isSorting
+                                isSorting={false}
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
                                 isIconRightAligned
@@ -1299,7 +1299,7 @@ const getDialogTitle = () => {
                                 tableHeadersData={getTableHeadersData}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
-                                titleConfirmation={getTitleConfirmation(dialogType, availableFileCount)}
+                                titleConfirmation={getTitleConfirmation(dialogType, availableFileCount, docData?.totalRecords || 0)}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}
