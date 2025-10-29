@@ -384,6 +384,12 @@ export const handleSearchChange = (
     setResetFilterSearch(true);
   }
 
+   if (value.trim().length === 0 && value.length > 0) {
+    setSuggestions([]);
+    setIsSearchLoading(false);
+    return;
+  }
+
   if (value?.length < 2) {
     setSuggestions([]);
     setShowSearchError(false);

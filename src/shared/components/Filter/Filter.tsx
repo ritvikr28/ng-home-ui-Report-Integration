@@ -560,6 +560,7 @@ const handleDateChange = (
             setShowSearchError(false);
             setIsDropdownOpen(false);
             setSearchSelectionError("");
+            setLocalSelectedCategories([]);
           }}
           validationText={relatedToError}
           validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
@@ -654,6 +655,7 @@ const handleDateChange = (
                       prev.filter(id => id !== closeObj.id?.toString())
                     );
                   }}
+                  tagListBoxLabelText={t("Filter.Added")}
                 />
           </>
         )}
