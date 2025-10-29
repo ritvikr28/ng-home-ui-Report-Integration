@@ -563,6 +563,7 @@ const handleDateChange = (
           }}
           validationText={relatedToError}
           validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
+          placeholderText={t("Filter.selectOption")}
         >
           {relatedTo.map((item) => (
             <DropdownItem
@@ -665,6 +666,7 @@ const handleDateChange = (
           isFixedMultiSelect
           multiSelect
           isScrollbarVisible
+          placeholderText={t("Filter.selectOption")}
           selectedItems={localSelectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
           onSelectMultiple={(_, items) => {
             setLocalSelectedCategories((prev) => {
