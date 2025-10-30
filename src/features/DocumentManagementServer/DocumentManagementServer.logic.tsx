@@ -135,7 +135,7 @@ export const getTableHeadersData: {
       headerTxtTrunctLength: 17,
       columnWidth: "261px",
       txtTrunctLength: 35,
-      isColumnSorting: true,
+      isColumnSorting: false,
 anyComponent: (e: any) => (
   <>
     {(!e || !Array.isArray(e) || !e.length) ? null : (
@@ -217,7 +217,7 @@ anyComponent: (e: any) => (
   showValAs: ShowValAs.CustomeComponent,
   headerTxtTrunctLength: 50,
   columnWidth: "180px",
-  isColumnSorting: true,
+  isColumnSorting: false,
   anyComponent: (e: any) => {
     // const shouldTruncate = 12;
     const value = e?.length > 12 ? truncatedString(e, 12)?.truncated : "";
@@ -1279,12 +1279,12 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (dialogType: string, availableFileCount: number): string => {
+export const getTitleConfirmation = (dialogType: string, availableFileCount: number, totalRecords: number): string => {
   if (dialogType === "clearAll") return "Clear all downloads?";
   if (dialogType === "delete") {
         return availableFileCount === 1 ? "Delete Document?" : "Delete Documents?";
   }
-  return "Prepare Download?";
+  return availableFileCount === totalRecords ? "Prepare to download all documents?" : "Prepare Download?";
 };
 
 export const fileDownload = async (

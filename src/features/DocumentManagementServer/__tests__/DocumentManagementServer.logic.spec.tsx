@@ -3022,21 +3022,22 @@ describe("handleBulkDeleteLogic", () => {
 
 describe("getTitleConfirmation", () => {
   it('returns "Clear all downloads?" for "clearAll"', () => {
-    expect(getTitleConfirmation("clearAll", 0)).toBe("Clear all downloads?");
+    expect(getTitleConfirmation("clearAll", 0, 0)).toBe("Clear all downloads?");
   });
 
   it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    expect(getTitleConfirmation("delete", 1)).toBe("Delete Document?");
+    expect(getTitleConfirmation("delete", 1, 0)).toBe("Delete Document?");
   });
 
   it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    expect(getTitleConfirmation("delete", 2)).toBe("Delete Documents?");
+    expect(getTitleConfirmation("delete", 2, 0)).toBe("Delete Documents?");
   });
 
   it('returns "Prepare Download?" for other values', () => {
-    expect(getTitleConfirmation("prepare", 0)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("anythingElse", 0)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("", 0)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("prepare", 0, 1)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("anythingElse", 0, 1)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("", 0, 1)).toBe("Prepare Download?");
+
   });
 });
 
