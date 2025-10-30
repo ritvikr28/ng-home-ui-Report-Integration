@@ -82,6 +82,9 @@
     .filter-tool-view .filter-btn {
       margin-right: 8px;
       margin-top: 24px;
+      text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
     }
 
     .heading-title {
@@ -366,6 +369,9 @@
         margin-top: 0% !important;
         justify-content: flex-start;
         contain: content;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
       }
     }
   }
@@ -391,6 +397,9 @@
         margin-top: 0% !important;
         justify-content: flex-start;
         contain: content;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
       }
     }
     
@@ -423,6 +432,9 @@
         width: 94%;
         justify-content: flex-start;
         contain: content;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        display: inline-block;
       }
 
       .tag-list-container {

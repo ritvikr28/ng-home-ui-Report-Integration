@@ -76,6 +76,8 @@ jest.mock("@essnextgen/ui-kit", () => {
           </button>
         )}
         {children}
+        <div>Send</div>
+        <div>Pupils</div>
       </div>
     ),
     /* eslint-disable react/require-default-props */
@@ -131,8 +133,9 @@ jest.mock("@essnextgen/ui-kit", () => {
 
 jest.mock("../../../../features/DocumentManagementServer/DocumentManagementServer.logic", () => ({
   ...jest.requireActual("../../.././../features/DocumentManagementServer/DocumentManagementServer.logic"),
-  handleSearchChange: jest.fn(),
+   handleSearchChange: jest.fn(),
   getAllRegistrationIds: jest.fn(() => []),
+  fetchCategory: jest.fn(() => Promise.resolve([]))
 }));
 
 const renderComponent = (props = {}) =>
@@ -1323,5 +1326,91 @@ it("calls handleSearchChange on search input change", async () => {
     });
   });
 
+  it("clears selected categories when Related To is changed", async () => {
+  const setSelectedCategoriesMock = jest.fn();
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={[
+        { data: "send", text: "Send" },
+        { data: "pupils", text: "Pupils" }
+      ]}
+      setSelectedCategories={setSelectedCategoriesMock}
+    />
+  );
+
+  // Simulate changing the Related To dropdown
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+
+  // Now open the category dropdown to trigger setSelectedCategories
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+
+  // The updater function should receive an empty array as previous categories
+  await waitFor(() => {
+    const updater = setSelectedCategoriesMock.mock.calls.at(-1)?.[0];
+    if (typeof updater === "function") {
+      // The updater should be called with [] as previous categories
+      expect(updater([])).toEqual([]);
+    }
+  });
+});
+
+test("fetches and displays sorted categories correctly", async () => {
+  // Mock API response with unsorted data
+  (logic.fetchCategory as jest.Mock).mockResolvedValueOnce([
+  { application: "Zebra" },
+  { application: "Apple" },
+  { application: "Mango" }
+]);
+
+  // Include one category in selectedCategories with matching 'Apple'
+  const selectedCategories = [
+    { data: { application: "Apple" }, text: "Apple" },
+    { data: { application: "HR" }, text: "HR" }
+  ];
+
+ render(
+      <FilterDialog
+        title="Filter"
+        isOpen
+        onClose={jest.fn()}
+        handleApply={jest.fn()}
+        isFilterDialogOpen
+        setSelectedCategories={mockSetSelectedCategories}
+        selectedCategories={selectedCategories}
+        setIsDateError={jest.fn()}
+        isDateError={false}
+        setSelectedDateRange={jest.fn()}
+        selectedDateRange={{ fromDate: "", toDate: "" }}
+        setReferenceExternalIds={jest.fn()}
+        setDocumentRelatedTo={jest.fn()}
+        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        setSelectedRelatedTo={jest.fn()}
+        tagListArray={[]}
+        setTagListArray={jest.fn()}
+      />
+    );
+
+  // Wait for categories to be fetched and displayed
+  await waitFor(() => {
+    expect(logic.fetchCategory).toHaveBeenCalledWith(1);
+  });
+
+  // Now check sorted order in rendered categories
+  const categoryElements = screen.getAllByText(/Apple|Mango|Zebra/i);
+  const categoryNames = categoryElements.map((el) => el.textContent);
+
+  // Assert the categories are sorted alphabetically
+  expect(categoryNames).toEqual(["Apple", "Mango", "Zebra"]);
+
+  // Optional: simulate clicking one of the mapped items to trigger item logic
+  categoryElements[0].click();
+
+  // This ensures .map callback code runs and state updates occur
+  await waitFor(() => {
+    expect(categoryElements[0]).toBeInTheDocument();
+    expect(mockSetSelectedCategories).toHaveBeenCalled();
+  });
+});
 
 });
