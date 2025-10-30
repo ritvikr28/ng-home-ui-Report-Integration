@@ -441,7 +441,7 @@ it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch 
     setShowSearchError,
     setIsSearchLoading,
     1,
-    setResetFilterSearch // <-- pass the function here
+    setResetFilterSearch
   );
 
   expect(setResetFilterSearch).toHaveBeenCalledWith(true);
@@ -3461,5 +3461,27 @@ describe("handleEditSelectedOverFlowMenu", () => {
     });
     expect(mocks.setSidePanelOpenReason).toHaveBeenCalledWith("view");
     expect(mocks.setIsSidePanelOpen).toHaveBeenCalledWith(true);
+  });
+
+  it("clears suggestions and loading for whitespace-only input", () => {
+    const event = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
+    const setSearchTerm = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    const setIsSearchLoading = jest.fn();
+
+    logicModule.handleSearchChange(
+      event,
+      [],
+      "",
+      "",
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
   });
 });

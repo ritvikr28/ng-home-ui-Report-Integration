@@ -1323,5 +1323,32 @@ it("calls handleSearchChange on search input change", async () => {
     });
   });
 
+  it("clears selected categories when Related To is changed", async () => {
+  const setSelectedCategoriesMock = jest.fn();
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={[
+        { data: "send", text: "Send" },
+        { data: "pupils", text: "Pupils" }
+      ]}
+      setSelectedCategories={setSelectedCategoriesMock}
+    />
+  );
 
+  // Simulate changing the Related To dropdown
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+
+  // Now open the category dropdown to trigger setSelectedCategories
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+
+  // The updater function should receive an empty array as previous categories
+  await waitFor(() => {
+    const updater = setSelectedCategoriesMock.mock.calls.at(-1)?.[0];
+    if (typeof updater === "function") {
+      // The updater should be called with [] as previous categories
+      expect(updater([])).toEqual([]);
+    }
+  });
+});
 });

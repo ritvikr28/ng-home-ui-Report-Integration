@@ -524,6 +524,25 @@ describe("Additional tests to increase coverage", () => {
     expect(screen.getByText(/invalid date/i)).toBeInTheDocument();
   });
  
+    it("handles filter close", async () => {
+       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+ 
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+ 
+    fireEvent.click(screen.getByTestId("filter-btn"));
+    // Set invalid date range in state
+
+    const closeBtn = screen.getByTestId("dialog-close-button");
+ 
+    fireEvent.click(closeBtn);
+
+    expect(screen.queryByTestId("dms-filter-dialog")).not.toBeInTheDocument();
+  });
+
   it("renders empty states for showErrorBanner and showSearchError", async () => {
     (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
