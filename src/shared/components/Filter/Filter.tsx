@@ -90,6 +90,7 @@ const FilterDialog = ({
   const [localTagListArray, setLocalTagListArray] = useState<SelectedItem[]>(tagListArray);
   const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
   const [relatedToSelected, setRelatedToSelected] = useState(false);
+  const [searchKey, setSearchKey] = useState(0);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -507,6 +508,8 @@ const handleDateChange = (
       escapeExits
       onClose={() => {
         setRelatedToSelected(false);
+        setRelatedToError("");
+        setSearchSelectionError("");
         onClose();
       }}
       title={isLoading ? "" : title}
@@ -561,6 +564,10 @@ const handleDateChange = (
             setIsDropdownOpen(false);
             setSearchSelectionError("");
             setLocalSelectedCategories([]);
+            setFromDate({ day: "", month: "", year: "" });
+            setToDate({ day: "", month: "", year: "" });
+            setSelectedDateRange({ fromDate: "", toDate: "" });
+            setSearchKey(prevKey => prevKey + 1);
           }}
           validationText={relatedToError}
           validationTextLevel={relatedToError ? ValidationTextLevel.Error : undefined}
@@ -582,6 +589,7 @@ const handleDateChange = (
         {(localSelectedRelatedTo?.text === 'Pupil' || localSelectedRelatedTo?.text === 'Staff') && (
           <>
             <Search
+                  key={searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
                   placeholderText={`${localSelectedRelatedTo?.text} name`} 
@@ -589,6 +597,7 @@ const handleDateChange = (
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
+                  value={searchTerm}
                   searchTerm={searchTerm}
                   setSearchTerm={setSearchTerm}
                   existingValues={[searchTerm]}
@@ -712,12 +721,16 @@ const handleDateChange = (
             .sort((a, b) => a.application.localeCompare(b.application))
             .map((category) => (
               <DropdownItem
-                key={category.application}
+                key={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
                 data={category}
-                id={category.application}
+                id={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
                 text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-                value={category.application}
-                isSelected={localSelectedCategories.some((item) => item.data === category.application)}
+                value={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
+                isSelected={localSelectedCategories.some(
+                  (item) =>
+                    (item.data?.application || item.data) === category.application &&
+                    (item.data?.registrationId || item.data?.id) === (category.registrationId ?? category.registrationId)
+                )}
               >
                 {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
               </DropdownItem>

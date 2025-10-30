@@ -135,11 +135,13 @@
     .dms-filter-dialog-fromdate-input #ng-calendar-content {
     position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;
+    margin-left: -12px !important;
    
   }
   .dms-filter-dialog-todate-input #ng-calendar-content {
     position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;
+    margin-left: -12px !important;
    
   }
 }
