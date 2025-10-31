@@ -571,6 +571,9 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     setIsSearchTriggered,
     setSelectedCategories,
     setSearchRefExternalId,
+    setIsHeaderBoxChecked,
+    setSelectedCheckBoxIds,
+    setPrevSelectedDocs
   });
 };
 

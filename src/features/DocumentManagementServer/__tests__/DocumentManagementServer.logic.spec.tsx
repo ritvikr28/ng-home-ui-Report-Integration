@@ -1846,6 +1846,9 @@ describe("validateAndApplyFilter", () => {
   let setAllSelectedDocs: jest.Mock;
   let setExcludedCheckBoxIds: jest.Mock;
   let setReferenceExternalIds: jest.Mock;
+  let setIsHeaderBoxChecked: jest.Mock;
+  let setSelectedCheckBoxIds: jest.Mock;
+  let setPrevSelectedDocs: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -1858,6 +1861,9 @@ describe("validateAndApplyFilter", () => {
     setAllSelectedDocs = jest.fn();
     setExcludedCheckBoxIds = jest.fn();
     setReferenceExternalIds = jest.fn();
+    setIsHeaderBoxChecked = jest.fn();
+    setSelectedCheckBoxIds = jest.fn();
+    setPrevSelectedDocs = jest.fn();
   });
 
   afterEach(() => {
@@ -1878,7 +1884,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1898,7 +1907,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1918,7 +1930,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1938,7 +1953,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1958,7 +1976,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1978,7 +1999,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1998,7 +2022,10 @@ describe("validateAndApplyFilter", () => {
       setAllSelectedDocs,
       setExcludedCheckBoxIds,
       referenceExternalIds: [],
-      setReferenceExternalIds
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsFilterLoading).toHaveBeenCalledWith(true);
     expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
@@ -3201,6 +3228,9 @@ describe("handleApply", () => {
   let setExcludedCheckBoxIds: jest.Mock;
   let setAllSelectedDocs: jest.Mock;
   let setSearchRefExternalId: jest.Mock;
+  let setIsHeaderBoxChecked: jest.Mock;
+  let setSelectedCheckBoxIds: jest.Mock;
+  let setPrevSelectedDocs: jest.Mock;
 
   beforeEach(() => {
     setSearchInput = jest.fn();
@@ -3218,6 +3248,9 @@ describe("handleApply", () => {
     setExcludedCheckBoxIds = jest.fn();
     setAllSelectedDocs = jest.fn();
     setSearchRefExternalId = jest.fn();
+    setIsHeaderBoxChecked = jest.fn();
+    setSelectedCheckBoxIds = jest.fn();
+    setPrevSelectedDocs = jest.fn();
     jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
   });
   it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
@@ -3242,6 +3275,9 @@ describe("handleApply", () => {
       setSelectedCategories,
       setSelectedFormats,
       setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3275,6 +3311,9 @@ describe("handleApply", () => {
       setSelectedCategories,
       setSelectedFormats,
       setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3308,6 +3347,9 @@ describe("handleApply", () => {
       setSelectedCategories,
       setSelectedFormats,
       setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
@@ -3335,6 +3377,9 @@ describe("handleApply", () => {
     setSelectedCategories,
     setSelectedFormats,
     setSearchRefExternalId,
+    setIsHeaderBoxChecked,
+    setSelectedCheckBoxIds,
+    setPrevSelectedDocs
   });
 
   // Check that setTableKey was called with a function

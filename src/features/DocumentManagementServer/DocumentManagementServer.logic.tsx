@@ -1099,6 +1099,9 @@ export function validateAndApplyFilter({
   setAllSelectedDocs,
   referenceExternalIds,
   setReferenceExternalIds,
+  setIsHeaderBoxChecked,
+  setSelectedCheckBoxIds,
+  setPrevSelectedDocs
 }: {
   selectedDateRange: { fromDate?: string; toDate?: string };
   isDateError: boolean;
@@ -1113,6 +1116,9 @@ export function validateAndApplyFilter({
   setAllSelectedDocs: (v: any[]) => void;
   referenceExternalIds: string[];
   setReferenceExternalIds: (v: string[]) => void;
+  setIsHeaderBoxChecked: (v: boolean) => void;
+  setSelectedCheckBoxIds: (v: string[]) => void;
+  setPrevSelectedDocs: (v: any[]) => void;
 }) {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
@@ -1149,6 +1155,9 @@ export function validateAndApplyFilter({
   setCurrentPage(1);
   setExcludedCheckBoxIds([]);
   setAllSelectedDocs([]);
+  setIsHeaderBoxChecked(false);
+  setSelectedCheckBoxIds([]);
+  setPrevSelectedDocs([]);
 }
 
 export function closeSidePanel(
@@ -1391,6 +1400,9 @@ export function handleApply({
   setSelectedCategories,
   setSelectedFormats,
   setSearchRefExternalId,
+  setIsHeaderBoxChecked,
+  setSelectedCheckBoxIds,
+  setPrevSelectedDocs
 }: {
   referenceExternalIds: string[],
   categories?: any[],
@@ -1412,6 +1424,9 @@ export function handleApply({
   setSelectedCategories: (v: any[]) => void,
   setSelectedFormats: (v: any[]) => void,
   setSearchRefExternalId: (v: string[]) => void,
+  setIsHeaderBoxChecked: (v: boolean) => void,
+  setSelectedCheckBoxIds: (v: string[]) => void,
+  setPrevSelectedDocs: (v: any[]) => void,
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
@@ -1428,6 +1443,9 @@ export function handleApply({
     setAllSelectedDocs,
     referenceExternalIds,
     setReferenceExternalIds: setSearchRefExternalId,
+    setIsHeaderBoxChecked,
+    setSelectedCheckBoxIds,
+    setPrevSelectedDocs
   });
   setSelectedCategories(appliedCategories);
   setSelectedFormats(appliedCategories);
