@@ -82,6 +82,9 @@
     .essui-validation-text {
       margin-top: 10px;
     }
+  .added-header {
+    margin-top: 30px;
+  }
 }
 
 .dms-layout .essui-dialog{
@@ -104,7 +107,13 @@
   #suggestions-wrapper {
     padding: 0px 0px !important;
     margin-top: 10px;
+     
+  .no-items-text {
+    margin-left: 10px !important;
+    margin-right: 5px !important;
   }
+  }
+ 
 }
 
 .filter-tool-view .dropdown .essui-overflow-menu{
