@@ -11,8 +11,8 @@
   "license": "",
   "private": true,
   "dependencies": {
-    "@essnextgen/auth-ui": "^2.1.15",
-    "@essnextgen/ui-application-kit": "^1.2.0",
+    "@essnextgen/auth-ui": "^2.1.18-alpha.2",
+    "@essnextgen/ui-application-kit": "^1.2.1-alpha.0",
     "@essnextgen/ui-error-pages-kit": "0.0.2-alpha.1",
     "@essnextgen/ui-flagr": "^0.0.3",
     "@essnextgen/ui-intl-kit": "^0.0.9",
