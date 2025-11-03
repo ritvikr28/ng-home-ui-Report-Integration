@@ -57,8 +57,43 @@
 
 }
 
+.dms-related-to-dropdown{
+    margin-bottom: 40px !important;
+    
+      .essui-validation-text {
+        margin-top: 10px;
+      }
+      #search-autocomplete .search-input{
+        margin-bottom: 10px !important;
+      }
+  }
+
+.dms-related-to-search{
+  margin-left: 20px !important;
+  margin-bottom: 40px !important;
+
+  .heading-text{
+    font-weight: normal !important;
+    margin-top: 8px !important;
+  }
+   .search-input{
+        display: table !important;
+      }
+    .essui-validation-text {
+      margin-top: 10px;
+    }
+  .added-header {
+    margin-top: 30px;
+  }
+}
+
+.dms-layout .essui-dialog{
+  overflow-x: hidden !important;
+}
+
 .dms-filter-dialog{
   overflow-y: scroll;
+  overflow-x: hidden;
 
   .filter-dialog-loader{
     align-self: center;
@@ -66,7 +101,19 @@
     .essui-loader{
       width: auto;
     }
+
+
   }
+  #suggestions-wrapper {
+    padding: 0px 0px !important;
+    margin-top: 10px;
+     
+  .no-items-text {
+    margin-left: 10px !important;
+    margin-right: 5px !important;
+  }
+  }
+ 
 }
 
 .filter-tool-view .dropdown .essui-overflow-menu{
@@ -97,11 +144,13 @@
     .dms-filter-dialog-fromdate-input #ng-calendar-content {
     position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;
+    margin-left: -12px !important;
    
   }
   .dms-filter-dialog-todate-input #ng-calendar-content {
     position: relative !important;
     transform: translate3d(0px, 0px, 0px) !important;
+    margin-left: -12px !important;
    
   }
 }

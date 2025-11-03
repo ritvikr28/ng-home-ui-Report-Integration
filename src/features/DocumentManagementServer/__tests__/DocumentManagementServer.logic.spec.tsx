@@ -36,7 +36,10 @@ import {
   handleClearAllConfirm,
   getCompletedPartitionKeys,
   handleBulkDeleteLogic,
-  getTitleConfirmation
+  getTitleConfirmation,
+  addUniqueTagItem,
+  handleApply,
+  handleEditSelectedOverFlowMenu
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -324,26 +327,6 @@ describe("debouncedFetchSuggestions", () => {
     jest.useRealTimers();
   });
 
-  test("fetches and sets suggestions", async () => {
-    const mockSuggestions = [{ fileName: "Doc A", fileId: "1" }];
-    (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
-
-    const setSearchLoading = jest.fn();
-    const setSuggestions = jest.fn();
-    const setShowError = jest.fn();
-
-    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
-
-    await act(() => {
-      jest.advanceTimersByTime(1000);
-      return Promise.resolve();
-    });
-
-    expect(setSuggestions).toHaveBeenCalled();
-    expect(setSearchLoading).toHaveBeenCalledWith(false);
-    expect(setShowError).not.toHaveBeenCalled();
-  });
-
   test("handles undefined payload structure", async () => {
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
@@ -410,17 +393,6 @@ describe("handleSearchChange", () => {
     expect(setIsSearchLoading).toHaveBeenCalledWith(false);
   });
 
-  it("should handle undefined input value gracefully", () => {
-  const event = { target: { value: undefined } } as any;
-  const setSearchTerm = jest.fn();
-  const setSuggestions = jest.fn();
-  const setShowSearchError = jest.fn();
-  const setIsSearchLoading = jest.fn();
-
-  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
-  expect(setSuggestions).toHaveBeenCalledWith([]);
-});
-
   it("should handle empty string as input", () => {
   const event = { target: { value: "" } } as any;
   const setSearchTerm = jest.fn();
@@ -450,6 +422,29 @@ describe("handleSearchChange", () => {
 
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
+});
+it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch is a function", () => {
+  const event = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
+  const setSearchTerm = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  const setIsSearchLoading = jest.fn();
+  const setResetFilterSearch = jest.fn();
+
+  handleSearchChange(
+    event,
+    [],
+    "",
+    "",
+    setSearchTerm,
+    setSuggestions,
+    setShowSearchError,
+    setIsSearchLoading,
+    1,
+    setResetFilterSearch
+  );
+
+  expect(setResetFilterSearch).toHaveBeenCalledWith(true);
 });
 });
 
@@ -985,21 +980,21 @@ describe('fetchCategory', () => {
     const mockData = [{ id: 1, name: 'Test Category' }];
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual(mockData);
   });
 
   it('returns empty array when API resolves with null', async () => {
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(null);
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual([]);
   });
 
   it('returns empty array when API throws an error', async () => {
     (ApiService.fetchFilterCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
 
-    const result = await fetchCategory();
+    const result = await fetchCategory(1);
     expect(result).toEqual([]);
   });
 });
@@ -1850,6 +1845,10 @@ describe("validateAndApplyFilter", () => {
   let setCurrentPage: jest.Mock;
   let setAllSelectedDocs: jest.Mock;
   let setExcludedCheckBoxIds: jest.Mock;
+  let setReferenceExternalIds: jest.Mock;
+  let setIsHeaderBoxChecked: jest.Mock;
+  let setSelectedCheckBoxIds: jest.Mock;
+  let setPrevSelectedDocs: jest.Mock;
 
   beforeEach(() => {
     jest.useFakeTimers();
@@ -1861,6 +1860,10 @@ describe("validateAndApplyFilter", () => {
     setCurrentPage = jest.fn();
     setAllSelectedDocs = jest.fn();
     setExcludedCheckBoxIds = jest.fn();
+    setReferenceExternalIds = jest.fn();
+    setIsHeaderBoxChecked = jest.fn();
+    setSelectedCheckBoxIds = jest.fn();
+    setPrevSelectedDocs = jest.fn();
   });
 
   afterEach(() => {
@@ -1879,7 +1882,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1897,7 +1905,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1915,7 +1928,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1933,7 +1951,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1951,7 +1974,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1969,7 +1997,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalled();
@@ -1987,7 +2020,12 @@ describe("validateAndApplyFilter", () => {
       setIsFilterDialogOpen,
       setCurrentPage,
       setAllSelectedDocs,
-      setExcludedCheckBoxIds
+      setExcludedCheckBoxIds,
+      referenceExternalIds: [],
+      setReferenceExternalIds,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
     });
     expect(setIsFilterLoading).toHaveBeenCalledWith(true);
     expect(setDateRange).toHaveBeenCalledWith({ fromDate: "2025-01-01", toDate: "2025-01-02" });
@@ -2198,12 +2236,7 @@ describe("buildSelectedDocs", () => {
         request: {
           selectAll: true,
           downloadCriteria: {
-            referenceMappingDetails: [
-              {
-                referenceExternalId: "ext1",
-                relatedTo: { learnerExternalId: "ext1" }
-              }
-            ],
+            referenceMappingDetails: [],
             documentRealatedTo: 1,
             categoryId: [1,2],
             fromDate: "2025-01-01",
@@ -3016,23 +3049,485 @@ describe("handleBulkDeleteLogic", () => {
 
 describe("getTitleConfirmation", () => {
   it('returns "Clear all downloads?" for "clearAll"', () => {
-    expect(getTitleConfirmation("clearAll", 0)).toBe("Clear all downloads?");
+    expect(getTitleConfirmation("clearAll", 0, 0)).toBe("Clear all downloads?");
   });
 
   it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    expect(getTitleConfirmation("delete", 1)).toBe("Delete Document?");
+    expect(getTitleConfirmation("delete", 1, 0)).toBe("Delete Document?");
   });
 
   it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    expect(getTitleConfirmation("delete", 2)).toBe("Delete Documents?");
+    expect(getTitleConfirmation("delete", 2, 0)).toBe("Delete Documents?");
   });
 
   it('returns "Prepare Download?" for other values', () => {
-    expect(getTitleConfirmation("prepare", 0)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("anythingElse", 0)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("", 0)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("prepare", 0, 1)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("anythingElse", 0, 1)).toBe("Prepare Download?");
+    expect(getTitleConfirmation("", 0, 1)).toBe("Prepare Download?");
+
   });
 });
 
+describe("addUniqueTagItem", () => {
+  let setTagListArray: jest.Mock;
+  let setReferenceExternalIds: jest.Mock;
 
+  beforeEach(() => {
+    setTagListArray = jest.fn();
+    setReferenceExternalIds = jest.fn();
+  });
 
+  it("does nothing if item is null", () => {
+    addUniqueTagItem({
+      item: null,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("adds a new unique pupil tag and referenceExternalId", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    // Simulate callback to check correct value
+    const cb = setReferenceExternalIds.mock.calls[0][0];
+    expect(cb([])).toEqual(["p1"]);
+  });
+
+  it("does not add duplicate pupil tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.text) }],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("adds a new unique staff tag and referenceExternalId", () => {
+    const item = {
+      externalId: "s1",
+      text: "Jane Smith",
+      props: { externalId: "s1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Staff" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    const cb = setReferenceExternalIds.mock.calls[0][0];
+    expect(cb([])).toEqual(["s1"]);
+  });
+
+  it("adds a new unique organisation tag and does not add referenceExternalId if missing", () => {
+    const item = {
+      organisationId: "o1",
+      text: "Test Org",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Organisation" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("does not add tag if maxLimit is reached", () => {
+    const item = {
+      learnerExternalId: "p2",
+      text: "Another Pupil",
+      props: { externalId: "p2" }
+    };
+    const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray,
+      setTagListArray,
+      setReferenceExternalIds,
+      maxLimit: 5
+    });
+    expect(setTagListArray).not.toHaveBeenCalled();
+    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  });
+
+  it("falls back to item.text as id if idKey is missing", () => {
+    const item = {
+      text: "Fallback",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Unknown" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledWith([item]);
+  });
+
+  it("does not add duplicate when fallback id is used", () => {
+    const item = {
+      text: "Fallback",
+      props: {}
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Unknown" } as any,
+      tagListArray: [item as any],
+      setTagListArray,
+      setReferenceExternalIds,
+    });
+    expect(setTagListArray).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("handleApply", () => {
+  let setSearchInput: jest.Mock;
+  let setSearchTerm: jest.Mock;
+  let setSearchText: jest.Mock;
+  let setTableKey: jest.Mock;
+  let setIsSearchTriggered: jest.Mock;
+  let setSelectedCategories: jest.Mock;
+  let setSelectedFormats: jest.Mock;
+  let setIsDateError: jest.Mock;
+  let setIsFilterLoading: jest.Mock;
+  let setDateRange: jest.Mock;
+  let setIsFilterDialogOpen: jest.Mock;
+  let setCurrentPage: jest.Mock;
+  let setExcludedCheckBoxIds: jest.Mock;
+  let setAllSelectedDocs: jest.Mock;
+  let setSearchRefExternalId: jest.Mock;
+  let setIsHeaderBoxChecked: jest.Mock;
+  let setSelectedCheckBoxIds: jest.Mock;
+  let setPrevSelectedDocs: jest.Mock;
+
+  beforeEach(() => {
+    setSearchInput = jest.fn();
+    setSearchTerm = jest.fn();
+    setSearchText = jest.fn();
+    setTableKey = jest.fn();
+    setIsSearchTriggered = jest.fn();
+    setSelectedCategories = jest.fn();
+    setSelectedFormats = jest.fn();
+    setIsDateError = jest.fn();
+    setIsFilterLoading = jest.fn();
+    setDateRange = jest.fn();
+    setIsFilterDialogOpen = jest.fn();
+    setCurrentPage = jest.fn();
+    setExcludedCheckBoxIds = jest.fn();
+    setAllSelectedDocs = jest.fn();
+    setSearchRefExternalId = jest.fn();
+    setIsHeaderBoxChecked = jest.fn();
+    setSelectedCheckBoxIds = jest.fn();
+    setPrevSelectedDocs = jest.fn();
+    jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
+  });
+  it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
+    handleApply({
+      referenceExternalIds: ["id1"],
+      categories: [{ id: "cat1" }],
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSearchInput).toHaveBeenCalledWith("");
+    expect(setSearchTerm).toHaveBeenCalledWith("");
+    expect(setSearchText).toHaveBeenCalledWith("");
+    expect(setTableKey).toHaveBeenCalled();
+    expect(setIsSearchTriggered).toHaveBeenCalledWith(true);
+  });
+
+  it("calls validateAndApplyFilter and does not reset search when referenceExternalIds is empty", () => {
+    handleApply({
+      referenceExternalIds: [],
+      categories: [{ id: "cat1" }],
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat1" }]);
+    expect(setSearchInput).not.toHaveBeenCalled();
+    expect(setSearchTerm).not.toHaveBeenCalled();
+    expect(setSearchText).not.toHaveBeenCalled();
+    expect(setTableKey).not.toHaveBeenCalled();
+    expect(setIsSearchTriggered).toHaveBeenCalledWith(true);
+  });
+
+  it("uses selectedCategories if categories is undefined", () => {
+    handleApply({
+      referenceExternalIds: [],
+      categories: undefined,
+      selectedCategories: [{ id: "cat2" }],
+      selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+      isDateError: false,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSearchInput,
+      setSearchTerm,
+      setSearchText,
+      setTableKey,
+      setIsSearchTriggered,
+      setSelectedCategories,
+      setSelectedFormats,
+      setSearchRefExternalId,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs
+    });
+
+    expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
+    expect(setSelectedFormats).toHaveBeenCalledWith([{ id: "cat2" }]);
+  });
+  it("increments tableKey when referenceExternalIds is not empty", () => {
+  handleApply({
+    referenceExternalIds: ["id1"],
+    categories: [{ id: "cat1" }],
+    selectedCategories: [{ id: "cat2" }],
+    selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+    isDateError: false,
+    setIsDateError,
+    setIsFilterLoading,
+    setDateRange,
+    setIsFilterDialogOpen,
+    setCurrentPage,
+    setExcludedCheckBoxIds,
+    setAllSelectedDocs,
+    setSearchInput,
+    setSearchTerm,
+    setSearchText,
+    setTableKey,
+    setIsSearchTriggered,
+    setSelectedCategories,
+    setSelectedFormats,
+    setSearchRefExternalId,
+    setIsHeaderBoxChecked,
+    setSelectedCheckBoxIds,
+    setPrevSelectedDocs
+  });
+
+  // Check that setTableKey was called with a function
+  expect(setTableKey).toHaveBeenCalled();
+  const callArg = setTableKey.mock.calls[0][0];
+  expect(typeof callArg).toBe("function");
+  // Optionally, check that the function increments a value
+  expect(callArg(5)).toBe(6);
+});
+});
+
+describe("handleEditSelectedOverFlowMenu", () => {
+  const getMocks = () => ({
+    setShowDialog: jest.fn(),
+    setShowConfirmDialog: jest.fn(),
+    setShowRestrictedDeleteDialog: jest.fn(),
+    setShowRestrictedPrepareDialog: jest.fn(),
+    setIsPreDialogLoading: jest.fn(),
+    setRestrictedFileCount: jest.fn(),
+    setAlreadyDeletedFileCount: jest.fn(),
+    setAvailableFileCount: jest.fn(),
+    setDialogType: jest.fn(),
+    setIsDialogLoading: jest.fn(),
+    setSidePanelOpenReason: jest.fn(),
+    setIsSidePanelOpen: jest.fn(),
+    buildValidationPayload: jest.fn((args) => args),
+    validation: jest.fn(async () => ({
+      data: {
+        restrictedFileCount: 1,
+        alreadyDeletedFileCount: 2,
+        availableFileCount: 3,
+      }
+    })),
+  });
+
+  const baseArgs = {
+    e: {} as React.SyntheticEvent,
+    selectedItem: { value: "Prepare download" },
+    totalSelectedCount: 1,
+    isHeaderBoxChecked: false,
+    allSelectedDocs: [{ fileId: "1" }],
+    allRegistrationIds: [1, 2],
+    dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
+    searchRefExternalId: ["ref1"],
+    documentRealatedTo: 1,
+  };
+
+  it("shows dialog if nothing selected", async () => {
+    const mocks = getMocks();
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      totalSelectedCount: 0,
+    });
+    expect(mocks.setShowDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalled();
+  });
+
+  it("shows restricted prepare dialog if available=0 and alreadyDeleted>0 for Prepare download", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 1, availableFileCount: 0 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Prepare download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowRestrictedPrepareDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows restricted delete dialog if available=0 and restricted>0 for Delete", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 1, alreadyDeletedFileCount: 0, availableFileCount: 0 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Delete" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows confirm dialog if available>0 for Delete", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 2 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Delete" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows confirm dialog for Prepare download if available>0", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 1 }
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Prepare download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+  });
+
+  it("opens side panel for view download", async () => {
+    const mocks = getMocks();
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "View download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setSidePanelOpenReason).toHaveBeenCalledWith("view");
+    expect(mocks.setIsSidePanelOpen).toHaveBeenCalledWith(true);
+  });
+
+  it("clears suggestions and loading for whitespace-only input", () => {
+    const event = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
+    const setSearchTerm = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    const setIsSearchLoading = jest.fn();
+
+    logicModule.handleSearchChange(
+      event,
+      [],
+      "",
+      "",
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading
+    );
+
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+    expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  });
+});

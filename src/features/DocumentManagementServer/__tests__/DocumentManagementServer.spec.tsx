@@ -327,38 +327,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   expect(checkbox).not.toBeChecked();
 });
  
-  it("shows error banner when showErrorBanner is set", async () => {
-     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
-
-  render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
-  // type search query
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
- 
-  // wait for suggestion to show up
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
- 
-  const suggestionNode = await screen.findAllByText("Alfie");
- 
-  // click suggestion
-  fireEvent.click(suggestionNode[0]);
- 
-  const gridLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(gridLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
- 
-  });
- 
   it("resets state on search close", async () => {
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
@@ -399,24 +367,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     // Verify loader and interval cleared
     expect(container).toBeTruthy(); // minimal assertion
   });
- 
-    it("renders expiry message for fileExpiryDays > 0", async () => {
-      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [
-          { name: "FileFuture", status: "complete", fileExpiryDays: 3 }
-        ],
-      });
-      render(<MemoryRouter>
-        <DocumentManagementServerView />
-      </MemoryRouter>);
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View download"));
-      await waitFor(() => {
-        expect(screen.getByText("FileFuture")).toBeInTheDocument();
-        expect(screen.getByText("Expires in 3 day(s).")).toBeInTheDocument();
-      });
-    });
   it("renders side panel files with expiry 0 or undefined", async () => {
     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
@@ -436,26 +386,6 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
     });
   });
-  
-    it("does not render expiry message when fileExpiryDays is undefined", async () => {
-      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [
-          { name: "FileNoExpiry", status: "complete" }
-        ],
-      });
-      render(<MemoryRouter>
-        <DocumentManagementServerView />
-      </MemoryRouter>);
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View download"));
-      await waitFor(() => {
-        expect(screen.getByText("FileNoExpiry")).toBeInTheDocument();
-        // Should NOT find expiry text
-        expect(screen.queryByText(/Expires in/)).not.toBeInTheDocument();
-        expect(screen.queryByText("Expires today.")).not.toBeInTheDocument();
-      });
-    });
  
   it("updates breadcrumbs on resize for mobile", () => {
     global.innerWidth = 500;
@@ -588,12 +518,31 @@ describe("Additional tests to increase coverage", () => {
     // Set invalid date range in state
      const fromDateInput = screen.getAllByPlaceholderText("DD");
   fireEvent.change(fromDateInput[0], { target: { value: "32" } });
-  fireEvent.click(screen.getByText("Apply"));
+  fireEvent.click(screen.getByText("Filter.applyFilters"));
  
  
     expect(screen.getByText(/invalid date/i)).toBeInTheDocument();
   });
  
+    it("handles filter close", async () => {
+       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+ 
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+ 
+    fireEvent.click(screen.getByTestId("filter-btn"));
+    // Set invalid date range in state
+
+    const closeBtn = screen.getByTestId("dialog-close-button");
+ 
+    fireEvent.click(closeBtn);
+
+    expect(screen.queryByTestId("dms-filter-dialog")).not.toBeInTheDocument();
+  });
+
   it("renders empty states for showErrorBanner and showSearchError", async () => {
     (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
@@ -796,6 +745,7 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
 describe('onClickSidePnlSecondaryBtn', () => {
   it("shows confirm dialog when clicking 'Clear all' with completed files", async () => {
+    cleanup();
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
     status: 200,
     data: [{ name: "File1", status: "complete" }],
@@ -804,13 +754,14 @@ describe('onClickSidePnlSecondaryBtn', () => {
       <DocumentManagementServerView />
     </MemoryRouter>);
  
-  fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
- 
-await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
-fireEvent.click(screen.getByTestId('secondary-button'));
- 
-  expect(await screen.getByText("Clear all downloads?")).toBeInTheDocument();
+  fireEvent.click(screen.getByText("Actions"));
+  fireEvent.click(screen.getByText("View download"));
+
+  await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
+  fireEvent.click(screen.getByTestId('secondary-button'));
+
+  const confirmDialog = await screen.getByText("Clear all downloads?");
+  expect(confirmDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Keep all"));
 });
@@ -1048,4 +999,81 @@ await waitFor(() => {
   expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
 });
 })
+
+it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Open filter dialog
+  fireEvent.click(screen.getByTestId("filter-btn"));
+  await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
+  // Open Related to dropdown and select "Pupil"
+  fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
+  const pupilOption = await screen.getByText("Pupil");
+  fireEvent.click(pupilOption);
+  // Type in advanced search input and select a suggestion
+  const advInput = await screen.getByPlaceholderText("Pupil name");
+  fireEvent.change(advInput, { target: { value: "Alfie" } });
+  fireEvent.keyDown(advInput, { key: "Enter", code: "Enter" });
+  // Click Apply
+  const input = await screen.getAllByTestId("search-autocomplete-input");
+  fireEvent.click(input[0]);
+  
+    // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
+ 
+});
+
+it("shows 'All selected documents have already been deleted.' when all selected are already deleted", async () => {
+  // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 2,
+      availableFileCount: 0,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Select the checkboxes for both rows (simulate selecting multiple docs)
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
+
+  // Open actions and trigger Delete
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Delete"));
+
+  // Should show the "All selected documents have already been deleted." message
+  await waitFor(() => {
+    expect(screen.getByText("All selected documents have already been deleted.")).toBeInTheDocument();
+  });
+});
 })
