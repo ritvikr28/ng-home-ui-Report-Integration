@@ -98,6 +98,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
               type="button"
               className="new-sidepanel-toggle-btn"
               onClick={togglePanel}
+              aria-label="toggle-button"
             >
               <FilledLeftPanelIcon />
             </button>
