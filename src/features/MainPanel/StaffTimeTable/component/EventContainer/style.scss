@@ -90,6 +90,7 @@
 
 .new-event-card-box .essui-event {
   padding: 4px !important;
+  background-color: white !important;
 }
 
 .new-event-card-box {
@@ -182,5 +183,12 @@
 }
 
 .new-event-card-box .essui-event .essui-event--critical {
-  background-color: white
+  background-color: white;
+}
+
+@media screen and (max-width: 767.9px) {
+  .new-event-card-box .essui-event {
+    width: 88vw !important;
+  }
+
 }
