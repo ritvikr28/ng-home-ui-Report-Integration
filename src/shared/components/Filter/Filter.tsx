@@ -42,7 +42,7 @@ interface FilterDialogProps {
   setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string, toDate: string }>>
   selectedDateRange: { fromDate: string, toDate: string }
   isLoading?: boolean;
-  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>;
   selectedRelatedTo: ISelectedItem | undefined;
   setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
@@ -142,6 +142,11 @@ useEffect(() => {
     setLocalTagListArray(tagListArray);
     setLocalSelectedRelatedTo(selectedRelatedTo);
   }
+   if (selectedRelatedTo && selectedRelatedTo.text && selectedRelatedTo.text.length > 0) {
+      fetchCategory(Number(selectedRelatedTo.value)).then((categories) => {
+        setAvailableCategories(categories);
+      });
+    }
 }, [isOpen]);
 
 const relatedTo = Object.entries(relatedToEnum).map(([text, value]) => ({
@@ -196,11 +201,6 @@ useEffect(() => {
     setTagListArray(tagListArray);
     if(tagListArray.length > 0) {
       setIsDropdownOpen(true);
-    }
-    if (selectedRelatedTo && selectedRelatedTo.text && selectedRelatedTo.text.length > 0) {
-      fetchCategory(Number(selectedRelatedTo.value)).then((categories) => {
-        setAvailableCategories(categories);
-      });
     }
   }, [isFilterDialogOpen, selectedDateRange]);
 
@@ -558,7 +558,7 @@ const handleDateChange = (
                 console.error("Failed to fetch categories", error);
             });
             setLocalTagListArray([]);
-            setReferenceExternalIds([]);
+            if (setReferenceExternalIds) setReferenceExternalIds([]);
             setSearchTerm("");
             setShowSearchError(false);
             setIsDropdownOpen(false);
@@ -660,9 +660,11 @@ const handleDateChange = (
                       if (updated.length === 0) setIsDropdownOpen(false); // Hide box if no tags left
                       return updated;
                     });
-                    setReferenceExternalIds(prev =>
-                      prev.filter(id => id !== closeObj.id?.toString())
-                    );
+                    if (setReferenceExternalIds) {
+                      setReferenceExternalIds(prev =>
+                        prev.filter(id => id !== closeObj.id?.toString())
+                      );
+                    }
                   }}
                   tagListBoxLabelText={t("Filter.Added")}
                 />
@@ -804,6 +806,7 @@ const handleDateChange = (
 FilterDialog.defaultProps = {
   dataTestId: "dms-filter-dialog",
   isLoading: false,
+  setReferenceExternalIds: () => {}
 };
 
 export default FilterDialog;
