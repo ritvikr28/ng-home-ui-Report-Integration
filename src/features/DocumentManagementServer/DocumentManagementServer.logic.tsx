@@ -523,13 +523,14 @@ export function getReferenceMappingForSearchedPerson({
     );
 
     matchedRelatedArr.forEach((relatedItem: any) => {
-      const matchedRelatedTo = Array.isArray(doc.relatedTo)
-        ? doc.relatedTo.filter((r: any) =>
-            searchRefExternalId.includes(
-              r.learnerExternalId || r.externalId || r.organisationId
-            )
-          )
-        : doc.relatedTo;
+      let matchedRelatedTo = null;
+      if (Array.isArray(doc.relatedTo)) {
+        matchedRelatedTo = doc.relatedTo.find((r: any) =>
+          (r.learnerExternalId || r.externalId || r.organisationId) === relatedItem.referenceExternalId
+        );
+      } else {
+        matchedRelatedTo = doc.relatedTo;
+      }
 
       referenceMapping.push({
         referenceExternalId: relatedItem.referenceExternalId,
@@ -661,7 +662,7 @@ export const fetchViewDownloadData = async ({
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
           });
-        }, 300000);
+        }, 10000);
       }
 
       if (!hasInProgress && pollingRef.current) {
