@@ -1348,7 +1348,7 @@ export function addUniqueTagItem({
   selectedRelatedTo: ISelectedItem | undefined;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
 }) {
   if (!item) return;
@@ -1372,7 +1372,7 @@ if (selectedRelatedTo?.text === "Pupil") {
 
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId) {
+    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
       setReferenceExternalIds((prev) =>
         prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
       );
