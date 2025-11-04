@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -74,21 +74,8 @@ export function mapRelatedArr(doc: any): any[] {
   }
   return relatedArr;
 }
- 
-export const getTableHeadersData: {
-  text: string;
-  isShow: boolean;
-  showValAs: ShowValAs;
-  isTextTruncate?: boolean;
-  columnWidth: string;
-  isHeaderTextTruncate?: boolean;
-  headerTxtTrunctLength?: number;
-  isSimpleText?: boolean;
-  txtTrunctLength?: number;
-  isColumnSorting?: boolean;
-  isColumnSortByDefault?: boolean;
-  anyComponent?: (e: any) => JSX.Element;
-}[] = [
+
+export const getTableHeadersData =(t:any):TableHeader[] => [
     {
       text: "Id",
       isShow: false,
@@ -97,7 +84,7 @@ export const getTableHeadersData: {
       columnWidth: "16px"
     },
     {
-      text: "Document",
+      text: t("DocumentManagementServer.documentColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: false,
@@ -129,7 +116,7 @@ export const getTableHeadersData: {
       }
     },
     {
-      text: "Related to",
+      text: t("DocumentManagementServer.relatedColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: true,
@@ -186,7 +173,7 @@ anyComponent: (e: any) => (
 )
     },
     {
-      text: "Category",
+      text: t("DocumentManagementServer.categoryColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
@@ -214,7 +201,7 @@ anyComponent: (e: any) => (
       }
     },
    {
-  text: "Added by",
+  text: t("DocumentManagementServer.addedByColumn"),
   isShow: true,
   showValAs: ShowValAs.CustomeComponent,
   headerTxtTrunctLength: 50,
@@ -245,7 +232,7 @@ anyComponent: (e: any) => (
   }
 },
     {
-      text: "Date added",
+      text: t("DocumentManagementServer.dateAddedColumn"),
       isShow: true,
       columnWidth: "140px",
       showValAs: ShowValAs.Text,
@@ -254,7 +241,7 @@ anyComponent: (e: any) => (
       isColumnSortByDefault: true,
     },
     {
-      text: "Format",
+      text: t("DocumentManagementServer.formatColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -283,7 +270,7 @@ anyComponent: (e: any) => (
       }
     },
     {
-      text: "Size",
+      text: t("DocumentManagementServer.sizeColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -682,7 +669,7 @@ export const fetchViewDownloadData = async ({
       pollingRef.current = null;
     }
   } finally {
-    setIsSidePanelLoader(false);
+    setIsSidePanelLoader(false);;
   }
 };
  
@@ -697,6 +684,7 @@ export const fetchCategory = async (documentRealatedTo: number | null): Promise<
 }
  
 export const getResultNotFoundMsg = (
+  t:any,
   searchText: string,
   docData: any,
   searchTerm: string,
@@ -711,7 +699,7 @@ export const getResultNotFoundMsg = (
     return "No data to display.";
   }
   if (!isSearchTriggered && !searchText) {
-    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+    return t("DocumentManagementServer.searchBarText");
   }
   return undefined;
 };
@@ -1233,7 +1221,6 @@ export async function handleClearAllConfirm({
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
- setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
 
@@ -1257,8 +1244,6 @@ export async function handleClearAllConfirm({
   setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
-
-
 
 export const buildValidationPayload = ({
   isSelectAll = false,
@@ -1290,8 +1275,7 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (dialogType: string, availableFileCount: number, totalRecords: number): string => {
-  const { t } = require("react-i18next").useTranslation();
+export const getTitleConfirmation = (t: any, dialogType: string, availableFileCount: number, totalRecords: number): string => {
   if (dialogType === "clearAll") return t("DocumentManagementServer.clearAllDownloadsTitle");
   if (dialogType === "delete") {
     return availableFileCount === 1 ? t("DocumentManagementServer.deleteDocumentTitle") : t("DocumentManagementServer.deleteDocumentsTitle");

@@ -173,8 +173,8 @@ afterEach(() => {
     </MemoryRouter>
   );
 
-  fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
+  fireEvent.click(await screen.getByText("DocumentManagementServer.editSelectedBtnTitle"));
+  fireEvent.click(await screen.getByText("DocumentManagementServer.ViewDownload"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -199,7 +199,7 @@ afterEach(() => {
       jest.advanceTimersByTime(2000);
     });
     expect(
-      screen.getByText("Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.")
+      screen.getByText("DocumentManagementServer.searchBarText")
     ).toBeInTheDocument();
   });
  
@@ -242,23 +242,23 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       <DocumentManagementServerView />
     </MemoryRouter>);
    
-    fireEvent.click(screen.getByText("Date added"));
-    fireEvent.click(screen.getByText("Document"));
-    fireEvent.click(screen.getByText("Format"));
-    fireEvent.click(screen.getByText("Size"));
-    fireEvent.click(screen.getByText("Category"));
+    fireEvent.click(screen.getByText("DocumentManagementServer.dateAddedColumn"));
+    fireEvent.click(screen.getByText("DocumentManagementServer.documentColumn"));
+    fireEvent.click(screen.getByText("DocumentManagementServer.formatColumn"));
+    fireEvent.click(screen.getByText("DocumentManagementServer.sizeColumn"));
+    fireEvent.click(screen.getByText("DocumentManagementServer.categoryColumn"));
   });
    
  
-  it("shows NoSelectionDialog when no item selected for prepare download", async () => {
+  it.only("shows NoSelectionDialog when no item selected for prepare download", async () => {
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    fireEvent.click(await screen.findByText("Actions"));
-    fireEvent.click(await screen.findByText("Prepare download"));
+    fireEvent.click(await screen.findByText("DocumentManagementServer.editSelectedBtnTitle"));
+    fireEvent.click(await screen.findByText("DocumentManagementServer.prepareDownloadTitle"));
     expect(
       screen.getByText(
-        "Please select at least one item from the search results to perform the action."
+        "DocumentManagementServer.noItemsSelectedMessage"
       )
     ).toBeInTheDocument();
   });

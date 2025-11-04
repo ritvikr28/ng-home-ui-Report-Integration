@@ -506,9 +506,11 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         {
             isShow: showDeleteErrorBanner,
             variant: "warning",
-            title: `Unable to delete [document/documents]`,
+            title: t("DocumentManagementServer.unableToDelete"),
             message:
-            `A technical issue has stopped us from deleting the ${availableFileCount === 1 ? "document" : "documents"}. Please try again later. If the issue persists, please get in touch with our support team.`,
+           t("DocumentManagementServer.unableToDeleteDocumentMsg", {
+            type: availableFileCount === 1 ? "document" : "documents"
+            }),
             autoclose: false,
             onClickClose: () => setShowDeleteErrorBanner(false)
     }
@@ -529,7 +531,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
-    const resultNotFoundMSG = getResultNotFoundMsg(searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
+    const resultNotFoundMSG = getResultNotFoundMsg(t,searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
 
@@ -871,8 +873,6 @@ const getDialogTitle = () => {
         </>
         );
     }
-
-
     return <Loader loaderType={LoaderType.Circular} loaderText="Please wait..." />;
     };
     return (<>
@@ -952,8 +952,8 @@ const getDialogTitle = () => {
                         title={alreadyDeletedFileCount === 1 ? "Document cannot be downloaded" : "Documents cannot be downloaded"}
                         notificationTitle={
                         alreadyDeletedFileCount === 1
-                            ? `This document cannot be downloaded as it has been deleted.`
-                            : `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} documents cannot be downloaded as they have been deleted.`
+                            ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: alreadyDeletedFileCount })
+                            : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "", count: alreadyDeletedFileCount })
                         }
                         loading={isPreDialogLoading}
                         onClose={() => {
@@ -1318,10 +1318,10 @@ const getDialogTitle = () => {
                                 }
                                 searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={getTableHeadersData}
+                                tableHeadersData={getTableHeadersData(t)}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
-                                titleConfirmation={getTitleConfirmation(dialogType, availableFileCount, docData?.totalRecords || 0)}
+                                titleConfirmation={getTitleConfirmation(t,dialogType, availableFileCount, docData?.totalRecords || 0)}
                                 isOpenConfirmationDialog={showConfirmDialog}
                                 showToastNotification={false}
                                 toastNotificationStatus={NotificationStatus.SUCCESS}

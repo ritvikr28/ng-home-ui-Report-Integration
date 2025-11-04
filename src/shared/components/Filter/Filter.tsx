@@ -352,7 +352,7 @@ const handleDateChange = (
   // --- Validation for From Date ---
   if (isFrom) {
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-      setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setError(t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }));
       setIsDateError(true);
       return;
     }
@@ -368,7 +368,7 @@ const handleDateChange = (
     }
     // Check if To date is before From date
     if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
-      setToDateError("To date should not be before From date.");
+      setToDateError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
     } else {
       // Only clear To date error if To date is valid
@@ -440,7 +440,7 @@ const handleDateChange = (
         (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
         localTagListArray.length === 0
       ) {
-        setSearchSelectionError(`${localSelectedRelatedTo.text} is required`);
+        setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
         return;
       } 
       setSearchSelectionError("");
@@ -644,8 +644,8 @@ const handleDateChange = (
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={`${localSelectedRelatedTo.text} already added`}
-                  validationTextForLimit={`${localSelectedRelatedTo.text} list limit reached`}
+                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: localSelectedRelatedTo.text })}
+                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: localSelectedRelatedTo.text })}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
                   validationText={validationText}
                   validationTextLevel={validationTextLevel}
