@@ -568,6 +568,6 @@
     "toDateMustBeOnOrBefore" : "To date must be on or before {{date}}",
     "fromDateMustBeOnOrAfter":"From date must be on or after {{date}}",
     "fromDateRequired": "From date is required",
-    "invalidDate": "Invalid date"
+    "invalidDate": "Invalid Date"
   }
 }

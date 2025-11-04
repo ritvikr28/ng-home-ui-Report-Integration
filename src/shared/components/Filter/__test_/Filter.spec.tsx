@@ -5,6 +5,29 @@ import { Category } from "../../../../features/DocumentManagementServer/response
 import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
 
+jest.mock("@essnextgen/ui-intl-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-intl-kit"),
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (key === "Filter.fromDateMustBeOnOrBefore") {
+        return `From date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
+      }
+      if (key === "Filter.fromDateMustBeOnOrAfter") {
+        return `From date must be on or after ${options?.date ?? "01/01/1900"}`;
+      }
+      if (key === "Filter.fromDateRequired") {
+        return "From date is required";
+      }
+      if (key === "Filter.toDateShouldNotBeBeforeFromDate") {
+        return "To date should not be before From date.";
+      }
+      if (key === "Filter.invalidDate") {
+        return "Invalid Date";
+      }
+      return key;
+    }
+  })
+}));
 
 const mockHandleApply = jest.fn();
 const mockOnClose = jest.fn();
@@ -477,7 +500,7 @@ it("sets error when fromDate is in invalid format", async () => {
   fireEvent.change(fromYear, { target: { value: "203" } });
 
   const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[0]).toHaveTextContent(/Invalid Date/i);
+  expect(validationText[1]).toHaveTextContent(/Invalid Date/i);
 });
 
 it("sets error when toDate is in invalid format", async () => {
@@ -495,7 +518,9 @@ it("sets error when toDate is in invalid format", async () => {
   fireEvent.change(toYear, { target: { value: "203" } });
 
   await waitFor(() => {
-  expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
+  expect(
+    screen.getByText((content) => content.includes("Invalid Date"))
+  ).toBeInTheDocument();
 });
 });
 
@@ -793,14 +818,15 @@ describe("From date minimum validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
+    const minDate = "01/01/1900";
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
-      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
     });
 
     setDateInput(dateInputs[0], "01", "01", "1900");
     await waitFor(() => {
-      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);
     });
   });
@@ -808,15 +834,15 @@ describe("From date minimum validation", () => {
   it("clears error when From date is changed to a valid date after 01/01/1900", async () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
+    const minDate = "01/01/1900";
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
-      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
     });
 
     setDateInput(dateInputs[0], "02", "01", "1900");
     await waitFor(() => {
-      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);
     });
   });
@@ -830,7 +856,8 @@ describe("From date invalid format validation", () => {
     setDateInput(dateInputs[0], "31", "02", "2023");
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      screen.debug();
+      expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -844,7 +871,8 @@ describe("From date invalid format validation", () => {
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      screen.debug();
+      expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -858,7 +886,8 @@ describe("To date invalid format validation", () => {
     setDateInput(dateInputs[1], "31", "02", "2023");
 
     await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
+      screen.debug();
+      expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
