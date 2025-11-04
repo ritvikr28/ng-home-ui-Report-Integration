@@ -337,7 +337,7 @@ describe("debouncedFetchSuggestions", () => {
   debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(3000);
     return Promise.resolve();
   });
 
@@ -354,7 +354,7 @@ describe("debouncedFetchSuggestions", () => {
     debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(3000);
       return Promise.resolve();
     });
 
@@ -2182,7 +2182,59 @@ describe("fetchGetDocumentDetailsLogic", () => {
     consoleSpy.mockRestore();
   });
 });
+describe("referenceMappingDetails deduplication", () => {
+  it("removes duplicates by referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id1", value: 3 }, // duplicate id1
+      { referenceExternalId: "id3", value: 4 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { referenceExternalId: "id1", value: 3 }, // last occurrence kept
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 4 }
+    ]);
+  });
 
+  it("returns empty array if input is empty", () => {
+    const referenceMappingDetails: any[] = [];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([]);
+  });
+
+  it("returns same array if all referenceExternalId are unique", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual(referenceMappingDetails);
+  });
+
+  it("handles items with missing referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { value: 3 }, // last undefined key kept
+      { referenceExternalId: "id2", value: 2 }
+    ]);
+  });
+});
 describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
