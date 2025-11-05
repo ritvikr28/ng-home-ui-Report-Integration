@@ -876,7 +876,8 @@ export function buildSelectedDocs(
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
-  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[]
+  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
+  dateRange: { fromDate: string; toDate: string }
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -926,9 +927,9 @@ export function buildSelectedDocs(
   referenceMappingDetails = Array.from(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
-
-  const fromDate = selectedDocs[0]?.fromDate ?? "";
-  const toDate = selectedDocs[0]?.toDate ?? "";
+debugger
+  const fromDate = dateRange?.fromDate ?? "";
+  const toDate = dateRange?.toDate ?? "";
 
   const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
 
@@ -1343,6 +1344,7 @@ export function addUniqueTagItem({
   setTagListArray,
   setReferenceExternalIds,
   maxLimit = 5,
+  setAlreadyExistingTags
 }: {
   item: ISearchItemProp | null;
   selectedRelatedTo: ISelectedItem | undefined;
@@ -1350,6 +1352,7 @@ export function addUniqueTagItem({
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
+  setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   if (!item) return;
 
@@ -1359,7 +1362,7 @@ if (selectedRelatedTo?.text === "Pupil") {
 } else if (selectedRelatedTo?.text === "Staff") {
   idKey = "externalId";
 }
-
+debugger
   const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
 
   const alreadyExists = tagListArray.some(
@@ -1367,7 +1370,7 @@ if (selectedRelatedTo?.text === "Pupil") {
   );
 
   if (alreadyExists) {
-    return;
+    return setAlreadyExistingTags ? setAlreadyExistingTags(true) : null;
   }
 
   if (tagListArray.length < maxLimit) {

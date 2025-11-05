@@ -91,6 +91,7 @@ const FilterDialog = ({
   const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
+  const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -499,7 +500,7 @@ const handleDateChange = (
     }
   }))
 }));
-
+console.log('localSelectedRelatedTo.text', localSelectedRelatedTo,localTagListArray, alreadyExistingTags);
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -554,7 +555,6 @@ const handleDateChange = (
               })
               .catch((error) => {
                 setAvailableCategories([]);
-                // Optionally log or show error
                 console.error("Failed to fetch categories", error);
             });
             setLocalTagListArray([]);
@@ -621,6 +621,7 @@ const handleDateChange = (
                       setTagListArray: setLocalTagListArray,
                       setReferenceExternalIds,
                       maxLimit: 5,
+                      setAlreadyExistingTags
                     });
                     setIsDropdownOpen(true);
                     setSearchSelectionError("");

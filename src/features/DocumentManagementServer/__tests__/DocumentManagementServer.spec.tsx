@@ -174,7 +174,7 @@ afterEach(() => {
   );
 
   fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
+  fireEvent.click(await screen.getByText("View downloads"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -361,7 +361,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     </MemoryRouter>);
  
       fireEvent.click(await screen.findByText("Actions"));
-      fireEvent.click(await screen.findByText("View download"));
+      fireEvent.click(await screen.findByText("View downloads"));
  
     fireEvent.click(screen.getByTestId("side-panel-close-button")); // side panel close
     // Verify loader and interval cleared
@@ -379,7 +379,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       <DocumentManagementServerView />
     </MemoryRouter>);
     fireEvent.click(await screen.getByText("Actions"));
-    fireEvent.click(await screen.getByText("View download"));
+    fireEvent.click(await screen.getByText("View downloads"));
     await waitFor(() => {
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
@@ -755,7 +755,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
     </MemoryRouter>);
  
   fireEvent.click(screen.getByText("Actions"));
-  fireEvent.click(screen.getByText("View download"));
+  fireEvent.click(screen.getByText("View downloads"));
 
   await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
   fireEvent.click(screen.getByTestId('secondary-button'));
