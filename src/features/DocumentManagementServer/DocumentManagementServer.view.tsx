@@ -237,23 +237,18 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
 
     useEffect(() => {
-  if (!isFilterDialogOpen && isSearchTriggered && searchText) {
-    const allRegistrationId = getAllRegistrationIds(selectedFormats);
-    setIsInitialLoad(true);
-    fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
-     if (!isFilterDialogOpen && isSearchTriggered) {
-    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
-    }
-    setIsInitialLoad(false);
-  }
-}, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
-
-
-    useEffect(() => {
-        if (!isFilterDialogOpen && isSearchTriggered) {
+        const allRegistrationId = getAllRegistrationIds(selectedFormats);
+ 
+        if (!isFilterDialogOpen && isSearchTriggered && searchText) {
+            setIsInitialLoad(true);
+            fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+ 
+            setIsInitialLoad(false);
+        }
+        if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
         }
-    }, [isSearchTriggered, searchRefExternalId, selectedFormats, currentPage, dateRange, selectedFormats, sortBy, sortDirection, documentRealatedTo]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
@@ -666,8 +661,8 @@ switch (dialogType) {
       contentText: (() => {
             if (alreadyDeletedFileCount > 0) {
                 return alreadyDeletedFileCount === 1
-                ? t("DocumentManagementServer.documentCannotBePreparedForDownload", { count: alreadyDeletedFileCount })
-                : t("DocumentManagementServer.documentsCannotBePreparedForDownload", { count: alreadyDeletedFileCount });
+                ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: alreadyDeletedFileCount })
+                : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: alreadyDeletedFileCount });
             }
             return "";
             })(),
@@ -816,7 +811,7 @@ const getDialogTitle = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0 && !showToastNotification && !showToastNotification) {
+    if (hasFetchedViewDownload && viewData?.length === 0) {
         return <p>{t("DocumentManagementServer.downloadsAppearHere")}</p>;
     }
     if (viewData?.length > 0) {
@@ -870,6 +865,7 @@ const getDialogTitle = () => {
                 </div>
             );
             })}
+            
         </>
         );
     }
@@ -910,7 +906,7 @@ const getDialogTitle = () => {
                                 }
                                 if (alreadyDeletedFileCount > 0) {
                                     if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1) {
-                                        return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeletedMsg");
+                                        return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
                                     }
                                 return alreadyDeletedFileCount === 1
                                     ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
@@ -1298,7 +1294,7 @@ const getDialogTitle = () => {
                                             isOpen={isFilterDialogOpen}
                                             title={t("Filter.heading")}
                                             isLoading={isFilterLoading}
-                                            onClose={() => {setIsFilterDialogOpen(false)}}
+                                            onClose={() => setIsFilterDialogOpen(false)}
                                             setSelectedCategories={setSelectedCategories}
                                             selectedCategories={selectedCategories}
                                             handleApply={handleApplyWrapper}
@@ -1307,7 +1303,6 @@ const getDialogTitle = () => {
                                             isDateError={isDateError}
                                             setSelectedDateRange={setSelectedDateRange}
                                             selectedDateRange={selectedDateRange}
-                                            setReferenceExternalIds={setSearchRefExternalId}
                                             setDocumentRelatedTo={setDocumentRelatedTo}
                                             selectedRelatedTo={selectedRelatedTo}
                                             setSelectedRelatedTo={setSelectedRelatedTo}

@@ -2488,7 +2488,7 @@ describe("getReferenceMappingForSearchedPerson", () => {
   })).toEqual([
     {
       referenceExternalId: "ext1",
-      relatedTo: [{ learnerExternalId: "ext1", preferredForename: "John" }],
+      relatedTo: { learnerExternalId: "ext1", preferredForename: "John" },
       documentRealatedTo: 1
     }
   ]);

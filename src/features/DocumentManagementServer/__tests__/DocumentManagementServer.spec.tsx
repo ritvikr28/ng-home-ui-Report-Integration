@@ -26,6 +26,66 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "DocumentManagementServer.subHeadingText") {
         return "Bulk download or delete documents for pupils, staff members, or the school.";
       }
+      if (key === "DocumentManagementServer.dateAddedColumn") {
+        return "Date added";
+      }
+      if (key === "DocumentManagementServer.documentColumn") {
+        return "Document";
+      }
+      if (key === "DocumentManagementServer.formatColumn") {
+        return "Format";
+      }
+      if (key === "DocumentManagementServer.sizeColumn") {
+        return "Size";
+      }
+      if (key === "DocumentManagementServer.categoryColumn") {
+        return "Category";
+      }
+      if (key === "DocumentManagementServer.editSelectedBtnTitle") {
+        return "Actions";
+      }
+      if (key === "DocumentManagementServer.PrepareDownload") {
+        return "Prepare download";
+      }
+      if (key === "DocumentManagementServer.ViewDownload") {
+        return "View download";
+      }
+      if (key === "DocumentManagementServer.Delete") {
+        return "Delete";
+      }
+      if (key === "DocumentManagementServer.noItemsSelectedMessage") {
+        return "Please select at least one item from the search results to perform the action.";
+      }
+      if (key === "Filter.applyFilters") {
+        return "Search";
+      }
+      if (key === "DocumentManagementServer.documentWillBeGoneForever") {
+        return `${options?.count ?? "?"} document will be gone forever once deleted.`;
+      }
+      if (key === "DocumentManagementServer.documentsWillBeGoneForever") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents will be gone forever once deleted.`;
+      }
+      if (key === "DocumentManagementServer.documentsAlreadyDeletedMsg") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents have already been deleted.`;
+      }
+      if (key === "DocumentManagementServer.allSelectedDocumentsAlreadyDeleted") {
+        return "All selected documents have already been deleted.";
+      }
+      if (key === "DocumentManagementServer.documentsCannotBeDownloadedMsg") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents cannot be downloaded as they have been deleted.`;
+      }
+       if (key === "DocumentManagementServer.documentCannotBeDownloadedMsg") {
+        return "This document cannot be downloaded as it has been deleted.";
+      }
+      if (key === "DocumentManagementServer.prepareSingleDocument") {
+        return `${options?.count ?? "?"} document is about to be prepared for downloading.`;
+      }
+      if (key === "DocumentManagementServer.clearAllDownloadsTitle") {
+        return "Clear all downloads?";
+      }
+      if (key === "DocumentManagementServer.keepAll") {
+        return "Keep all";
+      }
       return key;
     }
   })
@@ -173,8 +233,8 @@ afterEach(() => {
     </MemoryRouter>
   );
 
-  fireEvent.click(await screen.getByText("DocumentManagementServer.editSelectedBtnTitle"));
-  fireEvent.click(await screen.getByText("DocumentManagementServer.ViewDownload"));
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("View download"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -242,23 +302,23 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       <DocumentManagementServerView />
     </MemoryRouter>);
    
-    fireEvent.click(screen.getByText("DocumentManagementServer.dateAddedColumn"));
-    fireEvent.click(screen.getByText("DocumentManagementServer.documentColumn"));
-    fireEvent.click(screen.getByText("DocumentManagementServer.formatColumn"));
-    fireEvent.click(screen.getByText("DocumentManagementServer.sizeColumn"));
-    fireEvent.click(screen.getByText("DocumentManagementServer.categoryColumn"));
+    fireEvent.click(screen.getByText("Date added"));
+    fireEvent.click(screen.getByText("Document"));
+    fireEvent.click(screen.getByText("Format"));
+    fireEvent.click(screen.getByText("Size"));
+    fireEvent.click(screen.getByText("Category"));
   });
    
  
-  it.only("shows NoSelectionDialog when no item selected for prepare download", async () => {
+  it("shows NoSelectionDialog when no item selected for prepare download", async () => {
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    fireEvent.click(await screen.findByText("DocumentManagementServer.editSelectedBtnTitle"));
-    fireEvent.click(await screen.findByText("DocumentManagementServer.prepareDownloadTitle"));
+    fireEvent.click(await screen.findByText("Actions"));
+    fireEvent.click(await screen.findByText("Prepare download"));
     expect(
       screen.getByText(
-        "DocumentManagementServer.noItemsSelectedMessage"
+        "Please select at least one item from the search results to perform the action."
       )
     ).toBeInTheDocument();
   });
@@ -518,7 +578,7 @@ describe("Additional tests to increase coverage", () => {
     // Set invalid date range in state
      const fromDateInput = screen.getAllByPlaceholderText("DD");
   fireEvent.change(fromDateInput[0], { target: { value: "32" } });
-  fireEvent.click(screen.getByText("Filter.applyFilters"));
+  fireEvent.click(screen.getByText("Search"));
  
  
     expect(screen.getByText(/invalid date/i)).toBeInTheDocument();
@@ -996,7 +1056,7 @@ it("shows correct notification when one document is available for download in di
   fireEvent.click(await screen.findByText("Prepare download"));
   // Should show the single available document message
 await waitFor(() => {
-  expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
+   expect(screen.getByText("1 document is about to be prepared for downloading.")).toBeInTheDocument();
 });
 })
 

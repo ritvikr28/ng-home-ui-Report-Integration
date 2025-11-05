@@ -512,13 +512,14 @@ export function getReferenceMappingForSearchedPerson({
     );
 
     matchedRelatedArr.forEach((relatedItem: any) => {
-      const matchedRelatedTo = Array.isArray(doc.relatedTo)
-        ? doc.relatedTo.filter((r: any) =>
-            searchRefExternalId.includes(
-              r.learnerExternalId || r.externalId || r.organisationId
-            )
-          )
-        : doc.relatedTo;
+      let matchedRelatedTo = null;
+      if (Array.isArray(doc.relatedTo)) {
+        matchedRelatedTo = doc.relatedTo.find((r: any) =>
+          (r.learnerExternalId || r.externalId || r.organisationId) === relatedItem.referenceExternalId
+        );
+      } else {
+        matchedRelatedTo = doc.relatedTo;
+      }
 
       referenceMapping.push({
         referenceExternalId: relatedItem.referenceExternalId,
@@ -650,7 +651,7 @@ export const fetchViewDownloadData = async ({
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
           });
-        }, 300000);
+        }, 10000);
       }
 
       if (!hasInProgress && pollingRef.current) {
@@ -1334,7 +1335,7 @@ export function addUniqueTagItem({
   selectedRelatedTo: ISelectedItem | undefined;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
 }) {
   if (!item) return;
@@ -1358,7 +1359,7 @@ if (selectedRelatedTo?.text === "Pupil") {
 
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId) {
+    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
       setReferenceExternalIds((prev) =>
         prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
       );

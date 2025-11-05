@@ -21,8 +21,11 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
       if (key === "Filter.toDateShouldNotBeBeforeFromDate") {
         return "To date should not be before From date.";
       }
-      if (key === "Filter.invalidDate") {
-        return "Invalid Date";
+      // if (key === "Filter.invalidDate") {
+      //   return "Invalid Date";
+      // }
+      if (key === "Filter.toDateMustBeOnOrBefore") {
+        return `To date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
       }
       return key;
     }
@@ -93,7 +96,7 @@ jest.mock("@essnextgen/ui-kit", () => {
           <button
             type="button"
             data-testid={dataTestId}
-            onClick={() => onSelectMultiple && onSelectMultiple(null, [{ data: "send", text: "Send" }])}
+            onClick={() => onSelectMultiple && onSelectMultiple(null, [{ data: {name: "send", id: "1", application: "Send"}, text: "Send" }])}
           >
             Mock Category Dropdown
           </button>
@@ -483,6 +486,7 @@ it("shows error when fromDate is partially filled", async () => {
   fireEvent.click(applyBtn);
 
   await screen.findByText(/Invalid Date/i);
+  
 });
 
 
@@ -518,10 +522,8 @@ it("sets error when toDate is in invalid format", async () => {
   fireEvent.change(toYear, { target: { value: "203" } });
 
   await waitFor(() => {
-  expect(
-    screen.getByText((content) => content.includes("Invalid Date"))
-  ).toBeInTheDocument();
-});
+ expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
+  });
 });
 
 
@@ -1383,6 +1385,50 @@ it("calls handleSearchChange on search input change", async () => {
     }
   });
 });
+
+test("covers .sort and .map logic for category matching (full branch coverage)", async () => {
+  const setSelectedCategoriesMock = jest.fn();
+
+  // Mock category data — one with registrationId, one without
+  (logic.fetchCategory as jest.Mock).mockResolvedValueOnce([
+    { application: "Zebra", registrationId: 5 },
+    { application: "Mango" }
+  ]);
+
+  render(
+    <FilterDialog
+      {...defaultProps}
+      selectedCategories={[
+        { data: { application: "Zebra", registrationId: 5 }, text: "Zebra" },
+        { data: { application: "Mango", id: 99 }, text: "Mango" }
+      ]}
+      setSelectedCategories={setSelectedCategoriesMock}
+    />
+  );
+
+  // Open the related-to dropdown
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+  const pupilOptions = screen.getAllByText("Pupil");
+  fireEvent.click(pupilOptions[0]); // pick the first one to avoid ambiguity
+
+  // Open category dropdown
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+
+  // Wait for fetched category names to appear
+  const zebra = await screen.findByText("Zebra");
+  const mango = await screen.findByText("Mango");
+
+  // Click both categories to trigger both logical branches
+  fireEvent.click(zebra);
+  fireEvent.click(mango);
+
+  // Validate callback
+  await waitFor(() => {
+    expect(setSelectedCategoriesMock).toHaveBeenCalled();
+  });
+});
+
+
 
 test("fetches and displays sorted categories correctly", async () => {
   // Mock API response with unsorted data
