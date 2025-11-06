@@ -927,7 +927,6 @@ export function buildSelectedDocs(
   referenceMappingDetails = Array.from(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
-debugger
   const fromDate = dateRange?.fromDate ?? "";
   const toDate = dateRange?.toDate ?? "";
 
@@ -1362,7 +1361,6 @@ if (selectedRelatedTo?.text === "Pupil") {
 } else if (selectedRelatedTo?.text === "Staff") {
   idKey = "externalId";
 }
-debugger
   const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
 
   const alreadyExists = tagListArray.some(

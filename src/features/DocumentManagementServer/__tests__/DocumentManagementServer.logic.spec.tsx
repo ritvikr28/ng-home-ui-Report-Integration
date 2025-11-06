@@ -3509,7 +3509,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
       ...mocks,
-      selectedItem: { value: "View downloads" },
+      selectedItem: { value: "View download" },
       totalSelectedCount: 1,
     });
     expect(mocks.setSidePanelOpenReason).toHaveBeenCalledWith("view");
