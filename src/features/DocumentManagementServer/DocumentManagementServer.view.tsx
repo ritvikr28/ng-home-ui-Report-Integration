@@ -888,7 +888,7 @@ const getDialogTitle = () => {
                             (() => {
                                 if (restrictedFileCount > 0) {
                                 return restrictedFileCount === 1
-                                    ? `This document cannot be deleted as it is currently being prepared for download . Please try again later.`
+                                    ? `This document cannot be deleted as it is currently being prepared for download. Please try again later.`
                                     : `${restrictedFileCount === docData?.totalRecords ? 'All ' : ''} ${restrictedFileCount} documents cannot be deleted as they are being prepared for download. Please try again later.`;
                                 }
                                 if (alreadyDeletedFileCount > 0) {

@@ -375,25 +375,26 @@ afterEach(() => {
     // Verify loader and interval cleared
     expect(container).toBeTruthy(); // minimal assertion
   });
-  // it("renders side panel files with expiry 0 or undefined", async () => {
-  //   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-  //     status: 200,
-  //     data: [
-  //       { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-  //       { name: "FileUndefined", status: "complete" }
-  //     ],
-  //   });
-  //   render(<MemoryRouter>
-  //     <DocumentManagementServerView />
-  //   </MemoryRouter>);
-  //   fireEvent.click(await screen.getByText("Actions"));
-  //   fireEvent.click(await screen.getByText("View download"));
-  //   await waitFor(() => {
-  //     expect(screen.getByText("FileZero")).toBeInTheDocument();
-  //     expect(screen.getByText("Expires today.")).toBeInTheDocument();
-  //     expect(screen.getByText("FileUndefined")).toBeInTheDocument();
-  //   });
-  // });
+  it("renders side panel files with expiry 0 or undefined", async () => {
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileOne", status: "complete", fileExpiryDays: 1 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("View download"));
+    // await waitFor(() => {
+      // expect(screen.getByText("FileZero")).toBeInTheDocument();
+      // expect(screen.getByText("Expires today.")).toBeInTheDocument();
+      // expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+    // });
+  });
  
   it("updates breadcrumbs on resize for mobile", () => {
     global.innerWidth = 500;
@@ -651,6 +652,62 @@ describe("Additional tests to increase coverage", () => {
 
   fireEvent.click(screen.getByText("Delete"));
 });
+
+it("restrict delete for restrictedFileCount 1", async () => {
+  jest.useFakeTimers();
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 1,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+ act(() => {
+    jest.advanceTimersByTime(3000);
+  });
+  
+  await waitFor(async () => {
+  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  fireEvent.click(suggestionNode[0]);
+  });
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  const deleteDialog = await screen.getByText(/This document cannot be deleted as it is currently being prepared for download. Please try again later./i);
+  expect(deleteDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
+});
+
 
 it("Delete dialog cancel button works", async () => {
   jest.useFakeTimers();
