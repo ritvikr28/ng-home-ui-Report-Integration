@@ -114,21 +114,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (restrictedFileCount > 0) {
         messages.push(
-            restrictedFileCount === 1
-                ? t("DocumentManagementServer.documentCannotBeDeletedMsg", { count: restrictedFileCount })
-                : t("DocumentManagementServer.documentsCannotBeDeletedMsg", {
-                    all: restrictedFileCount === docData?.totalRecords ? "All " : "",
-                    count: restrictedFileCount
-                })
+            `${restrictedFileCount === docData?.totalRecords && restrictedFileCount !== 1 ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted as ${restrictedFileCount !== 1 ? "they are" : "it is"} currently being prepared for download. Please try again later.`
         );
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            alreadyDeletedFileCount === 1
-                ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
-                : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "", count: alreadyDeletedFileCount })
+            `${alreadyDeletedFileCount === docData?.totalRecords && alreadyDeletedFileCount !== 1 ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} have already been deleted.`
         );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
@@ -621,10 +614,7 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-            notificationTitle:
-                availableFileCount === 1
-                    ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
-                    : t("DocumentManagementServer.documentsWillBeGoneForever", { all: availableFileCount === docData?.totalRecords ? "All " : "", count: availableFileCount }),
+      notificationTitle: `${availableFileCount === docData?.totalRecords && availableFileCount !== 1 ? 'All ' : ''}  ${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
          if (alreadyDeletedFileCount > 0) {
@@ -701,7 +691,8 @@ switch (dialogType) {
           documentRealatedTo,
           excludedCheckBoxIds,
           isHeaderBoxChecked,
-          allSelectedDocs
+          allSelectedDocs,
+          dateRange
         );
 
         prepareDownload(selectedDocs)
@@ -918,7 +909,7 @@ const getDialogTitle = () => {
                         message={
                             (() => {
                                 if (restrictedFileCount > 0 && alreadyDeletedFileCount > 0) {
-                                return `${alreadyDeletedFileCount === docData?.totalRecords ? 'All ' : ''} ${alreadyDeletedFileCount} file${alreadyDeletedFileCount !== 1 ? "s" : ""} are already deleted.`;
+                                return `${alreadyDeletedFileCount === docData?.totalRecords && alreadyDeletedFileCount !== 1 ? 'All ' : ''} ${alreadyDeletedFileCount} file${alreadyDeletedFileCount !== 1 ? "s" : ""} are already deleted.`;
                                 }
                                 return "";
                             })()
@@ -1060,7 +1051,7 @@ const getDialogTitle = () => {
                                     },
                                     {
                                         disabled: false,
-                                        text: t("DocumentManagementServer.ViewDownload"),
+                                        text: 'View downloads',
                                         value: 'View download'
                                     },
                                     {

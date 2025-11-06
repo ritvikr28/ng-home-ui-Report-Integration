@@ -70,8 +70,7 @@ import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 // import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
 // import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
-import { SendNotification } from "./features/MainPanel/Notifications/SendNotifications.view";
-import { WS_BASE } from "./features/MainPanel/Notifications/SendNotifications.logic";
+import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
 
 // interface HomePageForSimsConnectedNormalUserProps {
 //   isRenderSimsConnectedBanner: boolean;
@@ -98,12 +97,6 @@ declare global {
   }
 }
 
-export const socket = (() => {
-  if (sendNotificationFlagr) {
-    return new WebSocket(`${WS_BASE}`);
-  }
-  return null;
-})();
 export const getMenus: (
   data: IModulePermission[],
   globalMenus: IApplicationMenu[]
@@ -306,11 +299,18 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
-          {sendNotificationFlagr && (
+          {/* {sendNotificationFlagr && (
             <ProtectedRoute
               exact
               path="/notification"
               component={SendNotification}
+            />
+          )} */}
+          {sendNotificationFlagr && (
+            <ProtectedRoute
+              exact
+              path="/notification-layout"
+              component={NotificationsLogic}
             />
           )}
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
