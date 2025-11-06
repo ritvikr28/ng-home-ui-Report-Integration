@@ -1,4 +1,3 @@
-
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -533,6 +532,8 @@ describe("Additional tests to increase coverage", () => {
     fireEvent.click(saveBtn);
   });
  
+ 
+
  
   it("handles date filter validation error", async () => {
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
@@ -1126,3 +1127,4 @@ it("shows 'All selected documents have already been deleted.' when all selected 
   });
 });
 })
+
