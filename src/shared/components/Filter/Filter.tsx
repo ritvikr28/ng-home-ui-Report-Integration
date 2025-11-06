@@ -310,7 +310,7 @@ const handleDateChange = (
     newDate.day === "00" || newDate.day === "0" ||
     newDate.month === "00" || newDate.month === "0"
   ) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -348,7 +348,7 @@ const handleDateChange = (
 
   // If any field is missing (partial date), show required error instead of invalid date
   if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -366,7 +366,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
@@ -386,7 +386,7 @@ const handleDateChange = (
   // --- Validation for To Date ---
   else {
     if (!newDate.day || !newDate.month || !newDate.year) {
-        setError("Invalid Date");
+        setError(t("Filter.invalidDate"));
         setIsDateError(true);
         return;
       }
@@ -406,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
@@ -435,7 +435,7 @@ const handleDateChange = (
   const handleApplyWrapper = () => {
       
       if (!localSelectedRelatedTo) {
-        setRelatedToError("Pupil, Staff, or School is required.");
+        setRelatedToError(t("Filter.relatedToRequired"));
         return;
       }
       setRelatedToError("");
@@ -750,7 +750,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="From"
+              helpText={t("Filter.fromDateLabel")}
               showDatePicker
                day={fromDate.day ? parseInt(fromDate.day, 10) : undefined}
               month={fromDate.month ? parseInt(fromDate.month, 10) : undefined}
@@ -767,7 +767,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-todate-input">
            <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="To"
+              helpText={t("Filter.toDateLabel")}
               showDatePicker
                day={toDate.day ? parseInt(toDate.day, 10) : undefined}
               month={toDate.month ? parseInt(toDate.month, 10) : undefined}

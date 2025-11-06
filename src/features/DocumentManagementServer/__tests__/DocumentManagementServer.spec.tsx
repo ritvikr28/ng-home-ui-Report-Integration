@@ -92,6 +92,9 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "DocumentManagementServer.documentCannotBeDeletedNotification") {
         return "This document cannot be deleted as it is currently being prepared for download. Please try again later";
       }
+      if (key === "Filter.invalidDate") {
+        return "Invalid Date";
+      }
       return key;
     }
   })

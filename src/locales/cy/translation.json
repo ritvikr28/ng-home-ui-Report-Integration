@@ -452,6 +452,8 @@
     "keepAll": "Cadw popeth",
     "clearAllDescription": "Bydd y weithred hon yn tynnu'r holl ffeiliau 'Wedi'u cwblhau' o'r panel Lawrlwytho.",
     "downloadsCleared": "Cliriwyd y lawrlwythiad",
+    "documentDeleted": "Dogfen wedi'i dileu",
+    "documentsDeleted": "Dogfennau wedi'u dileu",
     "documentCannotBeDeleted": "{{count}} document cannot be deleted",
     "documentsCannotBeDeleted": "{{count}} documents cannot be deleted",
     "documentAlreadyDeleted": "Dogfen eisoes wedi ei dileu",
@@ -471,7 +473,8 @@
     "documentsCannotBeDownloadedMsg": "Ni ellir lawrlwytho dogfennau {{all}}{{count}} gan eu bod eisoes wedi'u dileu.",
     "unableToDelete": "Methu dileu [dogfen/dogfennau]",
     "unableToDeleteDocumentMsg": "Mae problem dechnegol wedi ein hatal rhag dileu'r ddogfen. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-  "unableToDeleteDocumentsMsg": "Mae problem dechnegol wedi ein hatal rhag dileu'r dogfennau. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "unableToDeleteDocumentsMsg": "Mae problem dechnegol wedi ein hatal rhag dileu'r dogfennau. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "technicalIssueMessage":"Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "documentColumn": "Dogfen",
     "relatedColumn": "Perthyn i",
     "categoryColumn": "Categori",
@@ -504,6 +507,9 @@
     "toDateMustBeOnOrBefore" : "Rhaid i'r dyddiad i fod ar neu cyn {{date}}",
     "fromDateMustBeOnOrAfter":"Rhaid i'r dyddiad o fod ar neu ar ôl {{date}}",
     "fromDateRequired": "Mae angen dyddiad o",
-    "invalidDate": "Dyddiad annilys"
+    "invalidDate": "Dyddiad annilys",
+    "relatedToRequired":"Pupil, Staff, or School is required.",
+    "fromDateLabel": "O",
+    "toDateLabel": "I"
   }
 }

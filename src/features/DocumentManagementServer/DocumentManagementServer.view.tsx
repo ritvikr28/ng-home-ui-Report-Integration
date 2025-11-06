@@ -108,16 +108,26 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         const messages = [];
  
         if (restrictedFileCount > 0) {
-        messages.push(
-            `${restrictedFileCount === docData?.totalRecords && restrictedFileCount !== 1 ? 'All ' : ''} ${restrictedFileCount} document${restrictedFileCount !== 1 ? "s" : ""} cannot be deleted as ${restrictedFileCount !== 1 ? "they are" : "it is"} currently being prepared for download. Please try again later.`
-        );
+       messages.push(
+  restrictedFileCount === 1
+    ? t("DocumentManagementServer.documentCannotBeDeletedNotification", { count: restrictedFileCount })
+    : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
+        all: restrictedFileCount === docData?.totalRecords ? "All " : "",
+        count: restrictedFileCount
+      })
+);
         
         }
         
         if (alreadyDeletedFileCount > 0) {
         messages.push(
-            `${alreadyDeletedFileCount === docData?.totalRecords && alreadyDeletedFileCount !== 1 ? 'All ' : ''}  ${alreadyDeletedFileCount} document${alreadyDeletedFileCount !== 1 ? "s" : ""} have already been deleted.`
-        );
+                        alreadyDeletedFileCount === 1
+                            ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+                            : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+                                    all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "",
+                                    count: alreadyDeletedFileCount
+                                })
+                    );
         }
         const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
  
@@ -482,8 +492,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isShow: showErrorBanner,
             variant: "warning",
             title: "Information unavailable",
-            message:
-            "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please get in touch with our support team.",
+            message: t("DocumentManagementServer.technicalIssueMessage"),
             autoclose: true
         },
         {
@@ -609,7 +618,12 @@ switch (dialogType) {
       okText: "Delete",
       contentText,
       isNotificationanner: true,
-      notificationTitle: `${availableFileCount === docData?.totalRecords && availableFileCount !== 1 ? 'All ' : ''}  ${availableFileCount} document${availableFileCount > 1 ? "s" : ""} will be gone forever once deleted.`,
+      notificationTitle: availableFileCount === 1
+        ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
+        : t("DocumentManagementServer.documentsWillBeGoneForever", {
+            all: availableFileCount === docData?.totalRecords ? "All " : "",
+            count: availableFileCount
+            }),
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
          if (alreadyDeletedFileCount > 0) {
@@ -657,7 +671,7 @@ switch (dialogType) {
                     ? t("DocumentManagementServer.prepareSingleDocument", { count: availableFileCount })
                     : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? "All " : "", count: availableFileCount }),
       notificationStatus: NotificationStatus.WARNING,
-      okText: "Prepare download",
+      okText: t("DocumentManagementServer.PrepareDownload"),
       onCancel: (): void => { setShowConfirmDialog(false); 
          if (alreadyDeletedFileCount > 0) {
             fetchGetDocumentDetails(
@@ -863,7 +877,11 @@ const getDialogTitle = () => {
                 {showDeleteSuccessToast && (
                     <Notification
                         status={NotificationStatus.SUCCESSTOAST}
-                        title={availableFileCount === 1 ? "Document deleted" : "Documents deleted"}
+                        title={
+                          availableFileCount === 1
+                            ? t("DocumentManagementServer.documentDeleted")
+                            : t("DocumentManagementServer.documentsDeleted")
+                        }
                         autoclose
                         hideCloseButton
                     />
