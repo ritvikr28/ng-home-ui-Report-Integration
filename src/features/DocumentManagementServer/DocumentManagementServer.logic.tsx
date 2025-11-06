@@ -1010,6 +1010,7 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox,
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
+  setShowDeleteAbortBanner,
   fetchGetDocumentDetails,
   deleteFiles,
   excludedCheckBoxIds,
@@ -1031,6 +1032,7 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox: (v: boolean) => void,
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
+  setShowDeleteAbortBanner : (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
   deleteFiles: (payload: any) => Promise<number>,
   excludedCheckBoxIds: string[],
@@ -1041,6 +1043,7 @@ export const handleBulkDeleteLogic = async ({
 
 
   setShowDeleteSuccessToast(false);
+  setShowDeleteAbortBanner(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
     categoryId: allRegistrationIds,
@@ -1078,7 +1081,10 @@ export const handleBulkDeleteLogic = async ({
       setShowDeleteErrorBanner(false);
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
-    } else {
+    } 
+    else if(status === 409){
+     setShowDeleteAbortBanner(true)
+    }else {
       setShowDeleteErrorBanner(true);
     }
   } catch (err) {

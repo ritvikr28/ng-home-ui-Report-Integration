@@ -74,6 +74,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [viewData, setViewData] = useState<ViewDownloadItem[]>([]);
     const [sidePanelOpenReason, setSidePanelOpenReason] = useState<"prepare" | "view" | null>(null);
     const [prepareDownloadError, setPrepareDownloadError] = useState(false);
+    const [PrepareDownloadAbortBanner, setPrepareDownloadAbortBanner] = useState(false);
     const [clearAllError, setClearAllError] = useState(false);
     const [showEmailNotification, setShowEmailNotification] = useState(false);
     const [showToastNotification, setShowToastNotification] = useState(false);
@@ -86,6 +87,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string[]>([]);
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
+    const [showDeleteAbortBanner, setShowDeleteAbortBanner] = useState(false);
      const [restrictedFileCount, setRestrictedFileCount] = useState(0); 
     const [alreadyDeletedFileCount, setAlreadyDeletedFileCount] = useState(0);
     const [availableFileCount, setAvailableFileCount] = useState(0);
@@ -498,6 +500,15 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             `A technical issue has stopped us from deleting the ${availableFileCount === 1 ? "document" : "documents"}. Please try again later. If the issue persists, please get in touch with our support team.`,
             autoclose: false,
             onClickClose: () => setShowDeleteErrorBanner(false)
+    },
+    {
+            isShow: showDeleteAbortBanner,
+            variant: "warning",
+            title: `Unable to delete [document/documents]`,
+            message:
+            `This document cannot be deleted as it is currently being prepared for download. Please try again later.`,
+            autoclose: false,
+            onClickClose: () => setShowDeleteAbortBanner(false)
     }
     ];
 
@@ -538,6 +549,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             setIsClearSelectedCheckbox,
             setShowDeleteErrorBanner,
             setShowDeleteSuccessToast,
+            setShowDeleteAbortBanner,
             fetchGetDocumentDetails,
             deleteFiles,
             excludedCheckBoxIds,
@@ -677,6 +689,7 @@ switch (dialogType) {
       },
       onConfirm: (): void => {
         setPrepareDownloadError(false);
+        setPrepareDownloadAbortBanner(false);
         setIsSidePanelLoader(true);
         setSidePanelOpenReason("prepare");
         setIsSidePanelOpen(true);
@@ -694,8 +707,10 @@ switch (dialogType) {
 
         prepareDownload(selectedDocs)
           .then((statuses) => {
-            if (statuses.some((status: number) => status !== 204)) {
+            if (statuses.some((status: number) => status !== 204 && status !== 409)) {
               setPrepareDownloadError(true);
+            }else if (statuses.some((status: number) => status == 409)) {
+              setPrepareDownloadAbortBanner(true);
             } else if (totalSelectedCount > 1) {
               setShowEmailNotification(true);
             }
@@ -1217,6 +1232,15 @@ const getDialogTitle = () => {
                                                 message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
                                                 autoclose
                                                 onClickClose={() => setPrepareDownloadError(false)}
+                                            />
+                                        )}
+                                        {PrepareDownloadAbortBanner && (
+                                            <Notification
+                                                status={NotificationStatus.WARNING}
+                                                title="Unable to prepare [document/documents] for download"
+                                                message="This document cannot be downloaded as it has been deleted already."
+                                                autoclose
+                                                onClickClose={() => setPrepareDownloadAbortBanner(false)}
                                             />
                                         )}
                                         {downloadError && (
