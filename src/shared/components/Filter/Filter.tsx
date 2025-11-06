@@ -500,7 +500,6 @@ const handleDateChange = (
     }
   }))
 }));
-console.log('localSelectedRelatedTo.text', localSelectedRelatedTo,localTagListArray, alreadyExistingTags);
   return (
     <Dialog
       className="dms-filter-dialog"
