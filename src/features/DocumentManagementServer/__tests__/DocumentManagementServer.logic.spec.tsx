@@ -84,9 +84,9 @@ describe("getTableHeadersData", () => {
   });
 
   test("should contain 'Related to' header with anyComponent", () => {
-    const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
-    expect(relatedToColumn).toBeDefined();
-    expect(typeof relatedToColumn?.anyComponent).toBe("function");
+    const relatedToCol = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
+    expect(relatedToCol).toBeDefined();
+    expect(typeof relatedToCol?.anyComponent).toBe("function");
   });
 
   test("renders nothing when elem is undefined", () => {
@@ -107,7 +107,6 @@ describe("getTableHeadersData column anyComponent rendering", () => {
   const t = (key: string) => key;
   const headers = getTableHeadersData(t);
   const sizeColumn = headers.find(h => h.text === "Size");
-  const anyComponent = sizeColumn?.anyComponent;
 
     test("Category column renders tooltip with value", () => {
     const catColumn = headers.find(h => h.text === "DocumentManagementServer.categoryColumn");
@@ -3114,22 +3113,18 @@ describe("handleBulkDeleteLogic", () => {
 describe("getTitleConfirmation", () => {
   const t = jest.fn(key => key);
   it('returns "Clear all downloads?" for "clearAll"', () => {
-    const t = (key: string) => key; // Mock translation function
     expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
   });
 
   it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    const t = (key: string) => key;
     expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
   });
 
   it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    const t = (key: string) => key;
     expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
   });
 
   it('returns "Prepare Download?" for other values', () => {
-    const t = (key: string) => key;
     expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
     expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
     expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
