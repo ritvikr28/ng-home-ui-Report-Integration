@@ -103,6 +103,7 @@ describe("getTableHeadersData", () => {
 });
 
 describe("getTableHeadersData column anyComponent rendering", () => {
+  
   const t = (key: string) => key;
   const headers = getTableHeadersData(t);
   const sizeColumn = headers.find(h => h.text === "Size");
@@ -146,6 +147,22 @@ describe("getTableHeadersData column anyComponent rendering", () => {
   expect(container).toBeEmptyDOMElement();
 });
 
+// test("Related to column renders currentRegistration when currentYearGroup is missing", () => {
+//     const t = (key: string) => key;
+//     const headers = getTableHeadersData(t);
+//     const relatedToCol = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
+//     // Simulate item with currentRegistration but no currentYearGroup
+//     const item = {
+//       preferredForename: "Jane",
+//       preferredSurname: "Smith",
+//       legalName: "Jane Smith",
+//       currentRegistration: "RegA",
+//       // currentYearGroup is intentionally missing
+//     };
+//     const { container } = render(<>{relatedToCol?.anyComponent?.([item])}</>);
+// expect(container).toHaveTextContent(/RegA/);
+//   });
+
 });
 
 
@@ -155,6 +172,23 @@ describe("formatSuggestions", () => {
   expect(await formatSuggestions(undefined as any)).toEqual([]);
   expect(await formatSuggestions(null as any)).toEqual([]);
 });
+
+it("formats Pupil with neither year group nor primary class", async () => {
+  const input = [{
+    name: "Pupil",
+    values: [{
+      pupilId: "p4",
+      preferredForename: "Alex",
+      preferredSurname: "Kim",
+      legalName: "Alex Kim",
+      imagePath: ""
+      // both missing
+    }]
+  }];
+  const result = await formatSuggestions(input);
+  expect(result[0].values[0].value).toBeUndefined();
+});
+
 
 
   it("formats Pupil category with icon and value", async () => {

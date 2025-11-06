@@ -28,11 +28,6 @@ export const breadcrumbActionsList = [
     },
     {
         active: false,
-        linkName: 'Document Management Server',
-        path: '#'
-    },
-    {
-        active: false,
         linkName: 'Documents',
         path: ''
     }

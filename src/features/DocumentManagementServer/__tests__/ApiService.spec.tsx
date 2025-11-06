@@ -80,6 +80,14 @@ describe('fetchDocumentDetails', () => {
 });
 
 describe('fetchDMSSuggestions', () => {
+  it('should include DocumentRelatedTo param when documentRelatedTo is provided', async () => {
+    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+
+    await fetchDMSSuggestions('doc', '', '', [], 42);
+    const calledUrl = spy.mock.calls[0][0];
+    expect(calledUrl).toContain('AutoCompleteRequest.DocumentRelatedTo=42');
+  });
 describe('clearAllFiles', () => {
   afterEach(() => {
     jest.clearAllMocks();
