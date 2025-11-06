@@ -2187,15 +2187,15 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[])).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[])).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[])).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[])).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[])).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2228,7 +2228,8 @@ describe("buildSelectedDocs", () => {
       1,
       excludedIdDetails,
       isHeaderBoxChecked,
-      []
+      [],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
 
     expect(resultWithExcluded).toEqual([
@@ -2272,7 +2273,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }]
+      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
     expect(result[0].request.excludedFileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2300,7 +2302,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }]
+      [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
      expect(result[0].request.fileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2327,7 +2330,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      []
+      [],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2351,7 +2355,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      []
+      [],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2376,7 +2381,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      []
+      [],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2400,7 +2406,8 @@ describe("buildSelectedDocs", () => {
       0,
       excludedCheckBoxIds,
       isHeaderBoxChecked,
-      []
+      [],
+      {fromDate: "2025-01-01", toDate: "2025-01-02"}
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
