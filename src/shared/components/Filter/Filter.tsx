@@ -93,6 +93,9 @@ const FilterDialog = ({
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
 
+  // eslint-disable-next-line no-unused-expressions
+  alreadyExistingTags;
+
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
 

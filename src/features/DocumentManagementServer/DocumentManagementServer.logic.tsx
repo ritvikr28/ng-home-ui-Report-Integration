@@ -1368,7 +1368,8 @@ if (selectedRelatedTo?.text === "Pupil") {
   );
 
   if (alreadyExists) {
-    return setAlreadyExistingTags ? setAlreadyExistingTags(true) : null;
+    if (setAlreadyExistingTags) setAlreadyExistingTags(true);
+    return;
   }
 
   if (tagListArray.length < maxLimit) {
