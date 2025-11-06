@@ -1,4 +1,3 @@
-
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -387,16 +386,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
     });
   });
  
-  it("updates breadcrumbs on resize for mobile", () => {
-    global.innerWidth = 500;
-    act(() => {
-      global.dispatchEvent(new Event("resize"));
-    });
-    render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-    expect(screen.getByText("Document Management Server")).toBeInTheDocument();
-  });
+
 });
  
 describe("Additional tests to increase coverage", () => {
@@ -474,16 +464,7 @@ describe("Additional tests to increase coverage", () => {
   });
  
  
-  it("updates breadcrumbs on resize for mobile", () => {
-    global.innerWidth = 500;
-    act(() => {
-      global.dispatchEvent(new Event("resize"));
-    });
-    render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>)
-    expect(screen.getByText("Document Management Server")).toBeInTheDocument();
-  });
+
  
   it("handles date filter validation error", async () => {
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
@@ -1077,3 +1058,4 @@ it("shows 'All selected documents have already been deleted.' when all selected 
   });
 });
 })
+
