@@ -39,8 +39,6 @@ export function renderRelatedToItem(item: any) {
   // School or other types
   return <span>{item.name}</span>;
 };
-
-// const { t } = useTranslation();
  
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
@@ -670,7 +668,7 @@ export const fetchViewDownloadData = async ({
       pollingRef.current = null;
     }
   } finally {
-    setIsSidePanelLoader(false);;
+    setIsSidePanelLoader(false);
   }
 };
  

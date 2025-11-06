@@ -103,7 +103,6 @@ describe("getTableHeadersData", () => {
 });
 
 describe("getTableHeadersData column anyComponent rendering", () => {
-  
   const t = (key: string) => key;
   const headers = getTableHeadersData(t);
   const sizeColumn = headers.find(h => h.text === "Size");
@@ -145,22 +144,6 @@ describe("getTableHeadersData column anyComponent rendering", () => {
   const { container } = render(<>{sizeColumn?.anyComponent?.([])}</>);
   expect(container).toBeEmptyDOMElement();
 });
-
-// test("Related to column renders currentRegistration when currentYearGroup is missing", () => {
-//     const t = (key: string) => key;
-//     const headers = getTableHeadersData(t);
-//     const relatedToCol = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
-//     // Simulate item with currentRegistration but no currentYearGroup
-//     const item = {
-//       preferredForename: "Jane",
-//       preferredSurname: "Smith",
-//       legalName: "Jane Smith",
-//       currentRegistration: "RegA",
-//       // currentYearGroup is intentionally missing
-//     };
-//     const { container } = render(<>{relatedToCol?.anyComponent?.([item])}</>);
-// expect(container).toHaveTextContent(/RegA/);
-//   });
 
 });
 
@@ -1181,7 +1164,6 @@ describe("getAllRegistrationIds", () => {
 
 describe("Document column anyComponent", () => {
   const t = (key: string) => key;
-
   const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
   const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
@@ -3136,7 +3118,6 @@ describe("getTitleConfirmation", () => {
     expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
   });
 });
-
 
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;

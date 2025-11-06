@@ -510,6 +510,8 @@
     "emailNotificationMessage": "Your downloads are being prepared. This may take few minutes.",
     "failedDownloadTitle": "Unable to prepare [document/documents] for download",
     "failedDownloadMessage": "A technical issue has prevented us from preparing {{files}} for download. Please try again later. If the issue persists please get in touch with our support team.",
+    "prepareDownloadErrorTitle":"Unable to prepare [document/documents] for download",
+    "prepareDownloadErrorMessage":"A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team.",
     "downloadsAppearHere": "Files you download will appear here.",
     "downloadErrorTitle": "Unable to download",
     "downloadErrorMessage": "A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team.",

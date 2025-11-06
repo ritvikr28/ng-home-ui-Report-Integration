@@ -133,7 +133,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
 
     
-
     const location = useLocation();
     
     useEffect(() => {
@@ -1229,8 +1228,8 @@ const getDialogTitle = () => {
                                         {prepareDownloadError && (
                                             <Notification
                                                 status={NotificationStatus.WARNING}
-                                                title="Unable to prepare [document/documents] for download"
-                                                message="A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team."
+                                                title={t("DocumentManagementServer.prepareDownloadErrorTitle", { type: availableFileCount === 1 ? "document" : "documents" })}
+                                                message={t("DocumentManagementServer.prepareDownloadErrorMessage", { type: availableFileCount === 1 ? "document" : "documents" })}
                                                 autoclose
                                                 onClickClose={() => setPrepareDownloadError(false)}
                                             />

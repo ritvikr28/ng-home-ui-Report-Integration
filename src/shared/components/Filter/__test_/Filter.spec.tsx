@@ -194,7 +194,6 @@ describe("FilterDialog", () => {
     expect(mockSetSelectedCategories).toHaveBeenCalled();
   });
   
-
   // it("applies filters when Apply button is clicked", () => {
   //   renderComponent();
   //   fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));

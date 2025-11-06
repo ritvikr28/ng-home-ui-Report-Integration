@@ -446,6 +446,8 @@
     "emailNotificationMessage": "Byddwn yn anfon e-bost atoch pan fydd eich lawrlwythiadau'n barod. Gwiriwch eich ffolder sbam os na fyddwch yn ei gweld yn eich mewnflwch.",
     "failedDownloadTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
     "failedDownloadMessage": "Mae problem dechnegol wedi atal ni rhag paratoi {{files}} i'w lawrlwytho. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "prepareDownloadErrorTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
+    "prepareDownloadErrorMessage": "Mae problem dechnegol wedi atal ni rhag paratoi {{files}} i'w lawrlwytho. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "downloadsAppearHere": "Bydd ffeiliau rydych chi'n eu lawrlwytho yn ymddangos yma.",
     "downloadErrorTitle": "Methu lawrlwytho",
     "downloadErrorMessage": "Mae problem dechnegol wedi ein hatal rhag cwblhau'r lawrlwythiad. Ni ellir lawrlwytho'r pecyn. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",

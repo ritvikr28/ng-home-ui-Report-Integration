@@ -331,7 +331,7 @@ const handleDateChange = (
   }
 
   if (newDate.year && newDate.year.length < 4) {
-     setError(isFrom ? t("Filter.fromDateRequired") : "");
+    setError(isFrom ? t("Filter.fromDateRequired") : "");
     setIsDateError(true);
     return;
   }
@@ -340,7 +340,7 @@ const handleDateChange = (
     setError("");
     setIsDateError(false);
     if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
-        setError(t("Filter.fromDateRequired"));
+      setError(t("Filter.fromDateRequired"));
       setIsDateError(true);
     }
     return;
