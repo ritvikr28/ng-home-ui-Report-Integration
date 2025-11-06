@@ -1,0 +1,13 @@
+/* stylelint-disable-next-line selector-class-pattern */
+.dialog-class .dialog-footer .essui-dialog__footer {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  flex-direction: row-reverse;
+}
+
+@media only screen and (min-width: 768px) {
+  .dialog-class .essui-dialog {
+    display: inline-table;
+  }
+}

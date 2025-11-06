@@ -174,7 +174,7 @@ afterEach(() => {
   );
 
   fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("View download"));
+  fireEvent.click(await screen.getByText("View downloads"));
 
   await waitFor(() => {
     expect(screen.getByText("FailedFile.pdf")).toBeInTheDocument();
@@ -886,7 +886,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
     </MemoryRouter>);
  
   fireEvent.click(screen.getByText("Actions"));
-  fireEvent.click(screen.getByText("View download"));
+  fireEvent.click(screen.getByText("View downloads"));
 
   await waitFor(() => expect(screen.queryByTestId('secondary-button')).toBeInTheDocument());
   fireEvent.click(screen.getByTestId('secondary-button'));
