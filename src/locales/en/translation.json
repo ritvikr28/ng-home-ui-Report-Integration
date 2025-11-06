@@ -516,9 +516,9 @@
     "keepAll": "Keep all",
     "clearAllDescription": "This action will remove all files 'Completed' from the Downloads panel.",
     "downloadsCleared": "Downloads cleared",
-  "documentDeleted": "Document deleted",
-  "documentsDeleted": "Documents deleted",
-  "documentCannotBeDeleted": "Document cannot be deleted",
+    "documentDeleted": "Document deleted",
+    "documentsDeleted": "Documents deleted",
+    "documentCannotBeDeleted": "Document cannot be deleted",
     "documentsCannotBeDeleted": "{{count}} documents cannot be deleted",
     "documentAlreadyDeleted": "{{count}} Document already deleted",
     "documentsAlreadyDeleted": "{{count}} documents already deleted",
@@ -543,8 +543,7 @@
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
     "sizeColumn": "Size"
-  },
-  
+  }, 
   "Filter": {
     "heading": "Advanced Search",
     "relatedToHeading": "Select related to pupil, staff, or school",
