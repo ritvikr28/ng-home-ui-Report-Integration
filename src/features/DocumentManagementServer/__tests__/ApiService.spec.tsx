@@ -80,7 +80,7 @@ describe('fetchDocumentDetails', () => {
 });
 
 describe('fetchDMSSuggestions', () => {
-   it('should include DocumentRelatedTo param when documentRelatedTo is provided', async () => {
+  it('should include DocumentRelatedTo param when documentRelatedTo is provided', async () => {
     const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
     const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
     await fetchDMSSuggestions('doc', '', '', [], 42);
