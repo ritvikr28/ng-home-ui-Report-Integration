@@ -225,6 +225,17 @@ afterEach(() => {
     expect(screen.getByText("Home")).toBeInTheDocument();
   });
 
+  it("updates breadcrumbs on resize for mobile", () => {
+    global.innerWidth = 500;
+    act(() => {
+      global.dispatchEvent(new Event("resize"));
+    });
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+    expect(screen.getByText("Documents")).toBeInTheDocument();
+  });
+
   it("sets failedFileName when cancelled files are present in viewData", async () => {
   // Mock viewDownload to return a cancelled file
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({

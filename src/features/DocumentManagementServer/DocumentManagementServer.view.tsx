@@ -473,7 +473,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             if (window.innerWidth < 1024) {
                 // md and below
                 if (breadcrumbActionsList.length > 1) {
-                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-2, -1));
+                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-1));
                 } else {
                     setVisibleBreadcrumbs(breadcrumbActionsList);
                 }
