@@ -3,9 +3,16 @@
 import { useState, useRef, useEffect } from "react";
 import "./style.scss";
 import { authService } from "@essnextgen/auth-ui";
-import { connectWebSocket, fetchActiveConnectionCount, handleSendNotification } from "./SendNotifications.logic";
-import { sendNotificationFlagr, socket } from "../../../Layout";
+import { connectWebSocket, fetchActiveConnectionCount, handleSendNotification, WS_BASE } from "./SendNotifications.logic";
+import { sendNotificationFlagr } from "../../../Layout";
 
+
+export const socket = (() => {
+  if (sendNotificationFlagr) {
+    return new WebSocket(`${WS_BASE}`);
+  }
+  return null;
+})();
 
 export const SendNotification = () => {
   const [token, setToken] = useState("");
@@ -13,7 +20,7 @@ export const SendNotification = () => {
   const [activeConnectionCount, setActiveConnectionCount] = useState(0);
   const wsRef = useRef<WebSocket | null>(null);
 
-wsRef.current = sendNotificationFlagr ? socket : null;
+  wsRef.current = sendNotificationFlagr ? socket : null;
 
   const [notification, setNotification] = useState<{
     type: string;

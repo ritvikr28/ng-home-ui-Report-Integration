@@ -28,11 +28,6 @@ export const breadcrumbActionsList = [
     },
     {
         active: false,
-        linkName: 'Document Management Server',
-        path: '#'
-    },
-    {
-        active: false,
         linkName: 'Documents',
         path: ''
     }
@@ -1243,8 +1238,8 @@ const getDialogTitle = () => {
                                         {showEmailNotification && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
-                                                title="You'll get an email when your downloads are ready"
-                                                message="We'll send you an email when your download is ready. Please check your spam folder if you don't see it in your inbox."
+                                                title="Preparing downloads"
+                                                message="Your downloads are being prepared. This may take a few minutes."
                                                 onClickClose={() => setShowEmailNotification(false)}
                                             />
                                         )}

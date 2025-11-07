@@ -55,5 +55,6 @@ module.exports = {
     }
   }, coveragePathIgnorePatterns: [
     "src/features/DBManagement",
+    "src/features/MainPanel/Notifications"
   ]
 };

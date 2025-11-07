@@ -1,4 +1,182 @@
-.notification-app-container {
-  justify-content: center;
-  display: grid;
+body {
+  background-color: #f7f7f7;
+}
+
+#side-panel-close-button {
+  margin-right: 32px;
+  margin-top: 16px;
+}
+
+
+
+.notification-controlledlist-width .essui-dropdown-container {
+  display: none;
+}
+
+.notification-layout-header {
+  margin-top: 16px;
+  margin-left: 148px;
+  margin-right: 148px;
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .essui-overflow-menu__direction-top {
+    bottom: auto;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .essui-dialog__separator {
+    display: none;
+  }
+
+  #edit-selected-btn,
+  #primary-button-id {
+    display: none;
+  }
+
+  #edit-selected-btn {
+    height: 40px !important;
+    width: 100% !important;
+    margin-left: 10px !important;
+    padding-top: 0 !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  #edit-selected-btn .essui-button .essui-button__right-icon {
+    margin-top: 8px !important;
+
+  }
+
+  .filter-tool-view {
+    padding: 28px 24px;
+  }
+
+  .filter-tool-grid-container.essui-grid-container {
+    row-gap: 0;
+  }
+
+}
+
+.primary-add-data-btn {
+  min-width: 0;
+}
+
+.dynamic-table-scrollable {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .essui-table {
+
+    /* stylelint-disable-next-line selector-class-pattern */
+    thead.essui-table__head {
+
+      /* stylelint-disable-next-line selector-class-pattern */
+      tr.essui-table__row {
+
+        /* stylelint-disable-next-line selector-class-pattern */
+        th.essui-table__cell--header {
+          text-align: left !important;
+        }
+      }
+    }
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .essui-table__row {
+    td:nth-child(4) {
+      text-align: left;
+      padding-left: 12px;
+
+    }
+  }
+}
+
+#filtertool-id {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@media (min-width: 768px) and (max-width: 1023.9px) {
+  .notification-layout-header {
+    margin-left: 16px;
+    margin-right: 10px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+
+    #edit-selected-btn {
+      margin-left: 0 !important;
+    }
+  }
+
+  .essui-side-panel-footer-android-chrome {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+}
+
+@media (min-device-width: 320px) and (max-device-width: 599px) {
+  .dropdown {
+    max-width: 37% !important;
+  }
+
+  .notification-layout-header #edit-selected-btn {
+    margin-left: 0 !important;
+  }
+}
+
+@media (min-width: 1025px) {
+  #add-btn {
+    position: static;
+  }
+
+}
+
+@media (min-width: 0) and (max-width: 767px) {
+  .notification-layout-header {
+    margin-left: 16px;
+    margin-right: 16px;
+    overflow-x: hidden;
+    overflow-y: hidden;
+  }
+
+
+
+  #filtertool-id {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  }
+
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+.notification-message {
+  text-align: left;
+}
+
+.file-status-failed .essui-validation-text {
+  width: 41px;
+}
+
+.notification-layout-header #edit-selected-btn,
+.notification-layout-header #primary-button-id {
+  display: unset !important;
+}
+
+.notification-layout-header .filter-tool-grid-container.essui-grid-container {
+  row-gap: 16px !important;
+}
+
+.view-text-style {
+  color: "#2177C2";
+  font-family: "Segoe UI", sans-serif;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  height: 24px;
+  width: 36px;
+
 }
