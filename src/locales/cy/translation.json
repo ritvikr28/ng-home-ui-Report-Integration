@@ -269,7 +269,8 @@
     "quicklinkTableColumnName":"Enw",
     "quicklinkTableColumStarred": "Gyda seren",
     "quicklinkseeall": "Gweld popeth",
-    "classview": "Golwg Dosbarth"
+    "classview": "Golwg Dosbarth",
+    "inviteUsers": "Gwahodd defnyddwyr"
   },
   "welcomePage": {
     "himsg": "Helo",
