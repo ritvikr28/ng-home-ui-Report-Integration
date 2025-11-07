@@ -558,6 +558,7 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     selectedCategories,
     selectedDateRange,
     isDateError,
+    selectedEntity,
     setIsDateError,
     setIsFilterLoading,
     setDateRange,
@@ -575,9 +576,9 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     setSearchRefExternalId,
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
-    setPrevSelectedDocs
+    setPrevSelectedDocs,
+    setSelectedEntities
   });
-  setSelectedEntities(selectedEntity || []);
 };
 
 let dialogConfig;

@@ -1322,6 +1322,7 @@ export function handleApply({
   selectedCategories,
   selectedDateRange,
   isDateError,
+  selectedEntity,
   setIsDateError,
   setIsFilterLoading,
   setDateRange,
@@ -1339,13 +1340,15 @@ export function handleApply({
   setSearchRefExternalId,
   setIsHeaderBoxChecked,
   setSelectedCheckBoxIds,
-  setPrevSelectedDocs
+  setPrevSelectedDocs,
+  setSelectedEntities,
 }: {
   referenceExternalIds: string[],
   categories?: any[],
   selectedCategories: any[],
   selectedDateRange: any,
   isDateError: boolean,
+  selectedEntity?: any[],
   setIsDateError: (v: boolean) => void,
   setIsFilterLoading: (v: boolean) => void,
   setDateRange: (v: any) => void,
@@ -1363,7 +1366,8 @@ export function handleApply({
   setSearchRefExternalId: (v: string[]) => void,
   setIsHeaderBoxChecked: (v: boolean) => void,
   setSelectedCheckBoxIds: (v: string[]) => void,
-  setPrevSelectedDocs: (v: any[]) => void
+  setPrevSelectedDocs: (v: any[]) => void,
+  setSelectedEntities: (v: any[]) => void
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
@@ -1391,6 +1395,9 @@ export function handleApply({
     setSearchTerm("");
     setSearchText("");
     setTableKey((prev) => prev + 1);
+  }
+  if (setSelectedEntities) {
+    setSelectedEntities(selectedEntity || []);
   }
   setIsSearchTriggered(true);
 }

@@ -3061,10 +3061,12 @@ describe("getTitleConfirmation", () => {
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
   let setReferenceExternalIds: jest.Mock;
+  let setAlreadyExistingTags: jest.Mock;
 
   beforeEach(() => {
     setTagListArray = jest.fn();
     setReferenceExternalIds = jest.fn();
+    setAlreadyExistingTags = jest.fn();
   });
 
   it("does nothing if item is null", () => {
@@ -3092,12 +3094,11 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    // Simulate callback to check correct value
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["p1"]);
-  });
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
+    });
 
   it("does not add duplicate pupil tag", () => {
     const item = {
@@ -3112,8 +3113,11 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    const prev = [{ ...item, name: item.text, id: Number(item.text) }];
+    expect(updater(prev)).toEqual(prev); // Should not add duplicate
   });
 
   it("adds a new unique staff tag and referenceExternalId", () => {
@@ -3129,10 +3133,10 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["s1"]);
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
   });
 
   it("adds a new unique organisation tag and does not add referenceExternalId if missing", () => {
@@ -3148,8 +3152,10 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+   expect(setTagListArray).toHaveBeenCalled();
+  const updater = setTagListArray.mock.calls[0][0];
+  expect(typeof updater).toBe("function");
+  expect(updater([])).toEqual([item]);
   });
 
   it("does not add tag if maxLimit is reached", () => {
@@ -3158,8 +3164,9 @@ describe("addUniqueTagItem", () => {
       text: "Another Pupil",
       props: { externalId: "p2" }
     };
+    
     const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
-    addUniqueTagItem({
+     addUniqueTagItem({
       item,
       selectedRelatedTo: { text: "Pupil" } as any,
       tagListArray,
@@ -3167,8 +3174,10 @@ describe("addUniqueTagItem", () => {
       setReferenceExternalIds,
       maxLimit: 5
     });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater(tagListArray)).toEqual(tagListArray); // Should not add
   });
 
   it("falls back to item.text as id if idKey is missing", () => {
@@ -3183,7 +3192,10 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
   });
 
   it("does not add duplicate when fallback id is used", () => {
@@ -3199,6 +3211,62 @@ describe("addUniqueTagItem", () => {
       setReferenceExternalIds,
     });
     expect(setTagListArray).toHaveBeenCalledTimes(1);
+  });
+
+  it("calls setReferenceExternalIds with correct updater when adding unique tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+   addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with an empty array to simulate initial state
+    updater([]);
+
+    // Now assert setReferenceExternalIds was called
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    const refUpdater = setReferenceExternalIds.mock.calls[0][0];
+    expect(typeof refUpdater).toBe("function");
+    expect(refUpdater([])).toEqual(["p1"]);
+    expect(setAlreadyExistingTags).not.toHaveBeenCalled();
+  });
+
+  it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with a state that already contains the item
+    updater([{ ...item, name: item.text, id: Number(item.learnerExternalId) }]);
+
+    // Now assert setAlreadyExistingTags was called
+    expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
   });
 });
 
@@ -3221,6 +3289,7 @@ describe("handleApply", () => {
   let setIsHeaderBoxChecked: jest.Mock;
   let setSelectedCheckBoxIds: jest.Mock;
   let setPrevSelectedDocs: jest.Mock;
+  let setSelectedEntities: jest.Mock;
 
   beforeEach(() => {
     setSearchInput = jest.fn();
@@ -3241,6 +3310,7 @@ describe("handleApply", () => {
     setIsHeaderBoxChecked = jest.fn();
     setSelectedCheckBoxIds = jest.fn();
     setPrevSelectedDocs = jest.fn();
+    setSelectedEntities = jest.fn();
     jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
   });
   it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
@@ -3250,6 +3320,7 @@ describe("handleApply", () => {
       selectedCategories: [{ id: "cat2" }],
       selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
       isDateError: false,
+      selectedEntity: [],
       setIsDateError,
       setIsFilterLoading,
       setDateRange,
@@ -3267,7 +3338,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3303,7 +3375,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3339,7 +3412,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
@@ -3369,7 +3443,8 @@ describe("handleApply", () => {
     setSearchRefExternalId,
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
-    setPrevSelectedDocs
+    setPrevSelectedDocs,  
+    setSelectedEntities
   });
 
   // Check that setTableKey was called with a function
