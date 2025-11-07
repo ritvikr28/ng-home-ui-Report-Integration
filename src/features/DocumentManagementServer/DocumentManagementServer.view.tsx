@@ -1165,15 +1165,9 @@ const getDialogTitle = () => {
                                     setSelectedFormats([]);
                                     setSelectedCategories([]);
                                     setSelectedRelatedTo(undefined);
-                                    if (item) {
-                                        setSelectedEntities(prev => {
-                                        // Avoid duplicates
-                                        const ids = prev.map(e => e.learnerExternalId || e.externalId || e.organisationId);
-                                        const newId = item.learnerExternalId || item.externalId || item.organisationId;
-                                        if (ids.includes(newId)) return prev;
-                                        return [...prev, item];
-                                        });
-                                    }
+                                   if (item) {
+                                     setSelectedEntities([item]);
+                                   }
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={

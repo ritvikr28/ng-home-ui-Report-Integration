@@ -1304,30 +1304,31 @@ export function addUniqueTagItem({
   if (!item) return;
 
   let idKey = "organisationId";
-if (selectedRelatedTo?.text === "Pupil") {
-  idKey = "learnerExternalId";
-} else if (selectedRelatedTo?.text === "Staff") {
-  idKey = "externalId";
-}
-  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
-
-  const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
-  );
-
-  if (alreadyExists) {
-    if (setAlreadyExistingTags) setAlreadyExistingTags(true);
-    return;
+  if (selectedRelatedTo?.text === "Pupil") {
+    idKey = "learnerExternalId";
+  } else if (selectedRelatedTo?.text === "Staff") {
+    idKey = "externalId";
   }
+  const newId = (item as any)[idKey] ?? item.text;
 
-  if (tagListArray.length < maxLimit) {
-    setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
-      setReferenceExternalIds((prev) =>
-        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
-      );
+  setTagListArray((prevTagListArray) => {
+    const alreadyExists = prevTagListArray.some(
+      (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    );
+    if (alreadyExists) {
+      if (setAlreadyExistingTags) setAlreadyExistingTags(true);
+      return prevTagListArray;
     }
-  }
+    if (prevTagListArray.length < maxLimit) {
+      if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
+        setReferenceExternalIds((prev) =>
+          prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+        );
+      }
+      return [...prevTagListArray, item as SelectedItem];
+    }
+    return prevTagListArray;
+  });
 }
 
 export function handleApply({
