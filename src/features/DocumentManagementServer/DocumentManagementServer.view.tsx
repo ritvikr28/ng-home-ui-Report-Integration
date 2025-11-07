@@ -540,7 +540,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isHeaderBoxChecked
         });
 
-const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntities?: any[]) => {
+const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
   handleApply({
     referenceExternalIds,
     categories,
@@ -566,7 +566,7 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     setSelectedCheckBoxIds,
     setPrevSelectedDocs
   });
-  setSelectedEntities(selectedEntities || []);
+  setSelectedEntities(selectedEntity || []);
 };
 
 let dialogConfig;
