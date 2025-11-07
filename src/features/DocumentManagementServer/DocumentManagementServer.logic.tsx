@@ -1272,7 +1272,6 @@ export const fileDownload = async (
 export function addUniqueTagItem({
   item,
   selectedRelatedTo,
-  tagListArray,
   setTagListArray,
   setReferenceExternalIds,
   maxLimit = 5,
