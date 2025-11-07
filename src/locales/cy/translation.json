@@ -269,7 +269,8 @@
     "quicklinkTableColumnName":"Enw",
     "quicklinkTableColumStarred": "Gyda seren",
     "quicklinkseeall": "Gweld popeth",
-    "classview": "Golwg Dosbarth"
+    "classview": "Golwg Dosbarth",
+    "inviteUsers": "Gwahodd defnyddwyr"
   },
   "welcomePage": {
     "himsg": "Helo",
@@ -299,7 +300,9 @@
     "primarytext":"Beth sy'n newydd?",
     "secondarytext":"Y diweddaraf ar SIMS Next Gen - cyhoeddiadau newydd, cofrestrwch ar gyfer mynediad cynnar, a darganfod beth sy'n newydd.",
     "primarytextsimsnextgen": "Mapio SIMS Next Gen",
-    "secondarytextsimsnextgen": "Dod i wybod beth sydd ar y gorwel a sut rydyn ni'n gwella SIMS ar fapio Next Gen."
+    "secondarytextsimsnextgen": "Dod i wybod beth sydd ar y gorwel a sut rydyn ni'n gwella SIMS ar fapio Next Gen.",
+    "primaryvideotext":"Fideos o Beth sy'n newydd",
+    "secondaryvideotext":"Arddangos y modiwlau a'r nodweddion diweddaraf - eich helpu i gael y gorau o'ch MIS cwmwl newydd."
   },
   "homeStaffTimeTableEventTiles" :
   {
