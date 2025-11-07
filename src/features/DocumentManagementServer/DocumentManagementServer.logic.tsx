@@ -496,53 +496,6 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading(false);
 }
 
-export function getReferenceMappingForSearchedPerson({
-  docData,
-  searchRefExternalId,
-  documentRealatedTo,
-}: {
-  docData: any,
-  searchRefExternalId: string[],
-  documentRealatedTo: number,
-}) {
-  if (!Array.isArray(docData?.data)) return [];
-
-  // Get all documents matching the related type
-  const relatedDocs = docData.data.filter(
-    (d: any) => d.documentRealatedTo === documentRealatedTo
-  );
-
-  if (!relatedDocs?.length) return [];
-
-  const referenceMapping: any[] = [];
-
-  relatedDocs.forEach((doc: any) => {
-    const relatedArr = mapRelatedArr(doc);
-    const matchedRelatedArr = relatedArr.filter((item: any) =>
-      searchRefExternalId.includes(item?.referenceExternalId)
-    );
-
-    matchedRelatedArr.forEach((relatedItem: any) => {
-      let matchedRelatedTo = null;
-      if (Array.isArray(doc.relatedTo)) {
-        matchedRelatedTo = doc.relatedTo.find((r: any) =>
-          (r.learnerExternalId || r.externalId || r.organisationId) === relatedItem.referenceExternalId
-        );
-      } else {
-        matchedRelatedTo = doc.relatedTo;
-      }
-
-      referenceMapping.push({
-        referenceExternalId: relatedItem.referenceExternalId,
-        relatedTo: matchedRelatedTo,
-        documentRealatedTo: doc.documentRealatedTo,
-      });
-    });
-  });
-
-  return referenceMapping;
-}
-
 
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
@@ -877,7 +830,8 @@ export function buildSelectedDocs(
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
-  dateRange: { fromDate: string; toDate: string }
+  dateRange: { fromDate: string; toDate: string },
+  selectedEntities: any[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -892,44 +846,38 @@ export function buildSelectedDocs(
 
   let referenceMappingDetails: any[] = [];
 
-  if (searchRefExternalId.length > 0) {
-    const rawMappings = getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId,
+  // Build mapping from selectedEntities if available
+  if (searchRefExternalId.length > 0 && selectedEntities.length > 0) {
+    referenceMappingDetails = selectedEntities.map(entity => ({
+      referenceExternalId:
+        entity.learnerExternalId || entity.externalId || entity.organisationId,
+      relatedTo: entity,
       documentRealatedTo,
-    });
+    }));
 
-    const uniqueMappingsMap = new Map<string, any>();
-
-    rawMappings.forEach((mapping) => {
-      const id = mapping.referenceExternalId;
-      if (!uniqueMappingsMap.has(id)) {
-        uniqueMappingsMap.set(id, {
-          referenceExternalId: id,
-          relatedTo:
-            Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
-              ? mapping.relatedTo[0]
-              : mapping.relatedTo,
-        });
-      }
-    });
-
-    referenceMappingDetails = Array.from(uniqueMappingsMap.values());
+    // Deduplicate by referenceExternalId
+    referenceMappingDetails = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
   }
 
+  // Filter mappings to only those present in selectedDocs
   if (selectedDocs.length > 0 && referenceMappingDetails.length > 0) {
-    const validIds = new Set(selectedDocs.map((d: { externalId: any; learnerExternalId: any;  }) => d.externalId || d.learnerExternalId));
+    const validIds = new Set(
+      selectedDocs.map((d: { externalId: any; learnerExternalId: any; }) => d.externalId || d.learnerExternalId)
+    );
     referenceMappingDetails = referenceMappingDetails.filter((m) =>
       validIds.has(m.referenceExternalId)
     );
   }
 
+  // Final deduplication
   referenceMappingDetails = Array.from(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
+
   const fromDate = dateRange?.fromDate ?? "";
   const toDate = dateRange?.toDate ?? "";
-
   const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
 
   return [
@@ -958,7 +906,7 @@ export function buildSelectedDocs(
 
 export function mapToBulkDeletePayload({
   isSelectAll = false,
-  categoryId = [],
+  categoryIds = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -967,7 +915,7 @@ export function mapToBulkDeletePayload({
   excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
-  categoryId?: number[];
+  categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];
@@ -979,7 +927,7 @@ export function mapToBulkDeletePayload({
     request: {
       isSelectAll,
       bulkDeleteCriteria: {
-        categoryId,
+        categoryIds,
         fromDate,
         toDate,
         referenceDetails: {
@@ -1043,7 +991,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
-    categoryId: allRegistrationIds,
+    categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
@@ -1429,7 +1377,7 @@ export function handleApply({
   setSearchRefExternalId: (v: string[]) => void,
   setIsHeaderBoxChecked: (v: boolean) => void,
   setSelectedCheckBoxIds: (v: string[]) => void,
-  setPrevSelectedDocs: (v: any[]) => void,
+  setPrevSelectedDocs: (v: any[]) => void
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
