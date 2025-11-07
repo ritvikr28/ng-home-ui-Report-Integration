@@ -331,7 +331,8 @@
     "quicklinkTableColumnName":"Name",
     "quicklinkTableColumStarred": "Starred",
     "quicklinkseeall": "See all",
-    "classview": "Class View"
+    "classview": "Class View",
+    "inviteUsers": "Invite Users"
   },
   "welcomePage": {
     "himsg": "Hi",

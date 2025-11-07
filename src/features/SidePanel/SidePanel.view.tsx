@@ -281,9 +281,11 @@ const renderQuickLinkContent: React.FC<RenderQuickLinkContentProps> = ({
 const simsIdAdminQuickLink: () => JSX.Element = () => {
   const hasInviteUserView: boolean = isOrganisationInVariant("InviteUserView");
 
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
+
   return (
     <div className="left-sidepanel-home113">
-      <div className="quick-link-title">Quick Links</div>
+      <div className="quick-link-title">{t("quickLink.headingTitle")}</div>
       <div className="quick-link-section">
         {hasInviteUserView && (
           <div
@@ -294,7 +296,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => {
             }}
             style={{ cursor: "pointer" }}
           >
-            Invite Users
+            {t("quickLink.inviteUsers")}
           </div>
         )}
       </div>
