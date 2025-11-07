@@ -3174,10 +3174,12 @@ describe("getTitleConfirmation", () => {
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
   let setReferenceExternalIds: jest.Mock;
+  let setAlreadyExistingTags: jest.Mock;
 
   beforeEach(() => {
     setTagListArray = jest.fn();
     setReferenceExternalIds = jest.fn();
+    setAlreadyExistingTags = jest.fn();
   });
 
   it("does nothing if item is null", () => {
@@ -3313,6 +3315,25 @@ describe("addUniqueTagItem", () => {
     });
     expect(setTagListArray).toHaveBeenCalledTimes(1);
   });
+
+  it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+    setTagListArray,
+    setReferenceExternalIds,
+    setAlreadyExistingTags
+  });
+
+  expect(setTagListArray).not.toHaveBeenCalled();
+  expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
+});
 });
 
 describe("handleApply", () => {

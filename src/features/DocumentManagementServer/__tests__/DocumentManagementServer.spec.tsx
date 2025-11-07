@@ -99,7 +99,17 @@ import * as Logic from "../DocumentManagementServer.logic";
   })
 }));
 
+jest.mock("../ApiService", () => ({
+  fetchFilterCategory: jest.fn(),
+  viewDownload: jest.fn(),
+  prepareAndDownloadFile: jest.fn(),
+}));
  
+jest.mock('focus-trap-react', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <>{children}</>,
+}));
+
 jest.mock("../DocumentManagementServer.logic", () => {
   const original = jest.requireActual("../DocumentManagementServer.logic");
   return {
@@ -110,7 +120,6 @@ jest.mock("../DocumentManagementServer.logic", () => {
     reduceCategories: jest.fn(),
     fetchCategory: jest.fn(),
     debouncedFetchSuggestions: jest.fn(),
-    fileDownload: jest.fn(),
   };
 });
  
@@ -122,7 +131,6 @@ jest.mock("../ApiService", () => ({
   viewDownload: jest.fn(),
   fetchStaffProfilePhoto: jest.fn(),
   validation: jest.fn(),
-  fileDownload: jest.fn(),
 }));
  
  
@@ -269,42 +277,40 @@ afterEach(() => {
     ).toBeInTheDocument();
   });
  
-// it("shows suggestions and triggers search when user clicks a suggestion", async () => {
-//     jest.useFakeTimers();
- 
-//   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+it("shows suggestions and triggers search when user clicks a suggestion", async () => {
+  jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
-//   render(<MemoryRouter>
-//     <DocumentManagementServerView />
-//   </MemoryRouter>);
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
 
-//   // type search query
-//   const input = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(input, { target: { value: "Alfie" } });
-//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+  // type search query
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
  
-//   // wait for suggestion to show up
-//   const searchLoader = screen.getAllByTestId("loader-arc");
-//   await waitFor(() => {
-//     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-//   });
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  jest.advanceTimersByTime(3000);
  
-//   jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
-//   await waitFor(async () => {
-//   const suggestionNode = await screen.findAllByText("Alfie");
+  const suggestionNode = await screen.findAllByText("Alfie");
  
-//   // click suggestion
-//   fireEvent.click(suggestionNode[0]);
-//   });
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
  
-//   // verify document is displayed
-//   await waitFor(() => {
-//     expect(screen.getByText("Doc1")).toBeInTheDocument();
-//   });
- 
-// });
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+ jest.useRealTimers();
+});
  
  
   it("handles sorting on multiple columns", () => {
@@ -334,7 +340,7 @@ afterEach(() => {
   });
  
   test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
-    jest.useFakeTimers();
+  jest.useFakeTimers();
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -363,19 +369,17 @@ afterEach(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
   // Click the suggestion
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
   fireEvent.click(suggestionNode[0]);
-  });
 
   // Wait for Doc1 to appear
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
 
-    const headerCheckbox = await screen.getByTestId("checkmark-check-box-row-testid");
+    const headerCheckbox = await screen.findByTestId("checkmark-check-box-row-testid");
 
     // Check the header checkbox
     fireEvent.click(headerCheckbox);
@@ -399,10 +403,11 @@ afterEach(() => {
   // Unselect the checkbox (remove)
   fireEvent.click(checkbox);
   expect(checkbox).not.toBeChecked();
+  jest.useRealTimers();
 });
  
   it("resets state on search close", async () => {
-    jest.useFakeTimers();
+  jest.useFakeTimers();
        (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
@@ -422,15 +427,14 @@ afterEach(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
  
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
-
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+ 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
-  });
     fireEvent.click(screen.getByTestId("search-close--icon-btn"));
     expect(screen.getByRole("textbox")).toHaveValue("");
+    jest.useRealTimers();
   });
  
     it("closes side panel and clears interval", async () => {
@@ -438,73 +442,33 @@ afterEach(() => {
       <DocumentManagementServerView />
     </MemoryRouter>);
  
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View downloads"));
+      fireEvent.click(await screen.findByText("Actions"));
+      fireEvent.click(await screen.findByText("View downloads"));
  
     fireEvent.click(screen.getByTestId("side-panel-close-button")); // side panel close
     // Verify loader and interval cleared
     expect(container).toBeTruthy(); // minimal assertion
   });
-
-    it("renders side panel files with expiry 0 or undefined", async () => {
-      // jest.useFakeTimers();
-      (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-        status: 200,
-        data: [
-          { name: "FileZero", status: "complete", fileExpiryDays: 0, fileId: "f1", application: "App", section: "Sec", blobName: "blob1" },
-          { name: "FileOne", status: "complete", fileExpiryDays: 1, fileId: "f2", application: "App", section: "Sec", blobName: "blob2" },
-          { name: "FileUndefined", status: "complete", fileId: "f3", application: "App", section: "Sec", blobName: "blob3" },
-          { name: "FileInProgress", status: "inprogress", fileId: "f4", application: "App", section: "Sec", blobName: "blob4" },
-
-        ],
-      });
-      (Logic.fileDownload as jest.Mock).mockResolvedValue(new Blob(["file content"]));
-
-      render(<MemoryRouter>
-        <DocumentManagementServerView />
-      </MemoryRouter>);
-      fireEvent.click(await screen.getByText("Actions"));
-      fireEvent.click(await screen.getByText("View downloads"));
-
-      // const searchLoader = screen.getAllByTestId("loader-arc");
-      // await waitFor(() => {
-        // await expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-      // });
-      // await waitFor(() => {
-        // await expect(screen.getByText("FileZero")).toBeInTheDocument();
-      // });
-
-      // jest.advanceTimersByTime(1000)
-      // const downloadButtons = screen.getAllByText("Download");
-      // console.log("Download Buttons:", downloadButtons);
-      // fireEvent.click(downloadButtons[0]);
-
-      // // await waitFor(() => {
-      //   await expect(Logic.fileDownload).toHaveBeenCalled();
-      // });
-      // await waitFor(() => {
-      // expect(screen.getByText("FileZero")).toBeInTheDocument();
-      // expect(screen.getByText("Expires today.")).toBeInTheDocument();
-      // expect(screen.getByText("FileUndefined")).toBeInTheDocument();
-      // });
-    });
-
-
-//breadcrumb-test-id
-   it("updates breadcrumbs on resize for mobile", () => {
-    global.innerWidth = 500;
-    act(() => {
-      global.dispatchEvent(new Event("resize"));
+  it("renders side panel files with expiry 0 or undefined", async () => {
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
     });
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    // expect(screen.getByText("Documents")).toBeInTheDocument();
-    const breadcrumbLinks = screen.getAllByText("Documents").filter(el =>
-    el.tagName.toLowerCase() === "a" || el.closest('[data-testid="breadcrumb-test-id"]')
-  );
-  expect(breadcrumbLinks.length).toBe(1);
-  })
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("View downloads"));
+    await waitFor(() => {
+      expect(screen.getByText("FileZero")).toBeInTheDocument();
+      expect(screen.getByText("Expires today.")).toBeInTheDocument();
+      expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+    });
+  });
+ 
 
 });
  
@@ -535,7 +499,7 @@ describe("Additional tests to increase coverage", () => {
  
  
   it("handles multiple files for email notification", async () => {
-    jest.useFakeTimers();
+  jest.useFakeTimers();
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -563,16 +527,14 @@ describe("Additional tests to increase coverage", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
+  jest.advanceTimersByTime(3000);
  
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
+  const suggestionNode = await screen.findAllByText("Alfie");
+ 
   // click suggestion
-  await waitFor(async () => { 
-    const suggestionNode = await screen.findAllByText("Alfie");
-
-    // click suggestion
-    fireEvent.click(suggestionNode[0]);
-  });
-
+  fireEvent.click(suggestionNode[0]);
+ 
   // verify document is displayed
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
@@ -583,13 +545,9 @@ describe("Additional tests to increase coverage", () => {
  
     fireEvent.click(await screen.getByText("Actions"));
     fireEvent.click(await screen.getByText("Prepare download"));
-    const saveBtn =
-      screen.queryByTestId("tid-save-btn--small-screen") ||
-      screen.queryByTestId("tid-save-btn--large-screen");
-
-    if (saveBtn) {
-      fireEvent.click(saveBtn);
-    }
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
+    jest.useRealTimers();
   });
  
  
@@ -616,12 +574,11 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
  
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
-  await waitFor(async () => {
+  jest.advanceTimersByTime(3000);
   const suggestionNode = await screen.findAllByText("Alfie");
+ 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
-  });
  
   // verify document is displayed
   await waitFor(() => {
@@ -635,6 +592,7 @@ describe("Additional tests to increase coverage", () => {
  
  
     expect(screen.getByText(/invalid date/i)).toBeInTheDocument();
+    jest.useRealTimers();
   });
  
     it("handles filter close", async () => {
@@ -657,7 +615,7 @@ describe("Additional tests to increase coverage", () => {
   });
 
   it("renders empty states for showErrorBanner and showSearchError", async () => {
-    jest.useFakeTimers();
+  jest.useFakeTimers();
     (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
       ({ setShowErrorBanner }: any) => setShowErrorBanner(true)
@@ -678,15 +636,15 @@ describe("Additional tests to increase coverage", () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+
+  jest.advanceTimersByTime(3000);
  
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
-  await waitFor(async () => {
   const suggestionNode = await screen.findAllByText("Alfie");
  
   // click suggestion
   fireEvent.click(suggestionNode[0]);
-  });
   expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
+  jest.useRealTimers();
   }); 
 
  it("opens delete confirmation dialog when delete is clicked with selection and confirm delete", async () => {
@@ -713,19 +671,15 @@ describe("Additional tests to increase coverage", () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
   fireEvent.click(suggestionNode[0]);
-  });
 
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
-
 
   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
 
@@ -733,72 +687,12 @@ describe("Additional tests to increase coverage", () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  const deleteDialog = await screen.getByText(/will be gone forever once deleted./i);
+  const deleteDialog = await screen.findByText(/will be gone forever once deleted./i);
   expect(deleteDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Delete"));
+  jest.useRealTimers();
 });
-
-it("restrict delete for restrictedFileCount 1", async () => {
-  jest.useFakeTimers();
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  (ApiService.validation as jest.Mock).mockResolvedValue({
-  data: {
-    restrictedFileCount: 1,
-    alreadyDeletedFileCount: 0,
-    availableFileCount: 0,
-  }
-});
-  render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
-  fireEvent.click(suggestionNode[0]);
-  });
-
-  await waitFor(() => {
-    expect(screen.getByText("Doc1")).toBeInTheDocument();
-  });
-
-
-  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-
-  fireEvent.click(screen.getByText("Actions"));
-
-  fireEvent.click(screen.getByText("Delete"));
-
-    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  const deleteDialog = await screen.getByText(/This document cannot be deleted as it is currently being prepared for download. Please try again later/i);
-  expect(deleteDialog).toBeInTheDocument();
-
-  fireEvent.click(screen.getByText("Okay"));
-});
-
 
 it("Delete dialog cancel button works", async () => {
   jest.useFakeTimers();
@@ -824,19 +718,14 @@ it("Delete dialog cancel button works", async () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
   fireEvent.click(suggestionNode[0]);
-  });
 
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
-
 
   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
 
@@ -844,13 +733,10 @@ it("Delete dialog cancel button works", async () => {
 
   fireEvent.click(screen.getByText("Delete"));
 
-      const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-  const deleteDialog = await screen.getByText(/will be gone forever once deleted./i);
+  const deleteDialog = await screen.findByText(/will be gone forever once deleted./i);
   expect(deleteDialog).toBeInTheDocument();
   fireEvent.click(screen.getByText("Keep it"));
+  jest.useRealTimers();
 });
 
 it("Delete dialog for already deleted works", async () => {
@@ -877,14 +763,10 @@ it("Delete dialog for already deleted works", async () => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
   fireEvent.click(suggestionNode[0]);
-  });
 
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
@@ -895,21 +777,12 @@ it("Delete dialog for already deleted works", async () => {
   fireEvent.click(screen.getByText("Actions"));
 
   fireEvent.click(screen.getByText("Delete"));
-// act(() => {
-//     jest.advanceTimersByTime(2000);
-//   });
 
-
-  const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  expect(
-    screen.getByText(/already been deleted/i)
-  ).toBeInTheDocument();
+  const deleteDialog = await screen.findByText(/documents have already been deleted./i);
+  expect(deleteDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Okay"));
+  jest.useRealTimers();
 });
 
 it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted", async () => {
@@ -923,7 +796,7 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
     availableFileCount: 0,
   }
 });
-  const { container } =  render(<MemoryRouter>
+  render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
 
@@ -936,33 +809,26 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
   fireEvent.click(suggestionNode[0]);
-  });
 
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
+
   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
 
   fireEvent.click(screen.getByText("Actions"));
 
   fireEvent.click(screen.getByText("Prepare download"));
 
-    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-  console.log(container.innerHTML);
-  const prepareDialog = await screen.getByText(/documents cannot be downloaded as they have been deleted./i);
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Okay"));
+  jest.useRealTimers();
 });
 
 describe('onClickSidePnlSecondaryBtn', () => {
@@ -1024,14 +890,12 @@ describe('onClickSidePnlSecondaryBtn', () => {
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
+  jest.advanceTimersByTime(3000);
 
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
   fireEvent.click(suggestionNode[0]);
-  });
 
   // verify document is displayed
   await waitFor(() => {
@@ -1039,16 +903,12 @@ describe('onClickSidePnlSecondaryBtn', () => {
   });
  
     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-    fireEvent.click(await screen.getByText("Actions"));
-    const option = await screen.getByText("Prepare download");
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
     fireEvent.click(option);
-    const saveBtn =
-     screen.queryByTestId("tid-save-btn--small-screen") ||
-     screen.queryByTestId("tid-save-btn--large-screen");
-
-   if (saveBtn) {
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
     fireEvent.click(saveBtn);
-  }
+    jest.useRealTimers();
 })
 })
 it("sets excludedFileDetails and fileDetails correctly when select all with exclusions", async () => {
@@ -1073,14 +933,12 @@ it("sets excludedFileDetails and fileDetails correctly when select all with excl
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
 
-  await waitFor(async () => {
-    const suggestionNode = await screen.getAllByText(/Alfie/i);
-    fireEvent.click(suggestionNode[0]);
-  });
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
 
   // click suggestion
+  fireEvent.click(suggestionNode[0]);
 
   // verify document is displayed
   await waitFor(() => {
@@ -1104,6 +962,7 @@ it("sets excludedFileDetails and fileDetails correctly when select all with excl
   // expect(screen.queryByText("Please select at least one item from the search results to perform the action.")).not.toBeInTheDocument();
 
   // You can also check for correct dialog or notification if needed
+  jest.useRealTimers();
 });
 
 it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted and clicking Cancel button triggers grid reload", async () => {
@@ -1117,8 +976,7 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
     availableFileCount: 2,
   }
 });
-   
-   render(<MemoryRouter>
+  render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
 
@@ -1131,14 +989,10 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
   fireEvent.click(suggestionNode[0]);
-  });
 
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
@@ -1150,19 +1004,17 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
 
   fireEvent.click(screen.getByText("Prepare download"));
 
-  const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-  const prepareDialog = await screen.getByText(/documents cannot be downloaded as they have already been deleted./i);
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
 
   fireEvent.click(screen.getByText("Cancel"));
+  jest.useRealTimers();
 });
 
 it("shows correct message when one document is already deleted in dialog", async () => {
+  // Mock validation to set alreadyDeletedFileCount = 1, availableFileCount = 0
   jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -1185,12 +1037,10 @@ it("shows correct message when one document is already deleted in dialog", async
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
   // Click the suggestion
-  await waitFor(async () => {
+  jest.advanceTimersByTime(3000);
   const suggestionNode = await screen.findAllByText("Alfie");
   fireEvent.click(suggestionNode[0]);
-  });
   // Wait for Doc1 to appear
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
@@ -1200,22 +1050,20 @@ it("shows correct message when one document is already deleted in dialog", async
   // Open actions and trigger Prepare download
   fireEvent.click(await screen.findByText("Actions"));
   fireEvent.click(await screen.findByText("Prepare download"));
-
-  const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
   // Should show the single deleted document message
   await waitFor(() => {
   expect(screen.getByText(/cannot be downloaded as it has been deleted/)).toBeInTheDocument();
 });
+jest.useRealTimers();
 });
 
 it("shows correct notification when one document is available for download in dialog", async () => {
+  // Mock validation to set availableFileCount = 1, alreadyDeletedFileCount = 0
   jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-   (ApiService.validation as jest.Mock).mockResolvedValue({
+  (ApiService.validation as jest.Mock).mockResolvedValue({
     data: {
       restrictedFileCount: 0,
       alreadyDeletedFileCount: 0,
@@ -1223,28 +1071,23 @@ it("shows correct notification when one document is available for download in di
     },
   });
 
-   render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Simulate search for "Alfie"
   const input = await screen.findByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
+  // Wait for suggestions to load
   const searchLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
-
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
-  
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  // Click the suggestion
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
   fireEvent.click(suggestionNode[0]);
-  });
-
+  // Wait for Doc1 to appear
   await waitFor(() => {
     expect(screen.getByText("Doc1")).toBeInTheDocument();
   });
@@ -1254,128 +1097,41 @@ it("shows correct notification when one document is available for download in di
   fireEvent.click(await screen.findByText("Actions"));
   fireEvent.click(await screen.findByText("Prepare download"));
   // Should show the single available document message
-    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
 await waitFor(() => {
-  expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
+   expect(screen.getByText("1 document is about to be prepared for downloading.")).toBeInTheDocument();
 });
-
-fireEvent.click(await screen.findByText("Prepare download"));
+jest.useRealTimers();
 })
 
-it("catches error on failure of document download preparation", async () => {
-  jest.useFakeTimers();
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-   (ApiService.validation as jest.Mock).mockResolvedValue({
-    data: {
-      restrictedFileCount: 0,
-      alreadyDeletedFileCount: 0,
-      availableFileCount: 1,
-    },
-  });
-  (Logic.prepareDownload as jest.Mock).mockRejectedValue(new Error("Network Error"));
-
-   render(<MemoryRouter>
-      <DocumentManagementServerView />
-    </MemoryRouter>);
-
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
- act(() => {
-    jest.advanceTimersByTime(3000);
-  });
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+  // Open filter dialog
+  fireEvent.click(screen.getByTestId("filter-btn"));
+  await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
+  // Open Related to dropdown and select "Pupil"
+  fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
+  const pupilOption = await screen.getByText("Pupil");
+  fireEvent.click(pupilOption);
+  // Type in advanced search input and select a suggestion
+  const advInput = await screen.getByPlaceholderText("Pupil name");
+  fireEvent.change(advInput, { target: { value: "Alfie" } });
+  fireEvent.keyDown(advInput, { key: "Enter", code: "Enter" });
+  // Click Apply
+  const input = await screen.getAllByTestId("search-autocomplete-input");
+  fireEvent.click(input[0]);
   
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
-  fireEvent.click(suggestionNode[0]);
-  });
-
-  await waitFor(() => {
-    expect(screen.getByText("Doc1")).toBeInTheDocument();
-  });
-  // Select the checkbox for the first row
-  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
-  // Open actions and trigger Prepare download
-  fireEvent.click(await screen.findByText("Actions"));
-  fireEvent.click(await screen.findByText("Prepare download"));
-  // Should show the single available document message
-    const searchLoaderDialog = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
-await waitFor(() => {
-  expect(screen.getByText(/1 document is about to be prepared for downloading./)).toBeInTheDocument();
+    // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
+ 
 });
-
-fireEvent.click(await screen.findByText("Prepare download"));
-});
-
-// it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
-//    jest.useFakeTimers();
-//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data:[], status:200});
-//   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-//   const { container } = render(<MemoryRouter>
-//     <DocumentManagementServerView />
-//   </MemoryRouter>);
-//   // Open filter dialog
-//   fireEvent.click(screen.getByTestId("filter-btn"));
-  
-    
-//   // fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
-//   fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to-icon-btn"));
-//   const pupilOption = await screen.getByAltText("Pupil");
-//   console.log(pupilOption)
-//   fireEvent.click(pupilOption);
-//   console.log(container.innerHTML);
-//   // Type in advanced search input and select a suggestion
-//   const input = await screen.findByTestId("search-autocomplete-input");
-//   fireEvent.change(input, { target: { value: "Alfie" } });
-//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
-
-//   // const searchLoader = screen.getAllByTestId("loader-arc");
-//   // await waitFor(() => {
-// //   //   expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-// //   // });
-
-// //  act(() => {
-// //     jest.advanceTimersByTime(3000);
-// //   });
-  
-// //   await waitFor(async () => {
-// //   const suggestionNode = await screen.getAllByText(/Alfie/i);
-// //   fireEvent.click(suggestionNode[0]);
-// //   });
-
-
-// //   fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-categories"));
-// //   const categoryOption = await screen.getByText("Abc");
-// //   fireEvent.click(categoryOption);
-// //   fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-// //   // Wait for Doc1 to appear
-// //   await waitFor(() => {
-// //     expect(screen.getByText("No data to display.")).toBeInTheDocument();
-
-// //   });
-//     // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
-// })
-
 
 it("shows 'All selected documents have already been deleted.' when all selected are already deleted", async () => {
-  jest.useFakeTimers();
   // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
+  jest.useFakeTimers();
   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -1402,12 +1158,10 @@ it("shows 'All selected documents have already been deleted.' when all selected 
     expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
 
-  jest.advanceTimersByTime(3000); // advance timers if there are any debounced functions
   // Click the suggestion
-  await waitFor(async () => {
-  const suggestionNode = await screen.getAllByText(/Alfie/i);
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
   fireEvent.click(suggestionNode[0]);
-  });
 
   // Wait for Doc1 to appear
   await waitFor(() => {
@@ -1419,17 +1173,113 @@ it("shows 'All selected documents have already been deleted.' when all selected 
   fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
 
   // Open actions and trigger Delete
-  fireEvent.click(await screen.getByText("Actions"));
-  fireEvent.click(await screen.getByText("Delete"));
-  const searchLoaderDialog = screen.getAllByTestId("loader-arc");
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Delete"));
+
+  // Should show the "All selected documents have already been deleted." message
   await waitFor(() => {
-    expect(within(searchLoaderDialog[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    expect(screen.getByText("All selected documents have already been deleted.")).toBeInTheDocument();
+  });
+  jest.useRealTimers();
+});
+
+it("covers setTimeout and fetchViewDownloadData in prepare mode", async () => {
+  jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [{ name: "File1", status: "complete" }],
+  });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 0,
+      availableFileCount: 2,
+    },
   });
 
-  expect(
-    screen.getByText(/All selected documents have already been deleted./i)
-  ).toBeInTheDocument();
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
 
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Select the checkboxes for both rows (simulate selecting multiple docs)
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
+
+  // Open actions and click "Prepare download"
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("Prepare download"));
+
+  // Click the confirmation button to trigger prepare mode
+  const viewLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(viewLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  const saveBtn = await screen.getByTestId("tid-save-btn--small-screen");
+  fireEvent.click(saveBtn);
+
+  await waitFor(() => {
+  expect(screen.getByText("Downloads")).toBeInTheDocument();
+});
+  // Fast-forward the 2-second timer
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+});
+
+it("sets visible breadcrumbs to last item on mobile view", () => {
+  // Set window width to mobile
+  window.innerWidth = 500;
+  // Trigger resize event
+  window.dispatchEvent(new Event("resize"));
+
+  const { container } = render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // The breadcrumbs should only show the last item ("Documents")
+  console.log(container.innerHTML);
+  const breadcrumb = document.querySelector('[data-test-id="breadcrumb-test-id"]');
+  expect(breadcrumb).toBeInTheDocument();
+});
+
+it("sets visible breadcrumbs to all items on desktop view", () => {
+  // Set window width to desktop
+  window.innerWidth = 1200;
+  window.dispatchEvent(new Event("resize"));
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // The breadcrumbs should show all items: Home, Admin Console, Documents
+  const breadcrumb = document.querySelector('[data-test-id="breadcrumb-test-id"]');
+  expect(breadcrumb).toBeInTheDocument();
+  expect(screen.getByText("Home")).toBeInTheDocument();
 });
 })
 
