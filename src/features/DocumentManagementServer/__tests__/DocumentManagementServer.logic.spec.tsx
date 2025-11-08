@@ -355,6 +355,31 @@ describe("debouncedFetchSuggestions", () => {
     jest.useRealTimers();
   });
 
+  it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
+    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
+
+    // Call debouncedFetchSuggestions multiple times rapidly
+    debouncedFetchSuggestions("Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+
+    // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
+    jest.advanceTimersByTime(2999);
+    expect(mockFetchDMSSuggestions).not.toHaveBeenCalled();
+
+    // Advance timers to 3000ms, should call fetchDMSSuggestions only once with last args
+    await act(() => {
+      jest.advanceTimersByTime(1);
+      return Promise.resolve();
+    });
+
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledTimes(1);
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledWith("Doc3", "", "", [], undefined);
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
+  });
   test("handles undefined payload structure", async () => {
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
