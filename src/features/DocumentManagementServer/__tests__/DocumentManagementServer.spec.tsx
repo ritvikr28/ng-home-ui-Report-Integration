@@ -1282,4 +1282,3 @@ it("sets visible breadcrumbs to all items on desktop view", () => {
   expect(screen.getByText("Home")).toBeInTheDocument();
 });
 })
-
