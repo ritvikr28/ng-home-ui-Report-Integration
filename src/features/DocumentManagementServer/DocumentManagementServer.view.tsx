@@ -1097,42 +1097,31 @@ const getDialogTitle = () => {
                                 emptybtnTitle="Add Type"
                                 isShowEmptyAddBtn={false}
                                 errorActionListItem={[
-                                    {
-                                        action: 'Secondary Text',
-                                        iconName: 'home',
-                                        id: '1',
-                                        showActionAs: ShowActionAs.Text,
-                                        title: 'Primary Text'
-                                    },
-                                    {
-                                        action: 'Secondary Text',
+                                     {
+                                        action: 'Our team is attempting to fix the issue. Please wait for a few minutes and try again',
                                         iconName: 'information',
-                                        id: '2',
-                                        title: 'Primary Text'
+                                        id: '1',
+                                        title: 'Try again after a while'
                                     },
                                     {
-                                        action: 'Secondary Text',
-                                        iconName: 'view',
-                                        id: '3',
+                                        action: 'Click here to go back to home page',
+                                        iconName: 'home',
+                                        id: '2',
                                         showActionAs: ShowActionAs.Link,
-                                        title: 'Primary Text'
+                                        title: 'Go back to home page'
                                     }
                                 ]}
                                 errorPageActionListDescription="Things to try"
-                                errorPageReasonListDescription="This may be due to one of the reasons below"
-                                errorPageTitle="Summary of issue"
+                                errorPageReasonListDescription="Sorry, We are having trouble connecting."
+                                errorPageTitle="Service Unavailable"
                                 errorReasonListItem={[
                                     {
                                         id: '1',
-                                        reason: 'Wrong link or address.'
+                                        reason: 'One of our servers could be down'
                                     },
                                     {
                                         id: '2',
-                                        reason: 'The page may have been removed.'
-                                    },
-                                    {
-                                        id: '3',
-                                        reason: 'Wrong link or address.'
+                                        reason: 'Our service could have been disrupted by unforeseen interruptions'
                                     }
                                 ]}
                                 groupTagsEnabled
