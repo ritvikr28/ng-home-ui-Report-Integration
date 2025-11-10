@@ -3290,24 +3290,31 @@ describe("addUniqueTagItem", () => {
     expect(setTagListArray).toHaveBeenCalledTimes(1);
   });
 
-  it("calls setAlreadyExistingTags when adding duplicate tag", () => {
-  const item = {
-    learnerExternalId: "p1",
-    text: "John Doe",
-    props: { externalId: "p1" }
-  };
-  addUniqueTagItem({
-    item,
-    selectedRelatedTo: { text: "Pupil" } as any,
-    tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
-    setTagListArray,
-    setReferenceExternalIds,
-    setAlreadyExistingTags
-  });
+   it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
 
-  expect(setTagListArray).not.toHaveBeenCalled();
-  expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
-});
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with a state that already contains the item
+    updater([{ ...item, name: item.text, id: Number(item.learnerExternalId) }]);
+
+    // Now assert setAlreadyExistingTags was called
+    expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
+  });
 
   it("calls setReferenceExternalIds with correct updater when adding unique tag", () => {
     const item = {
