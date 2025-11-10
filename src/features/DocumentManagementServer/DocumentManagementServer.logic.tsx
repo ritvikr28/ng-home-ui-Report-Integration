@@ -1137,7 +1137,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  300
+  3000
 );
 
 export async function handleClearAllConfirm({

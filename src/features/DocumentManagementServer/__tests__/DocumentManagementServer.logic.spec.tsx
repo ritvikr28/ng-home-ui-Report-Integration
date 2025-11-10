@@ -354,6 +354,31 @@ describe("debouncedFetchSuggestions", () => {
     jest.useRealTimers();
   });
 
+  it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
+    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
+
+    // Call debouncedFetchSuggestions multiple times rapidly
+    debouncedFetchSuggestions("Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+
+    // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
+    jest.advanceTimersByTime(2999);
+    expect(mockFetchDMSSuggestions).not.toHaveBeenCalled();
+
+    // Advance timers to 3000ms, should call fetchDMSSuggestions only once with last args
+    await act(() => {
+      jest.advanceTimersByTime(1);
+      return Promise.resolve();
+    });
+
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledTimes(1);
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledWith("Doc3", "", "", [], undefined);
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
+  });
   test("handles undefined payload structure", async () => {
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
@@ -364,7 +389,7 @@ describe("debouncedFetchSuggestions", () => {
   debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(3000);
     return Promise.resolve();
   });
 
@@ -381,7 +406,7 @@ describe("debouncedFetchSuggestions", () => {
     debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(3000);
       return Promise.resolve();
     });
 
@@ -2218,7 +2243,59 @@ describe("fetchGetDocumentDetailsLogic", () => {
     consoleSpy.mockRestore();
   });
 });
+describe("referenceMappingDetails deduplication", () => {
+  it("removes duplicates by referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id1", value: 3 }, // duplicate id1
+      { referenceExternalId: "id3", value: 4 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { referenceExternalId: "id1", value: 3 }, // last occurrence kept
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 4 }
+    ]);
+  });
 
+  it("returns empty array if input is empty", () => {
+    const referenceMappingDetails: any[] = [];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([]);
+  });
+
+  it("returns same array if all referenceExternalId are unique", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual(referenceMappingDetails);
+  });
+
+  it("handles items with missing referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { value: 3 }, // last undefined key kept
+      { referenceExternalId: "id2", value: 2 }
+    ]);
+  });
+});
 describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
@@ -3211,6 +3288,32 @@ describe("addUniqueTagItem", () => {
       setReferenceExternalIds,
     });
     expect(setTagListArray).toHaveBeenCalledTimes(1);
+  });
+
+   it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with a state that already contains the item
+    updater([{ ...item, name: item.text, id: Number(item.learnerExternalId) }]);
+
+    // Now assert setAlreadyExistingTags was called
+    expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
   });
 
   it("calls setReferenceExternalIds with correct updater when adding unique tag", () => {

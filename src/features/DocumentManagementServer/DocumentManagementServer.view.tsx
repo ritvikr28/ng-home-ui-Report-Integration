@@ -401,15 +401,15 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
   }
 
   // After search, no results
-  if (
-    isSearchTriggered &&
-    docData &&
-    docData?.statusCode === 200 &&
-    Array.isArray(docData?.data) &&
-    docData?.data.length === 0
-  ) {
-    return "No data to display.";
-  }
+//   if (
+//     isSearchTriggered &&
+//     docData &&
+//     docData?.statusCode === 200 &&
+//     Array.isArray(docData?.data) &&
+//     docData?.data.length === 0
+//   ) {
+//     return "No data to display.";
+//   }
 
   if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
   return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
