@@ -94,6 +94,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isGlobalLoaderModel, setIsGlobalLoaderModel] = useState<boolean>(false);
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
+    const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const dateTagArr = getDateTag(dateRange);
@@ -550,13 +551,14 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isHeaderBoxChecked
         });
 
-const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[]) => {
+const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
   handleApply({
     referenceExternalIds,
     categories,
     selectedCategories,
     selectedDateRange,
     isDateError,
+    selectedEntity,
     setIsDateError,
     setIsFilterLoading,
     setDateRange,
@@ -574,7 +576,8 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     setSearchRefExternalId,
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
-    setPrevSelectedDocs
+    setPrevSelectedDocs,
+    setSelectedEntities
   });
 };
 
@@ -700,7 +703,8 @@ switch (dialogType) {
           excludedCheckBoxIds,
           isHeaderBoxChecked,
           allSelectedDocs,
-          dateRange
+          dateRange,
+          selectedEntities
         );
 
         prepareDownload(selectedDocs)
@@ -1182,6 +1186,9 @@ const getDialogTitle = () => {
                                     setSelectedFormats([]);
                                     setSelectedCategories([]);
                                     setSelectedRelatedTo(undefined);
+                                   if (item) {
+                                     setSelectedEntities([item]);
+                                   }
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={

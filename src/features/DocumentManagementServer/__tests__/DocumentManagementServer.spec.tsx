@@ -105,6 +105,11 @@ jest.mock("../ApiService", () => ({
   prepareAndDownloadFile: jest.fn(),
 }));
  
+jest.mock('focus-trap-react', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <>{children}</>,
+}));
+
 jest.mock("../DocumentManagementServer.logic", () => {
   const original = jest.requireActual("../DocumentManagementServer.logic");
   return {
@@ -1127,5 +1132,112 @@ it("shows 'All selected documents have already been deleted.' when all selected 
     expect(screen.getByText("All selected documents have already been deleted.")).toBeInTheDocument();
   });
 });
+
+it("covers setTimeout and fetchViewDownloadData in prepare mode", async () => {
+  jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    status: 200,
+    data: [{ name: "File1", status: "complete" }],
+  });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 0,
+      availableFileCount: 2,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Select the checkboxes for both rows (simulate selecting multiple docs)
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
+
+  // Open actions and click "Prepare download"
+  fireEvent.click(await screen.getByText("Actions"));
+  fireEvent.click(await screen.getByText("Prepare download"));
+
+  // Click the confirmation button to trigger prepare mode
+  const viewLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(viewLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  const saveBtn = await screen.getByTestId("tid-save-btn--small-screen");
+  fireEvent.click(saveBtn);
+
+  await waitFor(() => {
+  expect(screen.getByText("Downloads")).toBeInTheDocument();
+});
+  // Fast-forward the 2-second timer
+  act(() => {
+    jest.advanceTimersByTime(2000);
+  });
+
+   
+});
+
+// it("set selectedEntities on suggestion click", async () => {
+//   (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockCategories);
+//   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+//   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+//   const { container } = render(<MemoryRouter>
+//     <DocumentManagementServerView />
+//   </MemoryRouter>);
+//   // Open filter dialog
+//   fireEvent.click(screen.getByTestId("filter-btn"));
+//   await waitFor(() => expect(screen.getByTestId("dms-filter-dialog")).toBeInTheDocument());
+//   // Open Related to dropdown and select "Pupil"
+//   fireEvent.click(screen.getByTestId("text-input-dms-filter-dialog-related-to"));
+//   const pupilOption = await screen.getByText("Pupil");
+//   fireEvent.click(pupilOption);
+//   // Type in advanced search input and select a suggestion
+//    const input = await screen.getByPlaceholderText("Pupil name");
+//   fireEvent.change(input, { target: { value: "Alfie" } });
+//   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+//   act(() => {
+//     jest.runAllTimers();
+//   });
+
+//   expect(ApiService.fetchDMSSuggestions).toHaveBeenCalledWith("Alfie", expect.anything());
+//   // Wait for suggestions to load
+//   console.log(container.innerHTML);
+//     expect(screen.getAllByText("Alfie").length).toBeGreaterThan(0);
+
+
+
+//   // Click the suggestion
+  
+//   const suggestionNode = await screen.getAllByText("Alfie");
+//   fireEvent.click(suggestionNode[0]);
+  
+//     // expect(screen.getByTestId("search-autocomplete-input")).toHaveValue("");
+ 
+// });
 })
 
