@@ -35,7 +35,7 @@ interface FilterDialogProps {
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[]) => void;
+  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[], entities?: any[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
@@ -91,6 +91,10 @@ const FilterDialog = ({
   const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
+  const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
+
+  // eslint-disable-next-line no-unused-expressions
+  alreadyExistingTags;
 
 const getDateString = (date: { day: string; month: string; year: string }) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -306,7 +310,7 @@ const handleDateChange = (
     newDate.day === "00" || newDate.day === "0" ||
     newDate.month === "00" || newDate.month === "0"
   ) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -327,7 +331,7 @@ const handleDateChange = (
   }
 
   if (newDate.year && newDate.year.length < 4) {
-    setError(isFrom ? "From date is required" : "");
+    setError(isFrom ? t("Filter.fromDateRequired") : "");
     setIsDateError(true);
     return;
   }
@@ -336,7 +340,7 @@ const handleDateChange = (
     setError("");
     setIsDateError(false);
     if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
-      setError("From date is required");
+      setError(t("Filter.fromDateRequired"));
       setIsDateError(true);
     }
     return;
@@ -344,7 +348,7 @@ const handleDateChange = (
 
   // If any field is missing (partial date), show required error instead of invalid date
   if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -352,23 +356,23 @@ const handleDateChange = (
   // --- Validation for From Date ---
   if (isFrom) {
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-      setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setError(t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }));
       setIsDateError(true);
       return;
     }
     if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-      setError("From date must be on or after 01/01/1900");
+      setError(t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" }));
       setIsDateError(true);
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
     // Check if To date is before From date
     if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
-      setToDateError("To date should not be before From date.");
+      setToDateError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
     } else {
       // Only clear To date error if To date is valid
@@ -382,17 +386,17 @@ const handleDateChange = (
   // --- Validation for To Date ---
   else {
     if (!newDate.day || !newDate.month || !newDate.year) {
-        setError("Invalid Date");
+        setError(t("Filter.invalidDate"));
         setIsDateError(true);
         return;
       }
       if (!otherDate.day || !otherDate.month || !otherDate.year) {
-        setFromDateError("From date is required");
+        setFromDateError(t("Filter.fromDateRequired"));
         setIsDateError(true);
         return;
       }
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-      setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setError(`${t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })}`);
       setIsDateError(true);
       return;
     }
@@ -402,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
@@ -431,7 +435,7 @@ const handleDateChange = (
   const handleApplyWrapper = () => {
       
       if (!localSelectedRelatedTo) {
-        setRelatedToError("Pupil, Staff, or School is required.");
+        setRelatedToError(t("Filter.relatedToRequired"));
         return;
       }
       setRelatedToError("");
@@ -440,7 +444,7 @@ const handleDateChange = (
         (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
         localTagListArray.length === 0
       ) {
-        setSearchSelectionError(`${localSelectedRelatedTo.text} is required`);
+        setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
         return;
       } 
       setSearchSelectionError("");
@@ -460,16 +464,20 @@ const handleDateChange = (
     setDocumentRelatedTo(Number(localSelectedRelatedTo?.value));
 
       let ids: string[] = [];
+      let entities: any[] = [];
       if (localSelectedRelatedTo?.text === "Pupil") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
+        entities = localTagListArray;
       } else if (localSelectedRelatedTo?.text === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
+        entities = localTagListArray;
       } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
+        entities = orgId ? [{ organisationId: orgId }] : [];
       }
 
-      handleApply(ids, localSelectedCategories)
+      handleApply(ids, localSelectedCategories, entities)
       setWasApplied(true);
   };
 
@@ -499,7 +507,6 @@ const handleDateChange = (
     }
   }))
 }));
-
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -554,7 +561,6 @@ const handleDateChange = (
               })
               .catch((error) => {
                 setAvailableCategories([]);
-                // Optionally log or show error
                 console.error("Failed to fetch categories", error);
             });
             setLocalTagListArray([]);
@@ -621,6 +627,7 @@ const handleDateChange = (
                       setTagListArray: setLocalTagListArray,
                       setReferenceExternalIds,
                       maxLimit: 5,
+                      setAlreadyExistingTags
                     });
                     setIsDropdownOpen(true);
                     setSearchSelectionError("");
@@ -644,8 +651,8 @@ const handleDateChange = (
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={`${localSelectedRelatedTo.text} already added`}
-                  validationTextForLimit={`${localSelectedRelatedTo.text} list limit reached`}
+                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: localSelectedRelatedTo.text })}
+                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: localSelectedRelatedTo.text })}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
                   validationText={validationText}
                   validationTextLevel={validationTextLevel}
@@ -747,7 +754,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="From"
+              helpText={t("Filter.fromDateLabel")}
               showDatePicker
                day={fromDate.day ? parseInt(fromDate.day, 10) : undefined}
               month={fromDate.month ? parseInt(fromDate.month, 10) : undefined}
@@ -764,7 +771,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-todate-input">
            <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="To"
+              helpText={t("Filter.toDateLabel")}
               showDatePicker
                day={toDate.day ? parseInt(toDate.day, 10) : undefined}
               month={toDate.month ? parseInt(toDate.month, 10) : undefined}

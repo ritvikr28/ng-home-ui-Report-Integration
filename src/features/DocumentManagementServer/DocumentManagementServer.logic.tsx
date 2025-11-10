@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
@@ -72,21 +72,8 @@ export function mapRelatedArr(doc: any): any[] {
   }
   return relatedArr;
 }
- 
-export const getTableHeadersData: {
-  text: string;
-  isShow: boolean;
-  showValAs: ShowValAs;
-  isTextTruncate?: boolean;
-  columnWidth: string;
-  isHeaderTextTruncate?: boolean;
-  headerTxtTrunctLength?: number;
-  isSimpleText?: boolean;
-  txtTrunctLength?: number;
-  isColumnSorting?: boolean;
-  isColumnSortByDefault?: boolean;
-  anyComponent?: (e: any) => JSX.Element;
-}[] = [
+
+export const getTableHeadersData =(t:any):TableHeader[] => [
     {
       text: "Id",
       isShow: false,
@@ -95,7 +82,7 @@ export const getTableHeadersData: {
       columnWidth: "16px"
     },
     {
-      text: "Document",
+      text: t("DocumentManagementServer.documentColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: false,
@@ -127,7 +114,7 @@ export const getTableHeadersData: {
       }
     },
     {
-      text: "Related to",
+      text: t("DocumentManagementServer.relatedColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: true,
@@ -184,7 +171,7 @@ anyComponent: (e: any) => (
 )
     },
     {
-      text: "Category",
+      text: t("DocumentManagementServer.categoryColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
@@ -212,7 +199,7 @@ anyComponent: (e: any) => (
       }
     },
    {
-  text: "Added by",
+  text: t("DocumentManagementServer.addedByColumn"),
   isShow: true,
   showValAs: ShowValAs.CustomeComponent,
   headerTxtTrunctLength: 50,
@@ -243,7 +230,7 @@ anyComponent: (e: any) => (
   }
 },
     {
-      text: "Date added",
+      text: t("DocumentManagementServer.dateAddedColumn"),
       isShow: true,
       columnWidth: "140px",
       showValAs: ShowValAs.Text,
@@ -252,7 +239,7 @@ anyComponent: (e: any) => (
       isColumnSortByDefault: true,
     },
     {
-      text: "Format",
+      text: t("DocumentManagementServer.formatColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -281,7 +268,7 @@ anyComponent: (e: any) => (
       }
     },
     {
-      text: "Size",
+      text: t("DocumentManagementServer.sizeColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -496,53 +483,6 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading(false);
 }
 
-export function getReferenceMappingForSearchedPerson({
-  docData,
-  searchRefExternalId,
-  documentRealatedTo,
-}: {
-  docData: any,
-  searchRefExternalId: string[],
-  documentRealatedTo: number,
-}) {
-  if (!Array.isArray(docData?.data)) return [];
-
-  // Get all documents matching the related type
-  const relatedDocs = docData.data.filter(
-    (d: any) => d.documentRealatedTo === documentRealatedTo
-  );
-
-  if (!relatedDocs?.length) return [];
-
-  const referenceMapping: any[] = [];
-
-  relatedDocs.forEach((doc: any) => {
-    const relatedArr = mapRelatedArr(doc);
-    const matchedRelatedArr = relatedArr.filter((item: any) =>
-      searchRefExternalId.includes(item?.referenceExternalId)
-    );
-
-    matchedRelatedArr.forEach((relatedItem: any) => {
-      let matchedRelatedTo = null;
-      if (Array.isArray(doc.relatedTo)) {
-        matchedRelatedTo = doc.relatedTo.find((r: any) =>
-          (r.learnerExternalId || r.externalId || r.organisationId) === relatedItem.referenceExternalId
-        );
-      } else {
-        matchedRelatedTo = doc.relatedTo;
-      }
-
-      referenceMapping.push({
-        referenceExternalId: relatedItem.referenceExternalId,
-        relatedTo: matchedRelatedTo,
-        documentRealatedTo: doc.documentRealatedTo,
-      });
-    });
-  });
-
-  return referenceMapping;
-}
-
 
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
@@ -696,6 +636,7 @@ export const fetchCategory = async (documentRealatedTo: number | null): Promise<
 }
  
 export const getResultNotFoundMsg = (
+  t:any,
   searchText: string,
   docData: any,
   searchTerm: string,
@@ -710,7 +651,7 @@ export const getResultNotFoundMsg = (
     return "No data to display.";
   }
   if (!isSearchTriggered && !searchText) {
-    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+    return t("DocumentManagementServer.searchBarText");
   }
   return undefined;
 };
@@ -876,7 +817,9 @@ export function buildSelectedDocs(
   documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
-  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[]
+  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
+  dateRange: { fromDate: string; toDate: string },
+  selectedEntities: any[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -891,45 +834,38 @@ export function buildSelectedDocs(
 
   let referenceMappingDetails: any[] = [];
 
-  if (searchRefExternalId.length > 0) {
-    const rawMappings = getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId,
+  // Build mapping from selectedEntities if available
+  if (searchRefExternalId.length > 0 && selectedEntities.length > 0) {
+    referenceMappingDetails = selectedEntities.map(entity => ({
+      referenceExternalId:
+        entity.learnerExternalId || entity.externalId || entity.organisationId,
+      relatedTo: entity,
       documentRealatedTo,
-    });
+    }));
 
-    const uniqueMappingsMap = new Map<string, any>();
-
-    rawMappings.forEach((mapping) => {
-      const id = mapping.referenceExternalId;
-      if (!uniqueMappingsMap.has(id)) {
-        uniqueMappingsMap.set(id, {
-          referenceExternalId: id,
-          relatedTo:
-            Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
-              ? mapping.relatedTo[0]
-              : mapping.relatedTo,
-        });
-      }
-    });
-
-    referenceMappingDetails = Array.from(uniqueMappingsMap.values());
+    // Deduplicate by referenceExternalId
+    referenceMappingDetails = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
   }
 
+  // Filter mappings to only those present in selectedDocs
   if (selectedDocs.length > 0 && referenceMappingDetails.length > 0) {
-    const validIds = new Set(selectedDocs.map((d: { externalId: any; learnerExternalId: any;  }) => d.externalId || d.learnerExternalId));
+    const validIds = new Set(
+      selectedDocs.map((d: { externalId: any; learnerExternalId: any; }) => d.externalId || d.learnerExternalId)
+    );
     referenceMappingDetails = referenceMappingDetails.filter((m) =>
       validIds.has(m.referenceExternalId)
     );
   }
 
+  // Final deduplication
   referenceMappingDetails = Array.from(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
 
-  const fromDate = selectedDocs[0]?.fromDate ?? "";
-  const toDate = selectedDocs[0]?.toDate ?? "";
-
+  const fromDate = dateRange?.fromDate ?? "";
+  const toDate = dateRange?.toDate ?? "";
   const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
 
   return [
@@ -958,7 +894,7 @@ export function buildSelectedDocs(
 
 export function mapToBulkDeletePayload({
   isSelectAll = false,
-  categoryId = [],
+  categoryIds = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -967,7 +903,7 @@ export function mapToBulkDeletePayload({
   excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
-  categoryId?: number[];
+  categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];
@@ -979,7 +915,7 @@ export function mapToBulkDeletePayload({
     request: {
       isSelectAll,
       bulkDeleteCriteria: {
-        categoryId,
+        categoryIds,
         fromDate,
         toDate,
         referenceDetails: {
@@ -1043,7 +979,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
-    categoryId: allRegistrationIds,
+    categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
@@ -1232,7 +1168,6 @@ export async function handleClearAllConfirm({
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
- setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
 
@@ -1256,8 +1191,6 @@ export async function handleClearAllConfirm({
   setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
-
-
 
 export const buildValidationPayload = ({
   isSelectAll = false,
@@ -1289,12 +1222,12 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (dialogType: string, availableFileCount: number, totalRecords: number): string => {
-  if (dialogType === "clearAll") return "Clear all downloads?";
+export const getTitleConfirmation = (t: any, dialogType: string, availableFileCount: number, totalRecords: number): string => {
+  if (dialogType === "clearAll") return t("DocumentManagementServer.clearAllDownloadsTitle");
   if (dialogType === "delete") {
-        return availableFileCount === 1 ? "Delete Document?" : "Delete Documents?";
+    return availableFileCount === 1 ? t("DocumentManagementServer.deleteDocumentTitle") : t("DocumentManagementServer.deleteDocumentsTitle");
   }
-  return availableFileCount === totalRecords ? "Prepare to download all documents?" : "Prepare Download?";
+  return availableFileCount === totalRecords ? t("DocumentManagementServer.prepareAllDocumentsTitle") : t("DocumentManagementServer.prepareDownloadTitle");
 };
 
 export const fileDownload = async (
@@ -1339,10 +1272,10 @@ export const fileDownload = async (
 export function addUniqueTagItem({
   item,
   selectedRelatedTo,
-  tagListArray,
   setTagListArray,
   setReferenceExternalIds,
   maxLimit = 5,
+  setAlreadyExistingTags
 }: {
   item: ISearchItemProp | null;
   selectedRelatedTo: ISelectedItem | undefined;
@@ -1350,34 +1283,36 @@ export function addUniqueTagItem({
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
+  setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
   if (!item) return;
 
   let idKey = "organisationId";
-if (selectedRelatedTo?.text === "Pupil") {
-  idKey = "learnerExternalId";
-} else if (selectedRelatedTo?.text === "Staff") {
-  idKey = "externalId";
-}
-
-  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
-
-  const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
-  );
-
-  if (alreadyExists) {
-    return;
+  if (selectedRelatedTo?.text === "Pupil") {
+    idKey = "learnerExternalId";
+  } else if (selectedRelatedTo?.text === "Staff") {
+    idKey = "externalId";
   }
+  const newId = (item as any)[idKey] ?? item.text;
 
-  if (tagListArray.length < maxLimit) {
-    setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
-      setReferenceExternalIds((prev) =>
-        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
-      );
+  setTagListArray((prevTagListArray) => {
+    const alreadyExists = prevTagListArray.some(
+      (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    );
+    if (alreadyExists) {
+      if (setAlreadyExistingTags) setAlreadyExistingTags(true);
+      return prevTagListArray;
     }
-  }
+    if (prevTagListArray.length < maxLimit) {
+      if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
+        setReferenceExternalIds((prev) =>
+          prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+        );
+      }
+      return [...prevTagListArray, item as SelectedItem];
+    }
+    return prevTagListArray;
+  });
 }
 
 export function handleApply({
@@ -1386,6 +1321,7 @@ export function handleApply({
   selectedCategories,
   selectedDateRange,
   isDateError,
+  selectedEntity,
   setIsDateError,
   setIsFilterLoading,
   setDateRange,
@@ -1403,13 +1339,15 @@ export function handleApply({
   setSearchRefExternalId,
   setIsHeaderBoxChecked,
   setSelectedCheckBoxIds,
-  setPrevSelectedDocs
+  setPrevSelectedDocs,
+  setSelectedEntities,
 }: {
   referenceExternalIds: string[],
   categories?: any[],
   selectedCategories: any[],
   selectedDateRange: any,
   isDateError: boolean,
+  selectedEntity?: any[],
   setIsDateError: (v: boolean) => void,
   setIsFilterLoading: (v: boolean) => void,
   setDateRange: (v: any) => void,
@@ -1428,6 +1366,7 @@ export function handleApply({
   setIsHeaderBoxChecked: (v: boolean) => void,
   setSelectedCheckBoxIds: (v: string[]) => void,
   setPrevSelectedDocs: (v: any[]) => void,
+  setSelectedEntities: (v: any[]) => void
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
@@ -1455,6 +1394,9 @@ export function handleApply({
     setSearchTerm("");
     setSearchText("");
     setTableKey((prev) => prev + 1);
+  }
+  if (setSelectedEntities) {
+    setSelectedEntities(selectedEntity || []);
   }
   setIsSearchTriggered(true);
 }
