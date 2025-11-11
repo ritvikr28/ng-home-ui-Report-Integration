@@ -19,6 +19,12 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "DocumentManagementServer.headingText") {
         return "Documents";
       }
+      if (key === "DocumentManagementServer.Home") {
+        return "Home";
+      }
+      if (key === "DocumentManagementServer.ViewDownload") {
+        return "View downloads";
+      }
       if (key === "DocumentManagementServer.sidePanelTitle") {
         return "Downloads";
       }
