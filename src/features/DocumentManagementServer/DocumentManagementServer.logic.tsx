@@ -27,7 +27,7 @@ export function renderRelatedToItem(item: any) {
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-       <Tag
+         <Tag
           dataTestId="name"
           id="name"
           className="relatedto-tag"
@@ -39,7 +39,7 @@ export function renderRelatedToItem(item: any) {
   // School or other types
   return <span>{item.name}</span>;
 };
- 
+
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
