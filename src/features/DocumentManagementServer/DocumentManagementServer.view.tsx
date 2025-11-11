@@ -95,6 +95,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
+    const [isViewDownloadLoading, setIsViewDownloadLoading] = useState<boolean>(false);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const dateTagArr = getDateTag(dateRange);
@@ -257,6 +258,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             // Wait for 2 seconds before calling view download API
             const timer = setTimeout(() => {
             fetchViewDownloadData({
+                setIsViewDownloadLoading,
                 showLoader: false, 
                 setIsSidePanelLoader,
                 setViewData: (data) => {
@@ -274,6 +276,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setShowToastNotification(false);
     setIsSidePanelLoader(true);
     fetchViewDownloadData({
+    setIsViewDownloadLoading,
       showLoader: false,
       setIsSidePanelLoader,
       setViewData: (data) => {
@@ -814,7 +817,7 @@ const getDialogTitle = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0) {
+    if (hasFetchedViewDownload && viewData?.length === 0 && isViewDownloadLoading) {
         return <p>{t("DocumentManagementServer.downloadsAppearHere")}</p>;
     }
     if (viewData?.length > 0) {
@@ -1067,7 +1070,7 @@ const getDialogTitle = () => {
                                     },
                                     {
                                         disabled: false,
-                                        text: 'View downloads',
+                                        text: t("DocumentManagementServer.ViewDownload"),
                                         value: 'View download'
                                     },
                                     {

@@ -574,6 +574,7 @@ export function reduceCategories(res: any[]): Category[] {
 }
 
 export const fetchViewDownloadData = async ({
+  setIsViewDownloadLoading,
   showLoader = true,
   setIsSidePanelLoader,
   setViewData,
@@ -592,10 +593,11 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
-
+      setIsViewDownloadLoading(true);
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
+            setIsViewDownloadLoading,
             showLoader: false,
             setIsSidePanelLoader,
             setViewData,
@@ -609,10 +611,12 @@ export const fetchViewDownloadData = async ({
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
+       setIsViewDownloadLoading(true);
     }
     if (!(result?.data && result?.status === 200) && pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
+      setIsViewDownloadLoading(true);
     }
   } catch (err) {
     console.error("Error fetching view download details:", err);
@@ -620,8 +624,10 @@ export const fetchViewDownloadData = async ({
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
+    setIsViewDownloadLoading(true);
   } finally {
     setIsSidePanelLoader(false);
+    setIsViewDownloadLoading(true);
   }
 };
  
