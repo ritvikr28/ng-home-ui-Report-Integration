@@ -187,11 +187,10 @@
 .relatedto-main {
   display: flex;
   gap: 2%;
+  justify-content: start;
+  max-width: 250px;
 
   a {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
     color: #2177c2;
   }
 
@@ -207,6 +206,12 @@
       font-size: 14px;
     }
   }
+}
+.scrollable-tooltip {
+  max-height: 300px; 
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px; /* prevent scrollbar overlap with text */
 }
 
 .relatedto-tag {
