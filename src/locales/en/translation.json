@@ -548,7 +548,7 @@
     "sizeColumn": "Size"
   }, 
   "Filter": {
-    "heading": "Advanced Search",
+    "heading": "Advanced search",
     "relatedToHeading": "Select related to pupil, staff, or school",
     "pupilSearchHeading": "Pupil",
     "staffSearchHeading": "Staff",
@@ -558,7 +558,7 @@
     "entityIsRequired": "{{entity}} is required",
     "toDateShouldNotBeBeforeFromDate": "To date should not be before From date.",
     "fromDateMustBeOnOrBefore": "From date must be on or before {{date}}",
-    "selectEntity": "Select upto 5",
+    "selectEntity": "Select up to 5",
     "informationUnavailable": "Information unavailable",
     "categoryHeading": "Category (optional)",
     "dateHeading": "Date added (optional)",
