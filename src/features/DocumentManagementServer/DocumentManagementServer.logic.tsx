@@ -27,15 +27,12 @@ export function renderRelatedToItem(item: any) {
         <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
           {item.name}
         </a>
-        {(item.year !== null && item.year !== undefined && item.year !== "" &&
-          item.reg !== null && item.reg !== undefined && item.reg !== "") ? (
-          <Tag
-            dataTestId="name"
-            id="name"
-            className="relatedto-tag"
-            text={`${item.year} / ${item.reg}`}
-          />
-        ) : null}
+         <Tag
+          dataTestId="name"
+          id="name"
+          className="relatedto-tag"
+          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
+        />
       </>
     );
   }
