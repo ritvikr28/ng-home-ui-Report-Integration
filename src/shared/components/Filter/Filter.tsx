@@ -35,7 +35,7 @@ interface FilterDialogProps {
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[]) => void;
+  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[], entities?: any[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
@@ -464,16 +464,20 @@ const handleDateChange = (
     setDocumentRelatedTo(Number(localSelectedRelatedTo?.value));
 
       let ids: string[] = [];
+      let entities: any[] = [];
       if (localSelectedRelatedTo?.text === "Pupil") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
+        entities = localTagListArray;
       } else if (localSelectedRelatedTo?.text === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
+        entities = localTagListArray;
       } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
+        entities = orgId ? [{ organisationId: orgId }] : [];
       }
 
-      handleApply(ids, localSelectedCategories)
+      handleApply(ids, localSelectedCategories, entities)
       setWasApplied(true);
   };
 

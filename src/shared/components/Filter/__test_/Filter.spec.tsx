@@ -1226,7 +1226,13 @@ it("calls handleApply with staff externalIds when RelatedTo is Staff", async () 
 
   await waitFor(() => {
     // handleApply should be called with ["staff-123"] as the first argument
-    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything());
+    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything(),expect.arrayContaining([
+      expect.objectContaining({
+        text: "Test Staff",
+        externalId: "staff-123",
+        id: "staff-123"
+      })
+    ]));
   });
 });
 

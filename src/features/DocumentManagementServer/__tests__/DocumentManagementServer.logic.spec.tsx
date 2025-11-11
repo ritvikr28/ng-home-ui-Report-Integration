@@ -32,7 +32,6 @@ import {
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
   buildSelectedDocs,
-  getReferenceMappingForSearchedPerson,
   handleClearAllConfirm,
   getCompletedPartitionKeys,
   handleBulkDeleteLogic,
@@ -355,6 +354,31 @@ describe("debouncedFetchSuggestions", () => {
     jest.useRealTimers();
   });
 
+  it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
+    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
+
+    // Call debouncedFetchSuggestions multiple times rapidly
+    debouncedFetchSuggestions("Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+
+    // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
+    jest.advanceTimersByTime(2999);
+    expect(mockFetchDMSSuggestions).not.toHaveBeenCalled();
+
+    // Advance timers to 3000ms, should call fetchDMSSuggestions only once with last args
+    await act(() => {
+      jest.advanceTimersByTime(1);
+      return Promise.resolve();
+    });
+
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledTimes(1);
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledWith("Doc3", "", "", [], undefined);
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
+  });
   test("handles undefined payload structure", async () => {
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
@@ -365,7 +389,7 @@ describe("debouncedFetchSuggestions", () => {
   debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(3000);
     return Promise.resolve();
   });
 
@@ -382,7 +406,7 @@ describe("debouncedFetchSuggestions", () => {
     debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(3000);
       return Promise.resolve();
     });
 
@@ -2219,20 +2243,72 @@ describe("fetchGetDocumentDetailsLogic", () => {
     consoleSpy.mockRestore();
   });
 });
+describe("referenceMappingDetails deduplication", () => {
+  it("removes duplicates by referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id1", value: 3 }, // duplicate id1
+      { referenceExternalId: "id3", value: 4 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { referenceExternalId: "id1", value: 3 }, // last occurrence kept
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 4 }
+    ]);
+  });
 
+  it("returns empty array if input is empty", () => {
+    const referenceMappingDetails: any[] = [];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([]);
+  });
+
+  it("returns same array if all referenceExternalId are unique", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual(referenceMappingDetails);
+  });
+
+  it("handles items with missing referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { value: 3 }, // last undefined key kept
+      { referenceExternalId: "id2", value: 2 }
+    ]);
+  });
+});
 describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2266,7 +2342,8 @@ describe("buildSelectedDocs", () => {
       excludedIdDetails,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      [{ fileId: "2", registrationId: 456, externalId: "ext3" }]
     );
 
     expect(resultWithExcluded).toEqual([
@@ -2311,7 +2388,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2340,7 +2418,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
      expect(result[0].request.fileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2368,7 +2447,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2393,7 +2473,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2419,7 +2500,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2444,79 +2526,13 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
 });
 
-describe("getReferenceMappingForSearchedPerson", () => {
-  it("returns empty array if docData.data is not an array", () => {
-    expect(getReferenceMappingForSearchedPerson({
-      docData: { data: undefined },
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-
-    expect(getReferenceMappingForSearchedPerson({
-      docData: { data: null },
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns empty array if no document matches documentRealatedTo", () => {
-    const docData = {
-      data: [
-        { documentRealatedTo: 2, relatedTo: [{ learnerExternalId: "ext1" }] }
-      ]
-    };
-    expect(getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns empty array if no relatedItem matches searchRefExternalId", () => {
-    const docData = {
-      data: [
-        { documentRealatedTo: 1, relatedTo: [{ learnerExternalId: "notmatch" }] }
-      ]
-    };
-    expect(getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns correct mapping if document and relatedItem match", () => {
-  const docData = {
-    data: [
-      {
-        documentRealatedTo: 1,
-        relatedTo: [{ learnerExternalId: "ext1", preferredForename: "John" }],
-      }
-    ]
-  };
-  jest.spyOn(logicModule, "mapRelatedArr").mockImplementation(() => [
-    { referenceExternalId: "ext1" }
-  ]);
-  expect(getReferenceMappingForSearchedPerson({
-    docData,
-    searchRefExternalId: ["ext1"],
-    documentRealatedTo: 1,
-  })).toEqual([
-    {
-      referenceExternalId: "ext1",
-      relatedTo: { learnerExternalId: "ext1", preferredForename: "John" },
-      documentRealatedTo: 1
-    }
-  ]);
-  jest.restoreAllMocks();
-  });
-});
 
 describe('handleClearAllConfirm', () => {
   const viewData = [{ partitionKey: 'key1', status: 'complete' }];
@@ -3122,10 +3138,12 @@ describe("getTitleConfirmation", () => {
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
   let setReferenceExternalIds: jest.Mock;
+  let setAlreadyExistingTags: jest.Mock;
 
   beforeEach(() => {
     setTagListArray = jest.fn();
     setReferenceExternalIds = jest.fn();
+    setAlreadyExistingTags = jest.fn();
   });
 
   it("does nothing if item is null", () => {
@@ -3153,12 +3171,11 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    // Simulate callback to check correct value
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["p1"]);
-  });
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
+    });
 
   it("does not add duplicate pupil tag", () => {
     const item = {
@@ -3173,8 +3190,11 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    const prev = [{ ...item, name: item.text, id: Number(item.text) }];
+    expect(updater(prev)).toEqual(prev); // Should not add duplicate
   });
 
   it("adds a new unique staff tag and referenceExternalId", () => {
@@ -3190,10 +3210,10 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["s1"]);
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
   });
 
   it("does not add tag if maxLimit is reached", () => {
@@ -3202,8 +3222,9 @@ describe("addUniqueTagItem", () => {
       text: "Another Pupil",
       props: { externalId: "p2" }
     };
+    
     const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
-    addUniqueTagItem({
+     addUniqueTagItem({
       item,
       selectedRelatedTo: { text: "Pupil" } as any,
       tagListArray,
@@ -3211,8 +3232,10 @@ describe("addUniqueTagItem", () => {
       setReferenceExternalIds,
       maxLimit: 5
     });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater(tagListArray)).toEqual(tagListArray); // Should not add
   });
 
   it("falls back to item.text as id if idKey is missing", () => {
@@ -3227,7 +3250,10 @@ describe("addUniqueTagItem", () => {
       setTagListArray,
       setReferenceExternalIds,
     });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
+    expect(setTagListArray).toHaveBeenCalled();
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+    expect(updater([])).toEqual([item]);
   });
 
   it("does not add duplicate when fallback id is used", () => {
@@ -3243,6 +3269,88 @@ describe("addUniqueTagItem", () => {
       setReferenceExternalIds,
     });
     expect(setTagListArray).toHaveBeenCalledTimes(1);
+  });
+
+   it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with a state that already contains the item
+    updater([{ ...item, name: item.text, id: Number(item.learnerExternalId) }]);
+
+    // Now assert setAlreadyExistingTags was called
+    expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
+  });
+
+  it("calls setReferenceExternalIds with correct updater when adding unique tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+   addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with an empty array to simulate initial state
+    updater([]);
+
+    // Now assert setReferenceExternalIds was called
+    expect(setReferenceExternalIds).toHaveBeenCalled();
+    const refUpdater = setReferenceExternalIds.mock.calls[0][0];
+    expect(typeof refUpdater).toBe("function");
+    expect(refUpdater([])).toEqual(["p1"]);
+    expect(setAlreadyExistingTags).not.toHaveBeenCalled();
+  });
+
+  it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+    const item = {
+      learnerExternalId: "p1",
+      text: "John Doe",
+      props: { externalId: "p1" }
+    };
+    addUniqueTagItem({
+      item,
+      selectedRelatedTo: { text: "Pupil" } as any,
+      tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+      setTagListArray,
+      setReferenceExternalIds,
+      setAlreadyExistingTags
+    });
+
+    // Get the updater function
+    const updater = setTagListArray.mock.calls[0][0];
+    expect(typeof updater).toBe("function");
+
+    // Call the updater with a state that already contains the item
+    updater([{ ...item, name: item.text, id: Number(item.learnerExternalId) }]);
+
+    // Now assert setAlreadyExistingTags was called
+    expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
   });
 });
 
@@ -3265,6 +3373,7 @@ describe("handleApply", () => {
   let setIsHeaderBoxChecked: jest.Mock;
   let setSelectedCheckBoxIds: jest.Mock;
   let setPrevSelectedDocs: jest.Mock;
+  let setSelectedEntities: jest.Mock;
 
   beforeEach(() => {
     setSearchInput = jest.fn();
@@ -3285,6 +3394,7 @@ describe("handleApply", () => {
     setIsHeaderBoxChecked = jest.fn();
     setSelectedCheckBoxIds = jest.fn();
     setPrevSelectedDocs = jest.fn();
+    setSelectedEntities = jest.fn();
     jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
   });
   it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
@@ -3294,6 +3404,7 @@ describe("handleApply", () => {
       selectedCategories: [{ id: "cat2" }],
       selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
       isDateError: false,
+      selectedEntity: [],
       setIsDateError,
       setIsFilterLoading,
       setDateRange,
@@ -3311,7 +3422,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3347,7 +3459,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3383,7 +3496,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
@@ -3413,7 +3527,8 @@ describe("handleApply", () => {
     setSearchRefExternalId,
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
-    setPrevSelectedDocs
+    setPrevSelectedDocs,  
+    setSelectedEntities
   });
 
   // Check that setTableKey was called with a function
