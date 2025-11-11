@@ -1341,12 +1341,15 @@ export function addUniqueTagItem({
   if (!item) return;
 
   let idKey = "organisationId";
-if (selectedRelatedTo?.text === "Pupil") {
-  idKey = "learnerExternalId";
-} else if (selectedRelatedTo?.text === "Staff") {
-  idKey = "externalId";
-}
-  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
+  if (selectedRelatedTo?.text === "Pupil") {
+    idKey = "learnerExternalId";
+  } else if (selectedRelatedTo?.text === "Staff") {
+    idKey = "externalId";
+  } else if (selectedRelatedTo?.text === "Organisation" || selectedRelatedTo?.text === "School") {
+    idKey = "organisationId";
+  }
+
+  const newId = (item as any)[idKey] ?? item.text;
 
   const alreadyExists = tagListArray.some(
     (tag) => ((tag as any)[idKey] ?? tag.id) === newId
@@ -1357,11 +1360,13 @@ if (selectedRelatedTo?.text === "Pupil") {
     return;
   }
 
+  if (setAlreadyExistingTags) setAlreadyExistingTags(false);
+
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
+    if (setReferenceExternalIds && newId) {
       setReferenceExternalIds((prev) =>
-        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+        prev.includes(newId) ? prev : [...prev, newId]
       );
     }
   }

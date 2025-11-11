@@ -615,6 +615,7 @@ const handleDateChange = (
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
+                    setAlreadyExistingTags(false);
                     setSearchTerm(item?.text || "");
                     addUniqueTagItem({
                       item,

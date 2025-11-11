@@ -904,10 +904,9 @@ describe("To date validation", () => {
     setDateInput(dateInputs[0], "01", "01", "1900");
     setDateInput(dateInputs[1], "31", "12", "1899");
 
-    await waitFor(() => {
       expect(screen.getByText("To date must be on or after 01/01/1900")).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
+  
   });
 
   it("shows error when To date is set without From date", async () => {
