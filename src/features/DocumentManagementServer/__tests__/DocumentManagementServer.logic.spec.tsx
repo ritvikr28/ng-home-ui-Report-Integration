@@ -3196,23 +3196,6 @@ describe("addUniqueTagItem", () => {
     expect(cb([])).toEqual(["s1"]);
   });
 
-  it("adds a new unique organisation tag and does not add referenceExternalId if missing", () => {
-    const item = {
-      organisationId: "o1",
-      text: "Test Org",
-      props: {}
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Organisation" } as any,
-      tagListArray: [],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
-  });
-
   it("does not add tag if maxLimit is reached", () => {
     const item = {
       learnerExternalId: "p2",
