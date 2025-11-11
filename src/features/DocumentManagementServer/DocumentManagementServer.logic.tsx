@@ -592,7 +592,6 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
-
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({

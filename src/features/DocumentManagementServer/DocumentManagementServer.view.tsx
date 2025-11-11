@@ -15,25 +15,27 @@ import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
  
 
-export const breadcrumbActionsList = [
+export const breadcrumbActionsList = (t: (key: string) => string) => [
     {
         active: false,
-        linkName: 'Home',
+        linkName: t("DocumentManagementServer.Home"),
         path: window.location.origin
     },
     {
         active: false,
-        linkName: 'Admin Console',
+        linkName: t("DocumentManagementServer.adminconsole"),
         path: homeurl
     },
     {
         active: false,
-        linkName: 'Documents',
+        linkName: t("DocumentManagementServer.headingText"),
         path: ''
     }
 ]
  
 const DocumentManagementServerView: () => JSX.Element = () => {
+    const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
     const [dialogType, setDialogType] = useState<string>("");
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
     const [totalPage, setTotalPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(0);
@@ -52,7 +54,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
     const [sortBy, setSortBy] = useState<string>("DateAdded");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
-    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList);
+    const [visibleBreadcrumbs, setVisibleBreadcrumbs] =useState(breadcrumbActionsList(t));
     const [dateRange, setDateRange] = useState({ fromDate: "", toDate: "" })
     const [selectedDateRange, setSelectedDateRange] = useState({ fromDate: "", toDate: "" })
     const [isDateError, setIsDateError] = useState(false);
@@ -102,9 +104,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     ...categoryArr,
     ...dateTagArr
     ];
-
-    const { t }: UseTranslationResponse<"translation", undefined> =
-        useTranslation();
 
         const messages = [];
  
@@ -474,12 +473,12 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             if (window.innerWidth < 1024) {
                 // md and below
                 if (breadcrumbActionsList.length > 1) {
-                    setVisibleBreadcrumbs(breadcrumbActionsList.slice(-1));
+                    setVisibleBreadcrumbs(breadcrumbActionsList(t).slice(-1));
                 } else {
-                    setVisibleBreadcrumbs(breadcrumbActionsList);
+                    setVisibleBreadcrumbs(breadcrumbActionsList(t));
                 }
             } else {
-                setVisibleBreadcrumbs(breadcrumbActionsList);
+                setVisibleBreadcrumbs(breadcrumbActionsList(t));
             }
         };
         handleResize();
@@ -591,7 +590,7 @@ switch (dialogType) {
       isNotificationanner: false,
       notificationTitle: "",
       notificationStatus: NotificationStatus.WARNING,
-      okText: "Clear all",
+      okText: t("DocumentManagementServer.ClearAll"),
       onCancel: (): void => { setShowConfirmDialog(false); },
       onConfirm: async (): Promise<void> => {
         setClearAllError(false);
@@ -617,7 +616,7 @@ switch (dialogType) {
   case "delete":
     dialogConfig = {
       cancelText: "Keep it",
-      okText: "Delete",
+      okText: t("DocumentManagementServer.Delete"),
       contentText,
       isNotificationanner: true,
       notificationTitle: availableFileCount === 1
@@ -814,13 +813,13 @@ const getDialogTitle = () => {
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
-    if (hasFetchedViewDownload && viewData?.length === 0) {
+    if (hasFetchedViewDownload && viewData?.length === 0 ) {
         return <p>{t("DocumentManagementServer.downloadsAppearHere")}</p>;
     }
     if (viewData?.length > 0) {
         return (
         <>
-            <p>Prepared downloads will expire after 5 days</p>
+            <p>{t("DocumentManagementServer.preparedDownloadsExpireMsg")}</p>
             {viewData.map((item, index) => {
             const isComplete = item?.status?.toLowerCase() === 'complete';
             const isInProgress = item?.status?.toLowerCase() === 'inprogress';
@@ -1067,7 +1066,7 @@ const getDialogTitle = () => {
                                     },
                                     {
                                         disabled: false,
-                                        text: 'View downloads',
+                                        text: t("DocumentManagementServer.ViewDownload"),
                                         value: 'View download'
                                     },
                                     {
@@ -1191,7 +1190,7 @@ const getDialogTitle = () => {
                                 isGlobalLoader={isDialogLoading}
                                 globalLoaderText="Please wait..."
                                 isGlobalLoaderModel={isGlobalLoaderModel}
-                                secondaryButtonTitle={hasCompletedFiles ? "Clear all" : "Close"}
+                                secondaryButtonTitle={hasCompletedFiles ? t("DocumentManagementServer.ClearAll") : t("DocumentManagementServer.Close")}
                                 onClickSidePnlSecondaryBtn={() => {
                                     if (hasCompletedFiles) {
                                         setDialogType("clearAll");
