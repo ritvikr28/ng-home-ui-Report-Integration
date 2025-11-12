@@ -98,7 +98,10 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   };
 
   const renderExtraItemsTooltip = () => {
-    if (totalItems.length <= 1) return null;
+    if (totalItems.length <= 1) {
+      // Keeps layout stable but visually hidden
+      return <div style={{ width: 0, height: 0, overflow: "hidden" }} />;
+    }
 
     return (
       <Tooltip
