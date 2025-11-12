@@ -1207,6 +1207,7 @@ export const fileDownload = async (
 export function addUniqueTagItem({
   item,
   selectedRelatedTo,
+  tagListArray,
   setTagListArray,
   setReferenceExternalIds,
   maxLimit = 5,
@@ -1227,27 +1228,31 @@ export function addUniqueTagItem({
     idKey = "learnerExternalId";
   } else if (selectedRelatedTo?.text === "Staff") {
     idKey = "externalId";
+  } else if (selectedRelatedTo?.text === "Organisation" || selectedRelatedTo?.text === "School") {
+    idKey = "organisationId";
   }
+
   const newId = (item as any)[idKey] ?? item.text;
 
-  setTagListArray((prevTagListArray) => {
-    const alreadyExists = prevTagListArray.some(
-      (tag) => ((tag as any)[idKey] ?? tag.id) === newId
-    );
-    if (alreadyExists) {
-      if (setAlreadyExistingTags) setAlreadyExistingTags(true);
-      return prevTagListArray;
+  const alreadyExists = tagListArray.some(
+    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+  );
+
+  if (alreadyExists) {
+    if (setAlreadyExistingTags) setAlreadyExistingTags(true);
+    return;
+  }
+
+  if (setAlreadyExistingTags) setAlreadyExistingTags(false);
+
+  if (tagListArray.length < maxLimit) {
+    setTagListArray([...tagListArray, item as SelectedItem]);
+    if (setReferenceExternalIds && newId) {
+      setReferenceExternalIds((prev) =>
+        prev.includes(newId) ? prev : [...prev, newId]
+      );
     }
-    if (prevTagListArray.length < maxLimit) {
-      if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
-        setReferenceExternalIds((prev) =>
-          prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
-        );
-      }
-      return [...prevTagListArray, item as SelectedItem];
-    }
-    return prevTagListArray;
-  });
+  }
 }
 
 export function handleApply({
