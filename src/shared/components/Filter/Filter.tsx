@@ -725,7 +725,7 @@ const handleDateChange = (
             });
           }}
         >
-          {availableCategories
+          {availableCategories && availableCategories
             ?.slice()
             .sort((a, b) => a.application.localeCompare(b.application))
             .map((category) => (
