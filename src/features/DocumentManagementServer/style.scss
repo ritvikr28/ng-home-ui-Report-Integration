@@ -407,7 +407,6 @@
         display: inline-block;
       }
     }
-    
   }
 }
 
@@ -455,6 +454,9 @@
     margin-left: 1px !important;
     width: 97.6%;
   }
+    .essui-dialog__title {
+      white-space: unset;
+    }
   }
 
   .dms-layout .side-width .essui-side-navigation-panel-container-grid-item {
