@@ -1109,21 +1109,23 @@ export async function handleClearAllConfirm({
     if (response === 204) {
       setViewData([]);
       setShowToastNotification(true);
-      clearAllFetchViewDownloadData({
+      await clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
       });
+      setIsSidePanelLoader(false);
     } else {
       setClearAllError(true);
+      setIsSidePanelLoader(false);
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
+    setIsSidePanelLoader(false);
   }
-  setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
 
