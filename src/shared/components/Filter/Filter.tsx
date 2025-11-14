@@ -441,7 +441,7 @@ const handleDateChange = (
       setRelatedToError("");
 
       if (
-        (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
+        (localSelectedRelatedTo.text === t("Filter.Pupil") || localSelectedRelatedTo.text === t("Filter.Staff")) &&
         localTagListArray.length === 0
       ) {
         setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
@@ -465,13 +465,13 @@ const handleDateChange = (
 
       let ids: string[] = [];
       let entities: any[] = [];
-      if (localSelectedRelatedTo?.text === "Pupil") {
+      if (localSelectedRelatedTo?.text === t("Filter.Pupil")) {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === "Staff") {
+      } else if (localSelectedRelatedTo?.text === t("Filter.Staff")) {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
+      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === t("Filter.School")) {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
         entities = orgId ? [{ organisationId: orgId }] : [];
@@ -507,6 +507,19 @@ const handleDateChange = (
     }
   }))
 }));
+
+const getEntityLabel = (entity: string) => {
+  if (!entity) return "";
+  let key = "";
+  const lowerEntity = entity.toLowerCase();
+  if (lowerEntity === "pupil") {
+    key = "Filter.pupils";
+  } else if (lowerEntity === "staff") {
+    key = "Filter.staffs";
+  }
+  return key ? t(key) : "";
+};
+
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -525,7 +538,7 @@ const handleDateChange = (
       <>
        {relatedToSelected &&
         (!localSelectedRelatedTo ||
-          !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "")) ? (
+          ![t("Filter.Pupil"), t("Filter.Staff"), "Organisation", t("Filter.School")].includes(localSelectedRelatedTo?.text ?? "")) ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -584,10 +597,12 @@ const handleDateChange = (
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.text === "Organisation" ? "School" : item.text}
+              // text={item.text === "Organisation" ? "School" : item.text}
+              text={t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
               value={item.value.toString()}
             >
-              {item.text === "Organisation" ? "School" : item.text}
+              {/* {item.text === "Organisation" ? "School" : item.text} */}
+              {t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
             </DropdownItem>
           ))}
         </Dropdown>
@@ -598,8 +613,8 @@ const handleDateChange = (
                   key={searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
-                  placeholderText={`${localSelectedRelatedTo?.text} name`} 
-                  titleText={`${localSelectedRelatedTo?.text}`}
+                  placeholderText={t(`Filter.${localSelectedRelatedTo?.text?.toLowerCase()}Name`)}
+                  titleText={ t(`Filter.${localSelectedRelatedTo.text}`)}
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
@@ -610,7 +625,7 @@ const handleDateChange = (
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
+                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(localSelectedRelatedTo?.text)}`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }

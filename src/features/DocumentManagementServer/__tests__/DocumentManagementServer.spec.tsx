@@ -58,6 +58,9 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "DocumentManagementServer.Delete") {
         return "Delete";
       }
+      if (key === "DocumentManagementServer.keepIt") {
+        return "Keep it";
+      }
       if (key === "DocumentManagementServer.noItemsSelectedMessage") {
         return "Please select at least one item from the search results to perform the action.";
       }
@@ -99,6 +102,12 @@ import * as Logic from "../DocumentManagementServer.logic";
       }
       if (key === "Filter.invalidDate") {
         return "Invalid Date";
+      }
+      if (key === "Filter.Pupil") {
+        return "Pupil";
+      }
+      if (key === "Filter.pupilName") {
+        return "Pupil name";
       }
       return key;
     }
