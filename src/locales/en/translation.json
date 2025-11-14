@@ -486,7 +486,7 @@
   },
   "DocumentManagementServer": {
     "headingText": "Documents",
-    "adminconsole": "Admin Console",
+    "adminconsole": "Admin console",
     "Home": "Home",
     "subHeadingText": "Bulk download or delete documents for pupils, staff members, or the school.",
     "sidePanelTitle": "Downloads",
@@ -498,6 +498,8 @@
     "ViewDownload": "View downloads",
     "Delete": "Delete",
     "Close": "Close",
+    "keepIt": "Keep it",
+    "download": "Download",
     "searchBarText": "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.",
     "noItemsSelectedTitle": "No items selected",
     "noItemsSelectedMessage": "Please select at least one item from the search results to perform the action.",
@@ -579,6 +581,13 @@
     "invalidDate": "Invalid Date",
     "relatedToRequired":"Pupil, Staff, or School is required.",
     "fromDateLabel": "From Date",
-    "toDateLabel": "To Date"
+    "toDateLabel": "To Date",
+    "Pupil":"Pupil",
+    "Staff":"Staff",
+    "School":"School",
+    "pupilName": "Pupil name",
+    "staffName": "Staff name",
+    "pupils": "pupils",
+    "staffs": "staffs"
   }
 }

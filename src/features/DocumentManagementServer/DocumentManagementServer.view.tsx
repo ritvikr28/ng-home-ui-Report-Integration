@@ -615,7 +615,7 @@ switch (dialogType) {
 
   case "delete":
     dialogConfig = {
-      cancelText: "Keep it",
+      cancelText: t("DocumentManagementServer.keepIt"),
       okText: t("DocumentManagementServer.Delete"),
       contentText,
       isNotificationanner: true,
@@ -856,7 +856,7 @@ const getDialogTitle = () => {
                            }
                        }}
                    >
-                       Download
+                       {t("DocumentManagementServer.download")}
                    </Button>
                )}
                 {(isInProgress || isInitiated) && (
@@ -990,7 +990,7 @@ const getDialogTitle = () => {
                     )}
                     <LocalisedMenu
                         customHeight={100}
-                        menuHeading="Admin Console"
+                        menuHeading={t("DocumentManagementServer.adminconsole")}
                         onCloseSideNavigationPanel={() => setIsOpen(false)}
                         isOpenSideNavigation={isOpen}
                         defaultSelectedMenu={{
