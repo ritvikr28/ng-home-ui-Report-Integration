@@ -595,7 +595,7 @@ const handleDateChange = (
         {(localSelectedRelatedTo?.text === 'Pupil' || localSelectedRelatedTo?.text === 'Staff') && (
           <>
             <Search
-                  key={searchKey}
+                  key={tagListArray.length + searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
                   placeholderText={`${localSelectedRelatedTo?.text} name`} 
@@ -610,7 +610,7 @@ const handleDateChange = (
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
+                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text.toLowerCase()}s`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
@@ -619,7 +619,6 @@ const handleDateChange = (
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
-                    setAlreadyExistingTags(false);
                     setSearchTerm(item?.text || "");
                     addUniqueTagItem({
                       item,
