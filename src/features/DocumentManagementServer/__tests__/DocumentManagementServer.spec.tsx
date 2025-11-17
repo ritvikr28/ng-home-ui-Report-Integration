@@ -151,6 +151,7 @@ jest.mock("../DocumentManagementServer.logic", () => {
     reduceCategories: jest.fn(),
     fetchCategory: jest.fn(),
     debouncedFetchSuggestions: jest.fn(),
+    fileDownload: jest.fn(),
   };
 });
  
@@ -198,6 +199,11 @@ const mockDocData = {
   ],
 };
  
+const zipFileDownloadMockData = {
+  statusCode: 200,
+  payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
+  errorMessage: null
+};
 const mockSuggestions = {
     payload: [
       { name: "Pupil", link: "", values: [
@@ -240,6 +246,7 @@ const mockSuggestions = {
       status: 200,
       data: [],
     });
+    (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
   })
 jest.setTimeout(10000);
   beforeEach(() => {
@@ -485,7 +492,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-        { name: "FileUndefined", status: "complete" }
+        { name: "FileUndefined", status: "complete" },
+        { name: "FileOneDay", status: "complete", fileExpiryDays: 1 }
       ],
     });
     render(<MemoryRouter>
@@ -497,7 +505,12 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+      expect(screen.getByText("FileOneDay")).toBeInTheDocument();
+      expect(screen.getByText("Expires in 1 day(s).")).toBeInTheDocument();
     });
+    const downloadBtns = screen.getAllByText("DocumentManagementServer.download");
+    fireEvent.click(downloadBtns[0]);
+    
   });
  
 
