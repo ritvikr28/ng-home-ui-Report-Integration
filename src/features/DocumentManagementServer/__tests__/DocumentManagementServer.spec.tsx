@@ -480,7 +480,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
         { name: "FileOneDay", status: "complete", fileExpiryDays: 1 }
       ],
     });
-   const { container } = render(<MemoryRouter>
+    render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
     fireEvent.click(await screen.getByText("Actions"));
@@ -491,10 +491,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
       expect(screen.getByText("FileOneDay")).toBeInTheDocument();
       expect(screen.getByText("Expires in 1 day(s).")).toBeInTheDocument();
-      console.log("Rendered container:", container.innerHTML);
     });
     const downloadBtns = screen.getAllByText("DocumentManagementServer.download");
-    console.log(downloadBtns);
     fireEvent.click(downloadBtns[0]);
     
   });
