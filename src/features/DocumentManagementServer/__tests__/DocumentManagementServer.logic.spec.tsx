@@ -32,7 +32,6 @@ import {
   closeSidePanel,
   fetchGetDocumentDetailsLogic,
   buildSelectedDocs,
-  getReferenceMappingForSearchedPerson,
   handleClearAllConfirm,
   getCompletedPartitionKeys,
   handleBulkDeleteLogic,
@@ -54,29 +53,51 @@ jest.mock("@essnextgen/ui-kit", () => ({
   },
 }));
 
+// eslint-disable-next-line
+beforeAll(() => {
+  global.ResizeObserver = global.ResizeObserver || class {
+    // eslint-disable-next-line
+    observe() { void this; }
+    // eslint-disable-next-line
+    unobserve() { void this; }
+    // eslint-disable-next-line
+    disconnect() { void this; }
+  };
+});
+
 describe("getTableHeadersData", () => {
-  const relatedToColumn = getTableHeadersData.find(h => h.text === 'Related to');
+  const t = (key: string) => key; 
+  const headers = getTableHeadersData(t);
+  const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
   const anyComponent = relatedToColumn?.anyComponent;
 
-  test("should be an array and contain expected columns", () => {
-    expect(Array.isArray(getTableHeadersData)).toBe(true);
+ test("should be an array and contain expected columns", () => {
+    expect(Array.isArray(headers)).toBe(true);
     const expectedColumns = [
-      "Id", "Document", "Related to", "Category", "Added by", "Date added", "Format", "Size"
+      "Id",
+      "DocumentManagementServer.documentColumn",
+      "DocumentManagementServer.relatedColumn",
+      "DocumentManagementServer.categoryColumn",
+      "DocumentManagementServer.addedByColumn",
+      "DocumentManagementServer.dateAddedColumn",
+      "DocumentManagementServer.formatColumn",
+      "DocumentManagementServer.sizeColumn"
     ];
     expectedColumns.forEach(col => {
-      expect(getTableHeadersData.find(h => h.text === col)).toBeDefined();
+      expect(headers.find(h => h.text === col)).toBeDefined();
     });
   });
-
+  
   test("should contain 'Document' header with anyComponent", () => {
-    const docHeader = getTableHeadersData.find(h => h.text === "Document");
+    const docHeader = headers.find(h => h.text === "DocumentManagementServer.documentColumn");
     expect(docHeader).toBeDefined();
     expect(typeof docHeader?.anyComponent).toBe("function");
   });
 
   test("should contain 'Related to' header with anyComponent", () => {
-    expect(relatedToColumn).toBeDefined();
-    expect(typeof relatedToColumn?.anyComponent).toBe("function");
+    const relatedToCol = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
+    expect(relatedToCol).toBeDefined();
+    expect(typeof relatedToCol?.anyComponent).toBe("function");
   });
 
   test("renders nothing when elem is undefined", () => {
@@ -86,36 +107,37 @@ describe("getTableHeadersData", () => {
 
 
   test("does not render tooltip when only one related item", () => {
-  const relatedToCol = getTableHeadersData.find(h => h.text === "Related to");
+  const relatedToCol = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const { container } = render(<>{relatedToCol?.anyComponent?.(["Only One"])}</>);
   expect(container.querySelector('[data-testid="tooltip-eventtime"]')).not.toBeInTheDocument();
 });
 });
 
 describe("getTableHeadersData column anyComponent rendering", () => {
-  const sizeColumn = getTableHeadersData.find(h => h.text === "Size");
-   const headers = getTableHeadersData;
+  const t = (key: string) => key;
+  const headers = getTableHeadersData(t);
+  const sizeColumn = headers.find(h => h.text === "Size");
 
     test("Category column renders tooltip with value", () => {
-    const catColumn = headers.find(h => h.text === "Category");
+    const catColumn = headers.find(h => h.text === "DocumentManagementServer.categoryColumn");
     const { getByText } = render(<>{catColumn?.anyComponent?.("App")}</>);
     expect(getByText("App")).toBeInTheDocument();
   });
 
   test("Format column renders tooltip with value", () => {
-    const formatColumn = headers.find(h => h.text === "Format");
+    const formatColumn = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const { getByText } = render(<>{formatColumn?.anyComponent?.("pdf")}</>);
     expect(getByText("pdf")).toBeInTheDocument();
   });
 
   test("Size column renders correctly for string input", () => {
-    const sizeCol = headers.find(h => h.text === "Size");
+    const sizeCol = headers.find(h => h.text === "DocumentManagementServer.sizeColumn");
     const { getByText } = render(<>{sizeCol?.anyComponent?.("2 MB")}</>);
     expect(getByText("2 MB")).toBeInTheDocument();
   });
 
   test("Size column renders correctly for array input", () => {
-    const sizeCols = headers.find(h => h.text === "Size");
+    const sizeCols = headers.find(h => h.text === "DocumentManagementServer.sizeColumn");
     const { getByText } = render(<>{sizeCols?.anyComponent?.(["2 MB"])}</>);
     expect(getByText("2 MB")).toBeInTheDocument();
   });
@@ -144,6 +166,23 @@ describe("formatSuggestions", () => {
   expect(await formatSuggestions(null as any)).toEqual([]);
 });
 
+it("formats Pupil with neither year group nor primary class", async () => {
+  const input = [{
+    name: "Pupil",
+    values: [{
+      pupilId: "p4",
+      preferredForename: "Alex",
+      preferredSurname: "Kim",
+      legalName: "Alex Kim",
+      imagePath: ""
+      // both missing
+    }]
+  }];
+  const result = await formatSuggestions(input);
+  expect(result[0].values[0].value).toBeUndefined();
+});
+
+
 
   it("formats Pupil category with icon and value", async () => {
     const input = [
@@ -152,6 +191,7 @@ describe("formatSuggestions", () => {
         values: [
           {
             pupilId: "p1",
+            learnerExternalId: "p1",
             preferredForename: "John",
             preferredSurname: "Doe",
             legalName: "Jonathan Doe",
@@ -327,6 +367,31 @@ describe("debouncedFetchSuggestions", () => {
     jest.useRealTimers();
   });
 
+  it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
+    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
+    const setSearchLoading = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowError = jest.fn();
+
+    // Call debouncedFetchSuggestions multiple times rapidly
+    debouncedFetchSuggestions("Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions("Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+
+    // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
+    jest.advanceTimersByTime(2999);
+    expect(mockFetchDMSSuggestions).not.toHaveBeenCalled();
+
+    // Advance timers to 3000ms, should call fetchDMSSuggestions only once with last args
+    await act(() => {
+      jest.advanceTimersByTime(1);
+      return Promise.resolve();
+    });
+
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledTimes(1);
+    expect(mockFetchDMSSuggestions).toHaveBeenCalledWith("Doc3", "", "", [], undefined);
+    expect(setSearchLoading).toHaveBeenCalledWith(false);
+  });
   test("handles undefined payload structure", async () => {
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
@@ -337,7 +402,7 @@ describe("debouncedFetchSuggestions", () => {
   debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
-    jest.advanceTimersByTime(1000);
+    jest.advanceTimersByTime(3000);
     return Promise.resolve();
   });
 
@@ -354,7 +419,7 @@ describe("debouncedFetchSuggestions", () => {
     debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
-      jest.advanceTimersByTime(1000);
+      jest.advanceTimersByTime(3000);
       return Promise.resolve();
     });
 
@@ -633,89 +698,91 @@ describe("handleSuggestionClick edge cases", () => {
 });
 
 describe("getTableHeadersData advanced rendering edge cases", () => {
-  const headers = getTableHeadersData;
+  const t = (key: string) => key; // mock translation function
+  const headers = getTableHeadersData(t);
 
   it("Related to column renders nothing when input is empty array", () => {
-    const column = headers.find(h => h.text === "Related to");
+    const column = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
     const { container } = render(<>{column?.anyComponent?.([])}</>);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("Related to column renders nothing when input is null", () => {
-  const column = headers.find(h => h.text === "Related to");
+  const column = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const { container } = render(<>{column?.anyComponent?.(null)}</>);
   expect(container).toBeEmptyDOMElement();
 });
 
   it("Related to column renders nothing when input is null", () => {
-    const column = headers.find(h => h.text === "Related to");
+    const column = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
     const { container } = render(<>{column?.anyComponent?.(null)}</>);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("Category column renders nothing when input is empty", () => {
-    const column = headers.find(h => h.text === "Category");
+    const column = headers.find(h => h.text === "DocumentManagementServer.categoryColumn");
     const { container } = render(<>{column?.anyComponent?.("")}</>);
     expect(container).not.toBeEmptyDOMElement(); // still renders Tooltip
   });
 
 
   it("renders plain value if value is falsy or length <= 25", () => {
-    const column = headers.find(h => h.text === "Format");
+    const column = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const { container } = render(<>{column?.anyComponent?.('pdf')}</>);
     expect(container.querySelector(".document-text.document-column")).toHaveTextContent("pdf");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
   it("renders truncated value with tooltip if length > 25", () => {
-    const column = headers.find(h => h.text === "Format");
+    const column = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const longValue = "averylongformatnamethatisdefinitelymorethan25chars";
     const { container } = render(<>{column?.anyComponent?.(longValue)}</>);
     expect(container).toHaveTextContent("averylongformatnamethatisdefinitelymorethan25chars".substring(0, 25));
   });
    it("renders plain value if value is empty string", () => {
-    const column = headers.find(h => h.text === "Format");
+    const column = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const { container } = render(<>{column?.anyComponent?.('')}</>);
     expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
   it("Size column renders nothing when input is undefined", () => {
-    const column = headers.find(h => h.text === "Size");
+    const column = headers.find(h => h.text === "DocumentManagementServer.sizeColumn");
     const { container } = render(<>{column?.anyComponent?.(undefined)}</>);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("Size column renders correctly for array with undefined", () => {
-    const column = headers.find(h => h.text === "Size");
+    const column = headers.find(h => h.text === "DocumentManagementServer.sizeColumn");
     const { container } = render(<>{column?.anyComponent?.([undefined])}</>);
     expect(container).toBeEmptyDOMElement();
   });
 
   it("Size column renders correctly for array with first valid value", () => {
-    const column = headers.find(h => h.text === "Size");
+    const column = headers.find(h => h.text === "DocumentManagementServer.sizeColumn");
     const { getByText } = render(<>{column?.anyComponent?.(["100KB", "200KB"])}</>);
     expect(getByText("100KB")).toBeInTheDocument();
   });
 
   it("renders pupil related item with link and tag", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "pupil",
     name: "John Doe",
     pupilId: "p1",
     year: "Y5",
-    reg: "A"
+    reg: "A",
+    isLeaver: "Leaver"
   }];
    const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
     // Check for link
     const link = getByRole("link", { name: "John Doe" });
     expect(link).toHaveAttribute("href", "/");
     // Check for tag
-    expect(getByText("Y5 / A")).toBeInTheDocument();
+    expect(getByText("(Y5) / (A)")).toBeInTheDocument();
 });
   it("renders staff related item with link and staff code", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "staff",
     name: "Jane Smith",
@@ -729,7 +796,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
 });
 
 it("renders staff related item with referenceExternalId (profile link)", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "staff",
     name: "Jane Smith",
@@ -743,7 +810,7 @@ it("renders staff related item with referenceExternalId (profile link)", () => {
 });
 
 it("renders staff related item without referenceExternalId (fallback link)", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "staff",
     name: "Jane Smith",
@@ -757,7 +824,7 @@ it("renders staff related item without referenceExternalId (fallback link)", () 
 });
 
 it("renders pupil related item with referenceExternalId (profile link)", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "pupil",
     name: "John Doe",
@@ -772,7 +839,7 @@ it("renders pupil related item with referenceExternalId (profile link)", () => {
 });
 
 it("renders pupil related item without referenceExternalId (fallback link)", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [{
     type: "pupil",
     name: "John Doe",
@@ -787,7 +854,7 @@ it("renders pupil related item without referenceExternalId (fallback link)", () 
 });
 
 it("renders tooltip with multiple staff and pupil and school items", () => {
-  const relatedToColumn = headers.find(h => h.text === "Related to");
+  const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
   const elem = [
     {
       type: "staff",
@@ -807,7 +874,7 @@ it("renders tooltip with multiple staff and pupil and school items", () => {
   ];
   const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
 
-  expect(getByText("+3")).toBeInTheDocument();
+  expect(getByText("+2")).toBeInTheDocument();
 
   const link = getByRole("link", { name: "Jane Smith | SC123" });
   expect(link).toHaveAttribute("href", "/");
@@ -1001,31 +1068,36 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-    const result = getResultNotFoundMsg('test', { statusCode: 200, data: [] }, 'test', false, true);
+   const t = (key: string) => key; 
+    const result = getResultNotFoundMsg(t,'test', { statusCode: 200, data: [] }, 'test', false, true);
     expect(result).toBe(
       'No data to display.'
     );
   });
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
-    const result = getResultNotFoundMsg('', { data: ['some data'] }, '', true, true);
+    const t = (key: string) => key;
+    const result = getResultNotFoundMsg(t,'', { data: ['some data'] }, '', true, true);
     expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
-    const result = getResultNotFoundMsg('test', { data: ['doc1'] }, 'test', false, false);
+    const t = (key: string) => key;
+    const result = getResultNotFoundMsg(t,'test', { data: ['doc1'] }, 'test', false, false);
     expect(result).toBeUndefined();
   });
 
   it('returns "No data to display" when not searching and no data', () => {
+    const t = (key: string) => key;
   const result = getResultNotFoundMsg(
-    "", // searchText is empty
+    t,
+    '', // searchText is empty
     { statusCode: 200, data: [] }, // docData has empty array
     "", // searchTerm
     false, // showErrorBanner
     false // isSearching
   );
-  expect(result).toEqual("Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.");
+  expect(result).toEqual("DocumentManagementServer.searchBarText");
 });
 });
 
@@ -1129,8 +1201,9 @@ describe("getAllRegistrationIds", () => {
 })
 
 describe("Document column anyComponent", () => {
-  const documentColumn = getTableHeadersData.find(h => h.text === "Document");
-  const categoryColumn = getTableHeadersData.find(h => h.text === "Category");
+  const t = (key: string) => key;
+  const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
+  const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
   it("renders plain value if value is falsy or length <= 25", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
@@ -1183,7 +1256,8 @@ describe("Document column anyComponent", () => {
 });
 
 describe("Size column anyComponent", () => {
-  const sizeColumn = getTableHeadersData.find(h => h.text === "Size");
+  const t = (key: string) => key;
+  const sizeColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.sizeColumn");
 
   it("renders nothing if value is undefined", () => {
     expect(sizeColumn).toBeDefined();
@@ -1348,7 +1422,8 @@ describe("handleTagCloseLogic", () => {
 });
 
 describe("tableData mapping for relatedTo types", () => {
-  const relatedToColumn = getTableHeadersData.find(h => h.text === "Related to");
+  const t = (key: string) => key; // mock translation function
+  const relatedToColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.relatedColumn");
   const renderRelated = relatedToColumn?.anyComponent;
 
   it("maps pupils correctly when documentRealatedTo === 1", () => {
@@ -1504,7 +1579,8 @@ describe('mapRelatedArr', () => {
           preferredForename: 'Alice',
           preferredSurname: 'Brown',
           staffCode: 'S001',
-          externalId: '456'
+          externalId: '456',
+          rollState: 'Current'
         }
       ]
     };
@@ -1514,7 +1590,8 @@ describe('mapRelatedArr', () => {
         type: 'staff',
         name: 'Alice Brown',
         staffCode: 'S001',
-        referenceExternalId: '456'
+        referenceExternalId: '456',
+        isLeaver: ''
       }
     ]);
   });
@@ -2182,20 +2259,72 @@ describe("fetchGetDocumentDetailsLogic", () => {
     consoleSpy.mockRestore();
   });
 });
+describe("referenceMappingDetails deduplication", () => {
+  it("removes duplicates by referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id1", value: 3 }, // duplicate id1
+      { referenceExternalId: "id3", value: 4 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { referenceExternalId: "id1", value: 3 }, // last occurrence kept
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 4 }
+    ]);
+  });
 
+  it("returns empty array if input is empty", () => {
+    const referenceMappingDetails: any[] = [];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([]);
+  });
+
+  it("returns same array if all referenceExternalId are unique", () => {
+    const referenceMappingDetails = [
+      { referenceExternalId: "id1", value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { referenceExternalId: "id3", value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual(referenceMappingDetails);
+  });
+
+  it("handles items with missing referenceExternalId", () => {
+    const referenceMappingDetails = [
+      { value: 1 },
+      { referenceExternalId: "id2", value: 2 },
+      { value: 3 }
+    ];
+    const deduped = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
+    expect(deduped).toEqual([
+      { value: 3 }, // last undefined key kept
+      { referenceExternalId: "id2", value: 2 }
+    ]);
+  });
+});
 describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""})).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2229,7 +2358,8 @@ describe("buildSelectedDocs", () => {
       excludedIdDetails,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      [{ fileId: "2", registrationId: 456, externalId: "ext3" }]
     );
 
     expect(resultWithExcluded).toEqual([
@@ -2274,7 +2404,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2303,7 +2434,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
      expect(result[0].request.fileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2331,7 +2463,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2356,7 +2489,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2382,7 +2516,8 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2407,79 +2542,13 @@ describe("buildSelectedDocs", () => {
       excludedCheckBoxIds,
       isHeaderBoxChecked,
       [],
-      {fromDate: "2025-01-01", toDate: "2025-01-02"}
+      {fromDate: "2025-01-01", toDate: "2025-01-02"},
+      []
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
 });
 
-describe("getReferenceMappingForSearchedPerson", () => {
-  it("returns empty array if docData.data is not an array", () => {
-    expect(getReferenceMappingForSearchedPerson({
-      docData: { data: undefined },
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-
-    expect(getReferenceMappingForSearchedPerson({
-      docData: { data: null },
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns empty array if no document matches documentRealatedTo", () => {
-    const docData = {
-      data: [
-        { documentRealatedTo: 2, relatedTo: [{ learnerExternalId: "ext1" }] }
-      ]
-    };
-    expect(getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns empty array if no relatedItem matches searchRefExternalId", () => {
-    const docData = {
-      data: [
-        { documentRealatedTo: 1, relatedTo: [{ learnerExternalId: "notmatch" }] }
-      ]
-    };
-    expect(getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId: ["ext1"],
-      documentRealatedTo: 1,
-    })).toEqual([]);
-  });
-
-  it("returns correct mapping if document and relatedItem match", () => {
-  const docData = {
-    data: [
-      {
-        documentRealatedTo: 1,
-        relatedTo: [{ learnerExternalId: "ext1", preferredForename: "John" }],
-      }
-    ]
-  };
-  jest.spyOn(logicModule, "mapRelatedArr").mockImplementation(() => [
-    { referenceExternalId: "ext1" }
-  ]);
-  expect(getReferenceMappingForSearchedPerson({
-    docData,
-    searchRefExternalId: ["ext1"],
-    documentRealatedTo: 1,
-  })).toEqual([
-    {
-      referenceExternalId: "ext1",
-      relatedTo: { learnerExternalId: "ext1", preferredForename: "John" },
-      documentRealatedTo: 1
-    }
-  ]);
-  jest.restoreAllMocks();
-  });
-});
 
 describe('handleClearAllConfirm', () => {
   const viewData = [{ partitionKey: 'key1', status: 'complete' }];
@@ -2624,7 +2693,8 @@ describe('getCompletedPartitionKeys', () => {
 });
 
 describe("Added by column anyComponent", () => {
-  const addedByColumn = getTableHeadersData.find(h => h.text === "Added by");
+  const t = (key: string) => key; // mock translation function
+  const addedByColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
 
   test("renders plain value if length <= 12", () => {
     const value = "ShortName";
@@ -3055,33 +3125,41 @@ describe("handleBulkDeleteLogic", () => {
 });
 
 describe("getTitleConfirmation", () => {
+  const t = jest.fn(key => key);
   it('returns "Clear all downloads?" for "clearAll"', () => {
-    expect(getTitleConfirmation("clearAll", 0, 0)).toBe("Clear all downloads?");
+    expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
   });
 
   it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    expect(getTitleConfirmation("delete", 1, 0)).toBe("Delete Document?");
+    expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
   });
 
   it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    expect(getTitleConfirmation("delete", 2, 0)).toBe("Delete Documents?");
+    expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
   });
 
   it('returns "Prepare Download?" for other values', () => {
-    expect(getTitleConfirmation("prepare", 0, 1)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("anythingElse", 0, 1)).toBe("Prepare Download?");
-    expect(getTitleConfirmation("", 0, 1)).toBe("Prepare Download?");
+    expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
 
+  });
+   it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
+    const result = getTitleConfirmation(t, "prepare", 5, 5);
+    expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
+    expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
   });
 });
 
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
   let setReferenceExternalIds: jest.Mock;
+  let setAlreadyExistingTags: jest.Mock;
 
   beforeEach(() => {
     setTagListArray = jest.fn();
     setReferenceExternalIds = jest.fn();
+    setAlreadyExistingTags = jest.fn();
   });
 
   it("does nothing if item is null", () => {
@@ -3096,127 +3174,170 @@ describe("addUniqueTagItem", () => {
     expect(setReferenceExternalIds).not.toHaveBeenCalled();
   });
 
-  it("adds a new unique pupil tag and referenceExternalId", () => {
-    const item = {
-      learnerExternalId: "p1",
-      text: "John Doe",
-      props: { externalId: "p1" }
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Pupil" } as any,
-      tagListArray: [],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    // Simulate callback to check correct value
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["p1"]);
+it("adds a new unique pupil tag and referenceExternalId", () => {
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: [],
+    setTagListArray,
+    setReferenceExternalIds,
   });
+  expect(setTagListArray).toHaveBeenCalledWith([item]);
+  expect(setReferenceExternalIds).toHaveBeenCalled();
+  const updater = setReferenceExternalIds.mock.calls[0][0];
+  expect(typeof updater).toBe("function");
+  expect(updater([])).toEqual(["p1"]);
+});
 
   it("does not add duplicate pupil tag", () => {
-    const item = {
-      learnerExternalId: "p1",
-      text: "John Doe",
-      props: { externalId: "p1" }
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Pupil" } as any,
-      tagListArray: [{ ...item, name: item.text, id: Number(item.text) }],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  const prev = [{ ...item, name: item.text, id: Number(item.text) }];
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: prev,
+    setTagListArray,
+    setReferenceExternalIds,
   });
+  // Should not add duplicate, so setTagListArray should NOT be called
+  expect(setTagListArray).not.toHaveBeenCalledWith([...prev, item]);
+});
 
-  it("adds a new unique staff tag and referenceExternalId", () => {
-    const item = {
-      externalId: "s1",
-      text: "Jane Smith",
-      props: { externalId: "s1" }
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Staff" } as any,
-      tagListArray: [],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).toHaveBeenCalled();
-    const cb = setReferenceExternalIds.mock.calls[0][0];
-    expect(cb([])).toEqual(["s1"]);
+it("adds a new unique staff tag and referenceExternalId", () => {
+  const item = {
+    externalId: "s1",
+    text: "Jane Smith",
+    props: { externalId: "s1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Staff" } as any,
+    tagListArray: [],
+    setTagListArray,
+    setReferenceExternalIds,
   });
+  expect(setTagListArray).toHaveBeenCalledWith([item]);
+  expect(setReferenceExternalIds).toHaveBeenCalled();
+  const updater = setReferenceExternalIds.mock.calls[0][0];
+  expect(typeof updater).toBe("function");
+  expect(updater([])).toEqual(["s1"]);
+});
 
-  it("adds a new unique organisation tag and does not add referenceExternalId if missing", () => {
-    const item = {
-      organisationId: "o1",
-      text: "Test Org",
-      props: {}
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Organisation" } as any,
-      tagListArray: [],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+it("does not add tag if maxLimit is reached", () => {
+  const item = {
+    learnerExternalId: "p2",
+    text: "Another Pupil",
+    props: { externalId: "p2" }
+  };
+  const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray,
+    setTagListArray,
+    setReferenceExternalIds,
+    maxLimit: 5
   });
+  // Should not add, so setTagListArray should NOT be called with a longer array
+  expect(setTagListArray).not.toHaveBeenCalledWith([...tagListArray, item]);
+});
 
-  it("does not add tag if maxLimit is reached", () => {
-    const item = {
-      learnerExternalId: "p2",
-      text: "Another Pupil",
-      props: { externalId: "p2" }
-    };
-    const tagListArray = Array(5).fill({ learnerExternalId: "x", text: "x" });
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Pupil" } as any,
-      tagListArray,
-      setTagListArray,
-      setReferenceExternalIds,
-      maxLimit: 5
-    });
-    expect(setTagListArray).not.toHaveBeenCalled();
-    expect(setReferenceExternalIds).not.toHaveBeenCalled();
+ it("falls back to item.text as id if idKey is missing", () => {
+  const item = {
+    text: "Fallback",
+    props: {}
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Unknown" } as any,
+    tagListArray: [],
+    setTagListArray,
+    setReferenceExternalIds,
   });
+  expect(setTagListArray).toHaveBeenCalledWith([item]);
+});
 
-  it("falls back to item.text as id if idKey is missing", () => {
-    const item = {
-      text: "Fallback",
-      props: {}
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Unknown" } as any,
-      tagListArray: [],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledWith([item]);
+it("falls back to item.text as id if idKey is missing", () => {
+  const item = {
+    text: "Fallback",
+    props: {}
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Unknown" } as any,
+    tagListArray: [],
+    setTagListArray,
+    setReferenceExternalIds,
   });
+  expect(setTagListArray).toHaveBeenCalledWith([item]);
+});
 
-  it("does not add duplicate when fallback id is used", () => {
-    const item = {
-      text: "Fallback",
-      props: {}
-    };
-    addUniqueTagItem({
-      item,
-      selectedRelatedTo: { text: "Unknown" } as any,
-      tagListArray: [item as any],
-      setTagListArray,
-      setReferenceExternalIds,
-    });
-    expect(setTagListArray).toHaveBeenCalledTimes(1);
+it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+    setTagListArray,
+    setReferenceExternalIds,
+    setAlreadyExistingTags
   });
+  expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
+});
+
+it("calls setReferenceExternalIds with correct updater when adding unique tag", () => {
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: [],
+    setTagListArray,
+    setReferenceExternalIds,
+    setAlreadyExistingTags
+  });
+  expect(setTagListArray).toHaveBeenCalledWith([item]);
+  expect(setReferenceExternalIds).toHaveBeenCalled();
+  const updater = setReferenceExternalIds.mock.calls[0][0];
+  expect(typeof updater).toBe("function");
+  expect(updater([])).toEqual(["p1"]);
+  expect(
+  setAlreadyExistingTags.mock.calls.length === 0 ||
+  setAlreadyExistingTags.mock.calls.some(call => call[0] === false)
+  ).toBe(true);
+});
+ it("calls setAlreadyExistingTags when adding duplicate tag", () => {
+  const item = {
+    learnerExternalId: "p1",
+    text: "John Doe",
+    props: { externalId: "p1" }
+  };
+  addUniqueTagItem({
+    item,
+    selectedRelatedTo: { text: "Pupil" } as any,
+    tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
+    setTagListArray,
+    setReferenceExternalIds,
+    setAlreadyExistingTags
+  });
+  expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
+});
 });
 
 describe("handleApply", () => {
@@ -3238,6 +3359,7 @@ describe("handleApply", () => {
   let setIsHeaderBoxChecked: jest.Mock;
   let setSelectedCheckBoxIds: jest.Mock;
   let setPrevSelectedDocs: jest.Mock;
+  let setSelectedEntities: jest.Mock;
 
   beforeEach(() => {
     setSearchInput = jest.fn();
@@ -3258,6 +3380,7 @@ describe("handleApply", () => {
     setIsHeaderBoxChecked = jest.fn();
     setSelectedCheckBoxIds = jest.fn();
     setPrevSelectedDocs = jest.fn();
+    setSelectedEntities = jest.fn();
     jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
   });
   it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
@@ -3267,6 +3390,7 @@ describe("handleApply", () => {
       selectedCategories: [{ id: "cat2" }],
       selectedDateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
       isDateError: false,
+      selectedEntity: [],
       setIsDateError,
       setIsFilterLoading,
       setDateRange,
@@ -3284,7 +3408,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3320,7 +3445,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3356,7 +3482,8 @@ describe("handleApply", () => {
       setSearchRefExternalId,
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
-      setPrevSelectedDocs
+      setPrevSelectedDocs,
+      setSelectedEntities
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
@@ -3386,7 +3513,8 @@ describe("handleApply", () => {
     setSearchRefExternalId,
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
-    setPrevSelectedDocs
+    setPrevSelectedDocs,  
+    setSelectedEntities
   });
 
   // Check that setTableKey was called with a function

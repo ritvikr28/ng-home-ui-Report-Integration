@@ -42,22 +42,21 @@ export const setDefaultAndCurrentSlide: (
   setCurrentSlide(newSlideIndex);
 };
 
-const isEventInProgress = (eventStart: string, eventEnd: string, currentUTCDateTime: string): boolean =>
-  Date.parse(eventStart) <= Date.parse(currentUTCDateTime) &&
-  Date.parse(currentUTCDateTime) <= Date.parse(eventEnd);
+const isEventInProgress = (eventStart: string, eventEnd: string, currentLocalDateTime: Date): boolean =>
+  new Date(eventStart) <= currentLocalDateTime && currentLocalDateTime <= new Date(eventEnd);
 
 
-const isEventUpcoming: (eventStart: string, currentUTCDateTime: string) => boolean = (eventStart, currentUTCDateTime) =>
-  Date.parse(eventStart) > Date.parse(currentUTCDateTime);
+const isEventUpcoming = (eventStart: string, currentLocalDateTime: Date): boolean =>
+  new Date(eventStart) > currentLocalDateTime;
 
 export const findCurrentIndex: (apiRegsiterEventData: IRegistersDetails[]) => number = (apiRegsiterEventData) => {
-  const currentUTCDateTime: string = new Date().toISOString().split(".")[0];
+  const currentLocalDateTime: Date = new Date();
   return apiRegsiterEventData.findIndex(
     (x) =>
       x.eventStart != null &&
       x.eventEnd != null &&
-      (isEventInProgress(x.eventStart, x.eventEnd, currentUTCDateTime) ||
-        isEventUpcoming(x.eventStart, currentUTCDateTime))
+      (isEventInProgress(x.eventStart, x.eventEnd, currentLocalDateTime) ||
+        isEventUpcoming(x.eventStart, currentLocalDateTime))
   );
 };
 

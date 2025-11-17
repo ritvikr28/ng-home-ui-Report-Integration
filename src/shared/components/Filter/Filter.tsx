@@ -35,7 +35,7 @@ interface FilterDialogProps {
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[]) => void;
+  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[], entities?: any[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
@@ -310,7 +310,7 @@ const handleDateChange = (
     newDate.day === "00" || newDate.day === "0" ||
     newDate.month === "00" || newDate.month === "0"
   ) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -331,7 +331,7 @@ const handleDateChange = (
   }
 
   if (newDate.year && newDate.year.length < 4) {
-    setError(isFrom ? "From date is required" : "");
+    setError(isFrom ? t("Filter.fromDateRequired") : "");
     setIsDateError(true);
     return;
   }
@@ -340,7 +340,7 @@ const handleDateChange = (
     setError("");
     setIsDateError(false);
     if (isFrom && otherDate.day && otherDate.month && otherDate.year) {
-      setError("From date is required");
+      setError(t("Filter.fromDateRequired"));
       setIsDateError(true);
     }
     return;
@@ -348,7 +348,7 @@ const handleDateChange = (
 
   // If any field is missing (partial date), show required error instead of invalid date
   if (isFrom && (!newDate.day || !newDate.month || !newDate.year)) {
-    setError("Invalid Date");
+    setError(t("Filter.invalidDate"));
     setIsDateError(true);
     return;
   }
@@ -356,23 +356,23 @@ const handleDateChange = (
   // --- Validation for From Date ---
   if (isFrom) {
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-      setError(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setError(t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }));
       setIsDateError(true);
       return;
     }
     if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-      setError("From date must be on or after 01/01/1900");
+      setError(t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" }));
       setIsDateError(true);
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
     // Check if To date is before From date
     if (thisDateStr && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
-      setToDateError("To date should not be before From date.");
+      setToDateError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
     } else {
       // Only clear To date error if To date is valid
@@ -386,17 +386,17 @@ const handleDateChange = (
   // --- Validation for To Date ---
   else {
     if (!newDate.day || !newDate.month || !newDate.year) {
-        setError("Invalid Date");
+        setError(t("Filter.invalidDate"));
         setIsDateError(true);
         return;
       }
       if (!otherDate.day || !otherDate.month || !otherDate.year) {
-        setFromDateError("From date is required");
+        setFromDateError(t("Filter.fromDateRequired"));
         setIsDateError(true);
         return;
       }
     if (thisDateStr && dayjs(thisDateStr).isAfter(dayjs(), "day")) {
-      setError(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`);
+      setError(`${t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })}`);
       setIsDateError(true);
       return;
     }
@@ -406,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && !dayjs(thisDateStr, "YYYY-MM-DD", true).isValid()) {
-      setError("Invalid Date");
+      setError(t("Filter.invalidDate"));
       setIsDateError(true);
       return;
     }
@@ -435,16 +435,16 @@ const handleDateChange = (
   const handleApplyWrapper = () => {
       
       if (!localSelectedRelatedTo) {
-        setRelatedToError("Pupil, Staff, or School is required.");
+        setRelatedToError(t("Filter.relatedToRequired"));
         return;
       }
       setRelatedToError("");
 
       if (
-        (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
+        (localSelectedRelatedTo.text === t("Filter.Pupil") || localSelectedRelatedTo.text === t("Filter.Staff")) &&
         localTagListArray.length === 0
       ) {
-        setSearchSelectionError(`${localSelectedRelatedTo.text} is required`);
+        setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
         return;
       } 
       setSearchSelectionError("");
@@ -464,16 +464,20 @@ const handleDateChange = (
     setDocumentRelatedTo(Number(localSelectedRelatedTo?.value));
 
       let ids: string[] = [];
-      if (localSelectedRelatedTo?.text === "Pupil") {
+      let entities: any[] = [];
+      if (localSelectedRelatedTo?.text === t("Filter.Pupil")) {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
-      } else if (localSelectedRelatedTo?.text === "Staff") {
+        entities = localTagListArray;
+      } else if (localSelectedRelatedTo?.text === t("Filter.Staff")) {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
-      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
+        entities = localTagListArray;
+      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === t("Filter.School")) {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
+        entities = orgId ? [{ organisationId: orgId }] : [];
       }
 
-      handleApply(ids, localSelectedCategories)
+      handleApply(ids, localSelectedCategories, entities)
       setWasApplied(true);
   };
 
@@ -503,6 +507,19 @@ const handleDateChange = (
     }
   }))
 }));
+
+const getEntityLabel = (entity: string) => {
+  if (!entity) return "";
+  let key = "";
+  const lowerEntity = entity.toLowerCase();
+  if (lowerEntity === "pupil") {
+    key = "Filter.pupils";
+  } else if (lowerEntity === "staff") {
+    key = "Filter.staffs";
+  }
+  return key ? t(key) : "";
+};
+
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -521,7 +538,7 @@ const handleDateChange = (
       <>
        {relatedToSelected &&
         (!localSelectedRelatedTo ||
-          !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "")) ? (
+          ![t("Filter.Pupil"), t("Filter.Staff"), "Organisation", t("Filter.School")].includes(localSelectedRelatedTo?.text ?? "")) ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -580,22 +597,22 @@ const handleDateChange = (
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.text === "Organisation" ? "School" : item.text}
+              text={t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
               value={item.value.toString()}
             >
-              {item.text === "Organisation" ? "School" : item.text}
+              {t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
             </DropdownItem>
           ))}
         </Dropdown>
 
-        {(localSelectedRelatedTo?.text === 'Pupil' || localSelectedRelatedTo?.text === 'Staff') && (
+        {(localSelectedRelatedTo?.text === t("Filter.Pupil") || localSelectedRelatedTo?.text === t("Filter.Staff")) && (
           <>
             <Search
-                  key={searchKey}
+                  key={tagListArray.length + searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
-                  placeholderText={`${localSelectedRelatedTo?.text} name`} 
-                  titleText={`${localSelectedRelatedTo?.text}`}
+                  placeholderText={t(`Filter.${localSelectedRelatedTo?.text?.toLowerCase()}Name`)}
+                  titleText={ t(`Filter.${localSelectedRelatedTo.text}`)}
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
@@ -606,7 +623,7 @@ const handleDateChange = (
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
+                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(localSelectedRelatedTo?.text.toLowerCase())}`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
@@ -647,8 +664,8 @@ const handleDateChange = (
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={`${localSelectedRelatedTo.text} already added`}
-                  validationTextForLimit={`${localSelectedRelatedTo.text} list limit reached`}
+                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: localSelectedRelatedTo.text })}
+                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: localSelectedRelatedTo.text })}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
                   validationText={validationText}
                   validationTextLevel={validationTextLevel}
@@ -721,7 +738,7 @@ const handleDateChange = (
             });
           }}
         >
-          {availableCategories
+          {availableCategories && availableCategories
             ?.slice()
             .sort((a, b) => a.application.localeCompare(b.application))
             .map((category) => (
@@ -750,7 +767,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-fromdate-input">
             <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="From"
+              helpText={t("Filter.fromDateLabel")}
               showDatePicker
                day={fromDate.day ? parseInt(fromDate.day, 10) : undefined}
               month={fromDate.month ? parseInt(fromDate.month, 10) : undefined}
@@ -767,7 +784,7 @@ const handleDateChange = (
           <div className="dms-filter-dialog-todate-input">
            <DateInput
               dataTestId={`${dataTestId}-date-added`}
-              helpText="To"
+              helpText={t("Filter.toDateLabel")}
               showDatePicker
                day={toDate.day ? parseInt(toDate.day, 10) : undefined}
               month={toDate.month ? parseInt(toDate.month, 10) : undefined}

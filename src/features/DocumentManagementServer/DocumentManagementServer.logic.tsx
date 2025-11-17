@@ -1,45 +1,14 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem } from "@essnextgen/ui-kit";
+import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
  import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
+import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 
-export function renderRelatedToItem(item: any) {
-  if (item.type === "staff") {
-     const href = item?.referenceExternalId ? `/staff/profile/${item.referenceExternalId}` : "/";
-    return (
-      <>
-        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-           {item?.name}
-           {item?.staffCode ? ` | ${item?.staffCode}` : ""}
-        </a>
-      </>
-    );
-  }
-  if (item.type === "pupil") {
-      const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
-    return (
-      <>
-        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-          {item.name}
-        </a>
-       <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
-        />
-      </>
-    );
-  }
-  // School or other types
-  return <span>{item.name}</span>;
-};
- 
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
@@ -60,6 +29,7 @@ export function mapRelatedArr(doc: any): any[] {
         name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
         staffCode: staff.staffCode || "",
         referenceExternalId: staff.externalId || "",
+        isLeaver: staff?.onRollState || ""
       }));
     } else if (doc.documentRealatedTo === 2) {
       // School
@@ -72,21 +42,8 @@ export function mapRelatedArr(doc: any): any[] {
   }
   return relatedArr;
 }
- 
-export const getTableHeadersData: {
-  text: string;
-  isShow: boolean;
-  showValAs: ShowValAs;
-  isTextTruncate?: boolean;
-  columnWidth: string;
-  isHeaderTextTruncate?: boolean;
-  headerTxtTrunctLength?: number;
-  isSimpleText?: boolean;
-  txtTrunctLength?: number;
-  isColumnSorting?: boolean;
-  isColumnSortByDefault?: boolean;
-  anyComponent?: (e: any) => JSX.Element;
-}[] = [
+
+export const getTableHeadersData =(t:any):TableHeader[] => [
     {
       text: "Id",
       isShow: false,
@@ -95,7 +52,7 @@ export const getTableHeadersData: {
       columnWidth: "16px"
     },
     {
-      text: "Document",
+      text: t("DocumentManagementServer.documentColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: false,
@@ -126,65 +83,31 @@ export const getTableHeadersData: {
         );
       }
     },
+  {
+    text: t("DocumentManagementServer.relatedColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    isTextTruncate: true,
+    isHeaderTextTruncate: false,
+    headerTxtTrunctLength: 17,
+    columnWidth: "261px",
+    txtTrunctLength: 35,
+    isColumnSorting: false,
+    anyComponent: (e: any) => (
+      <>
+        {(!e || !Array.isArray(e) || !e.length) ? null : (
+              <EllipsisWithTooltip
+                text={e[0]}
+                className=" relatedto-main"
+                isTooltipNeeded={!!(e.length === 1)}
+                totalItems={e}
+              />
+        )}
+      </>
+    )
+  },
     {
-      text: "Related to",
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      isTextTruncate: true,
-      isHeaderTextTruncate: false,
-      headerTxtTrunctLength: 17,
-      columnWidth: "261px",
-      txtTrunctLength: 35,
-      isColumnSorting: false,
-anyComponent: (e: any) => (
-  <>
-    {(!e || !Array.isArray(e) || !e.length) ? null : (
-      <div className="relatedto-main">
-        {renderRelatedToItem(e[0])}
-        {e.length > 1 ? (
-          <Tooltip
-            dataTestId='tooltip-eventtime'
-              content={
-              <div className="relatedto-tooltip">
-                {e.map((item: any, idx: number) => {
-                    if (item.type === "staff") {
-                      return (
-                        <div key={item.name + idx}>
-                          <span>{item.name} | {item.staffCode}</span>
-                        </div>
-                      );
-                    }
-                    if (item.type === "pupil") {
-                      return (
-                        <div key={item.name + idx}>
-                          <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
-                        </div>
-                      );
-                    }
-                    // School or other types
-                    return (
-                      <div key={item.name + idx}>
-                        <span>{item.name}</span>
-                      </div>
-                    );
-                  })}
-              </div>
-}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content">
-              <span>{`+${e.length}`}</span>
-            </div>
-          </Tooltip>
-        ) : null}
-      </div>
-    )}
-  </>
-)
-    },
-    {
-      text: "Category",
+      text: t("DocumentManagementServer.categoryColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isHeaderTextTruncate: true,
@@ -212,7 +135,7 @@ anyComponent: (e: any) => (
       }
     },
    {
-  text: "Added by",
+  text: t("DocumentManagementServer.addedByColumn"),
   isShow: true,
   showValAs: ShowValAs.CustomeComponent,
   headerTxtTrunctLength: 50,
@@ -243,7 +166,7 @@ anyComponent: (e: any) => (
   }
 },
     {
-      text: "Date added",
+      text: t("DocumentManagementServer.dateAddedColumn"),
       isShow: true,
       columnWidth: "140px",
       showValAs: ShowValAs.Text,
@@ -252,7 +175,7 @@ anyComponent: (e: any) => (
       isColumnSortByDefault: true,
     },
     {
-      text: "Format",
+      text: t("DocumentManagementServer.formatColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -281,7 +204,7 @@ anyComponent: (e: any) => (
       }
     },
     {
-      text: "Size",
+      text: t("DocumentManagementServer.sizeColumn"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       txtTrunctLength: 12,
@@ -496,53 +419,6 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading(false);
 }
 
-export function getReferenceMappingForSearchedPerson({
-  docData,
-  searchRefExternalId,
-  documentRealatedTo,
-}: {
-  docData: any,
-  searchRefExternalId: string[],
-  documentRealatedTo: number,
-}) {
-  if (!Array.isArray(docData?.data)) return [];
-
-  // Get all documents matching the related type
-  const relatedDocs = docData.data.filter(
-    (d: any) => d.documentRealatedTo === documentRealatedTo
-  );
-
-  if (!relatedDocs?.length) return [];
-
-  const referenceMapping: any[] = [];
-
-  relatedDocs.forEach((doc: any) => {
-    const relatedArr = mapRelatedArr(doc);
-    const matchedRelatedArr = relatedArr.filter((item: any) =>
-      searchRefExternalId.includes(item?.referenceExternalId)
-    );
-
-    matchedRelatedArr.forEach((relatedItem: any) => {
-      let matchedRelatedTo = null;
-      if (Array.isArray(doc.relatedTo)) {
-        matchedRelatedTo = doc.relatedTo.find((r: any) =>
-          (r.learnerExternalId || r.externalId || r.organisationId) === relatedItem.referenceExternalId
-        );
-      } else {
-        matchedRelatedTo = doc.relatedTo;
-      }
-
-      referenceMapping.push({
-        referenceExternalId: relatedItem.referenceExternalId,
-        relatedTo: matchedRelatedTo,
-        documentRealatedTo: doc.documentRealatedTo,
-      });
-    });
-  });
-
-  return referenceMapping;
-}
-
 
 export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
   if (tags.length <= maxVisible) return tags;
@@ -652,7 +528,6 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
-
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
@@ -696,6 +571,7 @@ export const fetchCategory = async (documentRealatedTo: number | null): Promise<
 }
  
 export const getResultNotFoundMsg = (
+  t:any,
   searchText: string,
   docData: any,
   searchTerm: string,
@@ -710,7 +586,7 @@ export const getResultNotFoundMsg = (
     return "No data to display.";
   }
   if (!isSearchTriggered && !searchText) {
-    return "Use the search bar to find and select a pupil, staff member, or school to view, download, or delete related documents.";
+    return t("DocumentManagementServer.searchBarText");
   }
   return undefined;
 };
@@ -781,7 +657,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               ));
               props = {
                 name: text,
-                id: item?.pupilId,
+                id: item?.learnerExternalId,
                 value,
                 categoryName: category.name,
                 ...item
@@ -877,7 +753,8 @@ export function buildSelectedDocs(
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
-  dateRange: { fromDate: string; toDate: string }
+  dateRange: { fromDate: string; toDate: string },
+  selectedEntities: any[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -892,44 +769,38 @@ export function buildSelectedDocs(
 
   let referenceMappingDetails: any[] = [];
 
-  if (searchRefExternalId.length > 0) {
-    const rawMappings = getReferenceMappingForSearchedPerson({
-      docData,
-      searchRefExternalId,
+  // Build mapping from selectedEntities if available
+  if (searchRefExternalId.length > 0 && selectedEntities.length > 0) {
+    referenceMappingDetails = selectedEntities.map(entity => ({
+      referenceExternalId:
+        entity.learnerExternalId || entity.externalId || entity.organisationId,
+      relatedTo: entity,
       documentRealatedTo,
-    });
+    }));
 
-    const uniqueMappingsMap = new Map<string, any>();
-
-    rawMappings.forEach((mapping) => {
-      const id = mapping.referenceExternalId;
-      if (!uniqueMappingsMap.has(id)) {
-        uniqueMappingsMap.set(id, {
-          referenceExternalId: id,
-          relatedTo:
-            Array.isArray(mapping.relatedTo) && mapping.relatedTo.length > 0
-              ? mapping.relatedTo[0]
-              : mapping.relatedTo,
-        });
-      }
-    });
-
-    referenceMappingDetails = Array.from(uniqueMappingsMap.values());
+    // Deduplicate by referenceExternalId
+    referenceMappingDetails = Array.from(
+      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+    );
   }
 
+  // Filter mappings to only those present in selectedDocs
   if (selectedDocs.length > 0 && referenceMappingDetails.length > 0) {
-    const validIds = new Set(selectedDocs.map((d: { externalId: any; learnerExternalId: any;  }) => d.externalId || d.learnerExternalId));
+    const validIds = new Set(
+      selectedDocs.map((d: { externalId: any; learnerExternalId: any; }) => d.externalId || d.learnerExternalId)
+    );
     referenceMappingDetails = referenceMappingDetails.filter((m) =>
       validIds.has(m.referenceExternalId)
     );
   }
 
+  // Final deduplication
   referenceMappingDetails = Array.from(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
+
   const fromDate = dateRange?.fromDate ?? "";
   const toDate = dateRange?.toDate ?? "";
-
   const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
 
   return [
@@ -958,7 +829,7 @@ export function buildSelectedDocs(
 
 export function mapToBulkDeletePayload({
   isSelectAll = false,
-  categoryId = [],
+  categoryIds = [],
   fromDate = "",
   toDate = "",
   referenceExternalIds = [],
@@ -967,7 +838,7 @@ export function mapToBulkDeletePayload({
   excludedFileDetails = []
 }: {
   isSelectAll?: boolean;
-  categoryId?: number[];
+  categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
   referenceExternalIds?: string[];
@@ -979,7 +850,7 @@ export function mapToBulkDeletePayload({
     request: {
       isSelectAll,
       bulkDeleteCriteria: {
-        categoryId,
+        categoryIds,
         fromDate,
         toDate,
         referenceDetails: {
@@ -1046,7 +917,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteAbortBanner(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
-    categoryId: allRegistrationIds,
+    categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
@@ -1207,7 +1078,7 @@ export const debouncedFetchSuggestions = debounce(
       setSearchLoading(false);
     }
   },
-  300
+  3000
 );
 
 export async function handleClearAllConfirm({
@@ -1238,32 +1109,31 @@ export async function handleClearAllConfirm({
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
- setIsSidePanelLoader(true);
   try {
     const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
 
     if (response === 204) {
       setViewData([]);
       setShowToastNotification(true);
-      clearAllFetchViewDownloadData({
+      await clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
       });
+      setIsSidePanelLoader(false);
     } else {
       setClearAllError(true);
+      setIsSidePanelLoader(false);
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
+    setIsSidePanelLoader(false);
   }
-  setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
-
-
 
 export const buildValidationPayload = ({
   isSelectAll = false,
@@ -1295,12 +1165,12 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (dialogType: string, availableFileCount: number, totalRecords: number): string => {
-  if (dialogType === "clearAll") return "Clear all downloads?";
+export const getTitleConfirmation = (t: any, dialogType: string, availableFileCount: number, totalRecords: number): string => {
+  if (dialogType === "clearAll") return t("DocumentManagementServer.clearAllDownloadsTitle");
   if (dialogType === "delete") {
-        return availableFileCount === 1 ? "Delete Document?" : "Delete Documents?";
+    return availableFileCount === 1 ? t("DocumentManagementServer.deleteDocumentTitle") : t("DocumentManagementServer.deleteDocumentsTitle");
   }
-  return availableFileCount === totalRecords ? "Prepare to download all documents?" : "Prepare Download?";
+  return availableFileCount === totalRecords && availableFileCount > 1 ? t("DocumentManagementServer.prepareAllDocumentsTitle") : t("DocumentManagementServer.prepareDownloadTitle");
 };
 
 export const fileDownload = async (
@@ -1362,27 +1232,31 @@ export function addUniqueTagItem({
   if (!item) return;
 
   let idKey = "organisationId";
-if (selectedRelatedTo?.text === "Pupil") {
-  idKey = "learnerExternalId";
-} else if (selectedRelatedTo?.text === "Staff") {
-  idKey = "externalId";
-}
-  const newId = (item as any)[idKey] ?? item.text; // fallback to text if ID missing
+  if (selectedRelatedTo?.text === "Pupil") {
+    idKey = "learnerExternalId";
+  } else if (selectedRelatedTo?.text === "Staff") {
+    idKey = "externalId";
+  }
+
+  // Always normalize the ID for comparison
+  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
 
   const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    (tag) => {
+      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      return tagId === newId;
+    }
   );
 
   if (alreadyExists) {
     if (setAlreadyExistingTags) setAlreadyExistingTags(true);
     return;
   }
-
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
-    if (item?.props?.externalId && typeof setReferenceExternalIds === "function") {
+    if (setReferenceExternalIds && newId) {
       setReferenceExternalIds((prev) =>
-        prev.includes(item.props.externalId) ? prev : [...prev, item.props.externalId]
+        prev.includes(newId) ? prev : [...prev, newId]
       );
     }
   }
@@ -1394,6 +1268,7 @@ export function handleApply({
   selectedCategories,
   selectedDateRange,
   isDateError,
+  selectedEntity,
   setIsDateError,
   setIsFilterLoading,
   setDateRange,
@@ -1411,13 +1286,15 @@ export function handleApply({
   setSearchRefExternalId,
   setIsHeaderBoxChecked,
   setSelectedCheckBoxIds,
-  setPrevSelectedDocs
+  setPrevSelectedDocs,
+  setSelectedEntities,
 }: {
   referenceExternalIds: string[],
   categories?: any[],
   selectedCategories: any[],
   selectedDateRange: any,
   isDateError: boolean,
+  selectedEntity?: any[],
   setIsDateError: (v: boolean) => void,
   setIsFilterLoading: (v: boolean) => void,
   setDateRange: (v: any) => void,
@@ -1436,6 +1313,7 @@ export function handleApply({
   setIsHeaderBoxChecked: (v: boolean) => void,
   setSelectedCheckBoxIds: (v: string[]) => void,
   setPrevSelectedDocs: (v: any[]) => void,
+  setSelectedEntities: (v: any[]) => void
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
@@ -1463,6 +1341,9 @@ export function handleApply({
     setSearchTerm("");
     setSearchText("");
     setTableKey((prev) => prev + 1);
+  }
+  if (setSelectedEntities) {
+    setSelectedEntities(selectedEntity || []);
   }
   setIsSearchTriggered(true);
 }

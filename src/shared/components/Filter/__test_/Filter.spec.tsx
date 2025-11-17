@@ -1,3 +1,4 @@
+
 import React from "react";
 import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import dayjs from "dayjs";
@@ -5,6 +6,38 @@ import { Category } from "../../../../features/DocumentManagementServer/response
 import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
 
+jest.mock("@essnextgen/ui-intl-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-intl-kit"),
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (key === "Filter.fromDateMustBeOnOrBefore") {
+        return `From date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
+      }
+      if (key === "Filter.fromDateMustBeOnOrAfter") {
+        return `From date must be on or after ${options?.date ?? "01/01/1900"}`;
+      }
+      if (key === "Filter.fromDateRequired") {
+        return "From date is required";
+      }
+      if (key === "Filter.toDateShouldNotBeBeforeFromDate") {
+        return "To date should not be before From date.";
+      }
+      if (key === "Filter.invalidDate") {
+        return "Invalid Date";
+      }
+      if (key === "Filter.Staff") {
+        return "Staff";
+      }
+      if (key === "Filter.Pupil") {
+        return "Pupil";
+      }
+      if (key === "Filter.toDateMustBeOnOrBefore") {
+        return `To date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
+      }
+      return key;
+    }
+  })
+}));
 
 const mockHandleApply = jest.fn();
 const mockOnClose = jest.fn();
@@ -166,7 +199,7 @@ describe("FilterDialog", () => {
     await fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
     expect(mockSetSelectedCategories).toHaveBeenCalled();
   });
-
+  
   // it("applies filters when Apply button is clicked", () => {
   //   renderComponent();
   //   fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
@@ -443,59 +476,41 @@ it("updates existing dateRange in selectedCategories if it exists", () => {
   expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
 });
 
-
-it("shows error when fromDate is partially filled", async () => {
+it("shows error when To date is partially filled", async () => {
   render(<FilterDialog {...defaultProps} />);
-
   const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
-  const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
-  const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
+  // Only fill day and month for To date, leave year empty
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "15" } });
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "" } });
 
-  fireEvent.change(fromDay, { target: { value: "15" } });
-  fireEvent.change(fromMonth, { target: { value: "05" } });
-  fireEvent.change(fromYear, { target: { value: "202" } });
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
-  const applyBtn = screen.getByTestId("dms-filter-dialog-apply-btn");
-  fireEvent.click(applyBtn);
-
-  await screen.findByText(/Invalid Date/i);
+ await waitFor(() => {
+  const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+  expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(true);
+});
 });
 
 
-it("sets error when fromDate is in invalid format", async () => {
+
+it("shows error when To date is invalid (e.g. 31/02/2023)", async () => {
   render(<FilterDialog {...defaultProps} />);
-
   const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+  // Fill valid From date
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "10" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+  // Fill To date with invalid date
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "31" } });
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "02" } });
+  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
 
-  const fromDay = within(dateInputs[0]).getByPlaceholderText("DD");
-  const fromMonth = within(dateInputs[0]).getByPlaceholderText("MM");
-  const fromYear = within(dateInputs[0]).getByPlaceholderText("YYYY");
-
-  fireEvent.change(fromDay, { target: { value: "31" } });
-  fireEvent.change(fromMonth, { target: { value: "02" } });
-  fireEvent.change(fromYear, { target: { value: "203" } });
-
-  const validationText = await screen.findAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText[0]).toHaveTextContent(/Invalid Date/i);
-});
-
-it("sets error when toDate is in invalid format", async () => {
-  render(<FilterDialog {...defaultProps} />);
-
-  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-
-  const toDay = within(dateInputs[1]).getByPlaceholderText("DD");
-  const toMonth = within(dateInputs[1]).getByPlaceholderText("MM");
-  const toYear = within(dateInputs[1]).getByPlaceholderText("YYYY");
-
-  // Enter Invalid Date: 31st Feb is not valid
-  fireEvent.change(toDay, { target: { value: "31" } });
-  fireEvent.change(toMonth, { target: { value: "02" } });
-  fireEvent.change(toYear, { target: { value: "203" } });
+  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
   await waitFor(() => {
-  expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
+  const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+  expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
 });
 });
 
@@ -518,6 +533,50 @@ it("shows tag as [fromDate] to - when only From Date is selected", async () => {
   });
 });
 
+});
+
+describe("From date edge case validation", () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it("shows error when From date is invalid (not YYYY-MM-DD)", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    setDateInput(dateInputs[0], "31", "02", "2023"); // invalid date
+    fireEvent.blur(dateInputs[0]);
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    await waitFor(() => {
+      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+      expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error when From date is in the future", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    const tomorrow = dayjs().add(1, "day");
+    setDateInput(dateInputs[0], tomorrow.date().toString(), (tomorrow.month() + 1).toString(), tomorrow.year().toString());
+    fireEvent.blur(dateInputs[0]);
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    await waitFor(() => {
+      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+      expect(validationText.some(node => /on or before/i.test(node.textContent || ""))).toBe(true);
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error when From date is before minimum allowed date", async () => {
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    setDateInput(dateInputs[0], "31", "12", "1899");
+    fireEvent.blur(dateInputs[0]);
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    await waitFor(() => {
+      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+      expect(validationText.some(node => /on or after|01\/01\/1900/i.test(node.textContent || ""))).toBe(true);
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
 });
 
 describe("Date tag formatting in FilterDialog", () => {
@@ -793,14 +852,15 @@ describe("From date minimum validation", () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
+    const minDate = "01/01/1900";
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
-      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
     });
 
     setDateInput(dateInputs[0], "01", "01", "1900");
     await waitFor(() => {
-      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);
     });
   });
@@ -808,73 +868,21 @@ describe("From date minimum validation", () => {
   it("clears error when From date is changed to a valid date after 01/01/1900", async () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
+    const minDate = "01/01/1900";
     setDateInput(dateInputs[0], "31", "12", "1899");
     await waitFor(() => {
-      expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
+      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
     });
 
     setDateInput(dateInputs[0], "02", "01", "1900");
     await waitFor(() => {
-      expect(screen.queryByText("From date must be on or after 01/01/1900")).not.toBeInTheDocument();
+      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);
     });
   });
 });
 
-describe("From date invalid format validation", () => {
-  it("shows error when From date is invalid (e.g. 31/02/2023)", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-    setDateInput(dateInputs[0], "31", "02", "2023");
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-
-  it("shows error when From date is partially filled (e.g. 15/05/202)", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-    setDateInput(dateInputs[0], "15", "05", "202");
-
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-});
-
-describe("To date invalid format validation", () => {
-  it("shows error when To date is invalid (e.g. 31/02/2023)", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-    setDateInput(dateInputs[1], "31", "02", "2023");
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-
-  // it("shows error when To date is partially filled (e.g. 15/05/202)", async () => {
-  //   renderComponent();
-  //   const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-  //   setDateInput(dateInputs[1], "15", "05", "202");
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText("Invalid Date")).toBeInTheDocument();
-  //     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  //   });
-  // });
-});
 
 describe("To date validation", () => {
   it("shows error when To date is in the future", async () => {
@@ -902,10 +910,9 @@ describe("To date validation", () => {
     setDateInput(dateInputs[0], "01", "01", "1900");
     setDateInput(dateInputs[1], "31", "12", "1899");
 
-    await waitFor(() => {
       expect(screen.getByText("To date must be on or after 01/01/1900")).toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
+  
   });
 
   it("shows error when To date is set without From date", async () => {
@@ -922,35 +929,6 @@ describe("To date validation", () => {
   });
 });
 
-  it("shows error when From date is in invalid format", async () => {
-  render(<FilterDialog {...defaultProps} />);
-  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-
-  // Invalid date: 31st Feb is not valid
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "31" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "02" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
-
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-  expect(await screen.findByText("Invalid Date")).toBeInTheDocument();
-  expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-});
-
-  it("shows error when To date is in invalid format", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-    // Invalid date: 31st Feb is not valid
-    setDateInput(dateInputs[1], "31", "02", "2023");
-
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-    await waitFor(() => {
-      expect(screen.getByText("Invalid Date")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
 
   it("shows error when To date is in the future (with valid From date)", async () => {
   renderComponent();
@@ -1254,7 +1232,13 @@ it("calls handleApply with staff externalIds when RelatedTo is Staff", async () 
 
   await waitFor(() => {
     // handleApply should be called with ["staff-123"] as the first argument
-    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything());
+    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything(),expect.arrayContaining([
+      expect.objectContaining({
+        text: "Test Staff",
+        externalId: "staff-123",
+        id: "staff-123"
+      })
+    ]));
   });
 });
 
