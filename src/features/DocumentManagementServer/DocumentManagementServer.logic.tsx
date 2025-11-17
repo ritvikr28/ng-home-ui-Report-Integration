@@ -7,38 +7,7 @@ import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
  import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
-
-export function renderRelatedToItem(item: any) {
-  if (item.type === "staff") {
-     const href = item?.referenceExternalId ? `/staff/profile/${item.referenceExternalId}` : "/";
-    return (
-      <>
-        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-           {item?.name}
-           {item?.staffCode ? ` | ${item?.staffCode}` : ""}
-        </a>
-      </>
-    );
-  }
-  if (item.type === "pupil") {
-      const href = item?.referenceExternalId ? `/pupilprofile/profile/${item.referenceExternalId}` : "/";
-    return (
-      <>
-        <a href={href} className="relatedto-link" target="_blank" rel="noopener noreferrer">
-          {item.name}
-        </a>
-         <Tag
-          dataTestId="name"
-          id="name"
-          className="relatedto-tag"
-          text={`${item.year}${item.reg ? ` / ${item.reg}` : ""}`}
-        />
-      </>
-    );
-  }
-  // School or other types
-  return <span>{item.name}</span>;
-};
+import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
@@ -60,6 +29,7 @@ export function mapRelatedArr(doc: any): any[] {
         name: `${staff.preferredForename} ${staff.preferredSurname}`.trim(),
         staffCode: staff.staffCode || "",
         referenceExternalId: staff.externalId || "",
+        isLeaver: staff?.onRollState || ""
       }));
     } else if (doc.documentRealatedTo === 2) {
       // School
@@ -113,63 +83,29 @@ export const getTableHeadersData =(t:any):TableHeader[] => [
         );
       }
     },
-    {
-      text: t("DocumentManagementServer.relatedColumn"),
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      isTextTruncate: true,
-      isHeaderTextTruncate: false,
-      headerTxtTrunctLength: 17,
-      columnWidth: "261px",
-      txtTrunctLength: 35,
-      isColumnSorting: false,
-anyComponent: (e: any) => (
-  <>
-    {(!e || !Array.isArray(e) || !e.length) ? null : (
-      <div className="relatedto-main">
-        {renderRelatedToItem(e[0])}
-        {e.length > 1 ? (
-          <Tooltip
-            dataTestId='tooltip-eventtime'
-              content={
-              <div className="relatedto-tooltip">
-                {e.map((item: any, idx: number) => {
-                    if (item.type === "staff") {
-                      return (
-                        <div key={item.name + idx}>
-                          <span>{item.name} | {item.staffCode}</span>
-                        </div>
-                      );
-                    }
-                    if (item.type === "pupil") {
-                      return (
-                        <div key={item.name + idx}>
-                          <span>{item.name} | {item.year} {item.reg ? `| ${item.reg}` : ""}</span>
-                        </div>
-                      );
-                    }
-                    // School or other types
-                    return (
-                      <div key={item.name + idx}>
-                        <span>{item.name}</span>
-                      </div>
-                    );
-                  })}
-              </div>
-}
-            align={TooltipAlign.Center}
-            position={TooltipPosition.Bottom}
-          >
-            <div className="tooltip-content">
-              <span>{`+${e.length}`}</span>
-            </div>
-          </Tooltip>
-        ) : null}
-      </div>
-    )}
-  </>
-)
-    },
+  {
+    text: t("DocumentManagementServer.relatedColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    isTextTruncate: true,
+    isHeaderTextTruncate: false,
+    headerTxtTrunctLength: 17,
+    columnWidth: "261px",
+    txtTrunctLength: 35,
+    isColumnSorting: false,
+    anyComponent: (e: any) => (
+      <>
+        {(!e || !Array.isArray(e) || !e.length) ? null : (
+              <EllipsisWithTooltip
+                text={e[0]}
+                className=" relatedto-main"
+                isTooltipNeeded={!!(e.length === 1)}
+                totalItems={e}
+              />
+        )}
+      </>
+    )
+  },
     {
       text: t("DocumentManagementServer.categoryColumn"),
       isShow: true,
@@ -592,7 +528,6 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
-
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
@@ -1174,21 +1109,23 @@ export async function handleClearAllConfirm({
     if (response === 204) {
       setViewData([]);
       setShowToastNotification(true);
-      clearAllFetchViewDownloadData({
+      await clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
       });
+      setIsSidePanelLoader(false);
     } else {
       setClearAllError(true);
+      setIsSidePanelLoader(false);
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
+    setIsSidePanelLoader(false);
   }
-  setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
 
@@ -1227,7 +1164,7 @@ export const getTitleConfirmation = (t: any, dialogType: string, availableFileCo
   if (dialogType === "delete") {
     return availableFileCount === 1 ? t("DocumentManagementServer.deleteDocumentTitle") : t("DocumentManagementServer.deleteDocumentsTitle");
   }
-  return availableFileCount === totalRecords ? t("DocumentManagementServer.prepareAllDocumentsTitle") : t("DocumentManagementServer.prepareDownloadTitle");
+  return availableFileCount === totalRecords && availableFileCount > 1 ? t("DocumentManagementServer.prepareAllDocumentsTitle") : t("DocumentManagementServer.prepareDownloadTitle");
 };
 
 export const fileDownload = async (

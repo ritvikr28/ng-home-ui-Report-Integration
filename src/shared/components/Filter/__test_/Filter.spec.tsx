@@ -25,6 +25,12 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
       if (key === "Filter.invalidDate") {
         return "Invalid Date";
       }
+      if (key === "Filter.Staff") {
+        return "Staff";
+      }
+      if (key === "Filter.Pupil") {
+        return "Pupil";
+      }
       if (key === "Filter.toDateMustBeOnOrBefore") {
         return `To date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
       }

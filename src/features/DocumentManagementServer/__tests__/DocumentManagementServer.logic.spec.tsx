@@ -53,6 +53,18 @@ jest.mock("@essnextgen/ui-kit", () => ({
   },
 }));
 
+// eslint-disable-next-line
+beforeAll(() => {
+  global.ResizeObserver = global.ResizeObserver || class {
+    // eslint-disable-next-line
+    observe() { void this; }
+    // eslint-disable-next-line
+    unobserve() { void this; }
+    // eslint-disable-next-line
+    disconnect() { void this; }
+  };
+});
+
 describe("getTableHeadersData", () => {
   const t = (key: string) => key; 
   const headers = getTableHeadersData(t);
@@ -759,14 +771,15 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
     name: "John Doe",
     pupilId: "p1",
     year: "Y5",
-    reg: "A"
+    reg: "A",
+    isLeaver: "Leaver"
   }];
    const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
     // Check for link
     const link = getByRole("link", { name: "John Doe" });
     expect(link).toHaveAttribute("href", "/");
     // Check for tag
-    expect(getByText("Y5 / A")).toBeInTheDocument();
+    expect(getByText("(Y5) / (A)")).toBeInTheDocument();
 });
   it("renders staff related item with link and staff code", () => {
   const relatedToColumn = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
@@ -861,7 +874,7 @@ it("renders tooltip with multiple staff and pupil and school items", () => {
   ];
   const { getByText, getByRole } = render(<>{relatedToColumn?.anyComponent?.(elem)}</>);
 
-  expect(getByText("+3")).toBeInTheDocument();
+  expect(getByText("+2")).toBeInTheDocument();
 
   const link = getByRole("link", { name: "Jane Smith | SC123" });
   expect(link).toHaveAttribute("href", "/");
@@ -1566,7 +1579,8 @@ describe('mapRelatedArr', () => {
           preferredForename: 'Alice',
           preferredSurname: 'Brown',
           staffCode: 'S001',
-          externalId: '456'
+          externalId: '456',
+          rollState: 'Current'
         }
       ]
     };
@@ -1576,7 +1590,8 @@ describe('mapRelatedArr', () => {
         type: 'staff',
         name: 'Alice Brown',
         staffCode: 'S001',
-        referenceExternalId: '456'
+        referenceExternalId: '456',
+        isLeaver: ''
       }
     ]);
   });
