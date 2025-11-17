@@ -13,6 +13,7 @@ import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
+import gtmAnalytics from "../../shared/utils/analytics";
  
 
 export const breadcrumbActionsList = (t: (key: string) => string) => [
@@ -713,10 +714,18 @@ switch (dialogType) {
             } else if (totalSelectedCount > 1) {
               setShowEmailNotification(true);
             }
+            gtmAnalytics.pushEvent({
+                event: "key_action",
+                actionType: "prepare_download"
+            });
           })
           .catch(() => {
             setIsSidePanelLoader(false);
             setPrepareDownloadError(true);
+            gtmAnalytics.pushEvent({
+                event: "error_message",
+                actionType: "Unable to prepare for download"
+            });
           });
       },
       template: DialogTemplate.Confirmation,
@@ -738,6 +747,22 @@ switch (dialogType) {
         }
     }
     }, [viewData]);
+
+
+    useEffect(() => {
+        gtmAnalytics.pushPageViewEvent();
+    }, []);
+
+    useEffect(() => {
+        if (!isInitialLoad && sortBy) {
+            gtmAnalytics.pushEvent({
+                event: "interact_click",
+                elementType: "sort",
+                elementTextOrLabel: sortBy?.toLowerCase() === "dateadded" ? "Date added" : sortBy,
+                elementLocation: "body"
+            });
+        }
+    }, [sortBy, isInitialLoad]);
 
     const handleCloseSidePanel = () => {
         closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
@@ -851,8 +876,19 @@ const getDialogTitle = () => {
                                    item.section,
                                    item.blobName
                                );
+                               gtmAnalytics.pushEvent({
+                                   event: "file_download",
+                                   fileExtension: item?.name?.split('.').pop() || "",
+                                   fileName: "[DownloadFileName]",
+                                   linkText: "Download",
+                                   linkUrl: "[DownloadLinkUrl]"
+                               });
                            } catch (error) {
                                setDownloadError(true);
+                               gtmAnalytics.pushEvent({
+                                   event: "error_message",
+                                   actionType: "Unable to download"
+                               });
                            }
                        }}
                    >

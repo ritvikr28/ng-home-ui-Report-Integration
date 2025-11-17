@@ -281,6 +281,12 @@ export const handleSuggestionClick = async (
     refExternalId = [item?.organisationId];
   }
   setSearchRefExternalId(refExternalId || []);
+  gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType: "search_option",
+      elementTextOrLabel: item.categoryName === "Organisation" ? "School" : item.categoryName ?? "",
+      elementLocation: "search_suggestions"
+    });
 };
  
 // Has items check
@@ -408,6 +414,11 @@ export async function fetchGetDocumentDetailsLogic({
       setShowErrorBanner(false);
     } else if (result && result?.status === 400) {
       setShowErrorBanner(true);
+      
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Information unavailable"
+      });
     } else {
       setShowSearchError(true);
     }
@@ -949,11 +960,23 @@ export const handleBulkDeleteLogic = async ({
       setShowDeleteErrorBanner(false);
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
+      gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "delete"
+    });
     } else {
       setShowDeleteErrorBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
   }
 };
 
@@ -1120,11 +1143,19 @@ export async function handleClearAllConfirm({
     } else {
       setClearAllError(true);
       setIsSidePanelLoader(false);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
     setIsSidePanelLoader(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
   }
   setShowConfirmDialog(false);
 }
@@ -1459,5 +1490,9 @@ export const handleEditSelectedOverFlowMenu = async ({
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
     setSidePanelOpenReason("view");
     setIsSidePanelOpen(true);
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "view_download"
+    });
   }
 };

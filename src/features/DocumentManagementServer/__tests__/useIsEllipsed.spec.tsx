@@ -25,11 +25,11 @@ describe("EllipsisWithTooltip Component", () => {
     jest.clearAllMocks();
   });
 
-  const baseText = { name: "John Doe", referenceExternalId: "123" };
+  const baseText = { name: "Benjamin Doe", referenceExternalId: "123" };
 
   const mockEllipsed = (value: boolean) => {
     mockUseIsEllipsed.mockReturnValue({
-      ref: { current: document.createElement("div") },
+      ref: { current: document.createElement("span") },
       isEllipsed: value,
     });
   };
@@ -47,7 +47,7 @@ describe("EllipsisWithTooltip Component", () => {
       />
     );
 
-    const link = screen.getByRole("link", { name: /John Doe/i });
+    const link = screen.getByRole("link", { name: /Benjamin Doe/i });
     expect(link).toHaveAttribute("href", "/staff/profile/123");
     expect(screen.getByTestId("tooltip")).toBeInTheDocument();
   });
@@ -65,9 +65,13 @@ describe("EllipsisWithTooltip Component", () => {
       />
     );
 
-    const link = screen.getByRole("link", { name: /John Doe/i });
+    const link = screen.getByRole("link", { name: /Benjamin Doe/i });
     expect(link).toHaveAttribute("href", "/pupilprofile/profile/123");
+    expect(screen.getByTestId("tooltip-content")).toHaveTextContent(
+      "Benjamin Doe"
+    );
     expect(screen.getByTestId("tag")).toHaveTextContent("Year 6 / 6KH");
+    
   });
 
   it("renders default span when type is neither staff nor pupil", () => {
@@ -83,7 +87,7 @@ describe("EllipsisWithTooltip Component", () => {
       />
     );
 
-    const span = screen.getByText("John Doe");
+    const span = screen.getByText("Benjamin Doe");
     expect(span.tagName).toBe("SPAN");
   });
 
@@ -123,5 +127,6 @@ describe("EllipsisWithTooltip Component", () => {
       />
     );
     expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId("tooltip-content")).not.toBeInTheDocument();
   });
 });

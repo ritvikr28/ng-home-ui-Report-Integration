@@ -27,6 +27,7 @@ import { Category } from "../../../features/DocumentManagementServer/responseMod
 import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
+import gtmAnalytics from "../../utils/analytics";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -479,6 +480,38 @@ const handleDateChange = (
 
       handleApply(ids, localSelectedCategories, entities)
       setWasApplied(true);
+
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "advanced_search"
+    });
+
+    const filterValueTags = localTagListArray?.map((item) => item.name)?.length || 0;
+    const filterTypeTag = localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School" ? "School" : localSelectedRelatedTo?.text || "";
+    if(localSelectedRelatedTo?.text) {
+      gtmAnalytics.pushEvent({
+        event: "apply_filter",
+        filterType: filterTypeTag,
+        filterValue: localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School" ? "" : filterValueTags
+      });
+    }
+
+    if (localSelectedCategories && localSelectedCategories.length > 0) {
+      gtmAnalytics.pushEvent({
+        event: "apply_filter",
+        filterType: "Category",
+        filterValue: ""
+      });
+    }
+
+    if ((localSelectedDateRange?.fromDate || localSelectedDateRange?.toDate) &&
+      Object.keys(localSelectedDateRange).length > 0) {
+      Object.keys(localSelectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
+        event: "apply_filter",
+        filterType: key === "fromDate" ? "From Date" : "To Date",
+        filterValue: ""
+      }));
+    }
   };
 
    useEffect(() => {
