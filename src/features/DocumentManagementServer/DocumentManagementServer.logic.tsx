@@ -657,7 +657,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               ));
               props = {
                 name: text,
-                id: item?.pupilId,
+                id: item?.learnerExternalId,
                 value,
                 categoryName: category.name,
                 ...item
@@ -1230,23 +1230,22 @@ export function addUniqueTagItem({
     idKey = "learnerExternalId";
   } else if (selectedRelatedTo?.text === "Staff") {
     idKey = "externalId";
-  } else if (selectedRelatedTo?.text === "Organisation" || selectedRelatedTo?.text === "School") {
-    idKey = "organisationId";
   }
 
-  const newId = (item as any)[idKey] ?? item.text;
+  // Always normalize the ID for comparison
+  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
 
   const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    (tag) => {
+      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      return tagId === newId;
+    }
   );
 
   if (alreadyExists) {
     if (setAlreadyExistingTags) setAlreadyExistingTags(true);
     return;
   }
-
-  if (setAlreadyExistingTags) setAlreadyExistingTags(false);
-
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
     if (setReferenceExternalIds && newId) {

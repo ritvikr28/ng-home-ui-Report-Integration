@@ -608,7 +608,7 @@ const getEntityLabel = (entity: string) => {
         {(localSelectedRelatedTo?.text === t("Filter.Pupil") || localSelectedRelatedTo?.text === t("Filter.Staff")) && (
           <>
             <Search
-                  key={searchKey}
+                  key={tagListArray.length + searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
                   placeholderText={t(`Filter.${localSelectedRelatedTo?.text?.toLowerCase()}Name`)}
@@ -623,7 +623,7 @@ const getEntityLabel = (entity: string) => {
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(localSelectedRelatedTo?.text)}`}
+                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(localSelectedRelatedTo?.text.toLowerCase())}`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
@@ -632,7 +632,6 @@ const getEntityLabel = (entity: string) => {
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
-                    setAlreadyExistingTags(false);
                     setSearchTerm(item?.text || "");
                     addUniqueTagItem({
                       item,
