@@ -1,10 +1,10 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
-import { authService } from "@essnextgen/auth-ui";
  
 jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
 
