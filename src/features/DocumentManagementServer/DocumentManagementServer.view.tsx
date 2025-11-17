@@ -13,6 +13,7 @@ import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
+import { authService, MatchPermissions } from "@essnextgen/auth-ui";
  
 
 export const breadcrumbActionsList = (t: (key: string) => string) => [
@@ -97,6 +98,12 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
+
+
+    const hasDMSDeletePermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "Delete" }],
+    MatchPermissions.all
+    );
 
     const categoryArr = getCategoryArr(selectedFormats);
     const dateTagArr = getDateTag(dateRange);
@@ -1069,13 +1076,15 @@ const getDialogTitle = () => {
                                         text: t("DocumentManagementServer.ViewDownload"),
                                         value: 'View download'
                                     },
-                                    {
-                                        disabled: false,
-                                        isSelected: false,
-                                        isShowDivider: true,
-                                        text: t("DocumentManagementServer.Delete"),
-                                        value: 'Delete'
-                                    }
+                                    ...(hasDMSDeletePermissions
+                                        ? [{
+                                            disabled: false,
+                                            isSelected: false,
+                                            isShowDivider: true,
+                                            text: t("DocumentManagementServer.Delete"),
+                                            value: 'Delete'
+                                        }]
+                                        : [])
                                 ]}
                                 onEditSelectedOverFlowMenu={onEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}

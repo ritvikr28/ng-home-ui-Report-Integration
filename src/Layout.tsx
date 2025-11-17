@@ -211,7 +211,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     const hasDMSPermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "View" }],
     MatchPermissions.all
-  );
+    );
 
   const requiredSystemStatusViewPermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "View" }
