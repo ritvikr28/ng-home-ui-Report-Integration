@@ -529,7 +529,6 @@ export const fetchViewDownloadData = async ({
   setIsViewDownloadError,
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
-
   if (showLoader) setIsSidePanelLoader(true);
   setIsViewDownloadError(false); 
   try {
@@ -543,7 +542,6 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
-
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
@@ -583,6 +581,7 @@ export const fetchViewDownloadData = async ({
     setIsSidePanelLoader(false);
   }
 };
+
 export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory(documentRealatedTo);
@@ -1137,7 +1136,6 @@ export async function handleClearAllConfirm({
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
   setIsViewDownloadError: (v: boolean) => void,
-
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
