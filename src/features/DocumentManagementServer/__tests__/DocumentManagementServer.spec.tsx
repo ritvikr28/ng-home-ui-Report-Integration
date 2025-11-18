@@ -109,6 +109,9 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "Filter.pupilName") {
         return "Pupil name";
       }
+      if (key === "DocumentManagementServer.Cancel") {
+        return "Cancel";
+      }
       return key;
     }
   })

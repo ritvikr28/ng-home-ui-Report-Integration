@@ -509,25 +509,81 @@ export function reduceCategories(res: any[]): Category[] {
   ) as Category[];
 }
 
+// export const fetchViewDownloadData = async ({
+//   showLoader = true,
+//   setIsSidePanelLoader,
+//   setViewData,
+//   viewDownload,
+//   downloadPollingIntervalRef,
+// }: FetchViewDownloadDataParams) => {
+//   const pollingRef = downloadPollingIntervalRef;
+//   if (showLoader) setIsSidePanelLoader(true);
+//   try {
+//     const result = await viewDownload();
+//     if (result?.data && result?.status === 200) {
+//       setViewData(result.data);
+
+//       const hasInProgress = result.data.some(
+//         (item: { status: string }) =>
+//           item?.status?.toLowerCase() === "inprogress" ||
+//           item?.status?.toLowerCase() === "initiated"
+//       );
+//       if (hasInProgress && !pollingRef.current) {
+//         pollingRef.current = setInterval(() => {
+//           fetchViewDownloadData({
+//             showLoader: false,
+//             setIsSidePanelLoader,
+//             setViewData,
+//             viewDownload,
+//             downloadPollingIntervalRef: pollingRef,
+//           });
+//         }, 10000);
+//       }
+
+//       if (!hasInProgress && pollingRef.current) {
+//         clearInterval(pollingRef.current);
+//         pollingRef.current = null;
+//       }
+//     }
+//     if (!(result?.data && result?.status === 200) && pollingRef.current) {
+//       clearInterval(pollingRef.current);
+//       pollingRef.current = null;
+//     }
+//   } catch (err) {
+//     console.error("Error fetching view download details:", err);
+//     if (pollingRef.current) {
+//       clearInterval(pollingRef.current);
+//       pollingRef.current = null;
+//     }
+//   } finally {
+//     setIsSidePanelLoader(false);
+//   }
+// };
+ 
 export const fetchViewDownloadData = async ({
   showLoader = true,
   setIsSidePanelLoader,
   setViewData,
   viewDownload,
   downloadPollingIntervalRef,
+  setIsViewDownloadError,
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
+
   if (showLoader) setIsSidePanelLoader(true);
+  setIsViewDownloadError(false); 
   try {
     const result = await viewDownload();
     if (result?.data && result?.status === 200) {
       setViewData(result.data);
+      setIsViewDownloadError(false);
 
       const hasInProgress = result.data.some(
         (item: { status: string }) =>
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
+
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
@@ -536,6 +592,7 @@ export const fetchViewDownloadData = async ({
             setViewData,
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
+            setIsViewDownloadError,
           });
         }, 10000);
       }
@@ -544,22 +601,28 @@ export const fetchViewDownloadData = async ({
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
-    }
-    if (!(result?.data && result?.status === 200) && pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
+    } else {
+      setIsViewDownloadError(true);
+      setViewData([]); 
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      return; 
     }
   } catch (err) {
     console.error("Error fetching view download details:", err);
+    setIsViewDownloadError(true);
+    setViewData([]);  // 🟢 Clear stale data
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
+    return; 
   } finally {
     setIsSidePanelLoader(false);
   }
 };
- 
 export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory(documentRealatedTo);
@@ -1087,6 +1150,7 @@ export async function handleClearAllConfirm({
   setClearAllError,
   setShowConfirmDialog,
   getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+  setIsViewDownloadError
 }: {
   viewData: any[],
   clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
@@ -1100,6 +1164,8 @@ export async function handleClearAllConfirm({
   setClearAllError: (v: boolean) => void,
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
+  setIsViewDownloadError: (v: boolean) => void,
+
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
@@ -1115,6 +1181,7 @@ export async function handleClearAllConfirm({
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+        setIsViewDownloadError,
       });
       setIsSidePanelLoader(false);
     } else {
