@@ -208,6 +208,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.all
   );
 
+    const hasDMSPermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "View" }],
+    MatchPermissions.all
+    );
+
   const requiredSystemStatusViewPermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "View" }
   ];
@@ -290,7 +295,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               /* istanbul ignore next */
               path="/documents"
               render={() =>
-                hasAdminConsolePermissions ? (
+                (hasAdminConsolePermissions && hasDMSPermissions) ? (
                   <DocumentManagementServer />
                 ) : (
                   <Redirect to="/unauthorized" />

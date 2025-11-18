@@ -524,6 +524,8 @@
     "downloadErrorTitle": "Unable to download",
     "downloadErrorMessage": "A technical issue has stopped us from completing the download. The file could not be downloaded. Please try again later. If the issue persists please get in touch with our support team.",
     "keepAll": "Keep all",
+    "All": "All ",
+    "Cancel": "Cancel",
     "clearAllDescription": "This action will remove all files that are ready to download from the Downloads panel.",
     "downloadsCleared": "Downloads cleared",
     "documentDeleted": "Document deleted",

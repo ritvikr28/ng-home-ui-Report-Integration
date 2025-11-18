@@ -1,10 +1,26 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
  
+jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
+
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    getUsername: jest.fn(() => "TestUser"),
+    getOrgId: jest.fn(() => "Org123"),
+    getUserId: jest.fn(() => "User456"),
+    isAuthorised: jest.fn(() => true),
+    getAuthTokens: jest.fn(() => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyIsImtpZCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyJ9.eyJpc3MiOiJodHRwczovL3NpbXNpZC1wYXJ0bmVyLXN0c3NlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJwbS1zc28tZWRjNGE3ZWMtNjI0Zi00OWQ0LTkxODEtNTU1YjczMDFlMzNmIiwiZXhwIjoxNjcyMDU2NTk5LCJuYmYiOjE2NzIwNTYyOTksImlhdCI6MTY3MjA1NjI5OSwic2lkIjoiNzMyNzAzZWQ3NzQ5ZTZhZWE3ZjJlN2U0OTdlMDM5ZjQiLCJzdWIiOiIxNDk5MDZ8RjZDMTdBMDItRkVCMC00OUFELTg4MjQtRTZBOTQxOTUwQkFDfEluaXRpYWwuQWRtaW4zMEBzaW1zaWQucGxhY2Vob2xkZXIuaWRlbnRpdHlmb3IuY28udWt8U0lNUyBJRHw2NTNhNDVjZi1hOGY3LTQyM2EtYjEzNC1jOGVjMmE0NGE1OGQiLCJhdXRoX3RpbWUiOjE2NzIwNTYyOTcsImlkcCI6Imlkc3J2IiwiTGFzdExvZ2luVGltZXN0YW1wIjoiRGVjIDI2LCAyMDIyIDEwOjE5OjEzIiwiUGFzc3dvcmRDaGFuZ2VkVGltZXN0YW1wIjoiRGVjIDA4LCAyMDIxIDE3OjAyOjQwIiwic2l0ZSI6IkI0MUJCMkFCIiwibGF1bmNoZXIiOiJ3ZWItYWNjZXNzIiwiU2l0ZVJvbGUiOiJBZG1pbiIsImhvbWVvcmdhbmlzYXRpb25pZGVudGlmaWVyIjoiQjQxQkIyQUItMzk3QS00RkNGLUJBNTktNjE1NkY0NTUzMjY5IiwibXVsdGlwbGVvcmdhbmlzYXRpb25zIjoiZmFsc2UiLCJuYW1lIjoiSW5pdGlhbCBBZG1pbiIsInJvbGUiOiJhZG1pbkBiNDFiYjJhYi0zOTdhLTRmY2YtYmE1OS02MTU2ZjQ1NTMyNjkiLCJhZGRpdGlvbmFscm9sZXNwcmVzZW50IjoiZmFsc2UiLCJ1c2Vyb3JnYW5pc2F0aW9uaWRlbnRpZmllciI6IjlGMEU2RTUyLTVGMjItNDYxRi05RjNCLTYwNEJFRDQxMEU5Q3xCNDFCQjJBQi0zOTdBLTRGQ0YtQkE1OS02MTU2RjQ1NTMyNjl8UyIsInByb3ZpZGVyIjoiU0lNUyBJRCIsInByb3ZpZGVyaWQiOiIxNDk5MDYiLCJwcm92aWRlcm5hbWUiOiJJbml0aWFsIEFkbWluIiwidmVuZG9yaWQiOiIyODYxQTAwMC03OTM0LTQ0QkYtOUY2RS05NkE5MjIyNjZGMzkiLCJhcHBsaWNhdGlvbmlkIjoiMUEyQjMyQzctOUMzOS00Q0NGLUE1ODEtRTI1M0E5RkEwN0E0IiwiYXBwbGljYXRpb25uYW1lIjoiRVNTLVNhdGVsbGl0ZXMtRGV2ZWxvcG1lbnQtU3RhZmYgJiBBZG1pbiIsImFtciI6WyJwYXNzd29yZCJdfQ.0dhbAIzNyXm5oJ679cOuiqwT8RgqcBhEGACfvxfGBLKHSNxvlBKqwmtRNxySYIc4MgH3w2sT4SLpo8yaEihjk9AXzfSPshHKbfAigb82834xnfMAEDnyc0hMT9jaxvfYVw8ZORPsVw68mxAwt4-WTVoUxLy4IK7tpI-Pzc_aFpW-BbMHr9Ctt_ls8EPH8NxJ22LnNbxJPSx3iBn8OwvcCIf2TeJL0fs30_VAm-XMLnF4w2SMbOC5O8CNd-ii6dmDLDriYYVzp-mQ4NiARohGJyDl6IwdgX6wXsSJB78Yy6AmCxUIXPQk4TYg_8wI9a_XNgilY5iMmEV6GXoLtm4e0A")
+  },
+  MatchPermissions: {
+    any: "any", // ← mock value (doesn't matter what)
+  },
+}));
+
  jest.mock("@essnextgen/ui-intl-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-intl-kit"),
   useTranslation: () => ({
@@ -109,6 +125,9 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "Filter.pupilName") {
         return "Pupil name";
       }
+      if (key === "DocumentManagementServer.Cancel") {
+        return "Cancel";
+      }
       return key;
     }
   })
@@ -135,6 +154,7 @@ jest.mock("../DocumentManagementServer.logic", () => {
     reduceCategories: jest.fn(),
     fetchCategory: jest.fn(),
     debouncedFetchSuggestions: jest.fn(),
+    fileDownload: jest.fn(),
   };
 });
  
@@ -182,6 +202,11 @@ const mockDocData = {
   ],
 };
  
+const zipFileDownloadMockData = {
+  statusCode: 200,
+  payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
+  errorMessage: null
+};
 const mockSuggestions = {
     payload: [
       { name: "Pupil", link: "", values: [
@@ -224,6 +249,7 @@ const mockSuggestions = {
       status: 200,
       data: [],
     });
+    (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
   })
 jest.setTimeout(10000);
   beforeEach(() => {
@@ -469,7 +495,8 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
-        { name: "FileUndefined", status: "complete" }
+        { name: "FileUndefined", status: "complete" },
+        { name: "FileOneDay", status: "complete", fileExpiryDays: 1 }
       ],
     });
     render(<MemoryRouter>
@@ -481,7 +508,12 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
       expect(screen.getByText("FileZero")).toBeInTheDocument();
       expect(screen.getByText("Expires today.")).toBeInTheDocument();
       expect(screen.getByText("FileUndefined")).toBeInTheDocument();
+      expect(screen.getByText("FileOneDay")).toBeInTheDocument();
+      expect(screen.getByText("Expires in 1 day(s).")).toBeInTheDocument();
     });
+    const downloadBtns = screen.getAllByText("DocumentManagementServer.download");
+    fireEvent.click(downloadBtns[0]);
+    
   });
  
 
@@ -497,6 +529,16 @@ describe("Additional tests to increase coverage", () => {
   });
  
  it("shows NoSelectionDialog when no item selected for delete", async () => {
+//   jest.mock("@essnextgen/auth-ui", () => ({
+//   ...jest.requireActual("@essnextgen/auth-ui"),
+//   authService: {
+//     isAuthorised: () => true,
+//     getAuthTokens: () => ({
+//       accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vY2sgVXNlciIsIm9yZ2FuaXNhdGlvbiI6Ik9yZzEyMyJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+//     }),
+//   },
+//   MatchPermissions: { all: "all" }
+// }));
   render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
@@ -1272,12 +1314,10 @@ it("sets visible breadcrumbs to last item on mobile view", () => {
   // Trigger resize event
   window.dispatchEvent(new Event("resize"));
 
-  const { container } = render(<MemoryRouter>
+  render(<MemoryRouter>
     <DocumentManagementServerView />
   </MemoryRouter>);
 
-  // The breadcrumbs should only show the last item ("Documents")
-  console.log(container.innerHTML);
   const breadcrumb = document.querySelector('[data-test-id="breadcrumb-test-id"]');
   expect(breadcrumb).toBeInTheDocument();
 });

@@ -281,6 +281,12 @@ export const handleSuggestionClick = async (
     refExternalId = [item?.organisationId];
   }
   setSearchRefExternalId(refExternalId || []);
+  gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType: "search_option",
+      elementTextOrLabel: item.categoryName === "Organisation" ? "School" : item.categoryName ?? "",
+      elementLocation: "search_suggestions"
+    });
 };
  
 // Has items check
@@ -408,6 +414,11 @@ export async function fetchGetDocumentDetailsLogic({
       setShowErrorBanner(false);
     } else if (result && result?.status === 400) {
       setShowErrorBanner(true);
+      
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Information unavailable"
+      });
     } else {
       setShowSearchError(true);
     }
@@ -515,13 +526,16 @@ export const fetchViewDownloadData = async ({
   setViewData,
   viewDownload,
   downloadPollingIntervalRef,
+  setIsViewDownloadError,
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
   if (showLoader) setIsSidePanelLoader(true);
+  setIsViewDownloadError(false); 
   try {
     const result = await viewDownload();
     if (result?.data && result?.status === 200) {
       setViewData(result.data);
+      setIsViewDownloadError(false);
 
       const hasInProgress = result.data.some(
         (item: { status: string }) =>
@@ -536,6 +550,7 @@ export const fetchViewDownloadData = async ({
             setViewData,
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
+            setIsViewDownloadError,
           });
         }, 10000);
       }
@@ -544,22 +559,29 @@ export const fetchViewDownloadData = async ({
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
-    }
-    if (!(result?.data && result?.status === 200) && pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
+    } else {
+      setIsViewDownloadError(true);
+      setViewData([]); 
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      return; 
     }
   } catch (err) {
     console.error("Error fetching view download details:", err);
+    setIsViewDownloadError(true);
+    setViewData([]);  // 🟢 Clear stale data
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
+    return; 
   } finally {
     setIsSidePanelLoader(false);
   }
 };
- 
+
 export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory(documentRealatedTo);
@@ -952,14 +974,31 @@ export const handleBulkDeleteLogic = async ({
       setShowDeleteErrorBanner(false);
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
+      gtmAnalytics.pushEvent({
+        event: "key_action",
+        actionType: "delete"
+      });
     } 
     else if(status === 409){
-     setShowDeleteAbortBanner(true)
+     setShowDeleteAbortBanner(true);
+     setShowDeleteErrorBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
     }else {
       setShowDeleteErrorBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
   }
 };
 
@@ -1093,6 +1132,7 @@ export async function handleClearAllConfirm({
   setClearAllError,
   setShowConfirmDialog,
   getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+  setIsViewDownloadError
 }: {
   viewData: any[],
   clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
@@ -1106,6 +1146,7 @@ export async function handleClearAllConfirm({
   setClearAllError: (v: boolean) => void,
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
+  setIsViewDownloadError: (v: boolean) => void,
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
@@ -1121,16 +1162,25 @@ export async function handleClearAllConfirm({
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+        setIsViewDownloadError,
       });
       setIsSidePanelLoader(false);
     } else {
       setClearAllError(true);
       setIsSidePanelLoader(false);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
     setIsSidePanelLoader(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
   }
   setShowConfirmDialog(false);
 }
@@ -1465,5 +1515,9 @@ export const handleEditSelectedOverFlowMenu = async ({
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
     setSidePanelOpenReason("view");
     setIsSidePanelOpen(true);
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "view_download"
+    });
   }
 };
