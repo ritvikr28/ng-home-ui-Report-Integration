@@ -2322,15 +2322,15 @@ describe("buildSelectedDocs", () => {
   const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
-    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+    expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[],  {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
   });
 
   it("returns empty array if docData.data is not an array", () => {
-    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
-    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any)).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+    expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
   });
 
   it("returns correct request object for valid input", () => {
@@ -2365,7 +2365,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      [{ fileId: "2", registrationId: 456, externalId: "ext3" }]
+      [{ fileId: "2", registrationId: 456, externalId: "ext3" }],
+      ["ext2"]
     );
 
     expect(resultWithExcluded).toEqual([
@@ -2411,7 +2412,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      ["1", "2"]
     );
     expect(result[0].request.excludedFileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2441,7 +2443,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [{ fileId: "1", registrationId: 123, externalId: "ext1" }, { fileId: "2", registrationId: 456, externalId: "ext2" }],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      ["1", "2"]
     );
      expect(result[0].request.fileDetails).toEqual([
       { fileId: "1", registrationId: 123, externalId: "ext1" },
@@ -2470,7 +2473,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      [""]
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2496,7 +2500,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      [""]
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2523,7 +2528,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      [""]
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2549,7 +2555,8 @@ describe("buildSelectedDocs", () => {
       isHeaderBoxChecked,
       [],
       {fromDate: "2025-01-01", toDate: "2025-01-02"},
-      []
+      [],
+      [""]
     );
     expect(result[0].request.excludedFileDetails).toEqual([]);
   });
@@ -2868,6 +2875,7 @@ describe("handleBulkDeleteLogic", () => {
   let setShowDeleteSuccessToast: jest.Mock;
   let fetchGetDocumentDetails: jest.Mock;
   let deleteFiles: jest.Mock;
+  let setShowDeleteAbortBanner: jest.Mock;
 
   const docData = {
     data: [
@@ -2901,6 +2909,7 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteSuccessToast = jest.fn();
     fetchGetDocumentDetails = jest.fn();
     deleteFiles = jest.fn();
+    setShowDeleteAbortBanner = jest.fn();
   });
 
   it("should handle successful delete (status 204) with select all unchecked", async () => {
@@ -2926,7 +2935,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
@@ -2962,7 +2973,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: true
+      isHeaderBoxChecked: true,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
@@ -2998,7 +3011,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
@@ -3029,7 +3044,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
@@ -3060,7 +3077,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: true
+      isHeaderBoxChecked: true,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     // fileDetails should be empty in payload
@@ -3091,7 +3110,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     const callPayload = deleteFiles.mock.calls[0][0];
@@ -3124,7 +3145,9 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
     });
 
     const callPayload = deleteFiles.mock.calls[0][0];
@@ -3549,6 +3572,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     setIsDialogLoading: jest.fn(),
     setSidePanelOpenReason: jest.fn(),
     setIsSidePanelOpen: jest.fn(),
+    setAvailableFileIds: jest.fn(),
     buildValidationPayload: jest.fn((args) => args),
     validation: jest.fn(async () => ({
       data: {
