@@ -520,57 +520,6 @@ export function reduceCategories(res: any[]): Category[] {
   ) as Category[];
 }
 
-// export const fetchViewDownloadData = async ({
-//   showLoader = true,
-//   setIsSidePanelLoader,
-//   setViewData,
-//   viewDownload,
-//   downloadPollingIntervalRef,
-// }: FetchViewDownloadDataParams) => {
-//   const pollingRef = downloadPollingIntervalRef;
-//   if (showLoader) setIsSidePanelLoader(true);
-//   try {
-//     const result = await viewDownload();
-//     if (result?.data && result?.status === 200) {
-//       setViewData(result.data);
-
-//       const hasInProgress = result.data.some(
-//         (item: { status: string }) =>
-//           item?.status?.toLowerCase() === "inprogress" ||
-//           item?.status?.toLowerCase() === "initiated"
-//       );
-//       if (hasInProgress && !pollingRef.current) {
-//         pollingRef.current = setInterval(() => {
-//           fetchViewDownloadData({
-//             showLoader: false,
-//             setIsSidePanelLoader,
-//             setViewData,
-//             viewDownload,
-//             downloadPollingIntervalRef: pollingRef,
-//           });
-//         }, 10000);
-//       }
-
-//       if (!hasInProgress && pollingRef.current) {
-//         clearInterval(pollingRef.current);
-//         pollingRef.current = null;
-//       }
-//     }
-//     if (!(result?.data && result?.status === 200) && pollingRef.current) {
-//       clearInterval(pollingRef.current);
-//       pollingRef.current = null;
-//     }
-//   } catch (err) {
-//     console.error("Error fetching view download details:", err);
-//     if (pollingRef.current) {
-//       clearInterval(pollingRef.current);
-//       pollingRef.current = null;
-//     }
-//   } finally {
-//     setIsSidePanelLoader(false);
-//   }
-// };
- 
 export const fetchViewDownloadData = async ({
   showLoader = true,
   setIsSidePanelLoader,

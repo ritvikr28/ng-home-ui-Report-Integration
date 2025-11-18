@@ -98,8 +98,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
-    // const [isViewdownloadError, setIsViewdownloadError] = useState<boolean>(false);
-const [isViewDownloadError, setIsViewDownloadError] = useState(false);
+    const [isViewDownloadError, setIsViewDownloadError] = useState(false);
 
     const categoryArr = getCategoryArr(selectedFormats);
     const dateTagArr = getDateTag(dateRange);
@@ -1271,14 +1270,6 @@ const getDialogTitle = () => {
                                                 onClickClose={() => setClearAllError(false)}
                                             />
                                         )}
-                                        {/* {isViewDownloadError && (
-                                            <Notification
-                                                status={NotificationStatus.WARNING}
-                                                title={t("DocumentManagementServer.informationUnavailable")}
-                                                message={t("DocumentManagementServer.technicalIssueMessage")}
-                                                autoclose={false}
-                                            />
-                                            )} */}
                                         {prepareDownloadError && (
                                             <Notification
                                                 status={NotificationStatus.WARNING}

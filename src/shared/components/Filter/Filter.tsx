@@ -90,13 +90,11 @@ const FilterDialog = ({
   const [localSelectedDateRange, setLocalSelectedDateRange] = useState<{ fromDate: string, toDate: string }>(selectedDateRange);
   const [localTagListArray, setLocalTagListArray] = useState<SelectedItem[]>(tagListArray);
   const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
-  // selectedDisplayKey for display mapping
-  const selectedKey = localSelectedRelatedTo?.text;
-  const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-
+  const selectedKey = localSelectedRelatedTo?.text;
+  const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
 
@@ -452,11 +450,15 @@ const handleDateChange = (
         return;
       }
       setSearchSelectionError("");
+
+
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       if (fromDateError || toDateError || isDateError) {
         setIsDateError(true);
         return;
       }
+
+
     setSelectedCategories(localSelectedCategories);
     setSelectedDateRange(localSelectedDateRange);
     setTagListArray(localTagListArray);
