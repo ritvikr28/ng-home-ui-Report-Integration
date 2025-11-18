@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react"
 import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
+import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu } from "./DocumentManagementServer.logic"
@@ -98,6 +99,12 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
+
+
+    const hasDMSDeletePermissions: boolean = authService.isAuthorised(
+    [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "Delete" }],
+    MatchPermissions.all
+    );
 
     const categoryArr = getCategoryArr(selectedFormats);
     const dateTagArr = getDateTag(dateRange);
@@ -1105,13 +1112,15 @@ const getDialogTitle = () => {
                                         text: t("DocumentManagementServer.ViewDownload"),
                                         value: 'View download'
                                     },
-                                    {
-                                        disabled: false,
-                                        isSelected: false,
-                                        isShowDivider: true,
-                                        text: t("DocumentManagementServer.Delete"),
-                                        value: 'Delete'
-                                    }
+                                    ...(hasDMSDeletePermissions
+                                        ? [{
+                                            disabled: false,
+                                            isSelected: false,
+                                            isShowDivider: true,
+                                            text: t("DocumentManagementServer.Delete"),
+                                            value: 'Delete'
+                                        }]
+                                        : [])
                                 ]}
                                 onEditSelectedOverFlowMenu={onEditSelectedOverFlowMenu}
                                 onEditSelectedBtnClick={() => {}}
