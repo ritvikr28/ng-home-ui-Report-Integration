@@ -919,9 +919,6 @@ export const handleBulkDeleteLogic = async ({
   isHeaderBoxChecked: boolean
 
 }) => {
-
-
-
   setShowDeleteSuccessToast(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
@@ -958,12 +955,12 @@ export const handleBulkDeleteLogic = async ({
       setAllSelectedDocs([]);
       setIsClearSelectedCheckbox(true);
       setShowDeleteErrorBanner(false);
-      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
       gtmAnalytics.pushEvent({
       event: "key_action",
       actionType: "delete"
     });
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
     } else {
       setShowDeleteErrorBanner(true);
       gtmAnalytics.pushEvent({
