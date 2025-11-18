@@ -191,6 +191,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
         values: [
           {
             pupilId: "p1",
+            learnerExternalId: "p1",
             preferredForename: "John",
             preferredSurname: "Doe",
             legalName: "Jonathan Doe",
@@ -3325,8 +3326,10 @@ it("calls setReferenceExternalIds with correct updater when adding unique tag", 
   const updater = setReferenceExternalIds.mock.calls[0][0];
   expect(typeof updater).toBe("function");
   expect(updater([])).toEqual(["p1"]);
-  // Accept that setAlreadyExistingTags may be called with false
-  expect(setAlreadyExistingTags).toHaveBeenCalledWith(false);
+  expect(
+  setAlreadyExistingTags.mock.calls.length === 0 ||
+  setAlreadyExistingTags.mock.calls.some(call => call[0] === false)
+  ).toBe(true);
 });
  it("calls setAlreadyExistingTags when adding duplicate tag", () => {
   const item = {

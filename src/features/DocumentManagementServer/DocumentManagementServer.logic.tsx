@@ -281,6 +281,12 @@ export const handleSuggestionClick = async (
     refExternalId = [item?.organisationId];
   }
   setSearchRefExternalId(refExternalId || []);
+  gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType: "search_option",
+      elementTextOrLabel: item.categoryName === "Organisation" ? "School" : item.categoryName ?? "",
+      elementLocation: "search_suggestions"
+    });
 };
  
 // Has items check
@@ -408,6 +414,11 @@ export async function fetchGetDocumentDetailsLogic({
       setShowErrorBanner(false);
     } else if (result && result?.status === 400) {
       setShowErrorBanner(true);
+      
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Information unavailable"
+      });
     } else {
       setShowSearchError(true);
     }
@@ -720,7 +731,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               ));
               props = {
                 name: text,
-                id: item?.pupilId,
+                id: item?.learnerExternalId,
                 value,
                 categoryName: category.name,
                 ...item
@@ -1012,11 +1023,23 @@ export const handleBulkDeleteLogic = async ({
       setShowDeleteErrorBanner(false);
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
+      gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "delete"
+    });
     } else {
       setShowDeleteErrorBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
   }
 };
 
@@ -1187,11 +1210,19 @@ export async function handleClearAllConfirm({
     } else {
       setClearAllError(true);
       setIsSidePanelLoader(false);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
     setIsSidePanelLoader(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
   }
   setShowConfirmDialog(false);
 }
@@ -1297,23 +1328,22 @@ export function addUniqueTagItem({
     idKey = "learnerExternalId";
   } else if (selectedRelatedTo?.text === "Staff") {
     idKey = "externalId";
-  } else if (selectedRelatedTo?.text === "Organisation" || selectedRelatedTo?.text === "School") {
-    idKey = "organisationId";
   }
 
-  const newId = (item as any)[idKey] ?? item.text;
+  // Always normalize the ID for comparison
+  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
 
   const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    (tag) => {
+      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      return tagId === newId;
+    }
   );
 
   if (alreadyExists) {
     if (setAlreadyExistingTags) setAlreadyExistingTags(true);
     return;
   }
-
-  if (setAlreadyExistingTags) setAlreadyExistingTags(false);
-
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
     if (setReferenceExternalIds && newId) {
@@ -1527,5 +1557,9 @@ export const handleEditSelectedOverFlowMenu = async ({
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
     setSidePanelOpenReason("view");
     setIsSidePanelOpen(true);
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "view_download"
+    });
   }
 };
