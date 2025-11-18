@@ -1799,7 +1799,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
@@ -1827,7 +1828,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
@@ -1848,7 +1850,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(downloadPollingIntervalRef.current).toBeNull();
@@ -1866,7 +1869,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(downloadPollingIntervalRef.current).toBeNull();
@@ -1884,7 +1888,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(consoleSpy).toHaveBeenCalledWith("Error fetching view download details:", error);
@@ -1905,7 +1910,8 @@ describe("fetchViewDownloadData", () => {
       setIsSidePanelLoader,
       setViewData,
       viewDownload,
-      downloadPollingIntervalRef
+      downloadPollingIntervalRef,
+      setIsViewDownloadError: jest.fn()
     });
 
     expect(setIsSidePanelLoader).not.toHaveBeenCalledWith(true);
@@ -2594,6 +2600,7 @@ describe('handleClearAllConfirm', () => {
       setClearAllError,
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+      setIsViewDownloadError: jest.fn(),
     });
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
     expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
@@ -2621,6 +2628,7 @@ describe('handleClearAllConfirm', () => {
       setClearAllError,
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+      setIsViewDownloadError: jest.fn(),
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
@@ -2643,6 +2651,7 @@ describe('handleClearAllConfirm', () => {
       setClearAllError,
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
+      setIsViewDownloadError: jest.fn(),
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).toHaveBeenCalledWith(false);

@@ -99,6 +99,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [selectedRelatedTo, setSelectedRelatedTo] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
+    const [isViewDownloadError, setIsViewDownloadError] = useState(false);
 
 
     const hasDMSDeletePermissions: boolean = authService.isAuthorised(
@@ -120,7 +121,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   restrictedFileCount === 1
     ? t("DocumentManagementServer.documentCannotBeDeletedNotification", { count: restrictedFileCount })
     : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
-        all: restrictedFileCount === docData?.totalRecords ? "All " : "",
+        all: restrictedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
         count: restrictedFileCount
       })
 );
@@ -132,7 +133,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                         alreadyDeletedFileCount === 1
                             ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                             : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
-                                    all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "",
+                                    all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
                                     count: alreadyDeletedFileCount
                                 })
                     );
@@ -272,6 +273,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         },
         viewDownload,
         downloadPollingIntervalRef,
+        setIsViewDownloadError,
       });
     }, 2000);
 
@@ -289,6 +291,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     },
       viewDownload,
       downloadPollingIntervalRef,
+        setIsViewDownloadError,
       
     });
   }
@@ -615,6 +618,7 @@ switch (dialogType) {
           setClearAllError,
           setShowConfirmDialog,
           getCompletedPartitionKeys,
+          setIsViewDownloadError
         });
       },
       template: DialogTemplate.Confirmation,
@@ -630,7 +634,7 @@ switch (dialogType) {
       notificationTitle: availableFileCount === 1
         ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
         : t("DocumentManagementServer.documentsWillBeGoneForever", {
-            all: availableFileCount === docData?.totalRecords ? "All " : "",
+            all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
             count: availableFileCount
             }),
       notificationStatus: NotificationStatus.WARNING,
@@ -665,7 +669,7 @@ switch (dialogType) {
 
   default:
     dialogConfig = {
-      cancelText: "Cancel",
+      cancelText: t("DocumentManagementServer.Cancel"),
       contentText: (() => {
             if (alreadyDeletedFileCount > 0) {
                 return alreadyDeletedFileCount === 1
@@ -678,7 +682,7 @@ switch (dialogType) {
             notificationTitle:
                 availableFileCount === 1
                     ? t("DocumentManagementServer.prepareSingleDocument", { count: availableFileCount })
-                    : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? "All " : "", count: availableFileCount }),
+                    : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: availableFileCount }),
       notificationStatus: NotificationStatus.WARNING,
       okText: t("DocumentManagementServer.PrepareDownload"),
       onCancel: (): void => { setShowConfirmDialog(false); 
@@ -842,6 +846,16 @@ const getDialogTitle = () => {
     return "";
 };
     const renderViewDownloadContent = () => {
+          if (isViewDownloadError) {
+    return (
+      <Notification
+        status={NotificationStatus.WARNING}
+        title={t("DocumentManagementServer.informationUnavailable")}
+        message={t("DocumentManagementServer.technicalIssueMessage")}
+        autoclose={false}
+      />
+    );
+  }
     if (isSidePanelLoader) {
         return <Loader loaderType={LoaderType.Circular} />;
     }
@@ -949,7 +963,7 @@ const getDialogTitle = () => {
                                 return restrictedFileCount === 1
                                 ? t("DocumentManagementServer.documentCannotBeDeletedNotification")
                                 : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
-                                    all: restrictedFileCount === docData?.totalRecords ? "All " : "",
+                                    all: restrictedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
                                     count: restrictedFileCount
                                     });
                                 }
@@ -959,7 +973,7 @@ const getDialogTitle = () => {
                                     }
                                 return alreadyDeletedFileCount === 1
                                     ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
-                                    : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "", count: alreadyDeletedFileCount });
+                                    : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount });
                                 }
                                 return "";
                             })()
@@ -998,7 +1012,7 @@ const getDialogTitle = () => {
                         notificationTitle={
                         alreadyDeletedFileCount === 1
                             ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: alreadyDeletedFileCount })
-                            : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? "All " : "", count: alreadyDeletedFileCount })
+                            : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount })
                         }
                         loading={isPreDialogLoading}
                         onClose={() => {
@@ -1283,7 +1297,7 @@ const getDialogTitle = () => {
                                                 onClickClose={() => setDownloadError(false)}
                                             />
                                         )}
-                                        {showEmailNotification && (
+                                        {showEmailNotification && !isViewDownloadError && (
                                             <Notification
                                                 status={NotificationStatus.HIGHLIGHT}
                                                 title={t("DocumentManagementServer.emailNotificationTitle")}

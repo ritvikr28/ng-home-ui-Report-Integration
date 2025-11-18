@@ -93,7 +93,8 @@ const FilterDialog = ({
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-
+  const selectedKey = localSelectedRelatedTo?.text;
+  const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
 
@@ -154,9 +155,11 @@ useEffect(() => {
     }
 }, [isOpen]);
 
-const relatedTo = Object.entries(relatedToEnum).map(([text, value]) => ({
-  text,
+// Use keys for logic, translation for display
+const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
+  key, // for logic
   value,
+  label: t(`Filter.${key === "Organisation" ? "School" : key}`), // for display
 }));
 
 useEffect(() => {
@@ -441,23 +444,21 @@ const handleDateChange = (
       }
       setRelatedToError("");
 
-      if (
-        (localSelectedRelatedTo.text === t("Filter.Pupil") || localSelectedRelatedTo.text === t("Filter.Staff")) &&
-        localTagListArray.length === 0
-      ) {
-        setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
+    // Use key for logic
+    if ((selectedKey === "Pupil" || selectedKey === "Staff") && localTagListArray.length === 0) {
+        setSearchSelectionError(t("Filter.entityIsRequired", { entity: t(`Filter.${selectedDisplayKey}`) }));
         return;
-      } 
+      }
       setSearchSelectionError("");
-      
-      
+
+
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       if (fromDateError || toDateError || isDateError) {
         setIsDateError(true);
         return;
       }
 
-      
+
     setSelectedCategories(localSelectedCategories);
     setSelectedDateRange(localSelectedDateRange);
     setTagListArray(localTagListArray);
@@ -466,13 +467,13 @@ const handleDateChange = (
 
       let ids: string[] = [];
       let entities: any[] = [];
-      if (localSelectedRelatedTo?.text === t("Filter.Pupil")) {
+      if (selectedKey === "Pupil") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === t("Filter.Staff")) {
+      } else if (selectedKey === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === t("Filter.School")) {
+      } else if (selectedKey === "Organisation" || selectedKey === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
         entities = orgId ? [{ organisationId: orgId }] : [];
@@ -547,7 +548,10 @@ const getEntityLabel = (entity: string) => {
   const lowerEntity = entity.toLowerCase();
   if (lowerEntity === "pupil") {
     key = "Filter.pupils";
-  } else if (lowerEntity === "staff") {
+  } 
+  else if (lowerEntity === "disgybl") {
+    key = "Filter.pupils";
+  }else if (lowerEntity === "staff") {
     key = "Filter.staffs";
   }
   return key ? t(key) : "";
@@ -570,8 +574,7 @@ const getEntityLabel = (entity: string) => {
     >
       <>
        {relatedToSelected &&
-        (!localSelectedRelatedTo ||
-          ![t("Filter.Pupil"), t("Filter.Staff"), "Organisation", t("Filter.School")].includes(localSelectedRelatedTo?.text ?? "")) ? (
+       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "") ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -630,22 +633,22 @@ const getEntityLabel = (entity: string) => {
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
+              text={item.label}
               value={item.value.toString()}
             >
-              {t(`Filter.${item.text === "Organisation" ? "School" : item.text}`)}
+              {item.label}
             </DropdownItem>
           ))}
         </Dropdown>
 
-        {(localSelectedRelatedTo?.text === t("Filter.Pupil") || localSelectedRelatedTo?.text === t("Filter.Staff")) && (
+        {(localSelectedRelatedTo && (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff")) && (
           <>
             <Search
                   key={tagListArray.length + searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
-                  placeholderText={t(`Filter.${localSelectedRelatedTo?.text?.toLowerCase()}Name`)}
-                  titleText={ t(`Filter.${localSelectedRelatedTo.text}`)}
+                  placeholderText={t(`Filter.${(selectedDisplayKey ?? "").toLowerCase()}Name`)}
+                  titleText={ t(`Filter.${selectedDisplayKey ?? ""}`)}
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
@@ -656,7 +659,7 @@ const getEntityLabel = (entity: string) => {
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(localSelectedRelatedTo?.text.toLowerCase())}`}
+                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(selectedDisplayKey ?? "")}`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
@@ -697,8 +700,8 @@ const getEntityLabel = (entity: string) => {
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: localSelectedRelatedTo.text })}
-                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: localSelectedRelatedTo.text })}
+                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: t(`Filter.${selectedDisplayKey ?? ""}`) })}
+                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: t(`Filter.${selectedDisplayKey ?? ""}`) })}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
                   validationText={validationText}
                   validationTextLevel={validationTextLevel}
