@@ -243,6 +243,10 @@
 }
 
 
+.grid-wrapper #taglist-id .summary-tag .essui-icon-button {
+  display: none !important;
+}
+
 .grid-wrapper {
 
   .sorting-column-flex, .sorting-column-flex span:first-child {
@@ -457,13 +461,15 @@
     .essui-dialog__title {
       white-space: unset;
     }
-  }
 
+  }
+    
   .dms-layout .side-width .essui-side-navigation-panel-container-grid-item {
     height: 100vh !important;
   };
 }
 
+// -------------------------1024px to 1279.9px-------------------------------
 @media (min-width:1024px) and (max-width: 1279.9px) {
   .grid-wrapper .filter-tool-view #search-autocomplete.with-suggestions #suggestions-wrapper {
     display: block;

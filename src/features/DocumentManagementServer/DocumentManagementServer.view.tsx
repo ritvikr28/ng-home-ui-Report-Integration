@@ -114,17 +114,27 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     ...dateTagArr
     ];
 
-        const messages = [];
+    document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
+        const span = tag.querySelector('.essui-tag span');
+        if (span && span.textContent.trim().startsWith('+')) {
+            tag.classList.add('summary-tag');
+        } else {
+            tag.classList.remove('summary-tag');
+        }
+    });
+
+
+    const messages = [];
  
         if (restrictedFileCount > 0) {
        messages.push(
-  restrictedFileCount === 1
-    ? t("DocumentManagementServer.documentCannotBeDeletedNotification", { count: restrictedFileCount })
-    : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
-        all: restrictedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
-        count: restrictedFileCount
-      })
-);
+        restrictedFileCount === 1
+            ? t("DocumentManagementServer.documentCannotBeDeletedNotification", { count: restrictedFileCount })
+            : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
+                all: restrictedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
+                count: restrictedFileCount
+            })
+        );
         
         }
         
@@ -370,7 +380,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   setSortBy(apiColumnName);
   setSortDirection(newDirection);
 };
- 
 
 
 const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISelectedItem) => {
