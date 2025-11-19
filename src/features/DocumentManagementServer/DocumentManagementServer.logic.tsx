@@ -895,7 +895,8 @@ export const handleBulkDeleteLogic = async ({
   fetchGetDocumentDetails,
   deleteFiles,
   excludedCheckBoxIds,
-  isHeaderBoxChecked
+  isHeaderBoxChecked,
+  setIsSearchDataLoading
 }: {
   allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
   docData: any,
@@ -916,10 +917,12 @@ export const handleBulkDeleteLogic = async ({
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
   deleteFiles: (payload: any) => Promise<number>,
   excludedCheckBoxIds: string[],
-  isHeaderBoxChecked: boolean
+  isHeaderBoxChecked: boolean,
+  setIsSearchDataLoading: (v: boolean) => void
 
 }) => {
   setShowDeleteSuccessToast(false);
+  if (setIsSearchDataLoading) setIsSearchDataLoading(true);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -960,7 +963,14 @@ export const handleBulkDeleteLogic = async ({
       event: "key_action",
       actionType: "delete"
     });
-    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    if(isHeaderBoxChecked === true){
+    setTimeout(() => {
+        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    }, 3500);
+  }
+  else{
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    }
     } else {
       setShowDeleteErrorBanner(true);
       gtmAnalytics.pushEvent({

@@ -548,7 +548,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             fetchGetDocumentDetails,
             deleteFiles,
             excludedCheckBoxIds,
-            isHeaderBoxChecked
+            isHeaderBoxChecked,
+            setIsSearchDataLoading
         });
 
 const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
