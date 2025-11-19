@@ -19,7 +19,7 @@ import {
   Notification,
   NotificationStatus
 } from "@essnextgen/ui-kit";
-import { useTranslation,i18next  } from "@essnextgen/ui-intl-kit";
+import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -93,7 +93,7 @@ const FilterDialog = ({
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-  const selectedKey = localSelectedRelatedTo?.text;
+  const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
   const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
@@ -105,10 +105,6 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
-useEffect(() => {
-  i18next.changeLanguage('cy');
-}, []);
- 
 
 let validationText = "";
 if (searchSelectionError) {
@@ -410,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-      setError("To date must be on or after 01/01/1900");
+      setError(t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }));
       setIsDateError(true);
       return;
     }
@@ -421,7 +417,7 @@ const handleDateChange = (
     }
     // Check if To date is before From date
     if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-      setError("To date should not be before From date.");
+      setError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
       return;
     } 
@@ -472,7 +468,7 @@ const handleDateChange = (
 
       let ids: string[] = [];
       let entities: any[] = [];
-      if (selectedKey === "Pupil" || selectedKey === "Disgybl") {
+      if (selectedKey === "Pupil") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
         entities = localTagListArray;
       } else if (selectedKey === "Staff") {

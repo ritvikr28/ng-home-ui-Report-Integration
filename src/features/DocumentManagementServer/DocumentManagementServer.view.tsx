@@ -346,19 +346,19 @@ const DocumentManagementServerView: () => JSX.Element = () => {
    const handleSorting = (columnName: string) => {
   let apiColumnName = columnName;
   switch (columnName) {
-    case "Date added":
+    case t("DocumentManagementServer.dateAddedColumn"):
       apiColumnName = "DateAdded";
       break;
-    case "Document":
+    case t("DocumentManagementServer.documentColumn"):
       apiColumnName = "Document";
       break;
-    case "Format":
+    case t("DocumentManagementServer.formatColumn"):
       apiColumnName = "Format";
       break;
-    case "Size":
+    case t("DocumentManagementServer.sizeColumn"):
       apiColumnName = "Size";
       break;
-    case "Category":
+    case t("DocumentManagementServer.categoryColumn"):
       apiColumnName = "Category";
       break;
     default:
@@ -1034,7 +1034,11 @@ const getDialogTitle = () => {
                 {showRestrictedPrepareDialog && (
                     <NoSelectionDialog
                         setShowDialog={setShowRestrictedPrepareDialog}
-                        title={alreadyDeletedFileCount === 1 ? "Document cannot be downloaded" : "Documents cannot be downloaded"}
+                        title={
+                          alreadyDeletedFileCount === 1
+                            ? t("DocumentManagementServer.documentCannotBeDownloadedTitle", { count: alreadyDeletedFileCount })
+                            : t("DocumentManagementServer.documentsCannotBeDownloadedTitle", { count: alreadyDeletedFileCount })
+                        }
                         notificationTitle={
                         alreadyDeletedFileCount === 1
                             ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: alreadyDeletedFileCount })
@@ -1299,8 +1303,8 @@ const getDialogTitle = () => {
                                         {clearAllError && (
                                             <Notification
                                                 status={NotificationStatus.WARNING}
-                                                title="Unable to clear downloads"
-                                                message="A technical issue has prevented us from clearing the downloads. Please try again later. If the issue persists please get in touch with our support team."
+                                                title={t("DocumentManagementServer.clearAllErrorTitle")}
+                                                message={t("DocumentManagementServer.clearAllErrorMessage")}
                                                 autoclose
                                                 onClickClose={() => setClearAllError(false)}
                                             />
@@ -1317,8 +1321,8 @@ const getDialogTitle = () => {
                                         {PrepareDownloadAbortBanner && (
                                             <Notification
                                                 status={NotificationStatus.WARNING}
-                                                title="Unable to prepare [document/documents] for download"
-                                                message="This document cannot be downloaded as it has been deleted already."
+                                                title={t("DocumentManagementServer.prepareDownloadErrorTitle")}
+                                                message={t("DocumentManagementServer.prepareDownloadAbortMessage")}
                                                 autoclose
                                                 onClickClose={() => setPrepareDownloadAbortBanner(false)}
                                             />
