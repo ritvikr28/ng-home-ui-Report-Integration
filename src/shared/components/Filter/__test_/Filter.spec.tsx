@@ -34,6 +34,9 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
       if (key === "Filter.toDateMustBeOnOrBefore") {
         return `To date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
       }
+      if (key === "Filter.toDateMustBeOnOrAfter") {
+        return `To date must be on or after ${options?.date ?? "01/01/1900"}`;
+      }
       return key;
     }
   })
@@ -962,7 +965,7 @@ describe("To date validation", () => {
 describe("FilterDialog handleApplyWrapper validation", () => {
   it("shows error if no tag is selected for Pupil", async () => {
     renderComponent({
-  selectedRelatedTo: { text: "Staff", value: "2" },
+  selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
   tagListArray: [],
   availableCategories: [
     { registrationId: "1", application: "Send" },
@@ -976,7 +979,7 @@ describe("FilterDialog handleApplyWrapper validation", () => {
 
   it("shows error if no tag is selected for Staff", async () => {
     renderComponent({
-      selectedRelatedTo: { text: "Staff", value: "2" },
+      selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
       tagListArray: [],
     });
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
@@ -986,7 +989,7 @@ describe("FilterDialog handleApplyWrapper validation", () => {
 
   it("shows error if date is invalid", async () => {
     renderComponent({
-      selectedRelatedTo: { text: "Pupil", value: "1" },
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
       tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }],
     });
     // Set invalid date
@@ -1225,7 +1228,7 @@ it("shows 'From date is required' error when From date is cleared but To date is
 it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
   const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
   renderComponent({
-    selectedRelatedTo: { text: "Staff", value: "2" },
+    selectedRelatedTo: { text: "Staff", value: "2" , data: { data: { key: "Staff" } } },
     tagListArray: [staffTag],
   });
 
@@ -1321,6 +1324,7 @@ it("calls handleSearchChange on search input change", async () => {
         { data: "pupils", text: "Pupils" }
       ]}
       setSelectedCategories={setSelectedCategoriesMock}
+      selectedRelatedTo={{ text: "Pupil", value: "1", data: { data: { key: "Pupil" } } }}
     />
   );
 
@@ -1413,7 +1417,7 @@ test("fetches and displays sorted categories correctly", async () => {
         selectedDateRange={{ fromDate: "", toDate: "" }}
         setReferenceExternalIds={jest.fn()}
         setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        selectedRelatedTo={{ text: "Pupil", value: "1" ,data: { data : { key: "Pupil" } } }}
         setSelectedRelatedTo={jest.fn()}
         tagListArray={[]}
         setTagListArray={jest.fn()}

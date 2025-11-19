@@ -131,6 +131,9 @@ jest.mock("@essnextgen/auth-ui", () => ({
       if (key === "DocumentManagementServer.Okay") {
         return "Okay";
       }
+      if (key === "DocumentManagementServer.informationUnavailable") {
+        return "Information unavailable";
+        }
       return key;
     }
   })
