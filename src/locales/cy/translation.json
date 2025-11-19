@@ -480,6 +480,8 @@
     "documentsCannotBeDeletedMsg": "{{all}}{{count}} Nid oes modd dileu dogfennau gan eu bod ar hyn o bryd yn cael eu paratoi ar gyfer lawrlwytho. Ceisiwch eto yn nes ymlaen.",
     "documentAlreadyDeletedMsg": "Mae'r ddogfen eisoes wedi ei dileu.",
     "documentsAlreadyDeletedMsg": "Mae {{all}} {{count}} dogfen eisoes wedi'u dileu.",
+    "documentCannotBeDownloaded": "Ni ellir lawrlwytho'r ddogfen gan ei bod wedi'i dileu.",
+    "documentsCannotBeDownloaded": "ni ellir lawrlwytho dogfennau gan eu bod eisoes wedi'u dileu.",
     "allSelectedDocumentsAlreadyDeleted": "Mae’r holl ddogfennau a ddewiswyd eisoes wedi’u dileu.",
     "documentCannotBeDeletedNotification": "This document cannot be deleted as it is currently being prepared for download. Please try again later.",
     "documentsCannotBeDeletedNotification": "Methu dileu {{all}}{{count}} dogfen am eu bod yn cael eu paratoi i'w lawrlwytho. Ceisiwch eto yn nes ymlaen.",
