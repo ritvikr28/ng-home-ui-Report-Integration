@@ -450,7 +450,7 @@
     "documentsAppearAfterUploadMsg":"Bydd dogfennau'n ymddangos yma ar ôl iddynt gael eu uwchlwytho.",
     "informationUnavailable":"Gwybodaeth ddim ar gael.",
     "prepareSingleDocument": "{{count}} Mae un ddogfen ar fin cael ei paratoi ar gyfer ei lawrlwytho.",
-    "prepareMultipleDocuments": "Mae {{All}}{{count}} dogfen ar fin cael eu paratoi i'w lawrlwytho.",
+    "prepareMultipleDocuments": "Mae bob un o'r {{count}} dogfen ar fin cael eu paratoi i'w lawrlwytho.",
     "emailNotificationTitle": "Paratoi lawrlwythiadau",
     "emailNotificationMessage": "Mae eich lawrlwythiadau'n cael eu paratoi. Gall hyn gymryd ychydig funudau.",
     "failedDownloadTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
@@ -475,7 +475,7 @@
     "documentCannotBePreparedForDownload": "{{count}} document cannot be prepared for downloading as it has already been deleted.",
     "documentsCannotBePreparedForDownload": "Ni ellir paratoi {{count}} dogfen i'w lawrlwytho gan eu bod wedi eu dileu eisoes.",
     "documentWillBeGoneForever": "Bydd {{count}} dogfen wedi diflannu am byth ar ôl ei dileu.",
-    "documentsWillBeGoneForever": "{{all}}{{count}} Bydd dogfennau’n diflannu am byth ar ôl cael eu dileu.",
+    "documentsWillBeGoneForever": "Bydd pob un o'r {{count}} dogfen wedi diflannu am byth ar ôl eu dileu.",
     "documentCannotBeDeletedMsg": "{{count}} Methu dileu'r ddogfen hon am ei bod yn cael ei pharatoi i'w lawrlwytho ar hyn o bryd. Ceisiwch eto yn nes ymlaen.",
     "documentsCannotBeDeletedMsg": "{{all}}{{count}} Nid oes modd dileu dogfennau gan eu bod ar hyn o bryd yn cael eu paratoi ar gyfer lawrlwytho. Ceisiwch eto yn nes ymlaen.",
     "documentAlreadyDeletedMsg": "Mae'r ddogfen eisoes wedi ei dileu.",
@@ -495,7 +495,8 @@
     "addedByColumn": "Ychwanegwyd gan",
     "dateAddedColumn": "Dyddiad ychwanegu",
     "formatColumn": "Fformat",
-    "sizeColumn": "Maint"
+    "sizeColumn": "Maint",
+    "Okay": "Iawn"
   },
   "Filter": {
     "heading": "Chwilio uwch",

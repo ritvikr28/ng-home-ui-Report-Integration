@@ -20,6 +20,7 @@ import {
   NotificationStatus
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { i18next } from '@essnextgen/ui-intl-kit';
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -28,6 +29,8 @@ import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
+import { Console } from "console";
+
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -105,6 +108,8 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
+
+
 let validationText = "";
 if (searchSelectionError) {
   validationText = searchSelectionError;
@@ -120,6 +125,10 @@ if (searchSelectionError) {
 } else {
   validationTextLevel = undefined;
 }
+
+useEffect(() => {
+  i18next.changeLanguage('cy');
+}, []);
 
 const clearAll = () => {
   resetDateState(setFromDate);

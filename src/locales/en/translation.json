@@ -554,7 +554,8 @@
     "addedByColumn": "Added by",
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
-    "sizeColumn": "Size"
+    "sizeColumn": "Size",
+    "Okay": "Okay"
   }, 
   "Filter": {
     "heading": "Advanced search",
