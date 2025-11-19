@@ -157,9 +157,9 @@ useEffect(() => {
 
 // Use keys for logic, translation for display
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
-  key, // for logic
   value,
-  label: t(`Filter.${key === "Organisation" ? "School" : key}`), // for display
+  text: t(`Filter.${key === "Organisation" ? "School" : key}`),
+  data: { key }, // property shorthand for key
 }));
 
 useEffect(() => {
@@ -574,7 +574,7 @@ const getEntityLabel = (entity: string) => {
     >
       <>
        {relatedToSelected &&
-       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "") ? (
+       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.data?.data?.key ?? "") ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -633,15 +633,14 @@ const getEntityLabel = (entity: string) => {
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.label}
+              text={item.text}
               value={item.value.toString()}
             >
-              {item.label}
+              {item.text}
             </DropdownItem>
           ))}
         </Dropdown>
-
-        {(localSelectedRelatedTo && (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff")) && (
+        {(localSelectedRelatedTo && (localSelectedRelatedTo.data?.data.key === "Pupil" || localSelectedRelatedTo.data?.data.key === "Staff")) && (
           <>
             <Search
                   key={tagListArray.length + searchKey}

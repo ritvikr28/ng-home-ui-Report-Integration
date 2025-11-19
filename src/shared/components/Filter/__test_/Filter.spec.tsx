@@ -1020,11 +1020,12 @@ describe("FilterDialog handleApplyWrapper validation", () => {
     });
   });
 it("removes a tag from the tag list when user clicks the remove button", async () => {
-  const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123" };
-  renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
-    tagListArray: [tag],
-  });
+ 
+  const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123", data: { data: { key: "Pupil" } } };
+renderComponent({
+  selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+  tagListArray: [tag],
+});
 
   // The tag should be visible
   expect(screen.getByTestId("search-tag")).toHaveTextContent("Test Pupil");
@@ -1175,7 +1176,7 @@ describe("FilterDialog category selection user scenarios for dateRange insertInd
 
   it("adds a tag to the tag list when user selects a suggestion", async () => {
   renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
+    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
     tagListArray: [],
     availableCategories: [
       { registrationId: "1", application: "Send" },
@@ -1244,7 +1245,7 @@ it("calls handleApply with staff externalIds when RelatedTo is Staff", async () 
 
 it("calls handleSearchChange on search input change", async () => {
   renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
+    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
     tagListArray: [],
   });
 
@@ -1295,7 +1296,7 @@ it("calls handleSearchChange on search input change", async () => {
         selectedDateRange={{ fromDate: "", toDate: "" }}
         setReferenceExternalIds={jest.fn()}
         setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        selectedRelatedTo={{ text: "Pupil", value: "1", data: { data : { key: "Pupil" } } }}
         setSelectedRelatedTo={jest.fn()}
         tagListArray={[]}
         setTagListArray={jest.fn()}

@@ -1280,19 +1280,19 @@ export function addUniqueTagItem({
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
   setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}): void {
   if (!item) return;
 
   let idKey = "organisationId";
-  if (selectedRelatedTo?.text === "Pupil") {
+  if (selectedRelatedTo?.data?.data.key === "Pupil") {
     idKey = "learnerExternalId";
-  } else if (selectedRelatedTo?.text === "Staff") {
+  } else if (selectedRelatedTo?.data?.data.key === "Staff") {
     idKey = "externalId";
   }
 
   // Always normalize the ID for comparison
   const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
-
+  
   const alreadyExists = tagListArray.some(
     (tag) => {
       const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();

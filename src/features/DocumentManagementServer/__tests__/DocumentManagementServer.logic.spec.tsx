@@ -3214,7 +3214,7 @@ it("adds a new unique pupil tag and referenceExternalId", () => {
   };
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Pupil" } as any,
+    selectedRelatedTo: { data: { data: { key: "Pupil" } } },
     tagListArray: [],
     setTagListArray,
     setReferenceExternalIds,
@@ -3235,7 +3235,7 @@ it("adds a new unique pupil tag and referenceExternalId", () => {
   const prev = [{ ...item, name: item.text, id: Number(item.text) }];
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Pupil" } as any,
+    selectedRelatedTo: { data: { data: { key: "Pupil" } } },
     tagListArray: prev,
     setTagListArray,
     setReferenceExternalIds,
@@ -3252,7 +3252,7 @@ it("adds a new unique staff tag and referenceExternalId", () => {
   };
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Staff" } as any,
+    selectedRelatedTo: { data: { data: { key: "Staff" } } },
     tagListArray: [],
     setTagListArray,
     setReferenceExternalIds,
@@ -3321,7 +3321,7 @@ it("calls setAlreadyExistingTags when adding duplicate tag", () => {
   };
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Pupil" } as any,
+    selectedRelatedTo: { data: { data: { key: "Pupil" } } },
     tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
     setTagListArray,
     setReferenceExternalIds,
@@ -3338,7 +3338,7 @@ it("calls setReferenceExternalIds with correct updater when adding unique tag", 
   };
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Pupil" } as any,
+    selectedRelatedTo: { data: { data: { key: "Pupil" } } },
     tagListArray: [],
     setTagListArray,
     setReferenceExternalIds,
@@ -3362,7 +3362,7 @@ it("calls setReferenceExternalIds with correct updater when adding unique tag", 
   };
   addUniqueTagItem({
     item,
-    selectedRelatedTo: { text: "Pupil" } as any,
+    selectedRelatedTo: { data: { data: { key: "Pupil" } } },
     tagListArray: [{ ...item, name: item.text, id: Number(item.learnerExternalId) }],
     setTagListArray,
     setReferenceExternalIds,
