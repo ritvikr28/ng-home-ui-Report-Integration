@@ -20,7 +20,6 @@ import {
   NotificationStatus
 } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import { i18next } from '@essnextgen/ui-intl-kit';
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -29,7 +28,6 @@ import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
-import { Console } from "console";
 
 
 interface FilterDialogProps {
@@ -126,9 +124,6 @@ if (searchSelectionError) {
   validationTextLevel = undefined;
 }
 
-useEffect(() => {
-  i18next.changeLanguage('cy');
-}, []);
 
 const clearAll = () => {
   resetDateState(setFromDate);
@@ -166,9 +161,9 @@ useEffect(() => {
 
 // Use keys for logic, translation for display
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
-  value: value,
+  value,
   text: t(`Filter.${key === "Organisation" ? "School" : key}`),
-  data: { key }, // store logic key in data
+  data: { key }, // property shorthand for key
 }));
 
 useEffect(() => {
