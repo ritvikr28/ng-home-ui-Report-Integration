@@ -983,7 +983,6 @@ export const handleBulkDeleteLogic = async ({
     } 
     else if(status === 409){
      setShowDeleteAbortBanner(true);
-     setShowDeleteErrorBanner(true);
       gtmAnalytics.pushEvent({
       event: "error_message",
       actionType: "Unable to delete"

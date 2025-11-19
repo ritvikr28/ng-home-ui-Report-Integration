@@ -967,6 +967,63 @@ describe('onClickSidePnlSecondaryBtn', () => {
     fireEvent.click(saveBtn);
     jest.useRealTimers();
 })
+
+ it("Catch 409 error code for failed prepareDownload", async () => {
+  jest.useFakeTimers();
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue([409]);
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});  
+ 
+ 
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+ 
+  // type search query
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+ 
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  jest.advanceTimersByTime(3000);
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
+
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+ 
+    fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
+    fireEvent.click(option);
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
+    jest.useRealTimers();
+})
 })
 it("sets excludedFileDetails and fileDetails correctly when select all with exclusions", async () => {
   jest.useFakeTimers();
