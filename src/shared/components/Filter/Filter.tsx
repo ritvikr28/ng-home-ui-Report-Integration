@@ -19,7 +19,7 @@ import {
   Notification,
   NotificationStatus
 } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { useTranslation,i18next  } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -104,6 +104,11 @@ const getDateString = (date: { day: string; month: string; year: string }) =>
 const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
   setDate({ day: "", month: "", year: "" });
 };
+
+useEffect(() => {
+  i18next.changeLanguage('cy');
+}, []);
+ 
 
 let validationText = "";
 if (searchSelectionError) {
@@ -445,7 +450,7 @@ const handleDateChange = (
       setRelatedToError("");
 
     // Use key for logic
-    if ((selectedKey === "Pupil" || selectedKey === "Staff") && localTagListArray.length === 0) {
+    if ((selectedKey === "Pupil" || selectedKey === "Disgybl"|| selectedKey === "Staff") && localTagListArray.length === 0) {
         setSearchSelectionError(t("Filter.entityIsRequired", { entity: t(`Filter.${selectedDisplayKey}`) }));
         return;
       }
@@ -467,7 +472,7 @@ const handleDateChange = (
 
       let ids: string[] = [];
       let entities: any[] = [];
-      if (selectedKey === "Pupil") {
+      if (selectedKey === "Pupil" || selectedKey === "Disgybl") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
         entities = localTagListArray;
       } else if (selectedKey === "Staff") {

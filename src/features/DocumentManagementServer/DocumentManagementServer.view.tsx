@@ -504,7 +504,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         {
             isShow: showErrorBanner,
             variant: "warning",
-            title: "Information unavailable",
+            title: t("DocumentManagementServer.informationUnavailable"),
             message: t("DocumentManagementServer.technicalIssueMessage"),
             autoclose: true
         },
@@ -522,9 +522,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     {
             isShow: showDeleteAbortBanner,
             variant: "warning",
-            title: `Unable to delete [document/documents]`,
-            message:
-            `This document cannot be deleted as it is currently being prepared for download. Please try again later.`,
+            title:t("DocumentManagementServer.unableToDelete"),
+            message:t("DocumentManagementServer.documentCannotBeDeletedNotification"),
             autoclose: false,
             onClickClose: () => setShowDeleteAbortBanner(false)
     }
