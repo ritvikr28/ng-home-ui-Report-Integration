@@ -745,17 +745,26 @@ switch (dialogType) {
 
         prepareDownload(selectedDocs)
           .then((statuses) => {
-            if (statuses.some((status: number) => status !== 204 && status !== 409)) {
-              setPrepareDownloadError(true);
-            }else if (statuses.some((status: number) => status === 409)) {
-              setPrepareDownloadAbortBanner(true);
-            } else if (totalSelectedCount > 1) {
-              setShowEmailNotification(true);
-            }
-            gtmAnalytics.pushEvent({
+             gtmAnalytics.pushEvent({
                 event: "key_action",
                 actionType: "prepare_download"
             });
+            if (statuses.some((status: number) => status !== 204 && status !== 409)) {
+              setPrepareDownloadError(true);
+              gtmAnalytics.pushEvent({
+                event: "error_message",
+                actionType: "Unable to prepare for download"
+            });
+            }else if (statuses.some((status: number) => status === 409)) {
+              setPrepareDownloadAbortBanner(true);
+              gtmAnalytics.pushEvent({
+                event: "error_message",
+                actionType: "Unable to prepare for download"
+            });
+            } else if (totalSelectedCount > 1) {
+              setShowEmailNotification(true);
+            }            
+            
           })
           .catch(() => {
             setIsSidePanelLoader(false);

@@ -504,10 +504,9 @@ const handleDateChange = (
         filterValue: ""
       });
     }
-
-    if ((localSelectedDateRange?.fromDate || localSelectedDateRange?.toDate) &&
-      Object.keys(localSelectedDateRange).length > 0) {
-      Object.keys(localSelectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
+    if ((selectedDateRange?.fromDate || selectedDateRange?.toDate) &&
+      Object.keys(selectedDateRange).length > 0) {
+      Object.keys(selectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
         event: "apply_filter",
         filterType: key === "fromDate" ? "From Date" : "To Date",
         filterValue: ""
