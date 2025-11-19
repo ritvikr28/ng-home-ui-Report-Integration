@@ -1279,6 +1279,7 @@ export function addUniqueTagItem({
 
   // Always normalize the ID for comparison
   const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
+  
   const alreadyExists = tagListArray.some(
     (tag) => {
       const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();

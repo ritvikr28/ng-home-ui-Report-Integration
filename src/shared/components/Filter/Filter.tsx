@@ -29,7 +29,6 @@ import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegis
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
 
-
 interface FilterDialogProps {
   dataTestId?: string;
   title: string;
@@ -106,8 +105,6 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
-
-
 let validationText = "";
 if (searchSelectionError) {
   validationText = searchSelectionError;
@@ -123,7 +120,6 @@ if (searchSelectionError) {
 } else {
   validationTextLevel = undefined;
 }
-
 
 const clearAll = () => {
   resetDateState(setFromDate);
