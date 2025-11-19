@@ -524,7 +524,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             variant: "warning",
             title:t("DocumentManagementServer.unableToDelete"),
             message:t("DocumentManagementServer.documentCannotBeDeletedNotification"),
-            autoclose: false,
+            autoclose: true,
             onClickClose: () => setShowDeleteAbortBanner(false)
     }
     ];
@@ -684,18 +684,22 @@ switch (dialogType) {
     dialogConfig = {
       cancelText: t("DocumentManagementServer.Cancel"),
       contentText: (() => {
-            if (alreadyDeletedFileCount > 0) {
-                return alreadyDeletedFileCount === 1
-                    ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: alreadyDeletedFileCount })
-                    : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: alreadyDeletedFileCount });
-            }
-            if (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) {
-                const deletedCount = (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) && isHeaderBoxChecked) ? (docData?.totalRecords - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) : alreadyDeletedFileCount;
-                return deletedCount === 1
-                    ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: deletedCount })
-                    : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: deletedCount });
-            }
-            return "";
+          if (alreadyDeletedFileCount > 0) {
+              return alreadyDeletedFileCount === 1
+                  ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: alreadyDeletedFileCount })
+                  : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: alreadyDeletedFileCount });
+          }
+          if (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) {
+              const deletedCount = (docData?.totalRecords > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) ? (docData?.totalRecords - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length)) : alreadyDeletedFileCount;
+              if (deletedCount === 1) {
+                  return t("DocumentManagementServer.documentCannotBeDownloaded", { count: deletedCount });
+              }
+              if (deletedCount > 1) {
+                  return t("DocumentManagementServer.documentsCannotBeDownloaded", { count: deletedCount });
+              }
+              return "";
+          }
+          return "";
         })(),
       isNotificationanner: true,
             notificationTitle:
@@ -744,17 +748,26 @@ switch (dialogType) {
 
         prepareDownload(selectedDocs)
           .then((statuses) => {
-            if (statuses.some((status: number) => status !== 204 && status !== 409)) {
-              setPrepareDownloadError(true);
-            }else if (statuses.some((status: number) => status === 409)) {
-              setPrepareDownloadAbortBanner(true);
-            } else if (totalSelectedCount > 1) {
-              setShowEmailNotification(true);
-            }
-            gtmAnalytics.pushEvent({
+             gtmAnalytics.pushEvent({
                 event: "key_action",
                 actionType: "prepare_download"
             });
+            if (statuses.some((status: number) => status !== 204 && status !== 409)) {
+              setPrepareDownloadError(true);
+              gtmAnalytics.pushEvent({
+                event: "error_message",
+                actionType: "Unable to prepare for download"
+            });
+            }else if (statuses.some((status: number) => status === 409)) {
+              setPrepareDownloadAbortBanner(true);
+              gtmAnalytics.pushEvent({
+                event: "error_message",
+                actionType: "Unable to prepare for download"
+            });
+            } else if (totalSelectedCount > 1) {
+              setShowEmailNotification(true);
+            }            
+            
           })
           .catch(() => {
             setIsSidePanelLoader(false);
