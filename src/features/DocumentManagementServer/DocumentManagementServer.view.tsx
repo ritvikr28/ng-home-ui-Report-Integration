@@ -116,7 +116,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
         const span = tag.querySelector('.essui-tag span');
-        if (span && span.textContent.trim().startsWith('+')) {
+        if (span && span.textContent && span.textContent.trim().startsWith('+')) {
             tag.classList.add('summary-tag');
         } else {
             tag.classList.remove('summary-tag');
