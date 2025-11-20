@@ -343,36 +343,42 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
 
-   const handleSorting = (columnName: string) => {
-  let apiColumnName = columnName;
-  switch (columnName) {
-    case t("DocumentManagementServer.dateAddedColumn"):
-      apiColumnName = "DateAdded";
-      break;
-    case t("DocumentManagementServer.documentColumn"):
-      apiColumnName = "Document";
-      break;
-    case t("DocumentManagementServer.formatColumn"):
-      apiColumnName = "Format";
-      break;
-    case t("DocumentManagementServer.sizeColumn"):
-      apiColumnName = "Size";
-      break;
-    case t("DocumentManagementServer.categoryColumn"):
-      apiColumnName = "Category";
-      break;
-    default:
-      return;
-  }
-  let newDirection = "Asc";
-  if (sortBy === apiColumnName) {
-    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-  }
- 
-  setSortBy(apiColumnName);
-  setSortDirection(newDirection);
-};
- 
+    const handleSorting = (columnName: string) => {
+        let apiColumnName = columnName;
+        switch (columnName) {
+            case t("DocumentManagementServer.dateAddedColumn"):
+                apiColumnName = "DateAdded";
+                break;
+            case t("DocumentManagementServer.documentColumn"):
+                apiColumnName = "Document";
+                break;
+            case t("DocumentManagementServer.formatColumn"):
+                apiColumnName = "Format";
+                break;
+            case t("DocumentManagementServer.sizeColumn"):
+                apiColumnName = "Size";
+                break;
+            case t("DocumentManagementServer.categoryColumn"):
+                apiColumnName = "Category";
+                break;
+            default:
+                return;
+        }
+        let newDirection = "Asc";
+        if (sortBy === apiColumnName) {
+            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+        }
+
+        setSortBy(apiColumnName);
+        setSortDirection(newDirection);
+
+        gtmAnalytics.pushEvent({
+            event: "interact_click",
+            elementType: "sort",
+            elementTextOrLabel: apiColumnName?.toLowerCase() === "dateadded" ? "Date added" : apiColumnName,
+            elementLocation: "body"
+        });
+    };
 
 
 const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISelectedItem) => {
@@ -405,28 +411,17 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
 };
  
     const getEmptyStateMsg = () => {
-  if (showErrorBanner) return t("DocumentManagementServer.informationUnavailable");
-  if (issearchDataLoading || isSearchLoading) return undefined;
+        if (showErrorBanner) return t("DocumentManagementServer.informationUnavailable");
+        if (issearchDataLoading || isSearchLoading) return undefined;
 
-  // Initial state: no search yet
-  if (!isSearchTriggered && !searchText) {
-    return "Use the search bar to search pupil, staff or organisation.";
-  }
+        // Initial state: no search yet
+        if (!isSearchTriggered && !searchText) {
+            return "Use the search bar to search pupil, staff or organisation.";
+        }
 
-  // After search, no results
-//   if (
-//     isSearchTriggered &&
-//     docData &&
-//     docData?.statusCode === 200 &&
-//     Array.isArray(docData?.data) &&
-//     docData?.data.length === 0
-//   ) {
-//     return "No data to display.";
-//   }
-
-  if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
-  return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
-};
+        if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
+        return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
+    };
 
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
@@ -800,19 +795,9 @@ switch (dialogType) {
 
 
     useEffect(() => {
-        gtmAnalytics.pushPageViewEvent();
+        gtmAnalytics.pushPageViewEvent("Admin Console");
     }, []);
 
-    useEffect(() => {
-        if (!isInitialLoad && sortBy) {
-            gtmAnalytics.pushEvent({
-                event: "interact_click",
-                elementType: "sort",
-                elementTextOrLabel: sortBy?.toLowerCase() === "dateadded" ? "Date added" : sortBy,
-                elementLocation: "body"
-            });
-        }
-    }, [sortBy, isInitialLoad]);
 
     const handleCloseSidePanel = () => {
         closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
@@ -939,9 +924,9 @@ const getDialogTitle = () => {
                                gtmAnalytics.pushEvent({
                                    event: "file_download",
                                    fileExtension: item?.name?.split('.').pop() || "",
-                                   fileName: "[DownloadFileName]",
+                                   fileName: "[RemovedFileName]",
                                    linkText: "Download",
-                                   linkUrl: "[DownloadLinkUrl]"
+                                   linkUrl: "[RemovedLinkUrl]"
                                });
                            } catch (error) {
                                setDownloadError(true);
