@@ -580,6 +580,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             deleteFiles,
             excludedCheckBoxIds,
             isHeaderBoxChecked,
+            setIsSearchDataLoading,
             availableFileIds
         });
 
