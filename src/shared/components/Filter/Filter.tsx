@@ -93,7 +93,7 @@ const FilterDialog = ({
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-  const selectedKey = localSelectedRelatedTo?.text;
+  const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
   const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
@@ -104,6 +104,7 @@ const getDateString = (date: { day: string; month: string; year: string }) =>
 const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
   setDate({ day: "", month: "", year: "" });
 };
+
 
 let validationText = "";
 if (searchSelectionError) {
@@ -157,9 +158,9 @@ useEffect(() => {
 
 // Use keys for logic, translation for display
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
-  key, // for logic
   value,
-  label: t(`Filter.${key === "Organisation" ? "School" : key}`), // for display
+  text: t(`Filter.${key === "Organisation" ? "School" : key}`),
+  data: { key }, // property shorthand for key
 }));
 
 useEffect(() => {
@@ -405,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-      setError("To date must be on or after 01/01/1900");
+      setError(t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }));
       setIsDateError(true);
       return;
     }
@@ -416,7 +417,7 @@ const handleDateChange = (
     }
     // Check if To date is before From date
     if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-      setError("To date should not be before From date.");
+      setError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
       return;
     } 
@@ -445,7 +446,7 @@ const handleDateChange = (
       setRelatedToError("");
 
     // Use key for logic
-    if ((selectedKey === "Pupil" || selectedKey === "Staff") && localTagListArray.length === 0) {
+    if ((selectedKey === "Pupil" || selectedKey === "Disgybl"|| selectedKey === "Staff") && localTagListArray.length === 0) {
         setSearchSelectionError(t("Filter.entityIsRequired", { entity: t(`Filter.${selectedDisplayKey}`) }));
         return;
       }
@@ -504,10 +505,9 @@ const handleDateChange = (
         filterValue: ""
       });
     }
-
-    if ((localSelectedDateRange?.fromDate || localSelectedDateRange?.toDate) &&
-      Object.keys(localSelectedDateRange).length > 0) {
-      Object.keys(localSelectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
+    if ((selectedDateRange?.fromDate || selectedDateRange?.toDate) &&
+      Object.keys(selectedDateRange).length > 0) {
+      Object.keys(selectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
         event: "apply_filter",
         filterType: key === "fromDate" ? "From Date" : "To Date",
         filterValue: ""
@@ -574,7 +574,7 @@ const getEntityLabel = (entity: string) => {
     >
       <>
        {relatedToSelected &&
-       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "") ? (
+       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.data?.data?.key ?? "") ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -633,15 +633,14 @@ const getEntityLabel = (entity: string) => {
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.label}
+              text={item.text}
               value={item.value.toString()}
             >
-              {item.label}
+              {item.text}
             </DropdownItem>
           ))}
         </Dropdown>
-
-        {(localSelectedRelatedTo && (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff")) && (
+        {(localSelectedRelatedTo && (localSelectedRelatedTo.data?.data.key === "Pupil" || localSelectedRelatedTo.data?.data.key === "Staff")) && (
           <>
             <Search
                   key={tagListArray.length + searchKey}

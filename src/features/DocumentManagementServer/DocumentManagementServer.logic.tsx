@@ -776,7 +776,8 @@ export function buildSelectedDocs(
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
   dateRange: { fromDate: string; toDate: string },
-  selectedEntities: any[]
+  selectedEntities: any[],
+  availableFileIds: string[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -785,7 +786,7 @@ export function buildSelectedDocs(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
+  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
   const excludedIdDetails =
     isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
@@ -903,10 +904,12 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox,
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
+  setShowDeleteAbortBanner,
   fetchGetDocumentDetails,
   deleteFiles,
   excludedCheckBoxIds,
-  isHeaderBoxChecked
+  isHeaderBoxChecked,
+  availableFileIds
 }: {
   allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
   docData: any,
@@ -924,16 +927,16 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox: (v: boolean) => void,
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
+  setShowDeleteAbortBanner : (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
   deleteFiles: (payload: any) => Promise<number>,
   excludedCheckBoxIds: string[],
-  isHeaderBoxChecked: boolean
-
+  isHeaderBoxChecked: boolean,
+  availableFileIds: string[]
 }) => {
 
-
-
   setShowDeleteSuccessToast(false);
+  setShowDeleteAbortBanner(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -943,22 +946,24 @@ export const handleBulkDeleteLogic = async ({
     documentRelatedTo: documentRealatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
-  : allSelectedDocs.map(doc => ({
-      fileId: doc.fileId,
-      registrationId: doc.registrationId,
-      externalId: doc.externalId,
-    })),
+      : allSelectedDocs
+        .filter(doc => availableFileIds?.includes(doc.fileId))
+        ?.map(doc => ({
+          fileId: doc.fileId,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId
+        })),
     excludedFileDetails:
-  isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
-    ? excludedCheckBoxIds.map(fileId => {
-        const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
-        return {
-          fileId,
-          externalId: matchingDoc?.externalId ?? "",
-          registrationId: matchingDoc?.registrationId ?? 0
-        };
-      })
-    : []
+      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
+        ? excludedCheckBoxIds.map(fileId => {
+          const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+          return {
+            fileId,
+            externalId: matchingDoc?.externalId ?? "",
+            registrationId: matchingDoc?.registrationId ?? 0
+          };
+        })
+        : []
   });
   try {
     const status = await deleteFiles(payload);
@@ -972,10 +977,17 @@ export const handleBulkDeleteLogic = async ({
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
       gtmAnalytics.pushEvent({
-      event: "key_action",
-      actionType: "delete"
+        event: "key_action",
+        actionType: "delete"
+      });
+    } 
+    else if(status === 409){
+     setShowDeleteAbortBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
     });
-    } else {
+    }else {
       setShowDeleteErrorBanner(true);
       gtmAnalytics.pushEvent({
       event: "error_message",
@@ -1267,19 +1279,19 @@ export function addUniqueTagItem({
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
   setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}): void {
   if (!item) return;
 
   let idKey = "organisationId";
-  if (selectedRelatedTo?.text === "Pupil") {
+  if (selectedRelatedTo?.data?.data.key === "Pupil") {
     idKey = "learnerExternalId";
-  } else if (selectedRelatedTo?.text === "Staff") {
+  } else if (selectedRelatedTo?.data?.data.key === "Staff") {
     idKey = "externalId";
   }
 
   // Always normalize the ID for comparison
   const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
-
+  
   const alreadyExists = tagListArray.some(
     (tag) => {
       const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
@@ -1410,6 +1422,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading,
   setSidePanelOpenReason,
   setIsSidePanelOpen,
+  setAvailableFileIds
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -1434,6 +1447,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading: (v: boolean) => void,
   setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
   setIsSidePanelOpen: (v: boolean) => void,
+  setAvailableFileIds: (v: string[]) => void
 }) => {
   setShowConfirmDialog(false);
   setShowRestrictedDeleteDialog(false);
@@ -1464,10 +1478,12 @@ export const handleEditSelectedOverFlowMenu = async ({
       const restricted = result?.data?.restrictedFileCount ?? 0;
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
       const available = result?.data?.availableFileCount ?? 0;
+      const availableFileIds = result?.data?.availableFileIds ?? [];
 
       setRestrictedFileCount(restricted);
       setAlreadyDeletedFileCount(alreadyDeleted);
       setAvailableFileCount(available);
+      setAvailableFileIds(availableFileIds);
 
       setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
       setIsPreDialogLoading(false);
