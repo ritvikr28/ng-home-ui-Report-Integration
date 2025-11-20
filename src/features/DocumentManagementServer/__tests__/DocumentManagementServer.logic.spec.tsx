@@ -2875,6 +2875,7 @@ describe("handleBulkDeleteLogic", () => {
   let setShowDeleteSuccessToast: jest.Mock;
   let fetchGetDocumentDetails: jest.Mock;
   let deleteFiles: jest.Mock;
+  let setIsSearchDataLoading: jest.Mock;
   let setShowDeleteAbortBanner: jest.Mock;
 
   const docData = {
@@ -2909,6 +2910,8 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteSuccessToast = jest.fn();
     fetchGetDocumentDetails = jest.fn();
     deleteFiles = jest.fn();
+    setIsSearchDataLoading = jest.fn();
+
     setShowDeleteAbortBanner = jest.fn();
   });
 
@@ -2936,6 +2939,7 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds: [],
       isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
@@ -2951,6 +2955,7 @@ describe("handleBulkDeleteLogic", () => {
   });
 
   it("should handle successful delete (status 204) with select all checked and exclusions", async () => {
+    jest.useFakeTimers();
     deleteFiles.mockResolvedValue(204);
 
     await handleBulkDeleteLogic({
@@ -2974,10 +2979,13 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds,
       isHeaderBoxChecked: true,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
 
+    jest.runAllTimers();
+    await Promise.resolve();
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
     expect(setSelectedCheckBoxIds).toHaveBeenCalledWith([]);
@@ -3012,6 +3020,7 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds,
       isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
@@ -3045,6 +3054,7 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds,
       isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
@@ -3077,7 +3087,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: true,
+      isHeaderBoxChecked: true, 
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
@@ -3111,6 +3122,7 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds: [],
       isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });
@@ -3146,6 +3158,7 @@ describe("handleBulkDeleteLogic", () => {
       deleteFiles,
       excludedCheckBoxIds: [],
       isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
       availableFileIds: ["1", "2"],
       setShowDeleteAbortBanner
     });

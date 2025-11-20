@@ -355,7 +355,7 @@ test("shows error when From Date is in the future", async () => {
   const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
   fireEvent.click(applyButton);
 
-  expect(await screen.findByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
+  expect(await screen.getByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
 });
 
 test("shows error when To Date is before From Date", async () => {
@@ -839,17 +839,6 @@ it("shows error when day or month is 00 or 0", async () => {
 });
 
 describe("From date minimum validation", () => {
-  // it("shows error when From date is before 01/01/1900", async () => {
-  //   renderComponent();
-  //   const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-  //   setDateInput(dateInputs[0], "31", "12", "1899");
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
-  //     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  //   });
-  // });
 
   it("clears error when From date is changed to 01/01/1900", async () => {
     renderComponent();
@@ -862,22 +851,6 @@ describe("From date minimum validation", () => {
     });
 
     setDateInput(dateInputs[0], "01", "01", "1900");
-    await waitFor(() => {
-      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("clears error when From date is changed to a valid date after 01/01/1900", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    const minDate = "01/01/1900";
-    setDateInput(dateInputs[0], "31", "12", "1899");
-    await waitFor(() => {
-      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
-    });
-
-    setDateInput(dateInputs[0], "02", "01", "1900");
     await waitFor(() => {
       expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);

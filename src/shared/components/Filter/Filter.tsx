@@ -507,11 +507,16 @@ const handleDateChange = (
     }
     if ((selectedDateRange?.fromDate || selectedDateRange?.toDate) &&
       Object.keys(selectedDateRange).length > 0) {
-      Object.keys(selectedDateRange).forEach((key) => gtmAnalytics.pushEvent({
-        event: "apply_filter",
-        filterType: key === "fromDate" ? "From Date" : "To Date",
-        filterValue: ""
-      }));
+      Object.keys(selectedDateRange).forEach((key) => {
+        const typedKey = key as keyof typeof selectedDateRange;
+        if (selectedDateRange[typedKey]) {
+          gtmAnalytics.pushEvent({
+            event: "apply_filter",
+            filterType: typedKey === "fromDate" ? "From Date" : "To Date",
+            filterValue: ""
+          });
+        }
+      });
     }
   };
 
