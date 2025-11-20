@@ -985,11 +985,11 @@ export const handleBulkDeleteLogic = async ({
     if(isHeaderBoxChecked === true){
     setTimeout(() => {
         fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-    }, 3500);
-  }
-  else{
-      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+      }, 3500);
     }
+    else{
+        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+      }
     } 
     else if(status === 409){
      setShowDeleteAbortBanner(true);
