@@ -116,6 +116,13 @@
         }
 
       };
+      @-moz-document url-prefix() {
+        .dynamic-table table {
+          border-collapse: separate !important;
+          border-spacing: 0 !important;
+          overflow: hidden;
+        }
+      }
   }
 
     .dynamic-table .essui-table__cell:last-child {
