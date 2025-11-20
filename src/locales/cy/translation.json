@@ -504,7 +504,8 @@
     "formatColumn": "Fformat",
     "sizeColumn": "Maint",
     "Okay": "Iawn",
-    "all": "Popeth"
+    "all": "Popeth",
+    "oneOrMoreSelectedDocumentsCannotBeDeleted": "One or more selected documents cannot be deleted as they are currently being prepared for download. Please try again later. If the issue persists, please get in touch with our support team."
   },
   "Filter": {
     "heading": "Chwilio uwch",

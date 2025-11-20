@@ -528,7 +528,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isShow: showDeleteAbortBanner,
             variant: "warning",
             title:t("DocumentManagementServer.unableToDelete"),
-            message:t("DocumentManagementServer.documentCannotBeDeletedNotification"),
+            message:t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
             autoclose: true,
             onClickClose: () => setShowDeleteAbortBanner(false)
     }
