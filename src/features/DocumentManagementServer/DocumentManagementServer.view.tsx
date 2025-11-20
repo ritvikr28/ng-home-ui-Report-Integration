@@ -117,7 +117,17 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     ...dateTagArr
     ];
 
-        const messages = [];
+    document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
+        const span = tag.querySelector('.essui-tag span');
+        if (span && span.textContent && span.textContent.trim().startsWith('+')) {
+            tag.classList.add('summary-tag');
+        } else {
+            tag.classList.remove('summary-tag');
+        }
+    });
+
+
+    const messages = [];
 
     if (restrictedFileCount > 0) {
         messages.push(
@@ -566,6 +576,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             deleteFiles,
             excludedCheckBoxIds,
             isHeaderBoxChecked,
+            setIsSearchDataLoading,
             availableFileIds
         });
 
