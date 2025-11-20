@@ -193,6 +193,20 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         "(min-width:320px) and (max-width: 1023.9px)"
     );
  
+    const isMobileViewSmall: boolean = useMediaQuery(
+        "(min-width:400px) and (max-width: 896px)"
+    );
+     useEffect(() => {
+            document.querySelectorAll('.tag-list-container .search-tagList').forEach(tag => {
+                const span = tag.querySelector('.essui-tag span');
+                if (span && span.textContent && span.textContent.trim().startsWith('+')) {
+                tag.classList.add('summary-tag');
+                } else {
+                tag.classList.remove('summary-tag');
+                }
+            });
+        }, [searchTagList, isMobileView, isMobileViewSmall]);
+
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {

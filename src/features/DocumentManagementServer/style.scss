@@ -250,7 +250,11 @@
 }
 
 
-.grid-wrapper #taglist-id .summary-tag .essui-icon-button {
+.grid-wrapper .tag-list-container .summary-tag .essui-icon-button {
+  display: none !important;
+}
+
+.grid-wrapper #taglist-id .multiple-tags-grid-item .essui-icon-button{
   display: none !important;
 }
 
