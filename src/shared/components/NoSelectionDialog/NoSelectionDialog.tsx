@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { Button, Dialog, DialogContent, DialogFooter, NotificationStatus, Notification, Loader, LoaderType } from "@essnextgen/ui-kit";
 // import './style.scss'
 
@@ -13,6 +14,8 @@ interface INoSelectionDialogProps {
 
 const NoSelectionDialog = (props: INoSelectionDialogProps) => {
   const { setShowDialog, message, title, notificationTitle, loading, onClose } = props;
+  const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
   if (loading) {
   return (
     <Dialog
@@ -55,7 +58,7 @@ const NoSelectionDialog = (props: INoSelectionDialogProps) => {
             setShowDialog(false);
             if (onClose) onClose();
           }}>
-          Okay
+          {t("DocumentManagementServer.Okay")}
         </Button>
       </DialogFooter>
     </Dialog>

@@ -526,13 +526,16 @@ export const fetchViewDownloadData = async ({
   setViewData,
   viewDownload,
   downloadPollingIntervalRef,
+  setIsViewDownloadError,
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
   if (showLoader) setIsSidePanelLoader(true);
+  setIsViewDownloadError(false); 
   try {
     const result = await viewDownload();
     if (result?.data && result?.status === 200) {
       setViewData(result.data);
+      setIsViewDownloadError(false);
 
       const hasInProgress = result.data.some(
         (item: { status: string }) =>
@@ -547,6 +550,7 @@ export const fetchViewDownloadData = async ({
             setViewData,
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
+            setIsViewDownloadError,
           });
         }, 10000);
       }
@@ -555,22 +559,29 @@ export const fetchViewDownloadData = async ({
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
-    }
-    if (!(result?.data && result?.status === 200) && pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
+    } else {
+      setIsViewDownloadError(true);
+      setViewData([]); 
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      return; 
     }
   } catch (err) {
     console.error("Error fetching view download details:", err);
+    setIsViewDownloadError(true);
+    setViewData([]);  // 🟢 Clear stale data
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
+    return; 
   } finally {
     setIsSidePanelLoader(false);
   }
 };
- 
+
 export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory(documentRealatedTo);
@@ -765,7 +776,8 @@ export function buildSelectedDocs(
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
   dateRange: { fromDate: string; toDate: string },
-  selectedEntities: any[]
+  selectedEntities: any[],
+  availableFileIds: string[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -774,7 +786,7 @@ export function buildSelectedDocs(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
+  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
   const excludedIdDetails =
     isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
@@ -892,10 +904,12 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox,
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
+  setShowDeleteAbortBanner,
   fetchGetDocumentDetails,
   deleteFiles,
   excludedCheckBoxIds,
   isHeaderBoxChecked,
+  availableFileIds,
   setIsSearchDataLoading
 }: {
   allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
@@ -914,15 +928,18 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox: (v: boolean) => void,
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
+  setShowDeleteAbortBanner : (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
   deleteFiles: (payload: any) => Promise<number>,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
-  setIsSearchDataLoading: (v: boolean) => void
-
+  setIsSearchDataLoading: (v: boolean) => void,
+  availableFileIds: string[]
 }) => {
+
   setShowDeleteSuccessToast(false);
   if (setIsSearchDataLoading) setIsSearchDataLoading(true);
+  setShowDeleteAbortBanner(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -932,22 +949,24 @@ export const handleBulkDeleteLogic = async ({
     documentRelatedTo: documentRealatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
-  : allSelectedDocs.map(doc => ({
-      fileId: doc.fileId,
-      registrationId: doc.registrationId,
-      externalId: doc.externalId,
-    })),
+      : allSelectedDocs
+        .filter(doc => availableFileIds?.includes(doc.fileId))
+        ?.map(doc => ({
+          fileId: doc.fileId,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId
+        })),
     excludedFileDetails:
-  isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
-    ? excludedCheckBoxIds.map(fileId => {
-        const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
-        return {
-          fileId,
-          externalId: matchingDoc?.externalId ?? "",
-          registrationId: matchingDoc?.registrationId ?? 0
-        };
-      })
-    : []
+      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
+        ? excludedCheckBoxIds.map(fileId => {
+          const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+          return {
+            fileId,
+            externalId: matchingDoc?.externalId ?? "",
+            registrationId: matchingDoc?.registrationId ?? 0
+          };
+        })
+        : []
   });
   try {
     const status = await deleteFiles(payload);
@@ -960,9 +979,9 @@ export const handleBulkDeleteLogic = async ({
       setShowDeleteErrorBanner(false);
       setShowDeleteSuccessToast(true);
       gtmAnalytics.pushEvent({
-      event: "key_action",
-      actionType: "delete"
-    });
+        event: "key_action",
+        actionType: "delete"
+      });
     if(isHeaderBoxChecked === true){
     setTimeout(() => {
         fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
@@ -971,7 +990,14 @@ export const handleBulkDeleteLogic = async ({
   else{
       fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
     }
-    } else {
+    } 
+    else if(status === 409){
+     setShowDeleteAbortBanner(true);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
+    }else {
       setShowDeleteErrorBanner(true);
       gtmAnalytics.pushEvent({
       event: "error_message",
@@ -1117,6 +1143,7 @@ export async function handleClearAllConfirm({
   setClearAllError,
   setShowConfirmDialog,
   getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+  setIsViewDownloadError
 }: {
   viewData: any[],
   clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
@@ -1130,6 +1157,7 @@ export async function handleClearAllConfirm({
   setClearAllError: (v: boolean) => void,
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
+  setIsViewDownloadError: (v: boolean) => void,
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
@@ -1145,6 +1173,7 @@ export async function handleClearAllConfirm({
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+        setIsViewDownloadError,
       });
       setIsSidePanelLoader(false);
     } else {
@@ -1260,19 +1289,19 @@ export function addUniqueTagItem({
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
   setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}): void {
   if (!item) return;
 
   let idKey = "organisationId";
-  if (selectedRelatedTo?.text === "Pupil") {
+  if (selectedRelatedTo?.data?.data.key === "Pupil") {
     idKey = "learnerExternalId";
-  } else if (selectedRelatedTo?.text === "Staff") {
+  } else if (selectedRelatedTo?.data?.data.key === "Staff") {
     idKey = "externalId";
   }
 
   // Always normalize the ID for comparison
   const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
-
+  
   const alreadyExists = tagListArray.some(
     (tag) => {
       const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
@@ -1403,6 +1432,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading,
   setSidePanelOpenReason,
   setIsSidePanelOpen,
+  setAvailableFileIds
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -1427,6 +1457,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading: (v: boolean) => void,
   setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
   setIsSidePanelOpen: (v: boolean) => void,
+  setAvailableFileIds: (v: string[]) => void
 }) => {
   setShowConfirmDialog(false);
   setShowRestrictedDeleteDialog(false);
@@ -1457,10 +1488,12 @@ export const handleEditSelectedOverFlowMenu = async ({
       const restricted = result?.data?.restrictedFileCount ?? 0;
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
       const available = result?.data?.availableFileCount ?? 0;
+      const availableFileIds = result?.data?.availableFileIds ?? [];
 
       setRestrictedFileCount(restricted);
       setAlreadyDeletedFileCount(alreadyDeleted);
       setAvailableFileCount(available);
+      setAvailableFileIds(availableFileIds);
 
       setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
       setIsPreDialogLoading(false);

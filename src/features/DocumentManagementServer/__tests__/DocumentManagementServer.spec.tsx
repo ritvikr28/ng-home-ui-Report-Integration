@@ -1,10 +1,26 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
 import * as Logic from "../DocumentManagementServer.logic";
  
+jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
+
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    getUsername: jest.fn(() => "TestUser"),
+    getOrgId: jest.fn(() => "Org123"),
+    getUserId: jest.fn(() => "User456"),
+    isAuthorised: jest.fn(() => true),
+    getAuthTokens: jest.fn(() => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyIsImtpZCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyJ9.eyJpc3MiOiJodHRwczovL3NpbXNpZC1wYXJ0bmVyLXN0c3NlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJwbS1zc28tZWRjNGE3ZWMtNjI0Zi00OWQ0LTkxODEtNTU1YjczMDFlMzNmIiwiZXhwIjoxNjcyMDU2NTk5LCJuYmYiOjE2NzIwNTYyOTksImlhdCI6MTY3MjA1NjI5OSwic2lkIjoiNzMyNzAzZWQ3NzQ5ZTZhZWE3ZjJlN2U0OTdlMDM5ZjQiLCJzdWIiOiIxNDk5MDZ8RjZDMTdBMDItRkVCMC00OUFELTg4MjQtRTZBOTQxOTUwQkFDfEluaXRpYWwuQWRtaW4zMEBzaW1zaWQucGxhY2Vob2xkZXIuaWRlbnRpdHlmb3IuY28udWt8U0lNUyBJRHw2NTNhNDVjZi1hOGY3LTQyM2EtYjEzNC1jOGVjMmE0NGE1OGQiLCJhdXRoX3RpbWUiOjE2NzIwNTYyOTcsImlkcCI6Imlkc3J2IiwiTGFzdExvZ2luVGltZXN0YW1wIjoiRGVjIDI2LCAyMDIyIDEwOjE5OjEzIiwiUGFzc3dvcmRDaGFuZ2VkVGltZXN0YW1wIjoiRGVjIDA4LCAyMDIxIDE3OjAyOjQwIiwic2l0ZSI6IkI0MUJCMkFCIiwibGF1bmNoZXIiOiJ3ZWItYWNjZXNzIiwiU2l0ZVJvbGUiOiJBZG1pbiIsImhvbWVvcmdhbmlzYXRpb25pZGVudGlmaWVyIjoiQjQxQkIyQUItMzk3QS00RkNGLUJBNTktNjE1NkY0NTUzMjY5IiwibXVsdGlwbGVvcmdhbmlzYXRpb25zIjoiZmFsc2UiLCJuYW1lIjoiSW5pdGlhbCBBZG1pbiIsInJvbGUiOiJhZG1pbkBiNDFiYjJhYi0zOTdhLTRmY2YtYmE1OS02MTU2ZjQ1NTMyNjkiLCJhZGRpdGlvbmFscm9sZXNwcmVzZW50IjoiZmFsc2UiLCJ1c2Vyb3JnYW5pc2F0aW9uaWRlbnRpZmllciI6IjlGMEU2RTUyLTVGMjItNDYxRi05RjNCLTYwNEJFRDQxMEU5Q3xCNDFCQjJBQi0zOTdBLTRGQ0YtQkE1OS02MTU2RjQ1NTMyNjl8UyIsInByb3ZpZGVyIjoiU0lNUyBJRCIsInByb3ZpZGVyaWQiOiIxNDk5MDYiLCJwcm92aWRlcm5hbWUiOiJJbml0aWFsIEFkbWluIiwidmVuZG9yaWQiOiIyODYxQTAwMC03OTM0LTQ0QkYtOUY2RS05NkE5MjIyNjZGMzkiLCJhcHBsaWNhdGlvbmlkIjoiMUEyQjMyQzctOUMzOS00Q0NGLUE1ODEtRTI1M0E5RkEwN0E0IiwiYXBwbGljYXRpb25uYW1lIjoiRVNTLVNhdGVsbGl0ZXMtRGV2ZWxvcG1lbnQtU3RhZmYgJiBBZG1pbiIsImFtciI6WyJwYXNzd29yZCJdfQ.0dhbAIzNyXm5oJ679cOuiqwT8RgqcBhEGACfvxfGBLKHSNxvlBKqwmtRNxySYIc4MgH3w2sT4SLpo8yaEihjk9AXzfSPshHKbfAigb82834xnfMAEDnyc0hMT9jaxvfYVw8ZORPsVw68mxAwt4-WTVoUxLy4IK7tpI-Pzc_aFpW-BbMHr9Ctt_ls8EPH8NxJ22LnNbxJPSx3iBn8OwvcCIf2TeJL0fs30_VAm-XMLnF4w2SMbOC5O8CNd-ii6dmDLDriYYVzp-mQ4NiARohGJyDl6IwdgX6wXsSJB78Yy6AmCxUIXPQk4TYg_8wI9a_XNgilY5iMmEV6GXoLtm4e0A")
+  },
+  MatchPermissions: {
+    any: "any", // ← mock value (doesn't matter what)
+  },
+}));
+
  jest.mock("@essnextgen/ui-intl-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-intl-kit"),
   useTranslation: () => ({
@@ -109,6 +125,15 @@ import * as Logic from "../DocumentManagementServer.logic";
       if (key === "Filter.pupilName") {
         return "Pupil name";
       }
+      if (key === "DocumentManagementServer.Cancel") {
+        return "Cancel";
+      }
+      if (key === "DocumentManagementServer.Okay") {
+        return "Okay";
+      }
+      if (key === "DocumentManagementServer.informationUnavailable") {
+        return "Information unavailable";
+        }
       return key;
     }
   })
@@ -510,6 +535,16 @@ describe("Additional tests to increase coverage", () => {
   });
  
  it("shows NoSelectionDialog when no item selected for delete", async () => {
+//   jest.mock("@essnextgen/auth-ui", () => ({
+//   ...jest.requireActual("@essnextgen/auth-ui"),
+//   authService: {
+//     isAuthorised: () => true,
+//     getAuthTokens: () => ({
+//       accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6Ik1vY2sgVXNlciIsIm9yZ2FuaXNhdGlvbiI6Ik9yZzEyMyJ9.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+//     }),
+//   },
+//   MatchPermissions: { all: "all" }
+// }));
   render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
@@ -888,6 +923,63 @@ describe('onClickSidePnlSecondaryBtn', () => {
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
+  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 2,
+  }
+});  
+ 
+ 
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+ 
+  // type search query
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+ 
+  // wait for suggestion to show up
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  jest.advanceTimersByTime(3000);
+
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  // click suggestion
+  fireEvent.click(suggestionNode[0]);
+
+  // verify document is displayed
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+ 
+    fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+    fireEvent.click(await screen.findByText("Actions"));
+    const option = await screen.findByTestId("option-test-0");
+    fireEvent.click(option);
+    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    fireEvent.click(saveBtn);
+    jest.useRealTimers();
+})
+
+ it("Catch 409 error code for failed prepareDownload", async () => {
+  jest.useFakeTimers();
+     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (Logic.prepareDownload as jest.Mock).mockResolvedValue([409]);
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [
