@@ -1285,12 +1285,10 @@ it("sets visible breadcrumbs to last item on mobile view", () => {
   // Trigger resize event
   window.dispatchEvent(new Event("resize"));
 
-  const { container } = render(<MemoryRouter>
+  render(<MemoryRouter>
     <DocumentManagementServerView />
   </MemoryRouter>);
 
-  // The breadcrumbs should only show the last item ("Documents")
-  console.log(container.innerHTML);
   const breadcrumb = document.querySelector('[data-test-id="breadcrumb-test-id"]');
   expect(breadcrumb).toBeInTheDocument();
 });

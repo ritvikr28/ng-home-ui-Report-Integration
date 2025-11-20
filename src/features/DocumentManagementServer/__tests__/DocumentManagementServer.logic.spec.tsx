@@ -2859,6 +2859,7 @@ describe("handleBulkDeleteLogic", () => {
   let setShowDeleteSuccessToast: jest.Mock;
   let fetchGetDocumentDetails: jest.Mock;
   let deleteFiles: jest.Mock;
+  let setIsSearchDataLoading: jest.Mock;
 
   const docData = {
     data: [
@@ -2892,6 +2893,8 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteSuccessToast = jest.fn();
     fetchGetDocumentDetails = jest.fn();
     deleteFiles = jest.fn();
+    setIsSearchDataLoading = jest.fn();
+
   });
 
   it("should handle successful delete (status 204) with select all unchecked", async () => {
@@ -2917,7 +2920,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading
     });
 
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
@@ -2931,6 +2935,7 @@ describe("handleBulkDeleteLogic", () => {
   });
 
   it("should handle successful delete (status 204) with select all checked and exclusions", async () => {
+    jest.useFakeTimers();
     deleteFiles.mockResolvedValue(204);
 
     await handleBulkDeleteLogic({
@@ -2953,9 +2958,12 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: true
+      isHeaderBoxChecked: true,
+      setIsSearchDataLoading
     });
 
+    jest.runAllTimers();
+    await Promise.resolve();
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
     expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
     expect(setSelectedCheckBoxIds).toHaveBeenCalledWith([]);
@@ -2989,7 +2997,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading
     });
 
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
@@ -3020,7 +3029,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds,
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading
     });
 
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(true);
@@ -3051,7 +3061,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: true
+      isHeaderBoxChecked: true, 
+      setIsSearchDataLoading
     });
 
     // fileDetails should be empty in payload
@@ -3082,7 +3093,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading
     });
 
     const callPayload = deleteFiles.mock.calls[0][0];
@@ -3115,7 +3127,8 @@ describe("handleBulkDeleteLogic", () => {
       fetchGetDocumentDetails,
       deleteFiles,
       excludedCheckBoxIds: [],
-      isHeaderBoxChecked: false
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading
     });
 
     const callPayload = deleteFiles.mock.calls[0][0];
