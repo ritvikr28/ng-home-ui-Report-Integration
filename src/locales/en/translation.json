@@ -560,7 +560,8 @@
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
     "sizeColumn": "Size",
-    "Okay": "Okay"
+    "Okay": "Okay",
+    "oneOrMoreSelectedDocumentsCannotBeDeleted": "One or more selected documents cannot be deleted as they are currently being prepared for download. Please try again later. If the issue persists, please get in touch with our support team."
   }, 
   "Filter": {
     "heading": "Advanced search",
