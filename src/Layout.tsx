@@ -229,7 +229,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-
+console.log("Test Home Changes Reflecting in One Go")
   console.log("Feature Flag - SendNotification:", sendNotificationFlagr)
 
   return (
