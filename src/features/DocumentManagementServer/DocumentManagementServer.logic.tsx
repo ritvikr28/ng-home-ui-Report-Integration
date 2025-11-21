@@ -982,14 +982,38 @@ export const handleBulkDeleteLogic = async ({
         event: "key_action",
         actionType: "delete"
       });
-    if(isHeaderBoxChecked === true){
-    setTimeout(() => {
-        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-      }, 3500);
+    if (isHeaderBoxChecked === true) {
+    let timeoutMs = 0;
+    const count = availableFileIds?.length || 0;
+    if (count <= 100) {
+      timeoutMs = 0;
+    } else if (count > 100 && count <= 200) {
+      timeoutMs = 1000;
+      console.log('Timeout set to 1000ms for count:', count);
+    } else if (count > 200 && count <= 400) {
+      timeoutMs = 2500;
+      console.log('Timeout set to 2500ms for count:', count);
+    } else if (count > 400 && count <= 650) {
+      timeoutMs = 4500;
+      console.log('Timeout set to 4500ms for count:', count);
+    } else if (count > 650 && count <= 1000) {
+      timeoutMs = 6000;
+      console.log('Timeout set to 6000ms for count:', count); 
     }
-    else{
+    else if (count > 1000) {
+      timeoutMs = 10000;
+      console.log('Timeout set to 10000ms for count:', count);
+    }
+    if (timeoutMs > 0) {
+      setTimeout(() => {
         fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-      }
+      }, timeoutMs);
+    } else {
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    }
+  } else {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+  }
     } 
     else if(status === 409){
      setShowDeleteAbortBanner(true);
@@ -1536,3 +1560,14 @@ export const handleEditSelectedOverFlowMenu = async ({
     });
   }
 };
+
+export function applySummaryTagClass() {
+  document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
+    const span = tag.querySelector('.essui-tag span');
+    if (span && span.textContent && span.textContent.trim().startsWith('+')) {
+      tag.classList.add('summary-tag');
+    } else {
+      tag.classList.remove('summary-tag');
+    }
+  });
+}

@@ -176,7 +176,10 @@ jest.mock("../ApiService", () => ({
  
  
 const mockCategories = [
-  { application: "App1", registrationId: [1], section: ["Section1"] }
+  { application: "App1", registrationId: [1], section: ["Section1"] },
+  { application: "App2", registrationId: [1], section: ["Section2"] },
+  { application: "App3", registrationId: [1], section: ["Section3"] },
+  { application: "App4", registrationId: [1], section: ["Section4"] }
 ];
  
 const mockDocData = {
