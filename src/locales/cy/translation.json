@@ -458,7 +458,6 @@
     "clearAllErrorTitle":"Methu clirio lawrlwythiadau",
     "clearAllErrorMessage":"Mae problem dechnegol wedi atal ni rhag clirio'r lawrlwythiadau. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "prepareDownloadErrorTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
-    "prepareDownloadAbortMessage": "Ni ellir lawrlwytho'r ddogfen hon gan ei bod eisoes wedi'i dileu.",
     "prepareDownloadErrorMessage": "Mae problem dechnegol wedi atal ni rhag paratoi {{files}} i'w lawrlwytho. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "downloadsAppearHere": "Bydd ffeiliau rydych chi'n eu lawrlwytho yn ymddangos yma.",
     "preparedDownloadsExpireMsg": "Bydd lawrlwythiadau parod yn dod i ben ar ôl 5 diwrnod",
@@ -482,6 +481,7 @@
     "documentCannotBeDeletedMsg": "{{count}} Methu dileu'r ddogfen hon am ei bod yn cael ei pharatoi i'w lawrlwytho ar hyn o bryd. Ceisiwch eto yn nes ymlaen.",
     "documentsCannotBeDeletedMsg": "{{all}}{{count}} Nid oes modd dileu dogfennau gan eu bod ar hyn o bryd yn cael eu paratoi ar gyfer lawrlwytho. Ceisiwch eto yn nes ymlaen.",
     "documentAlreadyDeletedMsg": "Mae'r ddogfen eisoes wedi ei dileu.",
+    "singleDocumentAlreadyDeletedMsg": "{{count}} mae'r ddogfen eisoes wedi'i dileu.",
     "documentsAlreadyDeletedMsg": "Mae {{all}} {{count}} dogfen eisoes wedi'u dileu.",
     "documentCannotBeDownloaded": "Ni ellir lawrlwytho'r ddogfen gan ei bod wedi'i dileu.",
     "documentsCannotBeDownloaded": "ni ellir lawrlwytho dogfennau gan eu bod eisoes wedi'u dileu.",
@@ -505,7 +505,8 @@
     "sizeColumn": "Maint",
     "Okay": "Iawn",
     "all": "Popeth",
-    "oneOrMoreSelectedDocumentsCannotBeDeleted": "One or more selected documents cannot be deleted as they are currently being prepared for download. Please try again later. If the issue persists, please get in touch with our support team."
+    "oneOrMoreSelectedDocumentsCannotBeDeleted": "Ni ellir dileu un neu fwy o ddogfennau a ddewiswyd gan eu bod yn cael eu paratoi i'w lawrlwytho ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "oneOrMoreSelectedDocumentsCannotBeDownloaded": "Ni ellir lawrlwytho un neu fwy o'r dogfennau a ddewiswyd gan eu bod eisoes wedi'u dileu. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth."
   },
   "Filter": {
     "heading": "Chwilio uwch",
