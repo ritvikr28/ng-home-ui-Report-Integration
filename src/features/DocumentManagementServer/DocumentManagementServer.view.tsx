@@ -6,7 +6,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -116,16 +116,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     ...categoryArr,
     ...dateTagArr
     ];
-
-    document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
-        const span = tag.querySelector('.essui-tag span');
-        if (span && span.textContent && span.textContent.trim().startsWith('+')) {
-            tag.classList.add('summary-tag');
-        } else {
-            tag.classList.remove('summary-tag');
-        }
-    });
-
+    
 
     const messages = [];
 
@@ -193,6 +184,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         "(min-width:320px) and (max-width: 1023.9px)"
     );
  
+    const isMobileViewSmall: boolean = useMediaQuery(
+        "(min-width:400px) and (max-width: 896px)"
+    );
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
@@ -227,6 +221,31 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
 
  
+    useEffect(() => {
+        const tagListNode = document.getElementById("taglist-id");
+        if (!tagListNode) {
+             return () => {};
+        }
+
+        // Initial run
+        applySummaryTagClass();
+
+        // Set up MutationObserver
+        const observer = new MutationObserver(() => {
+            applySummaryTagClass();
+        });
+
+        observer.observe(tagListNode, { childList: true, subtree: true });
+
+        return () => observer.disconnect();
+    }, [
+        searchTagList,
+        isMobileView,
+        isMobileViewSmall,
+        tableKey,
+        searchInput,
+        selectedCategories
+    ]);
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
@@ -266,6 +285,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
         }
+        applySummaryTagClass();
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
     useEffect(() => {
