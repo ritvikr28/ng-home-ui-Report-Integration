@@ -142,6 +142,24 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                 })
         );
     }
+
+    if (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) {
+        const deletedCount = (docData?.totalRecords > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) ? (docData?.totalRecords - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length)) : alreadyDeletedFileCount;
+        if (deletedCount === 1) {
+            messages.push(
+                t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: deletedCount })
+            );
+        } else if (deletedCount > 1) {
+            messages.push(
+                t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+                    all: (alreadyDeletedFileCount === 0 && restrictedFileCount === 0 && availableFileCount === 0) ? t("DocumentManagementServer.All") : "",
+                    count: deletedCount
+                })
+            );
+        }
+    }
+
+
     const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
 
     
@@ -671,10 +689,10 @@ switch (dialogType) {
       contentText,
       isNotificationanner: true,
       notificationTitle: availableFileCount === 1
-        ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
-        : t("DocumentManagementServer.documentsWillBeGoneForever", {
-            all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
-            count: availableFileCount
+            ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
+            : t("DocumentManagementServer.documentsWillBeGoneForever", {
+                all: availableFileCount === docData?.totalRecords || (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? t("DocumentManagementServer.All") : "",
+                count: (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? totalSelectedCount : availableFileCount
             }),
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
@@ -1022,11 +1040,13 @@ const getDialogTitle = () => {
                                     count: restrictedFileCount
                                     });
                                 }
-                                if (alreadyDeletedFileCount > 0) {
-                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1) {
+                                if (alreadyDeletedFileCount > 0 ||( totalSelectedCount !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) && isHeaderBoxChecked) ) {
+                                    const deletedCount = (totalSelectedCount > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) && isHeaderBoxChecked) ? (totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) : alreadyDeletedFileCount;
+
+                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1 || deletedCount > 1) {
                                         return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
                                     }
-                                return alreadyDeletedFileCount === 1
+                                return alreadyDeletedFileCount === 1 || deletedCount === 1
                                     ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                                     : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount });
                                 }
@@ -1069,9 +1089,12 @@ const getDialogTitle = () => {
                             : t("DocumentManagementServer.documentsCannotBeDownloadedTitle", { count: alreadyDeletedFileCount })
                         }
                         notificationTitle={
-                        alreadyDeletedFileCount === 1
-                            ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: alreadyDeletedFileCount })
-                            : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount })
+                            (() => {
+                                    const deletedCount = totalSelectedCount > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount ) && isHeaderBoxChecked ? totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) : alreadyDeletedFileCount;
+                                    return deletedCount === 1
+                                        ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: deletedCount })
+                                        : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === totalSelectedCount || (alreadyDeletedFileCount === 0 && restrictedFileCount === 0 && availableFileCount === 0) ? t("DocumentManagementServer.All") : "", count: deletedCount });
+                            })()
                         }
                         loading={isPreDialogLoading}
                         onClose={() => {
@@ -1351,7 +1374,7 @@ const getDialogTitle = () => {
                                             <Notification
                                                 status={NotificationStatus.WARNING}
                                                 title={t("DocumentManagementServer.prepareDownloadErrorTitle")}
-                                                message={t("DocumentManagementServer.prepareDownloadAbortMessage")}
+                                                message={t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDownloaded")}
                                                 autoclose
                                                 onClickClose={() => setPrepareDownloadAbortBanner(false)}
                                             />

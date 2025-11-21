@@ -1010,21 +1010,24 @@ export const handleBulkDeleteLogic = async ({
     fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
   }
     } 
-    else if(status === 409){
-     setShowDeleteAbortBanner(true);
+    else if (status === 409) {
+      setShowDeleteAbortBanner(true);
+      setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
-      event: "error_message",
-      actionType: "Unable to delete"
-    });
-    }else {
+        event: "error_message",
+        actionType: "Unable to delete"
+      });
+    } else {
       setShowDeleteErrorBanner(true);
+      setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
-      event: "error_message",
-      actionType: "Unable to delete"
-    });
+        event: "error_message",
+        actionType: "Unable to delete"
+      });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    setIsSearchDataLoading(false);
     gtmAnalytics.pushEvent({
       event: "error_message",
       actionType: "Unable to delete"
@@ -1519,9 +1522,10 @@ export const handleEditSelectedOverFlowMenu = async ({
       setShowRestrictedDeleteDialog(false);
 
       if (
-        selectedItem.value === "Prepare download" &&
-        available === 0 &&
-        alreadyDeleted > 0
+        selectedItem.value === "Prepare download" && (
+          (available === 0 && alreadyDeleted > 0)
+          || (totalSelectedCount > 0 && available === 0 && alreadyDeleted === 0 && restricted === 0)
+        )
       ) {
         setShowRestrictedPrepareDialog(true);
         setShowConfirmDialog(false);
@@ -1529,7 +1533,7 @@ export const handleEditSelectedOverFlowMenu = async ({
       }
 
       if (selectedItem.value === "Delete") {
-        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+        if (available === 0 && ((restricted > 0 || alreadyDeleted > 0) || (totalSelectedCount > 0 && alreadyDeleted === 0 && restricted === 0))) {
           setIsDialogLoading(false);
           setShowRestrictedDeleteDialog(true);
           setShowConfirmDialog(false);
