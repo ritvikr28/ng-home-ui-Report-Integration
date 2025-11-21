@@ -20,13 +20,6 @@ const FilterDialogView = ({ setFilterBtnClicked }: { setFilterBtnClicked: React.
                     setIsDialogOpen(false)
                 }}
                 title="Filter by"
-            // templateProps={{
-            //     contentText: <DialogContent />,
-            //     onCancel: function noRefCheck() { },
-            //     onConfirm: function noRefCheck() { },
-            //     template: DialogTemplate.Confirmation
-            // }}
-
             >
                 <DialogContent>
                     <Content />
@@ -35,18 +28,19 @@ const FilterDialogView = ({ setFilterBtnClicked }: { setFilterBtnClicked: React.
                     <div className="dialog-footer" style={{ display: "flex", gap: "10px", width: "100%", flexDirection: "row-reverse" }}>
                         <Button
                             dataTestId="close-btn"
-                            onClick={()=>{}}
-                            color={ButtonColor.Secondary}
-                        >
-                            Clear all
-                        </Button>
-                        <Button
-                            dataTestId="close-btn"
-                            onClick={() => {}}
+                            onClick={() => { }}
                             color={ButtonColor.Primary}
                         >
                             Apply
                         </Button>
+                        <Button
+                            dataTestId="close-btn"
+                            onClick={() => { }}
+                            color={ButtonColor.Secondary}
+                        >
+                            Clear all
+                        </Button>
+
                     </div>
                 </DialogFooter>
             </Dialog>

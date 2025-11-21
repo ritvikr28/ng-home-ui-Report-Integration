@@ -1,11 +1,11 @@
 import { render } from "@testing-library/react";
 import * as authUi from "@essnextgen/auth-ui";
 import * as flagr from "@essnextgen/ui-flagr";
-import * as schoolServices from "../../../shared/services/schoolDomain/schoolServices";
-import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
-import MainPanel from "../MainPanel.logic";
-import MainPanelView from "../MainPanel.view";
-import * as flagrUtils from "../../../shared/utils/flagr-utils";
+import * as schoolServices from "../../../../shared/services/schoolDomain/schoolServices";
+import { ISchoolNameDataResponse } from "../../../../shared/model/SchoolDomain/responsemodels";
+import MainPanel from "../../MainPanel.logic";
+import MainPanelView from "../../MainPanel.view";
+import * as flagrUtils from "../../../../shared/utils/flagr-utils";
 
 const mockSchoolDetails: ISchoolNameDataResponse = {
   schoolName: "test",
