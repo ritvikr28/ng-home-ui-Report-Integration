@@ -99,9 +99,8 @@ export const getNotificationTableHeadersData = (
     }
   ];
 
-const generateId = (index: number): string => {
-  return `notif-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-};
+const generateId = (index: number): string =>
+  `notif-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 const formatDate = (daysAgo: number): string => {
   const date = new Date();
@@ -177,7 +176,7 @@ export const generateNotificationData = (): {
   const statuses = ["Read", "Unread"];
   const priorities = ["Low", "Medium", "High"];
 
-  for (let i = 0; i < 0; i++) {
+  for (let i = 0; i < 85; i += 1) {
     const template = notificationTemplates[i % notificationTemplates.length];
     const status = statuses[Math.floor(Math.random() * statuses.length)];
     const priority = template.priority || priorities[Math.floor(Math.random() * priorities.length)];
