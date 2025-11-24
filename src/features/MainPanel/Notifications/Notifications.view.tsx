@@ -2,16 +2,25 @@
 import { Breadcrumbs, ControlledList, NotificationStatus, DialogTemplate, ResponseCode, Button, ButtonColor, ButtonSize, IconColor, ButtonIconPosition } from "@essnextgen/ui-kit";
 import React from "react";
 import "./style.scss";
-import { getNotificationTableHeadersData, notificationTableRows } from "./helper";
+import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
 import { useNotification } from "./useNotification";
 import NotificationSidePanelView from "./components/NotificationSidePanelComponent/NotificationSidePanel.view";
 
 const NotificationView = () => {
-    const { filterBtnClicked, setFilterBtnClicked } = useNotification();
+    const {
+        filterBtnClicked,
+        setFilterBtnClicked,
+        currentPage,
+        totalPages,
+        paginatedNotifications,
+        totalNotifications,
+        handlePageChange
+    } = useNotification();
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
 
+    const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0;
     return (
         <div className="ctf-layout" data-testid="ctf-layout">
             <div style={{ marginBottom: 16, width: "100%" }}>
@@ -77,7 +86,7 @@ const NotificationView = () => {
                                     "isShowDivider": true
                                 }
                             ]}
-                            emptyStateMsg="CTF will appear here once they are generated"
+                            emptyStateMsg="No notifications to display"
                             onAddEventBtnClick={() => { }}
                             groupTagsEnabled
                             headingText="Notification Centre"
@@ -95,7 +104,7 @@ const NotificationView = () => {
                             resultNotFoundMessage=""
                             showConfirmDialog
                             subHeadingText=""
-                            tableBodyData={notificationTableRows as any}
+                            tableBodyData={paginatedNotifications as any}
                             tableFirstColumnWidth="10px"
                             tableHeadersData={getNotificationTableHeadersData(setSideIsOpen, setSelectedItem) as any}
                             tableLastColumnWidth="10px"
@@ -133,15 +142,13 @@ const NotificationView = () => {
                             secondaryButtonTitle="Close"
                             isShowCheckboxCol={true}
                             isShowThirdElement={true}
-                            isShowdynamictableNoMsg={false}
-                            emptyRowResponseMessage="No data retrieved"
+                            isShowdynamictableNoMsg={totalNotifications === 0}
+                            emptyRowResponseMessage="No notifications to display"
                             emptyRowResponseCode={ResponseCode.Error}
-                            isPagination
-                            paginationCount={
-                                5
-                            }
-                            paginationOnChange={() => { }}
-                            paginationPage={1}
+                            isPagination={shouldShowPagination}
+                            paginationCount={totalPages}
+                            paginationOnChange={handlePageChange}
+                            paginationPage={currentPage}
                         />
                         <NotificationSidePanelView
                             sideIsOpen={sideIsOpen}

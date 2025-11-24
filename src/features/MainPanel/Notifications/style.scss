@@ -42,7 +42,7 @@ body {
     height: 40px !important;
     width: 100% !important;
     margin-left: 10px !important;
-    padding-top: 0 !important;
+    // padding-top: 0 !important;
   }
 
   /* stylelint-disable-next-line selector-class-pattern */
@@ -163,7 +163,7 @@ body {
 
 .notification-layout-header #edit-selected-btn,
 .notification-layout-header #primary-button-id {
-  display: unset !important;
+  display: flex !important;
 }
 
 .notification-layout-header .filter-tool-grid-container.essui-grid-container {

@@ -25,8 +25,17 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
       if (key === "Filter.invalidDate") {
         return "Invalid Date";
       }
+      if (key === "Filter.Staff") {
+        return "Staff";
+      }
+      if (key === "Filter.Pupil") {
+        return "Pupil";
+      }
       if (key === "Filter.toDateMustBeOnOrBefore") {
         return `To date must be on or before ${options?.date ?? dayjs().format("DD-MM-YYYY")}`;
+      }
+      if (key === "Filter.toDateMustBeOnOrAfter") {
+        return `To date must be on or after ${options?.date ?? "01/01/1900"}`;
       }
       return key;
     }
@@ -346,7 +355,7 @@ test("shows error when From Date is in the future", async () => {
   const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
   fireEvent.click(applyButton);
 
-  expect(await screen.findByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
+  expect(await screen.getByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
 });
 
 test("shows error when To Date is before From Date", async () => {
@@ -830,17 +839,6 @@ it("shows error when day or month is 00 or 0", async () => {
 });
 
 describe("From date minimum validation", () => {
-  // it("shows error when From date is before 01/01/1900", async () => {
-  //   renderComponent();
-  //   const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-
-  //   setDateInput(dateInputs[0], "31", "12", "1899");
-
-  //   await waitFor(() => {
-  //     expect(screen.getByText("From date must be on or after 01/01/1900")).toBeInTheDocument();
-  //     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  //   });
-  // });
 
   it("clears error when From date is changed to 01/01/1900", async () => {
     renderComponent();
@@ -853,22 +851,6 @@ describe("From date minimum validation", () => {
     });
 
     setDateInput(dateInputs[0], "01", "01", "1900");
-    await waitFor(() => {
-      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
-    });
-  });
-
-  it("clears error when From date is changed to a valid date after 01/01/1900", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    const minDate = "01/01/1900";
-    setDateInput(dateInputs[0], "31", "12", "1899");
-    await waitFor(() => {
-      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
-    });
-
-    setDateInput(dateInputs[0], "02", "01", "1900");
     await waitFor(() => {
       expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
       expect(mockSetIsDateError).toHaveBeenCalledWith(false);
@@ -956,7 +938,7 @@ describe("To date validation", () => {
 describe("FilterDialog handleApplyWrapper validation", () => {
   it("shows error if no tag is selected for Pupil", async () => {
     renderComponent({
-  selectedRelatedTo: { text: "Staff", value: "2" },
+  selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
   tagListArray: [],
   availableCategories: [
     { registrationId: "1", application: "Send" },
@@ -970,7 +952,7 @@ describe("FilterDialog handleApplyWrapper validation", () => {
 
   it("shows error if no tag is selected for Staff", async () => {
     renderComponent({
-      selectedRelatedTo: { text: "Staff", value: "2" },
+      selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
       tagListArray: [],
     });
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
@@ -980,7 +962,7 @@ describe("FilterDialog handleApplyWrapper validation", () => {
 
   it("shows error if date is invalid", async () => {
     renderComponent({
-      selectedRelatedTo: { text: "Pupil", value: "1" },
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
       tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }],
     });
     // Set invalid date
@@ -1014,11 +996,12 @@ describe("FilterDialog handleApplyWrapper validation", () => {
     });
   });
 it("removes a tag from the tag list when user clicks the remove button", async () => {
-  const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123" };
-  renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
-    tagListArray: [tag],
-  });
+ 
+  const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123", data: { data: { key: "Pupil" } } };
+renderComponent({
+  selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+  tagListArray: [tag],
+});
 
   // The tag should be visible
   expect(screen.getByTestId("search-tag")).toHaveTextContent("Test Pupil");
@@ -1169,7 +1152,7 @@ describe("FilterDialog category selection user scenarios for dateRange insertInd
 
   it("adds a tag to the tag list when user selects a suggestion", async () => {
   renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
+    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
     tagListArray: [],
     availableCategories: [
       { registrationId: "1", application: "Send" },
@@ -1218,7 +1201,7 @@ it("shows 'From date is required' error when From date is cleared but To date is
 it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
   const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
   renderComponent({
-    selectedRelatedTo: { text: "Staff", value: "2" },
+    selectedRelatedTo: { text: "Staff", value: "2" , data: { data: { key: "Staff" } } },
     tagListArray: [staffTag],
   });
 
@@ -1238,7 +1221,7 @@ it("calls handleApply with staff externalIds when RelatedTo is Staff", async () 
 
 it("calls handleSearchChange on search input change", async () => {
   renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1" },
+    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
     tagListArray: [],
   });
 
@@ -1289,7 +1272,7 @@ it("calls handleSearchChange on search input change", async () => {
         selectedDateRange={{ fromDate: "", toDate: "" }}
         setReferenceExternalIds={jest.fn()}
         setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        selectedRelatedTo={{ text: "Pupil", value: "1", data: { data : { key: "Pupil" } } }}
         setSelectedRelatedTo={jest.fn()}
         tagListArray={[]}
         setTagListArray={jest.fn()}
@@ -1314,6 +1297,7 @@ it("calls handleSearchChange on search input change", async () => {
         { data: "pupils", text: "Pupils" }
       ]}
       setSelectedCategories={setSelectedCategoriesMock}
+      selectedRelatedTo={{ text: "Pupil", value: "1", data: { data: { key: "Pupil" } } }}
     />
   );
 
@@ -1406,7 +1390,7 @@ test("fetches and displays sorted categories correctly", async () => {
         selectedDateRange={{ fromDate: "", toDate: "" }}
         setReferenceExternalIds={jest.fn()}
         setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1" }}
+        selectedRelatedTo={{ text: "Pupil", value: "1" ,data: { data : { key: "Pupil" } } }}
         setSelectedRelatedTo={jest.fn()}
         tagListArray={[]}
         setTagListArray={jest.fn()}

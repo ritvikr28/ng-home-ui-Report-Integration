@@ -27,6 +27,7 @@ import { Category } from "../../../features/DocumentManagementServer/responseMod
 import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
+import gtmAnalytics from "../../utils/analytics";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -92,7 +93,8 @@ const FilterDialog = ({
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-
+  const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
+  const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
 
@@ -102,6 +104,7 @@ const getDateString = (date: { day: string; month: string; year: string }) =>
 const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
   setDate({ day: "", month: "", year: "" });
 };
+
 
 let validationText = "";
 if (searchSelectionError) {
@@ -153,9 +156,11 @@ useEffect(() => {
     }
 }, [isOpen]);
 
-const relatedTo = Object.entries(relatedToEnum).map(([text, value]) => ({
-  text,
+// Use keys for logic, translation for display
+const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
   value,
+  text: t(`Filter.${key === "Organisation" ? "School" : key}`),
+  data: { key }, // property shorthand for key
 }));
 
 useEffect(() => {
@@ -401,7 +406,7 @@ const handleDateChange = (
       return;
     }
     if (thisDateStr && dayjs(thisDateStr).isBefore(dayjs("1900-01-01"), "day")) {
-      setError("To date must be on or after 01/01/1900");
+      setError(t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }));
       setIsDateError(true);
       return;
     }
@@ -412,7 +417,7 @@ const handleDateChange = (
     }
     // Check if To date is before From date
     if (otherDateStr && thisDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-      setError("To date should not be before From date.");
+      setError(t("Filter.toDateShouldNotBeBeforeFromDate"));
       setIsDateError(true);
       return;
     } 
@@ -440,23 +445,21 @@ const handleDateChange = (
       }
       setRelatedToError("");
 
-      if (
-        (localSelectedRelatedTo.text === "Pupil" || localSelectedRelatedTo.text === "Staff") &&
-        localTagListArray.length === 0
-      ) {
-        setSearchSelectionError(t("Filter.entityIsRequired", { entity: localSelectedRelatedTo.text }));
+    // Use key for logic
+    if ((selectedKey === "Pupil" || selectedKey === "Disgybl"|| selectedKey === "Staff") && localTagListArray.length === 0) {
+        setSearchSelectionError(t("Filter.entityIsRequired", { entity: t(`Filter.${selectedDisplayKey}`) }));
         return;
-      } 
+      }
       setSearchSelectionError("");
-      
-      
+
+
       handleDateChange(setFromDate, setFromDateError, fromDate.day, fromDate.month, fromDate.year, toDate, true);
       if (fromDateError || toDateError || isDateError) {
         setIsDateError(true);
         return;
       }
 
-      
+
     setSelectedCategories(localSelectedCategories);
     setSelectedDateRange(localSelectedDateRange);
     setTagListArray(localTagListArray);
@@ -465,13 +468,13 @@ const handleDateChange = (
 
       let ids: string[] = [];
       let entities: any[] = [];
-      if (localSelectedRelatedTo?.text === "Pupil") {
+      if (selectedKey === "Pupil") {
         ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === "Staff") {
+      } else if (selectedKey === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
         entities = localTagListArray;
-      } else if (localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School") {
+      } else if (selectedKey === "Organisation" || selectedKey === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
         entities = orgId ? [{ organisationId: orgId }] : [];
@@ -479,6 +482,42 @@ const handleDateChange = (
 
       handleApply(ids, localSelectedCategories, entities)
       setWasApplied(true);
+
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "advanced_search"
+    });
+
+    const filterValueTags = localTagListArray?.map((item) => item.name)?.length || 0;
+    const filterTypeTag = localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School" ? "School" : localSelectedRelatedTo?.text || "";
+    if(localSelectedRelatedTo?.text) {
+      gtmAnalytics.pushEvent({
+        event: "apply_filter",
+        filterType: filterTypeTag,
+        filterValue: localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School" ? "" : filterValueTags
+      });
+    }
+
+    if (localSelectedCategories && localSelectedCategories.length > 0) {
+      gtmAnalytics.pushEvent({
+        event: "apply_filter",
+        filterType: "Category",
+        filterValue: ""
+      });
+    }
+    if ((selectedDateRange?.fromDate || selectedDateRange?.toDate) &&
+      Object.keys(selectedDateRange).length > 0) {
+      Object.keys(selectedDateRange).forEach((key) => {
+        const typedKey = key as keyof typeof selectedDateRange;
+        if (selectedDateRange[typedKey]) {
+          gtmAnalytics.pushEvent({
+            event: "apply_filter",
+            filterType: typedKey === "fromDate" ? "From Date" : "To Date",
+            filterValue: ""
+          });
+        }
+      });
+    }
   };
 
    useEffect(() => {
@@ -507,6 +546,22 @@ const handleDateChange = (
     }
   }))
 }));
+
+const getEntityLabel = (entity: string) => {
+  if (!entity) return "";
+  let key = "";
+  const lowerEntity = entity.toLowerCase();
+  if (lowerEntity === "pupil") {
+    key = "Filter.pupils";
+  } 
+  else if (lowerEntity === "disgybl") {
+    key = "Filter.pupils";
+  }else if (lowerEntity === "staff") {
+    key = "Filter.staffs";
+  }
+  return key ? t(key) : "";
+};
+
   return (
     <Dialog
       className="dms-filter-dialog"
@@ -524,8 +579,7 @@ const handleDateChange = (
     >
       <>
        {relatedToSelected &&
-        (!localSelectedRelatedTo ||
-          !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.text ?? "")) ? (
+       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.data?.data?.key ?? "") ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -584,22 +638,21 @@ const handleDateChange = (
               key={item.value}
               data={item}
               id={item.value.toString()}
-              text={item.text === "Organisation" ? "School" : item.text}
+              text={item.text}
               value={item.value.toString()}
             >
-              {item.text === "Organisation" ? "School" : item.text}
+              {item.text}
             </DropdownItem>
           ))}
         </Dropdown>
-
-        {(localSelectedRelatedTo?.text === 'Pupil' || localSelectedRelatedTo?.text === 'Staff') && (
+        {(localSelectedRelatedTo && (localSelectedRelatedTo.data?.data.key === "Pupil" || localSelectedRelatedTo.data?.data.key === "Staff")) && (
           <>
             <Search
-                  key={searchKey}
+                  key={tagListArray.length + searchKey}
                   className="dms-related-to-search"
                   dataTestId={`${dataTestId}-search`}
-                  placeholderText={`${localSelectedRelatedTo?.text} name`} 
-                  titleText={`${localSelectedRelatedTo?.text}`}
+                  placeholderText={t(`Filter.${(selectedDisplayKey ?? "").toLowerCase()}Name`)}
+                  titleText={ t(`Filter.${selectedDisplayKey ?? ""}`)}
                   isFixedMultiSelect
                   isSearchWithId
                   size={TextInputSize.Large}
@@ -610,7 +663,7 @@ const handleDateChange = (
                   keyUpHandler={() => {}}
                   onKeyUpLenght={2}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
-                  headingText={`${t("Filter.selectEntity")} ${localSelectedRelatedTo?.text}s`}
+                  headingText={`${t("Filter.selectEntity")} ${getEntityLabel(selectedDisplayKey ?? "")}`}
                   onCloseHandle={ () => {
                     setSearchTerm("")
                   }
@@ -619,7 +672,6 @@ const handleDateChange = (
                   isCommaSeparted
                   getSelectedItems={() => [searchTerm].filter(Boolean).map((text) => ({ text, value: text }))}
                   onItemClick={(item: ISearchItemProp | null) => {
-                    setAlreadyExistingTags(false);
                     setSearchTerm(item?.text || "");
                     addUniqueTagItem({
                       item,
@@ -652,8 +704,8 @@ const handleDateChange = (
                   }
                   }
                   isNotificationShow={false}
-                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: localSelectedRelatedTo.text })}
-                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: localSelectedRelatedTo.text })}
+                  validationTextForTagList={t("Filter.entityAlreadyAdded", { entity: t(`Filter.${selectedDisplayKey ?? ""}`) })}
+                  validationTextForLimit={t("Filter.entityListLimitReached", { entity: t(`Filter.${selectedDisplayKey ?? ""}`) })}
                   validationTextLevelForTagList={ValidationTextLevel.Warning}
                   validationText={validationText}
                   validationTextLevel={validationTextLevel}

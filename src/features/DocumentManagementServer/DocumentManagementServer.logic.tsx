@@ -281,6 +281,12 @@ export const handleSuggestionClick = async (
     refExternalId = [item?.organisationId];
   }
   setSearchRefExternalId(refExternalId || []);
+  gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType: "search_option",
+      elementTextOrLabel: item.categoryName === "Organisation" ? "School" : item.categoryName ?? "",
+      elementLocation: "search_suggestions"
+    });
 };
  
 // Has items check
@@ -408,6 +414,11 @@ export async function fetchGetDocumentDetailsLogic({
       setShowErrorBanner(false);
     } else if (result && result?.status === 400) {
       setShowErrorBanner(true);
+      
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Information unavailable"
+      });
     } else {
       setShowSearchError(true);
     }
@@ -515,13 +526,16 @@ export const fetchViewDownloadData = async ({
   setViewData,
   viewDownload,
   downloadPollingIntervalRef,
+  setIsViewDownloadError,
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
   if (showLoader) setIsSidePanelLoader(true);
+  setIsViewDownloadError(false); 
   try {
     const result = await viewDownload();
     if (result?.data && result?.status === 200) {
       setViewData(result.data);
+      setIsViewDownloadError(false);
 
       const hasInProgress = result.data.some(
         (item: { status: string }) =>
@@ -536,6 +550,7 @@ export const fetchViewDownloadData = async ({
             setViewData,
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
+            setIsViewDownloadError,
           });
         }, 10000);
       }
@@ -544,22 +559,29 @@ export const fetchViewDownloadData = async ({
         clearInterval(pollingRef.current);
         pollingRef.current = null;
       }
-    }
-    if (!(result?.data && result?.status === 200) && pollingRef.current) {
-      clearInterval(pollingRef.current);
-      pollingRef.current = null;
+    } else {
+      setIsViewDownloadError(true);
+      setViewData([]); 
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+        pollingRef.current = null;
+      }
+      return; 
     }
   } catch (err) {
     console.error("Error fetching view download details:", err);
+    setIsViewDownloadError(true);
+    setViewData([]);  // 🟢 Clear stale data
     if (pollingRef.current) {
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
+    return; 
   } finally {
     setIsSidePanelLoader(false);
   }
 };
- 
+
 export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
   try {
     const response = await fetchFilterCategory(documentRealatedTo);
@@ -657,7 +679,7 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
               ));
               props = {
                 name: text,
-                id: item?.pupilId,
+                id: item?.learnerExternalId,
                 value,
                 categoryName: category.name,
                 ...item
@@ -754,7 +776,8 @@ export function buildSelectedDocs(
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
   dateRange: { fromDate: string; toDate: string },
-  selectedEntities: any[]
+  selectedEntities: any[],
+  availableFileIds: string[]
 ) {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
@@ -763,7 +786,7 @@ export function buildSelectedDocs(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs : [];
+  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
   const excludedIdDetails =
     isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
@@ -881,10 +904,13 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox,
   setShowDeleteErrorBanner,
   setShowDeleteSuccessToast,
+  setShowDeleteAbortBanner,
   fetchGetDocumentDetails,
   deleteFiles,
   excludedCheckBoxIds,
-  isHeaderBoxChecked
+  isHeaderBoxChecked,
+  availableFileIds,
+  setIsSearchDataLoading
 }: {
   allSelectedDocs: { fileId: string; registrationId: number, externalId: string }[],
   docData: any,
@@ -902,16 +928,18 @@ export const handleBulkDeleteLogic = async ({
   setIsClearSelectedCheckbox: (v: boolean) => void,
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteSuccessToast: (v: boolean) => void,
+  setShowDeleteAbortBanner : (v: boolean) => void,
   fetchGetDocumentDetails: (page: number, categories: number[], sortByCol: string, sortOrder: string) => void,
   deleteFiles: (payload: any) => Promise<number>,
   excludedCheckBoxIds: string[],
-  isHeaderBoxChecked: boolean
-
+  isHeaderBoxChecked: boolean,
+  setIsSearchDataLoading: (v: boolean) => void,
+  availableFileIds: string[]
 }) => {
 
-
-
   setShowDeleteSuccessToast(false);
+  if (setIsSearchDataLoading) setIsSearchDataLoading(true);
+  setShowDeleteAbortBanner(false);
   const payload = mapToBulkDeletePayload({
     isSelectAll: !!isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -921,22 +949,24 @@ export const handleBulkDeleteLogic = async ({
     documentRelatedTo: documentRealatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
-  : allSelectedDocs.map(doc => ({
-      fileId: doc.fileId,
-      registrationId: doc.registrationId,
-      externalId: doc.externalId,
-    })),
+      : allSelectedDocs
+        .filter(doc => availableFileIds?.includes(doc.fileId))
+        ?.map(doc => ({
+          fileId: doc.fileId,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId
+        })),
     excludedFileDetails:
-  isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
-    ? excludedCheckBoxIds.map(fileId => {
-        const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
-        return {
-          fileId,
-          externalId: matchingDoc?.externalId ?? "",
-          registrationId: matchingDoc?.registrationId ?? 0
-        };
-      })
-    : []
+      isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
+        ? excludedCheckBoxIds.map(fileId => {
+          const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+          return {
+            fileId,
+            externalId: matchingDoc?.externalId ?? "",
+            registrationId: matchingDoc?.registrationId ?? 0
+          };
+        })
+        : []
   });
   try {
     const status = await deleteFiles(payload);
@@ -947,13 +977,61 @@ export const handleBulkDeleteLogic = async ({
       setAllSelectedDocs([]);
       setIsClearSelectedCheckbox(true);
       setShowDeleteErrorBanner(false);
-      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
       setShowDeleteSuccessToast(true);
+      gtmAnalytics.pushEvent({
+        event: "key_action",
+        actionType: "delete"
+      });
+    if (isHeaderBoxChecked === true) {
+    let timeoutMs = 0;
+    const count = availableFileIds?.length || 0;
+    if (count <= 100) {
+      timeoutMs = 0;
+    } else if (count > 100 && count <= 200) {
+      timeoutMs = 1000;
+    } else if (count > 200 && count <= 400) {
+      timeoutMs = 2500;
+    } else if (count > 400 && count <= 650) {
+      timeoutMs = 4500;
+    } else if (count > 650 && count <= 1000) {
+      timeoutMs = 6000;
+    }
+    else if (count > 1000) {
+      timeoutMs = 10000;
+    }
+    if (timeoutMs > 0) {
+      setTimeout(() => {
+        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+      }, timeoutMs);
+    } else {
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+    }
+  } else {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+  }
+    } 
+    else if (status === 409) {
+      setShowDeleteAbortBanner(true);
+      setIsSearchDataLoading(false);
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Unable to delete"
+      });
     } else {
       setShowDeleteErrorBanner(true);
+      setIsSearchDataLoading(false);
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        actionType: "Unable to delete"
+      });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    setIsSearchDataLoading(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to delete"
+    });
   }
 };
 
@@ -1087,6 +1165,7 @@ export async function handleClearAllConfirm({
   setClearAllError,
   setShowConfirmDialog,
   getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
+  setIsViewDownloadError
 }: {
   viewData: any[],
   clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
@@ -1100,6 +1179,7 @@ export async function handleClearAllConfirm({
   setClearAllError: (v: boolean) => void,
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
+  setIsViewDownloadError: (v: boolean) => void,
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
@@ -1109,21 +1189,32 @@ export async function handleClearAllConfirm({
     if (response === 204) {
       setViewData([]);
       setShowToastNotification(true);
-      clearAllFetchViewDownloadData({
+      await clearAllFetchViewDownloadData({
         showLoader: false,
         setIsSidePanelLoader,
         setViewData,
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+        setIsViewDownloadError,
       });
+      setIsSidePanelLoader(false);
     } else {
       setClearAllError(true);
+      setIsSidePanelLoader(false);
+      gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
     }
   } catch (error) {
     setClearAllError(true);
     setShowToastNotification(false);
+    setIsSidePanelLoader(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      actionType: "Unable to clear downloads"
+    });
   }
-  setIsSidePanelLoader(false);
   setShowConfirmDialog(false);
 }
 
@@ -1220,31 +1311,30 @@ export function addUniqueTagItem({
   setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
   maxLimit?: number;
   setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+}): void {
   if (!item) return;
 
   let idKey = "organisationId";
-  if (selectedRelatedTo?.text === "Pupil") {
+  if (selectedRelatedTo?.data?.data.key === "Pupil") {
     idKey = "learnerExternalId";
-  } else if (selectedRelatedTo?.text === "Staff") {
+  } else if (selectedRelatedTo?.data?.data.key === "Staff") {
     idKey = "externalId";
-  } else if (selectedRelatedTo?.text === "Organisation" || selectedRelatedTo?.text === "School") {
-    idKey = "organisationId";
   }
 
-  const newId = (item as any)[idKey] ?? item.text;
-
+  // Always normalize the ID for comparison
+  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
+  
   const alreadyExists = tagListArray.some(
-    (tag) => ((tag as any)[idKey] ?? tag.id) === newId
+    (tag) => {
+      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      return tagId === newId;
+    }
   );
 
   if (alreadyExists) {
     if (setAlreadyExistingTags) setAlreadyExistingTags(true);
     return;
   }
-
-  if (setAlreadyExistingTags) setAlreadyExistingTags(false);
-
   if (tagListArray.length < maxLimit) {
     setTagListArray([...tagListArray, item as SelectedItem]);
     if (setReferenceExternalIds && newId) {
@@ -1364,6 +1454,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading,
   setSidePanelOpenReason,
   setIsSidePanelOpen,
+  setAvailableFileIds
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -1388,6 +1479,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading: (v: boolean) => void,
   setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
   setIsSidePanelOpen: (v: boolean) => void,
+  setAvailableFileIds: (v: string[]) => void
 }) => {
   setShowConfirmDialog(false);
   setShowRestrictedDeleteDialog(false);
@@ -1418,19 +1510,22 @@ export const handleEditSelectedOverFlowMenu = async ({
       const restricted = result?.data?.restrictedFileCount ?? 0;
       const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
       const available = result?.data?.availableFileCount ?? 0;
+      const availableFileIds = result?.data?.availableFileIds ?? [];
 
       setRestrictedFileCount(restricted);
       setAlreadyDeletedFileCount(alreadyDeleted);
       setAvailableFileCount(available);
+      setAvailableFileIds(availableFileIds);
 
       setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
       setIsPreDialogLoading(false);
       setShowRestrictedDeleteDialog(false);
 
       if (
-        selectedItem.value === "Prepare download" &&
-        available === 0 &&
-        alreadyDeleted > 0
+        selectedItem.value === "Prepare download" && (
+          (available === 0 && alreadyDeleted > 0)
+          || (totalSelectedCount > 0 && available === 0 && alreadyDeleted === 0 && restricted === 0)
+        )
       ) {
         setShowRestrictedPrepareDialog(true);
         setShowConfirmDialog(false);
@@ -1438,7 +1533,7 @@ export const handleEditSelectedOverFlowMenu = async ({
       }
 
       if (selectedItem.value === "Delete") {
-        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+        if (available === 0 && ((restricted > 0 || alreadyDeleted > 0) || (totalSelectedCount > 0 && alreadyDeleted === 0 && restricted === 0))) {
           setIsDialogLoading(false);
           setShowRestrictedDeleteDialog(true);
           setShowConfirmDialog(false);
@@ -1458,5 +1553,20 @@ export const handleEditSelectedOverFlowMenu = async ({
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
     setSidePanelOpenReason("view");
     setIsSidePanelOpen(true);
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "view_download"
+    });
   }
 };
+
+export function applySummaryTagClass() {
+  document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
+    const span = tag.querySelector('.essui-tag span');
+    if (span && span.textContent && span.textContent.trim().startsWith('+')) {
+      tag.classList.add('summary-tag');
+    } else {
+      tag.classList.remove('summary-tag');
+    }
+  });
+}

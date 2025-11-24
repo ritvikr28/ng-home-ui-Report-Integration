@@ -98,9 +98,17 @@ export const getNotificationTableHeadersData = (
     }
   ];
 
+const generateId = (index: number): string =>
+  `notif-${index}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
+const formatDate = (daysAgo: number): string => {
+  const date = new Date();
+  date.setDate(date.getDate() - daysAgo);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
 
-export const notificationTableRows: {
+export const generateNotificationData = (): {
   Id: string;
   Status: string;
   Notification: string;
@@ -108,86 +116,100 @@ export const notificationTableRows: {
   DateReceived: string;
   isShowIcon: boolean;
   iconName?: string;
-  doc?: any;
-}[] = [
-    {
-      Id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Status: "Unread",
-      Notification: "All teachers must update attendance records",
-      Priority: "Low",
-      DateReceived: "01 Jan 2025",
-      doc: [{
-        id: "72ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-        status: "Unread",
-        notification: "All teachers must update attendance records",
-        priority: "Low",
-        dateReceived: "01 Jan 2025",
-      }],
-      isShowIcon: true,
-      iconName: "chat",
-    },
-    {
-      Id: "62ff5e2f-f2ed-4f56-8a3b-8277a41b8sdc87",
-      Status: "Read",
-      Notification: "New health and safety guidelines will be discussed in today’s briefing",
-      Priority: "Medium",
-      DateReceived: "01 Jan 2025",
-      doc: [{
-        id: "62ff5e2f-f2ed-4f56-8a3b-8277a41b8sdc87",
-        status: "Read",
-        notification: "New health and safety guidelines will be discussed in today’s briefing",
-        priority: "Medium",
-        dateReceived: "01 Jan 2025",
-      }],
-      isShowIcon: true
+  doc?: { id: string; status: string; notification: string; priority: string; dateReceived: string; }[];
+}[] => {
+  const notifications: {
+    Id: string;
+    Status: string;
+    Notification: string;
+    Priority: string;
+    DateReceived: string;
+    isShowIcon: boolean;
+    iconName?: string;
+    doc?: { id: string; status: string; notification: string; priority: string; dateReceived: string; }[];
+  }[] = [];
 
-    },
-    {
-      Id: "82ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Status: "Unread",
-      Notification: "Reminder: Midterm exam schedules to be finalized by",
-      Priority: "High",
-      DateReceived: "01 Jan 2025",
-      doc: [{
-        id: "82ff5e2f-f2ed-4f56-8a3b-8277a41b8sdc87",
-        status: "Unread",
-        notification: "Reminder: Midterm exam schedules to be finalized by",
-        priority: "High",
-        dateReceived: "01 Jan 2025",
-      }],
-      isShowIcon: true,
-      iconName: "chat",
-    },
-    {
-      Id: "92ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Status: "Unread",
-      Notification: "Please submit weekly lesson plans",
-      Priority: "Low",
-      DateReceived: "01 Jan 2025",
-      doc: [{
-        id: "92ff5e2f-f2ed-4f56-8a3b-8277a41b8sdc87",
-        status: "Unread",
-        notification: "Please submit weekly lesson plans",
-        priority: "Low",
-        dateReceived: "01 Jan 2025",
-      }],
-      isShowIcon: true,
-      iconName: "chat",
-    },
-    {
-      Id: "102ff5e2f-f2ed-4f56-8a3b-8277a41b8c87",
-      Status: "Read",
-      Notification: "Please review the updated student disciplinary policy in your email",
-      Priority: "Medium",
-      DateReceived: "01 Jan 2025",
-      doc: [{
-        id: "102ff5e2f-f2ed-4f56-8a3b-8277a41b8sdc87",
-        status: "Read",
-        notification: "Please review the updated student disciplinary policy in your email",
-        priority: "Medium",
-        dateReceived: "01 Jan 2025",
-      }],
-      isShowIcon: true,
-      iconName: "chat",
-    }
+  const notificationTemplates = [
+    { text: "All teachers must update attendance records", priority: "Low" },
+    { text: "New health and safety guidelines will be discussed in today's briefing", priority: "Medium" },
+    { text: "Reminder: Midterm exam schedules to be finalized by end of week", priority: "High" },
+    { text: "Please submit weekly lesson plans for review", priority: "Low" },
+    { text: "Please review the updated student disciplinary policy in your email", priority: "Medium" },
+    { text: "Updated role in Staff Settings", priority: "Low" },
+    { text: "Cover assigned for your classes next week", priority: "Medium" },
+    { text: "Medical emergency protocol updated - please review", priority: "High" },
+    { text: "Parent-teacher meeting scheduled for next month", priority: "Medium" },
+    { text: "New curriculum guidelines available for download", priority: "Low" },
+    { text: "Fire drill scheduled for next Tuesday at 10 AM", priority: "High" },
+    { text: "Student enrollment deadline approaching", priority: "Medium" },
+    { text: "Library resources updated - new books available", priority: "Low" },
+    { text: "IT maintenance scheduled for this weekend", priority: "Medium" },
+    { text: "Sports day event planning meeting on Friday", priority: "Low" },
+    { text: "Grade submission deadline extended to next week", priority: "Medium" },
+    { text: "New student information system training session", priority: "High" },
+    { text: "Cafeteria menu updated for next month", priority: "Low" },
+    { text: "School bus route changes effective Monday", priority: "Medium" },
+    { text: "Annual school inspection scheduled for next month", priority: "High" },
+    { text: "Science fair registration now open", priority: "Low" },
+    { text: "Staff parking lot maintenance this weekend", priority: "Medium" },
+    { text: "Emergency contact information update required", priority: "High" },
+    { text: "New teaching resources available in shared drive", priority: "Low" },
+    { text: "Student council election nominations open", priority: "Medium" },
+    { text: "Weather alert: School closure procedures reminder", priority: "High" },
+    { text: "Photography club meeting rescheduled", priority: "Low" },
+    { text: "Parent portal password reset instructions", priority: "Medium" },
+    { text: "Field trip permission slips due by Friday", priority: "High" },
+    { text: "School newsletter published - please review", priority: "Low" },
+    { text: "Staff appreciation lunch next Wednesday", priority: "Medium" },
+    { text: "Critical: System security update required", priority: "High" },
+    { text: "Art exhibition opening next week", priority: "Low" },
+    { text: "Student progress reports available for review", priority: "Medium" },
+    { text: "Lockdown drill scheduled for next week", priority: "High" },
+    { text: "New printer setup in staff room", priority: "Low" },
+    { text: "Graduation ceremony planning committee meeting", priority: "Medium" },
+    { text: "Important: Student data privacy policy update", priority: "High" },
+    { text: "Book fair starting next Monday", priority: "Low" },
+    { text: "Staff training on new assessment tools", priority: "Medium" }
   ];
+
+  const statuses = ["Read", "Unread"];
+  const priorities = ["Low", "Medium", "High"];
+
+  for (let i = 0; i < 85; i += 1) {
+    const template = notificationTemplates[i % notificationTemplates.length];
+    const status = statuses[Math.floor(Math.random() * statuses.length)];
+    const priority = template.priority || priorities[Math.floor(Math.random() * priorities.length)];
+    const daysAgo = Math.floor(Math.random() * 60);
+    const hasIcon = Math.random() > 0.5;
+    const generateIdVal = generateId(i)
+
+    notifications.push({
+      Id: generateIdVal,
+      Status: status,
+      Notification: `${template.text}${i > 0 ? ` (${i + 1})` : ""}`,
+      Priority: priority,
+      DateReceived: formatDate(daysAgo),
+      doc: [
+        {
+          id: generateIdVal,
+          status,
+          notification: `${template.text}${i > 0 ? ` (${i + 1})` : ""}`,
+          priority,
+          dateReceived: formatDate(daysAgo),
+        }
+      ],
+      isShowIcon: hasIcon,
+      iconName: hasIcon ? "chat" : undefined
+    });
+  }
+  
+  notifications.sort((a, b) => {
+    const dateA = new Date(a.DateReceived);
+    const dateB = new Date(b.DateReceived);
+    return dateB.getTime() - dateA.getTime();
+  });
+
+  return notifications;
+};
+
+export const notificationTableRows = generateNotificationData();

@@ -54,7 +54,7 @@
 
   .clc-dms-isopen {
     flex: 1;
-    height: 96vh;
+    height: 91vh;
     width: 74%;
     padding: 16px;
     overflow-y: auto;
@@ -116,6 +116,13 @@
         }
 
       };
+      @-moz-document url-prefix() {
+        .dynamic-table table {
+          border-collapse: separate !important;
+          border-spacing: 0 !important;
+          overflow: hidden;
+        }
+      }
   }
 
     .dynamic-table .essui-table__cell:last-child {
@@ -242,6 +249,14 @@
   }
 }
 
+
+.grid-wrapper #taglist-id .summary-tag .essui-icon-button {
+  display: none !important;
+}
+
+.grid-wrapper #taglist-id .multiple-tags-grid-item .essui-icon-button{
+  display: none !important;
+}
 
 .grid-wrapper {
 
@@ -407,7 +422,6 @@
         display: inline-block;
       }
     }
-    
   }
 }
 
@@ -455,21 +469,19 @@
     margin-left: 1px !important;
     width: 97.6%;
   }
-  }
+    .essui-dialog__title {
+      white-space: unset;
+    }
 
+  }
+    
   .dms-layout .side-width .essui-side-navigation-panel-container-grid-item {
     height: 100vh !important;
-  }
-
-  ;
+  };
 }
 
+// -------------------------1024px to 1279.9px-------------------------------
 @media (min-width:1024px) and (max-width: 1279.9px) {
-  .dms-layout {
-    .side-width #localised-menu-id {
-      height: 100vh !important;
-    }
-  }
   .grid-wrapper .filter-tool-view #search-autocomplete.with-suggestions #suggestions-wrapper {
     display: block;
     z-index: 1;
@@ -482,7 +494,6 @@
 @media (max-width: 397px) {
   .dms-layout{ 
     .essui-side-panel-container-grid-item {
-    // max-width: 100%;
     max-width: fit-content;
     width: 100%;
     height: 101vh;
@@ -511,8 +522,8 @@
     padding: 0px 5px;
     margin-left: 1.2px !important;
     width: 98.5% !important;
-}
   }
+}
 
    @media (min-width: 3001px) {
    .grid-wrapper .filter-tool-view #search-autocomplete.with-suggestions #suggestions-wrapper{
@@ -521,7 +532,7 @@
     padding: 0px 5px;
     margin-left: 1.2px !important;
     width: 99% !important;
-}
+    }
   }
 
 @media (max-width: 600px) {
@@ -532,5 +543,19 @@
     max-width: 98vw;
     box-sizing: border-box;
     transform: translate(-50%, 0);
+  }
+}
+
+@media only screen 
+  and (min-device-width: 1024px) 
+  and (max-device-width: 1366px) 
+  and (-webkit-min-device-pixel-ratio: 2) {
+  .dms-layout {
+    .side-width #localised-menu-id {
+      height: 100vh !important;
+    }
+    .clc-dms-isopen {
+      height: 96vh;
+    }
   }
 }
