@@ -2173,6 +2173,8 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetHasFetched = jest.fn();
   const mockSetIsSearchLoading = jest.fn();
   const mockSetIsSearchDataLoading = jest.fn();
+  const mockSetPrepareDownloadAbortBanner = jest.fn();
+  const mockSetShowDeleteAbortBanner = jest.fn();
 
   const defaultArgs = {
     page: 2,
@@ -2190,6 +2192,8 @@ describe("fetchGetDocumentDetailsLogic", () => {
     setHasFetched: mockSetHasFetched,
     setIsSearchLoading: mockSetIsSearchLoading,
     setIsSearchDataLoading: mockSetIsSearchDataLoading,
+    setPrepareDownloadAbortBanner: mockSetPrepareDownloadAbortBanner,
+    setShowDeleteAbortBanner: mockSetShowDeleteAbortBanner
   };
 
   beforeEach(() => {

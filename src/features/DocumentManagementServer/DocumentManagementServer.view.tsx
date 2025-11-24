@@ -122,8 +122,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
     if (restrictedFileCount > 0) {
         messages.push(
-            restrictedFileCount === 1
-                ? t("DocumentManagementServer.documentCannotBeDeletedNotification", { count: restrictedFileCount })
+            restrictedFileCount === 1 && availableFileCount > 0
+                ? t("DocumentManagementServer.singleDocumentCannotBeDeletedNotification", { count: restrictedFileCount })
                 : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
                     all: restrictedFileCount === docData?.totalRecords ? "All " : "",
                     count: restrictedFileCount
@@ -135,7 +135,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     if (alreadyDeletedFileCount > 0) {
         messages.push(
             alreadyDeletedFileCount === 1
-                ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+                ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                 : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
                     all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
                     count: alreadyDeletedFileCount
@@ -371,6 +371,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         setShowErrorBanner,
         setIsSearchLoading,
         setIsSearchDataLoading,
+        setPrepareDownloadAbortBanner,
+        setShowDeleteAbortBanner
     });
     };
 
@@ -500,6 +502,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setExcludedCheckBoxIds([]);
         setPrevSelectedDocs([]);
         setSelectedRelatedTo(undefined);
+        setShowDeleteAbortBanner(false);
+        setPrepareDownloadAbortBanner(false);
         };
 
         useEffect(() => {
@@ -709,6 +713,10 @@ switch (dialogType) {
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
             setIsClearSelectedCheckbox(true);
+            setIsHeaderBoxChecked(false);
+            setPrevSelectedDocs([]);
+            setExcludedCheckBoxIds([]);
+            setTableKey(prev => prev + 1);
         }
        },
       onConfirm: async (): Promise<void> => {
@@ -797,17 +805,18 @@ switch (dialogType) {
                 event: "key_action",
                 actionType: "prepare_download"
             });
+            setPrepareDownloadAbortBanner(false);
             if (statuses.some((status: number) => status !== 204 && status !== 409)) {
               setPrepareDownloadError(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             }else if (statuses.some((status: number) => status === 409)) {
               setPrepareDownloadAbortBanner(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             } else if (totalSelectedCount > 1) {
               setShowEmailNotification(true);
@@ -817,9 +826,10 @@ switch (dialogType) {
           .catch(() => {
             setIsSidePanelLoader(false);
             setPrepareDownloadError(true);
+            setPrepareDownloadAbortBanner(false);
             gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
           });
       },
@@ -858,7 +868,7 @@ switch (dialogType) {
         setIsHeaderBoxChecked(isChecked);
         if (!isChecked) {
             setSelectedCheckBoxIds([]);
-                    setExcludedCheckBoxIds([]);
+            setExcludedCheckBoxIds([]);
 
         }
         setPrevSelectedDocs([])
@@ -982,7 +992,7 @@ const getDialogTitle = () => {
                                setDownloadError(true);
                                gtmAnalytics.pushEvent({
                                    event: "error_message",
-                                   actionType: "Unable to download"
+                                   messageText: "Unable to download"
                                });
                            }
                        }}
@@ -1047,8 +1057,8 @@ const getDialogTitle = () => {
                                     if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1 || deletedCount > 1) {
                                         return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
                                     }
-                                return alreadyDeletedFileCount === 1 || deletedCount === 1
-                                    ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+                                return (alreadyDeletedFileCount === 1 && availableFileCount > 0) || deletedCount === 1
+                                    ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                                     : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount });
                                 }
                                 return "";
