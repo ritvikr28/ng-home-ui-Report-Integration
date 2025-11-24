@@ -19,7 +19,7 @@ import {
   Notification,
   NotificationStatus
 } from "@essnextgen/ui-kit";
-import { useTranslation, i18next } from "@essnextgen/ui-intl-kit";
+import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -105,9 +105,6 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
-useEffect(() => {
-  i18next.changeLanguage('cy');
-}, []);
 
 let validationText = "";
 if (searchSelectionError) {
