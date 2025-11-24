@@ -6,8 +6,96 @@
   flex-direction: row-reverse;
 }
 
+.date-selection {
+  display: flex;
+  gap: 40px;
+}
+
+.dialog-content-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-left: 4px;
+}
+
+.start-end-date-container {
+  width: 200px;
+
+}
+
+.priority-checkboxes {
+  display: flex;
+  gap: 16px;
+
+  .essui-checkbox {
+    margin-right: unset !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .labelBox {
+    margin-left: unset !important;
+  }
+
+  .essui-checkbox-container {
+    gap: 8px !important;
+  }
+}
+
+.status-checkboxes {
+  display: flex;
+  gap: 16px;
+
+  .essui-checkbox {
+    margin-right: unset !important;
+  }
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .labelBox {
+    margin-left: unset !important;
+  }
+
+  .essui-checkbox-container {
+    gap: 8px !important;
+  }
+}
+
+.priority-label,
+.status-label {
+  margin-bottom: 8px;
+}
+
 @media only screen and (min-width: 768px) {
   .dialog-class .essui-dialog {
     display: inline-table;
+  }
+}
+
+@media (min-width: 0) and (max-width: 767.9px) {
+  .date-selection {
+    display: contents;
+    gap: 24px;
+  }
+
+  .dialog-content-container {
+    height: 250px;
+    position: relative;
+  }
+
+  .dialog-footer {
+    flex-direction: column !important;
+
+    .essui-button.essui-button--secondary.essui-button--medium {
+      width: 100% !important;
+    }
+
+    .essui-button.essui-button--primary.essui-button--medium {
+      width: 100% !important;
+    }
+  }
+
+  #ng-calendar-wrapper div#ng-calendar-content {
+    position: absolute !important;
+    transform: unset !important;
+    z-index: 1000 !important;
   }
 }

@@ -4,7 +4,6 @@ const singleSpaDefaults = require('webpack-config-single-spa-react-ts');
 const path = require("path");
 const { ProvidePlugin } = require("webpack");
 const Dotenv = require("dotenv-webpack");
-const ManifestPlugin = require("webpack-assets-manifest");
 
 const buildEnv =
   process.env.CUSTOM_ENV ||
@@ -28,7 +27,6 @@ module.exports = (webpackConfigEnv, argv) => {
         },
         output:{
             path: path.resolve(__dirname, "../../dist/singlespa"),
-            filename: "[name].[contenthash].js"
         },
         entry: "./src/singleSpa/index.tsx",
         externals:["@essnextgen/ui-kit","react", "react-dom", "single-spa"],
@@ -40,11 +38,7 @@ module.exports = (webpackConfigEnv, argv) => {
             new Dotenv({
                 path: `./.env.${buildEnv}`,
                 systemvars: true
-            }),
-             new ManifestPlugin({
-                output: 'mfe-manifest.json',
-                publicPath: true
-        })
+            })
         ]
     });
     

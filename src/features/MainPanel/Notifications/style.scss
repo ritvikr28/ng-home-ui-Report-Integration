@@ -29,19 +29,24 @@ body {
   }
 
   #edit-selected-btn,
-  #primary-button-id {
+  #primary-button-id .base-class {
     display: none;
+  }
+
+  .notification-controlledlist-width .edit-selected-btn .base-class {
+    height: 40px !important;
+    width: 100% !important;
   }
 
   #edit-selected-btn {
     height: 40px !important;
     width: 100% !important;
     margin-left: 10px !important;
-    padding-top: 0 !important;
+    // padding-top: 0 !important;
   }
 
   /* stylelint-disable-next-line selector-class-pattern */
-  #edit-selected-btn .essui-button .essui-button__right-icon {
+  #edit-selected-btn .base-class .essui-button .essui-button__right-icon {
     margin-top: 8px !important;
 
   }
@@ -107,11 +112,6 @@ body {
     }
   }
 
-  .essui-side-panel-footer-android-chrome {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
 }
 
 @media (min-device-width: 320px) and (max-device-width: 599px) {
@@ -120,7 +120,7 @@ body {
   }
 
   .notification-layout-header #edit-selected-btn {
-    margin-left: 0 !important;
+    margin-left: 8px !important;
   }
 }
 
@@ -163,7 +163,7 @@ body {
 
 .notification-layout-header #edit-selected-btn,
 .notification-layout-header #primary-button-id {
-  display: unset !important;
+  display: flex !important;
 }
 
 .notification-layout-header .filter-tool-grid-container.essui-grid-container {
