@@ -135,7 +135,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     if (alreadyDeletedFileCount > 0) {
         messages.push(
             alreadyDeletedFileCount === 1
-                ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+                ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                 : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
                     all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
                     count: alreadyDeletedFileCount
