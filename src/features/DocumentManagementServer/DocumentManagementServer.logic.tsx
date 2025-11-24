@@ -417,7 +417,7 @@ export async function fetchGetDocumentDetailsLogic({
       
       gtmAnalytics.pushEvent({
         event: "error_message",
-        actionType: "Information unavailable"
+        messageText: "Information unavailable"
       });
     } else {
       setShowSearchError(true);
@@ -1002,30 +1002,35 @@ export const handleBulkDeleteLogic = async ({
     if (timeoutMs > 0) {
       setTimeout(() => {
         fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-      }, 3500);
+      }, timeoutMs);
+    } else {
+      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
     }
-    else{
-        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
-      }
+  } else {
+    fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection);
+  }
     } 
-    else if(status === 409){
-     setShowDeleteAbortBanner(true);
+    else if (status === 409) {
+      setShowDeleteAbortBanner(true);
+      setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
-      event: "error_message",
-      actionType: "Unable to delete"
-    });
-    }else {
+        event: "error_message",
+        messageText: "Unable to delete"
+      });
+    } else {
       setShowDeleteErrorBanner(true);
+      setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
-      event: "error_message",
-      actionType: "Unable to delete"
-    });
+        event: "error_message",
+        messageText: "Unable to delete"
+      });
     }
   } catch (err) {
     setShowDeleteErrorBanner(true);
+    setIsSearchDataLoading(false);
     gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to delete"
+      messageText: "Unable to delete"
     });
   }
 };
@@ -1198,7 +1203,7 @@ export async function handleClearAllConfirm({
       setIsSidePanelLoader(false);
       gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to clear downloads"
+      messageText: "Unable to clear downloads"
     });
     }
   } catch (error) {
@@ -1207,7 +1212,7 @@ export async function handleClearAllConfirm({
     setIsSidePanelLoader(false);
     gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to clear downloads"
+      messageText: "Unable to clear downloads"
     });
   }
   setShowConfirmDialog(false);
@@ -1517,9 +1522,10 @@ export const handleEditSelectedOverFlowMenu = async ({
       setShowRestrictedDeleteDialog(false);
 
       if (
-        selectedItem.value === "Prepare download" &&
-        available === 0 &&
-        alreadyDeleted > 0
+        selectedItem.value === "Prepare download" && (
+          (available === 0 && alreadyDeleted > 0)
+          || (totalSelectedCount > 0 && available === 0 && alreadyDeleted === 0 && restricted === 0)
+        )
       ) {
         setShowRestrictedPrepareDialog(true);
         setShowConfirmDialog(false);
@@ -1527,7 +1533,7 @@ export const handleEditSelectedOverFlowMenu = async ({
       }
 
       if (selectedItem.value === "Delete") {
-        if (available === 0 && (restricted > 0 || alreadyDeleted > 0)) {
+        if (available === 0 && ((restricted > 0 || alreadyDeleted > 0) || (totalSelectedCount > 0 && alreadyDeleted === 0 && restricted === 0))) {
           setIsDialogLoading(false);
           setShowRestrictedDeleteDialog(true);
           setShowConfirmDialog(false);
@@ -1553,3 +1559,14 @@ export const handleEditSelectedOverFlowMenu = async ({
     });
   }
 };
+
+export function applySummaryTagClass() {
+  document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
+    const span = tag.querySelector('.essui-tag span');
+    if (span && span.textContent && span.textContent.trim().startsWith('+')) {
+      tag.classList.add('summary-tag');
+    } else {
+      tag.classList.remove('summary-tag');
+    }
+  });
+}

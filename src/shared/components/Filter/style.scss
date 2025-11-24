@@ -116,6 +116,12 @@
  
 }
 
+@-moz-document url-prefix() {
+.dms-filter-dialog-buttons{
+  margin-left: auto;
+}
+}
+
 .filter-tool-view .dropdown .essui-overflow-menu{
     width: 97%;
   }

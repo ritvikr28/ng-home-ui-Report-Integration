@@ -229,9 +229,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-
-  console.log("Feature Flag - SendNotification:", sendNotificationFlagr)
-
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>

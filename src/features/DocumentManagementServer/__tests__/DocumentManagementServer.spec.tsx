@@ -133,7 +133,7 @@ jest.mock("@essnextgen/auth-ui", () => ({
       }
       if (key === "DocumentManagementServer.informationUnavailable") {
         return "Information unavailable";
-        }
+      }
       return key;
     }
   })
@@ -176,12 +176,15 @@ jest.mock("../ApiService", () => ({
  
  
 const mockCategories = [
-  { application: "App1", registrationId: [1], section: ["Section1"] }
+  { application: "App1", registrationId: [1], section: ["Section1"] },
+  { application: "App2", registrationId: [1], section: ["Section2"] },
+  { application: "App3", registrationId: [1], section: ["Section3"] },
+  { application: "App4", registrationId: [1], section: ["Section4"] }
 ];
  
 const mockDocData = {
   statusCode: 200,
-  totalRecords: 1,
+  totalRecords: 2,
   data: [
     {
       fileId: "f1",
@@ -608,7 +611,7 @@ describe("Additional tests to increase coverage", () => {
  
     fireEvent.click(await screen.getByText("Actions"));
     fireEvent.click(await screen.getByText("Prepare download"));
-    const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
+    const saveBtn = await screen.findByTestId("close-btn");
     fireEvent.click(saveBtn);
     jest.useRealTimers();
   });
@@ -1085,7 +1088,7 @@ it("sets excludedFileDetails and fileDetails correctly when select all with excl
   jest.useRealTimers();
 });
 
-it("opens prepare download confirmation dialog when prepare download is clicked with selection and have files with deleted and clicking Cancel button triggers grid reload", async () => {
+it("if documents already deleted - documents cannot be downloaded as they have been deleted.", async () => {
   jest.useFakeTimers();
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
@@ -1130,6 +1133,99 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
   fireEvent.click(screen.getByText("Cancel"));
   jest.useRealTimers();
 });
+
+it("This document cannot be deleted as it is currently being prepared for download. Please try again later.", async () => {
+  jest.useFakeTimers();
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 1,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Delete"));
+
+  const prepareDialog = await screen.findByText(/This document cannot be deleted as it is currently being prepared for download. Please try again later/i);
+  expect(prepareDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
+  jest.useRealTimers();
+});
+
+
+it("Documents cannot be downloaded as they have been deleted", async () => {
+  jest.useFakeTimers();
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+  data: {
+    restrictedFileCount: 0,
+    alreadyDeletedFileCount: 0,
+    availableFileCount: 0,
+  }
+});
+  render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestionNode[0]);
+
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+
+  fireEvent.click(screen.getByText("Actions"));
+
+  fireEvent.click(screen.getByText("Prepare download"));
+  const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have been deleted./i);
+
+  expect(prepareDialog).toBeInTheDocument();
+
+  fireEvent.click(screen.getByText("Okay"));
+  jest.useRealTimers();
+}); 
 
 it("shows correct message when one document is already deleted in dialog", async () => {
   // Mock validation to set alreadyDeletedFileCount = 1, availableFileCount = 0
@@ -1299,6 +1395,60 @@ it("shows 'All selected documents have already been deleted.' when all selected 
   // Should show the "All selected documents have already been deleted." message
   await waitFor(() => {
     expect(screen.getByText("All selected documents have already been deleted.")).toBeInTheDocument();
+  });
+  jest.useRealTimers();
+});
+
+it("shows 'document will be gone forever once deleted.'", async () => {
+  // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
+  jest.useFakeTimers();
+  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+  (ApiService.validation as jest.Mock).mockResolvedValue({
+    data: {
+      restrictedFileCount: 0,
+      alreadyDeletedFileCount: 0,
+      availableFileCount: 1,
+    },
+  });
+
+  render(<MemoryRouter>
+    <DocumentManagementServerView />
+  </MemoryRouter>);
+
+  // Simulate search for "Alfie"
+  const input = await screen.findByTestId("search-autocomplete-input");
+  fireEvent.change(input, { target: { value: "Alfie" } });
+  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+  // Wait for suggestions to load
+  const searchLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+
+  // Click the suggestion
+  jest.advanceTimersByTime(3000);
+  const suggestionNode = await screen.findAllByText("Alfie");
+  fireEvent.click(suggestionNode[0]);
+
+  // Wait for Doc1 to appear
+  await waitFor(() => {
+    expect(screen.getByText("Doc1")).toBeInTheDocument();
+  });
+
+  // Select the checkboxes for both rows (simulate selecting multiple docs)
+  fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
+  // fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
+
+  // Open actions and trigger Delete
+  fireEvent.click(await screen.findByText("Actions"));
+  fireEvent.click(await screen.findByText("Delete"));
+
+  // Should show the "document will be gone forever once deleted." message
+  await waitFor(() => {
+    expect(screen.getByText(/document will be gone forever once deleted./)).toBeInTheDocument();
   });
   jest.useRealTimers();
 });

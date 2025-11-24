@@ -520,7 +520,6 @@
     "clearAllErrorTitle":"Unable to clear downloads",
     "clearAllErrorMessage":"A technical issue has prevented us from clearing the downloads. Please try again later. If the issue persists please get in touch with our support team.",
     "prepareDownloadErrorTitle":"Unable to prepare [document/documents] for download",
-    "prepareDownloadAbortMessage":"This document cannot be downloaded as it has already been deleted.",
     "prepareDownloadErrorMessage":"A technical issue has prevented us from preparing the [document/documents] for download. Please try again later. If the issue persists please get in touch with our support team.",
     "downloadsAppearHere": "Files you download will appear here.",
     "preparedDownloadsExpireMsg": "Prepared downloads will expire after 5 days",
@@ -542,6 +541,7 @@
     "documentWillBeGoneForever": "{{count}} document will be gone forever once deleted.",
     "documentsWillBeGoneForever": "{{all}}{{count}} documents will be gone forever once deleted.",
     "documentAlreadyDeletedMsg": "This document has already been deleted.",
+    "singleDocumentAlreadyDeletedMsg": "{{count}} document has already been deleted.",
     "documentsAlreadyDeletedMsg": "{{all}}{{count}} documents have already been deleted.",
     "allSelectedDocumentsAlreadyDeleted": "All selected documents have already been deleted.",
     "documentCannotBeDeletedNotification": "This document cannot be deleted as it is currently being prepared for download. Please try again later.",
@@ -560,7 +560,9 @@
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
     "sizeColumn": "Size",
-    "Okay": "Okay"
+    "Okay": "Okay",
+    "oneOrMoreSelectedDocumentsCannotBeDeleted": "One or more selected documents cannot be deleted as they are currently being prepared for download. Please try again later. If the issue persists, please get in touch with our support team.",
+    "oneOrMoreSelectedDocumentsCannotBeDownloaded": "One or more selected documents cannot be downloaded as they have already been deleted. Please try again later. If the issue persists, please get in touch with our support team."
   }, 
   "Filter": {
     "heading": "Advanced search",

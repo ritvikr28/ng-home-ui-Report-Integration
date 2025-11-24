@@ -38,7 +38,8 @@ import {
   getTitleConfirmation,
   addUniqueTagItem,
   handleApply,
-  handleEditSelectedOverFlowMenu
+  handleEditSelectedOverFlowMenu,
+  applySummaryTagClass
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -3030,6 +3031,206 @@ describe("handleBulkDeleteLogic", () => {
     expect(setShowDeleteSuccessToast).not.toHaveBeenCalledWith(true);
   });
 
+  it("should call fetchGetDocumentDetails after correct timeout for availableFileIds count between 100 and 200", async () => {
+  jest.useFakeTimers();
+  deleteFiles.mockResolvedValue(204);
+
+  await handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked: true,
+    setIsSearchDataLoading,
+    availableFileIds: Array(150).fill("fileId"), 
+    setShowDeleteAbortBanner
+  });
+
+  // Should not be called before timer runs
+  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(1000);
+
+  await Promise.resolve();
+
+  expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+});
+
+ it("should call fetchGetDocumentDetails after correct timeout for availableFileIds count between 400 and 600", async () => {
+  jest.useFakeTimers();
+  deleteFiles.mockResolvedValue(204);
+
+  await handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked: true,
+    setIsSearchDataLoading,
+    availableFileIds: Array(550).fill("fileId"), 
+    setShowDeleteAbortBanner
+  });
+
+  // Should not be called before timer runs
+  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(5000);
+
+  await Promise.resolve();
+
+  expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+});
+
+ it("should call fetchGetDocumentDetails after correct timeout for availableFileIds count between 200 and 400", async () => {
+  jest.useFakeTimers();
+  deleteFiles.mockResolvedValue(204);
+
+  await handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked: true,
+    setIsSearchDataLoading,
+    availableFileIds: Array(350).fill("fileId"), 
+    setShowDeleteAbortBanner
+  });
+
+  // Should not be called before timer runs
+  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(2500);
+
+  await Promise.resolve();
+
+  expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+});
+
+ it("should call fetchGetDocumentDetails after correct timeout for availableFileIds count between 600 and 1000", async () => {
+  jest.useFakeTimers();
+  deleteFiles.mockResolvedValue(204);
+
+  await handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked: true,
+    setIsSearchDataLoading,
+    availableFileIds: Array(850).fill("fileId"), 
+    setShowDeleteAbortBanner
+  });
+
+  // Should not be called before timer runs
+  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(6000);
+
+  await Promise.resolve();
+
+  expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+});
+
+ it("should call fetchGetDocumentDetails after correct timeout for availableFileIds count more than 1000", async () => {
+  jest.useFakeTimers();
+  deleteFiles.mockResolvedValue(204);
+
+  await handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRealatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked: true,
+    setIsSearchDataLoading,
+    availableFileIds: Array(1150).fill("fileId"), 
+    setShowDeleteAbortBanner
+  });
+
+  // Should not be called before timer runs
+  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
+
+  jest.advanceTimersByTime(10000);
+
+  await Promise.resolve();
+
+  expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
+});
+
   it("should handle deleteFiles throwing an error", async () => {
     deleteFiles.mockRejectedValue(new Error("fail"));
 
@@ -3710,5 +3911,59 @@ describe("handleEditSelectedOverFlowMenu", () => {
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("applySummaryTagClass", () => {
+  beforeEach(() => {
+    document.body.innerHTML = `
+      <div id="taglist-id">
+        <div class="search-tagList">
+          <div class="essui-tag"><span>App</span></div>
+        </div>
+        <div class="search-tagList">
+          <div class="essui-tag"><span>+2</span></div>
+        </div>
+      </div>
+    `;
+  });
+
+  it("adds summary-tag class to tags with +n and removes from others", () => {
+    const tagLists = document.querySelectorAll("#taglist-id .search-tagList");
+    // Initially, no tag has summary-tag
+    tagLists.forEach(tag => {
+      expect(tag.classList.contains("summary-tag")).toBe(false);
+    });
+
+    applySummaryTagClass();
+
+    // First tag should NOT have summary-tag
+    expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
+    // Second tag should have summary-tag
+    expect(tagLists[1].classList.contains("summary-tag")).toBe(true);
+  });
+
+  it("removes summary-tag class if +n is changed to something else", () => {
+    const tagLists = document.querySelectorAll("#taglist-id .search-tagList");
+    // Set +2, apply class
+    applySummaryTagClass();
+    expect(tagLists[1].classList.contains("summary-tag")).toBe(true);
+
+    // Change span text to something else
+    const span = tagLists[1].querySelector(".essui-tag span");
+    if (span) span.textContent = "Other";
+    applySummaryTagClass();
+    expect(tagLists[1].classList.contains("summary-tag")).toBe(false);
+  });
+
+  it("handles missing span gracefully", () => {
+    // Remove span from first tag
+    const tagLists = document.querySelectorAll("#taglist-id .search-tagList");
+    const span = tagLists[0].querySelector(".essui-tag span");
+    if (span) span.remove();
+    // Should not throw
+    expect(() => applySummaryTagClass()).not.toThrow();
+    // Should not add summary-tag
+    expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
   });
 });

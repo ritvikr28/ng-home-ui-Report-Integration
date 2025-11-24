@@ -6,7 +6,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu } from "./DocumentManagementServer.logic"
+import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -116,8 +116,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     ...categoryArr,
     ...dateTagArr
     ];
+    
 
-        const messages = [];
+    const messages = [];
 
     if (restrictedFileCount > 0) {
         messages.push(
@@ -134,13 +135,31 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     if (alreadyDeletedFileCount > 0) {
         messages.push(
             alreadyDeletedFileCount === 1
-                ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+                ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                 : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
                     all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
                     count: alreadyDeletedFileCount
                 })
         );
     }
+
+    if (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) {
+        const deletedCount = (docData?.totalRecords > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) ? (docData?.totalRecords - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length)) : alreadyDeletedFileCount;
+        if (deletedCount === 1) {
+            messages.push(
+                t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: deletedCount })
+            );
+        } else if (deletedCount > 1) {
+            messages.push(
+                t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+                    all: (alreadyDeletedFileCount === 0 && restrictedFileCount === 0 && availableFileCount === 0) ? t("DocumentManagementServer.All") : "",
+                    count: deletedCount
+                })
+            );
+        }
+    }
+
+
     const contentText = <div style={{ whiteSpace: "pre-line" }}>{messages.join("\n")}</div>;
 
     
@@ -183,6 +202,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         "(min-width:320px) and (max-width: 1023.9px)"
     );
  
+    const isMobileViewSmall: boolean = useMediaQuery(
+        "(min-width:400px) and (max-width: 896px)"
+    );
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
     useEffect(() => {
@@ -217,6 +239,31 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
 
  
+    useEffect(() => {
+        const tagListNode = document.getElementById("taglist-id");
+        if (!tagListNode) {
+             return () => {};
+        }
+
+        // Initial run
+        applySummaryTagClass();
+
+        // Set up MutationObserver
+        const observer = new MutationObserver(() => {
+            applySummaryTagClass();
+        });
+
+        observer.observe(tagListNode, { childList: true, subtree: true });
+
+        return () => observer.disconnect();
+    }, [
+        searchTagList,
+        isMobileView,
+        isMobileViewSmall,
+        tableKey,
+        searchInput,
+        selectedCategories
+    ]);
     const handleButtonClick: () => void = () => {
         setIsOpen(!isOpen);
     };
@@ -256,6 +303,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
             fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
         }
+        applySummaryTagClass();
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
     useEffect(() => {
@@ -343,36 +391,42 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     }, [isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs]);
 
 
-   const handleSorting = (columnName: string) => {
-  let apiColumnName = columnName;
-  switch (columnName) {
-    case t("DocumentManagementServer.dateAddedColumn"):
-      apiColumnName = "DateAdded";
-      break;
-    case t("DocumentManagementServer.documentColumn"):
-      apiColumnName = "Document";
-      break;
-    case t("DocumentManagementServer.formatColumn"):
-      apiColumnName = "Format";
-      break;
-    case t("DocumentManagementServer.sizeColumn"):
-      apiColumnName = "Size";
-      break;
-    case t("DocumentManagementServer.categoryColumn"):
-      apiColumnName = "Category";
-      break;
-    default:
-      return;
-  }
-  let newDirection = "Asc";
-  if (sortBy === apiColumnName) {
-    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-  }
- 
-  setSortBy(apiColumnName);
-  setSortDirection(newDirection);
-};
- 
+    const handleSorting = (columnName: string) => {
+        let apiColumnName = columnName;
+        switch (columnName) {
+            case t("DocumentManagementServer.dateAddedColumn"):
+                apiColumnName = "DateAdded";
+                break;
+            case t("DocumentManagementServer.documentColumn"):
+                apiColumnName = "Document";
+                break;
+            case t("DocumentManagementServer.formatColumn"):
+                apiColumnName = "Format";
+                break;
+            case t("DocumentManagementServer.sizeColumn"):
+                apiColumnName = "Size";
+                break;
+            case t("DocumentManagementServer.categoryColumn"):
+                apiColumnName = "Category";
+                break;
+            default:
+                return;
+        }
+        let newDirection = "Asc";
+        if (sortBy === apiColumnName) {
+            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+        }
+
+        setSortBy(apiColumnName);
+        setSortDirection(newDirection);
+
+        gtmAnalytics.pushEvent({
+            event: "interact_click",
+            elementType: "sort",
+            elementTextOrLabel: apiColumnName?.toLowerCase() === "dateadded" ? "Date added" : apiColumnName,
+            elementLocation: "body"
+        });
+    };
 
 
 const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISelectedItem) => {
@@ -405,28 +459,17 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
 };
  
     const getEmptyStateMsg = () => {
-  if (showErrorBanner) return t("DocumentManagementServer.informationUnavailable");
-  if (issearchDataLoading || isSearchLoading) return undefined;
+        if (showErrorBanner) return t("DocumentManagementServer.informationUnavailable");
+        if (issearchDataLoading || isSearchLoading) return undefined;
 
-  // Initial state: no search yet
-  if (!isSearchTriggered && !searchText) {
-    return "Use the search bar to search pupil, staff or organisation.";
-  }
+        // Initial state: no search yet
+        if (!isSearchTriggered && !searchText) {
+            return "Use the search bar to search pupil, staff or organisation.";
+        }
 
-  // After search, no results
-//   if (
-//     isSearchTriggered &&
-//     docData &&
-//     docData?.statusCode === 200 &&
-//     Array.isArray(docData?.data) &&
-//     docData?.data.length === 0
-//   ) {
-//     return "No data to display.";
-//   }
-
-  if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
-  return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
-};
+        if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
+        return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
+    };
 
 
 const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === 'complete');
@@ -523,7 +566,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             isShow: showDeleteAbortBanner,
             variant: "warning",
             title:t("DocumentManagementServer.unableToDelete"),
-            message:t("DocumentManagementServer.documentCannotBeDeletedNotification"),
+            message:t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
             autoclose: true,
             onClickClose: () => setShowDeleteAbortBanner(false)
     }
@@ -646,10 +689,10 @@ switch (dialogType) {
       contentText,
       isNotificationanner: true,
       notificationTitle: availableFileCount === 1
-        ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
-        : t("DocumentManagementServer.documentsWillBeGoneForever", {
-            all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
-            count: availableFileCount
+            ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
+            : t("DocumentManagementServer.documentsWillBeGoneForever", {
+                all: availableFileCount === docData?.totalRecords || (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? t("DocumentManagementServer.All") : "",
+                count: (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? totalSelectedCount : availableFileCount
             }),
       notificationStatus: NotificationStatus.WARNING,
       onCancel: (): void => { setShowConfirmDialog(false);
@@ -757,13 +800,13 @@ switch (dialogType) {
               setPrepareDownloadError(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             }else if (statuses.some((status: number) => status === 409)) {
               setPrepareDownloadAbortBanner(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             } else if (totalSelectedCount > 1) {
               setShowEmailNotification(true);
@@ -775,7 +818,7 @@ switch (dialogType) {
             setPrepareDownloadError(true);
             gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
           });
       },
@@ -801,19 +844,9 @@ switch (dialogType) {
 
 
     useEffect(() => {
-        gtmAnalytics.pushPageViewEvent();
+        gtmAnalytics.pushPageViewEvent("Admin Console");
     }, []);
 
-    useEffect(() => {
-        if (!isInitialLoad && sortBy) {
-            gtmAnalytics.pushEvent({
-                event: "interact_click",
-                elementType: "sort",
-                elementTextOrLabel: sortBy?.toLowerCase() === "dateadded" ? "Date added" : sortBy,
-                elementLocation: "body"
-            });
-        }
-    }, [sortBy, isInitialLoad]);
 
     const handleCloseSidePanel = () => {
         closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
@@ -940,15 +973,15 @@ const getDialogTitle = () => {
                                gtmAnalytics.pushEvent({
                                    event: "file_download",
                                    fileExtension: item?.name?.split('.').pop() || "",
-                                   fileName: "[DownloadFileName]",
+                                   fileName: "[RemovedFileName]",
                                    linkText: "Download",
-                                   linkUrl: "[DownloadLinkUrl]"
+                                   linkUrl: "[RemovedLinkUrl]"
                                });
                            } catch (error) {
                                setDownloadError(true);
                                gtmAnalytics.pushEvent({
                                    event: "error_message",
-                                   actionType: "Unable to download"
+                                   messageText: "Unable to download"
                                });
                            }
                        }}
@@ -1007,11 +1040,13 @@ const getDialogTitle = () => {
                                     count: restrictedFileCount
                                     });
                                 }
-                                if (alreadyDeletedFileCount > 0) {
-                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1) {
+                                if (alreadyDeletedFileCount > 0 ||( totalSelectedCount !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) && isHeaderBoxChecked) ) {
+                                    const deletedCount = (totalSelectedCount > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) && isHeaderBoxChecked) ? (totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) : alreadyDeletedFileCount;
+
+                                    if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1 || deletedCount > 1) {
                                         return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
                                     }
-                                return alreadyDeletedFileCount === 1
+                                return alreadyDeletedFileCount === 1 || deletedCount === 1
                                     ? t("DocumentManagementServer.documentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
                                     : t("DocumentManagementServer.documentsAlreadyDeletedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount });
                                 }
@@ -1054,9 +1089,12 @@ const getDialogTitle = () => {
                             : t("DocumentManagementServer.documentsCannotBeDownloadedTitle", { count: alreadyDeletedFileCount })
                         }
                         notificationTitle={
-                        alreadyDeletedFileCount === 1
-                            ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: alreadyDeletedFileCount })
-                            : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: alreadyDeletedFileCount })
+                            (() => {
+                                    const deletedCount = totalSelectedCount > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount ) && isHeaderBoxChecked ? totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) : alreadyDeletedFileCount;
+                                    return deletedCount === 1
+                                        ? t("DocumentManagementServer.documentCannotBeDownloadedMsg", { count: deletedCount })
+                                        : t("DocumentManagementServer.documentsCannotBeDownloadedMsg", { all: alreadyDeletedFileCount === totalSelectedCount || (alreadyDeletedFileCount === 0 && restrictedFileCount === 0 && availableFileCount === 0) ? t("DocumentManagementServer.All") : "", count: deletedCount });
+                            })()
                         }
                         loading={isPreDialogLoading}
                         onClose={() => {
@@ -1336,7 +1374,7 @@ const getDialogTitle = () => {
                                             <Notification
                                                 status={NotificationStatus.WARNING}
                                                 title={t("DocumentManagementServer.prepareDownloadErrorTitle")}
-                                                message={t("DocumentManagementServer.prepareDownloadAbortMessage")}
+                                                message={t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDownloaded")}
                                                 autoclose
                                                 onClickClose={() => setPrepareDownloadAbortBanner(false)}
                                             />
