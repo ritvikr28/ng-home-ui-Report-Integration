@@ -19,7 +19,7 @@ import {
   Notification,
   NotificationStatus
 } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { useTranslation, i18next } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
@@ -105,6 +105,9 @@ const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: stri
   setDate({ day: "", month: "", year: "" });
 };
 
+useEffect(() => {
+  i18next.changeLanguage('cy');
+}, []);
 
 let validationText = "";
 if (searchSelectionError) {
@@ -523,6 +526,7 @@ const handleDateChange = (
    useEffect(() => {
   if (searchTerm?.length > 1) {
     handleSearchChange(
+      t,
       { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
       getAllRegistrationIds(selectedCategories),
       selectedDateRange?.fromDate,
@@ -689,6 +693,7 @@ const getEntityLabel = (entity: string) => {
                   isLoader={isSearchLoading}
                   onChange={(e: any) =>   
                     handleSearchChange(
+                      t,
                       e,
                       getAllRegistrationIds(selectedCategories),
                       selectedDateRange?.fromDate,

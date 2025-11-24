@@ -1244,6 +1244,7 @@ it("calls handleSearchChange on search input change", async () => {
       .spyOn(logic, "handleSearchChange")
       .mockImplementation(
         (
+          _t,
           _e,
           _ids,
           _from,
