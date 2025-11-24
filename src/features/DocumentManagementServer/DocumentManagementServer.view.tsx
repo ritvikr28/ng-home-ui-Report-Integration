@@ -800,13 +800,13 @@ switch (dialogType) {
               setPrepareDownloadError(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             }else if (statuses.some((status: number) => status === 409)) {
               setPrepareDownloadAbortBanner(true);
               gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
             } else if (totalSelectedCount > 1) {
               setShowEmailNotification(true);
@@ -818,7 +818,7 @@ switch (dialogType) {
             setPrepareDownloadError(true);
             gtmAnalytics.pushEvent({
                 event: "error_message",
-                actionType: "Unable to prepare for download"
+                messageText: "Unable to prepare for download"
             });
           });
       },
@@ -981,7 +981,7 @@ const getDialogTitle = () => {
                                setDownloadError(true);
                                gtmAnalytics.pushEvent({
                                    event: "error_message",
-                                   actionType: "Unable to download"
+                                   messageText: "Unable to download"
                                });
                            }
                        }}
