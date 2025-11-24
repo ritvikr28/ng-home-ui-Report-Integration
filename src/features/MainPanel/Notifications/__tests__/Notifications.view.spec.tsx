@@ -227,8 +227,6 @@ describe("NotificationView", () => {
 });
 
 describe("NotificationView state management", () => {
-    let setFilterBtnClicked: jest.Mock;
-
     jest.mock("../useNotification", () => ({
         useNotification: () => ({
             filterBtnClicked: false,
@@ -237,7 +235,6 @@ describe("NotificationView state management", () => {
     }));
 
     beforeEach(() => {
-        setFilterBtnClicked = jest.fn();
         // eslint-disable-next-line global-require
         require("../useNotification").useNotification.mockReturnValue({
             filterBtnClicked: false,
