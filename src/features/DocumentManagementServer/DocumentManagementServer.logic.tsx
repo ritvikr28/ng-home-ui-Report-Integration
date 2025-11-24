@@ -376,7 +376,9 @@ export async function fetchGetDocumentDetailsLogic({
   setShowSearchError,
   setShowErrorBanner,
   setIsSearchLoading,
-  setIsSearchDataLoading
+  setIsSearchDataLoading,
+  setPrepareDownloadAbortBanner,
+  setShowDeleteAbortBanner
 }: {
   page: number;
   categories: number[];
@@ -392,8 +394,12 @@ export async function fetchGetDocumentDetailsLogic({
   setShowErrorBanner: (v: boolean) => void;
   setIsSearchLoading: (v: boolean) => void;
   setIsSearchDataLoading: (v: boolean) => void;
+  setPrepareDownloadAbortBanner: (v: boolean) => void;
+  setShowDeleteAbortBanner: (v: boolean) => void;
 }) {
   setIsSearchDataLoading(true);
+  setPrepareDownloadAbortBanner(false);
+  setShowDeleteAbortBanner(false);
   try {
     const result = await fetchDocumentDetails({
       pageNumber: page,

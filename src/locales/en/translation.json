@@ -545,6 +545,7 @@
     "documentsAlreadyDeletedMsg": "{{all}}{{count}} documents have already been deleted.",
     "allSelectedDocumentsAlreadyDeleted": "All selected documents have already been deleted.",
     "documentCannotBeDeletedNotification": "This document cannot be deleted as it is currently being prepared for download. Please try again later.",
+    "singleDocumentCannotBeDeletedNotification" : "{{count}} document cannot be deleted as it is being prepared for download. Please try again later.",
     "documentsCannotBeDeletedNotification": "{{all}}{{count}} documents cannot be deleted as they are being prepared for download. Please try again later.",
     "documentCannotBeDownloadedMsg": "This document cannot be downloaded as it has been deleted.",
     "documentsCannotBeDownloadedMsg": "{{all}}{{count}} documents cannot be downloaded as they have been deleted.",
