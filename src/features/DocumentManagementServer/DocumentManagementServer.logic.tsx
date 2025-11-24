@@ -417,7 +417,7 @@ export async function fetchGetDocumentDetailsLogic({
       
       gtmAnalytics.pushEvent({
         event: "error_message",
-        actionType: "Information unavailable"
+        messageText: "Information unavailable"
       });
     } else {
       setShowSearchError(true);
@@ -1015,14 +1015,14 @@ export const handleBulkDeleteLogic = async ({
       setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
         event: "error_message",
-        actionType: "Unable to delete"
+        messageText: "Unable to delete"
       });
     } else {
       setShowDeleteErrorBanner(true);
       setIsSearchDataLoading(false);
       gtmAnalytics.pushEvent({
         event: "error_message",
-        actionType: "Unable to delete"
+        messageText: "Unable to delete"
       });
     }
   } catch (err) {
@@ -1030,7 +1030,7 @@ export const handleBulkDeleteLogic = async ({
     setIsSearchDataLoading(false);
     gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to delete"
+      messageText: "Unable to delete"
     });
   }
 };
@@ -1203,7 +1203,7 @@ export async function handleClearAllConfirm({
       setIsSidePanelLoader(false);
       gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to clear downloads"
+      messageText: "Unable to clear downloads"
     });
     }
   } catch (error) {
@@ -1212,7 +1212,7 @@ export async function handleClearAllConfirm({
     setIsSidePanelLoader(false);
     gtmAnalytics.pushEvent({
       event: "error_message",
-      actionType: "Unable to clear downloads"
+      messageText: "Unable to clear downloads"
     });
   }
   setShowConfirmDialog(false);
