@@ -579,6 +579,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     useEffect(() => {
     if (searchTerm?.length > 1) {
         handleSearchChange(
+        t,
         { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
         getAllRegistrationIds(selectedFormats),
         selectedDateRange?.fromDate,
@@ -1329,7 +1330,7 @@ const getDialogTitle = () => {
                                      setSelectedEntities([item]);
                                    }
                                 }}
-                                searchOnChange={(e: any) => handleSearchChange(e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+                                searchOnChange={(e: any) => handleSearchChange(t,e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }

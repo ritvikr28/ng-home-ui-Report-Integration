@@ -295,6 +295,7 @@ export const hasItems = (suggestions: Suggestion[]): boolean =>
  
 // Search input change logic
 export const handleSearchChange = (
+  t: (key: string) => string,
   e: React.ChangeEvent<HTMLInputElement>,
   categoryId: number[] | null,
   fromDate: string,
@@ -331,6 +332,7 @@ export const handleSearchChange = (
   setShowSearchError(false);
  
   debouncedFetchSuggestions(
+    t,
     value,
     categoryId,
     fromDate,
@@ -610,8 +612,8 @@ export const getResultNotFoundMsg = (
     return "Information unavailable.";
   }
   // Show "No data to display" only if searching and no data
-  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-    return "No data to display.";
+  if ((searchText || isSearchTriggered ) && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+    return t("DocumentManagementServer.noDataToDisplay");
   }
   if (!isSearchTriggered && !searchText) {
     return t("DocumentManagementServer.searchBarText");
@@ -645,7 +647,7 @@ export const getStaffProfilePhoto = async (staffId: string) => {
   const response = await fetchStaffProfilePhoto(staffId);
   return response?.data ?? "";
 }
-export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> => {
+export const formatSuggestions = async (payload: any[], t: (key: string) => string): Promise<Suggestion[]> => {
   if (!payload) return [];
   return Promise.all(
     payload.map(async (category: any) => {
@@ -747,7 +749,8 @@ export const formatSuggestions = async (payload: any[]): Promise<Suggestion[]> =
         })
       );
       return {
-        name: category?.name || "",
+        // name: t(category?.name || ""),
+        name: t(`Filter.${category?.name || ""}`),
         values,
       };
     })
@@ -1131,6 +1134,7 @@ export function closeSidePanel(
 
 export const debouncedFetchSuggestions = debounce(
   async (
+    t: (key: string) => string,
     searchText: string,
     categoryId: number[] | null,
     fromDate: string,
@@ -1145,7 +1149,7 @@ export const debouncedFetchSuggestions = debounce(
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
       const values = response?.payload ?? [];
-      const suggestions = await formatSuggestions(values);
+      const suggestions = await formatSuggestions(values , t);
       setSuggestions(suggestions);
       setShowError(suggestions?.length === 0);
     } catch (err) {

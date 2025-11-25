@@ -523,6 +523,7 @@ const handleDateChange = (
    useEffect(() => {
   if (searchTerm?.length > 1) {
     handleSearchChange(
+      t,
       { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
       getAllRegistrationIds(selectedCategories),
       selectedDateRange?.fromDate,
@@ -689,6 +690,7 @@ const getEntityLabel = (entity: string) => {
                   isLoader={isSearchLoading}
                   onChange={(e: any) =>   
                     handleSearchChange(
+                      t,
                       e,
                       getAllRegistrationIds(selectedCategories),
                       selectedDateRange?.fromDate,

@@ -162,12 +162,14 @@ describe("getTableHeadersData column anyComponent rendering", () => {
 
 describe("formatSuggestions", () => {
   it("returns empty array when input is empty", async () => {
-  expect(await formatSuggestions([])).toEqual([]);
-  expect(await formatSuggestions(undefined as any)).toEqual([]);
-  expect(await formatSuggestions(null as any)).toEqual([]);
+    const t = (key: string) => key;
+  expect(await formatSuggestions([], t)).toEqual([]);
+  expect(await formatSuggestions(undefined as any, t)).toEqual([]);
+  expect(await formatSuggestions(null as any, t)).toEqual([]);
 });
 
 it("formats Pupil with neither year group nor primary class", async () => {
+  const t = (key: string) => key;
   const input = [{
     name: "Pupil",
     values: [{
@@ -179,13 +181,14 @@ it("formats Pupil with neither year group nor primary class", async () => {
       // both missing
     }]
   }];
-  const result = await formatSuggestions(input);
+  const result = await formatSuggestions(input, t);
   expect(result[0].values[0].value).toBeUndefined();
 });
 
 
 
   it("formats Pupil category with icon and value", async () => {
+    const t = (key: string) => key === "Filter.Pupil" ? "Pupil" : key;
     const input = [
       {
         name: "Pupil",
@@ -203,7 +206,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
         ]
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input, t);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Pupil");
     expect(result[0].values[0].text).toContain("John Doe (Jonathan Doe)");
@@ -216,6 +219,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
   });
 
   it("formats Staff category with icon", async () => {
+    const t = (key: string) => key === "Filter.Staff" ? "Staff" : key;
     const input = [
       {
         name: "Staff",
@@ -231,7 +235,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
         ]
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input,t);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Staff");
     expect(result[0].values[0].text).toContain("Jane Smith");
@@ -243,6 +247,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
   });
 
   it("formats Organisation category", async () => {
+    const t = (key: string) => key === "Filter.Organisation" ? "Organisation" : key;
     const input = [
       {
         name: "Organisation",
@@ -255,7 +260,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
         ]
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input, t);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Organisation");
     expect(result[0].values[0].text).toBe("Test School");
@@ -266,6 +271,7 @@ it("formats Pupil with neither year group nor primary class", async () => {
   });
 
 it('renders pupil image with correct class', async () => {
+  const t = (key: string) => key;
   const payload = [{
     name: 'Pupil',
     values: [{
@@ -279,7 +285,7 @@ it('renders pupil image with correct class', async () => {
     }]
   }];
 
-  const suggestions = await formatSuggestions(payload);
+  const suggestions = await formatSuggestions(payload, t);
   // Render the icon part of the suggestion
   render(<>{suggestions[0].values[0].icon}</>);
   const img = screen.getByAltText('Pupil Photo');
@@ -289,6 +295,7 @@ it('renders pupil image with correct class', async () => {
 });
 
   it("formats default category", async () => {
+    const t = (key: string) => key;
     const input = [
       {
         name: "Other",
@@ -300,9 +307,9 @@ it('renders pupil image with correct class', async () => {
         ]
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input, t);
     expect(result).toHaveLength(1);
-    expect(result[0].name).toBe("Other");
+    expect(result[0].name).toBe("Filter.Other");
     expect(result[0].values[0].text).toBe("Other Name");
     expect(result[0].values[0].props).toMatchObject({
       name: "Other Name",
@@ -311,13 +318,14 @@ it('renders pupil image with correct class', async () => {
   });
 
   it("handles empty values array for a category", async () => {
+    const t = (key: string) => key === "Filter.Document" ? "Document" : key;
     const input = [
       {
         name: "Document",
         values: []
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input, t);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
@@ -338,18 +346,20 @@ it('renders pupil image with correct class', async () => {
   // });
 
   it("handles missing values property", async () => {
+    const t = (key: string) => key === "Filter.Document" ? "Document" : key;
     const input = [
       {
         name: "Document"
       }
     ];
-    const result = await formatSuggestions(input);
+    const result = await formatSuggestions(input, t);
     expect(result).toHaveLength(1);
     expect(result[0].name).toBe("Document");
     expect(result[0].values).toEqual([]);
   });
    test("returns empty when input is empty", async () => {
-  const result = await formatSuggestions([]);
+  const t = (key: string) => key;
+  const result = await formatSuggestions([], t);
   expect(result).toEqual([]);
 });
 });
@@ -369,15 +379,16 @@ describe("debouncedFetchSuggestions", () => {
   });
 
   it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
+    const t = (key: string) => key;
     const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
     const setSearchLoading = jest.fn();
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
     // Call debouncedFetchSuggestions multiple times rapidly
-    debouncedFetchSuggestions("Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
-    debouncedFetchSuggestions("Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
-    debouncedFetchSuggestions("Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t,"Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t,"Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t,"Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
     jest.advanceTimersByTime(2999);
@@ -394,13 +405,14 @@ describe("debouncedFetchSuggestions", () => {
     expect(setSearchLoading).toHaveBeenCalledWith(false);
   });
   test("handles undefined payload structure", async () => {
+    const t = (key: string) => key;
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue({});
 
   const setSearchLoading = jest.fn();
   const setSuggestions = jest.fn();
   const setShowError = jest.fn();
 
-  debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
+  debouncedFetchSuggestions(t,"Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
   await act(() => {
     jest.advanceTimersByTime(3000);
@@ -412,12 +424,12 @@ describe("debouncedFetchSuggestions", () => {
 
   test("handles API error", async () => {
     (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
-
+    const t = (key: string) => key;
     const setSearchLoading = jest.fn();
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
 
-    debouncedFetchSuggestions("Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t,"Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
 
     await act(() => {
       jest.advanceTimersByTime(3000);
@@ -442,13 +454,14 @@ describe("handlePageChange", () => {
 
 describe("handleSearchChange", () => {
   const setup = (value: string) => {
+    const t = (key: string) => key;
     const event = { target: { value } } as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
 
-    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading };
   };
@@ -460,13 +473,14 @@ describe("handleSearchChange", () => {
   });
 
   it("should handle empty string as input", () => {
+  const t = (key: string) => key;
   const event = { target: { value: "" } } as any;
   const setSearchTerm = jest.fn();
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -478,18 +492,20 @@ describe("handleSearchChange", () => {
   });
 
   it("triggers loading for length === 2", () => {
+  const t = (key: string) => key;
   const event = { target: { value: "ab" } } as React.ChangeEvent<HTMLInputElement>;
   const setSearchTerm = jest.fn();
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
 
-  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
 });
 it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch is a function", () => {
+  const t = (key: string) => key;
   const event = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
   const setSearchTerm = jest.fn();
   const setSuggestions = jest.fn();
@@ -498,6 +514,7 @@ it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch 
   const setResetFilterSearch = jest.fn();
 
   handleSearchChange(
+    t,
     event,
     [],
     "",
@@ -658,8 +675,9 @@ describe("handleSearchChange boundary tests", () => {
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
+    const t = (key: string) => key;
 
-    handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -670,8 +688,9 @@ it("should not call fetch if value is only whitespace", () => {
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
+  const t = (key: string) => key;
 
-  handleSearchChange(event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -1069,7 +1088,7 @@ describe('fetchCategory', () => {
 
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
-   const t = (key: string) => key; 
+   const t = (key: string) => key === "DocumentManagementServer.noDataToDisplay" ? "No data to display." : key;
     const result = getResultNotFoundMsg(t,'test', { statusCode: 200, data: [] }, 'test', false, true);
     expect(result).toBe(
       'No data to display.'
@@ -3896,6 +3915,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
   });
 
   it("clears suggestions and loading for whitespace-only input", () => {
+    const t = (key: string) => key;
     const event = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
@@ -3903,6 +3923,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     const setIsSearchLoading = jest.fn();
 
     logicModule.handleSearchChange(
+      t,
       event,
       [],
       "",
