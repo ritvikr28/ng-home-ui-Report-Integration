@@ -3207,7 +3207,7 @@ describe("handleBulkDeleteLogic", () => {
   // Should not be called before timer runs
   expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
 
-  jest.advanceTimersByTime(6000);
+  jest.advanceTimersByTime(7000);
 
   await Promise.resolve();
 
@@ -3247,7 +3247,7 @@ describe("handleBulkDeleteLogic", () => {
   // Should not be called before timer runs
   expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
 
-  jest.advanceTimersByTime(10000);
+  jest.advanceTimersByTime(11000);
 
   await Promise.resolve();
 

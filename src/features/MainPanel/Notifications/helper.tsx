@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { ShowValAs, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
+// eslint-enable jsx-a11y/anchor-is-valid
+import { Link, ShowValAs, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
 
 export const getNotificationTableHeadersData = (
-  setSideIsOpen?: (isOpen: boolean) => void
+  setSideIsOpen?: (isOpen: boolean) => void,
+  setSelectedItem?: (item: any) => void
 ): {
   text: string;
   isShow: boolean;
@@ -77,24 +79,21 @@ export const getNotificationTableHeadersData = (
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       columnWidth: "129px",
-      anyComponent: (cellData: any) => (
-        <button
-          type="button"
-          onClick={() => {
-            if (setSideIsOpen) setSideIsOpen(true);
-          }}
-          style={{
-            color: "#2177C2",
-            background: "none",
-            border: "none",
-            padding: 0,
-            cursor: "pointer",
-            textDecoration: "underline"
-          }}
-          className="view-text-style"
-        >
-          {cellData}
-        </button>
+      anyComponent: (e: any) => (
+        <>
+          {/* eslint-disable jsx-a11y/anchor-is-valid */}
+          <Link
+            dataTestId="test-id"
+            id="element-id"
+            onClick={() => {
+              if (setSelectedItem) setSelectedItem(e);
+              if (setSideIsOpen) setSideIsOpen(true);
+            }}
+            target="_self"
+          >
+            View
+          </Link>
+        </>
       )
     }
   ];
@@ -117,7 +116,7 @@ export const generateNotificationData = (): {
   DateReceived: string;
   isShowIcon: boolean;
   iconName?: string;
-  doc?: string;
+  doc?: { id: string; status: string; notification: string; priority: string; dateReceived: string; }[];
 }[] => {
   const notifications: {
     Id: string;
@@ -127,7 +126,7 @@ export const generateNotificationData = (): {
     DateReceived: string;
     isShowIcon: boolean;
     iconName?: string;
-    doc?: string;
+    doc?: { id: string; status: string; notification: string; priority: string; dateReceived: string; }[];
   }[] = [];
 
   const notificationTemplates = [
@@ -182,14 +181,23 @@ export const generateNotificationData = (): {
     const priority = template.priority || priorities[Math.floor(Math.random() * priorities.length)];
     const daysAgo = Math.floor(Math.random() * 60);
     const hasIcon = Math.random() > 0.5;
-    
+    const generateIdVal = generateId(i)
+
     notifications.push({
-      Id: generateId(i),
+      Id: generateIdVal,
       Status: status,
       Notification: `${template.text}${i > 0 ? ` (${i + 1})` : ""}`,
       Priority: priority,
       DateReceived: formatDate(daysAgo),
-      doc: "View",
+      doc: [
+        {
+          id: generateIdVal,
+          status,
+          notification: `${template.text}${i > 0 ? ` (${i + 1})` : ""}`,
+          priority,
+          dateReceived: formatDate(daysAgo),
+        }
+      ],
       isShowIcon: hasIcon,
       iconName: hasIcon ? "chat" : undefined
     });

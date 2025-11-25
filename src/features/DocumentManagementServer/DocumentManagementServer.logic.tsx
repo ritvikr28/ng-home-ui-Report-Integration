@@ -1003,10 +1003,10 @@ export const handleBulkDeleteLogic = async ({
     } else if (count > 400 && count <= 650) {
       timeoutMs = 4500;
     } else if (count > 650 && count <= 1000) {
-      timeoutMs = 6000;
+      timeoutMs = 7000;
     }
     else if (count > 1000) {
-      timeoutMs = 10000;
+      timeoutMs = 11000;
     }
     if (timeoutMs > 0) {
       setTimeout(() => {
