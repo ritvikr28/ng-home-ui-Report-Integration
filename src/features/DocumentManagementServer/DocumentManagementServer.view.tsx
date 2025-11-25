@@ -372,7 +372,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         setIsSearchLoading,
         setIsSearchDataLoading,
         setPrepareDownloadAbortBanner,
-        setShowDeleteAbortBanner
+        setShowDeleteAbortBanner,
+        setShowDeleteErrorBanner
     });
     };
 
@@ -456,12 +457,13 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
     setIsDialogLoading,
     setSidePanelOpenReason,
     setIsSidePanelOpen,
-    setAvailableFileIds
+    setAvailableFileIds,
+    setShowErrorBanner
   });
 };
  
     const getEmptyStateMsg = () => {
-        if (showErrorBanner) return t("DocumentManagementServer.informationUnavailable");
+        if (showErrorBanner ||  ((searchText || !isSearchTriggered) && showSearchError)) return t("DocumentManagementServer.informationUnavailable");
         if (issearchDataLoading || isSearchLoading) return undefined;
 
         // Initial state: no search yet
@@ -469,7 +471,6 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
             return "Use the search bar to search pupil, staff or organisation.";
         }
 
-        if (!isSearchTriggered && showSearchError) return t("DocumentManagementServer.informationUnavailable");
         return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
     };
 
@@ -504,6 +505,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setSelectedRelatedTo(undefined);
         setShowDeleteAbortBanner(false);
         setPrepareDownloadAbortBanner(false);
+        setShowDeleteErrorBanner(false);
+        setShowErrorBanner(false);
         };
 
         useEffect(() => {
@@ -587,7 +590,8 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setSearchTerm,
         setSuggestions,
         setShowSearchError,
-        setIsSearchLoading
+        setIsSearchLoading,
+        setShowErrorBanner
         );
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
@@ -1330,7 +1334,7 @@ const getDialogTitle = () => {
                                      setSelectedEntities([item]);
                                    }
                                 }}
-                                searchOnChange={(e: any) => handleSearchChange(t,e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading)}
+                                searchOnChange={(e: any) => handleSearchChange(t, e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner)}
                                 searchValidationText={
                                     showSearchError ? "Search unavailable. Please try again later." : undefined
                                 }

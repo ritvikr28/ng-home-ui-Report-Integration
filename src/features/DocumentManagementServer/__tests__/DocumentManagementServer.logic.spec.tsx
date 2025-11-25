@@ -380,15 +380,16 @@ describe("debouncedFetchSuggestions", () => {
 
   it("calls fetchDMSSuggestions only once after 3000ms even if called multiple times rapidly", async () => {
     const t = (key: string) => key;
-    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [] });
+    const mockFetchDMSSuggestions = jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue({ payload: [], statusCode: 200 });
     const setSearchLoading = jest.fn();
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
+    const setShowErrorBanner = jest.fn();
 
     // Call debouncedFetchSuggestions multiple times rapidly
-    debouncedFetchSuggestions(t,"Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError);
-    debouncedFetchSuggestions(t,"Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError);
-    debouncedFetchSuggestions(t,"Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t, "Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+    debouncedFetchSuggestions(t, "Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+    debouncedFetchSuggestions(t, "Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
     // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
     jest.advanceTimersByTime(2999);
@@ -411,8 +412,9 @@ describe("debouncedFetchSuggestions", () => {
   const setSearchLoading = jest.fn();
   const setSuggestions = jest.fn();
   const setShowError = jest.fn();
+  const setShowErrorBanner = jest.fn();
 
-  debouncedFetchSuggestions(t,"Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
+  debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
   await act(() => {
     jest.advanceTimersByTime(3000);
@@ -428,8 +430,9 @@ describe("debouncedFetchSuggestions", () => {
     const setSearchLoading = jest.fn();
     const setSuggestions = jest.fn();
     const setShowError = jest.fn();
+    const setShowErrorBanner = jest.fn();
 
-    debouncedFetchSuggestions(t,"Doc", [], "", "", setSearchLoading, setSuggestions, setShowError);
+    debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
     await act(() => {
       jest.advanceTimersByTime(3000);
@@ -437,7 +440,7 @@ describe("debouncedFetchSuggestions", () => {
     });
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
-    expect(setShowError).toHaveBeenCalledWith(true);
+    expect(setShowErrorBanner).toHaveBeenCalledWith(true);
     expect(setSearchLoading).toHaveBeenCalledWith(false);
   });
 });
@@ -460,10 +463,11 @@ describe("handleSearchChange", () => {
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
+    const setShowErrorBanner = jest.fn();
 
-    handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
-    return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading };
+    return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner };
   };
 
   it("clears suggestions for short input", () => {
@@ -479,8 +483,9 @@ describe("handleSearchChange", () => {
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
+  const setShowErrorBanner = jest.fn();
 
-  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -498,8 +503,9 @@ describe("handleSearchChange", () => {
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
+  const setShowErrorBanner = jest.fn();
 
-  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -512,6 +518,7 @@ it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch 
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
   const setResetFilterSearch = jest.fn();
+  const setShowErrorBanner = jest.fn();
 
   handleSearchChange(
     t,
@@ -523,6 +530,7 @@ it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch 
     setSuggestions,
     setShowSearchError,
     setIsSearchLoading,
+    setShowErrorBanner,
     1,
     setResetFilterSearch
   );
@@ -675,9 +683,10 @@ describe("handleSearchChange boundary tests", () => {
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
+    const setShowErrorBanner = jest.fn();
     const t = (key: string) => key;
 
-    handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+    handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
     expect(setSuggestions).toHaveBeenCalledWith([]);
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -688,9 +697,10 @@ it("should not call fetch if value is only whitespace", () => {
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
   const setIsSearchLoading = jest.fn();
+  const setShowErrorBanner = jest.fn();
   const t = (key: string) => key;
 
-  handleSearchChange(t,event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading);
+  handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
   expect(setSuggestions).toHaveBeenCalledWith([]);
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
@@ -2175,6 +2185,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetIsSearchDataLoading = jest.fn();
   const mockSetPrepareDownloadAbortBanner = jest.fn();
   const mockSetShowDeleteAbortBanner = jest.fn();
+  const mockSetShowDeleteErrorBanner = jest.fn();
 
   const defaultArgs = {
     page: 2,
@@ -2193,7 +2204,8 @@ describe("fetchGetDocumentDetailsLogic", () => {
     setIsSearchLoading: mockSetIsSearchLoading,
     setIsSearchDataLoading: mockSetIsSearchDataLoading,
     setPrepareDownloadAbortBanner: mockSetPrepareDownloadAbortBanner,
-    setShowDeleteAbortBanner: mockSetShowDeleteAbortBanner
+    setShowDeleteAbortBanner: mockSetShowDeleteAbortBanner,
+    setShowDeleteErrorBanner: mockSetShowDeleteErrorBanner
   };
 
   beforeEach(() => {
@@ -2976,6 +2988,39 @@ describe("handleBulkDeleteLogic", () => {
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
     expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
     expect(setShowDeleteSuccessToast).toHaveBeenCalledWith(true);
+  });
+
+   it("should handle edge case for delete (status 409) with select all unchecked", async () => {
+    deleteFiles.mockResolvedValue(409);
+
+    await handleBulkDeleteLogic({
+      allSelectedDocs,
+      docData,
+      allRegistrationIds,
+      dateRange,
+      searchRefExternalId,
+      documentRealatedTo,
+      currentPage,
+      sortBy,
+      sortDirection,
+      setShowToastNotification,
+      setShowConfirmDialog,
+      setSelectedCheckBoxIds,
+      setAllSelectedDocs,
+      setIsClearSelectedCheckbox,
+      setShowDeleteErrorBanner,
+      setShowDeleteSuccessToast,
+      fetchGetDocumentDetails,
+      deleteFiles,
+      excludedCheckBoxIds: [],
+      isHeaderBoxChecked: false,
+      setIsSearchDataLoading,
+      availableFileIds: ["1", "2"],
+      setShowDeleteAbortBanner
+    });
+
+    expect(setShowDeleteAbortBanner).toHaveBeenCalledWith(true);
+    expect(setIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
 
   it("should handle successful delete (status 204) with select all checked and exclusions", async () => {
@@ -3811,12 +3856,14 @@ describe("handleEditSelectedOverFlowMenu", () => {
     setIsSidePanelOpen: jest.fn(),
     setAvailableFileIds: jest.fn(),
     buildValidationPayload: jest.fn((args) => args),
+    setShowErrorBanner: jest.fn(),
     validation: jest.fn(async () => ({
       data: {
         restrictedFileCount: 1,
         alreadyDeletedFileCount: 2,
         availableFileCount: 3,
-      }
+      },
+      status : 200
     })),
   });
 
@@ -3842,11 +3889,11 @@ describe("handleEditSelectedOverFlowMenu", () => {
     expect(mocks.setShowDialog).toHaveBeenCalledWith(true);
     expect(mocks.setShowConfirmDialog).toHaveBeenCalled();
   });
-
-  it("shows restricted prepare dialog if available=0 and alreadyDeleted>0 for Prepare download", async () => {
+  it("shows error banner if validation api fails", async () => {
     const mocks = getMocks();
     mocks.validation.mockResolvedValueOnce({
-      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 1, availableFileCount: 0 }
+      status: 400,
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 0 }
     });
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
@@ -3854,14 +3901,32 @@ describe("handleEditSelectedOverFlowMenu", () => {
       selectedItem: { value: "Prepare download" },
       totalSelectedCount: 1,
     });
-    expect(mocks.setShowRestrictedPrepareDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setIsPreDialogLoading).toHaveBeenCalledWith(false);
+    expect(mocks.setShowErrorBanner).toHaveBeenCalledWith(false);
+    expect(mocks.setShowDialog).toHaveBeenCalledWith(false);
+  });
+
+  it("shows restricted prepare dialog if available=0 and alreadyDeleted>0 for Prepare download", async () => {
+    const mocks = getMocks();
+    mocks.validation.mockResolvedValueOnce({
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 1, availableFileCount: 0 },
+      status: 200
+    });
+    await handleEditSelectedOverFlowMenu({
+      ...baseArgs,
+      ...mocks,
+      selectedItem: { value: "Prepare download" },
+      totalSelectedCount: 1,
+    });
+    expect(mocks.setShowRestrictedPrepareDialog).toHaveBeenCalledWith(false);
     expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
 
   it("shows restricted delete dialog if available=0 and restricted>0 for Delete", async () => {
     const mocks = getMocks();
     mocks.validation.mockResolvedValueOnce({
-      data: { restrictedFileCount: 1, alreadyDeletedFileCount: 0, availableFileCount: 0 }
+      data: { restrictedFileCount: 1, alreadyDeletedFileCount: 0, availableFileCount: 0 },
+      status: 200
     });
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
@@ -3876,7 +3941,8 @@ describe("handleEditSelectedOverFlowMenu", () => {
   it("shows confirm dialog if available>0 for Delete", async () => {
     const mocks = getMocks();
     mocks.validation.mockResolvedValueOnce({
-      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 2 }
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 2 },
+      status: 200
     });
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
@@ -3884,14 +3950,15 @@ describe("handleEditSelectedOverFlowMenu", () => {
       selectedItem: { value: "Delete" },
       totalSelectedCount: 1,
     });
-    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
     expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(false);
   });
 
   it("shows confirm dialog for Prepare download if available>0", async () => {
     const mocks = getMocks();
     mocks.validation.mockResolvedValueOnce({
-      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 1 }
+      data: { restrictedFileCount: 0, alreadyDeletedFileCount: 0, availableFileCount: 1 },
+      status: 200
     });
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
@@ -3899,7 +3966,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       selectedItem: { value: "Prepare download" },
       totalSelectedCount: 1,
     });
-    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(true);
+    expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
 
   it("opens side panel for view download", async () => {
@@ -3921,6 +3988,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
+    const setShowErrorBanner = jest.fn();
 
     logicModule.handleSearchChange(
       t,
@@ -3931,7 +3999,8 @@ describe("handleEditSelectedOverFlowMenu", () => {
       setSearchTerm,
       setSuggestions,
       setShowSearchError,
-      setIsSearchLoading
+      setIsSearchLoading,
+      setShowErrorBanner
     );
 
     expect(setSuggestions).toHaveBeenCalledWith([]);

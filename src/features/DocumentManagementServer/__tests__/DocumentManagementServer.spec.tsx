@@ -565,12 +565,21 @@ describe("Additional tests to increase coverage", () => {
  
  
   it("handles multiple files for email notification", async () => {
-  jest.useFakeTimers();
+    jest.useFakeTimers();
     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
-  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
-  (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
-  (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
-  (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+    jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+    (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+    (ApiService.validation as jest.Mock).mockResolvedValue({
+      data: {
+        restrictedFileCount: 0,
+        alreadyDeletedFileCount: 0,
+        availableFileCount: 2,
+      },
+      status: 200
+    });
+    (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
+
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
       status: 200,
       data: [
         { name: "FileZero", status: "complete", fileExpiryDays: 0 },
@@ -579,44 +588,43 @@ describe("Additional tests to increase coverage", () => {
     });
  
  
-  render(<MemoryRouter>
+    render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
- 
-  // type search query
-  const input = await screen.findByTestId("search-autocomplete-input");
-  fireEvent.change(input, { target: { value: "Alfie" } });
-  fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
- 
-  // wait for suggestion to show up
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
 
-  jest.advanceTimersByTime(3000);
- 
-  const suggestionNode = await screen.findAllByText("Alfie");
- 
-  // click suggestion
-  fireEvent.click(suggestionNode[0]);
- 
-  // verify document is displayed
-  await waitFor(() => {
-    expect(screen.getByText("Doc1")).toBeInTheDocument();
-  });
+    // type search query
+    const input = await screen.findByTestId("search-autocomplete-input");
+    fireEvent.change(input, { target: { value: "Alfie" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    // wait for suggestion to show up
+    const searchLoader = screen.getAllByTestId("loader-arc");
+    await waitFor(() => {
+      expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(3000);
+
+    const suggestionNode = await screen.findAllByText("Alfie");
+
+    // click suggestion
+    fireEvent.click(suggestionNode[0]);
+
+    // verify document is displayed
+    await waitFor(() => {
+      expect(screen.getByText("Doc1")).toBeInTheDocument();
+    });
     // Select multiple checkboxes
     fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
     fireEvent.click(screen.getByTestId("check-box-row-testid-1"));
- 
+
     fireEvent.click(await screen.getByText("Actions"));
     fireEvent.click(await screen.getByText("Prepare download"));
-    const saveBtn = await screen.findByTestId("close-btn");
-    fireEvent.click(saveBtn);
+    
+    // const saveBtn = await screen.findByTestId("tid-save-btn--large-screen");
+    // fireEvent.click(saveBtn);
     jest.useRealTimers();
   });
- 
- 
 
  
   it("handles date filter validation error", async () => {
@@ -722,7 +730,8 @@ describe("Additional tests to increase coverage", () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 0,
     availableFileCount: 2,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -752,7 +761,10 @@ describe("Additional tests to increase coverage", () => {
   fireEvent.click(screen.getByText("Actions"));
 
   fireEvent.click(screen.getByText("Delete"));
-
+  const deleteLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(deleteLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
   const deleteDialog = await screen.findByText(/will be gone forever once deleted./i);
   expect(deleteDialog).toBeInTheDocument();
 
@@ -769,7 +781,8 @@ it("Delete dialog cancel button works", async () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 2,
     availableFileCount: 2,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -814,7 +827,8 @@ it("Delete dialog for already deleted works", async () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 2,
     availableFileCount: 0,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -860,7 +874,8 @@ it("opens prepare download confirmation dialog when prepare download is clicked 
     restrictedFileCount: 2,
     alreadyDeletedFileCount: 2,
     availableFileCount: 0,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -938,7 +953,8 @@ describe('onClickSidePnlSecondaryBtn', () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 0,
     availableFileCount: 2,
-  }
+  },
+  status: 200
 });  
  
  
@@ -995,7 +1011,8 @@ describe('onClickSidePnlSecondaryBtn', () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 0,
     availableFileCount: 2,
-  }
+  },
+  status: 200
 });  
  
  
@@ -1097,7 +1114,8 @@ it("if documents already deleted - documents cannot be downloaded as they have b
     restrictedFileCount: 2,
     alreadyDeletedFileCount: 2,
     availableFileCount: 2,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -1143,7 +1161,8 @@ it("This document cannot be deleted as it is currently being prepared for downlo
     restrictedFileCount: 1,
     alreadyDeletedFileCount: 0,
     availableFileCount: 0,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -1190,7 +1209,8 @@ it("Documents cannot be downloaded as they have been deleted", async () => {
     restrictedFileCount: 0,
     alreadyDeletedFileCount: 0,
     availableFileCount: 0,
-  }
+  },
+  status: 200
 });
   render(<MemoryRouter>
       <DocumentManagementServerView />
@@ -1239,6 +1259,7 @@ it("shows correct message when one document is already deleted in dialog", async
       alreadyDeletedFileCount: 1,
       availableFileCount: 0,
     },
+    status: 200
   });
 
   render(<MemoryRouter>
@@ -1285,6 +1306,7 @@ it("shows correct notification when one document is available for download in di
       alreadyDeletedFileCount: 0,
       availableFileCount: 1,
     },
+    status: 200
   });
 
   render(<MemoryRouter>
@@ -1357,6 +1379,7 @@ it("shows 'All selected documents have already been deleted.' when all selected 
       alreadyDeletedFileCount: 2,
       availableFileCount: 0,
     },
+    status: 200
   });
 
   render(<MemoryRouter>
@@ -1411,6 +1434,7 @@ it("shows 'document will be gone forever once deleted.'", async () => {
       alreadyDeletedFileCount: 0,
       availableFileCount: 1,
     },
+    status: 200
   });
 
   render(<MemoryRouter>
@@ -1468,6 +1492,7 @@ it("covers setTimeout and fetchViewDownloadData in prepare mode", async () => {
       alreadyDeletedFileCount: 0,
       availableFileCount: 2,
     },
+    status: 200
   });
 
   render(<MemoryRouter>

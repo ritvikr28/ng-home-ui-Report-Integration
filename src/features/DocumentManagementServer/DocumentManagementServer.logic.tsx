@@ -304,6 +304,7 @@ export const handleSearchChange = (
   setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
   setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
   documentRelatedTo?: number,
   setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
@@ -330,6 +331,9 @@ export const handleSearchChange = (
   setIsSearchLoading(true);
   setSuggestions([]);
   setShowSearchError(false);
+  if (typeof setResetFilterSearch === "function") {
+    setShowErrorBanner(false);
+  }
  
   debouncedFetchSuggestions(
     t,
@@ -340,6 +344,7 @@ export const handleSearchChange = (
     setIsSearchLoading,
     setSuggestions,
     setShowSearchError,
+    setShowErrorBanner,
     documentRelatedTo
   );
 };
@@ -380,7 +385,8 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchLoading,
   setIsSearchDataLoading,
   setPrepareDownloadAbortBanner,
-  setShowDeleteAbortBanner
+  setShowDeleteAbortBanner,
+  setShowDeleteErrorBanner
 }: {
   page: number;
   categories: number[];
@@ -398,10 +404,13 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading: (v: boolean) => void;
   setPrepareDownloadAbortBanner: (v: boolean) => void;
   setShowDeleteAbortBanner: (v: boolean) => void;
+  setShowDeleteErrorBanner: (v: boolean) => void;
 }) {
   setIsSearchDataLoading(true);
   setPrepareDownloadAbortBanner(false);
   setShowDeleteAbortBanner(false);
+  setShowDeleteErrorBanner(false);
+
   try {
     const result = await fetchDocumentDetails({
       pageNumber: page,
@@ -1142,19 +1151,25 @@ export const debouncedFetchSuggestions = debounce(
     setSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
     setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
     setShowError: React.Dispatch<React.SetStateAction<boolean>>,
+    setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
     documentRelatedTo?: number | string
   ) => {
     setSearchLoading(true);
     setShowError(false);
     try {
       const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
-      const values = response?.payload ?? [];
-      const suggestions = await formatSuggestions(values , t);
-      setSuggestions(suggestions);
-      setShowError(suggestions?.length === 0);
+      if (!response || response?.statusCode !== 200) {
+        setShowErrorBanner(true);
+        setSuggestions([]);
+      } else {
+        const values = response?.payload ?? [];
+        const suggestions = await formatSuggestions(values , t);
+        setSuggestions(suggestions);
+        setShowErrorBanner(suggestions?.length === 0);
+      }
     } catch (err) {
       console.error("Autosuggest error:", err);
-      setShowError(true);
+      setShowErrorBanner(true);
       setSuggestions([]);
     } finally {
       setSearchLoading(false);
@@ -1464,7 +1479,8 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading,
   setSidePanelOpenReason,
   setIsSidePanelOpen,
-  setAvailableFileIds
+  setAvailableFileIds,
+  setShowErrorBanner,
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -1489,11 +1505,13 @@ export const handleEditSelectedOverFlowMenu = async ({
   setIsDialogLoading: (v: boolean) => void,
   setSidePanelOpenReason: React.Dispatch<React.SetStateAction<"view" | "prepare" | null>>,
   setIsSidePanelOpen: (v: boolean) => void,
-  setAvailableFileIds: (v: string[]) => void
+  setAvailableFileIds: (v: string[]) => void,
+  setShowErrorBanner: (v: boolean) => void,
 }) => {
   setShowConfirmDialog(false);
   setShowRestrictedDeleteDialog(false);
   setShowRestrictedPrepareDialog(false);
+  setShowErrorBanner(false);
 
   if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
     if (totalSelectedCount === 0) {
@@ -1516,49 +1534,55 @@ export const handleEditSelectedOverFlowMenu = async ({
       });
 
       const result = await validation(validationPayload);
+      if (result?.status !== 200 && result?.status !== 204) {
+        setIsPreDialogLoading(false);
+        setShowRestrictedDeleteDialog(false);
+        setShowDialog(false);
+        setShowErrorBanner(true);
+      } else {
+        const restricted = result?.data?.restrictedFileCount ?? 0;
+        const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
+        const available = result?.data?.availableFileCount ?? 0;
+        const availableFileIds = result?.data?.availableFileIds ?? [];
 
-      const restricted = result?.data?.restrictedFileCount ?? 0;
-      const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
-      const available = result?.data?.availableFileCount ?? 0;
-      const availableFileIds = result?.data?.availableFileIds ?? [];
+        setRestrictedFileCount(restricted);
+        setAlreadyDeletedFileCount(alreadyDeleted);
+        setAvailableFileCount(available);
+        setAvailableFileIds(availableFileIds);
 
-      setRestrictedFileCount(restricted);
-      setAlreadyDeletedFileCount(alreadyDeleted);
-      setAvailableFileCount(available);
-      setAvailableFileIds(availableFileIds);
+        setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
+        setIsPreDialogLoading(false);
+        setShowRestrictedDeleteDialog(false);
 
-      setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
-      setIsPreDialogLoading(false);
-      setShowRestrictedDeleteDialog(false);
-
-      if (
-        selectedItem.value === "Prepare download" && (
-          (available === 0 && alreadyDeleted > 0)
-          || (totalSelectedCount > 0 && available === 0 && alreadyDeleted === 0 && restricted === 0)
-        )
-      ) {
-        setShowRestrictedPrepareDialog(true);
-        setShowConfirmDialog(false);
-        return;
-      }
-
-      if (selectedItem.value === "Delete") {
-        if (available === 0 && ((restricted > 0 || alreadyDeleted > 0) || (totalSelectedCount > 0 && alreadyDeleted === 0 && restricted === 0))) {
-          setIsDialogLoading(false);
-          setShowRestrictedDeleteDialog(true);
+        if (
+          selectedItem.value === "Prepare download" && (
+            (available === 0 && alreadyDeleted > 0)
+            || (totalSelectedCount > 0 && available === 0 && alreadyDeleted === 0 && restricted === 0)
+          )
+        ) {
+          setShowRestrictedPrepareDialog(true);
           setShowConfirmDialog(false);
           return;
         }
 
-        if (available > 0) {
-          setIsDialogLoading(false);
-          setShowConfirmDialog(true);
-          setShowRestrictedDeleteDialog(false);
-          return;
-        }
-      }
+        if (selectedItem.value === "Delete") {
+          if (available === 0 && ((restricted > 0 || alreadyDeleted > 0) || (totalSelectedCount > 0 && alreadyDeleted === 0 && restricted === 0))) {
+            setIsDialogLoading(false);
+            setShowRestrictedDeleteDialog(true);
+            setShowConfirmDialog(false);
+            return;
+          }
 
-      setShowConfirmDialog(true);
+          if (available > 0) {
+            setIsDialogLoading(false);
+            setShowConfirmDialog(true);
+            setShowRestrictedDeleteDialog(false);
+            return;
+          }
+        }
+
+        setShowConfirmDialog(true);
+      }
     }
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
     setSidePanelOpenReason("view");
