@@ -532,6 +532,7 @@ const handleDateChange = (
       setSuggestions,
       setShowSearchError,
       setIsSearchLoading,
+      setShowSearchError,
       localSelectedRelatedTo?.value ? Number(localSelectedRelatedTo.value) : undefined
     );
       }
@@ -698,7 +699,8 @@ const getEntityLabel = (entity: string) => {
                       setSearchTerm,
                       setSuggestions,
                       setShowSearchError,
-                      setIsSearchLoading
+                      setIsSearchLoading,
+                      setShowSearchError
                     )
                   }
                   onFocus={() => {
@@ -780,7 +782,7 @@ const getEntityLabel = (entity: string) => {
             });
           }}
         >
-          {availableCategories && availableCategories
+          {availableCategories && Array.from(availableCategories ?? [])
             ?.slice()
             .sort((a, b) => a.application.localeCompare(b.application))
             .map((category) => (
