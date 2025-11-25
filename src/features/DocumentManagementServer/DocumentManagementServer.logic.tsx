@@ -612,7 +612,7 @@ export const getResultNotFoundMsg = (
     return "Information unavailable.";
   }
   // Show "No data to display" only if searching and no data
-  if (searchText && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
+  if ((searchText || isSearchTriggered ) && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
     return t("DocumentManagementServer.noDataToDisplay");
   }
   if (!isSearchTriggered && !searchText) {
