@@ -22,13 +22,13 @@ const NotificationView = () => {
 
     const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0;
     return (
-        <div className="ctf-layout" data-testid="ctf-layout">
+        <div className="notification-layout" data-testid="notification-layout">
             <div style={{ marginBottom: 16, width: "100%" }}>
                 <div className="notification-layout-header">
                     <Breadcrumbs
                         breadcrumbActions={[
                             { active: false, linkName: "Home", path: window.location.origin },
-                            { active: false, linkName: "Notification Center", path: "#" }
+                            { active: false, linkName: "Notification Centre", path: "#" }
                         ]}
                         className="essui-Breadcrumbs"
                         dataTestId="breadcrumb-test-id"
@@ -66,7 +66,7 @@ const NotificationView = () => {
                                     Filter
                                 </Button>
                             </>}
-                            editSelectedBtnTitle="Edit Selected"
+                            editSelectedBtnTitle="Edit selected"
                             editSelectedOptions={[
                                 {
                                     "disabled": false,
@@ -124,7 +124,8 @@ const NotificationView = () => {
                             isOpenConfirmationDialog={false}
                             isIconRightAligned={true}
                             isShowOverflowMenuCol={false}
-                            searchHeadingText="Search by"
+                            searchHeadingText="Search by notification title"
+                            isSearchHideClearIcon={false}
                             // isSidePanelOpen={sideIsOpen}
                             // isSidePanelLoader={false}
                             dynamicTableLoader={false}
