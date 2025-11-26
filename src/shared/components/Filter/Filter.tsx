@@ -490,7 +490,6 @@ const handleDateChange = (
           schoolName: schoolData?.schoolName || "",
         };
         entities = orgSchoolEntity ? [orgSchoolEntity] : [];
-        console.log("Organisation/School selected, orgId:", orgSchoolEntity);
       }
 
       handleApply(ids, localSelectedCategories, entities)
