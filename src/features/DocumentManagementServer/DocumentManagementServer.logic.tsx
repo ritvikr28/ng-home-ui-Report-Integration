@@ -1161,6 +1161,10 @@ export const debouncedFetchSuggestions = debounce(
       if (!response || response?.statusCode !== 200) {
         setShowErrorBanner(true);
         setSuggestions([]);
+        gtmAnalytics.pushEvent({
+          event: "error_message",
+          messageText: "Information unavailable"
+        });
       } else {
         const values = response?.payload ?? [];
         const suggestions = await formatSuggestions(values , t);
@@ -1171,6 +1175,10 @@ export const debouncedFetchSuggestions = debounce(
       console.error("Autosuggest error:", err);
       setShowErrorBanner(true);
       setSuggestions([]);
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        messageText: "Information unavailable"
+      });
     } finally {
       setSearchLoading(false);
     }
@@ -1539,6 +1547,10 @@ export const handleEditSelectedOverFlowMenu = async ({
         setShowRestrictedDeleteDialog(false);
         setShowDialog(false);
         setShowErrorBanner(true);
+        gtmAnalytics.pushEvent({
+          event: "error_message",
+          messageText: "Information unavailable"
+        });
       } else {
         const restricted = result?.data?.restrictedFileCount ?? 0;
         const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
