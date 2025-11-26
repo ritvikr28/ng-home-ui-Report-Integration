@@ -974,8 +974,6 @@ describe("FilterDialog handleApplyWrapper validation", () => {
   });
 
   it("calls handleApply if all validations pass for Organisation", async () => {
-     const orgId = "org-123";
-     const schoolData = { schoolName: "Test School" };
     renderComponent({
       selectedRelatedTo: { text: "Organisation", value: "3", data: { data: { key: "Organisation" } } },
       tagListArray: [],
