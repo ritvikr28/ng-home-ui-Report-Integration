@@ -59,7 +59,7 @@ describe("NotificationView", () => {
 
     it("renders the main layout and key components", () => {
         render(<NotificationView />);
-        expect(screen.getByTestId("ctf-layout")).toBeInTheDocument();
+        expect(screen.getByTestId("notification-layout")).toBeInTheDocument();
         expect(screen.getByTestId("breadcrumbs")).toBeInTheDocument();
         expect(screen.getByTestId("notification-side-panel")).toBeInTheDocument();
     });
