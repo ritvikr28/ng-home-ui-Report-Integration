@@ -28,6 +28,8 @@ import { relatedToEnum } from "../../../../public/Constants";
 import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
+import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
+import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 
 interface FilterDialogProps {
   dataTestId?: string;
@@ -95,6 +97,8 @@ const FilterDialog = ({
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
   const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
   const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
+  const [schoolData, setSchoolData] = useState<ISchoolNameDataResponse | null>(null);
+
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
 
@@ -103,8 +107,7 @@ const getDateString = (date: { day: string; month: string; year: string }) =>
 
 const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
   setDate({ day: "", month: "", year: "" });
-};
-
+};   
 
 let validationText = "";
 if (searchSelectionError) {
@@ -264,6 +267,11 @@ useEffect(() => {
   if (!isOpen) {
     setWasApplied(false); 
   }
+  async function fetchSchoolData() {
+    const data = await useFetchSchoolNameData();
+    setSchoolData(data);
+  }
+  fetchSchoolData();
 }, [isOpen]);
  
 useEffect(() => {
@@ -437,7 +445,7 @@ const handleDateChange = (
 };
 
 
-  const handleApplyWrapper = () => {
+  const handleApplyWrapper = async () => {
       
       if (!localSelectedRelatedTo) {
         setRelatedToError(t("Filter.relatedToRequired"));
@@ -477,7 +485,11 @@ const handleDateChange = (
       } else if (selectedKey === "Organisation" || selectedKey === "School") {
         const orgId = getUserOrganisation();
         ids = orgId ? [orgId] : [];
-        entities = orgId ? [{ organisationId: orgId }] : [];
+        const orgSchoolEntity = {
+          organisationId: orgId,
+          schoolName: schoolData?.schoolName || "",
+        };
+        entities = orgSchoolEntity ? [orgSchoolEntity] : [];
       }
 
       handleApply(ids, localSelectedCategories, entities)
