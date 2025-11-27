@@ -1,0 +1,16 @@
+.delete-confirmation-dialog {
+  .delete-confirmation-content {
+    width: 100%;
+  }
+
+  .notification-count {
+    font-weight: 600;
+  }
+
+  .dialog-footer {
+    display: flex;
+    gap: 24px;
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

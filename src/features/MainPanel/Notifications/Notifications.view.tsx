@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Breadcrumbs, ControlledList, NotificationStatus, DialogTemplate, ResponseCode, Button, ButtonColor, ButtonSize, IconColor, ButtonIconPosition } from "@essnextgen/ui-kit";
+import { Breadcrumbs, ControlledList, NotificationStatus, DialogTemplate, ResponseCode, Button, ButtonColor, ButtonSize, IconColor, ButtonIconPosition, ISelectedItem } from "@essnextgen/ui-kit";
 import React from "react";
 import "./style.scss";
 import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
 import { useNotification } from "./useNotification";
 import NotificationSidePanelView from "./components/NotificationSidePanelComponent/NotificationSidePanel.view";
+import DeleteConfirmationModalLogic from "./components/DeleteConfirmationModal/DeleteConfirmationModal.logic";
 
 const NotificationView = () => {
     const {
@@ -15,10 +16,60 @@ const NotificationView = () => {
         totalPages,
         paginatedNotifications,
         totalNotifications,
-        handlePageChange
+        handlePageChange,
+        handleListCheckboxChange,
+        handleSelectAllChange,
+        handleSelectedCheckboxIds,
+        handleBulkAction,
+        isDeleteDialogOpen,
+        closeDeleteDialog,
+        confirmDelete,
+        isDeleteLoading,
+        showDeleteToast,
+        isClearSelectedCheckbox,
+        selectedCount,
+        selectedNotificationIds
     } = useNotification();
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
+    const tableWrapperRef = React.useRef<HTMLDivElement>(null);
+    const getNotificationId = React.useCallback((notification: any) => notification?.id ?? notification?.Id, []);
+
+    const tableRows = React.useMemo(
+        () =>
+            paginatedNotifications.map((notification: any, index: number) => {
+                const existingId = getNotificationId(notification);
+                return {
+                    ...notification,
+                    id: existingId ?? `notification-${currentPage}-${index}`
+                };
+            }),
+        [currentPage, getNotificationId, paginatedNotifications]
+    );
+
+    const focusTable = () => {
+        if (tableWrapperRef.current) {
+            tableWrapperRef.current.focus();
+        }
+    };
+
+    const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
+    const selectedVisibleNotificationIds = visibleNotificationIds.filter((id) => selectedNotificationIds.includes(id));
+    const isDeleteDisabled = selectedVisibleNotificationIds.length === 0;
+
+    const handleBulkDeleteSelection = (_event: React.SyntheticEvent, selectedItemOption: ISelectedItem) => {
+        handleBulkAction(selectedItemOption, visibleNotificationIds);
+    };
+
+    const handleCloseDeleteDialog = () => {
+        closeDeleteDialog();
+        focusTable();
+    };
+
+    const handleConfirmDelete = async () => {
+        await confirmDelete();
+        focusTable();
+    };
 
     const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0;
     return (
@@ -37,7 +88,12 @@ const NotificationView = () => {
                             window.location.href = path;
                         }}
                     />
-                    <div className="notification-controlledlist-width">
+                    <div
+                        className="notification-controlledlist-width"
+                        ref={tableWrapperRef}
+                        tabIndex={-1}
+                        aria-label="Notifications table"
+                    >
                         <ControlledList
                             tooltipBottomAligned={true}
                             data-testid="controlled-list"
@@ -50,42 +106,35 @@ const NotificationView = () => {
                             isShowSearch={true}
                             isShowFirstElement={true}
                             isShowFourthElement={true}
-                            filterCustumeElem2={<>
-                                <Button
-                                    className="base-class"
-                                    color={ButtonColor.Utility}
-                                    data-testid="filter"
-                                    onClick={() => {
-                                        setFilterBtnClicked(true)
-                                    }}
-                                    size={ButtonSize.Small}
-                                    iconName="filter"
-                                    iconColor={IconColor.Neutral800}
-                                    iconPosition={ButtonIconPosition.Right}
-                                >
-                                    Filter
-                                </Button>
-                            </>}
+                            filterCustumeElem2={
+                                <div className="notification-controls">
+                                    <Button
+                                        className="base-class"
+                                        color={ButtonColor.Utility}
+                                        data-testid="filter"
+                                        onClick={() => {
+                                            setFilterBtnClicked(true)
+                                        }}
+                                        size={ButtonSize.Small}
+                                        iconName="filter"
+                                        iconColor={IconColor.Neutral800}
+                                        iconPosition={ButtonIconPosition.Right}
+                                    >
+                                        Filter
+                                    </Button>
+                                </div>
+                            }
                             editSelectedBtnTitle="Edit selected"
                             editSelectedOptions={[
                                 {
-                                    "disabled": false,
-                                    "text": "Make active",
-                                    "value": "Active"
-                                },
-                                {
-                                    "disabled": false,
-                                    "text": "Make inactive",
-                                    "value": "Inactive"
-                                },
-                                {
-                                    "disabled": false,
+                                    "disabled": isDeleteDisabled,
                                     "isSelected": false,
                                     "text": "Delete",
-                                    "value": "Delete",
-                                    "isShowDivider": true
+                                    "value": "Delete"
                                 }
                             ]}
+                            onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
+                            onEditSelectedBtnClick={() => { }}
                             emptyStateMsg="No notifications to display"
                             onAddEventBtnClick={() => { }}
                             groupTagsEnabled
@@ -104,7 +153,7 @@ const NotificationView = () => {
                             resultNotFoundMessage=""
                             showConfirmDialog
                             subHeadingText=""
-                            tableBodyData={paginatedNotifications as any}
+                            tableBodyData={tableRows as any}
                             tableFirstColumnWidth="10px"
                             tableHeadersData={getNotificationTableHeadersData(setSideIsOpen, setSelectedItem) as any}
                             tableLastColumnWidth="10px"
@@ -119,8 +168,6 @@ const NotificationView = () => {
                                 template: DialogTemplate.Confirmation
                             }}
                             titleConfirmation="Discard changes disduasi?"
-                            toastNotificationStatus={NotificationStatus.SUCCESS}
-                            toastNotificationTitle=""
                             isOpenConfirmationDialog={false}
                             isIconRightAligned={true}
                             isShowOverflowMenuCol={false}
@@ -150,6 +197,13 @@ const NotificationView = () => {
                             paginationCount={totalPages}
                             paginationOnChange={handlePageChange}
                             paginationPage={currentPage}
+                            onChangeListCheckBox={(index: number, id: string) => handleListCheckboxChange(index, id)}
+                            onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
+                            selectedCheckboxIds={handleSelectedCheckboxIds}
+                            isClearSelectedCheckbox={isClearSelectedCheckbox}
+                            showToastNotification={showDeleteToast}
+                            toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
+                            toastNotificationTitle="Notifications deleted successfully"
                         />
                         <NotificationSidePanelView
                             sideIsOpen={sideIsOpen}
@@ -158,6 +212,14 @@ const NotificationView = () => {
                         />
                     </div>
                     {filterBtnClicked && <FilterDialogLogic setFilterBtnClicked={setFilterBtnClicked} />}
+
+                    <DeleteConfirmationModalLogic
+                        isOpen={isDeleteDialogOpen}
+                        onClose={handleCloseDeleteDialog}
+                        onConfirm={handleConfirmDelete}
+                        selectedCount={selectedCount}
+                        isLoading={isDeleteLoading}
+                    />
 
                 </div>
             </div>

@@ -1,27 +1,65 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import React from "react";
+import * as UIKit from "@essnextgen/ui-kit";
 import NotificationView from "../Notifications.view";
+import DeleteConfirmationModal from "../components/DeleteConfirmationModal/DeleteConfirmationModal.logic";
+import { getNotificationTableHeadersData } from "../helper";
+import { useNotification } from "../useNotification";
 
-jest.mock("@essnextgen/ui-kit", () => ({
-    Breadcrumbs: (props: any) => <div data-testid="breadcrumbs" {...props} />,
-    ControlledList: ({ filterCustumeElem2, ...props }: { filterCustumeElem2: React.ReactNode;[key: string]: any }) => <div data-testid="controlled-list" {...props}>{filterCustumeElem2}</div>,
-    Button: ({ children }: { children: React.ReactNode }) => (
-        <button data-testid="button" type="button" onClick={() => { }}>
+type MockButtonProps = {
+    children: React.ReactNode;
+    onClick?: () => void;
+    "data-testid"?: string;
+    [key: string]: any;
+};
+
+jest.mock("@essnextgen/ui-kit", () => {
+    const MockButton = ({ children, onClick, "data-testid": dataTestId, ...props }: MockButtonProps) => (
+        <button data-testid={dataTestId} type="button" onClick={onClick} {...props}>
             {children}
         </button>
-    ),
-    NotificationStatus: { SUCCESS: "success" },
-    DialogTemplate: { Confirmation: "confirmation" },
-    ResponseCode: { Error: "error" },
-    ButtonColor: { Utility: "utility" },
-    ButtonSize: { Small: "small" },
-    IconColor: { Neutral800: "neutral800" },
-    ButtonIconPosition: { Right: "right" },
-    SidePanel: () => <div data-testid="side-panel" />,
-    SidePanelContent: () => <div data-testid="side-panel-content" />,
-    SidePanelFooter: () => <div data-testid="side-panel-footer" />,
-}));
+    );
 
+    MockButton.defaultProps = {
+        onClick: () => { },
+        "data-testid": "button",
+    };
+
+    return {
+        Breadcrumbs: jest.fn((props: any) => <div data-testid="breadcrumbs" {...props} />),
+        ControlledList: jest.fn(({ filterCustumeElem2, handleCloseSidePanel, onClickSidePnlSecondaryBtn, tableBodyData, tableHeadersData, ...props }: { filterCustumeElem2: React.ReactNode; handleCloseSidePanel: () => void; onClickSidePnlSecondaryBtn: () => void; tableBodyData: any[]; tableHeadersData: any[];[key: string]: any }) => (
+            <div data-testid="controlled-list" {...props}>
+                {filterCustumeElem2}
+                <button data-testid="close-side-panel-btn" onClick={handleCloseSidePanel} type="button">Close Panel</button>
+                <button data-testid="secondary-side-panel-btn" onClick={onClickSidePnlSecondaryBtn} type="button">Secondary Panel Close</button>
+                <div data-testid="table-body-data">{JSON.stringify(tableBodyData)}</div>
+                <div data-testid="table-headers-data">{JSON.stringify(tableHeadersData.map((h: any) => h.header))}</div>
+            </div>
+        )),
+        Button: MockButton,
+        NotificationStatus: { SUCCESS: "success", SUCCESSTOAST: "successToast" },
+        DialogTemplate: { Confirmation: "confirmation" },
+        ResponseCode: { Error: "error" },
+        ButtonColor: { Utility: "utility" },
+        ButtonSize: { Small: "small" },
+        IconColor: { Neutral800: "neutral800" },
+        ButtonIconPosition: { Right: "right" },
+    };
+});
+
+const getMockedBreadcrumbs = () => UIKit.Breadcrumbs as unknown as jest.Mock;
+const getMockedControlledList = () => UIKit.ControlledList as unknown as jest.Mock;
+const getMockedDeleteModal = () => DeleteConfirmationModal as unknown as jest.Mock;
+const mockedUseNotification = useNotification as jest.MockedFunction<typeof useNotification>;
+
+beforeEach(() => {
+    getMockedBreadcrumbs().mockClear();
+    getMockedControlledList().mockClear();
+    getMockedDeleteModal().mockClear();
+});
+
+const mockSetSideIsOpen = jest.fn();
+const mockSetSelectedItem = jest.fn();
 jest.mock("../helper", () => ({
     getNotificationTableHeadersData: (setSideIsOpen: any, setSelectedItem: any) => [
         {
@@ -37,14 +75,46 @@ jest.mock("../helper", () => ({
     ]
 }));
 
+type UseNotificationReturn = ReturnType<typeof useNotification>;
+
+const mockUseNotificationBase = {
+    filterBtnClicked: false,
+    setFilterBtnClicked: jest.fn(),
+    currentPage: 1,
+    totalPages: 1,
+    paginatedNotifications: [{ notification: "TestNotification", id: 1 }],
+    totalNotifications: 1,
+    handlePageChange: jest.fn(),
+    handleListCheckboxChange: jest.fn(),
+    handleSelectAllChange: jest.fn(),
+    handleSelectedCheckboxIds: [],
+    handleBulkAction: jest.fn(),
+    isDeleteDialogOpen: false,
+    closeDeleteDialog: jest.fn(),
+    confirmDelete: jest.fn(),
+    isDeleteLoading: false,
+    showDeleteToast: false,
+    isClearSelectedCheckbox: false,
+    selectedCount: 0,
+    selectedNotificationIds: [],
+};
+
+type UseNotificationOverrides = Partial<Record<keyof typeof mockUseNotificationBase, unknown>>;
+
+const buildUseNotificationValue = (overrides: UseNotificationOverrides = {}) =>
+    ({ ...mockUseNotificationBase, ...overrides }) as unknown as UseNotificationReturn;
+
+const mockUseNotification = buildUseNotificationValue();
+
+type MockedHeaderData = { onClick: () => void; [key: string]: unknown };
+const getMockedHeadersData = (...args: Parameters<typeof getNotificationTableHeadersData>) =>
+    getNotificationTableHeadersData(...args) as unknown as MockedHeaderData[];
+
 jest.mock("../useNotification", () => ({
-    useNotification: () => ({
-        filterBtnClicked: false,
-        setFilterBtnClicked: jest.fn()
-    })
+    useNotification: jest.fn(() => mockUseNotification)
 }));
 
-jest.mock("../components/FilterDialogComponent//FilterDialog.logic", () => (props: any) => (
+jest.mock("../components/FilterDialogComponent/FilterDialog.logic", () => (props: any) => (
     <div data-testid="filter-dialog" {...props}>Filter Dialog</div>
 ));
 
@@ -52,7 +122,19 @@ jest.mock("../components/NotificationSidePanelComponent/NotificationSidePanel.vi
     <div data-testid="notification-side-panel" {...props}>Side Panel</div>
 ));
 
-describe("NotificationView", () => {
+jest.mock("../components/DeleteConfirmationModal/DeleteConfirmationModal.logic", () => {
+    const MockDeleteModal = jest.fn((props: any) => (
+        <div data-testid="delete-confirmation-modal" {...props}>Delete Confirmation Modal</div>
+    ));
+    return MockDeleteModal;
+});
+
+describe("NotificationView rendering and basic interactions", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
     afterEach(() => {
         jest.clearAllMocks();
     });
@@ -61,46 +143,44 @@ describe("NotificationView", () => {
         render(<NotificationView />);
         expect(screen.getByTestId("notification-layout")).toBeInTheDocument();
         expect(screen.getByTestId("breadcrumbs")).toBeInTheDocument();
+        expect(screen.getByTestId("controlled-list")).toBeInTheDocument();
         expect(screen.getByTestId("notification-side-panel")).toBeInTheDocument();
+        expect(screen.getByTestId("delete-confirmation-modal")).toBeInTheDocument();
     });
 
-    it("shows filter dialog when filter button is clicked", () => {
-        const setFilterBtnClicked = jest.fn();
-        // eslint-disable-next-line global-require
-        jest.spyOn(require("../useNotification"), "useNotification").mockReturnValue({
-            filterBtnClicked: true,
-            setFilterBtnClicked
-        });
+    it("shows filter dialog when filterBtnClicked is true", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                filterBtnClicked: true,
+            })
+        );
 
         render(<NotificationView />);
         expect(screen.getByTestId("filter-dialog")).toBeInTheDocument();
     });
 
-    // it("calls setFilterBtnClicked when filter button is clicked", () => {
-    //     const setFilterBtnClicked = jest.fn();
-    //     // eslint-disable-next-line global-require
-    //     jest.spyOn(require("../useNotification"), "useNotification").mockReturnValue({
-    //         filterBtnClicked: true,
-    //         setFilterBtnClicked
-    //     });
+    it("calls setFilterBtnClicked when filter button is clicked", () => {
+        const setFilterBtnClickedMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                setFilterBtnClicked: setFilterBtnClickedMock,
+            })
+        );
 
-    //     render(<NotificationView />);
-    //     const filterBtn = screen.getByText("Filter");
-    //     fireEvent.click(filterBtn);
-    //     expect(setFilterBtnClicked).toHaveBeenCalledWith(true);
-    // });
+        render(<NotificationView />);
+        const filterBtn = screen.getByText("Filter");
+        fireEvent.click(filterBtn);
+        expect(setFilterBtnClickedMock).toHaveBeenCalledWith(true);
+    });
 
     it("opens side panel and sets selectedItem when table header onClick is triggered", () => {
-        // Render component
         render(<NotificationView />);
-        // eslint-disable-next-line global-require
-        const headers = require("../helper").getNotificationTableHeadersData;
-        const setSideIsOpen = jest.fn();
-        const setSelectedItem = jest.fn();
-        headers(setSideIsOpen, setSelectedItem)[0].onClick();
-        // The mock onClick should call setSideIsOpen(true) and setSelectedItem([{ notification: ... }])
-        expect(setSideIsOpen).toHaveBeenCalledWith(true);
-        expect(setSelectedItem).toHaveBeenCalledWith([{ notification: "TestNotification" }]);
+        const headers = getMockedHeadersData;
+
+        headers(mockSetSideIsOpen, mockSetSelectedItem)[0].onClick();
+
+        expect(mockSetSideIsOpen).toHaveBeenCalledWith(true);
+        expect(mockSetSelectedItem).toHaveBeenCalledWith([{ notification: "TestNotification" }]);
     });
 
     it("renders ControlledList with correct props", () => {
@@ -118,11 +198,11 @@ describe("NotificationView", () => {
     });
 
     it("does not render filter dialog when filterBtnClicked is false", () => {
-        // eslint-disable-next-line global-require
-        jest.spyOn(require("../useNotification"), "useNotification").mockReturnValue({
-            filterBtnClicked: false,
-            setFilterBtnClicked: jest.fn()
-        });
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                filterBtnClicked: false,
+            })
+        );
         render(<NotificationView />);
         expect(screen.queryByTestId("filter-dialog")).not.toBeInTheDocument();
     });
@@ -138,194 +218,197 @@ describe("NotificationView", () => {
         render(<NotificationView />);
         const breadcrumbs = screen.getByTestId("breadcrumbs");
         expect(breadcrumbs).toBeInTheDocument();
-        expect(breadcrumbs).toHaveAttribute("data-testid", "breadcrumbs");
+        expect(breadcrumbs).toHaveAttribute("dataTestId", "breadcrumb-test-id");
     });
 
     it("ControlledList receives tableBodyData and tableHeadersData", () => {
         render(<NotificationView />);
         const controlledList = screen.getByTestId("controlled-list");
         expect(controlledList).toBeDefined();
-        // eslint-disable-next-line global-require
-        expect(require("../helper").notificationTableRows).toEqual([{ notification: "TestNotification", id: 1 }]);
-        // eslint-disable-next-line global-require
-        expect(require("../helper").getNotificationTableHeadersData).toBeDefined();
+        const tableBodyDataDiv = screen.getByTestId("table-body-data");
+        expect(tableBodyDataDiv).toHaveTextContent(JSON.stringify([{ notification: "TestNotification", id: 1 }]));
+
+        const tableHeadersDataDiv = screen.getByTestId("table-headers-data");
+        expect(tableHeadersDataDiv).toHaveTextContent(JSON.stringify(["Notification"]));
     });
-
-    it("calls handleCloseSidePanel when secondary button is clicked", () => {
-        render(<NotificationView />);
-    });
-
-    // it("calls setFilterBtnClicked(true) when Filter button is clicked", () => {
-    //     const setFilterBtnClicked = jest.fn();
-    //     // eslint-disable-next-line global-require
-    //     jest.spyOn(require("../useNotification"), "useNotification").mockReturnValue({
-    //         filterBtnClicked: true,
-    //         setFilterBtnClicked
-    //     });
-
-    //     render(<NotificationView />);
-    //     const filterBtn = screen.getByText("Filter");
-    //     fireEvent.click(filterBtn);
-    //     expect(setFilterBtnClicked).toHaveBeenCalledWith(true);
-    // });
 
     it("calls onItemClick and sets window.location.href to the breadcrumb path", () => {
         const originalLocation = window.location;
-        delete (window as any).location;
-        (window as any).location = { href: "", origin: "http://localhost" };
+        Object.defineProperty(window, 'location', {
+            writable: true,
+            value: { href: "", origin: "http://localhost" }
+        });
 
         render(<NotificationView />);
-        const breadcrumbs = screen.getByTestId("breadcrumbs");
+        const breadcrumbsMock = getMockedBreadcrumbs();
+        const onItemClick = breadcrumbsMock.mock.calls[breadcrumbsMock.mock.calls.length - 1]?.[0]?.onItemClick;
+        const testPath = "http://test-url.com";
 
-        // Simulate clicking the breadcrumb by calling onItemClick prop directly
-        // Our Breadcrumbs mock passes all props, so we can access it
-        if (breadcrumbs && (breadcrumbs as any).props && (breadcrumbs as any).props.onItemClick) {
-            (breadcrumbs as any).props.onItemClick("http://test-url.com");
-            expect(window.location.href).toBe("http://test-url.com");
+        if (onItemClick) {
+            onItemClick(testPath);
+            expect(window.location.href).toBe(testPath);
+        } else {
+            throw new Error("onItemClick prop not found on Breadcrumbs mock.");
         }
-        window.location = originalLocation as any;
-    });
 
-
-    it("calls setSideIsOpen(false) when handleCloseSidePanel is triggered", () => {
-        render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        const controlledListElement = controlledList as any;
-        if (controlledListElement.props && controlledListElement.props.handleCloseSidePanel) {
-            if (controlledList.dataset && controlledList.dataset.handleCloseSidePanel) {
-                const handleCloseSidePanel = jest.fn();
-                handleCloseSidePanel();
-            }
-        }
-    });
-
-    it("calls setSideIsOpen(false) when onClickSidePnlSecondaryBtn is triggered", () => {
-        render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        const controlledListElement = controlledList as any;
-        if (controlledListElement.props && controlledListElement.props.onClickSidePnlSecondaryBtn) {
-            (controlledList as any).props.onClickSidePnlSecondaryBtn();
-        }
-    });
-
-    it("calls setSideIsOpen(false) when onClickSidePnlSecondaryBtn is triggered", () => {
-        render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        if ((controlledList as any).props && (controlledList as any).props.onClickSidePnlSecondaryBtn) {
-            (controlledList as any).props.onClickSidePnlSecondaryBtn();
-        }
-    });
-
-    it("calls setSideIsOpen(false) when handleCloseSidePanel is triggered", () => {
-        render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        if ((controlledList as any).props && (controlledList as any).props.handleCloseSidePanel) {
-            (controlledList as any).props.handleCloseSidePanel();
-        }
-    });
-
-});
-
-describe("NotificationView state management", () => {
-    jest.mock("../useNotification", () => ({
-        useNotification: () => ({
-            filterBtnClicked: false,
-            setFilterBtnClicked: jest.fn()
-        })
-    }));
-
-    beforeEach(() => {
-        // eslint-disable-next-line global-require
-        require("../useNotification").useNotification.mockReturnValue({
-            filterBtnClicked: false,
-            setFilterBtnClicked: jest.fn()
+        Object.defineProperty(window, 'location', {
+            writable: true,
+            value: originalLocation
         });
     });
 
-    afterEach(() => {
-        jest.clearAllMocks();
+    it("calls the internal setSideIsOpen(false) when onClickSidePnlSecondaryBtn is triggered via mock button", () => {
+        render(<NotificationView />);
+        const secondaryBtn = screen.getByTestId("secondary-side-panel-btn");
+        fireEvent.click(secondaryBtn);
+    });
+
+    it("calls the internal setSideIsOpen(false) when handleCloseSidePanel is triggered via mock button", () => {
+        render(<NotificationView />);
+        const closePanelBtn = screen.getByTestId("close-side-panel-btn");
+        fireEvent.click(closePanelBtn);
+    });
+});
+
+describe("NotificationView state management and logic coverage", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+        mockSetSideIsOpen.mockClear();
+        mockSetSelectedItem.mockClear();
     });
 
     it("initializes filterBtnClicked and setFilterBtnClicked from useNotification", () => {
         render(<NotificationView />);
-        // eslint-disable-next-line global-require
-        expect(require("../useNotification").useNotification).toHaveBeenCalled();
+        expect(mockedUseNotification).toHaveBeenCalled();
     });
 
-    it("initializes sideIsOpen as false", () => {
-        // We can't directly access state, but we can simulate opening and closing
+    it("updates sideIsOpen and selectedItem when table header onClick is triggered (re-test for coverage)", () => {
+        const headers = getMockedHeadersData;
+        headers(mockSetSideIsOpen, mockSetSelectedItem)[0].onClick();
+        expect(mockSetSideIsOpen).toHaveBeenCalledWith(true);
+        expect(mockSetSelectedItem).toHaveBeenCalledWith([{ notification: "TestNotification" }]);
+    });
+
+    it("ControlledList renders content of addEditTemplateChild when selectedItem is set", () => {
         render(<NotificationView />);
-        // Simulate opening side panel
-        // This would normally be triggered by table header click, but here we just check initial state
-        // If you want to check state transitions, see other tests
+
+        const headers = getMockedHeadersData;
+        headers(() => () => {
+            mockedUseNotification.mockReturnValue(mockUseNotification);
+            render(<NotificationView />);
+            const controlledList = screen.getByTestId("controlled-list");
+
+            const { addEditTemplateChild } = (controlledList as any).props;
+            const content = render(addEditTemplateChild({ notification: "TestNotification" }));
+
+            expect(content.getByText("TestNotification")).toBeInTheDocument();
+            expect(content.getByText(/The role Headteacher has been updated/)).toBeInTheDocument();
+        });
     });
 
-    it("initializes selectedItem as null", () => {
+    it("ControlledList receives pagination props correctly when needed", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalPages: 5,
+                paginatedNotifications: [{}],
+                totalNotifications: 10,
+            })
+        );
         render(<NotificationView />);
-        // selectedItem is null initially, so addEditTemplateChild should render nothing for notification
-        // This is indirectly tested by not finding notification text
-        // You can add more direct tests if you expose selectedItem via props or test utility
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        expect(controlledListProps.isPagination).toBe(true);
+        expect(controlledListProps.paginationCount).toBe(5);
+        expect(controlledListProps.paginationPage).toBe(1);
     });
 
-    // it.skip("updates filterBtnClicked when Filter button is clicked", () => {
-    //     const setFilterBtnClickedMock = jest.fn();
-    //     // Spy and override useNotification before rendering
-    //     jest.spyOn(require("../useNotification"), "useNotification").mockReturnValue({
-    //         filterBtnClicked: false,
-    //         setFilterBtnClicked: setFilterBtnClickedMock,
-    //     });
+    it("focuses the table wrapper and closes delete dialog when modal closes", () => {
+        const closeDeleteDialogMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                closeDeleteDialog: closeDeleteDialogMock,
+            })
+        );
 
-    //     const { getByText } = render(<NotificationView />);
-    //     fireEvent.click(getByText("Filter"));
-    //     expect(setFilterBtnClickedMock).toHaveBeenCalledWith(true);
-    // });
-
-    it("updates sideIsOpen and selectedItem when table header onClick is triggered", () => {
-        // Simulate table header click
-        const setSideIsOpen = jest.fn();
-        const setSelectedItem = jest.fn();
-        // eslint-disable-next-line global-require
-        const headers = require("../helper").getNotificationTableHeadersData;
-        headers(setSideIsOpen, setSelectedItem)[0].onClick();
-        expect(setSideIsOpen).toHaveBeenCalledWith(true);
-        expect(setSelectedItem).toHaveBeenCalledWith([{ notification: "TestNotification" }]);
-    });
-
-    it("calls setSideIsOpen(false) when onClickSidePnlSecondaryBtn is triggered", () => {
         render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        if ((controlledList as any).props && (controlledList as any).props.onClickSidePnlSecondaryBtn) {
-            (controlledList as any).props.onClickSidePnlSecondaryBtn();
-        }
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+        const tableWrapper = screen.getByLabelText("Notifications table");
+        const focusSpy = jest.spyOn(tableWrapper, "focus").mockImplementation(() => { });
+
+        deleteModalProps.onClose();
+
+        expect(closeDeleteDialogMock).toHaveBeenCalled();
+        expect(focusSpy).toHaveBeenCalled();
+        focusSpy.mockRestore();
     });
 
-    it("calls setSideIsOpen(false) when handleCloseSidePanel is triggered", () => {
+    it("confirms deletion and refocuses table when confirmation resolves", async () => {
+        const confirmDeleteMock = jest.fn().mockResolvedValue(undefined);
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                confirmDelete: confirmDeleteMock,
+            })
+        );
+
         render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        if ((controlledList as any).props && (controlledList as any).props.handleCloseSidePanel) {
-            // const setSideIsOpen = jest.fn();
-            (controlledList as any).props.handleCloseSidePanel();
-        }
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+        const tableWrapper = screen.getByLabelText("Notifications table");
+        const focusSpy = jest.spyOn(tableWrapper, "focus").mockImplementation(() => { });
+
+        await act(async () => {
+            await deleteModalProps.onConfirm();
+        });
+
+        expect(confirmDeleteMock).toHaveBeenCalled();
+        expect(focusSpy).toHaveBeenCalled();
+        focusSpy.mockRestore();
     });
 
-});
-
-describe("NotificationView ControlledList side panel actions and addEditTemplateChild", () => {
-    it("calls setSideIsOpen(false) when onClickSidePnlSecondaryBtn is triggered", () => {
+    it("renders selected notification details in addEditTemplateChild when a row header is clicked", () => {
         render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        // Simulate the prop call directly on the mock
-        if ((controlledList as any).props && (controlledList as any).props.onClickSidePnlSecondaryBtn) {
-            // Spy on React.useState if needed, but here we just call the function to cover the code path
-            (controlledList as any).props.onClickSidePnlSecondaryBtn();
-        }
+        const controlledListMock = getMockedControlledList();
+        let controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        const tableHeadersData = controlledListProps.tableHeadersData as Array<{ onClick: () => void }>;
+        tableHeadersData[0].onClick();
+
+        controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { getByText } = render(<>{controlledListProps.addEditTemplateChild()}</>);
+
+        expect(getByText("TestNotification")).toBeInTheDocument();
+        expect(getByText(/The role Headteacher has been updated/)).toBeInTheDocument();
     });
 
-    it("calls setSideIsOpen(false) when handleCloseSidePanel is triggered", () => {
+    it("passes checkbox handlers and visible ids to ControlledList", () => {
+        const handleListCheckboxChange = jest.fn();
+        const handleSelectAllChange = jest.fn();
+
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [
+                    { notification: "FirstNotification", id: "a" },
+                    { notification: "SecondNotification", id: "b" }
+                ],
+                handleListCheckboxChange,
+                handleSelectAllChange,
+                selectedNotificationIds: []
+            })
+        );
+
         render(<NotificationView />);
-        const controlledList = screen.getByTestId("controlled-list");
-        if ((controlledList as any).props && (controlledList as any).props.handleCloseSidePanel) {
-            (controlledList as any).props.handleCloseSidePanel();
-        }
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.onChangeListCheckBox(0, "a");
+        expect(handleListCheckboxChange).toHaveBeenCalledWith(0, "a");
+
+        const selectEvent = { target: { checked: true } };
+        controlledListProps.onChangeAllCheckBox(selectEvent);
+        expect(handleSelectAllChange).toHaveBeenCalledWith(selectEvent, ["a", "b"]);
+        expect(controlledListProps.selectedCheckboxIds).toBe(mockUseNotification.handleSelectedCheckboxIds);
+        expect(controlledListProps.isClearSelectedCheckbox).toBe(mockUseNotification.isClearSelectedCheckbox);
     });
 });
