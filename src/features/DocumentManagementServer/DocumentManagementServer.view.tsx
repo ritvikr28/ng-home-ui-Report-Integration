@@ -919,19 +919,32 @@ switch (dialogType) {
 };
 
 const getDialogTitle = () => {
-    if (restrictedFileCount > 0) {
-        return restrictedFileCount === 1
-            ? t("DocumentManagementServer.documentCannotBeDeleted", { count: restrictedFileCount })
-            : t("DocumentManagementServer.documentsCannotBeDeleted", { count: restrictedFileCount });
-    }
+  if (restrictedFileCount > 0) {
+    return restrictedFileCount === 1
+      ? t("DocumentManagementServer.documentCannotBeDeleted")
+      : t("DocumentManagementServer.documentsCannotBeDeleted");
+  }
 
-    if (alreadyDeletedFileCount > 0) {
-        return alreadyDeletedFileCount === 1
-            ? t("DocumentManagementServer.documentAlreadyDeleted", { count: alreadyDeletedFileCount })
-            : t("DocumentManagementServer.documentsAlreadyDeleted", { count: alreadyDeletedFileCount });
-    }
+  if (
+    alreadyDeletedFileCount > 0 ||
+    (totalSelectedCount !==
+      alreadyDeletedFileCount + restrictedFileCount + availableFileCount &&
+      isHeaderBoxChecked)
+  ) {
+    const deletedCount =
+      totalSelectedCount >
+        alreadyDeletedFileCount + restrictedFileCount + availableFileCount &&
+      isHeaderBoxChecked
+        ? totalSelectedCount -
+          (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)
+        : alreadyDeletedFileCount;
+    return (alreadyDeletedFileCount === 1 && availableFileCount > 0) ||
+      deletedCount === 1
+      ? t("DocumentManagementServer.documentAlreadyDeleted")
+      : t("DocumentManagementServer.documentsAlreadyDeleted");
+  }
 
-    return "";
+  return "";
 };
     const renderViewDownloadContent = () => {
           if (isViewDownloadError) {
@@ -1060,6 +1073,9 @@ const getDialogTitle = () => {
 
                                     if (alreadyDeletedFileCount === totalSelectedCount && totalSelectedCount > 1 || deletedCount > 1) {
                                         return t("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
+                                    }
+                                    if(deletedCount === totalSelectedCount && totalSelectedCount === 1) {
+                                        return t("DocumentManagementServer.documentAlreadyDeletedMsg");
                                     }
                                 return (alreadyDeletedFileCount === 1 && availableFileCount > 0) || deletedCount === 1
                                     ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
