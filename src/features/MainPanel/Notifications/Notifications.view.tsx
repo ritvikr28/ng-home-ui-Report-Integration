@@ -203,7 +203,7 @@ const NotificationView = () => {
                             isClearSelectedCheckbox={isClearSelectedCheckbox}
                             showToastNotification={showDeleteToast}
                             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
-                            toastNotificationTitle="Notifications deleted successfully"
+                            toastNotificationTitle="Notifications deleted"
                         />
                         <NotificationSidePanelView
                             sideIsOpen={sideIsOpen}
