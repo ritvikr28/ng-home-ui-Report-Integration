@@ -1512,7 +1512,7 @@ const getDialogTitle = () => {
                                 isSearchShowLoading={false}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"
-                                searchTagList = { searchTagList}
+                                searchTagList={searchTagListRaw}
                                 onOverflowTagClose ={()=>{}}
                                 isShowFourthElement={false}
                             />
