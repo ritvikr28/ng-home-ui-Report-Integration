@@ -190,10 +190,12 @@ body {
 
 }
 
-.essui-overflow-menu {
-  left: 7px;
-  margin: 5px 0 0 3px !important;
-  width: 100% !important; 
+.notification-controlledlist-width {
+  .essui-overflow-menu {
+    left: 7px;
+    margin: 5px 0 0 3px !important;
+    width: 100% !important;
+  }
 }
 
 .delete-confirmation-content .essui-notification {
