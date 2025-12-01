@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { Breadcrumbs, ControlledList, NotificationStatus, DialogTemplate, ResponseCode, Button, ButtonColor, ButtonSize, IconColor, ButtonIconPosition, ISelectedItem } from "@essnextgen/ui-kit";
-import React from "react";
+import React, { useEffect } from "react";
 import "./style.scss";
 import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
@@ -17,6 +17,10 @@ const NotificationView = () => {
         paginatedNotifications,
         totalNotifications,
         handlePageChange,
+        searchTerm,
+        handleSearchChange, // Removed as it is not defined in useNotification
+        handleClearSearch,
+        noResults,
         handleListCheckboxChange,
         handleSelectAllChange,
         handleSelectedCheckboxIds,
@@ -71,7 +75,12 @@ const NotificationView = () => {
         focusTable();
     };
 
-    const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0;
+    const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0 && !noResults;
+
+    useEffect(() => {
+        document.body.classList.add('no-scroll')
+    }, [])
+
     return (
         <div className="notification-layout" data-testid="notification-layout">
             <div style={{ marginBottom: 16, width: "100%" }}>
@@ -104,6 +113,10 @@ const NotificationView = () => {
                             dataTestId="controlled-list-test-id"
                             filterDDLOptions={[]}
                             isShowSearch={true}
+                            searchTerm={searchTerm}
+                            searchOnChange={(e) => handleSearchChange(e.target.value)}
+                            searchOnClickClose={handleClearSearch}
+                            searchOnCloseHandle={handleClearSearch}
                             isShowFirstElement={true}
                             isShowFourthElement={true}
                             filterCustumeElem2={
@@ -135,7 +148,7 @@ const NotificationView = () => {
                             ]}
                             onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
                             onEditSelectedBtnClick={() => { }}
-                            emptyStateMsg="No notifications to display"
+                            emptyStateMsg={noResults ? "No notifications match your search." : "No notifications to display"}
                             onAddEventBtnClick={() => { }}
                             groupTagsEnabled
                             headingText="Notification Centre"
@@ -172,9 +185,7 @@ const NotificationView = () => {
                             isIconRightAligned={true}
                             isShowOverflowMenuCol={false}
                             searchHeadingText="Search by notification title"
-                            isSearchHideClearIcon={false}
-                            // isSidePanelOpen={sideIsOpen}
-                            // isSidePanelLoader={false}
+                            isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
                             dynamicTableLoader={false}
                             onClickSidePnlSecondaryBtn={() => { setSideIsOpen(false) }}
                             handleCloseSidePanel={() => { setSideIsOpen(false) }}
@@ -190,8 +201,8 @@ const NotificationView = () => {
                             secondaryButtonTitle="Close"
                             isShowCheckboxCol={true}
                             isShowThirdElement={true}
-                            isShowdynamictableNoMsg={totalNotifications === 0}
-                            emptyRowResponseMessage="No notifications to display"
+                            isShowdynamictableNoMsg={totalNotifications === 0 || noResults}
+                            emptyRowResponseMessage={noResults ? "No notifications match your search." : "No notifications to display"}
                             emptyRowResponseCode={ResponseCode.Error}
                             isPagination={shouldShowPagination}
                             paginationCount={totalPages}
@@ -211,7 +222,7 @@ const NotificationView = () => {
                             selectedItem={selectedItem}
                         />
                     </div>
-                    {filterBtnClicked && <FilterDialogLogic setFilterBtnClicked={setFilterBtnClicked} />}
+                    {filterBtnClicked && <FilterDialogLogic />}
 
                     <DeleteConfirmationModalLogic
                         isOpen={isDeleteDialogOpen}

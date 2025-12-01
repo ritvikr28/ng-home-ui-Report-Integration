@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { notificationTableRows } from "./helper";
 
 const PAGE_SIZE = 40;
@@ -15,6 +15,44 @@ export const useNotification = () => {
     const [showDeleteToast, setShowDeleteToast] = useState(false);
     const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState(false);
 
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filters, setFilters] = useState<any>({});
+    const [filteredRows, setFilteredRows] = useState(notificationTableRows);
+    const [isSearching, setIsSearching] = useState(false);
+    const [noResults, setNoResults] = useState(false);
+
+    const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // Simulate API search/filter call
+    useEffect(() => {
+        setIsSearching(true);
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+
+        searchTimeout.current = setTimeout(() => {
+            let rows = notificationTableRows;
+
+            // Apply filters (dummy logic, replace with actual filter logic)
+            // if (filters && Object.keys(filters).length > 0) {
+            //     // Example: rows = rows.filter(row => row.status === filters.status);
+            // }
+
+            // Apply search (title only)
+            if (searchTerm.trim()) {
+                rows = rows.filter(row =>
+                    row.Notification.toLowerCase().includes(searchTerm.trim().toLowerCase())
+                );
+            }
+
+            setFilteredRows(rows);
+            setIsSearching(false);
+            setNoResults(rows.length === 0);
+            setCurrentPage(1); // Reset to first page on new search/filter
+        }, 300);
+
+        return () => {
+            if (searchTimeout.current) clearTimeout(searchTimeout.current);
+        };
+    }, [searchTerm, filters]);
+
     useEffect(() => {
         if (isClearSelectedCheckbox) {
             const timeout = setTimeout(() => setIsClearSelectedCheckbox(false), 0);
@@ -23,7 +61,7 @@ export const useNotification = () => {
         return undefined;
     }, [isClearSelectedCheckbox]);
 
-    const totalNotifications = notifications.length;
+    const totalNotifications = filteredRows.length;
     const totalPages = totalNotifications > 0 ? Math.ceil(totalNotifications / PAGE_SIZE) : 1;
 
     useEffect(() => {
@@ -51,8 +89,8 @@ export const useNotification = () => {
     const paginatedNotifications = useMemo(() => {
         const startIndex = (currentPage - 1) * PAGE_SIZE;
         const endIndex = startIndex + PAGE_SIZE;
-        return notifications.slice(startIndex, endIndex);
-    }, [currentPage, notifications]);
+        return filteredRows.slice(startIndex, endIndex);
+    }, [filteredRows, currentPage]);
 
     const handlePageChange = (event: any, page: number) => {
         setCurrentPage(page);
@@ -72,6 +110,10 @@ export const useNotification = () => {
             setIsClearSelectedCheckbox(false);
             return next;
         });
+    };
+
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
     };
 
     const handleSelectAllChange = (event: any, visibleIds: string[] = []) => {
@@ -138,6 +180,15 @@ export const useNotification = () => {
         setShowDeleteToast(true);
     };
 
+    const handleClearSearch = () => {
+        setSearchTerm("");
+    };
+
+    // Dummy filter setter for future use
+    const handleFilterChange = (newFilters: any) => {
+        setFilters(newFilters);
+    };
+
     return {
         filterBtnClicked,
         setFilterBtnClicked,
@@ -146,6 +197,13 @@ export const useNotification = () => {
         paginatedNotifications,
         totalNotifications,
         handlePageChange,
+        searchTerm,
+        handleSearchChange,
+        handleClearSearch,
+        filters,
+        handleFilterChange,
+        isSearching,
+        noResults,
         handleListCheckboxChange,
         handleSelectAllChange,
         handleSelectedCheckboxIds,

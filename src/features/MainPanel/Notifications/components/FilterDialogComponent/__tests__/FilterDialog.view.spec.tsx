@@ -8,15 +8,21 @@ jest.mock("../dialog-helper", () => ({
     DialogContent: () => <div data-testid="mock-dialog-content">Mock Content</div>
 }));
 
-describe("FilterDialogView", () => {
-    let setFilterBtnClicked: jest.Mock;
+const defaultProps = {
+    status: "",
+    setStatus: jest.fn(),
+    priority: "",
+    setPriority: jest.fn(),
+    startDate: "",
+    setStartDate: jest.fn(),
+    endDate: "",
+    setEndDate: jest.fn(),
+};
 
-    beforeEach(() => {
-        setFilterBtnClicked = jest.fn();
-    });
+describe("FilterDialogView", () => {
 
     it("renders dialog open by default with correct props", () => {
-        render(<FilterDialogView setFilterBtnClicked={setFilterBtnClicked} />);
+        render(<FilterDialogView {...defaultProps} />);
         const dialog = screen.getByTestId("test-id");
         expect(dialog).toBeInTheDocument();
         expect(dialog).toHaveClass("dialog-class");
@@ -26,7 +32,7 @@ describe("FilterDialogView", () => {
     });
 
     it("renders dialog footer and buttons", () => {
-        render(<FilterDialogView setFilterBtnClicked={setFilterBtnClicked} />);
+        render(<FilterDialogView {...defaultProps} />);
         const footer = document.querySelector(".dialog-footer");
         expect(footer).toBeInTheDocument();
         const buttons = screen.getAllByTestId("close-btn");
@@ -35,25 +41,11 @@ describe("FilterDialogView", () => {
         expect(buttons[1]).toHaveTextContent("Clear all");
     });
 
-    // it("calls setFilterBtnClicked and closes dialog on onClose", () => {
-    //     render(<FilterDialogView setFilterBtnClicked={setFilterBtnClicked} />);
-    //     const dialog = screen.getByTestId("test-id");
-    //     // Simulate onClose
-    //     fireEvent(dialog, new Event("close", { bubbles: true }));
-    //     // Since onClose is a prop, we need to call it directly
-    //     // Instead, find the Dialog and call its onClose prop
-    //     // But @testing-library/react does not expose props, so simulate by calling the function
-    //     // Alternative: test by clicking outside or ESC if Dialog supports it, but here call manually
-    //     // For this test, call setFilterBtnClicked directly
-    //     expect(setFilterBtnClicked).toHaveBeenCalledWith(false);
-    // });
-
     it("renders and allows clicking Clear all and Apply buttons", () => {
-        render(<FilterDialogView setFilterBtnClicked={setFilterBtnClicked} />);
+        render(<FilterDialogView {...defaultProps} />);
         const buttons = screen.getAllByTestId("close-btn");
         fireEvent.click(buttons[0]);
         fireEvent.click(buttons[1]);
-        // No-op handlers, just ensure no error
         expect(buttons[0]).toBeInTheDocument();
         expect(buttons[1]).toBeInTheDocument();
     });

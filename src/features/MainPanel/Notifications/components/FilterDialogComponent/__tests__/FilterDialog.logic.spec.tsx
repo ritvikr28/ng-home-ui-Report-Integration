@@ -1,33 +1,28 @@
 import React from 'react';
+import { render, screen } from '@testing-library/react';
 import FilterDialogLogic from '../FilterDialog.logic';
-import FilterDialogView from '../FilterDialog.view';
 
-jest.mock('../FilterDialog.view', () => jest.fn(() => <div>Mocked FilterDialogView</div>));
+// Mock the FilterDialogView to inspect props
+jest.mock('../FilterDialog.view', () => (props: any) => (
+    <div data-testid="mocked-view" {...props} />
+));
 
 describe('FilterDialogLogic', () => {
-    const mockSetFilterBtnClicked = jest.fn();
-
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    it('should render FilterDialogView', () => {
-        const element = FilterDialogLogic({ setFilterBtnClicked: mockSetFilterBtnClicked });
-        expect(element.type).toBe(FilterDialogView);
-        expect(element.props).toEqual({ setFilterBtnClicked: mockSetFilterBtnClicked });
-    });
-
-    it('should not call setFilterBtnClicked on render', () => {
-        FilterDialogLogic({ setFilterBtnClicked: mockSetFilterBtnClicked });
-        expect(mockSetFilterBtnClicked).not.toHaveBeenCalled();
+    it('should render FilterDialogView with initial empty state', () => {
+        render(<FilterDialogLogic />);
+        const view = screen.getByTestId('mocked-view');
+        expect(view).toBeInTheDocument();
+        expect(view).toHaveAttribute('status', '');
+        expect(view).toHaveAttribute('priority', '');
+        expect(view).toHaveAttribute('startDate', '');
+        expect(view).toHaveAttribute('endDate', '');
     });
 
     it('should be a function', () => {
         expect(typeof FilterDialogLogic).toBe('function');
-    });
-
-    it('should return a React element', () => {
-        const element = FilterDialogLogic({ setFilterBtnClicked: mockSetFilterBtnClicked });
-        expect(React.isValidElement(element)).toBe(true);
     });
 });

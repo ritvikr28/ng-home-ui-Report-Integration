@@ -109,6 +109,10 @@ body {
   align-items: center;
 }
 
+.notification-layout .filter-tool-view #search-autocomplete .icon-container.position-right {
+  margin-right: 10px;
+}
+
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .notification-layout-header {
     margin-left: 16px;
@@ -177,6 +181,10 @@ body {
 
 .notification-layout-header .filter-tool-grid-container.essui-grid-container {
   row-gap: 16px !important;
+}
+
+.notification-layout-header .essui-grid-col--sm-4 {
+  flex-basis: unset !important;
 }
 
 .view-text-style {

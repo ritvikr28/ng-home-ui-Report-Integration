@@ -1,8 +1,11 @@
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import React from "react";
 import { FormLabel, DateInput, CheckBox } from "@essnextgen/ui-kit";
 import "./style.scss";
+import { DialogContentProps } from "./FilterDialog.props";
 
-export const DialogContent = () => (
+export const DialogContent: React.FC<DialogContentProps> = ({ setStartDate, setEndDate, setStatus }) => (
     <div className="dialog-content-container"
     >
         <div>
@@ -14,14 +17,20 @@ export const DialogContent = () => (
                     dataTestId="test-id"
                     id="element-id-1"
                     label="Read"
-                    onChange={() => { }}
+                    onChange={(event) => {
+                        console.log("Status changed to:", (event.target as HTMLInputElement).value);
+                        setStatus((event.target as HTMLInputElement).value);
+                    }}
                     value="read"
                 />
                 <CheckBox
                     dataTestId="test-id"
                     id="element-id-2"
                     label="Unread"
-                    onChange={() => { }}
+                    onChange={(event) => {
+                        setStatus((event.target as HTMLInputElement).value);
+
+                    }}
                     value="unread"
                 />
                 <div />
@@ -66,7 +75,9 @@ export const DialogContent = () => (
                 <DateInput
                     dataTestId="test-id"
                     id="element-id"
-                    onChange={() => { }}
+                    onChange={(day: string | number, month: string | number, year: string | number) => {
+                        if (setStartDate) setStartDate(`${year}-${month}-${day}`);
+                    }}
                     onError={() => { }}
                     onValidateDate={() => { }}
                     showDatePicker
@@ -79,7 +90,9 @@ export const DialogContent = () => (
                 <DateInput
                     dataTestId="test-id"
                     id="element-id"
-                    onChange={() => { }}
+                    onChange={(day: string | number, month: string | number, year: string | number) => {
+                        if (setEndDate) setEndDate(`${year}-${month}-${day}`);
+                    }}
                     onError={() => { }}
                     onValidateDate={() => { }}
                     showDatePicker
