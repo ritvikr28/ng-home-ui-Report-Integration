@@ -267,12 +267,18 @@ useEffect(() => {
   if (!isOpen) {
     setWasApplied(false); 
   }
-  async function fetchSchoolData() {
+}, [isOpen]);
+
+  const fetchSchoolData = async () => {
     const data = await useFetchSchoolNameData();
     setSchoolData(data);
-  }
-  fetchSchoolData();
-}, [isOpen]);
+  };
+
+  useEffect(() => {
+    if (selectedDisplayKey === "School") {
+      fetchSchoolData();
+    }
+  }, [selectedDisplayKey]);
  
 useEffect(() => {
   if (!isOpen) {

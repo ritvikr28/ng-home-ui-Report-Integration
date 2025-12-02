@@ -593,8 +593,8 @@
     "fromDateRequired": "From date is required",
     "invalidDate": "Invalid Date",
     "relatedToRequired":"Pupil, Staff, or School is required.",
-    "fromDateLabel": "From Date",
-    "toDateLabel": "To Date",
+    "fromDateLabel": "From date",
+    "toDateLabel": "To date",
     "Pupil":"Pupil",
     "Staff":"Staff",
     "School":"School",
@@ -602,6 +602,6 @@
     "pupilName": "Pupil name",
     "staffName": "Staff name",
     "pupils": "pupils",
-    "staffs": "staffs"
+    "staffs": "staff members"
   }
 }

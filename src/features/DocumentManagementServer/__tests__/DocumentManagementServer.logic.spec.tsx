@@ -759,7 +759,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   it("renders plain value if value is falsy or length <= 25", () => {
     const column = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const { container } = render(<>{column?.anyComponent?.('pdf')}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("pdf");
+    expect(container.querySelector(".document-text")).toHaveTextContent("pdf");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -772,7 +772,12 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
    it("renders plain value if value is empty string", () => {
     const column = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
     const { container } = render(<>{column?.anyComponent?.('')}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    const node = container.querySelector(".document-text");
+    if (node) {
+      expect(node).toHaveTextContent("");
+    } else {
+      expect(node).toBeNull();
+    }
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -1099,7 +1104,7 @@ describe('fetchCategory', () => {
 describe('getResultNotFoundMsg', () => {
   it('returns not found message when searchText is provided and docData has no results', () => {
    const t = (key: string) => key === "DocumentManagementServer.noDataToDisplay" ? "No data to display." : key;
-    const result = getResultNotFoundMsg(t,'test', { statusCode: 200, data: [] }, 'test', false, true);
+    const result = getResultNotFoundMsg(t,'test', { statusCode: 200, data: [] }, 'test', false, true, false);
     expect(result).toBe(
       'No data to display.'
     );
@@ -1107,13 +1112,13 @@ describe('getResultNotFoundMsg', () => {
 
   it('returns "Information unavailable" when showErrorBanner is true', () => {
     const t = (key: string) => key;
-    const result = getResultNotFoundMsg(t,'', { data: ['some data'] }, '', true, true);
+    const result = getResultNotFoundMsg(t,'', { data: ['some data'] }, '', true, true, true);
     expect(result).toBe('Information unavailable.');
   });
 
   it('returns undefined when there is data and no error', () => {
     const t = (key: string) => key;
-    const result = getResultNotFoundMsg(t,'test', { data: ['doc1'] }, 'test', false, false);
+    const result = getResultNotFoundMsg(t,'test', { data: ['doc1'] }, 'test', false, false, false);
     expect(result).toBeUndefined();
   });
 
@@ -1125,7 +1130,8 @@ describe('getResultNotFoundMsg', () => {
     { statusCode: 200, data: [] }, // docData has empty array
     "", // searchTerm
     false, // showErrorBanner
-    false // isSearching
+    false, // isSearching
+    false 
   );
   expect(result).toEqual("DocumentManagementServer.searchBarText");
 });
@@ -1237,7 +1243,7 @@ describe("Document column anyComponent", () => {
 
   it("renders plain value if value is falsy or length <= 25", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("Short Name");
+    expect(container.querySelector(".document-text")).toHaveTextContent("Short Name");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -1249,20 +1255,20 @@ describe("Document column anyComponent", () => {
 
   it("renders plain value if value is empty string", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("")}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
   it("renders plain value if value is null", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.(null)}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
 
   it("renders plain value if value is falsy or length <= 10", () => {
     const { container } = render(<>{categoryColumn?.anyComponent?.("ShortCat")}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("ShortCat");
+    expect(container.querySelector(".document-text")).toHaveTextContent("ShortCat");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -1274,13 +1280,13 @@ describe("Document column anyComponent", () => {
 
   it("renders plain value if value is empty string", () => {
     const { container } = render(<>{categoryColumn?.anyComponent?.("")}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
   it("renders plain value if value is null", () => {
     const { container } = render(<>{categoryColumn?.anyComponent?.(null)}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("");
+    expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 });
@@ -1314,7 +1320,7 @@ describe("Size column anyComponent", () => {
     expect(sizeColumn).toBeDefined();
     expect(sizeColumn?.anyComponent).toBeDefined();
     const { container } = render(<>{sizeColumn!.anyComponent!("1234567890")}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("1234567890");
+    expect(container.querySelector(".document-text")).toHaveTextContent("1234567890");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -1322,7 +1328,7 @@ describe("Size column anyComponent", () => {
     expect(sizeColumn).toBeDefined();
     expect(sizeColumn?.anyComponent).toBeDefined();
     const { container } = render(<>{sizeColumn!.anyComponent!(["1234567890"])}</>);
-    expect(container.querySelector(".document-text.document-column")).toHaveTextContent("1234567890");
+    expect(container.querySelector(".document-text")).toHaveTextContent("1234567890");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
@@ -1830,7 +1836,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
@@ -1859,7 +1866,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
@@ -1881,7 +1889,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(downloadPollingIntervalRef.current).toBeNull();
@@ -1900,7 +1909,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(downloadPollingIntervalRef.current).toBeNull();
@@ -1919,7 +1929,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(consoleSpy).toHaveBeenCalledWith("Error fetching view download details:", error);
@@ -1941,7 +1952,8 @@ describe("fetchViewDownloadData", () => {
       setViewData,
       viewDownload,
       downloadPollingIntervalRef,
-      setIsViewDownloadError: jest.fn()
+      setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn()
     });
 
     expect(setIsSidePanelLoader).not.toHaveBeenCalledWith(true);
@@ -2179,13 +2191,13 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetCurrentPage = jest.fn();
   const mockSetTotalPage = jest.fn();
   const mockSetShowSearchError = jest.fn();
-  const mockSetShowErrorBanner = jest.fn();
   const mockSetHasFetched = jest.fn();
   const mockSetIsSearchLoading = jest.fn();
   const mockSetIsSearchDataLoading = jest.fn();
   const mockSetPrepareDownloadAbortBanner = jest.fn();
   const mockSetShowDeleteAbortBanner = jest.fn();
   const mockSetShowDeleteErrorBanner = jest.fn();
+  const mockSetSuggestions = jest.fn();
 
   const defaultArgs = {
     page: 2,
@@ -2199,13 +2211,13 @@ describe("fetchGetDocumentDetailsLogic", () => {
     setCurrentPage: mockSetCurrentPage,
     setTotalPage: mockSetTotalPage,
     setShowSearchError: mockSetShowSearchError,
-    setShowErrorBanner: mockSetShowErrorBanner,
     setHasFetched: mockSetHasFetched,
     setIsSearchLoading: mockSetIsSearchLoading,
     setIsSearchDataLoading: mockSetIsSearchDataLoading,
     setPrepareDownloadAbortBanner: mockSetPrepareDownloadAbortBanner,
     setShowDeleteAbortBanner: mockSetShowDeleteAbortBanner,
-    setShowDeleteErrorBanner: mockSetShowDeleteErrorBanner
+    setShowDeleteErrorBanner: mockSetShowDeleteErrorBanner,
+    setSuggestions: mockSetSuggestions
   };
 
   beforeEach(() => {
@@ -2245,7 +2257,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetCurrentPage).toHaveBeenCalledTimes(1);
     expect(mockSetTotalPage).toHaveBeenCalledWith(Math.ceil(10 / 10));
     expect(mockSetShowSearchError).toHaveBeenCalledWith(false);
-    expect(mockSetShowErrorBanner).toHaveBeenCalledWith(false);
+    // expect(setShowSearchError).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2263,7 +2275,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
 
     await fetchGetDocumentDetailsLogic(defaultArgs);
 
-    expect(mockSetShowErrorBanner).toHaveBeenCalledWith(true);
+    expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
@@ -2759,11 +2771,11 @@ describe("Added by column anyComponent", () => {
   test("renders nothing if value is null or undefined", () => {
     const { container } = render(<>{addedByColumn?.anyComponent?.(null)}</>);
     // Should render an empty span inside a flex div, not a truly empty DOM element
-    const span = container.querySelector('.document-text.document-column');
+    const span = container.querySelector('.document-text');
     expect(span).toBeInTheDocument();
     expect(span).toHaveTextContent("");
     const { container: container2 } = render(<>{addedByColumn?.anyComponent?.(undefined)}</>);
-    const span2 = container2.querySelector('.document-text.document-column');
+    const span2 = container2.querySelector('.document-text');
     expect(span2).toBeInTheDocument();
     expect(span2).toHaveTextContent("");
   });

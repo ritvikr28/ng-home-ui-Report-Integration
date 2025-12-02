@@ -132,6 +132,7 @@ export interface FetchViewDownloadDataParams {
   viewDownload: () => Promise<any>;
   downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
   setIsViewDownloadError: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowEmailNotification: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface ValidationFileDetail {

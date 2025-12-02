@@ -1,10 +1,10 @@
 
 import React from "react";
-import { Tooltip, TooltipAlign, TooltipPosition, ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
+import { ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import {isValidDate, truncatedString} from "../../shared/utils/commonFunctions";
+import {isValidDate} from "../../shared/utils/commonFunctions";
  import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
@@ -43,46 +43,38 @@ export function mapRelatedArr(doc: any): any[] {
   return relatedArr;
 }
 
-export const getTableHeadersData =(t:any):TableHeader[] => [
-    {
-      text: "Id",
-      isShow: false,
-      showValAs: ShowValAs.Text,
-      isTextTruncate: false,
-      columnWidth: "16px"
-    },
-    {
-      text: t("DocumentManagementServer.documentColumn"),
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      isTextTruncate: false,
-      isHeaderTextTruncate: true,
-      columnWidth: "267px",
-      headerTxtTrunctLength: 50,
-      isSimpleText: true,
-      txtTrunctLength: 35,
-      isColumnSorting: true,
-      anyComponent: (e: any) =>{
-        const value = e?.length > 25 ? truncatedString(e, 25)?.truncated : "";
-        if (!value) return <div style={{ display: "flex" }}><span className="document-text document-column">{e}</span></div>;
-        return (
-          <>
-          <div style={{ display: "flex" }}>
-            <Tooltip
-              dataTestId="tooltip-eventtime"
-              content={<span>{e}</span>}
-              align={TooltipAlign.Center}
-              position={TooltipPosition.Bottom}
-            >
-              <div className="tooltip-content document-text">
-                <span>{value}</span>
-              </div>
-            </Tooltip>
-          </div>
-          </>
-        );
-      }
-    },
+export const getTableHeadersData = (t: any): TableHeader[] => [
+  {
+    text: "Id",
+    isShow: false,
+    showValAs: ShowValAs.Text,
+    isTextTruncate: false,
+    columnWidth: "16px"
+  },
+  {
+    text: t("DocumentManagementServer.documentColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    isTextTruncate: false,
+    isHeaderTextTruncate: false,
+    columnWidth: "267px",
+    headerTxtTrunctLength: 50,
+    isSimpleText: true,
+    isColumnSorting: true,
+    anyComponent: (e: any) => (
+      <>
+        (
+          <EllipsisWithTooltip
+            text={e}
+            className=" relatedto-main"
+            isTooltipNeeded={!!(e && e.length === 1)}
+            totalItems={[e]}
+            colName="document"
+          />
+        )
+      </>
+    )
+  },
   {
     text: t("DocumentManagementServer.relatedColumn"),
     isShow: true,
@@ -96,145 +88,130 @@ export const getTableHeadersData =(t:any):TableHeader[] => [
     anyComponent: (e: any) => (
       <>
         {(!e || !Array.isArray(e) || !e.length) ? null : (
-              <EllipsisWithTooltip
-                text={e[0]}
-                className=" relatedto-main"
-                isTooltipNeeded={!!(e.length === 1)}
-                totalItems={e}
-              />
+          <EllipsisWithTooltip
+            text={e[0]}
+            className=" relatedto-main"
+            isTooltipNeeded={!!(e.length === 1)}
+            totalItems={e}
+            colName="relatedTo"
+          />
         )}
       </>
     )
   },
-    {
-      text: t("DocumentManagementServer.categoryColumn"),
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      isHeaderTextTruncate: true,
-      headerTxtTrunctLength: 20,
- 
-      isColumnSorting: true,
-      columnWidth: "144px",
-      anyComponent: (e: any) => {
-        const value = e?.length > 10 ? truncatedString(e, 10)?.truncated : "";
-        if (!value) return <span className="document-text document-column">{e}</span>;
-        return (
-          <>
-            <Tooltip
-              dataTestId="tooltip-eventtime"
-              content={<span>{e}</span>}
-              align={TooltipAlign.Center}
-              position={TooltipPosition.Bottom}
-            >
-              <div className="tooltip-content document-text">
-                <span>{value}</span>
-              </div>
-            </Tooltip>
-          </>
-        );
-      }
-    },
-   {
-  text: t("DocumentManagementServer.addedByColumn"),
-  isShow: true,
-  showValAs: ShowValAs.CustomeComponent,
-  headerTxtTrunctLength: 50,
-  columnWidth: "180px",
-  isColumnSorting: false,
-  anyComponent: (e: any) => {
-    // const shouldTruncate = 12;
-    const value = e?.length > 12 ? truncatedString(e, 12)?.truncated : "";
-    if (!value) return (
-      <div style={{ display: "flex" }}>
-        <span className="document-text document-column">{e}</span>
-      </div>
-    );
+  {
+    text: t("DocumentManagementServer.categoryColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    isHeaderTextTruncate: false,
+    headerTxtTrunctLength: 20,
+
+    isColumnSorting: true,
+    columnWidth: "144px",
+    isTextTruncate: false,
+    anyComponent: (e: any) => (
+      <>
+        {typeof e === 'undefined' ? null : (
+          <EllipsisWithTooltip
+            text={e}
+            className=" relatedto-main"
+            isTooltipNeeded={!!(e && e.length === 1)}
+            totalItems={[e]}
+            colName="category"
+          />
+        )}
+      </>
+    )
+  },
+  {
+    text: t("DocumentManagementServer.addedByColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    headerTxtTrunctLength: 50,
+    columnWidth: "180px",
+    isColumnSorting: false,
+    isHeaderTextTruncate: false,
+    isTextTruncate: false,
+    isSimpleText: true,
+    anyComponent: (e: any) => (
+      <>
+        (
+          <EllipsisWithTooltip
+            text={e}
+            className=" relatedto-main"
+            isTooltipNeeded={!!(e && e.length === 1)}
+            totalItems={[e]}
+            colName="addedBy"
+          />
+        )
+      </>
+    )
+  },
+  {
+    text: t("DocumentManagementServer.dateAddedColumn"),
+    isShow: true,
+    columnWidth: "140px",
+    showValAs: ShowValAs.Text,
+    isTextTruncate: false,
+    isColumnSorting: true,
+    isColumnSortByDefault: true,
+  },
+  {
+    text: t("DocumentManagementServer.formatColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    txtTrunctLength: 12,
+    isColumnSorting: true,
+    isTextTruncate: false,
+    isHeaderTextTruncate: false,
+    headerTxtTrunctLength: 50,
+    columnWidth: "120px",
+    anyComponent: (e: any) => (
+      <>
+        (
+          <EllipsisWithTooltip
+            text={e}
+            className=" relatedto-main"
+            isTooltipNeeded={!!(e && e.length === 1)}
+            totalItems={[e]}
+            colName="format"
+          />
+        )
+      </>
+    )
+  },
+  {
+    text: t("DocumentManagementServer.sizeColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    txtTrunctLength: 12,
+    isColumnSorting: true,
+    isTextTruncate: false,
+    isHeaderTextTruncate: false,
+    headerTxtTrunctLength: 50,
+    columnWidth: "129px",
+    anyComponent: (e: any) => {
+          if (
+      typeof e === "undefined" ||
+      e === null ||
+      (Array.isArray(e) && (e.length === 0 || !e[0] || e[0] === "" || typeof e[0] === "undefined" || e[0] === null))
+    ) {
+      return null;
+    }
+    // If array, use first value
+    const value = Array.isArray(e) ? e[0] : e;
     return (
-      <div style={{ display: "flex" }}>
-        <Tooltip
-          dataTestId="tooltip-addedby"
-          content={<span>{e}</span>}
-          align={TooltipAlign.Center}
-          position={TooltipPosition.Bottom}
-        >
-          <div className="tooltip-content document-text">
-            <span>{value}</span>
-          </div>
-        </Tooltip>
-      </div>
+      <EllipsisWithTooltip
+        text={value}
+        className=" relatedto-main"
+        isTooltipNeeded={!!(value && value.length === 1)}
+        totalItems={[value]}
+        colName="category"
+      />
     );
   }
-},
-    {
-      text: t("DocumentManagementServer.dateAddedColumn"),
-      isShow: true,
-      columnWidth: "140px",
-      showValAs: ShowValAs.Text,
-      isTextTruncate: false,
-      isColumnSorting: true,
-      isColumnSortByDefault: true,
-    },
-    {
-      text: t("DocumentManagementServer.formatColumn"),
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      txtTrunctLength: 12,
-      isColumnSorting: true,
-      isTextTruncate: false,
-      isHeaderTextTruncate: true,
-      headerTxtTrunctLength: 50,
-      columnWidth: "120px",
-      anyComponent: (e: any) => {
-        const value = e?.length > 25 ? truncatedString(e, 25)?.truncated : "";
-        if (!value) return <div style={{ display: "flex" }}><span className="document-text document-column">{e}</span></div>;
-        return (
-          <>
-            <Tooltip
-              dataTestId="tooltip-eventtime"
-              content={<span>{e}</span>}
-              align={TooltipAlign.Center}
-              position={TooltipPosition.Bottom}
-            >
-              <div className="tooltip-content document-text">
-                <span>{value}</span>
-              </div>
-            </Tooltip>
-          </>
-        );
-      }
-    },
-    {
-      text: t("DocumentManagementServer.sizeColumn"),
-      isShow: true,
-      showValAs: ShowValAs.CustomeComponent,
-      txtTrunctLength: 12,
-      isColumnSorting: true,
-      isTextTruncate: false,
-      isHeaderTextTruncate: true,
-      headerTxtTrunctLength: 50,
-      columnWidth: "129px",
-      anyComponent: (e: any) => {
-        const value = Array.isArray(e) ? e[0] : e;
-        const sizeVal = value?.length > 10 ? truncatedString(value, 10)?.truncated : "";
-        if (!value) return <></>;
-        if (!sizeVal) return <span className="document-text document-column">{value}</span>;
-        return (
-          <div style={{ display: "flex" }}>
-            <Tooltip
-              dataTestId="tooltip-eventtime"
-              content={<span>{value}</span>}
-              align={TooltipAlign.Center}
-              position={TooltipPosition.Bottom}
-            >
-              <div className="tooltip-content document-text">
-                <span>{sizeVal}</span>
-              </div>
-            </Tooltip>
-          </div>
-        );
-      },
-    }
-  ];
+}
+];
 
 
 export const handlePageChange = (
@@ -381,12 +358,12 @@ export async function fetchGetDocumentDetailsLogic({
   setCurrentPage,
   setTotalPage,
   setShowSearchError,
-  setShowErrorBanner,
   setIsSearchLoading,
   setIsSearchDataLoading,
   setPrepareDownloadAbortBanner,
   setShowDeleteAbortBanner,
-  setShowDeleteErrorBanner
+  setShowDeleteErrorBanner,
+  setSuggestions
 }: {
   page: number;
   categories: number[];
@@ -399,12 +376,12 @@ export async function fetchGetDocumentDetailsLogic({
   setCurrentPage: (v: number) => void;
   setTotalPage: (v: number) => void;
   setShowSearchError: (v: boolean) => void;
-  setShowErrorBanner: (v: boolean) => void;
   setIsSearchLoading: (v: boolean) => void;
   setIsSearchDataLoading: (v: boolean) => void;
   setPrepareDownloadAbortBanner: (v: boolean) => void;
   setShowDeleteAbortBanner: (v: boolean) => void;
   setShowDeleteErrorBanner: (v: boolean) => void;
+  setSuggestions: (v: Suggestion[]) => void;
 }) {
   setIsSearchDataLoading(true);
   setPrepareDownloadAbortBanner(false);
@@ -428,21 +405,23 @@ export async function fetchGetDocumentDetailsLogic({
       setCurrentPage(page);
       setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
       setShowSearchError(false);
-      setShowErrorBanner(false);
-    } else if (result && result?.status === 400) {
-      setShowErrorBanner(true);
+    } else {
+      setShowSearchError(true);
       
       gtmAnalytics.pushEvent({
         event: "error_message",
         messageText: "Information unavailable"
       });
-    } else {
-      setShowSearchError(true);
     }
   } catch (err) {
     console.error("Error fetching document details:", err);
     setShowSearchError(true);
+    gtmAnalytics.pushEvent({
+        event: "error_message",
+        messageText: "Information unavailable"
+      });
   }
+  setSuggestions([]);
   setIsSearchLoading(false);
   setIsSearchDataLoading(false);
 }
@@ -544,6 +523,7 @@ export const fetchViewDownloadData = async ({
   viewDownload,
   downloadPollingIntervalRef,
   setIsViewDownloadError,
+  setShowEmailNotification
 }: FetchViewDownloadDataParams) => {
   const pollingRef = downloadPollingIntervalRef;
   if (showLoader) setIsSidePanelLoader(true);
@@ -559,6 +539,7 @@ export const fetchViewDownloadData = async ({
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
       );
+      setShowEmailNotification(!!hasInProgress);
       if (hasInProgress && !pollingRef.current) {
         pollingRef.current = setInterval(() => {
           fetchViewDownloadData({
@@ -568,6 +549,7 @@ export const fetchViewDownloadData = async ({
             viewDownload,
             downloadPollingIntervalRef: pollingRef,
             setIsViewDownloadError,
+            setShowEmailNotification
           });
         }, 10000);
       }
@@ -615,9 +597,10 @@ export const getResultNotFoundMsg = (
   docData: any,
   searchTerm: string,
   showErrorBanner: boolean,
-  isSearchTriggered: boolean
+  isSearchTriggered: boolean,
+  showSearchError: boolean
 ): string | undefined => {
-  if (showErrorBanner) {
+  if (showSearchError || showErrorBanner) {
     return "Information unavailable.";
   }
   // Show "No data to display" only if searching and no data
