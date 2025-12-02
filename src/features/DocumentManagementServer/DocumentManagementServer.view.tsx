@@ -4,7 +4,7 @@ import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { useLocation } from "react-router-dom";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ValidationTextLevel, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
+import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
 import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
 import "./style.scss"
@@ -309,44 +309,45 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
         if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-            setShowToastNotification(false); 
-            setIsSidePanelLoader(true); 
+            setShowToastNotification(false);
+            setIsSidePanelLoader(true);
 
             // Wait for 2 seconds before calling view download API
             const timer = setTimeout(() => {
+                fetchViewDownloadData({
+                    showLoader: false,
+                    setIsSidePanelLoader,
+                    setViewData: (data) => {
+                        setViewData(data);
+                        setHasFetchedViewDownload(true);
+                    },
+                    viewDownload,
+                    downloadPollingIntervalRef,
+                    setIsViewDownloadError,
+                    setShowEmailNotification
+                });
+            }, 2000);
+
+            return () => clearTimeout(timer);
+        }
+        if (isSidePanelOpen && sidePanelOpenReason === "view") {
+            setShowToastNotification(false);
+            setIsSidePanelLoader(true);
             fetchViewDownloadData({
-                showLoader: false, 
+                showLoader: false,
                 setIsSidePanelLoader,
                 setViewData: (data) => {
-            setViewData(data);
-            setHasFetchedViewDownload(true);
-        },
-        viewDownload,
-        downloadPollingIntervalRef,
-        setIsViewDownloadError,
-      });
-    }, 2000);
-
-    return () => clearTimeout(timer);
-  }
-  if (isSidePanelOpen && sidePanelOpenReason === "view" ) {
-    setShowToastNotification(false);
-    setIsSidePanelLoader(true);
-    fetchViewDownloadData({
-      showLoader: false,
-      setIsSidePanelLoader,
-      setViewData: (data) => {
-        setViewData(data);
-        setHasFetchedViewDownload(true);
-    },
-      viewDownload,
-      downloadPollingIntervalRef,
-        setIsViewDownloadError,
-      
-    });
-  }
-  return undefined;
-}, [isSidePanelOpen, sidePanelOpenReason]);
+                    setViewData(data);
+                    setHasFetchedViewDownload(true);
+                },
+                viewDownload,
+                downloadPollingIntervalRef,
+                setIsViewDownloadError,
+                setShowEmailNotification
+            });
+        }
+        return undefined;
+    }, [isSidePanelOpen, sidePanelOpenReason]);
 
     const fetchGetDocumentDetails = (
     page: number,
@@ -368,12 +369,12 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         setCurrentPage,
         setTotalPage,
         setShowSearchError,
-        setShowErrorBanner,
         setIsSearchLoading,
         setIsSearchDataLoading,
         setPrepareDownloadAbortBanner,
         setShowDeleteAbortBanner,
-        setShowDeleteErrorBanner
+        setShowDeleteErrorBanner,
+        setSuggestions
     });
     };
 
@@ -552,7 +553,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
 
     const NotificationMsgBannerObject = [
         {
-            isShow: showErrorBanner,
+            isShow: showErrorBanner || showSearchError,
             variant: "warning",
             title: t("DocumentManagementServer.informationUnavailable"),
             message: t("DocumentManagementServer.technicalIssueMessage"),
@@ -580,7 +581,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     ];
 
     useEffect(() => {
-    if (searchTerm?.length > 1) {
+    if (searchTerm?.length > 1 && !showSearchError  && !isSearchTriggered) {
         handleSearchChange(
         t,
         { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
@@ -596,7 +597,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
     }
 }, [searchTerm, selectedFormats, selectedDateRange]);
 
-    const resultNotFoundMSG = getResultNotFoundMsg(t,searchText, docData, searchTerm, showErrorBanner, isSearchTriggered);
+    const resultNotFoundMSG = getResultNotFoundMsg(t,searchText, docData, searchTerm, showErrorBanner, isSearchTriggered, showSearchError);
     const filteredSuggestions = filterNonEmptySuggestions(suggestions);
      
 
@@ -1312,10 +1313,10 @@ const getDialogTitle = () => {
                                 paginationOnChange={onPageChange}
                                 isPagination={tableData.length > 0}
                                 paginationMinCountToHideNextPreviousBtn={0}
-                                emptyRowType={showErrorBanner ? TableRowType.Error : TableRowType.Info}
-                                emptyRowResponseCode={showErrorBanner ? ResponseCode.Error : ResponseCode.Info}
+                                emptyRowType={showErrorBanner || showSearchError ? TableRowType.Error : TableRowType.Info}
+                                emptyRowResponseCode={(showErrorBanner || showSearchError) ? ResponseCode.Error : ResponseCode.Info}
                                 emptyRowResponseMessage={resultNotFoundMSG}
-                                isShowdynamictableNoMsg={
+                                isShowdynamictableNoMsg={showSearchError ||
                                     (!isSearchTriggered && !searchText) ||
                                     (isSearchTriggered && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0)
                                 }
@@ -1340,6 +1341,7 @@ const getDialogTitle = () => {
                                     setIsClearSelectedCheckbox(true);
                                     setIsHeaderBoxChecked(false);
                                     setExcludedCheckBoxIds([]);
+                                    setPrevSelectedDocs([]);
                                     setTableKey(prev => prev + 1);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
                                     setIsSearchTriggered(true);
@@ -1351,13 +1353,12 @@ const getDialogTitle = () => {
                                    }
                                 }}
                                 searchOnChange={(e: any) => handleSearchChange(t, e, getAllRegistrationIds(selectedCategories), selectedDateRange?.fromDate, selectedDateRange?.toDate, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner)}
-                                searchValidationText={
-                                    showSearchError ? "Search unavailable. Please try again later." : undefined
-                                }
-                                searchValidationTextLevel={
-                                    showSearchError ? ValidationTextLevel.Warning : undefined
-                                }
-
+                                // searchValidationText={
+                                //     showSearchError ? "Search unavailable. Please try again later." : undefined
+                                // }
+                                // searchValidationTextLevel={
+                                //     showSearchError ? ValidationTextLevel.Warning : undefined
+                                // }
                                 searchOnCloseHandle={handleSearchClose}
                                 isGlobalLoader={isDialogLoading}
                                 globalLoaderText="Please wait..."
@@ -1508,7 +1509,7 @@ const getDialogTitle = () => {
                                 isShowAutoSuggest
                                 isLoaderForFilterandTable={false}
                                 loaderFilterText="Please Wait..."
-                                isShowErrorPage={!!showSearchError}
+                                isShowErrorPage={false}
                                 isSearchShowLoading={false}
                                 dynamicTableLoader={issearchDataLoading}
                                 className="grid_wrapper"

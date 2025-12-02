@@ -248,6 +248,8 @@ const mockSuggestions = {
   }
  
   beforeEach(() => {
+    jest.useFakeTimers();
+    jest.clearAllMocks();
     (Logic.fetchCategory as jest.Mock).mockResolvedValue(mockCategories);
     (Logic.reduceCategories as jest.Mock).mockReturnValue(mockCategories);
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
@@ -259,6 +261,13 @@ const mockSuggestions = {
       data: [],
     });
     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
+    /* eslint-disable */
+    global.ResizeObserver = global.ResizeObserver || class {
+      observe() { }
+      unobserve() { }
+      disconnect() { }
+    };
+    /* eslint-enable */
   })
 jest.setTimeout(10000);
   beforeEach(() => {
@@ -692,7 +701,7 @@ describe("Additional tests to increase coverage", () => {
   jest.useFakeTimers();
     (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({ data: [], status: 500 });
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
-      ({ setShowErrorBanner }: any) => setShowErrorBanner(true)
+      ({ setShowSearchError }: any) => setShowSearchError(true)
     );
     jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
  
@@ -717,7 +726,8 @@ describe("Additional tests to increase coverage", () => {
  
   // click suggestion
   fireEvent.click(suggestionNode[0]);
-  expect(screen.getByText(/Information unavailable/)).toBeInTheDocument();
+  const errorBanner = screen.getAllByText(/Information unavailable/);
+  expect(errorBanner[0]).toBeInTheDocument();
   jest.useRealTimers();
   }); 
 
@@ -988,6 +998,11 @@ describe('onClickSidePnlSecondaryBtn', () => {
     fireEvent.click(await screen.findByText("Actions"));
     const option = await screen.findByTestId("option-test-0");
     fireEvent.click(option);
+
+   const panelLoader = screen.getAllByTestId("loader-arc");
+   await waitFor(() => {
+     expect(within(panelLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+   });
     const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
     fireEvent.click(saveBtn);
     jest.useRealTimers();
@@ -1046,6 +1061,10 @@ describe('onClickSidePnlSecondaryBtn', () => {
     fireEvent.click(await screen.findByText("Actions"));
     const option = await screen.findByTestId("option-test-0");
     fireEvent.click(option);
+   const panelLoader = screen.getAllByTestId("loader-arc");
+   await waitFor(() => {
+     expect(within(panelLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+   });
     const saveBtn = await screen.findByTestId("tid-save-btn--small-screen");
     fireEvent.click(saveBtn);
     jest.useRealTimers();
@@ -1132,7 +1151,6 @@ it("if documents already deleted - documents cannot be downloaded as they have b
 
   jest.advanceTimersByTime(3000);
   const suggestionNode = await screen.findAllByText("Alfie");
-
   fireEvent.click(suggestionNode[0]);
 
   await waitFor(() => {
@@ -1142,9 +1160,12 @@ it("if documents already deleted - documents cannot be downloaded as they have b
   fireEvent.click(screen.getByTestId("check-box-row-testid-0"));
 
   fireEvent.click(screen.getByText("Actions"));
-
   fireEvent.click(screen.getByText("Prepare download"));
 
+  const panelLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(panelLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
   const prepareDialog = await screen.findByText(/documents cannot be downloaded as they have already been deleted./i);
   expect(prepareDialog).toBeInTheDocument();
 
@@ -1335,6 +1356,10 @@ it("shows correct notification when one document is available for download in di
   fireEvent.click(await screen.findByText("Actions"));
   fireEvent.click(await screen.findByText("Prepare download"));
   // Should show the single available document message
+  const panelLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(panelLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
 await waitFor(() => {
    expect(screen.getByText("1 document is about to be prepared for downloading.")).toBeInTheDocument();
 });
@@ -1532,6 +1557,10 @@ it("covers setTimeout and fetchViewDownloadData in prepare mode", async () => {
   const viewLoader = screen.getAllByTestId("loader-arc");
   await waitFor(() => {
     expect(within(viewLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
+  const panelLoader = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(panelLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
   });
   const saveBtn = await screen.getByTestId("tid-save-btn--small-screen");
   fireEvent.click(saveBtn);

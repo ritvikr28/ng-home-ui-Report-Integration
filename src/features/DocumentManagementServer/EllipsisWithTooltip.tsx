@@ -12,6 +12,7 @@ interface Props {
   className: string;
   isTooltipNeeded: boolean;
   totalItems: any[];
+  colName: string;
 }
 
 export const EllipsisWithTooltip: React.FC<Props> = ({
@@ -19,6 +20,7 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   className,
   isTooltipNeeded,
   totalItems = [],
+  colName = ""
 }) => {
   const [hrefUrl, setHrefUrl] = React.useState<string>("/");
   const [relatedName, setRelatedName] = React.useState<string>("");
@@ -51,22 +53,25 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
 
 
   useEffect(() => {
-    setHrefUrl(getProfileUrl(text.type, text.referenceExternalId));
-    setRelatedName(getDisplayName(text));
-    setYearRegTag(
-      text.type === "pupil"
-        ? getYearRegText(text.isLeaver, text.year, text.reg)
-        : ""
-    );
+    if (colName === "relatedTo") {
+      setHrefUrl(getProfileUrl(text?.type, text?.referenceExternalId));
+      setRelatedName(getDisplayName(text));
+      setYearRegTag(
+        text?.type === "pupil"
+          ? getYearRegText(text?.isLeaver, text?.year, text?.reg)
+          : ""
+      )
+    }
   }, [text]);
 
 
   const renderMainContent = () => {
     const tooltipContent =
-      (isTooltipNeeded ?? true) && isEllipsed ? <span>{text.name}</span> : null;
+      ((isTooltipNeeded ?? true) || colName !== "relatedTo") && isEllipsed ? <span>{text?.name || text}</span> : null;
 
-    const content =
-      text.type === "staff" || text.type === "pupil" ? (
+    let content;
+    if (colName === "relatedTo" && (text?.type === "staff" || text?.type === "pupil")) {
+      content = (
         <a
           ref={ref as React.RefObject<HTMLAnchorElement>}
           href={hrefUrl}
@@ -76,7 +81,9 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
         >
           {relatedName}
         </a>
-      ) : (
+      );
+    } else if (colName === "relatedTo") {
+      content = (
         <span
           ref={ref as React.RefObject<HTMLSpanElement>}
           className="document-text"
@@ -84,6 +91,16 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
           {relatedName}
         </span>
       );
+    } else {
+      content = (
+        <span
+          ref={ref as React.RefObject<HTMLSpanElement>}
+          className="document-text"
+        >
+          {text}
+        </span>
+      );
+    }
 
     return (
       <Tooltip
@@ -137,7 +154,7 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   return (
     <div className={`ellipsis-cell ${className}`}>
       {renderMainContent()}
-      {text.type === "pupil" && yearRegTag && (
+      {text?.type === "pupil" && yearRegTag && colName === "relatedTo" && (
         <Tag
           dataTestId="name"
           id="name"
