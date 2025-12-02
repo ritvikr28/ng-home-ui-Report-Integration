@@ -17,41 +17,43 @@ export const useNotification = () => {
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState<any>({});
-    const [filteredRows, setFilteredRows] = useState(notificationTableRows);
     const [isSearching, setIsSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
 
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    // Simulate API search/filter call
+
+    const filteredRows = useMemo(() => {
+        let rows = notifications;
+
+        // Apply filters (dummy logic, replace with actual filter logic)
+        // if (filters && Object.keys(filters).length > 0) {
+        //     // Example: rows = rows.filter(row => row.status === filters.status);
+        // }
+
+        // Apply search (title only)
+        if (searchTerm.trim()) {
+            rows = rows.filter(row =>
+                row.Notification.toLowerCase().includes(searchTerm.trim().toLowerCase())
+            );
+        }
+
+        return rows;
+    }, [notifications, searchTerm, filters]);
+
     useEffect(() => {
         setIsSearching(true);
         if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
         searchTimeout.current = setTimeout(() => {
-            let rows = notificationTableRows;
-
-            // Apply filters (dummy logic, replace with actual filter logic)
-            // if (filters && Object.keys(filters).length > 0) {
-            //     // Example: rows = rows.filter(row => row.status === filters.status);
-            // }
-
-            // Apply search (title only)
-            if (searchTerm.trim()) {
-                rows = rows.filter(row =>
-                    row.Notification.toLowerCase().includes(searchTerm.trim().toLowerCase())
-                );
-            }
-
-            setFilteredRows(rows);
             setIsSearching(false);
-            setNoResults(rows.length === 0);
+            setNoResults(filteredRows.length === 0);
             setCurrentPage(1); // Reset to first page on new search/filter
         }, 300);
 
         return () => {
             if (searchTimeout.current) clearTimeout(searchTimeout.current);
         };
-    }, [searchTerm, filters]);
+    }, [searchTerm, filters, filteredRows.length]);
 
     useEffect(() => {
         if (isClearSelectedCheckbox) {
@@ -75,8 +77,8 @@ export const useNotification = () => {
     }, [currentPage, totalNotifications, totalPages]);
 
     useEffect(() => {
-        setSelectedNotificationIds((prev) => prev.filter((id) => notifications.some((item) => getNotificationId(item) === id)));
-    }, [notifications]);
+        setSelectedNotificationIds((prev) => prev.filter((id) => filteredRows.some((item) => getNotificationId(item) === id)));
+    }, [filteredRows]);
 
     useEffect(() => {
         if (!showDeleteToast) {
