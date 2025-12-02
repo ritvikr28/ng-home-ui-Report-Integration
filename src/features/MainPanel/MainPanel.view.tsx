@@ -17,6 +17,9 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
+// import { WistiaPlayer } from "@wistia/wistia-player-react";
+// import { useRef, useState } from "react";
+
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -77,6 +80,9 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
+  // const playerRef = useRef(null);
+  // const [isVisible, setIsVisible] = useState(true)
+
   const SLTviewBETT: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SLTviewBETT"
@@ -87,7 +93,30 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
-  }; 
+  };
+
+  // function handlePlay() {
+  //   console.log("The video was just played!");
+  // };
+
+  // function handleOnEnded() {
+  //   console.log("The video has ended!");
+  // };
+
+  // function handleOnPause() {
+  //   console.log("the video has paused.");
+  // }
+
+  // function closePlayer() {
+  //   if (playerRef.current) {
+  //     // playerRef.current.pause(); // Optional: pause the video
+  //   }
+  //   setIsVisible(false); // Hide the component
+  // }
+
+  // function openPlayer() {
+  //   setIsVisible(true);
+  // }
 
   return (
     <div>
@@ -111,6 +140,23 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             isOpen={isOpen}
             isSchoolNameToBeDisplayed
           />
+          {/* <div style={{ width: "50%", height: "50%" }}>
+            {isVisible && (
+              <>
+              <WistiaPlayer mediaId="w9mg776ol6"
+              ref={playerRef}
+              onPlay={handlePlay}
+              onEnded={handleOnEnded}
+              onPause={handleOnPause} />
+            <button onClick={closePlayer}>
+              Close Video
+            </button>
+            </>)}
+
+            {!isVisible && (
+              <p>Video is closed. <button onClick={openPlayer}>Open Video</button></p>
+            )}
+          </div> */}
         </GridItem>
       </Grid>
 

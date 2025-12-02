@@ -6,13 +6,15 @@ module.exports = {
     "**/?(*.)+(spec|test).+(ts|tsx|js|jsx)"
   ],
   moduleNameMapper: {
+    "^@wistia/wistia-player-react$": "<rootDir>/__mocks__/@wistia/wistia-player-react.js",
     "\\.(css|less|sass|scss)$":
       "<rootDir>/config/jest/__mocks__/styleMock.js",
     "\\.(gif|ttf|eot|svg|jpg|jpeg|png|ico|webp)$":
-      "<rootDir>/config/jest/__mocks__/fileMock.js"
+      "<rootDir>/config/jest/__mocks__/fileMock.js",
+    "\\.(css|scss)$": "identity-obj-proxy"
   },
   transformIgnorePatterns: [
-    "node_modules/(?!.*(@essnextgen\\/auth-ui|axios))",
+    "node_modules/(?!.*(@essnextgen\\/auth-ui|axios|@wistia/wistia-player-react))",
     "dist"
   ],
   preset: "ts-jest",
