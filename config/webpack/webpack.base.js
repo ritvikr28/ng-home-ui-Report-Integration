@@ -127,7 +127,10 @@ const baseConfig = {
     publicPath: "/"
   },
   resolve: {
-    extensions: ["*", ".js", ".jsx", ".tsx", ".ts"]
+    alias: {
+      'react/jsx-runtime': 'react/jsx-runtime.js',
+    },
+    extensions: [".*", ".js", ".jsx", ".tsx", ".ts", ".mjs"]
   },
   performance: {
     hints: "warning",
