@@ -169,7 +169,7 @@ export const generateNotificationData = (): {
     { text: "Graduation ceremony planning committee meeting", priority: "Medium" },
     { text: "Important: Student data privacy policy update", priority: "High" },
     { text: "Book fair starting next Monday", priority: "Low" },
-    { text: "Staff training on new assessment tools", priority: "Medium" }
+    ...Array(41).fill({ text: "Staff training on new assessment tools", priority: "Medium" })
   ];
 
   const statuses = ["Read", "Unread"];
