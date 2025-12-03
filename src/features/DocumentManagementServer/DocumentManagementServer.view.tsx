@@ -685,7 +685,8 @@ switch (dialogType) {
           setClearAllError,
           setShowConfirmDialog,
           getCompletedPartitionKeys,
-          setIsViewDownloadError
+          setIsViewDownloadError,
+          setShowEmailNotification
         });
       },
       template: DialogTemplate.Confirmation,
