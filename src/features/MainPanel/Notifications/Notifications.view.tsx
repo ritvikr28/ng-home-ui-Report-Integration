@@ -32,7 +32,7 @@ const NotificationView = () => {
         showDeleteToast,
         isClearSelectedCheckbox,
         selectedCount,
-        selectedNotificationIds
+        isNoSelectionMode
     } = useNotification();
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
@@ -50,16 +50,8 @@ const NotificationView = () => {
             }),
         [currentPage, getNotificationId, paginatedNotifications]
     );
-
-    const focusTable = () => {
-        if (tableWrapperRef.current) {
-            tableWrapperRef.current.focus();
-        }
-    };
-
+    
     const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
-    const selectedVisibleNotificationIds = visibleNotificationIds.filter((id) => selectedNotificationIds.includes(id));
-    const isDeleteDisabled = selectedVisibleNotificationIds.length === 0;
 
     const handleBulkDeleteSelection = (_event: React.SyntheticEvent, selectedItemOption: ISelectedItem) => {
         handleBulkAction(selectedItemOption, visibleNotificationIds);
@@ -67,12 +59,16 @@ const NotificationView = () => {
 
     const handleCloseDeleteDialog = () => {
         closeDeleteDialog();
-        focusTable();
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     };
 
     const handleConfirmDelete = async () => {
         await confirmDelete();
-        focusTable();
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
     };
 
     const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0 && !noResults;
@@ -140,7 +136,7 @@ const NotificationView = () => {
                             editSelectedBtnTitle="Edit selected"
                             editSelectedOptions={[
                                 {
-                                    "disabled": isDeleteDisabled,
+                                    "disabled": false,
                                     "isSelected": false,
                                     "text": "Delete",
                                     "value": "Delete"
@@ -227,9 +223,10 @@ const NotificationView = () => {
                     <DeleteConfirmationModalLogic
                         isOpen={isDeleteDialogOpen}
                         onClose={handleCloseDeleteDialog}
-                        onConfirm={handleConfirmDelete}
+                        onConfirm={isNoSelectionMode ? handleCloseDeleteDialog : handleConfirmDelete}
                         selectedCount={selectedCount}
                         isLoading={isDeleteLoading}
+                        isNoSelection={isNoSelectionMode}
                     />
 
                 </div>

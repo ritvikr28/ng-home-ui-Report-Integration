@@ -97,6 +97,8 @@ const mockUseNotificationBase = {
     isClearSelectedCheckbox: false,
     selectedCount: 0,
     selectedNotificationIds: [],
+    isNoSelectionDialogOpen: false,
+    closeNoSelectionDialog: jest.fn(),
 };
 
 type UseNotificationOverrides = Partial<Record<keyof typeof mockUseNotificationBase, unknown>>;
@@ -323,7 +325,7 @@ describe("NotificationView state management and logic coverage", () => {
         expect(controlledListProps.paginationPage).toBe(1);
     });
 
-    it("focuses the table wrapper and closes delete dialog when modal closes", () => {
+    it("blurs active element and closes delete dialog when modal closes", () => {
         const closeDeleteDialogMock = jest.fn();
         mockedUseNotification.mockReturnValue(
             buildUseNotificationValue({
@@ -334,17 +336,33 @@ describe("NotificationView state management and logic coverage", () => {
         render(<NotificationView />);
         const deleteModalMock = getMockedDeleteModal();
         const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
-        const tableWrapper = screen.getByLabelText("Notifications table");
-        const focusSpy = jest.spyOn(tableWrapper, "focus").mockImplementation(() => { });
+        
+        
+        const mockBlur = jest.fn();
+        const mockActiveElement = document.createElement('div');
+        mockActiveElement.blur = mockBlur;
+        
+        
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
 
         deleteModalProps.onClose();
 
         expect(closeDeleteDialogMock).toHaveBeenCalled();
-        expect(focusSpy).toHaveBeenCalled();
-        focusSpy.mockRestore();
+        expect(mockBlur).toHaveBeenCalled();
+        
+        
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
     });
 
-    it("confirms deletion and refocuses table when confirmation resolves", async () => {
+    it("blurs active element and confirms deletion when confirmation resolves", async () => {
         const confirmDeleteMock = jest.fn().mockResolvedValue(undefined);
         mockedUseNotification.mockReturnValue(
             buildUseNotificationValue({
@@ -355,16 +373,32 @@ describe("NotificationView state management and logic coverage", () => {
         render(<NotificationView />);
         const deleteModalMock = getMockedDeleteModal();
         const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
-        const tableWrapper = screen.getByLabelText("Notifications table");
-        const focusSpy = jest.spyOn(tableWrapper, "focus").mockImplementation(() => { });
+        
+        
+        const mockBlur = jest.fn();
+        const mockActiveElement = document.createElement('div');
+        mockActiveElement.blur = mockBlur;
+        
+        
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
 
         await act(async () => {
             await deleteModalProps.onConfirm();
         });
 
         expect(confirmDeleteMock).toHaveBeenCalled();
-        expect(focusSpy).toHaveBeenCalled();
-        focusSpy.mockRestore();
+        expect(mockBlur).toHaveBeenCalled();
+        
+        
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
     });
 
     it("renders selected notification details in addEditTemplateChild when a row header is clicked", () => {
