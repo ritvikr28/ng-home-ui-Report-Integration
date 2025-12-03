@@ -47,6 +47,13 @@ const webpackBaseRules = [
         ]
       }
     }
+  },
+  {
+    test: /\.mjs$/,
+    include: /node_modules/, // Apply this rule to all node_modules files
+    resolve: {
+      fullySpecified: false, // Allows imports without file extensions in .mjs files
+    }
   }
 ];
 
@@ -56,7 +63,7 @@ const webpackBasePlugins = [
     filename: "index.html",
     inject: "body",
     minify: true,
-    hash:true
+    hash: true
   }),
   new ProvidePlugin({
     React: "react"

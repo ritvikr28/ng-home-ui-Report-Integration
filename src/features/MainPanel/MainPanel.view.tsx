@@ -5,6 +5,7 @@ import {
   GridItem
 } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+import { WistiaPlayer } from "@wistia/wistia-player-react";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -17,9 +18,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
-// import { WistiaPlayer } from "@wistia/wistia-player-react";
-// import { useRef, useState } from "react";
-
+import { HomePageVideoFlagr, homepageVideoOrgView } from "../../Layout";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -80,9 +79,6 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
-  // const playerRef = useRef(null);
-  // const [isVisible, setIsVisible] = useState(true)
-
   const SLTviewBETT: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "SLTviewBETT"
@@ -95,17 +91,17 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen(!isOpen);
   };
 
-  // function handlePlay() {
-  //   console.log("The video was just played!");
-  // };
+  function handlePlay() {
+    console.log("The video was just played!");
+  };
 
-  // function handleOnEnded() {
-  //   console.log("The video has ended!");
-  // };
+  function handleOnEnded() {
+    console.log("The video has ended!");
+  };
 
-  // function handleOnPause() {
-  //   console.log("the video has paused.");
-  // }
+  function handleOnPause() {
+    console.log("the video has paused.");
+  }
 
   // function closePlayer() {
   //   if (playerRef.current) {
@@ -140,23 +136,14 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             isOpen={isOpen}
             isSchoolNameToBeDisplayed
           />
-          {/* <div style={{ width: "50%", height: "50%" }}>
-            {isVisible && (
-              <>
+          {(homepageVideoOrgView && HomePageVideoFlagr) ? (
+            <div style={{ width: "50%", height: "50%" }}>
               <WistiaPlayer mediaId="w9mg776ol6"
-              ref={playerRef}
-              onPlay={handlePlay}
-              onEnded={handleOnEnded}
-              onPause={handleOnPause} />
-            <button onClick={closePlayer}>
-              Close Video
-            </button>
-            </>)}
-
-            {!isVisible && (
-              <p>Video is closed. <button onClick={openPlayer}>Open Video</button></p>
-            )}
-          </div> */}
+                onPlay={() => handlePlay()}
+                onEnded={() => handleOnEnded()}
+                onPause={() => handleOnPause()} />
+            </div>
+          ) : null}
         </GridItem>
       </Grid>
 

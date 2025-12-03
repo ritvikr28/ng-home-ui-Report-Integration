@@ -52,7 +52,7 @@ import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { saveAppPermission, startRequest } from "./actions/storeActions";
 import { IAppModule } from "./types/AppPermission";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
-import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
+import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./shared/utils";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
 import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
@@ -84,6 +84,15 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
   `${envConfig.APPLICATION}`,
   "SendNotification"
 );
+
+export const HomePageVideoFlagr: boolean = hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "HomePageVideoFlag"
+);
+
+export const homepageVideoOrgView: boolean =
+  isOrganisationInVariant("HomePageVideoFlag") || false;
+
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -228,6 +237,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
+
+  console.log("HomePageVideoFlagr in Layout", { HomePageVideoFlagr, homepageVideoOrgView, orgId: getUserOrganisation() });
 
   return (
     /* eslint-disable react/prop-types */
