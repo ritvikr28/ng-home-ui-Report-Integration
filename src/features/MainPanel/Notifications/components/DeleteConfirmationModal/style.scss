@@ -14,3 +14,11 @@
     justify-content: flex-end;
   }
 }
+
+.notification-controlledlist-width:focus {
+  outline: none;
+}
+
+.notification-controlledlist-width:focus-visible {
+  outline: none;
+}

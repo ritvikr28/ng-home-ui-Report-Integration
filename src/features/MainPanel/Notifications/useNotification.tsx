@@ -14,6 +14,7 @@ export const useNotification = () => {
     const [isDeleteLoading, setIsDeleteLoading] = useState(false);
     const [showDeleteToast, setShowDeleteToast] = useState(false);
     const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState(false);
+    const [isNoSelectionMode, setIsNoSelectionMode] = useState(false);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState<any>({});
@@ -152,8 +153,11 @@ export const useNotification = () => {
         }
         const idsOnCurrentPage = selectedNotificationIds.filter((id) => visibleIds.includes(id));
         if (!idsOnCurrentPage.length) {
+            setIsNoSelectionMode(true);
+            setIsDeleteDialogOpen(true);
             return;
         }
+        setIsNoSelectionMode(false);
         setPendingDeletionIds(idsOnCurrentPage);
         setIsDeleteDialogOpen(true);
     };
@@ -164,6 +168,7 @@ export const useNotification = () => {
         }
         setIsDeleteDialogOpen(false);
         setPendingDeletionIds([]);
+        setIsNoSelectionMode(false);
     };
 
     const confirmDelete = async () => {
@@ -217,6 +222,7 @@ export const useNotification = () => {
         showDeleteToast,
         isClearSelectedCheckbox,
         selectedCount: pendingDeletionIds.length,
-        selectedNotificationIds
+        selectedNotificationIds,
+        isNoSelectionMode
     };
 };

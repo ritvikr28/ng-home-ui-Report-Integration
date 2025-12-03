@@ -4,5 +4,6 @@ export interface DeleteConfirmationModalProps {
     onConfirm: () => void;
     selectedCount: number;
     isLoading?: boolean;
+    isNoSelection?: boolean;
 }
 
