@@ -2656,6 +2656,7 @@ describe('handleClearAllConfirm', () => {
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
       setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn(),
     });
     expect(setShowToastNotification).toHaveBeenCalledWith(true);
     expect(fetchViewDownloadDataMock).toHaveBeenCalledWith(expect.objectContaining({
@@ -2684,6 +2685,7 @@ describe('handleClearAllConfirm', () => {
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
       setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn(),
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).not.toHaveBeenCalledWith(true);
@@ -2707,6 +2709,7 @@ describe('handleClearAllConfirm', () => {
       setShowConfirmDialog,
       getCompletedPartitionKeys: getCompletedPartitionKeysMock,
       setIsViewDownloadError: jest.fn(),
+      setShowEmailNotification: jest.fn(),
     });
     expect(setClearAllError).toHaveBeenCalledWith(true);
     expect(setShowToastNotification).toHaveBeenCalledWith(false);
