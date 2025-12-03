@@ -63,15 +63,13 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isColumnSorting: true,
     anyComponent: (e: any) => (
       <>
-        (
-          <EllipsisWithTooltip
-            text={e}
-            className=" relatedto-main"
-            isTooltipNeeded={!!(e && e.length === 1)}
-            totalItems={[e]}
-            colName="document"
-          />
-        )
+        <EllipsisWithTooltip
+          text={e}
+          className=" relatedto-main"
+          isTooltipNeeded={!!(e && e.length === 1)}
+          totalItems={[e]}
+          colName="document"
+        />
       </>
     )
   },
@@ -135,15 +133,13 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isSimpleText: true,
     anyComponent: (e: any) => (
       <>
-        (
-          <EllipsisWithTooltip
-            text={e}
-            className=" relatedto-main"
-            isTooltipNeeded={!!(e && e.length === 1)}
-            totalItems={[e]}
-            colName="addedBy"
-          />
-        )
+        <EllipsisWithTooltip
+          text={e}
+          className=" relatedto-main"
+          isTooltipNeeded={!!(e && e.length === 1)}
+          totalItems={[e]}
+          colName="addedBy"
+        />
       </>
     )
   },
@@ -168,15 +164,13 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     columnWidth: "120px",
     anyComponent: (e: any) => (
       <>
-        (
-          <EllipsisWithTooltip
-            text={e}
-            className=" relatedto-main"
-            isTooltipNeeded={!!(e && e.length === 1)}
-            totalItems={[e]}
-            colName="format"
-          />
-        )
+        <EllipsisWithTooltip
+          text={e}
+          className=" relatedto-main"
+          isTooltipNeeded={!!(e && e.length === 1)}
+          totalItems={[e]}
+          colName="format"
+        />
       </>
     )
   },
@@ -1181,7 +1175,8 @@ export async function handleClearAllConfirm({
   setClearAllError,
   setShowConfirmDialog,
   getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys,
-  setIsViewDownloadError
+  setIsViewDownloadError,
+  setShowEmailNotification
 }: {
   viewData: any[],
   clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
@@ -1196,6 +1191,7 @@ export async function handleClearAllConfirm({
   setShowConfirmDialog: (v: boolean) => void,
   getCompletedPartitionKeys: (viewData: any[]) => string[],
   setIsViewDownloadError: (v: boolean) => void,
+  setShowEmailNotification: (v: boolean) => void
 }) {
   const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
@@ -1212,6 +1208,7 @@ export async function handleClearAllConfirm({
         viewDownload: clearAllViewDownload,
         downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
         setIsViewDownloadError,
+        setShowEmailNotification
       });
       setIsSidePanelLoader(false);
     } else {
