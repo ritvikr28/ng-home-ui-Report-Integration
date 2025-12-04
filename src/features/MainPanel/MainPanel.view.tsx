@@ -102,7 +102,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   function handleOnPause() {
     console.log("the video has paused.");
   }
-
+ const isShowVideo = true;
   // function closePlayer() {
   //   if (playerRef.current) {
   //     // playerRef.current.pause(); // Optional: pause the video
@@ -177,13 +177,13 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         ) && (
           <>
             <SltViewBett />
-            <div className="new-divider-spacing">
+            <div className={isShowVideo? "new-divider-spacing wistia-class" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>
         )}
 
-      {(homepageVideoOrgView && HomePageVideoFlagr) ? (
+      {(homepageVideoOrgView && HomePageVideoFlagr && isShowVideo) ? (
       <div className="wistia-palyer-video-class">
         <WistiaPlayer mediaId="w9mg776ol6"
           onPlay={() => handlePlay()}
