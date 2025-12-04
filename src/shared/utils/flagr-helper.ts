@@ -10,6 +10,7 @@ import { envConfig } from './constants';
 interface IFeatureFlagVariantAttachment {
   Payload: Array<IAttachmentValue>;
   IncludeOrganisations: Array<string>;
+  ExcludeOrganisations: Array<string>;
 }
 
 interface IAttachmentValue {
@@ -29,10 +30,11 @@ const getFeatureFlagVariantAttachment: (
   const visibilityVariant: IFeatureFlagVariant | undefined =
     featurePermission.variants.find(x => x.Key === variantName);
 
-  const defaultAttachment: IFeatureFlagVariantAttachment = {
-    Payload: [],
-    IncludeOrganisations: []
-  };
+    const defaultAttachment: IFeatureFlagVariantAttachment = {
+      Payload: [],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    };
 
   const attachment: IFeatureFlagVariantAttachment = Object.assign(
     defaultAttachment,
@@ -46,6 +48,7 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   flagName: string,
   variantType: string
 ): any => {
+  console.info('pilotReady included called', { flagName, variantType, userOrganisation });
   const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`,flagName);
 
   if (pilotReadyOrg?.enabled) {
@@ -67,6 +70,35 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   }
   return true;
 };
+
+const pilotReadyForExcluded: (flagName: string, variantType: string) => boolean = (
+  flagName: string,
+  variantType: string
+): any => {
+  console.info('pilotReady excluded called', { flagName, variantType, userOrganisation });
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`, flagName);
+  if (pilotReadyOrg?.enabled) {
+    const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
+      getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
+
+      console.info('variantAttachmentPayload excluded', variantAttachmentPayload);
+    if (
+      variantAttachmentPayload &&
+      variantAttachmentPayload.ExcludeOrganisations.length > 0
+    ) {
+      const isExcludedOrganisation: string | undefined =
+        variantAttachmentPayload.ExcludeOrganisations.find(
+          x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
+        );
+      if (isExcludedOrganisation === undefined) {
+        return false;
+      }
+      return false;
+    }
+  }
+  return false;
+};
+
 
 const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boolean = (
   flagName: string,
@@ -97,4 +129,4 @@ const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boole
   return false;
 };
 
-export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll };
+export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded};

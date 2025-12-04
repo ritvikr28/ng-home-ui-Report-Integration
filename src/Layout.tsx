@@ -60,6 +60,7 @@ import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 import UAM from "./features/AdminConsole/UAM.view";
 import {
+  isOrganisationExcludedInVariant,
   isOrganisationInVariant,
   isOrganisationInVariantForAnyOrAll
 } from "./shared/utils/flagr-utils";
@@ -92,6 +93,9 @@ export const HomePageVideoFlagr: boolean = hasFeaturePermission(
 
 export const homepageVideoOrgView: boolean =
   isOrganisationInVariant("HomePageVideoFlag") || false;
+
+export const homepageVideoOrgViewExcluded: boolean =
+  isOrganisationExcludedInVariant("HomePageVideoFlag") || false;
 
 
 export interface ILayoutProps {
@@ -238,7 +242,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-  console.log("HomePageVideoFlagr in Layout", { HomePageVideoFlagr, homepageVideoOrgView, orgId: getUserOrganisation() });
+  console.log("HomePageVideoFlagr in Layout", { HomePageVideoFlagr, homepageVideoOrgView, homepageVideoOrgViewExcluded, orgId: getUserOrganisation() });
 
   return (
     /* eslint-disable react/prop-types */

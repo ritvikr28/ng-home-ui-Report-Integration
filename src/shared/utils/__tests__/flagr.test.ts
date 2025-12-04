@@ -182,5 +182,6 @@ test('returns default attachment for an invalid variant', () => {
   expect(attachment).toEqual({
     Payload: [],
     IncludeOrganisations: [],
+    ExcludeOrganisations: []
   });
 });
