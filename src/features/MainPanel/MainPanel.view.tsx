@@ -102,7 +102,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   function handleOnPause() {
     console.log("the video has paused.");
   }
-
+ const isShowVideo = true;
   // function closePlayer() {
   //   if (playerRef.current) {
   //     // playerRef.current.pause(); // Optional: pause the video
@@ -136,14 +136,6 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
             isOpen={isOpen}
             isSchoolNameToBeDisplayed
           />
-          {(homepageVideoOrgView && HomePageVideoFlagr) ? (
-            <div style={{ width: "50%", height: "50%" }}>
-              <WistiaPlayer mediaId="w9mg776ol6"
-                onPlay={() => handlePlay()}
-                onEnded={() => handleOnEnded()}
-                onPause={() => handleOnPause()} />
-            </div>
-          ) : null}
         </GridItem>
       </Grid>
 
@@ -157,25 +149,25 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           requiredRegisterPermissions,
           MatchPermissions.all
         ) && (
-          <>
-            <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-            <div className="new-divider-spacing">
-              <Divider />
-            </div>
-          </>
-        )}
+            <>
+              <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+              <div className="new-divider-spacing">
+                <Divider />
+              </div>
+            </>
+          )}
       </StaffTimetableAndRegisterDetailsProvider>
       {authService.isAuthorised(
         requiredPupilProfilePermissions,
         MatchPermissions.all
       ) && (
-        <>
-          <Search isOpen={isOpen} />
-          <div className="new-divider-spacing">
-            <Divider />
-          </div>
-        </>
-      )}
+          <>
+            <Search isOpen={isOpen} />
+            <div className="new-divider-spacing">
+              <Divider />
+            </div>
+          </>
+        )}
 
       {SLTviewBETT &&
         hasSLTviewOrgPermission &&
@@ -185,11 +177,21 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         ) && (
           <>
             <SltViewBett />
-            <div className="new-divider-spacing">
+            <div className={isShowVideo? "new-divider-spacing wistia-class" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>
         )}
+
+      {(homepageVideoOrgView && HomePageVideoFlagr && isShowVideo) ? (
+      <div className="wistia-palyer-video-class">
+        <WistiaPlayer mediaId="w9mg776ol6"
+          onPlay={() => handlePlay()}
+          onEnded={() => handleOnEnded()}
+          onPause={() => handleOnPause()} />
+      </div>
+      ) : null}
+
       <div className="sims-section-footer c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />
       </div>

@@ -38,7 +38,7 @@
 
 .notification-banner-class-view .essui-global-typography-default-subtitle {
   font-weight: 600 !important;
-} 
+}
 
 .notification-banner-class-view {
   width: 99.5% !important;
@@ -52,5 +52,23 @@
 @media only screen and (max-width: 768px) {
   .sims-section-footer {
     margin-bottom: 70px;
+  }
+}
+
+.wistia-palyer-video-class {
+  width: 99%;
+  margin-bottom: 40px;
+}
+
+.wistia-class {
+
+  @media only screen and (max-width: 767px) {
+    margin-top: 26px !important;
+    margin-bottom: 29px !important;
+  }
+
+  @media only screen and (min-width: 768px) and (max-width: 1023px) {
+    margin-top: 21px !important;
+    margin-bottom: 26px !important;
   }
 }
