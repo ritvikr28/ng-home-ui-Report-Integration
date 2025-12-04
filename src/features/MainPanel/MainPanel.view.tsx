@@ -18,7 +18,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
-import { HomePageVideoFlagr, homepageVideoOrgView } from "../../Layout";
+import { homepageVideoOrgView } from "../../Layout";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -183,7 +183,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {(homepageVideoOrgView && HomePageVideoFlagr && isShowVideo) ? (
+      {(homepageVideoOrgView && isShowVideo) ? (
       <div className="wistia-palyer-video-class">
         <WistiaPlayer mediaId="w9mg776ol6"
           onPlay={() => handlePlay()}
