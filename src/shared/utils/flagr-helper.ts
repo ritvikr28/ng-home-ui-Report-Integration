@@ -91,12 +91,12 @@ const pilotReadyForExcluded: (flagName: string, variantType: string) => boolean 
           x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
         );
       if (isExcludedOrganisation === undefined) {
-        return false;
+        return true;
       }
-      return false;
+      return isExcludedOrganisation && false;
     }
   }
-  return false;
+  return true;
 };
 
 
