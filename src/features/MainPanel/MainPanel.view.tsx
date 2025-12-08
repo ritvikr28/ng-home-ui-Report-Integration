@@ -18,6 +18,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
+import gtmAnalytics from '../../shared/utils/analytics';
 import { homepageVideoOrgView } from "../../Layout";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
@@ -92,27 +93,20 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   };
 
   function handlePlay() {
-    console.log("The video was just played!");
-  };
-
-  function handleOnEnded() {
-    console.log("The video has ended!");
-  };
+    gtmAnalytics.pushEvent({ event: "playVideo" });
+    console.log("POST API called: isPlayed set to true for next session");
+  }
 
   function handleOnPause() {
-    console.log("the video has paused.");
+    gtmAnalytics.pushEvent({ event: "pausedVideo" });
+    console.log("The video has paused.");
   }
- const isShowVideo = true;
-  // function closePlayer() {
-  //   if (playerRef.current) {
-  //     // playerRef.current.pause(); // Optional: pause the video
-  //   }
-  //   setIsVisible(false); // Hide the component
-  // }
 
-  // function openPlayer() {
-  //   setIsVisible(true);
-  // }
+  function handleOnEnded() {
+    gtmAnalytics.pushVideoEvent(100);
+    console.log("The video has ended!");
+  }
+  const isShowVideo = true;
 
   return (
     <div>
@@ -177,19 +171,19 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         ) && (
           <>
             <SltViewBett />
-            <div className={isShowVideo? "new-divider-spacing wistia-class" : "new-divider-spacing"}>
+            <div className={isShowVideo ? "new-divider-spacing wistia-class" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>
         )}
 
       {(homepageVideoOrgView && isShowVideo) ? (
-      <div className="wistia-palyer-video-class">
-        <WistiaPlayer mediaId="w9mg776ol6"
-          onPlay={() => handlePlay()}
-          onEnded={() => handleOnEnded()}
-          onPause={() => handleOnPause()} />
-      </div>
+        <div className="wistia-palyer-video-class">
+          <WistiaPlayer mediaId="w9mg776ol6"
+            onPlay={() => handlePlay()}
+            onEnded={() => handleOnEnded()}
+            onPause={() => handleOnPause()} />
+        </div>
       ) : null}
 
       <div className="sims-section-footer c-clear-padding">
