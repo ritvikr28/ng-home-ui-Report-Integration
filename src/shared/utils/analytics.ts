@@ -12,6 +12,7 @@ type gtmAnalyticsType = {
   pushPageViewEvent: (pageType?: string) => void;
   pushLogInEvent: () => void;
   pushEvent: (events: object) => void;
+  pushVideoEvent: (videoEngagement: number) => void;
 };
 
 window.dataLayer = window.dataLayer || [];
@@ -56,7 +57,14 @@ const gtmAnalytics: gtmAnalyticsType = {
     if (window.dataLayer !== null) {
       window.dataLayer.push(events);
     }
-  }
+  },
+
+  pushVideoEvent: (percent: number) => {
+    window.dataLayer.push({
+      event: "stopVideo",
+      videoEngagement: percent
+    });
+  },
 };
 
 export default gtmAnalytics;
