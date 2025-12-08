@@ -91,9 +91,6 @@ export const HomePageVideoFlagr: boolean = hasFeaturePermission(
   "HomePageVideoFlag"
 );
 
-export const homepageVideoOrgView: boolean =
-  isOrganisationInVariant("HomePageVideoFlag") || false;
-
 export const homepageVideoOrgViewExcluded: boolean =
   isOrganisationExcludedInVariant("HomePageVideoFlag") || false;
 
@@ -242,7 +239,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-  console.log("HomePageVideoFlagr in Layout", { HomePageVideoFlagr, homepageVideoOrgView, homepageVideoOrgViewExcluded, orgId: getUserOrganisation() });
+  console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewExcluded, orgId: getUserOrganisation() });
 
   return (
     /* eslint-disable react/prop-types */

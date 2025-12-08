@@ -48,7 +48,6 @@ const pilotReady: (flagName: string, variantType: string) => boolean = (
   flagName: string,
   variantType: string
 ): any => {
-  console.info('pilotReady included called', { flagName, variantType, userOrganisation });
   const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`,flagName);
 
   if (pilotReadyOrg?.enabled) {
@@ -75,28 +74,25 @@ const pilotReadyForExcluded: (flagName: string, variantType: string) => boolean 
   flagName: string,
   variantType: string
 ): any => {
-  console.info('pilotReady excluded called', { flagName, variantType, userOrganisation });
   const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(`${envConfig.APPLICATION}`, flagName);
   if (pilotReadyOrg?.enabled) {
     const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
       getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
-
-      console.info('variantAttachmentPayload excluded', variantAttachmentPayload);
     if (
       variantAttachmentPayload &&
       variantAttachmentPayload.ExcludeOrganisations.length > 0
     ) {
-      const isExcludedOrganisation: string | undefined =
+      const isExcludedOrganisation: boolean | string | undefined =
         variantAttachmentPayload.ExcludeOrganisations.find(
           x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
         );
       if (isExcludedOrganisation === undefined) {
         return true;
       }
-      return isExcludedOrganisation && false;
+      return false;
     }
   }
-  return true;
+  return false;
 };
 
 
