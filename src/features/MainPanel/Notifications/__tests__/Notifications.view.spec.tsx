@@ -99,6 +99,19 @@ const mockUseNotificationBase = {
     selectedNotificationIds: [],
     isNoSelectionDialogOpen: false,
     closeNoSelectionDialog: jest.fn(),
+    searchTerm: "",
+    handleSearchChange: jest.fn(),
+    handleClearSearch: jest.fn(),
+    noResults: false,
+    filters: {},
+    handleFilterChange: jest.fn(),
+    handleRemoveFilter: jest.fn(),
+    handleClearAllFilters: jest.fn(),
+    searchTagList: [],
+    sortBy: "Date received",
+    sortDirection: "desc" as const,
+    handleSort: jest.fn(),
+    isNoSelectionMode: false,
 };
 
 type UseNotificationOverrides = Partial<Record<keyof typeof mockUseNotificationBase, unknown>>;
@@ -444,5 +457,757 @@ describe("NotificationView state management and logic coverage", () => {
         expect(handleSelectAllChange).toHaveBeenCalledWith(selectEvent, ["a", "b"]);
         expect(controlledListProps.selectedCheckboxIds).toBe(mockUseNotification.handleSelectedCheckboxIds);
         expect(controlledListProps.isClearSelectedCheckbox).toBe(mockUseNotification.isClearSelectedCheckbox);
+    });
+});
+
+describe("NotificationView - tableRows and visibleNotificationIds", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should generate tableRows with existing id", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [{ notification: "Test", id: "existing-id" }],
+                currentPage: 1,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { tableBodyData } = controlledListProps;
+
+        expect(tableBodyData[0].id).toBe("existing-id");
+    });
+
+    it("should generate tableRows with Id (capital I)", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [{ notification: "Test", Id: "capital-id" }],
+                currentPage: 1,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { tableBodyData } = controlledListProps;
+
+        expect(tableBodyData[0].id).toBe("capital-id");
+    });
+
+    it("should generate fallback id when neither id nor Id exists", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [{ notification: "Test" }],
+                currentPage: 2,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { tableBodyData } = controlledListProps;
+
+        expect(tableBodyData[0].id).toBe("notification-2-0");
+    });
+
+    it("should generate visibleNotificationIds from tableRows", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [
+                    { notification: "Test1", id: "id1" },
+                    { notification: "Test2", id: "id2" }
+                ],
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        const selectEvent = { target: { checked: true } };
+        controlledListProps.onChangeAllCheckBox(selectEvent);
+
+        expect(mockUseNotification.handleSelectAllChange).toHaveBeenCalledWith(selectEvent, ["id1", "id2"]);
+    });
+});
+
+describe("NotificationView - handleBulkDeleteSelection", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should call handleBulkAction with selectedItem and visibleNotificationIds", () => {
+        const handleBulkActionMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                paginatedNotifications: [
+                    { notification: "Test1", id: "id1" },
+                    { notification: "Test2", id: "id2" }
+                ],
+                handleBulkAction: handleBulkActionMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        const selectedItem = { value: "Delete" };
+        controlledListProps.onEditSelectedOverFlowMenu(null, selectedItem);
+
+        expect(handleBulkActionMock).toHaveBeenCalledWith(selectedItem, ["id1", "id2"]);
+    });
+});
+
+describe("NotificationView - handleCloseDeleteDialog", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should call closeDeleteDialog and blur active element", () => {
+        const closeDeleteDialogMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                closeDeleteDialog: closeDeleteDialogMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        const mockBlur = jest.fn();
+        const mockActiveElement = document.createElement('div');
+        mockActiveElement.blur = mockBlur;
+
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
+
+        deleteModalProps.onClose();
+
+        expect(closeDeleteDialogMock).toHaveBeenCalled();
+        expect(mockBlur).toHaveBeenCalled();
+
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
+    });
+
+    it("should handle case when activeElement is not HTMLElement", () => {
+        const closeDeleteDialogMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                closeDeleteDialog: closeDeleteDialogMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        const mockActiveElement = document.createElement('svg');
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
+
+        deleteModalProps.onClose();
+
+        expect(closeDeleteDialogMock).toHaveBeenCalled();
+
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
+    });
+});
+
+describe("NotificationView - handleConfirmDelete", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should call confirmDelete and blur active element", async () => {
+        const confirmDeleteMock = jest.fn().mockResolvedValue(undefined);
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                isNoSelectionMode: false,
+                confirmDelete: confirmDeleteMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        const mockBlur = jest.fn();
+        const mockActiveElement = document.createElement('div');
+        mockActiveElement.blur = mockBlur;
+
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
+
+        await act(async () => {
+            await deleteModalProps.onConfirm();
+        });
+
+        expect(confirmDeleteMock).toHaveBeenCalled();
+        expect(mockBlur).toHaveBeenCalled();
+
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
+    });
+
+    it("should handle case when activeElement is not HTMLElement in confirmDelete", async () => {
+        const confirmDeleteMock = jest.fn().mockResolvedValue(undefined);
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                isNoSelectionMode: false,
+                confirmDelete: confirmDeleteMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        const mockActiveElement = document.createElement('svg');
+        const originalActiveElement = Object.getOwnPropertyDescriptor(document, 'activeElement');
+        Object.defineProperty(document, 'activeElement', {
+            get: () => mockActiveElement,
+            configurable: true,
+        });
+
+        await act(async () => {
+            await deleteModalProps.onConfirm();
+        });
+
+        expect(confirmDeleteMock).toHaveBeenCalled();
+
+        if (originalActiveElement) {
+            Object.defineProperty(document, 'activeElement', originalActiveElement);
+        } else {
+            delete (document as any).activeElement;
+        }
+    });
+});
+
+describe("NotificationView - shouldShowPagination", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should show pagination when all conditions are met", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalPages: 5,
+                paginatedNotifications: [{ notification: "Test", id: 1 }],
+                noResults: false,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isPagination).toBe(true);
+    });
+
+    it("should not show pagination when totalPages is 1", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalPages: 1,
+                paginatedNotifications: [{ notification: "Test", id: 1 }],
+                noResults: false,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isPagination).toBe(false);
+    });
+
+    it("should not show pagination when paginatedNotifications is empty", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalPages: 5,
+                paginatedNotifications: [],
+                noResults: false,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isPagination).toBe(false);
+    });
+
+    it("should not show pagination when noResults is true", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalPages: 5,
+                paginatedNotifications: [{ notification: "Test", id: 1 }],
+                noResults: true,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isPagination).toBe(false);
+    });
+});
+
+describe("NotificationView - useEffect body class", () => {
+    beforeEach(() => {
+        document.body.classList.remove('no-scroll');
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should add no-scroll class to body on mount", () => {
+        render(<NotificationView />);
+        expect(document.body.classList.contains('no-scroll')).toBe(true);
+    });
+});
+
+describe("NotificationView - searchOnClickClose", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should call handleRemoveFilter for status when closeObj.id is 1", () => {
+        const handleRemoveFilterMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleRemoveFilter: handleRemoveFilterMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnClickClose(null, "text", { id: 1, value: "read" });
+
+        expect(handleRemoveFilterMock).toHaveBeenCalledWith('status', 'read');
+    });
+
+    it("should call handleRemoveFilter for priority when closeObj.id is 2", () => {
+        const handleRemoveFilterMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleRemoveFilter: handleRemoveFilterMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnClickClose(null, "text", { id: 2, value: "high" });
+
+        expect(handleRemoveFilterMock).toHaveBeenCalledWith('priority', 'high');
+    });
+
+    it("should call handleRemoveFilter for startDate when closeObj.id is 3", () => {
+        const handleRemoveFilterMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleRemoveFilter: handleRemoveFilterMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnClickClose(null, "text", { id: 3 });
+
+        expect(handleRemoveFilterMock).toHaveBeenCalledWith('startDate');
+    });
+
+    it("should call handleRemoveFilter for startDate when closeObj.name is Date", () => {
+        const handleRemoveFilterMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleRemoveFilter: handleRemoveFilterMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnClickClose(null, "text", { name: 'Date' });
+
+        expect(handleRemoveFilterMock).toHaveBeenCalledWith('startDate');
+    });
+
+    it("should call handleClearSearch when closeObj is not provided", () => {
+        const handleClearSearchMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleClearSearch: handleClearSearchMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnClickClose(null);
+
+        expect(handleClearSearchMock).toHaveBeenCalled();
+    });
+});
+
+describe("NotificationView - addEditTemplateChild", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should render notification text when selectedItem exists", () => {
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        let controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        const tableHeadersData = controlledListProps.tableHeadersData as Array<{ onClick: () => void }>;
+        tableHeadersData[0].onClick();
+
+        controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { getByText } = render(<>{controlledListProps.addEditTemplateChild()}</>);
+
+        expect(getByText("TestNotification")).toBeInTheDocument();
+        expect(getByText(/The role Headteacher has been updated/)).toBeInTheDocument();
+    });
+
+    it("should render null for notification text when selectedItem is null", () => {
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+        const { container } = render(<>{controlledListProps.addEditTemplateChild()}</>);
+
+        const notificationDiv = container.querySelector('div[style*="font-size: 20px"]');
+        expect(notificationDiv?.textContent).toBe("");
+    });
+});
+
+describe("NotificationView - ControlledList props", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should pass all ControlledList props correctly", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                searchTerm: "test",
+                noResults: false,
+                totalNotifications: 5,
+                sortBy: "Date received",
+                sortDirection: "desc",
+                searchTagList: [{ text: "Test", categoryName: "Status", closeObj: { name: "Test", id: 1 } }],
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.tooltipBottomAligned).toBe(true);
+        expect(controlledListProps.isAddEventBtnShow).toBe(false);
+        expect(controlledListProps.filterDDLOptions).toEqual([]);
+        expect(controlledListProps.isShowSearch).toBe(true);
+        expect(controlledListProps.searchTerm).toBe("test");
+        expect(controlledListProps.isShowFirstElement).toBe(true);
+        expect(controlledListProps.isShowFourthElement).toBe(true);
+        expect(controlledListProps.editSelectedBtnTitle).toBe("Edit selected");
+        expect(controlledListProps.emptyStateMsg).toBe("No notifications to display");
+        expect(controlledListProps.groupTagsEnabled).toBe(true);
+        expect(controlledListProps.headingText).toBe("Notification Centre");
+        expect(controlledListProps.id).toBe("controlled-list");
+        expect(controlledListProps.isBreadCrumbEnable).toBe(false);
+        expect(controlledListProps.isOnCloseSidepnl).toBe(true);
+        expect(controlledListProps.lastColContentAlign).toBe("center");
+        expect(controlledListProps.lastColHeaderAlign).toBe("center");
+        expect(controlledListProps.paginationMinCountToHideNextPreviousBtn).toBe(0);
+        expect(controlledListProps.isShowPrimaryBtn).toBe(false);
+        expect(controlledListProps.resultNotFoundMessage).toBe("");
+        expect(controlledListProps.showConfirmDialog).toBe(true);
+        expect(controlledListProps.subHeadingText).toBe("");
+        expect(controlledListProps.tableFirstColumnWidth).toBe("10px");
+        expect(controlledListProps.tableLastColumnWidth).toBe("10px");
+        expect(controlledListProps.sortByDefault).toBe(true);
+        expect(controlledListProps.sortAscFirst).toBe(false);
+        expect(controlledListProps.isOpenConfirmationDialog).toBe(false);
+        expect(controlledListProps.isIconRightAligned).toBe(true);
+        expect(controlledListProps.isShowOverflowMenuCol).toBe(false);
+        expect(controlledListProps.searchHeadingText).toBe("Search by notification title");
+        expect(controlledListProps.isSearchHideClearIcon).toBe(true);
+        expect(controlledListProps.dynamicTableLoader).toBe(false);
+        expect(controlledListProps.sidePanelTitle).toBe("View");
+        expect(controlledListProps.sidePanelSubTitle).toBe("");
+        expect(controlledListProps.secondaryButtonTitle).toBe("Close");
+        expect(controlledListProps.isShowCheckboxCol).toBe(true);
+        expect(controlledListProps.isShowThirdElement).toBe(true);
+        expect(controlledListProps.emptyRowResponseCode).toBe("error");
+        expect(controlledListProps.showToastNotification).toBe(false);
+        expect(controlledListProps.toastNotificationStatus).toBe("successToast");
+        expect(controlledListProps.toastNotificationTitle).toBe("Notifications deleted");
+        expect(controlledListProps.searchTagList).toHaveLength(1);
+    });
+
+    it("should pass emptyStateMsg based on noResults", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                noResults: true,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.emptyStateMsg).toBe("No notifications match your search.");
+    });
+
+    it("should pass isShowdynamictableNoMsg based on totalNotifications and noResults", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                totalNotifications: 0,
+                noResults: false,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isShowdynamictableNoMsg).toBe(true);
+    });
+
+    it("should pass emptyRowResponseMessage based on noResults", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                noResults: true,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.emptyRowResponseMessage).toBe("No notifications match your search.");
+    });
+
+    it("should pass isSearchHideClearIcon based on searchTerm length", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                searchTerm: "te",
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.isSearchHideClearIcon).toBe(false);
+    });
+
+    it("should pass sortAscFirst when sortDirection is asc", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                sortBy: "Priority",
+                sortDirection: "asc",
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.sortAscFirst).toBe(true);
+    });
+
+    it("should call handleSort when sortingOnClickEvent is triggered", () => {
+        const handleSortMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleSort: handleSortMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.sortingOnClickEvent(null, "Priority");
+
+        expect(handleSortMock).toHaveBeenCalledWith("Priority");
+    });
+
+    it("should call handleSearchChange when searchOnChange is triggered", () => {
+        const handleSearchChangeMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleSearchChange: handleSearchChangeMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnChange({ target: { value: "test search" } });
+
+        expect(handleSearchChangeMock).toHaveBeenCalledWith("test search");
+    });
+
+    it("should call handleClearSearch when searchOnCloseHandle is triggered", () => {
+        const handleClearSearchMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                handleClearSearch: handleClearSearchMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        controlledListProps.searchOnCloseHandle();
+
+        expect(handleClearSearchMock).toHaveBeenCalled();
+    });
+});
+
+describe("NotificationView - FilterDialogLogic props", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should pass correct props to FilterDialogLogic", () => {
+        const setFilterBtnClickedMock = jest.fn();
+        const handleFilterChangeMock = jest.fn();
+        const handleClearAllFiltersMock = jest.fn();
+        const filtersMock = { status: ["read"] };
+
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                filterBtnClicked: true,
+                setFilterBtnClicked: setFilterBtnClickedMock,
+                filters: filtersMock,
+                handleFilterChange: handleFilterChangeMock,
+                handleClearAllFilters: handleClearAllFiltersMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const filterDialog = screen.getByTestId("filter-dialog");
+
+        expect(filterDialog).toBeInTheDocument();
+    });
+});
+
+describe("NotificationView - DeleteConfirmationModalLogic props", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should pass correct props to DeleteConfirmationModalLogic", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                selectedCount: 3,
+                isDeleteLoading: false,
+                isNoSelectionMode: false,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        expect(deleteModalProps.isOpen).toBe(true);
+        expect(deleteModalProps.selectedCount).toBe(3);
+        expect(deleteModalProps.isLoading).toBe(false);
+        expect(deleteModalProps.isNoSelection).toBe(false);
+    });
+
+    it("should call handleCloseDeleteDialog when isNoSelectionMode is true", () => {
+        const closeDeleteDialogMock = jest.fn();
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                isDeleteDialogOpen: true,
+                isNoSelectionMode: true,
+                closeDeleteDialog: closeDeleteDialogMock,
+            })
+        );
+
+        render(<NotificationView />);
+        const deleteModalMock = getMockedDeleteModal();
+        const deleteModalProps = deleteModalMock.mock.calls[deleteModalMock.mock.calls.length - 1]?.[0];
+
+        deleteModalProps.onConfirm();
+
+        expect(closeDeleteDialogMock).toHaveBeenCalled();
+    });
+});
+
+describe("NotificationView - layout and structure", () => {
+    beforeEach(() => {
+        mockedUseNotification.mockClear();
+        mockedUseNotification.mockReturnValue(mockUseNotification);
+    });
+
+    it("should render with correct layout structure", () => {
+        const { container } = render(<NotificationView />);
+
+        expect(container.querySelector('.notification-layout')).toBeInTheDocument();
+        expect(container.querySelector('.notification-layout-header')).toBeInTheDocument();
+        expect(container.querySelector('.notification-controlledlist-width')).toBeInTheDocument();
+        expect(container.querySelector('.notification-filters-wrapper')).toBeInTheDocument();
+    });
+
+    it("should render tableWrapperRef with correct attributes", () => {
+        const { container } = render(<NotificationView />);
+        const tableWrapper = container.querySelector('.notification-controlledlist-width');
+
+        expect(tableWrapper).toHaveAttribute('tabIndex', '-1');
+        expect(tableWrapper).toHaveAttribute('aria-label', 'Notifications table');
     });
 });

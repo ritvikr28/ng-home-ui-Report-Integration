@@ -1,42 +1,69 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import FilterDialogView from "./FilterDialog.view";
 
-// const statusOptions = ["Read", "Unread"];
-// const priorityOptions = ["Low", "Medium", "High"];
+interface FilterDialogLogicProps {
+    setFilterBtnClicked: (val: boolean) => void;
+    filters: {
+        status?: string[];
+        priority?: string[];
+        startDate?: string;
+        endDate?: string;
+    };
+    onApply: (filters: {
+        status?: string[];
+        priority?: string[];
+        startDate?: string;
+        endDate?: string;
+    }) => void;
+    onClear: () => void;
+}
 
 const FilterDialogLogic = ({
-    // setFilterBtnClicked,
-    // filters = {},
-    // onApply,
-    // onClear
-}: {
-        // setFilterBtnClicked: (val: boolean) => void,
-        // filters?: any,
-        // onApply?: (filters: any) => void,
-        // onClear?: () => void
-    }) => {
-    const [status, setStatus] = useState("");
-    const [priority, setPriority] = useState("");
-    const [startDate, setStartDate] = useState("");
-    const [endDate, setEndDate] = useState("");
+    setFilterBtnClicked,
+    filters = {},
+    onApply,
+    onClear
+}: FilterDialogLogicProps) => {
+    const [status, setStatus] = useState<string[]>(filters.status || []);
+    const [priority, setPriority] = useState<string[]>(filters.priority || []);
+    const [startDate, setStartDate] = useState(filters.startDate || "");
+    const [endDate, setEndDate] = useState(filters.endDate || "");
 
-    // const handleApply = () => {
-    //     onApply?.({
-    //         status,
-    //         priority,
-    //         startDate,
-    //         endDate
-    //     });
-    //     setFilterBtnClicked(false);
-    // };
+    useEffect(() => {
+        setStatus(filters.status || []);
+        setPriority(filters.priority || []);
+        setStartDate(filters.startDate || "");
+        setEndDate(filters.endDate || "");
+    }, [filters]);
 
-    // const handleClear = () => {
-    //     setStatus("");
-    //     setPriority("");
-    //     setStartDate("");
-    //     setEndDate("");
-    //     onClear?.();
-    // };
+    const handleApply = () => {
+        onApply({
+            status: status.length > 0 ? status : undefined,
+            priority: priority.length > 0 ? priority : undefined,
+            startDate: startDate || undefined,
+            endDate: endDate || undefined
+        });
+        setFilterBtnClicked(false);
+    };
+
+    const handleClear = () => {
+        setStatus([]);
+        setPriority([]);
+        setStartDate("");
+        setEndDate("");
+        onApply({
+            status: undefined,
+            priority: undefined,
+            startDate: undefined,
+            endDate: undefined
+        });
+        onClear();
+        setFilterBtnClicked(false);
+    };
+
+    const handleClose = () => {
+        setFilterBtnClicked(false);
+    };
 
     return (
         <FilterDialogView
@@ -48,11 +75,9 @@ const FilterDialogLogic = ({
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
-        // onApply={handleApply}
-        // onClear={handleClear}
-        // onClose={() => setFilterBtnClicked(false)}
-        // statusOptions={statusOptions}
-        // priorityOptions={priorityOptions}
+            onApply={handleApply}
+            onClear={handleClear}
+            onClose={handleClose}
         />
     );
 };

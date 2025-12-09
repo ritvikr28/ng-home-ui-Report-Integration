@@ -10,8 +10,8 @@ export interface DialogContentProps {
     setStartDate: (date: string) => void;
     endDate: string;
     setEndDate: (date: string) => void;
-    status: string;
-    setStatus: (status: string) => void;
-    priority: string;
-    setPriority: (priority: string) => void;
+    status: string[];
+    setStatus: React.Dispatch<React.SetStateAction<string[]>>;
+    priority: string[];
+    setPriority: React.Dispatch<React.SetStateAction<string[]>>;
 }
