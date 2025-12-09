@@ -53,8 +53,8 @@ describe("getNotificationTableHeadersData", () => {
 });
 
 describe("notificationTableRows", () => {
-  it("should have 5 notifications", () => {
-    expect(notificationTableRows).toHaveLength(85);
+  it("should have 165 notifications", () => {
+    expect(notificationTableRows).toHaveLength(165);
   });
 
   it("should have required keys in each notification", () => {

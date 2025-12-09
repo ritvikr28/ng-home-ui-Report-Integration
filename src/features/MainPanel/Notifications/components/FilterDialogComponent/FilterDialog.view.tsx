@@ -3,23 +3,48 @@ import { Dialog, DialogContent, DialogFooter, Button, ButtonColor } from "@essne
 import { DialogContent as Content } from "./dialog-helper";
 import "./style.scss";
 
-const FilterDialogView = ({ status, setStatus, priority, setPriority, startDate, setStartDate, endDate, setEndDate }: {
-    // setFilterBtnClicked?: React.Dispatch<React.SetStateAction<boolean>>;
-    status: string;
-    setStatus: React.Dispatch<React.SetStateAction<string>>;
-    priority: string;
-    setPriority: React.Dispatch<React.SetStateAction<string>>;
+interface FilterDialogViewProps {
+    status: string[];
+    setStatus: React.Dispatch<React.SetStateAction<string[]>>;
+    priority: string[];
+    setPriority: React.Dispatch<React.SetStateAction<string[]>>;
     startDate: string;
     setStartDate: React.Dispatch<React.SetStateAction<string>>;
     endDate: string;
     setEndDate: React.Dispatch<React.SetStateAction<string>>;
-    // onApply?: () => void;
-    // onClear?: () => void;
-    // onClose?: () => void;
-    // statusOptions?: string[];
-    // priorityOptions?: string[];
-}) => {
+    onApply: () => void;
+    onClear: () => void;
+    onClose: () => void;
+}
+
+const FilterDialogView = ({ 
+    status, 
+    setStatus, 
+    priority, 
+    setPriority, 
+    startDate, 
+    setStartDate, 
+    endDate, 
+    setEndDate,
+    onApply,
+    onClear,
+    onClose
+}: FilterDialogViewProps) => {
     const [isDialogOpen, setIsDialogOpen] = React.useState(true);
+
+    const handleClose = () => {
+        setIsDialogOpen(false);
+        onClose();
+    };
+
+    const handleApply = () => {
+        onApply();
+        setIsDialogOpen(false);
+    };
+
+    const handleClear = () => {
+        onClear();
+    };
 
     return (
         <>
@@ -30,34 +55,37 @@ const FilterDialogView = ({ status, setStatus, priority, setPriority, startDate,
                 escapeExits
                 returnFocusOnDeactivate
                 id="element-id"
-                onClose={() => {
-                    // setFilterBtnClicked && setFilterBtnClicked(false);
-                    setIsDialogOpen(false)
-                }}
+                onClose={handleClose}
                 title="Filter by"
             >
                 <DialogContent>
-                    <Content startDate={startDate} setStartDate={setStartDate} endDate={endDate} setEndDate={setEndDate} status={status} setStatus={setStatus} priority={priority} setPriority={setPriority} />
+                    <Content 
+                        startDate={startDate} 
+                        setStartDate={setStartDate} 
+                        endDate={endDate} 
+                        setEndDate={setEndDate} 
+                        status={status} 
+                        setStatus={setStatus} 
+                        priority={priority} 
+                        setPriority={setPriority}
+                    />
                 </DialogContent>
                 <DialogFooter>
-                    <div className="dialog-footer" style={{ display: "flex", gap: "10px", width: "100%", flexDirection: "row-reverse" }}>
+                    <div className="dialog-footer" style={{ display: "flex", gap: "24px", width: "100%", flexDirection: "row-reverse" }}>
                         <Button
-                            dataTestId="close-btn"
-                            onClick={() => {
-                                console.log("Apply button clicked--------------", { startDate, endDate, status, priority });
-                            }}
+                            dataTestId="apply-btn"
+                            onClick={handleApply}
                             color={ButtonColor.Primary}
                         >
                             Apply
                         </Button>
                         <Button
-                            dataTestId="close-btn"
-                            onClick={() => { }}
+                            dataTestId="clear-all-btn"
+                            onClick={handleClear}
                             color={ButtonColor.Secondary}
                         >
                             Clear all
                         </Button>
-
                     </div>
                 </DialogFooter>
             </Dialog>

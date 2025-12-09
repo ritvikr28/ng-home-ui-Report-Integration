@@ -103,11 +103,11 @@ body {
   }
 }
 
-.notification-controlledlist-width #filtertool-id {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-}
+// .notification-controlledlist-width #filtertool-id {
+//   display: flex;
+//   justify-content: flex-start;
+//   align-items: center;
+// }
 
 .notification-layout .filter-tool-view #search-autocomplete .icon-container.position-right {
   margin-right: 10px;
@@ -154,11 +154,11 @@ body {
 
 
 
-  .notification-controlledlist-width #filtertool-id {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-  }
+  // .notification-controlledlist-width #filtertool-id {
+  //   display: flex;
+  //   justify-content: flex-start;
+  //   align-items: center;
+  // }
 
 }
 
@@ -208,4 +208,10 @@ body {
 
 .delete-confirmation-content .essui-notification {
   width: 100% !important;
+}
+
+@media (min-width: 1025px) {
+  .notification-controls {
+    margin-top: 24px;
+  }
 }

@@ -18,7 +18,7 @@ const NotificationView = () => {
         totalNotifications,
         handlePageChange,
         searchTerm,
-        handleSearchChange, // Removed as it is not defined in useNotification
+        handleSearchChange,
         handleClearSearch,
         noResults,
         handleListCheckboxChange,
@@ -32,7 +32,15 @@ const NotificationView = () => {
         showDeleteToast,
         isClearSelectedCheckbox,
         selectedCount,
-        isNoSelectionMode
+        isNoSelectionMode,
+        filters,
+        handleFilterChange,
+        handleRemoveFilter,
+        handleClearAllFilters,
+        searchTagList,
+        sortBy,
+        sortDirection,
+        handleSort
     } = useNotification();
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
@@ -99,40 +107,53 @@ const NotificationView = () => {
                         tabIndex={-1}
                         aria-label="Notifications table"
                     >
-                        <ControlledList
-                            tooltipBottomAligned={true}
-                            data-testid="controlled-list"
-                            globalNotificationMsgBannerObject={
-                                null
-                            }
-                            isAddEventBtnShow={false}
-                            dataTestId="controlled-list-test-id"
-                            filterDDLOptions={[]}
-                            isShowSearch={true}
+                        <div className="notification-filters-wrapper">
+                            <ControlledList
+                                tooltipBottomAligned={true}
+                                data-testid="controlled-list"
+                                globalNotificationMsgBannerObject={
+                                    null
+                                }
+                                isAddEventBtnShow={false}
+                                dataTestId="controlled-list-test-id"
+                                filterDDLOptions={[]}
+                                isShowSearch={true}
                             searchTerm={searchTerm}
                             searchOnChange={(e) => handleSearchChange(e.target.value)}
-                            searchOnClickClose={handleClearSearch}
+                            searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
+                                if (closeObj) {
+                                    if (closeObj.id === 1) {
+                                        handleRemoveFilter('status', closeObj.value);
+                                    } else if (closeObj.id === 2) {
+                                        handleRemoveFilter('priority', closeObj.value);
+                                    } else if (closeObj.id === 3 || closeObj.name === 'Date') {
+                                        handleRemoveFilter('startDate');
+                                    }
+                                } else {
+                                    handleClearSearch();
+                                }
+                            }}
                             searchOnCloseHandle={handleClearSearch}
-                            isShowFirstElement={true}
-                            isShowFourthElement={true}
-                            filterCustumeElem2={
-                                <div className="notification-controls">
-                                    <Button
-                                        className="base-class"
-                                        color={ButtonColor.Utility}
-                                        data-testid="filter"
-                                        onClick={() => {
-                                            setFilterBtnClicked(true)
-                                        }}
-                                        size={ButtonSize.Small}
-                                        iconName="filter"
-                                        iconColor={IconColor.Neutral800}
-                                        iconPosition={ButtonIconPosition.Right}
-                                    >
-                                        Filter
-                                    </Button>
-                                </div>
-                            }
+                                isShowFirstElement={true}
+                                isShowFourthElement={true}
+                                filterCustumeElem2={
+                                    <div className="notification-controls">
+                                        <Button
+                                            className="base-class"
+                                            color={ButtonColor.Utility}
+                                            data-testid="filter"
+                                            onClick={() => {
+                                                setFilterBtnClicked(true)
+                                            }}
+                                            size={ButtonSize.Small}
+                                            iconName="filter"
+                                            iconColor={IconColor.Neutral800}
+                                            iconPosition={ButtonIconPosition.Right}
+                                        >
+                                            Filter
+                                        </Button>
+                                    </div>
+                                }
                             editSelectedBtnTitle="Edit selected"
                             editSelectedOptions={[
                                 {
@@ -166,6 +187,11 @@ const NotificationView = () => {
                             tableFirstColumnWidth="10px"
                             tableHeadersData={getNotificationTableHeadersData(setSideIsOpen, setSelectedItem) as any}
                             tableLastColumnWidth="10px"
+                            sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
+                                handleSort(columnName);
+                            }}
+                            sortByDefault={sortBy === "Date received" && sortDirection === "desc"}
+                            sortAscFirst={sortDirection === "asc"}
                             templatePropsConfirmation={{
                                 cancelText: "Cancel",
                                 contentText: "You have unsaved changes that will be lost.",
@@ -211,14 +237,23 @@ const NotificationView = () => {
                             showToastNotification={showDeleteToast}
                             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
                             toastNotificationTitle="Notifications deleted"
+                            searchTagList={searchTagList}
                         />
+                        </div>
                         <NotificationSidePanelView
                             sideIsOpen={sideIsOpen}
                             setSideIsOpen={setSideIsOpen}
                             selectedItem={selectedItem}
                         />
                     </div>
-                    {filterBtnClicked && <FilterDialogLogic />}
+                    {filterBtnClicked && (
+                        <FilterDialogLogic 
+                            setFilterBtnClicked={setFilterBtnClicked}
+                            filters={filters}
+                            onApply={handleFilterChange}
+                            onClear={handleClearAllFilters}
+                        />
+                    )}
 
                     <DeleteConfirmationModalLogic
                         isOpen={isDeleteDialogOpen}
