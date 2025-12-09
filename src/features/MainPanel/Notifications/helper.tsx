@@ -254,7 +254,8 @@ export const generateNotificationData = (): {
     { text: "New student recognition program launched", priority: "High" },
     { text: "School improvement plan published", priority: "Low" },
     { text: "New student engagement initiatives", priority: "Medium" },
-    { text: "School sustainability program update", priority: "Low" }
+    { text: "School sustainability program update", priority: "Low" },
+    ...Array(41).fill({ text: "Staff training on new assessment tools", priority: "Medium" })
   ];
 
   const statuses = ["Read", "Unread"];
