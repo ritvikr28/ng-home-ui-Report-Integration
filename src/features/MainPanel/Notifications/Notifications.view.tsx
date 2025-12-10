@@ -16,10 +16,12 @@ const NotificationView = () => {
         totalPages,
         paginatedNotifications,
         totalNotifications,
+        totalOriginalNotifications,
         handlePageChange,
         searchTerm,
         handleSearchChange,
         handleClearSearch,
+        isSearching,
         noResults,
         handleListCheckboxChange,
         handleSelectAllChange,
@@ -46,6 +48,15 @@ const NotificationView = () => {
     const [selectedItem, setSelectedItem] = React.useState<any>(null);
     const tableWrapperRef = React.useRef<HTMLDivElement>(null);
     const getNotificationId = React.useCallback((notification: any) => notification?.id ?? notification?.Id, []);
+
+    const hasActiveFilters = React.useMemo(() => 
+        (filters.status && filters.status.length > 0) || 
+        (filters.priority && filters.priority.length > 0) || 
+        filters.startDate || 
+        filters.endDate
+    , [filters]);
+
+    const hasSearch = React.useMemo(() => searchTerm.trim().length > 0, [searchTerm]);
 
     const tableRows = React.useMemo(
         () =>
@@ -80,6 +91,19 @@ const NotificationView = () => {
     };
 
     const shouldShowPagination = totalPages > 1 && paginatedNotifications.length > 0 && !noResults;
+
+    const getEmptyStateMessage = () => {
+        if (totalOriginalNotifications === 0 && !isSearching) {
+            return "No data to display";
+        }
+        if (totalNotifications === 0 && !isSearching && hasSearch) {
+            return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+        }
+        if (totalNotifications === 0 && !isSearching && hasActiveFilters) {
+            return "No notifications found for selected filters.";
+        }
+        return "";
+    };
 
     useEffect(() => {
         document.body.classList.add('no-scroll')
@@ -165,7 +189,7 @@ const NotificationView = () => {
                             ]}
                             onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
                             onEditSelectedBtnClick={() => { }}
-                            emptyStateMsg={noResults ? "No notifications match your search." : "No notifications to display"}
+                            emptyStateMsg={getEmptyStateMessage()}
                             onAddEventBtnClick={() => { }}
                             groupTagsEnabled
                             headingText="Notification Centre"
@@ -180,7 +204,7 @@ const NotificationView = () => {
 
                             paginationMinCountToHideNextPreviousBtn={0}
                             isShowPrimaryBtn={false}
-                            resultNotFoundMessage=""
+                            resultNotFoundMessage={noResults && searchTerm.trim() ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.` : ""}
                             showConfirmDialog
                             subHeadingText=""
                             tableBodyData={tableRows as any}
@@ -223,9 +247,9 @@ const NotificationView = () => {
                             secondaryButtonTitle="Close"
                             isShowCheckboxCol={true}
                             isShowThirdElement={true}
-                            isShowdynamictableNoMsg={totalNotifications === 0 || noResults}
-                            emptyRowResponseMessage={noResults ? "No notifications match your search." : "No notifications to display"}
-                            emptyRowResponseCode={ResponseCode.Error}
+                            isShowdynamictableNoMsg={(totalNotifications === 0 || noResults) && !isSearching}
+                            emptyRowResponseMessage={getEmptyStateMessage()}
+                            emptyRowResponseCode={ResponseCode.Info}
                             isPagination={shouldShowPagination}
                             paginationCount={totalPages}
                             paginationOnChange={handlePageChange}
@@ -236,7 +260,7 @@ const NotificationView = () => {
                             isClearSelectedCheckbox={isClearSelectedCheckbox}
                             showToastNotification={showDeleteToast}
                             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
-                            toastNotificationTitle="Notifications deleted"
+                            toastNotificationTitle="Notification deleted"
                             searchTagList={searchTagList}
                         />
                         </div>

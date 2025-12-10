@@ -39,7 +39,7 @@ jest.mock("@essnextgen/ui-kit", () => {
         Button: MockButton,
         NotificationStatus: { SUCCESS: "success", SUCCESSTOAST: "successToast" },
         DialogTemplate: { Confirmation: "confirmation" },
-        ResponseCode: { Error: "error" },
+        ResponseCode: { Error: "error", Info: "info" },
         ButtonColor: { Utility: "utility" },
         ButtonSize: { Small: "small" },
         IconColor: { Neutral800: "neutral800" },
@@ -84,6 +84,7 @@ const mockUseNotificationBase = {
     totalPages: 1,
     paginatedNotifications: [{ notification: "TestNotification", id: 1 }],
     totalNotifications: 1,
+    totalOriginalNotifications: 1,
     handlePageChange: jest.fn(),
     handleListCheckboxChange: jest.fn(),
     handleSelectAllChange: jest.fn(),
@@ -102,6 +103,7 @@ const mockUseNotificationBase = {
     searchTerm: "",
     handleSearchChange: jest.fn(),
     handleClearSearch: jest.fn(),
+    isSearching: false,
     noResults: false,
     filters: {},
     handleFilterChange: jest.fn(),
@@ -936,6 +938,8 @@ describe("NotificationView - ControlledList props", () => {
                 searchTerm: "test",
                 noResults: false,
                 totalNotifications: 5,
+                totalOriginalNotifications: 5,
+                isSearching: false,
                 sortBy: "Date received",
                 sortDirection: "desc",
                 searchTagList: [{ text: "Test", categoryName: "Status", closeObj: { name: "Test", id: 1 } }],
@@ -954,7 +958,7 @@ describe("NotificationView - ControlledList props", () => {
         expect(controlledListProps.isShowFirstElement).toBe(true);
         expect(controlledListProps.isShowFourthElement).toBe(true);
         expect(controlledListProps.editSelectedBtnTitle).toBe("Edit selected");
-        expect(controlledListProps.emptyStateMsg).toBe("No notifications to display");
+        expect(controlledListProps.emptyStateMsg).toBe("");
         expect(controlledListProps.groupTagsEnabled).toBe(true);
         expect(controlledListProps.headingText).toBe("Notification Centre");
         expect(controlledListProps.id).toBe("controlled-list");
@@ -982,10 +986,10 @@ describe("NotificationView - ControlledList props", () => {
         expect(controlledListProps.secondaryButtonTitle).toBe("Close");
         expect(controlledListProps.isShowCheckboxCol).toBe(true);
         expect(controlledListProps.isShowThirdElement).toBe(true);
-        expect(controlledListProps.emptyRowResponseCode).toBe("error");
+        expect(controlledListProps.emptyRowResponseCode).toBe("info");
         expect(controlledListProps.showToastNotification).toBe(false);
         expect(controlledListProps.toastNotificationStatus).toBe("successToast");
-        expect(controlledListProps.toastNotificationTitle).toBe("Notifications deleted");
+        expect(controlledListProps.toastNotificationTitle).toBe("Notification deleted");
         expect(controlledListProps.searchTagList).toHaveLength(1);
     });
 
@@ -993,6 +997,10 @@ describe("NotificationView - ControlledList props", () => {
         mockedUseNotification.mockReturnValue(
             buildUseNotificationValue({
                 noResults: true,
+                totalNotifications: 0,
+                totalOriginalNotifications: 5,
+                isSearching: false,
+                searchTerm: "test",
             })
         );
 
@@ -1000,7 +1008,7 @@ describe("NotificationView - ControlledList props", () => {
         const controlledListMock = getMockedControlledList();
         const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
 
-        expect(controlledListProps.emptyStateMsg).toBe("No notifications match your search.");
+        expect(controlledListProps.emptyStateMsg).toBe("Your search - test - did not match any results. Make sure that all words are spelled correctly.");
     });
 
     it("should pass isShowdynamictableNoMsg based on totalNotifications and noResults", () => {
@@ -1022,6 +1030,10 @@ describe("NotificationView - ControlledList props", () => {
         mockedUseNotification.mockReturnValue(
             buildUseNotificationValue({
                 noResults: true,
+                totalNotifications: 0,
+                totalOriginalNotifications: 5,
+                isSearching: false,
+                searchTerm: "test",
             })
         );
 
@@ -1029,7 +1041,7 @@ describe("NotificationView - ControlledList props", () => {
         const controlledListMock = getMockedControlledList();
         const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
 
-        expect(controlledListProps.emptyRowResponseMessage).toBe("No notifications match your search.");
+        expect(controlledListProps.emptyRowResponseMessage).toBe("Your search - test - did not match any results. Make sure that all words are spelled correctly.");
     });
 
     it("should pass isSearchHideClearIcon based on searchTerm length", () => {

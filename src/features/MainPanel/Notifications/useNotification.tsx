@@ -153,7 +153,17 @@ export const useNotification = () => {
 
         searchTimeout.current = setTimeout(() => {
             setIsSearching(false);
-            setNoResults(filteredRows.length === 0);
+            const hasSearchTerm = searchTerm.trim().length > 0;
+            const hasFilters = (filters.status && filters.status.length > 0) || 
+                              (filters.priority && filters.priority.length > 0) || 
+                              filters.startDate || 
+                              filters.endDate;
+            
+            if (filteredRows.length === 0 && (hasSearchTerm || hasFilters)) {
+                setNoResults(true);
+            } else {
+                setNoResults(false);
+            }
             setCurrentPage(1);
         }, 300);
 
@@ -171,6 +181,7 @@ export const useNotification = () => {
     }, [isClearSelectedCheckbox]);
 
     const totalNotifications = filteredRows.length;
+    const totalOriginalNotifications = notifications.length;
     const totalPages = totalNotifications > 0 ? Math.ceil(totalNotifications / PAGE_SIZE) : 1;
 
     useEffect(() => {
@@ -358,6 +369,7 @@ export const useNotification = () => {
 
     const handleClearSearch = () => {
         setSearchTerm("");
+        setNoResults(false);
         const hasActiveFilters = (filters.status && filters.status.length > 0) || (filters.priority && filters.priority.length > 0) || filters.startDate || filters.endDate;
         if (!hasActiveFilters) {
             setSortBy("Date received");
@@ -441,6 +453,7 @@ export const useNotification = () => {
         totalPages,
         paginatedNotifications,
         totalNotifications,
+        totalOriginalNotifications,
         handlePageChange,
         searchTerm,
         handleSearchChange,
