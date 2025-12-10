@@ -19,7 +19,7 @@ import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
-import { homepageVideoOrgViewExcluded } from "../../Layout";
+import { homepageVideoOrgViewIncluded } from "../../Layout";
 import gtmAnalytics from '../../shared/utils/analytics';
 // import { saveVideoPlayStatus } from '../../shared/services/videoPlayStatusSave';
 // import { fetchVideoPlayStatus } from "../../shared/services/videoPlayStatus";
@@ -203,7 +203,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {(homepageVideoOrgViewExcluded) ? (
+      {(homepageVideoOrgViewIncluded) ? (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}
