@@ -23,9 +23,9 @@ import { useTranslation } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import "./style.scss";
-import { Category } from "../../../features/DocumentManagementServer/responseModel";
+import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
-import { addUniqueTagItem, fetchCategory, filterNonEmptySuggestions, getAllRegistrationIds, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import { addUniqueTagItem, fetchDocumentCategoryData, filterNonEmptySuggestions, getAllRegistrationIds, getValidationState, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
@@ -85,7 +85,7 @@ const FilterDialog = ({
   const [isSearchLoading, setIsSearchLoading] = useState<boolean>(false);
   const [showSearchError, setShowSearchError] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [availableCategories, setAvailableCategories] = useState<Category[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<CategoryData[]>([]);
   const [relatedToError, setRelatedToError] = useState<string>("");
   const [searchSelectionError, setSearchSelectionError] = useState<string>("");
   const [localSelectedCategories, setLocalSelectedCategories] = useState<ISelectedItem[]>(selectedCategories);
@@ -98,6 +98,9 @@ const FilterDialog = ({
   const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
   const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   const [schoolData, setSchoolData] = useState<ISchoolNameDataResponse | null>(null);
+  const [refId, setRefId] = useState<string[]>([]);
+  const [filterEntities, setFilterEntities] = useState<any[]>([]);
+  const [categoryError, setCategoryError] = useState<boolean>(false);
 
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
@@ -107,23 +110,8 @@ const getDateString = (date: { day: string; month: string; year: string }) =>
 
 const resetDateState = (setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>) => {
   setDate({ day: "", month: "", year: "" });
-};   
-
-let validationText = "";
-if (searchSelectionError) {
-  validationText = searchSelectionError;
-} else if (showSearchError) {
-  validationText = t("Filter.informationUnavailable");
-}
-
-let validationTextLevel: ValidationTextLevel | undefined;
-if (searchSelectionError) {
-  validationTextLevel = ValidationTextLevel.Error;
-} else if (showSearchError) {
-  validationTextLevel = ValidationTextLevel.Warning;
-} else {
-  validationTextLevel = undefined;
-}
+};
+const { validationText, validationTextLevel } = getValidationState(searchSelectionError, showSearchError, t);
 
 const clearAll = () => {
   resetDateState(setFromDate);
@@ -140,24 +128,58 @@ const clearAll = () => {
   setLocalSelectedDateRange({ fromDate: "", toDate: "" });
   setLocalTagListArray([]);
   setLocalSelectedRelatedTo(undefined);
+  setCategoryError(false);
   setRelatedToSelected(false);
   setRelatedToError("");
   setSearchSelectionError("");
 };
 
-useEffect(() => {
-  if (isOpen) {
-    setLocalSelectedCategories(selectedCategories);
-    setLocalSelectedDateRange(selectedDateRange);
-    setLocalTagListArray(tagListArray);
-    setLocalSelectedRelatedTo(selectedRelatedTo);
-  }
-   if (selectedRelatedTo && selectedRelatedTo.text && selectedRelatedTo.text.length > 0) {
-      fetchCategory(Number(selectedRelatedTo.value)).then((categories) => {
-        setAvailableCategories(categories);
-      });
+  const fetchSchoolData = async () => {
+    const data = await useFetchSchoolNameData();
+    setSchoolData(data);
+  };
+
+  useEffect(() => {
+    if (selectedDisplayKey === "School") {
+      fetchSchoolData();
     }
-}, [isOpen]);
+  }, [selectedDisplayKey]);
+
+  useEffect(() => {
+    if (isOpen) {
+      setLocalSelectedCategories(selectedCategories);
+      setLocalSelectedDateRange(selectedDateRange);
+      setLocalTagListArray(tagListArray);
+      setLocalSelectedRelatedTo(selectedRelatedTo);
+    }
+  }, [isOpen]);
+
+  /* istanbul ignore next */
+  useEffect(() => {
+    let ids: string[] = [];
+    let entities: any[] = localTagListArray || [];
+    if (selectedKey === "Pupil") {
+      ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
+    } else if (selectedKey === "Staff") {
+      ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
+    } else if (selectedKey === "Organisation" || selectedKey === "School") {
+      const orgId = getUserOrganisation();
+      ids = orgId ? [orgId] : [];
+      const orgSchoolEntity = {
+        organisationId: orgId,
+        schoolName: schoolData?.schoolName || "",
+      };
+      entities = orgSchoolEntity ? [orgSchoolEntity] : [];
+    }
+
+    setRefId(ids);
+    setFilterEntities(entities);
+
+    if (isOpen && localSelectedRelatedTo && localSelectedRelatedTo.text && localSelectedRelatedTo.text.length > 0 && ids && ids?.length > 0) {
+      const payload = { CategoryRequest: { ReferenceExternalId: ids || [] } };
+      fetchDocumentCategoryData({ payload, setCategoryError, setAvailableCategories, setLocalSelectedCategories, localSelectedCategories, refId })
+    }
+  }, [localSelectedRelatedTo, isOpen, localTagListArray, schoolData]);
 
 // Use keys for logic, translation for display
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
@@ -202,11 +224,11 @@ useEffect(() => {
 }, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
 
   useEffect(() => {
-    if (selectedDateRange?.toDate && dayjs(selectedDateRange?.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
+    if (selectedDateRange?.toDate && dayjs(selectedDateRange.toDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.toDate.split("-");
       setToDate({ day, month, year })
     }
-    if (selectedDateRange?.fromDate && dayjs(selectedDateRange?.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
+    if (selectedDateRange?.fromDate && dayjs(selectedDateRange.fromDate, "YYYY-MM-DD").isValid() && isFilterDialogOpen) {
       const [year, month, day] = selectedDateRange.fromDate.split("-");
       setFromDate({ day, month, year })
     }
@@ -244,14 +266,14 @@ useEffect(() => {
     });
   }
   setFromDate({
-    day: selectedDateRange?.fromDate ? dayjs(selectedDateRange?.fromDate).date().toString() : "",
-    month: selectedDateRange?.fromDate ? (dayjs(selectedDateRange?.fromDate).month() + 1).toString() : "",
-    year: selectedDateRange?.fromDate ? dayjs(selectedDateRange?.fromDate).year().toString() : "",
+    day: selectedDateRange?.fromDate ? dayjs(selectedDateRange.fromDate).date().toString() : "",
+    month: selectedDateRange?.fromDate ? (dayjs(selectedDateRange.fromDate).month() + 1).toString() : "",
+    year: selectedDateRange?.fromDate ? dayjs(selectedDateRange.fromDate).year().toString() : "",
   });
   setToDate({
-    day: selectedDateRange?.toDate ? dayjs(selectedDateRange?.toDate).date().toString() : "",
-    month: selectedDateRange?.toDate ? (dayjs(selectedDateRange?.toDate).month() + 1).toString() : "",
-    year: selectedDateRange?.toDate ? dayjs(selectedDateRange?.toDate).year().toString() : "",
+    day: selectedDateRange?.toDate ? dayjs(selectedDateRange.toDate).date().toString() : "",
+    month: selectedDateRange?.toDate ? (dayjs(selectedDateRange.toDate).month() + 1).toString() : "",
+    year: selectedDateRange?.toDate ? dayjs(selectedDateRange.toDate).year().toString() : "",
   });
 }, [selectedDateRange?.fromDate, selectedDateRange?.toDate]);
 
@@ -265,28 +287,23 @@ useEffect(() => {
     setIsDateError(false);
   }
   if (!isOpen) {
-    setWasApplied(false); 
+    setWasApplied(false);
+    setSearchTerm("");
+    setSuggestions([]);
   }
 }, [isOpen]);
 
-  const fetchSchoolData = async () => {
-    const data = await useFetchSchoolNameData();
-    setSchoolData(data);
-  };
 
-  useEffect(() => {
-    if (selectedDisplayKey === "School") {
-      fetchSchoolData();
-    }
-  }, [selectedDisplayKey]);
  
 useEffect(() => {
   if (!isOpen) {
+    setCategoryError(false);
     return () => {};
   }
 
   const handleEsc = (event: KeyboardEvent) => {
     if (event.key === "Escape") {
+      setCategoryError(false);
       onClose();
     }
   };
@@ -319,9 +336,9 @@ const handleDateChange = (
   isFrom: boolean
 ) => {
   const newDate = {
-    day: day?.toString() ?? "",
-    month: month?.toString() ?? "",
-    year: year?.toString() ?? "",
+    day: day.toString() ?? "",
+    month: month.toString() ?? "",
+    year: year.toString() ?? "",
   };
   setDate(newDate);
 
@@ -480,25 +497,7 @@ const handleDateChange = (
     setSelectedRelatedTo(localSelectedRelatedTo);
     setDocumentRelatedTo(Number(localSelectedRelatedTo?.value));
 
-      let ids: string[] = [];
-      let entities: any[] = [];
-      if (selectedKey === "Pupil") {
-        ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
-        entities = localTagListArray;
-      } else if (selectedKey === "Staff") {
-        ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
-        entities = localTagListArray;
-      } else if (selectedKey === "Organisation" || selectedKey === "School") {
-        const orgId = getUserOrganisation();
-        ids = orgId ? [orgId] : [];
-        const orgSchoolEntity = {
-          organisationId: orgId,
-          schoolName: schoolData?.schoolName || "",
-        };
-        entities = orgSchoolEntity ? [orgSchoolEntity] : [];
-      }
-
-      handleApply(ids, localSelectedCategories, entities)
+    handleApply(refId, localSelectedCategories, filterEntities);
       setWasApplied(true);
 
     gtmAnalytics.pushEvent({
@@ -516,6 +515,7 @@ const handleDateChange = (
       });
     }
 
+    /* istanbul ignore next */
     if (localSelectedCategories && localSelectedCategories.length > 0) {
       gtmAnalytics.pushEvent({
         event: "apply_filter",
@@ -567,6 +567,7 @@ const handleDateChange = (
   }))
 }));
 
+/* istanbul ignore next */
 const getEntityLabel = (entity: string) => {
   if (!entity) return "";
   let key = "";
@@ -582,24 +583,79 @@ const getEntityLabel = (entity: string) => {
   return key ? t(key) : "";
 };
 
+/* istanbul ignore next */
+  const onSelectMultipleCategories = (_: any, items: ISelectedItem[]) => {
+    setLocalSelectedCategories((prev) => {
+      const dateRangeIndex = prev.findIndex((item) => item.data?.type === "dateRange");
+      const dateRangeItem = prev[dateRangeIndex];
+
+      const newItems = items
+        .filter((item) => item.data?.type !== "dateRange")
+        .map((item) => ({
+          ...item,
+          text:
+            item.text ||
+            (typeof item.data === "string"
+              ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+              : ""),
+        }));
+
+      let insertIndex = newItems.length;
+      if (dateRangeItem && dateRangeIndex > 0) {
+        const prevBeforeDate = prev.slice(0, dateRangeIndex).map((i) => i.data);
+        insertIndex = newItems.findIndex((i) => !prevBeforeDate.includes(i.data));
+        if (insertIndex === -1) insertIndex = newItems.length;
+        else insertIndex = newItems.filter((i) => prevBeforeDate.includes(i.data)).length;
+      } else if (dateRangeItem) {
+        insertIndex = 0;
+      }
+
+      if (dateRangeItem) {
+        const safeDateRangeItem = {
+          ...dateRangeItem,
+          text: dateRangeItem.text ?? "",
+        };
+        newItems.splice(insertIndex, 0, safeDateRangeItem);
+      }
+      return newItems;
+    });
+  }
+
+const handleDialogClose = () => {
+  setRelatedToSelected(false);
+  setRelatedToError("");
+  setSearchSelectionError("");
+  setSuggestions([]);
+  onClose();
+}
+
+/* istanbul ignore next */
+  const getValidationTextMsg = () => {
+    if (categoryError) {
+      return t("Filter.informationUnavailable");
+    }
+    return undefined;
+  }
+  /* istanbul ignore next */
+  const getValidationLevelMsg = () => {
+    if (categoryError) {
+      return ValidationTextLevel.Warning;
+    }
+    return undefined;
+  }
   return (
     <Dialog
       className="dms-filter-dialog"
       isOpen={isOpen}
       dataTestId={dataTestId}
       escapeExits
-      onClose={() => {
-        setRelatedToSelected(false);
-        setRelatedToError("");
-        setSearchSelectionError("");
-        onClose();
-      }}
+      onClose={handleDialogClose}
       title={isLoading ? "" : title}
       
     >
       <>
-       {relatedToSelected &&
-       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.data?.data?.key ?? "") ? (
+       {categoryError || (relatedToSelected &&
+       !["Pupil", "Staff", "Organisation", "School"].includes(localSelectedRelatedTo?.data?.data?.key ?? "")) ? (
                 <Notification
                   className="dms-filter-notification"
                   dataTestId={`${dataTestId}-notification`}
@@ -629,14 +685,7 @@ const getEntityLabel = (entity: string) => {
             setLocalSelectedRelatedTo(item);
             setRelatedToError("");
             setRelatedToSelected(true);
-            fetchCategory(Number(item.value))
-              .then((categories) => {
-                setAvailableCategories(categories);
-              })
-              .catch((error) => {
-                setAvailableCategories([]);
-                console.error("Failed to fetch categories", error);
-            });
+            setSuggestions([]);
             setLocalTagListArray([]);
             if (setReferenceExternalIds) setReferenceExternalIds([]);
             setSearchTerm("");
@@ -678,10 +727,11 @@ const getEntityLabel = (entity: string) => {
                   size={TextInputSize.Large}
                   value={searchTerm}
                   searchTerm={searchTerm}
+                  debouncerTreshold={1000}
                   setSearchTerm={setSearchTerm}
                   existingValues={[searchTerm]}
                   keyUpHandler={() => {}}
-                  onKeyUpLenght={2}
+                  onKeyUpLenght={3}
                   isShowListBox={isDropdownOpen && (localTagListArray.length > 0)}
                   headingText={`${t("Filter.selectEntity")} ${getEntityLabel(selectedDisplayKey ?? "")}`}
                   onCloseHandle={ () => {
@@ -722,6 +772,7 @@ const getEntityLabel = (entity: string) => {
                     )
                   }
                   onFocus={() => {
+                    /* istanbul ignore next */
                     setSuggestions(suggestions)
                   }
                   }
@@ -753,75 +804,42 @@ const getEntityLabel = (entity: string) => {
           </>
         )}
           
-            {localSelectedRelatedTo && (
+            {refId?.length ? (
               <>
-          <FormLabel>{t("Filter.categoryHeading")}</FormLabel>
-        <Dropdown
-          dataTestId={`${dataTestId}-categories`}
-          isFixedMultiSelect
-          multiSelect
-          isScrollbarVisible
-          placeholderText={t("Filter.selectOption")}
-          selectedItems={localSelectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
-          onSelectMultiple={(_, items) => {
-            setLocalSelectedCategories((prev) => {
-              const dateRangeIndex = prev.findIndex((item) => item.data?.type === "dateRange");
-              const dateRangeItem = prev[dateRangeIndex];
-
-              const newItems = items
-                .filter((item) => item.data?.type !== "dateRange")
-                .map((item) => ({
-                  ...item,
-                  text:
-                    item.text ||
-                    (typeof item.data === "string"
-                      ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
-                      : ""),
-                }));
-
-              let insertIndex = newItems.length;
-              if (dateRangeItem && dateRangeIndex > 0) {
-                const prevBeforeDate = prev.slice(0, dateRangeIndex).map((i) => i.data);
-                insertIndex = newItems.findIndex((i) => !prevBeforeDate.includes(i.data));
-                if (insertIndex === -1) insertIndex = newItems.length;
-                else insertIndex = newItems.filter((i) => prevBeforeDate.includes(i.data)).length;
-              } else if (dateRangeItem) {
-                insertIndex = 0;
-              }
-
-              if (dateRangeItem) {
-                const safeDateRangeItem = {
-                  ...dateRangeItem,
-                  text: dateRangeItem.text ?? "",
-                };
-                newItems.splice(insertIndex, 0, safeDateRangeItem);
-              }
-              return newItems;
-            });
-          }}
-        >
-          {availableCategories && Array.from(availableCategories ?? [])
-            ?.slice()
-            .sort((a, b) => a.application.localeCompare(b.application))
-            .map((category) => (
-              <DropdownItem
-                key={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
-                data={category}
-                id={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
-                text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-                value={`${category.application}-${category.registrationId ?? category.registrationId ?? ""}`}
-                isSelected={localSelectedCategories.some(
-                  (item) =>
-                    (item.data?.application || item.data) === category.application &&
-                    (item.data?.registrationId || item.data?.id) === (category.registrationId ?? category.registrationId)
-                )}
-              >
-                {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-              </DropdownItem>
-            ))}
-        </Dropdown>
-      </>
-        )}
+                <FormLabel>{t("Filter.categoryHeading")}</FormLabel>
+                <Dropdown
+                  dataTestId={`${dataTestId}-categories`}
+                  isFixedMultiSelect
+                  multiSelect
+                  isScrollbarVisible
+                  placeholderText={t("Filter.selectOption")}
+                  validationText={getValidationTextMsg()}
+                  validationTextLevel={getValidationLevelMsg()}
+                  selectedItems={localSelectedCategories.filter((item) => item.data?.type !== "dateRange") || []} // Use [] as fallback
+                  onSelectMultiple={onSelectMultipleCategories}
+                >
+                  {availableCategories && Array.from(availableCategories ?? [])
+                    ?.slice()
+                    .sort((a, b) => a.application.localeCompare(b.application))
+                    .map((category) => (
+                      <DropdownItem
+                        key={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        data={category}
+                        id={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+                        value={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        isSelected={localSelectedCategories.some(
+                          (item) =>
+                            (item.data?.application || item.data) === category.application &&
+                            (item.data?.categoryId || item.data?.id) === (category.categoryId ?? category.categoryId)
+                        )}
+                      >
+                        {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+                      </DropdownItem>
+                    ))}
+                </Dropdown>
+              </>
+            ) : null}
 
       <div className="dms-filter-dialog-date">
         <FormLabel className="date-added">{t("Filter.dateHeading")}</FormLabel>

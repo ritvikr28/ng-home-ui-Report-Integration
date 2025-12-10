@@ -3,7 +3,7 @@ import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
-import { deleteDocumentRequest, DocumentBasicDetails, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
+import { deleteDocumentRequest, DocumentBasicDetails, DocumentCategoryResponse, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
 import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
 
 export const fetchDocumentDetails = async ({
@@ -79,18 +79,35 @@ export const fetchDMSSuggestions = async (
   }
 };
 
-export const fetchFilterCategory = async (documentRealatedTo: number | null): Promise<any> => {
+// export const fetchFilterCategory = async (documentRealatedTo: number | null): Promise<any> => {
+//   try {
+//     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+//     const param = documentRealatedTo !== null ? `?DocumentRealatedTo=${encodeURIComponent(documentRealatedTo)}` : '';
+//     const url = `/validation/api/v1/applicationregistration${param}`;
+//     const response: AxiosResponse = await service.get(url, baseUrl);
+//     return response?.data;
+//   } catch (err) {
+//     console.error("Error fetching DMS suggestions:", err);
+//     return {};
+//   }
+// }
+
+
+export const fetchDocumentCategory = async (payload: { CategoryRequest: any }) => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const param = documentRealatedTo !== null ? `?DocumentRealatedTo=${encodeURIComponent(documentRealatedTo)}` : '';
-    const url = `/validation/api/v1/applicationregistration${param}`;
-    const response: AxiosResponse = await service.get(url, baseUrl);
-    return response?.data;
+    const url = `/validation/api/v1/data-export/get-linked-files-category-by-id`;
+    const responseData: AxiosResponse<DocumentCategoryResponse> = await service.post(url, payload, { baseURL: baseUrl });
+    return responseData?.data;
   } catch (err) {
-    console.error("Error fetching DMS suggestions:", err);
-    return {};
+    console.error("Error fetching document categories:", err);
+    if (typeof err === "object" && err !== null && "response" in err) {
+      // @ts-ignore
+      return err.response?.data ?? { status: 500, detail: "Unknown server error" };
+    }
+    return { status: 500, detail: "Unknown server error" };
   }
-}
+};
 
 export const prepareAndDownloadFile = async (payload: { request: any }) => {
   try {

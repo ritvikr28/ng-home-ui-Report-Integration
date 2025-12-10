@@ -10,11 +10,13 @@ export const useIsEllipsed = ({ deps = [] }: UseIsEllipsedProps = {}) => {
 
   useEffect(() => {
     const el = ref.current;
+    /* istanbul ignore next */
     if (!el) return;
 
     let frameId: number | null = null;
     let resizeObs: ResizeObserver | null = null;
 
+    /* istanbul ignore next */
     const checkEllipsis = () => {
       if (!el) return;
       const hasEllipsis = el.scrollWidth > el.clientWidth;

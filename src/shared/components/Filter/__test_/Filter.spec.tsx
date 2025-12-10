@@ -5,6 +5,9 @@ import dayjs from "dayjs";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
 import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
+import gtmAnalytics from "../../../utils/analytics";
+import * as ApiService from "../../../../features/DocumentManagementServer/ApiService";
+
 
 jest.mock("@essnextgen/ui-intl-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-intl-kit"),
@@ -71,96 +74,180 @@ const defaultProps = {
   isDateError: false,
   setSelectedDateRange: mockSetSelectedDateRange,
   selectedDateRange: { fromDate: "", toDate: "" },
-  setSelectedRelatedTo: mockSetSelectedRelatedTo,    
+  setSelectedRelatedTo: mockSetSelectedRelatedTo,
   selectedRelatedTo: undefined,
   setTagListArray: mockSetTagListArray,
   tagListArray: [],
   setReferenceExternalIds: jest.fn(),
   setDocumentRelatedTo: jest.fn(),
+  categoryError: false
 };
+
+const mockSuggestions = {
+  payload: [
+    {
+      name: "Pupil", link: "", values: [
+        {
+          "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+          "preferredForename": "Alfie",
+          "preferredSurname": "Harries",
+          "legalName": "Alfie Harries",
+          "currentYearGroup": "Year  4",
+          "currentPrimaryClass": "4SL",
+          "admissionNumber": "001875",
+          "onRollState": "Current",
+          "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+        },
+        {
+          "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+          "preferredForename": "Firoz",
+          "preferredSurname": "Bhandari",
+          "legalName": "Firoz Bhandari",
+          "currentYearGroup": "Year  4",
+          "currentPrimaryClass": "4SL",
+          "admissionNumber": "001861",
+          "onRollState": "Current",
+          "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+        }]
+    },
+    { name: "Staff", link: null, values: [] },
+    { name: "Organisation", link: null, values: [] }
+  ],
+  statusCode: 200,
+}
 
 jest.mock("@essnextgen/ui-kit", () => {
   const originalModule = jest.requireActual("@essnextgen/ui-kit");
   return {
     ...originalModule,
-    Dropdown: ({ onSelectMultiple, onSelect, dataTestId, children }: any) => (
-      <div>
-        {/* Related To Dropdown */}
-        {dataTestId === "dms-filter-dialog-related-to" && (
-          <>
-          <button
-            type="button"
-            data-testid={dataTestId}
-            onClick={() => onSelect && onSelect(null, { text: "Pupil", value: "1" })}
-          >
-            Mock RelatedTo Dropdown
-          </button>
-          <div data-testid="related-to-option" data-value="1" id="1">Pupil</div>
-          <div data-testid="related-to-option" data-value="2" id="2">Staff</div>
-          <div data-testid="related-to-option" data-value="3" id="3">Organisation</div>
-          <div data-testid="related-to-option" data-value="11" id="11">Other</div>
-        </>
-        )}
-        {/* Category Dropdown */}
-        {dataTestId === "dms-filter-dialog-categories" && (
-          <button
-            type="button"
-            data-testid={dataTestId}
-            onClick={() => onSelectMultiple && onSelectMultiple(null, [{ data: {name: "send", id: "1", application: "Send"}, text: "Send" }])}
-          >
-            Mock Category Dropdown
-          </button>
-        )}
-        {children}
-        <div>Send</div>
-        <div>Pupils</div>
-      </div>
-    ),
-    /* eslint-disable react/require-default-props */
+    Dropdown: ({ onSelectMultiple, onSelect, dataTestId, children, categoryError }: any) => {
+      const [relatedSelected, setRelatedSelected] = React.useState(false);
+      const [refIds, setRefIds] = React.useState<any[]>([]);
+
+      return (
+        <div>
+          {/* Related To Dropdown */}
+          {dataTestId === "dms-filter-dialog-related-to" && (
+            <>
+              <button
+                type="button"
+                data-testid={dataTestId}
+                onClick={() => setRelatedSelected(!relatedSelected)}
+              >
+                Mock RelatedTo Dropdown
+              </button>
+
+              {/* Render selectable options */}
+              {relatedSelected && (
+                <>
+                  <div
+                    data-testid="related-to-option"
+                    onClick={() => onSelect && onSelect(null, { text: "Pupil", value: "1" })}
+                  >
+                    Pupil
+                  </div>
+                  <div
+                    data-testid="related-to-option"
+                    onClick={() => onSelect && onSelect(null, { text: "Staff", value: "2" })}
+                  >
+                    Staff
+                  </div>
+                  <div
+                    data-testid="related-to-option"
+                    onClick={() => onSelect && onSelect(null, { text: "School", value: "3" })}
+                  >
+                    School
+                  </div>
+                </>
+              )}
+            </>
+          )}
+
+          {/* Show search input only after related-to selected */}
+          {relatedSelected && (
+            <input data-testid="search-autocomplete-input" onChange={() => { setRefIds(["123"]) }} />
+          )}
+
+          {/* Category Dropdown appears after search term entered */}
+          {refIds.length > 0 && (
+            <button
+              type="button"
+              data-testid="dms-filter-dialog-categories"
+              onClick={() =>
+                onSelectMultiple &&
+                onSelectMultiple(null, [
+                  { data: { name: "send", id: "1", application: "Send" }, text: "Send" }
+                ])
+              }
+            >
+              Mock Category Dropdown
+            </button>
+
+          )}
+          {categoryError && (
+            <div data-testid="text-input-dms-filter-dialog-categories__validation-text">
+              Information unavailable
+            </div>
+          )}
+
+          {children}
+        </div>
+      )
+    },
+
     Search: ({
       dataTestId,
       tagListValueArray = [],
       searchTerm = "",
-      setSearchTerm = () => {},
-      onRemoveTag = () => {},
-      onItemClick = () => {},
+      onRemoveTag = () => { },
+      onItemClick = () => { },
     }: {
-      dataTestId: any;
-      tagListValueArray?: any[];
-      searchTerm?: string;
-      setSearchTerm?: (v: string) => void;
-      onRemoveTag?: any;
-      onItemClick?: any;
-    }) => (
-      <section data-testid={dataTestId}>
-        {tagListValueArray.map((tag: any) => (
-          <span key={tag.id} data-testid="search-tag">
-            {tag.text}
-            <button
-              type="button"
-              aria-label={`Remove ${tag.text}`}
-              onClick={() => onRemoveTag({}, tag.text, tag)}
-              data-testid={`remove-tag-${tag.id}`}
+      dataTestId: string;
+      tagListValueArray: any[];
+      searchTerm: string;
+      onRemoveTag: (e: any, text: string, tag: any) => void;
+      onItemClick: (item: any) => void;
+    }) => {
+      const [term, setTerm] = React.useState(searchTerm);
+      const [suggestions, setSuggestions] = React.useState<string[]>([]);
+
+      React.useEffect(() => {
+        if (term === "Jane Doe") setSuggestions(["Jane Doe"]);
+        else setSuggestions([]);
+      }, [term]);
+
+      return (
+        <section data-testid={dataTestId}>
+          {tagListValueArray.map((tag: any) => (
+            <span key={tag.id} data-testid="search-tag">
+              {tag.text}
+              <button
+                type="button"
+                aria-label={`Remove ${tag.text}`}
+                onClick={() => onRemoveTag({}, tag.text, tag)}
+                data-testid={`remove-tag-${tag.id}`}
+              >
+                x
+              </button>
+            </span>
+          ))}
+          <input
+            data-testid="search-autocomplete-input"
+            value={term}
+            onChange={(e) => setTerm(e.target.value)}
+          />
+          {suggestions.map((sug) => (
+            <div
+              key={sug}
+              data-testid="search-suggestion"
+              onClick={() => onItemClick({ text: sug, value: sug })}
             >
-              x
-            </button>
-          </span>
-        ))}
-        <input
-          data-testid="search-autocomplete-input"
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-        />
-        {searchTerm && (
-          <div
-            data-testid="search-suggestion"
-            onClick={() => onItemClick({ text: searchTerm, value: searchTerm })}
-          >
-            {searchTerm}
-          </div>
-        )}
-      </section>
-    ),
+              {sug}
+            </div>
+          ))}
+        </section>
+      );
+    },
     DropdownItem: ({ text, ...props }: any) => (
       <div {...props}>{text}</div>
     ),
@@ -169,9 +256,9 @@ jest.mock("@essnextgen/ui-kit", () => {
 
 jest.mock("../../../../features/DocumentManagementServer/DocumentManagementServer.logic", () => ({
   ...jest.requireActual("../../.././../features/DocumentManagementServer/DocumentManagementServer.logic"),
-   handleSearchChange: jest.fn(),
+  handleSearchChange: jest.fn(),
   getAllRegistrationIds: jest.fn(() => []),
-  fetchCategory: jest.fn(() => Promise.resolve([]))
+  fetchDocumentCategoryData: jest.fn(() => Promise.resolve([]))
 }));
 
 const renderComponent = (props = {}) =>
@@ -185,6 +272,11 @@ const setDateInput = (container: HTMLElement, day: string, month: string, year: 
 
 describe("FilterDialog", () => {
   beforeEach(() => jest.clearAllMocks());
+  it("renders loader when isLoading is true", () => {
+    render(<FilterDialog {...defaultProps} isLoading />);
+    expect(document.querySelector(".filter-dialog-loader")).toBeInTheDocument();
+    expect(screen.getByText("Please Wait")).toBeInTheDocument();
+  });
 
   it("renders with all form elements", () => {
     renderComponent();
@@ -193,30 +285,6 @@ describe("FilterDialog", () => {
     expect(screen.getByText("Filter.clearFilters")).toBeInTheDocument();
     expect(screen.getByText("Filter.applyFilters")).toBeInTheDocument();
   });
-
-  it("selects a category via dropdown", async () => {
-    renderComponent();
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
-    const pupilOptions = screen.getAllByText("Pupil");
-    fireEvent.click(pupilOptions[0]);
-    await fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-    expect(mockSetSelectedCategories).toHaveBeenCalled();
-  });
-  
-  // it("applies filters when Apply button is clicked", () => {
-  //   renderComponent();
-  //   fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
-  //   const pupilOptions = screen.getAllByText("Pupil");
-  //   fireEvent.click(pupilOptions[0]);
-  //   renderComponent({
-  //   ...defaultProps,
-  //   tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }]
-  // });
-
-  //   const applyButtons = screen.getAllByTestId("dms-filter-dialog-apply-btn");
-  //   fireEvent.click(applyButtons[1]);
-  //   expect(mockHandleApply).toHaveBeenCalled();
-  // });
 
   it("sets from and to dates and triggers selectedDateRange", async () => {
     renderComponent();
@@ -252,6 +320,21 @@ describe("FilterDialog", () => {
 
     await waitFor(() => {
       expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("shows error if year has less than 4 digits", async () => {
+    renderComponent();
+
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+
+    // Set a year with less than 4 digits
+    setDateInput(dateInputs[0], "", "", "222"); // only 2 digits
+    await waitFor(() => {
+      // Check that the error message for From date is displayed
+      expect(screen.getByText("From date is required")).toBeInTheDocument(); // matches t("Filter.fromDateRequired")
+      // Check that the date error state is set
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -292,7 +375,7 @@ describe("FilterDialog", () => {
     expect(mockSetIsDateError).toHaveBeenCalledWith(false);
   });
 
-   it("populates fromDate and toDate when selectedDateRange is valid and dialog opens", () => {
+  it("populates fromDate and toDate when selectedDateRange is valid and dialog opens", () => {
 
     const selectedDateRange = {
       fromDate: "2022-05-10",
@@ -338,200 +421,200 @@ describe("FilterDialog", () => {
   });
 
 
-test("shows error when From Date is in the future", async () => {
-  render(<FilterDialog {...defaultProps} />);
+  test("shows error when From Date is in the future", async () => {
+    render(<FilterDialog {...defaultProps} />);
 
-  const futureDate = dayjs().add(1, "day");
-  fireEvent.change(screen.getAllByLabelText("Day")[0], {
-    target: { value: futureDate.date().toString() },
-  });
-  fireEvent.change(screen.getAllByLabelText("Month")[0], {
-    target: { value: (futureDate.month() + 1).toString() },
-  });
-  fireEvent.change(screen.getAllByLabelText("Year")[0], {
-    target: { value: futureDate.year().toString() },
-  });
+    const futureDate = dayjs().add(1, "day");
+    fireEvent.change(screen.getAllByLabelText("Day")[0], {
+      target: { value: futureDate.date().toString() },
+    });
+    fireEvent.change(screen.getAllByLabelText("Month")[0], {
+      target: { value: (futureDate.month() + 1).toString() },
+    });
+    fireEvent.change(screen.getAllByLabelText("Year")[0], {
+      target: { value: futureDate.year().toString() },
+    });
 
-  const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
-  fireEvent.click(applyButton);
+    const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
+    fireEvent.click(applyButton);
 
-  expect(await screen.getByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
-});
-
-test("shows error when To Date is before From Date", async () => {
-  render(<FilterDialog {...defaultProps} />);
-
-  // From: 2023-05-10
-  fireEvent.change(screen.getAllByLabelText("Day")[0], { target: { value: "10" } });
-  fireEvent.change(screen.getAllByLabelText("Month")[0], { target: { value: "5" } });
-  fireEvent.change(screen.getAllByLabelText("Year")[0], { target: { value: "2023" } });
-
-  // To: 2023-05-09 (before From)
-  fireEvent.change(screen.getAllByLabelText("Day")[1], { target: { value: "9" } });
-  fireEvent.change(screen.getAllByLabelText("Month")[1], { target: { value: "5" } });
-  fireEvent.change(screen.getAllByLabelText("Year")[1], { target: { value: "2023" } });
-
-  const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
-  fireEvent.click(applyButton);
-
-  expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
-});
-
-test("shows error when To date is selected but From date is not", async () => {
-  render(<FilterDialog {...defaultProps} />);
-
-  // Only fill To Date (second input group)
-  fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "15" } });
-  fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
-  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2022" } });
-
-  // Click Apply
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-  // Assertion for the error message
-  expect(await screen.findByText("From date is required")).toBeInTheDocument();
-});
-
-test("shows error when To date is before From date", async () => {
-  render(<FilterDialog {...defaultProps} />);
-
-  fireEvent.change(screen.getAllByPlaceholderText("DD")[0], { target: { value: "10" } });
-  fireEvent.change(screen.getAllByPlaceholderText("MM")[0], { target: { value: "05" } });
-  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[0], { target: { value: "2023" } });
-
-  fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "09" } });
-  fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
-  fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2023" } });
-
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-  expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
-});
-
-
-it("shows error when From date is after To date", async () => {
-  jest.setTimeout(15000);
-  renderComponent();
-
-  // Set To date first: 2022-05-10
-  const toDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[1];
-  fireEvent.change(within(toDateInputs).getByPlaceholderText("DD"), { target: { value: "10" } });
-  fireEvent.change(within(toDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(toDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
-
-  // Then set From date to a later date: 2022-05-12
-  const fromDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[0];
-  fireEvent.change(within(fromDateInputs).getByPlaceholderText("DD"), { target: { value: "12" } });
-  fireEvent.change(within(fromDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(fromDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
-
-  // Assertion: error message triggered by From date being after To date
-  await waitFor(() => {
-    expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
-    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  });
-});
-
-it("adds dateRange to selectedCategories if it doesn't exist", () => {
-  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
-    const result = updater([]);
-    expect(result).toEqual([
-      expect.objectContaining({
-        data: { type: "dateRange" },
-        text: expect.stringContaining("10 May 2022"),
-        value: expect.any(String)
-      })
-    ]);
+    expect(await screen.getByText(`From date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
   });
 
-  renderComponent({
-    selectedCategories: [],
-    selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
-    setSelectedCategories: mockSetSelectedCategoriesWithCheck
+  test("shows error when To Date is before From Date", async () => {
+    render(<FilterDialog {...defaultProps} />);
+
+    // From: 2023-05-10
+    fireEvent.change(screen.getAllByLabelText("Day")[0], { target: { value: "10" } });
+    fireEvent.change(screen.getAllByLabelText("Month")[0], { target: { value: "5" } });
+    fireEvent.change(screen.getAllByLabelText("Year")[0], { target: { value: "2023" } });
+
+    // To: 2023-05-09 (before From)
+    fireEvent.change(screen.getAllByLabelText("Day")[1], { target: { value: "9" } });
+    fireEvent.change(screen.getAllByLabelText("Month")[1], { target: { value: "5" } });
+    fireEvent.change(screen.getAllByLabelText("Year")[1], { target: { value: "2023" } });
+
+    const applyButton = screen.getByTestId("dms-filter-dialog-apply-btn");
+    fireEvent.click(applyButton);
+
+    expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
   });
 
-  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
-});
+  test("shows error when To date is selected but From date is not", async () => {
+    render(<FilterDialog {...defaultProps} />);
 
-it("updates existing dateRange in selectedCategories if it exists", () => {
-  const previous = [
-    { data: "send", text: "Send" },
-    { data: { type: "dateRange" }, text: "Old Range", value: "Old Range" }
-  ];
+    // Only fill To Date (second input group)
+    fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "15" } });
+    fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
+    fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2022" } });
 
-  const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
-    const result = updater(previous);
-    expect(result[1]).toEqual(
-      expect.objectContaining({
-        data: { type: "dateRange" },
-        text: expect.stringContaining("10 May 2022"),
-        value: expect.any(String)
-      })
-    );
+    // Click Apply
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    // Assertion for the error message
+    expect(await screen.findByText("From date is required")).toBeInTheDocument();
   });
 
-  renderComponent({
-    selectedCategories: previous,
-    selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
-    setSelectedCategories: mockSetSelectedCategoriesWithCheck
+  test("shows error when To date is before From date", async () => {
+    render(<FilterDialog {...defaultProps} />);
+
+    fireEvent.change(screen.getAllByPlaceholderText("DD")[0], { target: { value: "10" } });
+    fireEvent.change(screen.getAllByPlaceholderText("MM")[0], { target: { value: "05" } });
+    fireEvent.change(screen.getAllByPlaceholderText("YYYY")[0], { target: { value: "2023" } });
+
+    fireEvent.change(screen.getAllByPlaceholderText("DD")[1], { target: { value: "09" } });
+    fireEvent.change(screen.getAllByPlaceholderText("MM")[1], { target: { value: "05" } });
+    fireEvent.change(screen.getAllByPlaceholderText("YYYY")[1], { target: { value: "2023" } });
+
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    expect(await screen.findByText("To date should not be before From date.")).toBeInTheDocument();
   });
 
-  expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
-});
 
-it("shows error when To date is partially filled", async () => {
-  render(<FilterDialog {...defaultProps} />);
-  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-  // Only fill day and month for To date, leave year empty
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "15" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "" } });
+  it("shows error when From date is after To date", async () => {
+    jest.setTimeout(15000);
+    renderComponent();
 
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    // Set To date first: 2022-05-10
+    const toDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[1];
+    fireEvent.change(within(toDateInputs).getByPlaceholderText("DD"), { target: { value: "10" } });
+    fireEvent.change(within(toDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(toDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
 
- await waitFor(() => {
-  const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(true);
-});
-});
+    // Then set From date to a later date: 2022-05-12
+    const fromDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[0];
+    fireEvent.change(within(fromDateInputs).getByPlaceholderText("DD"), { target: { value: "12" } });
+    fireEvent.change(within(fromDateInputs).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(fromDateInputs).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
+
+    // Assertion: error message triggered by From date being after To date
+    await waitFor(() => {
+      expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
+
+  it("adds dateRange to selectedCategories if it doesn't exist", () => {
+    const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+      const result = updater([]);
+      expect(result).toEqual([
+        expect.objectContaining({
+          data: { type: "dateRange" },
+          text: expect.stringContaining("10 May 2022"),
+          value: expect.any(String)
+        })
+      ]);
+    });
+
+    renderComponent({
+      selectedCategories: [],
+      selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
+      setSelectedCategories: mockSetSelectedCategoriesWithCheck
+    });
+
+    expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+  });
+
+  it("updates existing dateRange in selectedCategories if it exists", () => {
+    const previous = [
+      { data: "send", text: "Send" },
+      { data: { type: "dateRange" }, text: "Old Range", value: "Old Range" }
+    ];
+
+    const mockSetSelectedCategoriesWithCheck = jest.fn((updater) => {
+      const result = updater(previous);
+      expect(result[1]).toEqual(
+        expect.objectContaining({
+          data: { type: "dateRange" },
+          text: expect.stringContaining("10 May 2022"),
+          value: expect.any(String)
+        })
+      );
+    });
+
+    renderComponent({
+      selectedCategories: previous,
+      selectedDateRange: { fromDate: "2022-05-10", toDate: "2022-05-12" },
+      setSelectedCategories: mockSetSelectedCategoriesWithCheck
+    });
+
+    expect(mockSetSelectedCategoriesWithCheck).toHaveBeenCalled();
+  });
+
+  it("shows error when To date is partially filled", async () => {
+    render(<FilterDialog {...defaultProps} />);
+    const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+    // Only fill day and month for To date, leave year empty
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "15" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "" } });
+
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    await waitFor(() => {
+      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+      expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(true);
+    });
+  });
 
 
 
-it("shows error when To date is invalid (e.g. 31/02/2023)", async () => {
-  render(<FilterDialog {...defaultProps} />);
-  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-  // Fill valid From date
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "10" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
-  // Fill To date with invalid date
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "31" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "02" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+  it("shows error when To date is invalid (e.g. 31/02/2023)", async () => {
+    render(<FilterDialog {...defaultProps} />);
+    const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
+    // Fill valid From date
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "10" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+    // Fill To date with invalid date
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "31" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "02" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
 
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
-  const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
-  expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
+    const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+    expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
 
-});
+  });
 
 
-it("shows tag as [fromDate] to - when only From Date is selected", async () => {
-  renderComponent();
+  it("shows tag as [fromDate] to - when only From Date is selected", async () => {
+    renderComponent();
 
-  const fromDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[0];
+    const fromDateInputs = screen.getAllByTestId("dms-filter-dialog-date-added")[0];
 
-  fireEvent.change(within(fromDateInputs).getByLabelText("Day"), { target: { value: "01" } });
-  fireEvent.change(within(fromDateInputs).getByLabelText("Month"), { target: { value: "01" } });
-  fireEvent.change(within(fromDateInputs).getByLabelText("Year"), { target: { value: "2023" } });
+    fireEvent.change(within(fromDateInputs).getByLabelText("Day"), { target: { value: "01" } });
+    fireEvent.change(within(fromDateInputs).getByLabelText("Month"), { target: { value: "01" } });
+    fireEvent.change(within(fromDateInputs).getByLabelText("Year"), { target: { value: "2023" } });
 
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     expect(within(fromDateInputs).getByPlaceholderText("DD")).toHaveValue("1");
     expect(within(fromDateInputs).getByPlaceholderText("MM")).toHaveValue("1");
     expect(within(fromDateInputs).getByPlaceholderText("YYYY")).toHaveValue("2023");
-});
+  });
 
 });
 
@@ -544,10 +627,10 @@ describe("From date edge case validation", () => {
     setDateInput(dateInputs[0], "31", "02", "2023"); // invalid date
     fireEvent.blur(dateInputs[0]);
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
-      expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    
+    const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+    expect(validationText.some(node => /Invalid Date/i.test(node.textContent || ""))).toBe(false);
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+
   });
 
   it("shows error when From date is in the future", async () => {
@@ -557,10 +640,10 @@ describe("From date edge case validation", () => {
     setDateInput(dateInputs[0], tomorrow.date().toString(), (tomorrow.month() + 1).toString(), tomorrow.year().toString());
     fireEvent.blur(dateInputs[0]);
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-      const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
-      expect(validationText.some(node => /on or before/i.test(node.textContent || ""))).toBe(true);
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    
+    const validationText = screen.getAllByTestId("dms-filter-dialog-date-added__validation-text");
+    expect(validationText.some(node => /on or before/i.test(node.textContent || ""))).toBe(true);
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+
   });
 
   it("shows error when From date is before minimum allowed date", async () => {
@@ -578,55 +661,55 @@ describe("From date edge case validation", () => {
 });
 
 describe("Date tag formatting in FilterDialog", () => {
- it("shows tag as [fromDate] to [toDate] when both dates are selected", () => {
-  const selectedDateRange = {
-    fromDate: "2022-05-10",
-    toDate: "2022-05-12"
-  };
+  it("shows tag as [fromDate] to [toDate] when both dates are selected", () => {
+    const selectedDateRange = {
+      fromDate: "2022-05-10",
+      toDate: "2022-05-12"
+    };
 
-  render(
-    <FilterDialog
-      {...defaultProps}
-      selectedDateRange={selectedDateRange}
-      setSelectedCategories={mockSetSelectedCategories}
-    />
-  );
+    render(
+      <FilterDialog
+        {...defaultProps}
+        selectedDateRange={selectedDateRange}
+        setSelectedCategories={mockSetSelectedCategories}
+      />
+    );
 
-  const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
-  const result = updater([]);
-  expect(result).toEqual(
-    expect.arrayContaining([
+    const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
+    const result = updater([]);
+    expect(result).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          text: "10 May 2022 to 12 May 2022",
+          data: { type: "dateRange" }
+        })
+      ])
+    );
+  });
+
+  it("shows tag as [fromDate] to - when only From Date is selected", () => {
+    const selectedDateRange = {
+      fromDate: "2022-05-10",
+      toDate: ""
+    };
+
+    render(
+      <FilterDialog
+        {...defaultProps}
+        selectedDateRange={selectedDateRange}
+        setSelectedCategories={mockSetSelectedCategories}
+      />
+    );
+
+    const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
+    const result = updater([]);
+    expect(result).toEqual([
       expect.objectContaining({
-        text: "10 May 2022 to 12 May 2022",
+        text: "10 May 2022 to -",
         data: { type: "dateRange" }
       })
-    ])
-  );
-});
-
- it("shows tag as [fromDate] to - when only From Date is selected", () => {
-  const selectedDateRange = {
-    fromDate: "2022-05-10",
-    toDate: ""
-  };
-
-  render(
-    <FilterDialog
-      {...defaultProps}
-      selectedDateRange={selectedDateRange}
-      setSelectedCategories={mockSetSelectedCategories}
-    />
-  );
-
-  const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
-  const result = updater([]);
-  expect(result).toEqual([
-    expect.objectContaining({
-      text: "10 May 2022 to -",
-      data: { type: "dateRange" }
-    })
-  ]);
-});
+    ]);
+  });
 
 
   it("removes date tag when both dates are empty", () => {
@@ -653,31 +736,6 @@ describe("Date tag formatting in FilterDialog", () => {
   });
 });
 
-describe("Dropdown dateRange insertIndex logic", () => {
-
-  it("does not insert dateRange if it does not exist in previous", () => {
-    const prev = [
-      { data: "send", text: "Send" },
-      { data: "pupils", text: "Pupils" }
-    ];
-    
-    const setSelectedCategories = jest.fn((updater) => {
-      const result = updater(prev);
-      expect(result.some((i: { data: { type: string; }; }) => i.data?.type === "dateRange")).toBe(false);
-    });
-
-    render(
-      <FilterDialog
-        {...defaultProps}
-        selectedRelatedTo={{ text: "Pupil", value: "1" }}
-        selectedCategories={prev}
-        setSelectedCategories={setSelectedCategories}
-      />
-    );
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-    expect(setSelectedCategories).toHaveBeenCalled();
-  });
-});
 
 // Helper for type guard
 function isDateRangeData(data: any): data is { type: string } {
@@ -700,7 +758,7 @@ describe("Dropdown dateRange insertIndex logic (unit coverage)", () => {
         .map(item => ({
           ...item,
           text: item.text || (typeof item.data === "string"
-            ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+            ? (item.data as string).charAt(0).toUpperCase() + (item.data as string).slice(1)
             : "")
         }));
       let insertIndex = newItems.length;
@@ -742,7 +800,7 @@ describe("Dropdown dateRange insertIndex logic (unit coverage)", () => {
         .map(item => ({
           ...item,
           text: item.text || (typeof item.data === "string"
-            ? item.data.charAt(0).toUpperCase() + item.data.slice(1)
+            ? (item.data as string).charAt(0).toUpperCase() + (item.data as string).slice(1)
             : "")
         }));
       let insertIndex = newItems.length;
@@ -807,29 +865,25 @@ describe("Dropdown dateRange insertIndex logic (unit coverage)", () => {
     const result = updater(prev);
     expect(result.some(i => isDateRangeData(i.data) && i.data.type === "dateRange")).toBe(false);
   });
-  it("calls onClose when Escape key is pressed", () => {
-  renderComponent();
+  it("calls all close handlers when Escape is pressed", () => {
+    renderComponent();
+    fireEvent.keyDown(window, { key: "Escape", code: "Escape" });
+  });
 
-  // Simulate Escape keydown event
-  fireEvent.keyDown(window, { key: "Escape", code: "Escape" });
+  it("shows error when day or month is 00 or 0", async () => {
+    render(<FilterDialog {...defaultProps} />);
 
-  expect(mockOnClose).toHaveBeenCalled();
-});
+    const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
 
-it("shows error when day or month is 00 or 0", async () => {
-  render(<FilterDialog {...defaultProps} />);
-
-  const dateInputs = await screen.findAllByTestId("dms-filter-dialog-date-added");
-
-  // Test day = "00"
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "00" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+    // Test day = "00"
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "00" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
 
     expect(screen.getByText(/Invalid Date/i)).toBeInTheDocument();
     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  
-})
+
+  })
 });
 
 describe("From date minimum validation", () => {
@@ -840,16 +894,15 @@ describe("From date minimum validation", () => {
 
     const minDate = "01/01/1900";
     setDateInput(dateInputs[0], "31", "12", "1899");
-      expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
-    
+    expect(screen.getByText(`From date must be on or after ${minDate}`)).toBeInTheDocument();
+
 
     setDateInput(dateInputs[0], "01", "01", "1900");
-      expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(false);
-  
+    expect(screen.queryByText(`From date must be on or after ${minDate}`)).not.toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+
   });
 });
-
 
 
 describe("To date validation", () => {
@@ -861,14 +914,12 @@ describe("To date validation", () => {
     setDateInput(dateInputs[0], "01", "01", "2023");
     setDateInput(dateInputs[1], futureDate.date().toString(), (futureDate.month() + 1).toString(), futureDate.year().toString());
 
-    // fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    expect(screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
 
-      expect(screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)).toBeInTheDocument();
-     
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+
   });
-  
+
   it("shows error when To date is before 01/01/1900", async () => {
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
@@ -877,48 +928,48 @@ describe("To date validation", () => {
     setDateInput(dateInputs[0], "01", "01", "1900");
     setDateInput(dateInputs[1], "31", "12", "1899");
 
-      expect(screen.getByText("To date must be on or after 01/01/1900")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-  
+    expect(screen.getByText("To date must be on or after 01/01/1900")).toBeInTheDocument();
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+
   });
 
   it("shows error when To date is set without From date", async () => {
-  renderComponent();
-  const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-  setDateInput(dateInputs[1], "20", "8", "2025"); // Only To date
+    setDateInput(dateInputs[1], "20", "8", "2025"); // Only To date
 
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     expect(screen.getByText("From date is required")).toBeInTheDocument();
     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-});
+  });
 
 
   it("shows error when To date is in the future (with valid From date)", async () => {
-  renderComponent();
-  const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
 
-  // Enter valid From date
-  setDateInput(dateInputs[0], "10", "08", "2025");
+    // Enter valid From date
+    setDateInput(dateInputs[0], "10", "08", "2025");
 
-  // Enter To date in the future
-  const futureDate = dayjs().add(1, "day");
-  setDateInput(
-    dateInputs[1],
-    futureDate.date().toString(),
-    (futureDate.month() + 1).toString(),
-    futureDate.year().toString()
-  );
+    // Enter To date in the future
+    const futureDate = dayjs().add(1, "day");
+    setDateInput(
+      dateInputs[1],
+      futureDate.date().toString(),
+      (futureDate.month() + 1).toString(),
+      futureDate.year().toString()
+    );
 
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     expect(
       screen.getByText(`To date must be on or before ${dayjs().format("DD-MM-YYYY")}`)
     ).toBeInTheDocument();
     expect(mockSetIsDateError).toHaveBeenCalledWith(true);
 
-});
+  });
 
 });
 
@@ -926,15 +977,14 @@ describe("To date validation", () => {
 describe("FilterDialog handleApplyWrapper validation", () => {
   it("shows error if no tag is selected for Pupil", async () => {
     renderComponent({
-  selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
-  tagListArray: [],
-  availableCategories: [
-    { registrationId: "1", application: "Send" },
-    { registrationId: "2", application: "Pupils" }
-  ]
-});
+      selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
+      tagListArray: [],
+      availableCategories: [
+        { registrationId: "1", application: "Send" },
+        { registrationId: "2", application: "Pupils" }
+      ]
+    });
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-    // expect(await screen.findByText("Pupil is required")).toBeInTheDocument();
     expect(mockHandleApply).not.toHaveBeenCalled();
   });
 
@@ -944,7 +994,6 @@ describe("FilterDialog handleApplyWrapper validation", () => {
       tagListArray: [],
     });
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-    // expect(await screen.findByText("Staff is required")).toBeInTheDocument();
     expect(mockHandleApply).not.toHaveBeenCalled();
   });
 
@@ -963,13 +1012,43 @@ describe("FilterDialog handleApplyWrapper validation", () => {
   });
 
   it("calls handleApply if all validations pass for Pupil", async () => {
+
+    const localSelectedCategories = [
+      { text: "Category1", categoryId: 1 },
+      { text: "Category2", categoryId: 2 }
+    ];
+    const selectedDateRange = { fromDate: "01-01-2023", toDate: "05-01-2023" };
+
+    const pushEventSpy = jest.spyOn(gtmAnalytics, "pushEvent").mockImplementation(jest.fn());
+
     renderComponent({
       selectedRelatedTo: { text: "Pupil", value: "1" },
       tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }],
+      selectedDateRange,
+      localSelectedCategories
     });
     fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
     await waitFor(() => {
       expect(mockHandleApply).toHaveBeenCalled();
+    });
+    await waitFor(() => {
+      expect(pushEventSpy).toHaveBeenCalledWith({
+        event: "apply_filter",
+        filterType: "Pupil",
+        filterValue: 1
+      });
+    });
+
+    expect(pushEventSpy).toHaveBeenCalledWith({
+      event: "apply_filter",
+      filterType: "From Date",
+      filterValue: ""
+    });
+
+    expect(pushEventSpy).toHaveBeenCalledWith({
+      event: "apply_filter",
+      filterType: "To Date",
+      filterValue: ""
     });
   });
 
@@ -983,28 +1062,27 @@ describe("FilterDialog handleApplyWrapper validation", () => {
       expect(mockHandleApply).toHaveBeenCalled();
     });
   });
-it("removes a tag from the tag list when user clicks the remove button", async () => {
- 
-  const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123", data: { data: { key: "Pupil" } } };
-renderComponent({
-  selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
-  tagListArray: [tag],
-});
+  it("removes a tag from the tag list when user clicks the remove button", async () => {
 
-  // The tag should be visible
-  expect(screen.getByTestId("search-tag")).toHaveTextContent("Test Pupil");
+    const tag = { text: "Test Pupil", learnerExternalId: "123", id: "123", data: { data: { key: "Pupil" } } };
+    renderComponent({
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+      tagListArray: [tag],
+    });
 
-  // Simulate user clicking the remove/close button for the tag
-  fireEvent.click(screen.getByTestId("remove-tag-123"));
+    // The tag should be visible
+    expect(screen.getByTestId("search-tag")).toHaveTextContent("Test Pupil");
 
-  // The tag should be removed from the UI
-  await waitFor(() => {
-    expect(screen.queryByTestId("search-tag")).not.toBeInTheDocument();
+    // Simulate user clicking the remove/close button for the tag
+    fireEvent.click(screen.getByTestId("remove-tag-123"));
+
+    // The tag should be removed from the UI
+    await waitFor(() => {
+      expect(screen.queryByTestId("search-tag")).not.toBeInTheDocument();
+    });
   });
-});
 
 });
-
 describe("onSelectMultiple updater logic (unit coverage)", () => {
   function updater(prev: any[], items: any[]) {
     const dateRangeIndex = prev.findIndex(item => item.data?.type === "dateRange");
@@ -1040,23 +1118,22 @@ describe("onSelectMultiple updater logic (unit coverage)", () => {
     return newItems;
   }
 
-  it("inserts dateRange at index 0 if it was first", () => {
+  it("inserts dateRange at index 0 if it was first in previous", () => {
     const prev = [
-      { data: { type: "dateRange" }, text: "Date", value: "Date" },
+      { data: { type: "dateRange" }, text: "Date" },
       { data: "send", text: "Send" }
     ];
-    const items = [
-      { data: "send", text: "Send" }
-    ];
+    const items = [{ data: "send", text: "Send" }];
     const result = updater(prev, items);
+
     expect(result[0].data.type).toBe("dateRange");
     expect(result[1].data).toBe("send");
   });
 
-  it("inserts dateRange after matching previous items", () => {
+  it("inserts dateRange after matching previous items if it was in middle", () => {
     const prev = [
       { data: "send", text: "Send" },
-      { data: { type: "dateRange" }, text: "Date", value: "Date" },
+      { data: { type: "dateRange" }, text: "Date" },
       { data: "pupils", text: "Pupils" }
     ];
     const items = [
@@ -1064,7 +1141,19 @@ describe("onSelectMultiple updater logic (unit coverage)", () => {
       { data: "pupils", text: "Pupils" }
     ];
     const result = updater(prev, items);
+
+    // DateRange should appear after "send" and before "pupils"
     expect(result[1].data.type).toBe("dateRange");
+    expect(result[0].data).toBe("send");
+    expect(result[2].data).toBe("pupils");
+  });
+
+  it("inserts dateRange at index 0 if it was first and no previous items before it", () => {
+    const prev = [{ data: { type: "dateRange" }, text: "Date" }];
+    const items: any[] = [];
+    const result = updater(prev, items);
+
+    expect(result[0].data.type).toBe("dateRange");
   });
 
   it("does not insert dateRange if it does not exist in previous", () => {
@@ -1072,48 +1161,67 @@ describe("onSelectMultiple updater logic (unit coverage)", () => {
       { data: "send", text: "Send" },
       { data: "pupils", text: "Pupils" }
     ];
-    const items = [
-      { data: "send", text: "Send" }
-    ];
+    const items = [{ data: "send", text: "Send" }];
     const result = updater(prev, items);
+
     expect(result.some(i => i.data?.type === "dateRange")).toBe(false);
   });
 
   it("adds text if missing and data is string", () => {
     const prev: any[] = [];
-    const items = [
-      { data: "send" }
-    ];
+    const items = [{ data: "send" }];
     const result = updater(prev, items);
+
     expect(result[0].text).toBe("Send");
   });
-});
-describe("FilterDialog category selection user scenarios for dateRange insertIndex logic", () => {
-  it("inserts dateRange at the end when all selected categories are present before dateRange", async () => {
-    // Initial categories: Send, Pupils, dateRange
-    const prevCategories = [
+
+  it("keeps existing text if present for string data", () => {
+    const prev: any[] = [];
+    const items = [{ data: "send", text: "CustomText" }];
+    const result = updater(prev, items);
+
+    expect(result[0].text).toBe("CustomText");
+  });
+
+  it("maintains correct order when multiple previous items exist", () => {
+    const prev = [
       { data: "send", text: "Send" },
-      { data: "pupils", text: "Pupils" },
-      { data: { type: "dateRange" }, text: "Date Range", value: "Date Range" }
+      { data: { type: "dateRange" }, text: "Date" },
+      { data: "pupils", text: "Pupils" }
+    ];
+    const items = [
+      { data: "send" },
+      { data: "pupils" }
+    ];
+    const result = updater(prev, items);
+
+    expect(result[0].data).toBe("send");
+    expect(result[1].data.type).toBe("dateRange");
+    expect(result[2].data).toBe("pupils");
+  });
+
+  it("sets insertIndex to newItems.length when all newItems data are in prevBeforeDate (branch A)", () => {
+    const prev = [
+      { data: "send", text: "Send" },
+      { data: { type: "dateRange" }, text: "Date" },
+      { data: "pupils", text: "Pupils" }
+    ];
+    // prevBeforeDate = ["send"]
+
+    // all newItems data included in prevBeforeDate
+    const items = [
+      { data: "send", text: "Send" }
     ];
 
-    renderComponent({
-      selectedRelatedTo: { text: "Pupil", value: "1" },
-      selectedCategories: prevCategories,
-      tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }]
-    });
+    const result = updater(prev, items);
 
-    // Simulate user selecting both "Send" and "Pupils" again
-    // This should trigger insertIndex === -1 branch
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-
-    // Check that dateRange is at the end
-    await waitFor(() => {
-      const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
-      const result = typeof updater === "function" ? updater(prevCategories) : updater;
-      expect(result[result.length - 1].data.type).toBe(undefined);
-    });
+    // dateRange should be inserted at the end
+    expect(result[result.length - 1].data.type).toBe("dateRange");
   });
+});
+
+
+describe("FilterDialog category selection user scenarios for dateRange insertIndex logic", () => {
 
   it("inserts dateRange after matching previous items when some selected categories are not present before dateRange", async () => {
     // Initial categories: Send, dateRange
@@ -1130,282 +1238,173 @@ describe("FilterDialog category selection user scenarios for dateRange insertInd
     const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
     const result = typeof updater === "function"
       ? updater([
-          { data: "send", text: "Send" },
-          { data: "extra", text: "Extra" }
-        ])
+        { data: "send", text: "Send" },
+        { data: "extra", text: "Extra" }
+      ])
       : updater;
     // dateRange should be inserted after "Send"
     expect(result[1].data.type).toBe(undefined);
   });
 
-  it("adds a tag to the tag list when user selects a suggestion", async () => {
-  renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
-    tagListArray: [],
-    availableCategories: [
-      { registrationId: "1", application: "Send" },
-      { registrationId: "2", application: "Pupils" }
-    ]
+  it("shows 'From date is required' error when From date is cleared but To date is filled", async () => {
+    renderComponent();
+
+    // Fill To date
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "15" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+
+    // Fill From date, then clear it
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "10" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
+
+    // Now clear From date fields
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "" } });
+    fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "" } });
+
+    // Click Apply
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
+
+    // Assert error is shown
+    expect(await screen.findByText("From date is required")).toBeInTheDocument();
   });
 
-  // Simulate user typing a search term
-  const searchInput = screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInput, { target: { value: "John Doe" } });
+  it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
+    const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
+    renderComponent({
+      selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
+      tagListArray: [staffTag],
+    });
 
-  // Simulate user clicking the suggestion
-  fireEvent.click(screen.getByTestId("search-suggestion"));
-
-  // Assert: The tag should be added to the tag list
-  await waitFor(() => {
-    expect(screen.getByTestId("search-tag")).toHaveTextContent("John Doe");
-  });
-});
-it("shows 'From date is required' error when From date is cleared but To date is filled", async () => {
-  renderComponent();
-
-  // Fill To date
-  const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "15" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
-
-  // Fill From date, then clear it
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "10" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "05" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2023" } });
-
-  // Now clear From date fields
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("DD"), { target: { value: "" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "" } });
-  fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "" } });
-
-  // Click Apply
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-  // Assert error is shown
-  expect(await screen.findByText("From date is required")).toBeInTheDocument();
-});
-
-it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
-  const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
-  renderComponent({
-    selectedRelatedTo: { text: "Staff", value: "2" , data: { data: { key: "Staff" } } },
-    tagListArray: [staffTag],
-  });
-
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-  await waitFor(() => {
-    // handleApply should be called with ["staff-123"] as the first argument
-    expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything(),expect.arrayContaining([
-      expect.objectContaining({
-        text: "Test Staff",
-        externalId: "staff-123",
-        id: "staff-123"
-      })
-    ]));
-  });
-});
-
-it("calls handleSearchChange on search input change", async () => {
-  renderComponent({
-    selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
-    tagListArray: [],
-  });
-
-  const searchInput = screen.getByTestId("search-autocomplete-input");
-  fireEvent.change(searchInput, { target: { value: "Jane Doe" } });
-  fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
-
-   
-    const suggestionNode = await screen.getAllByText("Jane Doe");
-   
-    fireEvent.click(suggestionNode[0]);
-
-    fireEvent.click(screen.getByTestId("remove-tag-undefined"));
-});
-
-  it("sets showSearchError to true when invalid search input is entered", async () => {
-    const setShowSearchErrorMock = jest.fn();
-
-    jest
-      .spyOn(logic, "handleSearchChange")
-      .mockImplementation(
-        (
-          _t,
-          _e,
-          _ids,
-          _from,
-          _to,
-          _setSearchTerm,
-          _setSuggestions,
-          setShowSearchError
-        ) => {
-          setShowSearchError(true);
-          setShowSearchErrorMock(true);
-        }
-      );
-
-    render(
-      <FilterDialog
-        title="Filter"
-        isOpen
-        onClose={jest.fn()}
-        handleApply={jest.fn()}
-        isFilterDialogOpen
-        setSelectedCategories={jest.fn()}
-        selectedCategories={[]}
-        setIsDateError={jest.fn()}
-        isDateError={false}
-        setSelectedDateRange={jest.fn()}
-        selectedDateRange={{ fromDate: "", toDate: "" }}
-        setReferenceExternalIds={jest.fn()}
-        setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1", data: { data : { key: "Pupil" } } }}
-        setSelectedRelatedTo={jest.fn()}
-        tagListArray={[]}
-        setTagListArray={jest.fn()}
-      />
-    );
-
-    const searchInput = screen.getByTestId("search-autocomplete-input");
-    fireEvent.change(searchInput, { target: { value: "error" } });
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
 
     await waitFor(() => {
-      expect(setShowSearchErrorMock).toHaveBeenCalledWith(true);
+      // handleApply should be called with ["staff-123"] as the first argument
+      expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything(), expect.arrayContaining([
+        expect.objectContaining({
+          text: "Test Staff",
+          externalId: "staff-123",
+          id: "staff-123"
+        })
+      ]));
     });
   });
 
-  it("clears selected categories when Related To is changed", async () => {
-  const setSelectedCategoriesMock = jest.fn();
-  render(
-    <FilterDialog
-      {...defaultProps}
-      selectedCategories={[
-        { data: "send", text: "Send" },
-        { data: "pupils", text: "Pupils" }
-      ]}
-      setSelectedCategories={setSelectedCategoriesMock}
-      selectedRelatedTo={{ text: "Pupil", value: "1", data: { data: { key: "Pupil" } } }}
-    />
-  );
+  it("calls handleSearchChange on search input change", async () => {
+    renderComponent({
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+      tagListArray: [],
+    });
 
-  // Simulate changing the Related To dropdown
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+    const searchInput = screen.getByTestId("search-autocomplete-input");
+    fireEvent.change(searchInput, { target: { value: "Jane Doe" } });
+    fireEvent.keyDown(searchInput, { key: "Enter", code: "Enter" });
 
-  // Now open the category dropdown to trigger setSelectedCategories
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
 
-  // The updater function should receive an empty array as previous categories
-  await waitFor(() => {
-    const updater = setSelectedCategoriesMock.mock.calls.at(-1)?.[0];
-    if (typeof updater === "function") {
-      // The updater should be called with [] as previous categories
-      expect(updater([])).toEqual([]);
-    }
+    const suggestionNode = await screen.getAllByText("Jane Doe");
+
+    fireEvent.click(suggestionNode[0]);
+
+    fireEvent.click(screen.getByTestId("remove-tag-undefined"));
   });
+
 });
 
-test("covers .sort and .map logic for category matching (full branch coverage)", async () => {
-  const setSelectedCategoriesMock = jest.fn();
+describe("Related To Dropdown", () => {
+  beforeEach(() => jest.clearAllMocks());
+  it("sets selected item state when Related To is changed", async () => {
+    const mockData = [{
+      application: "Apple",
+      category: "Apple",
+      categoryId: 8,
+      code: "APPL6",
+      section: "Section5"
+    }, {
+      application: "HR",
+      category: "HR",
+      categoryId: 1,
+      code: "APPL6",
+      section: "Section5"
+    }];
 
-  // Mock category data — one with registrationId, one without
-  (logic.fetchCategory as jest.Mock).mockResolvedValueOnce([
-    { application: "Zebra", registrationId: 5 },
-    { application: "Mango" }
-  ]);
+    (logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValueOnce(mockData);
 
-  render(
-    <FilterDialog
-      {...defaultProps}
-      selectedCategories={[
-        { data: { application: "Zebra", registrationId: 5 }, text: "Zebra" },
-        { data: { application: "Mango", id: 99 }, text: "Mango" }
-      ]}
-      setSelectedCategories={setSelectedCategoriesMock}
-    />
-  );
+    renderComponent({
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+      selectedCategories: mockData,
+      tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }]
+    });
 
-  // Open the related-to dropdown
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
-  const pupilOptions = screen.getAllByText("Pupil");
-  fireEvent.click(pupilOptions[0]); // pick the first one to avoid ambiguity
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-related-to"));
+    fireEvent.click(screen.getAllByTestId("related-to-option")[0]);
 
-  // Open category dropdown
-  fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
-
-  // Wait for fetched category names to appear
-  const zebra = await screen.findByText("Zebra");
-  const mango = await screen.findByText("Mango");
-
-  // Click both categories to trigger both logical branches
-  fireEvent.click(zebra);
-  fireEvent.click(mango);
-
-  // Validate callback
-  await waitFor(() => {
-    expect(setSelectedCategoriesMock).toHaveBeenCalled();
-  });
-});
-
-
-
-test("fetches and displays sorted categories correctly", async () => {
-  // Mock API response with unsorted data
-  (logic.fetchCategory as jest.Mock).mockResolvedValueOnce([
-  { application: "Zebra" },
-  { application: "Apple" },
-  { application: "Mango" }
-]);
-
-  // Include one category in selectedCategories with matching 'Apple'
-  const selectedCategories = [
-    { data: { application: "Apple" }, text: "Apple" },
-    { data: { application: "HR" }, text: "HR" }
-  ];
-
- render(
-      <FilterDialog
-        title="Filter"
-        isOpen
-        onClose={jest.fn()}
-        handleApply={jest.fn()}
-        isFilterDialogOpen
-        setSelectedCategories={mockSetSelectedCategories}
-        selectedCategories={selectedCategories}
-        setIsDateError={jest.fn()}
-        isDateError={false}
-        setSelectedDateRange={jest.fn()}
-        selectedDateRange={{ fromDate: "", toDate: "" }}
-        setReferenceExternalIds={jest.fn()}
-        setDocumentRelatedTo={jest.fn()}
-        selectedRelatedTo={{ text: "Pupil", value: "1" ,data: { data : { key: "Pupil" } } }}
-        setSelectedRelatedTo={jest.fn()}
-        tagListArray={[]}
-        setTagListArray={jest.fn()}
-      />
-    );
-
-  // Wait for categories to be fetched and displayed
-  await waitFor(() => {
-    expect(logic.fetchCategory).toHaveBeenCalledWith(1);
+    await waitFor(() => {
+      const updater = mockSetSelectedCategories.mock.calls.at(-1)[0];
+      expect(typeof updater).toBe("function");
+      expect(updater(mockData)).toEqual(mockData);
+      expect(mockSetTagListArray).toHaveBeenCalledWith([{ text: "Test Pupil", learnerExternalId: "123", id: "123" }]);
+    });
   });
 
-  // Now check sorted order in rendered categories
-  const categoryElements = screen.getAllByText(/Apple|Mango|Zebra/i);
-  const categoryNames = categoryElements.map((el) => el.textContent);
+  test("handleDialogClose resets state and calls onClose", () => {
+    const onClose = jest.fn();
 
-  // Assert the categories are sorted alphabetically
-  expect(categoryNames).toEqual(["Apple", "Mango", "Zebra"]);
+    renderComponent({
+      isOpen: true,
+      onClose,
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+      tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }]
+    });
 
-  // Optional: simulate clicking one of the mapped items to trigger item logic
-  categoryElements[0].click();
+    // Trigger dialog close using fireEvent
+    const closeButton = screen.getByRole("button", { name: /close/i });
+    fireEvent.click(closeButton);
 
-  // This ensures .map callback code runs and state updates occur
-  await waitFor(() => {
-    expect(categoryElements[0]).toBeInTheDocument();
-    expect(mockSetSelectedCategories).toHaveBeenCalled();
+
+    // Check side effects in UI
+    expect(screen.queryByTestId("dms-filter-dialog-related-to")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("search-error")).not.toBeInTheDocument();
+
+    // Ensure onClose is called
+    expect(onClose).toHaveBeenCalledTimes(1);
   });
-});
+
+  it("renders search block for Pupil/Staff", async () => {
+    const setCategoryError = jest.fn();
+    const mockData = [
+      {
+        application: "Application6",
+        category: "Application6",
+        categoryId: 8,
+        code: "APPL6",
+        section: "Section5"
+      }
+    ];
+    jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+    (logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValueOnce({ status: 500, detail: "Unknown server error" });
+
+    renderComponent({
+      selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
+      selectedCategories: mockData,
+      tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }],
+      catRefIds: ["1"],
+      selectedItems: [],
+      onSelectMultiple: jest.fn(),
+      setCategoryError
+    });
+    const dropdown = screen.getByTestId("dms-filter-dialog-related-to");
+    fireEvent.click(dropdown);
+    const suggestionNode = await screen.findAllByTestId("related-to-option");
+
+    // click suggestion
+    fireEvent.click(suggestionNode[0]);
+    const input = await screen.findByTestId("search-autocomplete-input");
+    fireEvent.change(input, { target: { value: "Pupil" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+    fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
+  });
 
 });

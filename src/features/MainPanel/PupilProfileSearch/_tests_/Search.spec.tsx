@@ -4,8 +4,13 @@ import Search from "../Search.logic";
 import searchInputValidation, { SearchInputProps } from "../utils/SearchInputValidation";
 import * as fetchSearchSuggestions from "../utils/FetchSearchSuggestions";
 import { ISearchSuggestionsResultsApiResponse } from "../../../../shared/model/SearchSuggestions/SearchResultsApiResponse";
+import { onItemClickFunc } from "../Search.view";
+import { envConfig } from "../../../../shared/utils";
+import gtmAnalytics from "../../../../shared/utils/analytics";
 
-
+jest.mock("../../../../shared/utils/analytics", () => ({
+  pushEvent: jest.fn(),
+}));
 
 describe("Search Input field tests", () => {
 
@@ -125,6 +130,39 @@ await waitFor(() => {
     expect(mockKeyPress1).toHaveBeenCalled();
 });
   });  
+});
+
+
+describe("SearchView onItemClickFunc", () => {
+  const setSuggestions = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // Mock window.location.href
+    delete (window as any).location;
+    (window as any).location = { href: "" };
+  });
+
+  it("pushes analytics event, clears suggestions, and navigates to link", () => {
+    const mockItem = { link: "/pupil/123" };
+
+    onItemClickFunc(mockItem, setSuggestions);
+
+    // Analytics is called
+    expect(gtmAnalytics.pushEvent).toHaveBeenCalledWith({
+      event: "click",
+      linkText: "[RemovedPupilName]",
+      linkUrl: `${envConfig.LEARNER_UI_URL}/pupil/123`,
+      clickType: "dropdown_option",
+      clickLocation: "search_suggestion",
+    });
+
+    // Suggestions cleared
+    expect(setSuggestions).toHaveBeenCalledWith([]);
+
+    // Navigation
+    expect(window.location.href).toBe(`${envConfig.LEARNER_UI_URL}/pupil/123`);
+  });
 });
 
 

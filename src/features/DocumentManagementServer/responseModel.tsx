@@ -68,6 +68,14 @@ export interface Category{
   section: string[];
 };
 
+export interface CategoryData {
+  application: string;
+  section: string;
+  code: string;
+  category: string;
+  categoryId: number;
+};
+
  export interface ViewDownloadItem {
         name?: string;
         status?: string;
@@ -83,6 +91,12 @@ export interface DocumentPrepareDownload {
   fileId: string;
   registrationId: number;
   status?: string;
+}
+
+export interface DocumentCategoryResponse {
+  error: string;
+  payload: CategoryData[];
+  status: string;
 }
 
 export interface ReferenceMappingDetail {
@@ -133,6 +147,15 @@ export interface FetchViewDownloadDataParams {
   downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>;
   setIsViewDownloadError: React.Dispatch<React.SetStateAction<boolean>>;
   setShowEmailNotification: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface FetchDocumentCategoryDataParams {
+  payload: { CategoryRequest: { ReferenceExternalId: string[] } };
+  setCategoryError: React.Dispatch<React.SetStateAction<boolean>>;
+  setAvailableCategories: React.Dispatch<React.SetStateAction<any[]>>;
+  setLocalSelectedCategories: React.Dispatch<React.SetStateAction<any[]>>;
+  localSelectedCategories: any[];
+  refId: string[];
 }
 
 export interface ValidationFileDetail {
