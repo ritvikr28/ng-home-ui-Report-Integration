@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import {
   Divider,
@@ -19,6 +20,9 @@ import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import { homepageVideoOrgViewExcluded } from "../../Layout";
+import gtmAnalytics from '../../shared/utils/analytics';
+import { saveVideoPlayStatus } from '../../shared/services/videoPlayStatusSave';
+import { fetchVideoPlayStatus } from "../../shared/services/videoPlayStatus";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -91,29 +95,43 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen(!isOpen);
   };
 
-  function handlePlay() {
-    console.log("The video was just played!");
-  };
+  const [isPlayed, setIsPlayed] = useState(false);
+
+  useEffect(() => {
+    async function loadPlayStatus() {
+      const result = await fetchVideoPlayStatus();
+
+      if (result?.status === 200 && result.payload) {
+        const playedValue =
+          String(result.payload.isPlayed).toLowerCase() === "true";
+
+        console.log("Converted isPlayed =", playedValue);
+        setIsPlayed(playedValue);
+      } else {
+        setIsPlayed(false);
+      }
+    }
+
+    loadPlayStatus();
+  }, []);
+
+  async function handlePlay() {
+    gtmAnalytics.pushEvent({ event: "playVideo" });
+    await saveVideoPlayStatus();
+    console.log("The video has played.");
+  }
+
 
   function handleOnEnded() {
+    gtmAnalytics.pushVideoEvent(100);
     console.log("The video has ended!");
   };
 
   function handleOnPause() {
     console.log("the video has paused.");
   }
- const isShowVideo = true;
-  // function closePlayer() {
-  //   if (playerRef.current) {
-  //     // playerRef.current.pause(); // Optional: pause the video
-  //   }
-  //   setIsVisible(false); // Hide the component
-  // }
 
-  // function openPlayer() {
-  //   setIsVisible(true);
-  // }
-
+  console.log("isPlayed value:", isPlayed);
   return (
     <div>
       <Grid className="new-margin-b-container">
@@ -163,7 +181,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       ) && (
           <>
             <Search isOpen={isOpen} />
-            <div className="new-divider-spacing">
+            <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>
@@ -177,13 +195,13 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         ) && (
           <>
             <SltViewBett />
-            <div className={isShowVideo? "new-divider-spacing wistia-class" : "new-divider-spacing"}>
+            <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>
         )}
 
-      {(homepageVideoOrgViewExcluded && isShowVideo) ? (
+      {(homepageVideoOrgViewExcluded && !isPlayed) ? (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}
