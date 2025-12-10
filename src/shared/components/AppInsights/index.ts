@@ -16,6 +16,12 @@ const ai = new ApplicationInsights({
     extensionConfig: {
       [reactPlugin.identifier]: { history: browserHistory }
     },
+    correlationHeaderExcludedDomains: [
+      "fast.wistia.com",
+      "fast.wistia.net",
+      "pipedream.wistia.com",
+      "pipedream.wistia.net"     // optional but safe
+    ],
     autoTrackPageVisitTime: true,
     enableAutoRouteTracking: true,
     enableCorsCorrelation: true,
@@ -37,6 +43,14 @@ else {
   ) => {
     const customParams: ITelemetryItem = envelope;
     customParams.data = { ApplicationName: process.env.APP_NAME };
+
+    if (envelope.data?.baseData?.url?.includes('wistia') && envelope.tags) {
+    // eslint-disable-next-line no-param-reassign
+      envelope.tags = {
+      ...envelope.tags,
+      'ai.operation.id': undefined
+    };
+  }
   };
   ai.addTelemetryInitializer(telemetryInitializer);
   ai.trackPageView();

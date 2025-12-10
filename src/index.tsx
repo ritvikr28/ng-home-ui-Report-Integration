@@ -6,6 +6,7 @@ import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import { envConfig } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+// import "./appInsights"
 
 gtmAnalytics.init(envConfig.REACT_GA_TRACKING_ID);
 
