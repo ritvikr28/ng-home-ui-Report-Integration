@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { renderHook } from "@testing-library/react-hooks";
 import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
@@ -140,7 +141,7 @@ jest.mock("@essnextgen/auth-ui", () => ({
 }));
 
 jest.mock("../ApiService", () => ({
-  fetchFilterCategory: jest.fn(),
+  fetchDocumentCategory: jest.fn(),
   viewDownload: jest.fn(),
   prepareAndDownloadFile: jest.fn(),
 }));
@@ -158,16 +159,16 @@ jest.mock("../DocumentManagementServer.logic", () => {
     fetchGetDocumentDetailsLogic: jest.fn(),
     prepareDownload: jest.fn(),
     reduceCategories: jest.fn(),
-    fetchCategory: jest.fn(),
     debouncedFetchSuggestions: jest.fn(),
     fileDownload: jest.fn(),
+    fetchDocumentCategoryData: jest.fn(),
   };
 });
  
 jest.mock("../ApiService", () => ({
   fetchDocumentDetails: jest.fn(),
   fetchDMSSuggestions: jest.fn(),
-  fetchFilterCategory: jest.fn(),
+  fetchDocumentCategory: jest.fn(),
   prepareAndDownloadFile: jest.fn(),
   viewDownload: jest.fn(),
   fetchStaffProfilePhoto: jest.fn(),
@@ -250,7 +251,7 @@ const mockSuggestions = {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.clearAllMocks();
-    (Logic.fetchCategory as jest.Mock).mockResolvedValue(mockCategories);
+    (Logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValue(mockCategories);
     (Logic.reduceCategories as jest.Mock).mockReturnValue(mockCategories);
     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
       ({ setDocData }: any) => setDocData(mockDocData)
@@ -338,7 +339,7 @@ afterEach(() => {
  
 it("shows suggestions and triggers search when user clicks a suggestion", async () => {
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
@@ -400,7 +401,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
  
   test("removes id from selectedCheckBoxIds and allSelectedDocs when checkbox is unchecked", async () => {
   jest.useFakeTimers();
-    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+    (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue([500]);
@@ -467,7 +468,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
  
   it("resets state on search close", async () => {
   jest.useFakeTimers();
-       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+       (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue({data: [], status: 500 });
 
@@ -575,7 +576,7 @@ describe("Additional tests to increase coverage", () => {
  
   it("handles multiple files for email notification", async () => {
     jest.useFakeTimers();
-    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+    (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
     jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
     (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
     (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -638,7 +639,7 @@ describe("Additional tests to increase coverage", () => {
  
   it("handles date filter validation error", async () => {
     jest.useFakeTimers();
-       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+       (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
  
@@ -679,7 +680,7 @@ describe("Additional tests to increase coverage", () => {
   });
  
     it("handles filter close", async () => {
-       (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+       (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
  
@@ -947,7 +948,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
  
  it("Catch error for failed prepareDownload", async () => {
   jest.useFakeTimers();
-     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+     (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue(Error("Network error"));
@@ -1010,7 +1011,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
 
  it("Catch 409 error code for failed prepareDownload", async () => {
   jest.useFakeTimers();
-     (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+     (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (Logic.prepareDownload as jest.Mock).mockResolvedValue([409]);
@@ -1029,8 +1030,6 @@ describe('onClickSidePnlSecondaryBtn', () => {
   },
   status: 200
 });  
- 
- 
   render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
@@ -1073,7 +1072,7 @@ describe('onClickSidePnlSecondaryBtn', () => {
 it("sets excludedFileDetails and fileDetails correctly when select all with exclusions", async () => {
   jest.useFakeTimers();
   // Mock document data with two files
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
 
@@ -1271,7 +1270,7 @@ it("Documents cannot be downloaded as they have been deleted", async () => {
 it("shows correct message when one document is already deleted in dialog", async () => {
   // Mock validation to set alreadyDeletedFileCount = 1, availableFileCount = 0
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -1318,7 +1317,7 @@ jest.useRealTimers();
 it("shows correct notification when one document is available for download in dialog", async () => {
   // Mock validation to set availableFileCount = 1, alreadyDeletedFileCount = 0
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -1367,7 +1366,7 @@ jest.useRealTimers();
 })
 
 it("resets search input and increments tableKey when filter applied with referenceExternalIds", async () => {
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   (ApiService.fetchDMSSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   render(<MemoryRouter>
@@ -1395,7 +1394,7 @@ it("resets search input and increments tableKey when filter applied with referen
 it("shows 'All selected documents have already been deleted.' when all selected are already deleted", async () => {
   // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -1450,7 +1449,7 @@ it("shows 'All selected documents have already been deleted.' when all selected 
 it("shows 'document will be gone forever once deleted.'", async () => {
   // Mock validation to set alreadyDeletedFileCount = 2, availableFileCount = 0, totalSelectedCount = 2
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.validation as jest.Mock).mockResolvedValue({
@@ -1504,7 +1503,7 @@ it("shows 'document will be gone forever once deleted.'", async () => {
 
 it("covers setTimeout and fetchViewDownloadData in prepare mode", async () => {
   jest.useFakeTimers();
-  (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue([]);
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
   (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
   (ApiService.viewDownload as jest.Mock).mockResolvedValue({
@@ -1604,3 +1603,65 @@ it("sets visible breadcrumbs to all items on desktop view", () => {
   expect(screen.getByText("Home")).toBeInTheDocument();
 });
 })
+
+function useTestHook(
+  isHeader = false,
+  excluded: number[] = [],
+  allSelected: number[] = [],
+  totalRecords?: number
+) {
+  const [isHeaderBoxChecked, setHeader] = useState<boolean>(isHeader);
+  const [excludedCheckBoxIds, setExcluded] = useState<number[]>(excluded);
+  const [allSelectedDocs, setAllSelected] = useState<number[]>(allSelected);
+  const [totalSelectedCount, setTotal] = useState<number>(0);
+
+  useEffect(() => {
+    const excludedCount = excludedCheckBoxIds.length;
+    let total = 0;
+    if (totalRecords) {
+      if (totalRecords === excludedCount) {
+        setHeader(false);
+        setAllSelected([]);
+        setExcluded([]);
+        total = 0;
+      } else if (isHeaderBoxChecked) {
+        total = totalRecords - excludedCount;
+      } else {
+        total = allSelectedDocs.length;
+      }
+    } else {
+      total = 0;
+    }
+    setTotal(total);
+  }, [isHeaderBoxChecked, excludedCheckBoxIds, allSelectedDocs, totalRecords]);
+
+  return { totalSelectedCount, setExcluded, setAllSelected, setHeader };
+}
+
+describe("useEffect totalSelectedCount", () => {
+  it("returns 0 if no totalRecords", () => {
+    const { result } = renderHook(() => useTestHook());
+    expect(result.current.totalSelectedCount).toBe(0);
+  });
+
+  it("resets states if totalRecords === excludedCount", () => {
+    const { result } = renderHook(() => useTestHook(true, [1, 2], [], 2));
+    expect(result.current.totalSelectedCount).toBe(0);
+  });
+
+  it("computes totalRecords - excludedCount if header checked", () => {
+    const { result } = renderHook(() => useTestHook(true, [1], [], 5));
+    expect(result.current.totalSelectedCount).toBe(4);
+  });
+
+  it("returns allSelectedDocs length if header unchecked", () => {
+    const { result } = renderHook(() => useTestHook(false, [], [10, 20], 5));
+    expect(result.current.totalSelectedCount).toBe(2);
+  });
+
+  it("updates when excludedCheckBoxIds changes", () => {
+    const { result } = renderHook(() => useTestHook(true, [1], [], 5));
+    act(() => result.current.setExcluded([1, 2, 3]));
+    expect(result.current.totalSelectedCount).toBe(2);
+  });
+});

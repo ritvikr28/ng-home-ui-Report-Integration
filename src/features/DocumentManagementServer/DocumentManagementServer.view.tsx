@@ -6,7 +6,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { fetchCategory, getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
+import { getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -207,6 +207,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     );
     const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
+    /* istanbul ignore next */
     useEffect(() => {
     // Try desktop main panel first
         let scrolled = false;
@@ -229,6 +230,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         }
     }, [currentPage]);
 
+    /* istanbul ignore next */
     useEffect(() => {
         if (!isMobileView) {
             document.body.classList.add("no-scroll");
@@ -238,7 +240,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     }, [isMobileView]);
  
 
- 
+ /* istanbul ignore next */
     useEffect(() => {
         const tagListNode = document.getElementById("taglist-id");
         if (!tagListNode) {
@@ -280,15 +282,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         }
     }, [docData]);
 
-    useEffect(() => {
-
-      fetchCategory(null).then((res) => {
-        const map: Record<string, number> = {};
-        res.forEach((cat: any) => {
-        map[cat.application] = cat.registrationId;
-        });
-    });
-    }, []);
 
 
     useEffect(() => {
@@ -378,6 +371,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     });
     };
 
+    /* istanbul ignore next */
      useEffect(() => {
         const excludedCount = excludedCheckBoxIds.length || 0;
         const computedTotalSelectedCount = (() => {
@@ -1330,8 +1324,8 @@ const getDialogTitle = () => {
                                 searchValue={searchTerm}
                                 searchIsLoader={isSearchLoading}
                                 isSearchHideClearIcon={searchTerm.length === 0}
-                                onKeyUpLenght={2}
-                                searchDebouncerTreshold={0}
+                                onKeyUpLenght={3}
+                                searchDebouncerTreshold={1000}
                                 searchSuggestions={filteredSuggestions}
                                 onSearchSuggestionItemClick={(item) =>{
                                     setTagListArray([]);

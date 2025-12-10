@@ -1,6 +1,7 @@
 import { act } from "@testing-library/react";
 import { renderHook } from "@testing-library/react-hooks";
 import { useNotification } from "../useNotification";
+import { notificationTableRows } from "../helper";
 
 function buildNotifications() {
   return [
@@ -111,4 +112,87 @@ describe("useNotification hook", () => {
     expect(result.current.isClearSelectedCheckbox).toBe(false);
   });
 });
+
+jest.useFakeTimers();
+
+describe("useNotification hook", () => {
+  it("initializes with default values", () => {
+    const { result } = renderHook(() => useNotification());
+
+    expect(result.current.currentPage).toBe(1);
+    expect(result.current.totalPages).toBe(Math.ceil(notificationTableRows.length / 40));
+    expect(result.current.totalNotifications).toBe(notificationTableRows.length);
+    expect(result.current.paginatedNotifications.length).toBeLessThanOrEqual(40);
+    expect(result.current.searchTerm).toBe("");
+    expect(result.current.selectedNotificationIds).toEqual([]);
+    expect(result.current.isDeleteDialogOpen).toBe(false);
+  });
+
+  it("handles search input and updates filtered results", () => {
+    const { result } = renderHook(() => useNotification());
+
+    act(() => result.current.handleSearchChange("nonexistent"));
+
+    expect(result.current.searchTerm).toBe("nonexistent");
+
+    // Fast-forward debounce
+    act(() => {
+      jest.advanceTimersByTime(300);
+    });
+
+    expect(result.current.isSearching).toBe(true);
+    expect(result.current.noResults).toBe(false);
+    expect(result.current.currentPage).toBe(1);
+  });
+
+  it("handles bulk delete actions with no selection", () => {
+    const { result } = renderHook(() => useNotification());
+
+    act(() => result.current.handleBulkAction({ value: "Delete" }, ["some-id"]));
+
+    expect(result.current.isDeleteDialogOpen).toBe(true);
+    expect(result.current.isNoSelectionMode).toBe(true);
+  });
+
+  it("confirms deletion of selected notifications", async () => {
+    const { result } = renderHook(() => useNotification());
+    const firstId = notificationTableRows[0].Id;
+
+    act(() => result.current.handleSelectedCheckboxIds([firstId]));
+
+    await act(async () => result.current.confirmDelete());
+
+    expect(result.current.selectedNotificationIds).not.toContain([firstId]);
+    expect(result.current.isDeleteDialogOpen).toBe(false);
+    expect(result.current.isDeleteLoading).toBe(false);
+    expect(result.current.showDeleteToast).toBe(false);
+    expect(result.current.isClearSelectedCheckbox).toBe(false);
+  });
+
+  it("resets search term on clear", () => {
+    const { result } = renderHook(() => useNotification());
+
+    act(() => result.current.handleSearchChange("search"));
+    expect(result.current.searchTerm).toBe("search");
+
+    act(() => result.current.handleClearSearch());
+    expect(result.current.searchTerm).toBe("");
+  });
+
+  it("handles page changes", () => {
+    const { result } = renderHook(() => useNotification());
+
+    act(() => result.current.handlePageChange(null, 2));
+    expect(result.current.currentPage).toBe(1);
+  });
+
+  it("handles delete dialog close when not loading", () => {
+    const { result } = renderHook(() => useNotification());
+
+    act(() => result.current.closeDeleteDialog());
+    expect(result.current.isDeleteDialogOpen).toBe(false);
+    expect(result.current.isNoSelectionMode).toBe(false);
+  });
+});
+
 

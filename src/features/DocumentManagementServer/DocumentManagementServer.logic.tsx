@@ -1,11 +1,11 @@
 
 import React from "react";
-import { ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader } from "@essnextgen/ui-kit";
+import { ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader, ValidationTextLevel } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchFilterCategory, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload } from "./ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
 import {isValidDate} from "../../shared/utils/commonFunctions";
- import { BuildValidationPayloadParams, Category, FetchViewDownloadDataParams } from "./responseModel";
+ import { BuildValidationPayloadParams, Category, FetchDocumentCategoryDataParams, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
 import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 
@@ -292,7 +292,7 @@ export const handleSearchChange = (
     return;
   }
 
-  if (value?.length < 2) {
+  if (value?.length < 3) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
@@ -575,15 +575,52 @@ export const fetchViewDownloadData = async ({
   }
 };
 
-export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
+
+export const fetchDocumentCategoryData = async ({
+  payload,
+  setCategoryError,
+  setAvailableCategories,
+  setLocalSelectedCategories,
+  localSelectedCategories,
+  refId
+}: FetchDocumentCategoryDataParams) => {
   try {
-    const response = await fetchFilterCategory(documentRealatedTo);
-    return response ?? [];
+    const response = await fetchDocumentCategory(payload);
+    setCategoryError(false);
+    if (response?.status && response?.status === 200) {
+      const data = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
+      setAvailableCategories(data || []);
+      const categoryIds = data.map(cat => cat.categoryId);
+
+      const filteredFormats = localSelectedCategories?.filter(
+        item => categoryIds?.includes(item?.data?.categoryId)
+      );
+      setLocalSelectedCategories(filteredFormats || []);
+      return data;
+    }
+    if (refId?.length === 0) {
+      setCategoryError(true);
+    }
+    setAvailableCategories([]);
+    return [];
   } catch (err) {
-    console.error("Error fetching categories:", err);
+    console.error("Error fetching document categories:", err);
+    setCategoryError(true);
+    setAvailableCategories([]);
     return [];
   }
 }
+
+
+// export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
+//   try {
+//     const response = await fetchFilterCategory(documentRealatedTo);
+//     return response ?? [];
+//   } catch (err) {
+//     console.error("Error fetching categories:", err);
+//     return [];
+//   }
+// }
  
 export const getResultNotFoundMsg = (
   t:any,
@@ -1595,4 +1632,28 @@ export function applySummaryTagClass() {
       tag.classList.remove('summary-tag');
     }
   });
+}
+
+export function getValidationState(
+  searchSelectionError: string,
+  showSearchError: boolean,
+  t: (key: string) => string
+) {
+  let validationText = "";
+  if (searchSelectionError) {
+    validationText = searchSelectionError;
+  } else if (showSearchError) {
+    validationText = t("Filter.informationUnavailable");
+  }
+
+  let validationTextLevel: ValidationTextLevel | undefined;
+  if (searchSelectionError) {
+    validationTextLevel = ValidationTextLevel.Error;
+  } else if (showSearchError) {
+    validationTextLevel = ValidationTextLevel.Warning;
+  } else {
+    validationTextLevel = undefined;
+  }
+
+  return { validationText, validationTextLevel };
 }

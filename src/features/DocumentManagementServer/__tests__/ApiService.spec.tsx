@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import axios, { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions, fetchFilterCategory, viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation, bulkDownload } from '../ApiService';
+import { fetchDocumentDetails, fetchDMSSuggestions,  viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation, bulkDownload, fetchDocumentCategory } from '../ApiService';
 import * as ApiService from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
@@ -151,9 +151,10 @@ describe('clearAllFiles', () => {
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     const result = await fetchDMSSuggestions('doc', '', '', []);
-    const values = Array.isArray(result?.payload?.[0]?.values)
-      ? result.payload[0].values
-      : [];
+    let values: any[] = [];
+    if (Array.isArray(result?.payload?.[0]?.values)) {
+      values = result.payload[0].values;
+    }
 
     expect(values).toEqual(mockValues);
   });
@@ -247,70 +248,73 @@ describe('clearAllFiles', () => {
   });
 });
 
-describe('fetchFilterCategory', () => {
+describe('fetchDocumentCategory', () => {
+  const payload = { CategoryRequest: { ReferenceExternalId: "1" } };
+  const mockData = [{ categoryId: 1, category: "Test" }];
+  const mockUrl = '/validation/api/v1/data-export/get-linked-files-category-by-id';
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test('should return data when API call is successful', async () => {
-    const mockData = { foo: 'bar' };
-    const mockUrl = '/validation/api/v1/applicationregistration?DocumentRealatedTo=1';
-
-    (service.get as jest.Mock).mockResolvedValueOnce({ data: mockData });
-
-    const result = await fetchFilterCategory(1);
+  it('should return data when API call is successful', async () => {
+    (service.post as jest.Mock).mockResolvedValueOnce({ data: mockData });
+    const result = await fetchDocumentCategory(payload);
     expect(result).toEqual(mockData);
-    expect(service.get).toHaveBeenCalledWith(mockUrl, expect.anything());
+    expect(service.post).toHaveBeenCalledWith(
+      mockUrl,
+      payload,
+      expect.objectContaining({ baseURL: expect.any(String) })
+    );
   });
 
-  test('should return empty object and log error on failure', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    (service.get as jest.Mock).mockRejectedValueOnce(new Error('API error'));
+  it('should return empty object and log error on failure', async () => {
+    const error = new Error('API error');
+    (service.post as jest.Mock).mockRejectedValueOnce(error);
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const result = await fetchFilterCategory(1);
-    expect(result).toEqual({});
+    const result = await fetchDocumentCategory(payload);
+    expect(result).toEqual({ status: 500, detail: "Unknown server error" });
     expect(consoleSpy).toHaveBeenCalledWith(
-      'Error fetching DMS suggestions:',
-      expect.any(Error)
+      'Error fetching document categories:',
+      error
     );
     consoleSpy.mockRestore();
   });
 
-  test('should return undefined if response is undefined', async () => {
-    (service.get as jest.Mock).mockResolvedValueOnce(undefined);
-
-    const result = await fetchFilterCategory(1);
-    expect(result).toBeUndefined();
-  });
-});
-
-describe('fetchFilterCategory', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('should return empty object and log error on failure', async () => {
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('API error'));
-
-    const result = await fetchFilterCategory(1);
-    expect(result).toEqual({});
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Error fetching DMS suggestions:',
-      expect.any(Error)
-    );
+  it('should return empty object if service.post throws non-Error', async () => {
+    (service.post as jest.Mock).mockRejectedValueOnce('some error');
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const result = await fetchDocumentCategory(payload);
+    expect(result).toEqual({ status: 500, detail: "Unknown server error" });
+    expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 
-  
+  it("returns default error object when API throws unknown error without response", async () => {
+    const mockError = {
+      response: {
+        data: {
+          status: 500,
+          detail: "Unknown server error"
+        }
+      }
+    };
+
+    (service.post as jest.Mock).mockRejectedValue(mockError);
+
+    const result = await fetchDocumentCategory(payload);
+
+    expect(result).toEqual({ status: 500, detail: "Unknown server error" });
+  });
+
   test('should return partitionKey if all branches fail', async () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce({}); // No error.response.status
     const { clearAllFiles } = await import('../ApiService');
-    const payload = { request: { partitionKey: ['key1', 'key2'] } };
-    const result = await clearAllFiles(payload);
+    const testPayload = { request: { partitionKey: ['key1', 'key2'] } };
+    const result = await clearAllFiles(testPayload);
     expect(result).toEqual(['key1', 'key2']);
-  });
+  })
 });
 
 describe('viewDownload', () => {

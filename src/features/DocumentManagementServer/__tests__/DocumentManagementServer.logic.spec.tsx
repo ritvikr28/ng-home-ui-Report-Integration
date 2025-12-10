@@ -2,12 +2,12 @@ import React from "react";
 import { act } from "@testing-library/react-hooks";
 import { render, screen } from "@testing-library/react";
 import dayjs from "dayjs";
-import { ISelectedItem } from "@essnextgen/ui-kit";
+import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 import * as ApiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
 import {
   debouncedFetchSuggestions,
-  fetchCategory,
+  fetchDocumentCategoryData,
   formatSuggestions,
   getAllRegistrationIds,
   getCategoryArr,
@@ -39,7 +39,8 @@ import {
   addUniqueTagItem,
   handleApply,
   handleEditSelectedOverFlowMenu,
-  applySummaryTagClass
+  applySummaryTagClass,
+  getValidationState
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -496,9 +497,9 @@ describe("handleSearchChange", () => {
     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
   });
 
-  it("triggers loading for length === 2", () => {
+  it("triggers loading for length === 3", () => {
   const t = (key: string) => key;
-  const event = { target: { value: "ab" } } as React.ChangeEvent<HTMLInputElement>;
+  const event = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
   const setSearchTerm = jest.fn();
   const setSuggestions = jest.fn();
   const setShowSearchError = jest.fn();
@@ -678,7 +679,7 @@ it("logs error when fetchDMSSuggestions fails", async () => {
 
 describe("handleSearchChange boundary tests", () => {
   it("triggers loading for length === 2", () => {
-    const event = { target: { value: "ab" } } as React.ChangeEvent<HTMLInputElement>;
+    const event = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
@@ -1073,32 +1074,128 @@ describe('getDateTag', () => {
   });
 });
 
-describe('fetchCategory', () => {
+describe("getValidationState", () => {
+  const t = (key: string) => key === "Filter.informationUnavailable" ? "Information unavailable." : key;
+
+  it("returns error text and level when searchSelectionError is set", () => {
+    const result = getValidationState("Some error", false, t);
+    expect(result).toEqual({
+      validationText: "Some error",
+      validationTextLevel: ValidationTextLevel.Error
+    });
+  });
+
+  it("returns warning text and level when showSearchError is true and no selection error", () => {
+    const result = getValidationState("", true, t);
+    expect(result).toEqual({
+      validationText: "Information unavailable.",
+      validationTextLevel: ValidationTextLevel.Warning
+    });
+  });
+
+  it("returns undefined text and level when both errors are falsy", () => {
+    const result = getValidationState("", false, t);
+    expect(result).toEqual({
+      validationText: "",
+      validationTextLevel: undefined
+    });
+  });
+
+  it("prioritizes searchSelectionError over showSearchError", () => {
+    const result = getValidationState("Priority error", true, t);
+    expect(result).toEqual({
+      validationText: "Priority error",
+      validationTextLevel: ValidationTextLevel.Error
+    });
+  });
+});
+
+describe('fetchDocumentCategoryData', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('returns data when API resolves with a valid response', async () => {
-    const mockData = [{ id: 1, name: 'Test Category' }];
-    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(mockData);
+  const payload = { CategoryRequest: { ReferenceExternalId: ["1"] } };
+  const setCategoryError = jest.fn();
+  const setAvailableCategories = jest.fn();
+  const setLocalSelectedCategories = jest.fn();
+  const localSelectedCategories: any[] = [];
+  const refId = ["ref-123"];
 
-    const result = await fetchCategory(1);
-    expect(result).toEqual(mockData);
+  it('returns data and filters localSelectedCategories correctly when API resolves with a valid response', async () => {
+    const emptyRefId: any[] = [];
+    const testLocalSelectedCategories = [
+      { data: { categoryId: 8, name: "MatchCategory" } }
+    ];
+    const mockData = [
+      {
+        application: "Application6",
+        category: "Application6",
+        categoryId: 8,
+        code: "APPL6",
+        section: "Section5"
+      }
+    ];
+    const responseData = { status: 200, payload: mockData, errors: "" };
+
+    (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(responseData);
+
+  const result = await fetchDocumentCategoryData({
+    payload,
+    setCategoryError,
+    setAvailableCategories,
+    setLocalSelectedCategories,
+    localSelectedCategories: testLocalSelectedCategories,
+    refId: emptyRefId
   });
 
-  it('returns empty array when API resolves with null', async () => {
-    (ApiService.fetchFilterCategory as jest.Mock).mockResolvedValue(null);
+  // Validate returned data
+  expect(result).toEqual(mockData);
+  expect(setAvailableCategories).toHaveBeenCalledWith(mockData);
+  expect(setLocalSelectedCategories).toHaveBeenCalledWith([
+    { data: { categoryId: 8, name: "MatchCategory" } }
+  ]);
+  // Error should be false
+  expect(setCategoryError).toHaveBeenCalledWith(false);
+});
 
-    const result = await fetchCategory(1);
-    expect(result).toEqual([]);
+it('returns empty array when API resolves with null', async () => {
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(null);
+
+  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories, refId});
+  expect(result).toEqual([]);
+});
+
+it('returns empty array when API throws an error', async () => {
+  (ApiService.fetchDocumentCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
+
+  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories, refId});
+  expect(result).toEqual([]);
+});
+
+it('returns empty array and sets error when API returns non-200 and refId is empty', async () => {
+  const emptyRefId: any[] = [];
+
+  // Mock API to return a non-200 status instead of throwing
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue({ status: 500 });
+
+  const result = await fetchDocumentCategoryData({
+    payload,
+    setCategoryError,
+    setAvailableCategories,
+    setLocalSelectedCategories,
+    localSelectedCategories,
+    refId: emptyRefId
   });
 
-  it('returns empty array when API throws an error', async () => {
-    (ApiService.fetchFilterCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
+  // Refactored to avoid nested ternary in the implementation (if present)
+  // The test itself does not use ternary, but ensure the implementation does not nest ternaries.
 
-    const result = await fetchCategory(1);
-    expect(result).toEqual([]);
-  });
+  expect(result).toEqual([]);
+  expect(setCategoryError).toHaveBeenCalledWith(true);
+  expect(setAvailableCategories).toHaveBeenCalledWith([]);
+});
+  
 });
 
 describe('getResultNotFoundMsg', () => {
@@ -2881,7 +2978,40 @@ describe('fileDownload', () => {
     await expect(
       logicModule.fileDownload(fileId, fileName, '', '', blobName)
     ).rejects.toThrow('fail');
+
   });
+
+  it('sets download error if bulkDownload throws', async () => {
+  const fileId = 'file-zip';
+  const fileName = 'test.zip';
+  const blobName = 'blob-zip';
+
+  jest.spyOn(ApiService, 'bulkDownload').mockRejectedValueOnce(new Error('fail'));
+  const setDownloadError = jest.fn();
+  const item = {
+    fileId,
+    name: fileName,
+    application: '',
+    section: '',
+    blobName
+  };
+
+  // Run fileDownload inside try/catch to simulate component behavior
+  try {
+    await logicModule.fileDownload(
+      item.fileId,
+      item.name,
+      item.application,
+      item.section,
+      item.blobName
+    );
+  } catch (err) {
+    setDownloadError(true);
+  }
+
+  expect(setDownloadError).toHaveBeenCalledWith(true);
+});
+
 
   it('downloads blob file using downloadFile', async () => {
     const fakeBlob = new Blob(['test']);
