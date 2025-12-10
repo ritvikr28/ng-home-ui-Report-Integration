@@ -20,7 +20,8 @@ const ai = new ApplicationInsights({
       "fast.wistia.com",
       "fast.wistia.net",
       "pipedream.wistia.com",
-      "pipedream.wistia.net"     // optional but safe
+      "pipedream.wistia.net",     // optional but safe
+      "distillery.wistia.com"
     ],
     autoTrackPageVisitTime: true,
     enableAutoRouteTracking: true,
