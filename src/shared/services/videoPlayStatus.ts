@@ -1,32 +1,28 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
-import { AxiosResponse } from "axios";
 import { service } from "../utils/api-service";
 import apiUrls from "../hook/ApiConfig.json";
 
-export interface IVideoPlayStatusResponse {
-  errors: any;
-  payload: {
-    isPlayed: string | boolean;   // <-- FIXED
-  };
-  status: number;
+export interface IVideoPlayStatusResult {
+  success: boolean;
+  isPlayed: boolean | string | null;
 }
 
-export const fetchVideoPlayStatus = async (): Promise<IVideoPlayStatusResponse | null> => {
+export const fetchVideoPlayStatus = async (): Promise<IVideoPlayStatusResult> => {
   try {
-    const response: AxiosResponse<IVideoPlayStatusResponse> = await service.get(
+    const response = await service.get(
       "VideoPlayStatus",
       buildApplicationUrl(apiUrls)
     );
 
-    console.log("VideoPlayStatus API response:", response);
-
-    if (response?.status === 200) {
-      return response.data;
+    if (response.status === 200 && response.data?.payload) {
+      return {
+        success: true,
+        isPlayed: response.data.payload.isPlayed
+      };
     }
 
-    return null;
-  } catch (err: any) {
-    console.error("VideoPlayStatus API error:", err);
-    return null;
+    return { success: false, isPlayed: null };
+  } catch {
+    return { success: false, isPlayed: null };
   }
 };

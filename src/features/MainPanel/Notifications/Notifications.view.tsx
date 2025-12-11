@@ -69,7 +69,7 @@ const NotificationView = () => {
             }),
         [currentPage, getNotificationId, paginatedNotifications]
     );
-    
+
     const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
 
     const handleBulkDeleteSelection = (_event: React.SyntheticEvent, selectedItemOption: ISelectedItem) => {
@@ -142,22 +142,22 @@ const NotificationView = () => {
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[]}
                                 isShowSearch={true}
-                            searchTerm={searchTerm}
-                            searchOnChange={(e) => handleSearchChange(e.target.value)}
-                            searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
-                                if (closeObj) {
-                                    if (closeObj.id === 1) {
-                                        handleRemoveFilter('status', closeObj.value);
-                                    } else if (closeObj.id === 2) {
-                                        handleRemoveFilter('priority', closeObj.value);
-                                    } else if (closeObj.id === 3 || closeObj.name === 'Date') {
-                                        handleRemoveFilter('startDate');
+                                searchTerm={searchTerm}
+                                searchOnChange={(e) => handleSearchChange(e.target.value)}
+                                searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
+                                    if (closeObj) {
+                                        if (closeObj.id === 1) {
+                                            handleRemoveFilter('status', closeObj.value);
+                                        } else if (closeObj.id === 2) {
+                                            handleRemoveFilter('priority', closeObj.value);
+                                        } else if (closeObj.id === 3 || closeObj.name === 'Date') {
+                                            handleRemoveFilter('startDate');
+                                        }
+                                    } else {
+                                        handleClearSearch();
                                     }
-                                } else {
-                                    handleClearSearch();
-                                }
-                            }}
-                            searchOnCloseHandle={handleClearSearch}
+                                }}
+                                searchOnCloseHandle={handleClearSearch}
                                 isShowFirstElement={true}
                                 isShowFourthElement={true}
                                 filterCustumeElem2={
@@ -193,9 +193,6 @@ const NotificationView = () => {
                             onAddEventBtnClick={() => { }}
                             groupTagsEnabled
                             headingText="Notification Centre"
-                            secondSubheading={[
-                                ""
-                            ]}
                             id="controlled-list"
                             isBreadCrumbEnable={false}
                             isOnCloseSidepnl
@@ -271,7 +268,7 @@ const NotificationView = () => {
                         />
                     </div>
                     {filterBtnClicked && (
-                        <FilterDialogLogic 
+                        <FilterDialogLogic
                             setFilterBtnClicked={setFilterBtnClicked}
                             filters={filters}
                             onApply={handleFilterChange}
