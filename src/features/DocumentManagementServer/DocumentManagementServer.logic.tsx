@@ -439,7 +439,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     categoryName: cat?.value,
     closeObj: {
       name: cat?.text,
-      id: cat?.data?.registrationId,
+      id: cat?.data?.categoryId,
     },
   })) || [];
  
@@ -582,12 +582,13 @@ export const fetchDocumentCategoryData = async ({
   setAvailableCategories,
   setLocalSelectedCategories,
   localSelectedCategories,
-  refId
 }: FetchDocumentCategoryDataParams) => {
   try {
     const response = await fetchDocumentCategory(payload);
     setCategoryError(false);
-    if (response?.status && response?.status === 200) {
+    const isSuccess = response?.status === 200;
+    /* eslint-disable */
+    if (isSuccess) {
       const data = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
       setAvailableCategories(data || []);
       const categoryIds = data.map(cat => cat.categoryId);
@@ -597,12 +598,12 @@ export const fetchDocumentCategoryData = async ({
       );
       setLocalSelectedCategories(filteredFormats || []);
       return data;
-    }
-    if (refId?.length === 0) {
+    } else {
       setCategoryError(true);
+      setAvailableCategories([]);
+      return [];
     }
-    setAvailableCategories([]);
-    return [];
+    /* eslint-enable */
   } catch (err) {
     console.error("Error fetching document categories:", err);
     setCategoryError(true);
@@ -653,7 +654,7 @@ export const getResultNotFoundMsg = (
  
 export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
      selectedFormats?.flatMap(item => {
-        const regId = item?.data?.registrationId;
+        const regId = item?.data?.categoryId;
         if (Array.isArray(regId)) {
             return regId;
         }

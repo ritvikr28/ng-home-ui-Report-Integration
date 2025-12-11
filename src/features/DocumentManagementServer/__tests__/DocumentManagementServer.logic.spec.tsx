@@ -977,7 +977,7 @@ describe('getCategoryArr', () => {
         text: 'PDF',
         value: 'pdf',
         data: {
-          registrationId: 'reg123'
+          categoryId: 'reg123'
         }
       }
     ];
@@ -1120,10 +1120,8 @@ describe('fetchDocumentCategoryData', () => {
   const setAvailableCategories = jest.fn();
   const setLocalSelectedCategories = jest.fn();
   const localSelectedCategories: any[] = [];
-  const refId = ["ref-123"];
 
   it('returns data and filters localSelectedCategories correctly when API resolves with a valid response', async () => {
-    const emptyRefId: any[] = [];
     const testLocalSelectedCategories = [
       { data: { categoryId: 8, name: "MatchCategory" } }
     ];
@@ -1146,7 +1144,6 @@ describe('fetchDocumentCategoryData', () => {
     setAvailableCategories,
     setLocalSelectedCategories,
     localSelectedCategories: testLocalSelectedCategories,
-    refId: emptyRefId
   });
 
   // Validate returned data
@@ -1162,19 +1159,18 @@ describe('fetchDocumentCategoryData', () => {
 it('returns empty array when API resolves with null', async () => {
   (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(null);
 
-  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories, refId});
+  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
   expect(result).toEqual([]);
 });
 
 it('returns empty array when API throws an error', async () => {
   (ApiService.fetchDocumentCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
 
-  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories, refId});
+  const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
   expect(result).toEqual([]);
 });
 
 it('returns empty array and sets error when API returns non-200 and refId is empty', async () => {
-  const emptyRefId: any[] = [];
 
   // Mock API to return a non-200 status instead of throwing
   (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue({ status: 500 });
@@ -1185,7 +1181,6 @@ it('returns empty array and sets error when API returns non-200 and refId is emp
     setAvailableCategories,
     setLocalSelectedCategories,
     localSelectedCategories,
-    refId: emptyRefId
   });
 
   // Refactored to avoid nested ternary in the implementation (if present)
@@ -1245,17 +1240,17 @@ describe("getAllRegistrationIds", () => {
 
   it("returns array of registrationIds when all are single values", () => {
     const input = [
-      { data: { registrationId: "id1" } },
-      { data: { registrationId: "id2" } },
-      { data: { registrationId: "id3" } }
+      { data: { categoryId: "id1" } },
+      { data: { categoryId: "id2" } },
+      { data: { categoryId: "id3" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
   });
 
   it("returns array of registrationIds when some are arrays", () => {
     const input = [
-      { data: { registrationId: ["id1", "id2"] } },
-      { data: { registrationId: "id3" } }
+      { data: { categoryId: ["id1", "id2"] } },
+      { data: { categoryId: "id3" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3"]);
   });
@@ -1263,12 +1258,12 @@ describe("getAllRegistrationIds", () => {
   it("skips items with no registrationId", () => {
     const input = [
       { data: {} },
-      { data: { registrationId: "id1" } }
+      { data: { categoryId: "id1" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1"]);
   });
 
-  it("returns empty array when all items have no registrationId", () => {
+  it("returns empty array when all items have no categoryId", () => {
     const input = [
       { data: {} },
       { data: {} }
@@ -1278,25 +1273,25 @@ describe("getAllRegistrationIds", () => {
 
   it("handles mixed array and single registrationIds", () => {
     const input = [
-      { data: { registrationId: ["id1", "id2"] } },
-      { data: { registrationId: "id3" } },
-      { data: { registrationId: ["id4"] } }
+      { data: { categoryId: ["id1", "id2"] } },
+      { data: { categoryId: "id3" } },
+      { data: { categoryId: ["id4"] } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1", "id2", "id3", "id4"]);
   });
 
   it("handles null registrationId", () => {
     const input = [
-      { data: { registrationId: null } },
-      { data: { registrationId: "id1" } }
+      { data: { categoryId: null } },
+      { data: { categoryId: "id1" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1"]);
   });
 
   it("handles undefined registrationId", () => {
     const input = [
-      { data: { registrationId: undefined } },
-      { data: { registrationId: "id1" } }
+      { data: { categoryId: undefined } },
+      { data: { categoryId: "id1" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1"]);
   });
@@ -1304,29 +1299,29 @@ describe("getAllRegistrationIds", () => {
   it("handles missing data property", () => {
     const input = [
       {},
-      { data: { registrationId: "id1" } }
+      { data: { categoryId: "id1" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1"]);
   });
 
   it("handles item with registrationId as empty array", () => {
     const input = [
-      { data: { registrationId: [] } },
-      { data: { registrationId: "id1" } }
+      { data: { categoryId: [] } },
+      { data: { categoryId: "id1" } }
     ];
     expect(getAllRegistrationIds(input)).toEqual(["id1"]);
   });
 
   it("handles item with registrationId as array with null/undefined", () => {
     const input = [
-      { data: { registrationId: [null, undefined, "id1"] } }
+      { data: { categoryId: [null, undefined, "id1"] } }
     ];
     expect(getAllRegistrationIds(input)).toEqual([null, undefined, "id1"]);
   });
 
   it("handles 100 items with single registrationId", () => {
     const input = Array.from({ length: 100 }, (_, i) => ({
-      data: { registrationId: `id${i + 1}` }
+      data: { categoryId: `id${i + 1}` }
     }));
     const expected = Array.from({ length: 100 }, (_, i) => `id${i + 1}`);
     expect(getAllRegistrationIds(input)).toEqual(expected);

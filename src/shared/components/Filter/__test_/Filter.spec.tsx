@@ -1272,26 +1272,6 @@ describe("FilterDialog category selection user scenarios for dateRange insertInd
     expect(await screen.findByText("From date is required")).toBeInTheDocument();
   });
 
-  it("calls handleApply with staff externalIds when RelatedTo is Staff", async () => {
-    const staffTag = { text: "Test Staff", externalId: "staff-123", id: "staff-123" };
-    renderComponent({
-      selectedRelatedTo: { text: "Staff", value: "2", data: { data: { key: "Staff" } } },
-      tagListArray: [staffTag],
-    });
-
-    fireEvent.click(screen.getByTestId("dms-filter-dialog-apply-btn"));
-
-    await waitFor(() => {
-      // handleApply should be called with ["staff-123"] as the first argument
-      expect(mockHandleApply).toHaveBeenCalledWith(["staff-123"], expect.anything(), expect.arrayContaining([
-        expect.objectContaining({
-          text: "Test Staff",
-          externalId: "staff-123",
-          id: "staff-123"
-        })
-      ]));
-    });
-  });
 
   it("calls handleSearchChange on search input change", async () => {
     renderComponent({

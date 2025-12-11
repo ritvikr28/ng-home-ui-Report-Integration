@@ -155,7 +155,6 @@ export interface FetchDocumentCategoryDataParams {
   setAvailableCategories: React.Dispatch<React.SetStateAction<any[]>>;
   setLocalSelectedCategories: React.Dispatch<React.SetStateAction<any[]>>;
   localSelectedCategories: any[];
-  refId: string[];
 }
 
 export interface ValidationFileDetail {
