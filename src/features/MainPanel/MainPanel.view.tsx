@@ -136,10 +136,11 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   console.log("isPlayed value:", isPlayed);
   const shouldShowVideo =
-    homepageVideoOrgViewIncluded &&
     !apiError &&
     isPlayed === false;
 
+     console.log("shouldShowVideo", shouldShowVideo);
+     
   return (
     <div>
       <Grid className="new-margin-b-container">
@@ -209,7 +210,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {shouldShowVideo && (
+      {homepageVideoOrgViewIncluded && shouldShowVideo && (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}
