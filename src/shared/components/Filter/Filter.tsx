@@ -193,7 +193,6 @@ const clearAll = () => {
 
     }
     else if (isOpen && localSelectedRelatedTo && localSelectedRelatedTo.text && localSelectedRelatedTo.text.length > 0 && refId?.length > 0) {
-      const payload = { CategoryRequest: { ReferenceExternalId: refId || [] } };
       fetchDocumentCategoryData({ payload, setCategoryError, setAvailableCategories, setLocalSelectedCategories, localSelectedCategories })
     }
   }, [localSelectedRelatedTo?.text, isOpen, refId]);
