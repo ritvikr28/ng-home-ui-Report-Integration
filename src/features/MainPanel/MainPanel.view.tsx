@@ -11,11 +11,10 @@ import "./style.scss";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import SltViewBett from "./SltViewBETT/SltViewBett.view";
-import { envConfig } from "../../shared/utils";
+import { envConfig, getUserOrganisation } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
-import { homepageVideoOrgViewIncluded } from "../../Layout";
 import gtmAnalytics from '../../shared/utils/analytics';
 import { saveVideoPlayStatus } from '../../shared/services/videoPlayStatusSave';
 import { fetchVideoPlayStatus } from "../../shared/services/videoPlayStatus";
@@ -84,6 +83,10 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     "SLTviewBETT"
   );
 
+  const homepageVideoOrgViewIncluded: boolean =
+    isOrganisationInVariant("HomePageVideoFlag");
+
+
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
 
@@ -139,8 +142,9 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     !apiError &&
     isPlayed === false;
 
-     console.log("shouldShowVideo", shouldShowVideo);
-     
+  console.log("shouldShowVideo", shouldShowVideo);
+  console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewIncluded, orgId: getUserOrganisation() });
+
   return (
     <div>
       <Grid className="new-margin-b-container">

@@ -90,10 +90,6 @@ export const HomePageVideoFlagr: boolean = hasFeaturePermission(
   "HomePageVideoFlag"
 );
 
-export const homepageVideoOrgViewIncluded: boolean =
-  isOrganisationInVariant("HomePageVideoFlag") || false;
-
-
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
@@ -237,8 +233,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-
-  console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewIncluded, orgId: getUserOrganisation() });
 
   return (
     /* eslint-disable react/prop-types */
