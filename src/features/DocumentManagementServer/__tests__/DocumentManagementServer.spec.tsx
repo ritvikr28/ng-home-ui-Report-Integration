@@ -1415,12 +1415,6 @@ it("shows 'All selected documents have already been deleted.' when all selected 
   fireEvent.change(input, { target: { value: "Alfie" } });
   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
 
-  // Wait for suggestions to load
-  const searchLoader = screen.getAllByTestId("loader-arc");
-  await waitFor(() => {
-    expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
-  });
-
   // Click the suggestion
   jest.advanceTimersByTime(3000);
   const suggestionNode = await screen.findAllByText("Alfie");

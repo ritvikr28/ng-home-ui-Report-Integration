@@ -191,7 +191,6 @@ export const clearAllFiles = async (payload: { request: { partitionKey: string[]
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `validation/api/v1/file/clearall`;
     const responseData: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
-    console.log("clearAllFiles response status:", responseData?.status);
     return responseData?.status;
   } catch (error: any) {
     console.error("clearAllFiles error:", error);

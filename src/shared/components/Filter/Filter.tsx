@@ -88,14 +88,14 @@ const FilterDialog = ({
   const [availableCategories, setAvailableCategories] = useState<CategoryData[]>([]);
   const [relatedToError, setRelatedToError] = useState<string>("");
   const [searchSelectionError, setSearchSelectionError] = useState<string>("");
-  const [localSelectedCategories, setLocalSelectedCategories] = useState<ISelectedItem[]>(selectedCategories);
+  const [localSelectedCategories, setLocalSelectedCategories] = useState<ISelectedItem[]>([]);
   const [localSelectedDateRange, setLocalSelectedDateRange] = useState<{ fromDate: string, toDate: string }>(selectedDateRange);
   const [localTagListArray, setLocalTagListArray] = useState<SelectedItem[]>(tagListArray);
-  const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>(selectedRelatedTo);
+  const [localSelectedRelatedTo, setLocalSelectedRelatedTo] = useState<ISelectedItem | undefined>();
   const [relatedToSelected, setRelatedToSelected] = useState(false);
   const [searchKey, setSearchKey] = useState(0);
   const [alreadyExistingTags, setAlreadyExistingTags] = useState<boolean>(false);
-  const selectedKey = localSelectedRelatedTo?.data?.data?.key ?? "";
+  const [selectedKey, setSelectedKey] = useState<string>(localSelectedRelatedTo?.data?.data?.key || "");
   const selectedDisplayKey = selectedKey === "Organisation" ? "School" : selectedKey;
   const [schoolData, setSchoolData] = useState<ISchoolNameDataResponse | null>(null);
   const [refId, setRefId] = useState<string[]>([]);
@@ -132,6 +132,7 @@ const clearAll = () => {
   setRelatedToSelected(false);
   setRelatedToError("");
   setSearchSelectionError("");
+  setRefId([]);
 };
 
   const fetchSchoolData = async () => {
@@ -154,32 +155,54 @@ const clearAll = () => {
     }
   }, [isOpen]);
 
+  useEffect(() => {
+      setSelectedKey(localSelectedRelatedTo?.data?.data?.key || "");
+  }, [localSelectedRelatedTo]);
+
   /* istanbul ignore next */
   useEffect(() => {
-    let ids: string[] = [];
-    let entities: any[] = localTagListArray || [];
-    if (selectedKey === "Pupil") {
-      ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
-    } else if (selectedKey === "Staff") {
-      ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
-    } else if (selectedKey === "Organisation" || selectedKey === "School") {
-      const orgId = getUserOrganisation();
-      ids = orgId ? [orgId] : [];
-      const orgSchoolEntity = {
-        organisationId: orgId,
-        schoolName: schoolData?.schoolName || "",
-      };
-      entities = orgSchoolEntity ? [orgSchoolEntity] : [];
-    }
+    if (isOpen) {
+      let ids: string[] = [];
+      let entities: any[] = localTagListArray || [];
+      if (selectedKey === "Pupil") {
+        ids = localTagListArray.map(item => (item as any).learnerExternalId).filter(Boolean);
+      } else if (selectedKey === "Staff") {
+        ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
+      } else if ((selectedKey === "Organisation" || selectedKey === "School") && schoolData) {
+        const orgId = getUserOrganisation();
+        ids = orgId ? [orgId] : [];
+        const orgSchoolEntity = {
+          organisationId: orgId,
+          schoolName: schoolData?.schoolName || "",
+        };
+        entities = orgSchoolEntity ? [orgSchoolEntity] : [];
+      }
 
-    setRefId(ids);
-    setFilterEntities(entities);
-
-    if (isOpen && localSelectedRelatedTo && localSelectedRelatedTo.text && localSelectedRelatedTo.text.length > 0 && ids && ids?.length > 0) {
-      const payload = { CategoryRequest: { ReferenceExternalId: ids || [] } };
-      fetchDocumentCategoryData({ payload, setCategoryError, setAvailableCategories, setLocalSelectedCategories, localSelectedCategories, refId })
+      setRefId(ids);
+      setFilterEntities(entities);
     }
-  }, [localSelectedRelatedTo, isOpen, localTagListArray, schoolData]);
+  }, [selectedKey, localTagListArray, schoolData, isOpen]);
+
+
+  /* istanbul ignore next */
+  useEffect(() => {
+    const payload = { CategoryRequest: { ReferenceExternalId: refId || [] } };
+
+    if (isOpen && (selectedKey === "Organisation" || selectedKey === "School") && refId?.length > 0) {
+      fetchDocumentCategoryData({ payload, setCategoryError, setAvailableCategories, setLocalSelectedCategories, localSelectedCategories })
+
+    }
+    else if (isOpen && localSelectedRelatedTo && localSelectedRelatedTo.text && localSelectedRelatedTo.text.length > 0 && refId?.length > 0) {
+      fetchDocumentCategoryData({ payload, setCategoryError, setAvailableCategories, setLocalSelectedCategories, localSelectedCategories })
+    }
+  }, [localSelectedRelatedTo?.text, isOpen, refId]);
+
+
+  useEffect(() => {
+    if (refId.length === 0) {
+      setCategoryError(false);
+    }
+  }, [refId, isOpen, selectedCategories, schoolData]);
 
 // Use keys for logic, translation for display
 const relatedTo = Object.entries(relatedToEnum).map(([key, value]) => ({
@@ -511,7 +534,7 @@ const handleDateChange = (
       gtmAnalytics.pushEvent({
         event: "apply_filter",
         filterType: filterTypeTag,
-        filterValue: localSelectedRelatedTo?.text === "Organisation" || localSelectedRelatedTo?.text === "School" ? "" : filterValueTags
+        filterValue: localSelectedRelatedTo.text === "Organisation" || localSelectedRelatedTo.text === "School" ? "" : filterValueTags
       });
     }
 
@@ -567,23 +590,23 @@ const handleDateChange = (
   }))
 }));
 
-/* istanbul ignore next */
-const getEntityLabel = (entity: string) => {
-  if (!entity) return "";
-  let key = "";
-  const lowerEntity = entity.toLowerCase();
-  if (lowerEntity === "pupil") {
-    key = "Filter.pupils";
-  } 
-  else if (lowerEntity === "disgybl") {
-    key = "Filter.pupils";
-  }else if (lowerEntity === "staff") {
-    key = "Filter.staffs";
-  }
-  return key ? t(key) : "";
-};
+  /* istanbul ignore next */
+  const getEntityLabel = (entity: string) => {
+    if (!entity) return "";
+    let key = "";
+    const lowerEntity = entity.toLowerCase();
+    if (lowerEntity === "pupil") {
+      key = "Filter.pupils";
+    }
+    else if (lowerEntity === "disgybl") {
+      key = "Filter.pupils";
+    } else if (lowerEntity === "staff") {
+      key = "Filter.staffs";
+    }
+    return key ? t(key) : "";
+  };
 
-/* istanbul ignore next */
+  /* istanbul ignore next */
   const onSelectMultipleCategories = (_: any, items: ISelectedItem[]) => {
     setLocalSelectedCategories((prev) => {
       const dateRangeIndex = prev.findIndex((item) => item.data?.type === "dateRange");
@@ -621,15 +644,34 @@ const getEntityLabel = (entity: string) => {
     });
   }
 
-const handleDialogClose = () => {
-  setRelatedToSelected(false);
-  setRelatedToError("");
-  setSearchSelectionError("");
-  setSuggestions([]);
-  onClose();
-}
+  const handleDialogClose = () => {
+    setRelatedToSelected(false);
+    setRelatedToError("");
+    setSearchSelectionError("");
+    setSuggestions([]);
+    onClose();
+  }
 
-/* istanbul ignore next */
+  const handleRemoveTag = (
+    e: React.SyntheticEvent<Element, Event>,
+    text: string,
+    closeObj: any
+  ) => {
+    if (!closeObj || typeof closeObj.id === "undefined") return;
+    setLocalTagListArray(prev => {
+      const updated = prev.filter(tag => tag.id !== closeObj.id);
+      if (updated.length === 0) setIsDropdownOpen(false); // Hide box if no tags left
+      return updated;
+    });
+    if (setReferenceExternalIds) {
+      /* istanbul ignore next */
+      setReferenceExternalIds(prev =>
+        prev.filter(id => id !== closeObj.id?.toString())
+      );
+    }
+  }
+
+  /* istanbul ignore next */
   const getValidationTextMsg = () => {
     if (categoryError) {
       return t("Filter.informationUnavailable");
@@ -684,6 +726,8 @@ const handleDialogClose = () => {
           onSelect={(e, item: ISelectedItem) => {
             setLocalSelectedRelatedTo(item);
             setRelatedToError("");
+            setRefId([]);
+            setSchoolData(null);
             setRelatedToSelected(true);
             setSuggestions([]);
             setLocalTagListArray([]);
@@ -786,19 +830,7 @@ const handleDialogClose = () => {
                   allowSearchIfError={!showSearchError}
                   isCustomInputForAdded
                   tagListValueArray={localTagListArray}
-                  onRemoveTag={(e, text, closeObj) => {
-                    if (!closeObj || typeof closeObj.id === "undefined") return;
-                    setLocalTagListArray(prev => {
-                      const updated = prev.filter(tag => tag.id !== closeObj.id);
-                      if (updated.length === 0) setIsDropdownOpen(false); // Hide box if no tags left
-                      return updated;
-                    });
-                    if (setReferenceExternalIds) {
-                      setReferenceExternalIds(prev =>
-                        prev.filter(id => id !== closeObj.id?.toString())
-                      );
-                    }
-                  }}
+                  onRemoveTag={handleRemoveTag}
                   tagListBoxLabelText={t("Filter.Added")}
                 />
           </>
@@ -820,21 +852,21 @@ const handleDialogClose = () => {
                 >
                   {availableCategories && Array.from(availableCategories ?? [])
                     ?.slice()
-                    .sort((a, b) => a.application.localeCompare(b.application))
+                    .sort((a, b) => a.category.localeCompare(b.category))
                     .map((category) => (
                       <DropdownItem
-                        key={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        key={`${category.category}-${category.categoryId ?? category.categoryId ?? ""}`}
                         data={category}
-                        id={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
-                        text={category.application.charAt(0).toUpperCase() + category.application.slice(1)}
-                        value={`${category.application}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        id={`${category.category}-${category.categoryId ?? category.categoryId ?? ""}`}
+                        text={category.category.charAt(0).toUpperCase() + category.category.slice(1)}
+                        value={`${category.category}-${category.categoryId ?? category.categoryId ?? ""}`}
                         isSelected={localSelectedCategories.some(
                           (item) =>
-                            (item.data?.application || item.data) === category.application &&
+                            (item.data?.category || item.data) === category.category &&
                             (item.data?.categoryId || item.data?.id) === (category.categoryId ?? category.categoryId)
                         )}
                       >
-                        {category.application.charAt(0).toUpperCase() + category.application.slice(1)}
+                        {category.category.charAt(0).toUpperCase() + category.category.slice(1)}
                       </DropdownItem>
                     ))}
                 </Dropdown>
