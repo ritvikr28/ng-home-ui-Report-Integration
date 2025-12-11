@@ -93,6 +93,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   
   const [isPlayed, setIsPlayed] = useState<boolean>(false);
   const [apiError, setApiError] = useState<boolean>(false);
+  const [videoStatusSaved, setVideoStatusSaved] = useState<boolean>(false);
 
   useEffect(() => {
     async function videoPlayStaus() {
@@ -113,7 +114,15 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   async function handlePlay() {
     gtmAnalytics.pushEvent({ event: "playVideo" });
-    await saveVideoPlayStatus();
+    if (!videoStatusSaved) {
+      try {
+        await saveVideoPlayStatus();
+        setVideoStatusSaved(true);
+      } catch (e) {
+        setApiError(true);
+        console.error('Failed to save video play status:', e);
+      }
+    }
   }
 
   function handleOnEnded() {
