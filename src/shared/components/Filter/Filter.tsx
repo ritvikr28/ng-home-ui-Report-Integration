@@ -438,6 +438,12 @@ const handleDateChange = (
       if (isValidDate(otherDateStr)) {
         setToDateError("");
       }
+      if (otherDateStr && dayjs(otherDateStr).isAfter(dayjs(), "day")) {
+        setToDateError(`${t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })}`);
+        setFromDateError("");
+        setIsDateError(true);
+        return;
+      }
       setIsDateError(false);
     }
     setError("");
@@ -737,6 +743,8 @@ const handleDateChange = (
             setIsDropdownOpen(false);
             setSearchSelectionError("");
             setLocalSelectedCategories([]);
+            setToDateError("");
+            setFromDateError("");
             setFromDate({ day: "", month: "", year: "" });
             setToDate({ day: "", month: "", year: "" });
             setSelectedDateRange({ fromDate: "", toDate: "" });
