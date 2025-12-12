@@ -145,7 +145,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   
   function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) {
-    const { detail: { percentWatched, lastPercentWatched, } } = event
+    const { detail: { percentWatched, lastPercentWatched } } = event
     const percentage = percentWatched * 100;
     const lastPercentage = lastPercentWatched * 100;
  
@@ -157,7 +157,6 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       }
     });
   };
-  console.log("shouldShowVideo", shouldShowVideo);
   console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewIncluded, orgId: getUserOrganisation() });
 
   return (
