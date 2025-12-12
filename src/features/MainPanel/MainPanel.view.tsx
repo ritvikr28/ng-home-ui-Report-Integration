@@ -86,14 +86,13 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   const homepageVideoOrgViewIncluded: boolean =
     isOrganisationInVariant("HomePageVideoFlag");
 
-
   const hasSLTviewOrgPermission: boolean =
     isOrganisationInVariant("SLTviewBETTORG");
 
-   const togglePanel: () => void = () => {
+  const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
   };
-  
+
   const [isPlayed, setIsPlayed] = useState<boolean>(false);
   const [apiError, setApiError] = useState<boolean>(false);
   const [videoStatusSaved, setVideoStatusSaved] = useState<boolean>(false);
@@ -102,7 +101,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     async function videoPlayStaus() {
       const result = await fetchVideoPlayStatus();
 
-  if (result && result.success) {
+      if (result && result.success) {
         const playedValue = String(result.isPlayed).toLowerCase() === "true";
         setIsPlayed(playedValue);
         setApiError(false);
@@ -142,6 +141,22 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     !apiError &&
     isPlayed === false;
 
+  console.log("isPlayed shouldShowVideo ", isPlayed, shouldShowVideo);
+
+  
+  function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) {
+    const { detail: { percentWatched, lastPercentWatched, } } = event
+    const percentage = percentWatched * 100;
+    const lastPercentage = lastPercentWatched * 100;
+ 
+    const milestones = [5, 25, 50, 75, 95];
+    milestones.forEach((milestone) => {
+      if (percentage >= milestone && lastPercentage < milestone) {
+        console.log(`The viewer has watched ${milestone}% of the video! 📈`);
+        gtmAnalytics.pushVideoEvent(milestone);
+      }
+    });
+  };
   console.log("shouldShowVideo", shouldShowVideo);
   console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewIncluded, orgId: getUserOrganisation() });
 
@@ -214,12 +229,14 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {homepageVideoOrgViewIncluded && shouldShowVideo && (
+      {shouldShowVideo && (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}
             onEnded={() => handleOnEnded()}
-            onPause={() => handleOnPause()} />
+            onPause={() => handleOnPause()}
+            onPercentWatchedChange={(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) => handlePercentWatchedChange(event)}
+          />
         </div>
       )}
 
@@ -231,3 +248,5 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 };
 
 export default MainPanelView;
+
+
