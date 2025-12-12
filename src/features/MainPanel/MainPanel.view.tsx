@@ -229,7 +229,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {shouldShowVideo && (
+      {homepageVideoOrgViewIncluded && shouldShowVideo && (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}
@@ -248,5 +248,3 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 };
 
 export default MainPanelView;
-
-
