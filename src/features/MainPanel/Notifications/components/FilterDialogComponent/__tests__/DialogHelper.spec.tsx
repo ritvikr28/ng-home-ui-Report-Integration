@@ -52,6 +52,7 @@ describe("DialogContent", () => {
         setStatus: mockSetStatus,
         priority: [] as string[],
         setPriority: mockSetPriority,
+        startDateError: "",
     };
 
     beforeEach(() => {

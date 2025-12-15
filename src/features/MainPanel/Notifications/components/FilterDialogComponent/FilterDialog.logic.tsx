@@ -28,15 +28,31 @@ const FilterDialogLogic = ({
     const [priority, setPriority] = useState<string[]>(filters.priority || []);
     const [startDate, setStartDate] = useState(filters.startDate || "");
     const [endDate, setEndDate] = useState(filters.endDate || "");
+    const [startDateError, setStartDateError] = useState<string>("");
 
     useEffect(() => {
         setStatus(filters.status || []);
         setPriority(filters.priority || []);
         setStartDate(filters.startDate || "");
         setEndDate(filters.endDate || "");
+        setStartDateError("");
     }, [filters]);
 
+    useEffect(() => {
+        const hasEndDate = endDate && endDate.trim() !== "";
+        const hasStartDate = startDate && startDate.trim() !== "";
+        
+        if (hasEndDate && !hasStartDate) {
+            setStartDateError("startDateRequired");
+        } else {
+            setStartDateError("");
+        }
+    }, [startDate, endDate]);
+
     const handleApply = () => {
+        if (startDateError) {
+            return;
+        }
         onApply({
             status: status.length > 0 ? status : undefined,
             priority: priority.length > 0 ? priority : undefined,
@@ -75,6 +91,7 @@ const FilterDialogLogic = ({
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
+            startDateError={startDateError}
             onApply={handleApply}
             onClear={handleClear}
             onClose={handleClose}

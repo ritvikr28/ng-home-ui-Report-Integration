@@ -1,7 +1,8 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useEffect } from "react";
-import { FormLabel, DateInput, CheckBox } from "@essnextgen/ui-kit";
+import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { useTranslation } from "@essnextgen/ui-intl-kit";
 import "./style.scss";
 import { DialogContentProps } from "./FilterDialog.props";
 
@@ -13,8 +14,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     setPriority,
     priority,
     startDate,
-    endDate
+    endDate,
+    startDateError
 }) => {
+    const { t } = useTranslation();
     const handleStatusChange = (value: string) => {
         setStatus((prev: string[]) => {
             if (prev.includes(value)) {
@@ -262,6 +265,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         onError={() => { }}
                         onValidateDate={() => { }}
                         showDatePicker
+                        validationText={startDateError ? t("Filter.startDateRequired") : undefined}
+                        validationTextLevel={startDateError ? ValidationTextLevel.Error : undefined}
                     />
                 </div>
                 <div className="start-end-date-container">

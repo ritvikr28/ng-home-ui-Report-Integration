@@ -43,12 +43,13 @@ jest.mock("@essnextgen/ui-kit", () => ({
 }));
 
 jest.mock("../dialog-helper", () => ({
-    DialogContent: jest.fn(({ startDate, endDate, status, priority }: any) => (
+    DialogContent: jest.fn(({ startDate, endDate, status, priority, startDateError }: any) => (
         <div data-testid="mock-dialog-content">
             <div data-testid="content-start-date">{startDate}</div>
             <div data-testid="content-end-date">{endDate}</div>
             <div data-testid="content-status">{JSON.stringify(status)}</div>
             <div data-testid="content-priority">{JSON.stringify(priority)}</div>
+            <div data-testid="content-start-date-error">{startDateError}</div>
         </div>
     )),
 }));
@@ -71,6 +72,7 @@ describe("FilterDialogView", () => {
         setStartDate: mockSetStartDate,
         endDate: "2024-12-31",
         setEndDate: mockSetEndDate,
+        startDateError: "",
         onApply: mockOnApply,
         onClear: mockOnClear,
         onClose: mockOnClose,
@@ -120,6 +122,7 @@ describe("FilterDialogView", () => {
                     setStatus: mockSetStatus,
                     priority: ["high"],
                     setPriority: mockSetPriority,
+                    startDateError: "",
                 }),
                 {}
             );
@@ -210,6 +213,7 @@ describe("FilterDialogView", () => {
                 setStartDate: jest.fn(),
                 endDate: "2023-06-30",
                 setEndDate: jest.fn(),
+                startDateError: "",
                 onApply: jest.fn(),
                 onClear: jest.fn(),
                 onClose: jest.fn(),
@@ -228,6 +232,7 @@ describe("FilterDialogView", () => {
                     setStatus: customProps.setStatus,
                     priority: ["low", "medium"],
                     setPriority: customProps.setPriority,
+                    startDateError: "",
                 }),
                 {}
             );
