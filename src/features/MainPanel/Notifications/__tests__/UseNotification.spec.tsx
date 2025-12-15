@@ -1094,7 +1094,7 @@ describe("useNotification", () => {
 
             expect(result.current.searchTagList.length).toBe(1);
             expect(result.current.searchTagList[0].categoryName).toBe("Date");
-            expect(result.current.searchTagList[0].text).toContain("-");
+            expect(result.current.searchTagList[0].text).toContain("to");
         });
 
         it("should generate tag for start date only", () => {
@@ -1105,7 +1105,7 @@ describe("useNotification", () => {
             });
 
             expect(result.current.searchTagList.length).toBe(1);
-            expect(result.current.searchTagList[0].text).toContain("From");
+            expect(result.current.searchTagList[0].text).toBe("10 Jan 2024");
         });
 
         it("should generate tag for end date only", () => {
@@ -1116,7 +1116,7 @@ describe("useNotification", () => {
             });
 
             expect(result.current.searchTagList.length).toBe(1);
-            expect(result.current.searchTagList[0].text).toContain("Until");
+            expect(result.current.searchTagList[0].text).toBe("20 Jan 2024");
         });
 
         it("should capitalize status labels", () => {

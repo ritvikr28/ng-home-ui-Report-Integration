@@ -591,6 +591,7 @@
     "fromDateMustBeOnOrAfter":"From date must be on or after {{date}}",
     "toDateMustBeOnOrAfter": "To date must be on or after {{date}}",
     "fromDateRequired": "From date is required",
+    "startDateRequired": "Start date is required",
     "invalidDate": "Invalid Date",
     "relatedToRequired":"Pupil, Staff, or School is required.",
     "fromDateLabel": "From date",

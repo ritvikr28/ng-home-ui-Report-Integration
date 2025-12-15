@@ -407,31 +407,22 @@ export const useNotification = () => {
             const startDate = filters.startDate ? parseFilterDate(filters.startDate) : null;
             const endDate = filters.endDate ? parseFilterDate(filters.endDate) : null;
             
+            const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            
+            const formatDate = (date: Date) => {
+                const day = date.getDate().toString().padStart(2, '0');
+                const month = monthNames[date.getMonth()];
+                const year = date.getFullYear();
+                return `${day} ${month} ${year}`;
+            };
+            
             let dateLabel = '';
             if (startDate && endDate) {
-                const formatDate = (date: Date) => {
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                    const year = date.getFullYear();
-                    return `${day}/${month}/${year}`;
-                };
-                dateLabel = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+                dateLabel = `${formatDate(startDate)} to ${formatDate(endDate)}`;
             } else if (startDate) {
-                const formatDate = (date: Date) => {
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                    const year = date.getFullYear();
-                    return `${day}/${month}/${year}`;
-                };
-                dateLabel = `From ${formatDate(startDate)}`;
+                dateLabel = formatDate(startDate);
             } else if (endDate) {
-                const formatDate = (date: Date) => {
-                    const day = date.getDate().toString().padStart(2, '0');
-                    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-                    const year = date.getFullYear();
-                    return `${day}/${month}/${year}`;
-                };
-                dateLabel = `Until ${formatDate(endDate)}`;
+                dateLabel = formatDate(endDate);
             }
             
             if (dateLabel) {
