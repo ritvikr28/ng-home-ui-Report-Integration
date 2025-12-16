@@ -19,12 +19,17 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import AttendanceOverview from "./AttendanceOverview.logic";
 
-const AttendanceOverviewView: React.FC = () => {
-  const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
-  const { data, loading, error }: { data: any; loading: boolean; error: any } = AttendanceOverview();
+
+
+interface AttendanceOverviewViewProps {
+  data: any;
+  loading: boolean;
+  error: any;
+}
+
+const AttendanceOverviewView: React.FC<AttendanceOverviewViewProps> = ({ data, loading, error }) => {
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
   const overallAbsenceData: {
     Name: string;

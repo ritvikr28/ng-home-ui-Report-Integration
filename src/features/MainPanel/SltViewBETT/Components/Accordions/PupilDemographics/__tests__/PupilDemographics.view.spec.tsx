@@ -1,16 +1,6 @@
+
 import { render, screen } from "@testing-library/react";
 import PupilDemographicsView from "../PupilDemographics.view";
-import * as PupilDemographics from "../PupilDemographics.logic";
-
-jest.mock("../PupilDemographics.logic", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
-
-jest.mock("@essnextgen/ui-kit", () => ({
-  ...jest.requireActual("@essnextgen/ui-kit"),
-  useMediaQuery: jest.fn(),
-}));
 
 describe("PupilDemographicsView", () => {
   const mockData = {
@@ -23,105 +13,75 @@ describe("PupilDemographicsView", () => {
     },
   };
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+
+
 
   test("renders loading state", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: null,
-      loading: true,
-      error: null,
-    });
-
-    render(<PupilDemographicsView />);
-
+    render(<PupilDemographicsView data={null} loading error={null} />);
     const loaders = screen.getAllByText(/please wait.../i);
     expect(loaders.length).toBeGreaterThan(0);
   });
 
-  test("renders error state for pupils on roll", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: null,
-      loading: false,
-      error: "Failed to fetch data",
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders error state for pupils on roll", () => {
+    render(
+      <PupilDemographicsView data={null} loading={false} error="Failed to fetch data" />
+    );
     expect(
       screen.getByText(/pupils on roll insights unavailable/i)
     ).toBeInTheDocument();
   });
 
-  test("renders data for pupils on roll", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: mockData,
-      loading: false,
-      error: null,
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders data for pupils on roll", () => {
+    render(
+      <PupilDemographicsView data={mockData} loading={false} error={null} />
+    );
     expect(screen.getByText(/pupildemographics.pupilsonroll/i)).toBeInTheDocument();
-    expect(screen.getByText(/449/i)).toBeInTheDocument();
+    expect(screen.getByText(449)).toBeInTheDocument();
   });
 
-  test("renders error state for pupil premium", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: { payload: { pupilOnRoll: null } },
-      loading: false,
-      error: "Failed to fetch data",
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders error state for pupil premium", () => {
+    render(
+      <PupilDemographicsView data={{ payload: { pupilOnRoll: null } }} loading={false} error="Failed to fetch data" />
+    );
     expect(
       screen.getByText(/pupil premium insight unavailable/i)
     ).toBeInTheDocument();
   });
 
-  test("renders data for pupil premium", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: mockData,
-      loading: false,
-      error: null,
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders data for pupil premium", () => {
+    render(
+      <PupilDemographicsView data={mockData} loading={false} error={null} />
+    );
     expect(screen.getByText(/pupildemographics.pupilpremium/i)).toBeInTheDocument();
-    expect(screen.getByText(/0% \(0\)/i)).toBeInTheDocument();
-    
+    expect(screen.getByText("0% (0)")).toBeInTheDocument();
   });
 
-  test("renders error state for FSM", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: { payload: { pupilOnRoll: null, pupilPremiumPercentage: null } },
-      loading: false,
-      error: "Failed to fetch data",
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders error state for FSM", () => {
+    render(
+      <PupilDemographicsView data={{ payload: { pupilOnRoll: null, pupilPremiumPercentage: null } }} loading={false} error="Failed to fetch data" />
+    );
     expect(screen.getByText(/fsm insight unavailable/i)).toBeInTheDocument();
   });
 
-  test("renders data for FSM", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: mockData,
-      loading: false,
-      error: null,
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders data for FSM", () => {
+    render(
+      <PupilDemographicsView data={mockData} loading={false} error={null} />
+    );
     expect(screen.getByText(/pupildemographics.freeschoolmeals/i)).toBeInTheDocument();
-    expect(screen.getByText(/24.28% \(109\)/i)).toBeInTheDocument();
+    expect(screen.getByText("24.28% (109)")).toBeInTheDocument();
   });
 
-  test("renders null for pupils on roll when data is undefined", () => {
-    (PupilDemographics.default as jest.Mock).mockReturnValue({
-      data: { payload: { pupilOnRoll: null } },
-      loading: false,
-      error: null,
-    });
 
-    render(<PupilDemographicsView />);
+  test("renders null for pupils on roll when data is undefined", () => {
+    render(
+      <PupilDemographicsView data={{ payload: { pupilOnRoll: null } }} loading={false} error={null} />
+    );
     expect(screen.queryByText(/pupildemographics.pupilsonroll/i)).not.toBeInTheDocument();
   });
 
