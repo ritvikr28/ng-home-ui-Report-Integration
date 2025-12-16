@@ -1,16 +1,11 @@
 import { render, screen, waitFor } from "@testing-library/react";
+
 import AttendanceOverviewView from "../AttendanceOverview.view";
-import AttendanceOverview from "../AttendanceOverview.logic";
 
-jest.mock("../AttendanceOverview.logic");
-
-interface BargraphsProps {
-  title: string;
-}
 
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
-  Bargraphs: ({ title }: BargraphsProps) => <div>{title}</div>,
+  Bargraphs: ({ title }: { title: string }) => <div>{title}</div>,
 }));
 
 describe("AttendanceOverviewView", () => {
@@ -18,32 +13,25 @@ describe("AttendanceOverviewView", () => {
     jest.clearAllMocks();
   });
 
+
   test("should display loading state", () => {
-    (AttendanceOverview as jest.Mock).mockReturnValue({
-      data: null,
-      loading: true,
-      error: null,
-    });
-
-    render(<AttendanceOverviewView />);
-
+    render(
+      <AttendanceOverviewView data={null} loading error={null} />
+    );
     expect(screen.getByText(/please wait.../i)).toBeInTheDocument();
   });
 
+
   test("should display error notification", async () => {
-    (AttendanceOverview as jest.Mock).mockReturnValue({
-      data: null,
-      loading: false,
-      error: "Failed to fetch data",
-    });
-
-    render(<AttendanceOverviewView />);
-
+    render(
+      <AttendanceOverviewView data={null} loading={false} error="Failed to fetch data" />
+    );
     expect(screen.getByText(/data fetch error/i)).toBeInTheDocument();
     expect(
       screen.getByText(/there was an error fetching the attendance data/i)
     ).toBeInTheDocument();
   });
+
 
   test("should display attendance data", async () => {
     const mockData = {
@@ -65,13 +53,9 @@ describe("AttendanceOverviewView", () => {
       },
     };
 
-    (AttendanceOverview as jest.Mock).mockReturnValue({
-      data: mockData,
-      loading: false,
-      error: null,
-    });
-
-    render(<AttendanceOverviewView />);
+    render(
+      <AttendanceOverviewView data={mockData} loading={false} error={null} />
+    );
 
     await waitFor(() => {
       expect(screen.getByText(/attendanceoverview.overallattendance/i)).toBeInTheDocument();
@@ -87,13 +71,8 @@ describe("AttendanceOverviewView", () => {
     expect(persistentAbsences).toHaveLength(1);
   });
 
-  test("should redirect to insights page on button click", () => {
-    (AttendanceOverview as jest.Mock).mockReturnValue({
-      data: null,
-      loading: false,
-      error: null,
-    });
 
+  test("should redirect to insights page on button click", () => {
     const originalLocation = window.location;
 
     const mockLocation = {
@@ -108,7 +87,9 @@ describe("AttendanceOverviewView", () => {
       writable: true,
     });
 
-    render(<AttendanceOverviewView />);
+    render(
+      <AttendanceOverviewView data={null} loading={false} error={null} />
+    );
 
     const button = screen.getByTestId("insights-button");
     expect(button).toBeInTheDocument();

@@ -17,18 +17,17 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
-import PupilDemographics from "./PupilDemographics.logic";
 
 
-const PupilDemographicsView: React.FC = () => {
-  const {
-    data,
-    loading,
-    error
-  }: { data: any; loading: boolean; error: string | null } =
-    PupilDemographics();
-    const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
+
+interface PupilDemographicsViewProps {
+  data: any;
+  loading: boolean;
+  error: string | null;
+}
+
+const PupilDemographicsView: React.FC<PupilDemographicsViewProps> = ({ data, loading, error }) => {
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
     const renderLoaderTileCard: () => JSX.Element = () => (
       <TileCard
         primaryText={
