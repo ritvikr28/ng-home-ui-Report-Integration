@@ -214,8 +214,8 @@ const NotificationView = () => {
                             tableHeadersData={tableHeadersData as any}
                             tableLastColumnWidth="10px"
                             isSorting={false}
-                            sortByDefault={true}
-                            sortAscFirst={sortDirection?.toLowerCase() === "asc"}
+                            sortByDefault={false}
+                            sortAscFirst={false}
                             sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
                                 handleSort(columnName);
                             }}

@@ -353,7 +353,7 @@ export const useNotification = () => {
     const handleSort = (columnName: string) => {
         let apiColumnName = columnName;
         switch (columnName) {
-            case "Date received":
+            case "Date received": {
                 apiColumnName = "DateReceived";
                 let newDirection = "Desc";
                 if (sortBy === "DateReceived") {
@@ -362,6 +362,7 @@ export const useNotification = () => {
                 setSortBy("DateReceived");
                 setSortDirection(newDirection);
                 return;
+            }
             case "Priority":
                 apiColumnName = "Priority";
                 break;

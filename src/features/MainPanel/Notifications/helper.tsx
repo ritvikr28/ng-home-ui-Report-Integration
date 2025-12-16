@@ -37,10 +37,10 @@ export const getNotificationTableHeadersData = (
       isHeaderTextTruncate: true,
       columnWidth: "129px",
       isColumnSorting: true,
-      ...(sortBy === "Status" && {
+      ...(sortBy === "Status" ? {
         isColumnSortByDefault: true,
         isColumnSortAscFirst: sortDirection === "Asc"
-      }),
+      } : {}),
       anyComponent: (cellData: any) => (
         <div>
           {cellData === "Unread" ? (
@@ -69,10 +69,10 @@ export const getNotificationTableHeadersData = (
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
       isColumnSorting: true,
-      ...(sortBy === "Priority" && {
+      ...(sortBy === "Priority" ? {
         isColumnSortByDefault: true,
         isColumnSortAscFirst: sortDirection === "Asc"
-      }),
+      } : {}),
       columnWidth: "274px"
     },
     {
@@ -82,10 +82,8 @@ export const getNotificationTableHeadersData = (
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
       isColumnSorting: true,
-      ...(sortBy === "DateReceived" && {
-        isColumnSortByDefault: true,
-        isColumnSortAscFirst: sortDirection === "Asc"
-      }),
+      isColumnSortByDefault: true,
+      isColumnSortAscFirst: sortBy === "DateReceived" ? sortDirection === "Asc" : false,
       columnWidth: "274px"
     },
     {

@@ -973,7 +973,7 @@ describe("NotificationView - ControlledList props", () => {
         expect(controlledListProps.subHeadingText).toBe("");
         expect(controlledListProps.tableFirstColumnWidth).toBe("10px");
         expect(controlledListProps.tableLastColumnWidth).toBe("10px");
-        expect(controlledListProps.sortByDefault).toBe(true);
+        expect(controlledListProps.sortByDefault).toBe(false);
         expect(controlledListProps.sortAscFirst).toBe(false);
         expect(controlledListProps.isOpenConfirmationDialog).toBe(false);
         expect(controlledListProps.isIconRightAligned).toBe(true);
@@ -1070,7 +1070,7 @@ describe("NotificationView - ControlledList props", () => {
         const controlledListMock = getMockedControlledList();
         const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
 
-        expect(controlledListProps.sortAscFirst).toBe(true);
+        expect(controlledListProps.sortAscFirst).toBe(false);
     });
 
     it("should pass sortAscFirst as false when sortDirection is desc", () => {
