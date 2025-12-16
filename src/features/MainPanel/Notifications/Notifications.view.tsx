@@ -49,6 +49,11 @@ const NotificationView = () => {
     const tableWrapperRef = React.useRef<HTMLDivElement>(null);
     const getNotificationId = React.useCallback((notification: any) => notification?.id ?? notification?.Id, []);
 
+    const tableHeadersData = React.useMemo(
+        () => getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, sortBy, sortDirection),
+        [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
+    );
+
     const hasActiveFilters = React.useMemo(() => 
         (filters.status && filters.status.length > 0) || 
         (filters.priority && filters.priority.length > 0) || 
@@ -206,13 +211,14 @@ const NotificationView = () => {
                             subHeadingText=""
                             tableBodyData={tableRows as any}
                             tableFirstColumnWidth="10px"
-                            tableHeadersData={getNotificationTableHeadersData(setSideIsOpen, setSelectedItem) as any}
+                            tableHeadersData={tableHeadersData as any}
                             tableLastColumnWidth="10px"
+                            isSorting={false}
+                            sortByDefault={true}
+                            sortAscFirst={sortDirection?.toLowerCase() === "asc"}
                             sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
                                 handleSort(columnName);
                             }}
-                            sortByDefault={sortBy === "Date received" && sortDirection === "desc"}
-                            sortAscFirst={sortDirection === "asc"}
                             templatePropsConfirmation={{
                                 cancelText: "Cancel",
                                 contentText: "You have unsaved changes that will be lost.",

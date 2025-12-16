@@ -318,7 +318,7 @@ describe("useNotification", () => {
                 jest.advanceTimersByTime(350);
             });
 
-            expect(result.current.sortBy).toBe("Date received");
+            expect(result.current.sortBy).toBe("DateReceived");
         });
     });
 
@@ -948,8 +948,8 @@ describe("useNotification", () => {
                 result.current.handleClearAllFilters();
             });
 
-            expect(result.current.sortBy).toBe("Date received");
-            expect(result.current.sortDirection).toBe("desc");
+            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortDirection).toBe("Desc");
         });
 
         it("should not reset sort when search term exists", () => {
@@ -979,13 +979,14 @@ describe("useNotification", () => {
                 result.current.handleSort("Date received");
             });
 
-            expect(result.current.sortDirection).toBe("asc");
+            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortDirection).toBe("Asc");
 
             act(() => {
                 result.current.handleSort("Date received");
             });
 
-            expect(result.current.sortDirection).toBe("desc");
+            expect(result.current.sortDirection).toBe("Desc");
         });
 
         it("should set new column and reset to desc", () => {
@@ -996,7 +997,7 @@ describe("useNotification", () => {
             });
 
             expect(result.current.sortBy).toBe("Priority");
-            expect(result.current.sortDirection).toBe("desc");
+            expect(result.current.sortDirection).toBe("Asc");
         });
 
         it("should return early for invalid column", () => {
@@ -1038,8 +1039,8 @@ describe("useNotification", () => {
                 result.current.handleClearSearch();
             });
 
-            expect(result.current.sortBy).toBe("Date received");
-            expect(result.current.sortDirection).toBe("desc");
+            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortDirection).toBe("Desc");
         });
 
         it("should not reset sort when active filters exist", () => {

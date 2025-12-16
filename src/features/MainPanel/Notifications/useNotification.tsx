@@ -25,8 +25,8 @@ export const useNotification = () => {
     }>({});
     const [isSearching, setIsSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
-    const [sortBy, setSortBy] = useState<string>("Date received");
-    const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+    const [sortBy, setSortBy] = useState<string>("DateReceived");
+    const [sortDirection, setSortDirection] = useState<string>("Desc");
 
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -114,7 +114,7 @@ export const useNotification = () => {
                 let comparison = 0;
 
                 switch (sortBy) {
-                    case "Date received": {
+                    case "DateReceived": {
                         const dateA = parseDate(a.DateReceived);
                         const dateB = parseDate(b.DateReceived);
                         if (!dateA && !dateB) return 0;
@@ -124,23 +124,24 @@ export const useNotification = () => {
                         break;
                     }
                     case "Priority": {
-                        const priorityOrder = { "Low": 1, "Medium": 2, "High": 3 };
+                        const priorityOrder = { "Low": 3, "Medium": 2, "High": 1 };
                         const priorityA = priorityOrder[a.Priority as keyof typeof priorityOrder] || 0;
                         const priorityB = priorityOrder[b.Priority as keyof typeof priorityOrder] || 0;
                         comparison = priorityA - priorityB;
                         break;
                     }
                     case "Status": {
-                        const statusA = a.Status?.toLowerCase() || "";
-                        const statusB = b.Status?.toLowerCase() || "";
-                        comparison = statusA.localeCompare(statusB);
+                        const statusOrder = { "Read": 2, "Unread": 1 };
+                        const statusA = statusOrder[a.Status as keyof typeof statusOrder] || 0;
+                        const statusB = statusOrder[b.Status as keyof typeof statusOrder] || 0;
+                        comparison = statusA - statusB;
                         break;
                     }
                     default:
                         return 0;
                 }
 
-                return sortDirection === "asc" ? comparison : -comparison;
+                return sortDirection === "Asc" ? comparison : -comparison;
             });
         }
 
@@ -344,27 +345,39 @@ export const useNotification = () => {
     const handleClearAllFilters = () => {
         setFilters({});
         if (!searchTerm.trim()) {
-            setSortBy("Date received");
-            setSortDirection("desc");
+            setSortBy("DateReceived");
+            setSortDirection("Desc");
         }
     };
 
     const handleSort = (columnName: string) => {
-        const columnMap: { [key: string]: string } = {
-            "Date received": "Date received",
-            "Priority": "Priority",
-            "Status": "Status"
-        };
-
-        const mappedColumn = columnMap[columnName];
-        if (!mappedColumn) return;
-
-        if (sortBy === mappedColumn) {
-            setSortDirection(prev => prev === "asc" ? "desc" : "asc");
-        } else {
-            setSortBy(mappedColumn);
-            setSortDirection("desc");
+        let apiColumnName = columnName;
+        switch (columnName) {
+            case "Date received":
+                apiColumnName = "DateReceived";
+                let newDirection = "Desc";
+                if (sortBy === "DateReceived") {
+                    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+                }
+                setSortBy("DateReceived");
+                setSortDirection(newDirection);
+                return;
+            case "Priority":
+                apiColumnName = "Priority";
+                break;
+            case "Status":
+                apiColumnName = "Status";
+                break;
+            default:
+                return;
         }
+        let newDirection = "Asc";
+        if (sortBy === apiColumnName) {
+            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+        }
+
+        setSortBy(apiColumnName);
+        setSortDirection(newDirection);
     };
 
     const handleClearSearch = () => {
@@ -372,8 +385,8 @@ export const useNotification = () => {
         setNoResults(false);
         const hasActiveFilters = (filters.status && filters.status.length > 0) || (filters.priority && filters.priority.length > 0) || filters.startDate || filters.endDate;
         if (!hasActiveFilters) {
-            setSortBy("Date received");
-            setSortDirection("desc");
+            setSortBy("DateReceived");
+            setSortDirection("Desc");
         }
     };
 

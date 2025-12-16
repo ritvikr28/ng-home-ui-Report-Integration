@@ -1073,6 +1073,21 @@ describe("NotificationView - ControlledList props", () => {
         expect(controlledListProps.sortAscFirst).toBe(true);
     });
 
+    it("should pass sortAscFirst as false when sortDirection is desc", () => {
+        mockedUseNotification.mockReturnValue(
+            buildUseNotificationValue({
+                sortBy: "Date received",
+                sortDirection: "desc",
+            })
+        );
+
+        render(<NotificationView />);
+        const controlledListMock = getMockedControlledList();
+        const controlledListProps = controlledListMock.mock.calls[controlledListMock.mock.calls.length - 1]?.[0];
+
+        expect(controlledListProps.sortAscFirst).toBe(false);
+    });
+
     it("should call handleSort when sortingOnClickEvent is triggered", () => {
         const handleSortMock = jest.fn();
         mockedUseNotification.mockReturnValue(
