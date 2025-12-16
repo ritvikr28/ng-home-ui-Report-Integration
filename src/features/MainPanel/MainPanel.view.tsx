@@ -112,12 +112,9 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
 
   function handleOnEnded() {
   gtmAnalytics.pushVideoEvent(100);
-  console.log('The video has ended!');
   };
 
-  function handleOnPause() {
-    console.log('the video has paused.');
-  }
+  function handleOnPause() {}
 
   const shouldShowVideo =
     !apiError &&

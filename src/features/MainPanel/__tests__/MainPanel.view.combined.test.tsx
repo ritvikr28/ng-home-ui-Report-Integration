@@ -123,21 +123,15 @@ describe('MainPanelView video event handlers', () => {
   });
 
   it('handleOnEnded should call gtmAnalytics.pushVideoEvent and log to console', () => {
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const handlers = setup();
-    expect(handlers).toBeDefined();
-    handlers.onEnded();
-    expect(gtmAnalytics.pushVideoEvent).toHaveBeenCalledWith(100);
-    expect(logSpy).toHaveBeenCalledWith('The video has ended!');
-    logSpy.mockRestore();
+  const handlers = setup();
+  expect(handlers).toBeDefined();
+  handlers.onEnded();
+  expect(gtmAnalytics.pushVideoEvent).toHaveBeenCalledWith(100);
   });
 
   it('handleOnPause should log to console', () => {
-    const logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const handlers = setup();
-    expect(handlers).toBeDefined();
-    handlers.onPause();
-    expect(logSpy).toHaveBeenCalledWith('the video has paused.');
-    logSpy.mockRestore();
+  const handlers = setup();
+  expect(handlers).toBeDefined();
+  handlers.onPause();
   });
 });
