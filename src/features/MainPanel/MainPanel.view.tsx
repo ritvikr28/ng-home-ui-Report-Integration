@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Divider, Grid, GridItem } from "@essnextgen/ui-kit";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { WistiaPlayer } from "@wistia/wistia-player-react";
+import { useVideoPlayStatus } from "../../shared/hooks/useVideoPlayStatus";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -11,13 +12,12 @@ import "./style.scss";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import SltViewBett from "./SltViewBETT/SltViewBett.view";
-import { envConfig, getUserOrganisation } from "../../shared/utils";
+import { envConfig } from "../../shared/utils";
 import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import gtmAnalytics from '../../shared/utils/analytics';
 import { saveVideoPlayStatus } from '../../shared/services/videoPlayStatusSave';
-import { fetchVideoPlayStatus } from "../../shared/services/videoPlayStatus";
 
 const requiredStaffTimeTablePermissions: Permission[] = [
   {
@@ -93,26 +93,10 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen(!isOpen);
   };
 
-  const [isPlayed, setIsPlayed] = useState<boolean>(false);
-  const [apiError, setApiError] = useState<boolean>(false);
+  const { isPlayed, apiError } = useVideoPlayStatus();
   const [videoStatusSaved, setVideoStatusSaved] = useState<boolean>(false);
 
-  useEffect(() => {
-    async function videoPlayStaus() {
-      const result = await fetchVideoPlayStatus();
 
-      if (result && result.success) {
-        const playedValue = String(result.isPlayed).toLowerCase() === "true";
-        setIsPlayed(playedValue);
-        setApiError(false);
-      } else {
-        setIsPlayed(false);
-        setApiError(true);
-      }
-    }
-
-    videoPlayStaus();
-  }, []);
 
   async function handlePlay() {
     gtmAnalytics.pushEvent({ event: "playVideo" });
@@ -121,28 +105,21 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         await saveVideoPlayStatus();
         setVideoStatusSaved(true);
       } catch (e) {
-        setApiError(true);
-        console.error('Failed to save video play status:', e);
+        console.error("Video Played");
       }
     }
   }
 
   function handleOnEnded() {
     gtmAnalytics.pushVideoEvent(100);
-    console.log("The video has ended!");
   };
 
   function handleOnPause() {
-    console.log("the video has paused.");
   }
 
-  console.log("isPlayed value:", isPlayed);
   const shouldShowVideo =
     !apiError &&
     isPlayed === false;
-
-  console.log("isPlayed shouldShowVideo ", isPlayed, shouldShowVideo);
-
   
   function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) {
     const { detail: { percentWatched, lastPercentWatched } } = event
@@ -152,12 +129,10 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     const milestones = [5, 25, 50, 75, 95];
     milestones.forEach((milestone) => {
       if (percentage >= milestone && lastPercentage < milestone) {
-        console.log(`The viewer has watched ${milestone}% of the video! 📈`);
         gtmAnalytics.pushVideoEvent(milestone);
       }
     });
   };
-  console.log("HomePageVideoFlagr in Layout", { homepageVideoOrgViewIncluded, orgId: getUserOrganisation() });
 
   return (
     <div>
