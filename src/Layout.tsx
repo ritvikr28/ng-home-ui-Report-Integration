@@ -223,7 +223,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 
   useEffect(() => {
     if (!isPlayed && !apiError && homepageVideoOrgViewIncluded) {
-      gtmAnalytics.pushEvent({ event: "showVideo1" });
+      gtmAnalytics.pushEvent({ event: "showVideo" });
 
     }
     console.log("isPlayed:", isPlayed, "apiError:", apiError);
