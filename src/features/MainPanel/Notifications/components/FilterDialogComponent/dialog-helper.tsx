@@ -186,7 +186,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     }, [priority]);
 
     return (
-        <div className="dialog-content-container">
+        <div className={`dialog-content-container${startDateError ? ' has-error' : ''}`}>
             <div>
                 <FormLabel forId="select" className="status-label">
                     Status
