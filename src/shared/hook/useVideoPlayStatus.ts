@@ -24,7 +24,7 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
       }
     }
     videoPlayStaus();
-  }, []);
+  }, [isPlayed, apiError]);
 
   return { isPlayed, apiError };
 }
