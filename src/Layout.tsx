@@ -222,9 +222,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const { isPlayed, apiError } = useVideoPlayStatus();
 
   useEffect(() => {
-    if (!isPlayed && !apiError && homepageVideoOrgViewIncluded) {
+     if (isPlayed === false && apiError===false && homepageVideoOrgViewIncluded) {
       gtmAnalytics.pushEvent({ event: "showVideo" });
-
     }
   }, []);
   
