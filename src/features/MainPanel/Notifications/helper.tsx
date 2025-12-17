@@ -4,7 +4,9 @@ import { Link, ShowValAs, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
 
 export const getNotificationTableHeadersData = (
   setSideIsOpen?: (isOpen: boolean) => void,
-  setSelectedItem?: (item: any) => void
+  setSelectedItem?: (item: any) => void,
+  sortBy: string = "DateReceived",
+  sortDirection: string = "Desc"
 ): {
   text: string;
   isShow: boolean;
@@ -17,6 +19,7 @@ export const getNotificationTableHeadersData = (
   txtTrunctLength?: number;
   isColumnSorting?: boolean;
   isColumnSortByDefault?: boolean;
+  isColumnSortAscFirst?: boolean | undefined;
   anyComponent?: (cellData: any, rowData?: any) => JSX.Element;
 }[] => [
     {
@@ -34,6 +37,10 @@ export const getNotificationTableHeadersData = (
       isHeaderTextTruncate: true,
       columnWidth: "129px",
       isColumnSorting: true,
+      ...(sortBy === "Status" ? {
+        isColumnSortByDefault: true,
+        isColumnSortAscFirst: sortDirection === "Asc"
+      } : {}),
       anyComponent: (cellData: any) => (
         <div>
           {cellData === "Unread" ? (
@@ -61,8 +68,11 @@ export const getNotificationTableHeadersData = (
       showValAs: ShowValAs.Text,
       isHeaderTextTruncate: true,
       headerTxtTrunctLength: 20,
-
       isColumnSorting: true,
+      ...(sortBy === "Priority" ? {
+        isColumnSortByDefault: true,
+        isColumnSortAscFirst: sortDirection === "Asc"
+      } : {}),
       columnWidth: "274px"
     },
     {
@@ -73,6 +83,7 @@ export const getNotificationTableHeadersData = (
       headerTxtTrunctLength: 20,
       isColumnSorting: true,
       isColumnSortByDefault: true,
+      isColumnSortAscFirst: sortBy === "DateReceived" ? sortDirection === "Asc" : false,
       columnWidth: "274px"
     },
     {
