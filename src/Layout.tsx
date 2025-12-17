@@ -4,8 +4,7 @@ import React, {
   lazy,
   LazyExoticComponent,
   FC,
-  useState,
-  useEffect
+  useState
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -30,9 +29,19 @@ import {
   SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import {
-  
+  // ActionCard,
+  // Button,
+  // ButtonColor,
+  // ButtonSize,
+  // Divider,
+  // ErrorActionList,
+  // ErrorActionListItem,
+  // Grid,
+  // GridItem,
+  // Link,
   Loader,
   LoaderType
+  // useMediaQuery
 } from "@essnextgen/ui-kit";
 import {
   useTranslation,
@@ -58,10 +67,14 @@ import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
+// import SIMSConnectedLauncher from "./shared/components/Notification-menu/SIMSConnectedLauncherBanner";
+// import { SectionTitle } from "./shared/components/SectionTitle/SectionTitle";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
-import gtmAnalytics from "./shared/utils/analytics";
-import { useVideoPlayStatus } from "./shared/hooks/useVideoPlayStatus";
+
+// interface HomePageForSimsConnectedNormalUserProps {
+//   isRenderSimsConnectedBanner: boolean;
+// }
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -72,9 +85,10 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
   "SendNotification"
 );
 
-
- export const homepageVideoOrgViewIncluded: boolean =
-    isOrganisationInVariant("HomePageVideoFlag");
+export const HomePageVideoFlagr: boolean = hasFeaturePermission(
+  `${envConfig.APPLICATION}`,
+  "HomePageVideoFlag"
+);
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -219,18 +233,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-  const { isPlayed, apiError } = useVideoPlayStatus();
 
-  useEffect(() => {
-    if (!isPlayed && !apiError && homepageVideoOrgViewIncluded) {
-      gtmAnalytics.pushEvent({ event: "showVideo" });
-
-    }
-    console.log("isPlayed:", isPlayed, "apiError:", apiError);
-    console.log("homepageVideoOrgViewIncluded:", homepageVideoOrgViewIncluded);
-  }, []);
-  
-  
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
