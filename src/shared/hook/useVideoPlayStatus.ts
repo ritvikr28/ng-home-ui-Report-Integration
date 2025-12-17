@@ -17,10 +17,8 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
         const playedValue = String(result.isPlayed).toLowerCase() === "true";
         setIsPlayed(playedValue);
         setApiError(false);
-        console.log("Error fetching video play status if condition", apiError);
        
       } else {
-        console.log("Error fetching video play status", apiError);
         setIsPlayed(false);
         setApiError(true);
       }
