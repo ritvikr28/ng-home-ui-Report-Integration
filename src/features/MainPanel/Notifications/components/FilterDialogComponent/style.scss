@@ -16,6 +16,10 @@
   flex-direction: column;
   gap: 20px;
   margin-left: 4px;
+
+  &.has-error {
+    height: 240px;
+  }
 }
 
 .start-end-date-container {
