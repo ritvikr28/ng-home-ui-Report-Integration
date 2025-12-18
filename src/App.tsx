@@ -76,11 +76,15 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   const { isPlayed, apiError } = useVideoPlayStatus();
   const orgid = getUserOrganisation();
 
-  if (homepageVideoOrgViewIncluded) {
-    if (isPlayed === false && apiError === false) {
-      gtmAnalytics.showVideoEvent();
+
+  useEffect(() => {
+    if (homepageVideoOrgViewIncluded) {
+      if (isPlayed === false && apiError === false && homepageVideoOrgViewIncluded) {
+        console.log("inside if condition-------------------------", { isPlayed, apiError });
+        gtmAnalytics.showVideoEvent();
+      }
     }
-  }
+  }, [isPlayed, homepageVideoOrgViewIncluded])
 
   console.log("App initialized:---------------------------", { orgid, homepageVideoOrgViewIncluded, isPlayed, apiError });
 

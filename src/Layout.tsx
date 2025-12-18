@@ -229,7 +229,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   //   }
   // }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
 
-
+  console.log("Layout rendered-------------------", { homepageVideoOrgViewIncluded });
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
