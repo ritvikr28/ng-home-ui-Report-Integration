@@ -8,17 +8,17 @@ export interface UseVideoPlayStatusResult {
 }
 
 export function useVideoPlayStatus(): UseVideoPlayStatusResult {
-  const [isPlayed, setIsPlayed] = useState<boolean>(false);
+  const [isPlayed, setIsPlayed] = useState<boolean>(true);
   const [apiError, setApiError] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       try {
         console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
-        if (homepageVideoOrgViewIncluded && !isPlayed && !apiError) {
+        if (homepageVideoOrgViewIncluded) {
           const result = await fetchVideoPlayStatus();
-          console.log("response api-------------------", {type1:typeof result.isPlayed})
-          if (result && result.success && result.isPlayed) {
+          console.log("response api-------------------", {result})
+          if (result && result.success ) {
             const playedValue = result.isPlayed;
             console.log("played value-------------------", {type: typeof isPlayed,result});
             setIsPlayed(playedValue);
