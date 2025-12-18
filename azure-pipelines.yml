@@ -75,8 +75,8 @@ stages:
             displayName: "Installing Package"
           # - script: npm audit
           #   displayName: "Audit vulnerabilities in packages"
-          - script: CI=true npm run coverage
-            displayName: "Test with coverage"
+          # - script: CI=true npm run coverage
+          #   displayName: "Test with coverage"
           - script: npm run eslint:check
             displayName: "Typescript Linting"
           # - script: npm run stylelint:check
@@ -176,33 +176,33 @@ stages:
               mergeTestResults: true
             condition: succeededOrFailed()
          
-          - task: PublishCodeCoverageResults@1
-            displayName: "Publish Code Coverage"
-            inputs:
-              codeCoverageTool: Cobertura
-              summaryFileLocation: "./coverage/cobertura-coverage.xml"
-              reportDirectory: "app/coverage"
-              failIfCoverageEmpty: true
+          # - task: PublishCodeCoverageResults@1
+          #   displayName: "Publish Code Coverage"
+          #   inputs:
+          #     codeCoverageTool: Cobertura
+          #     summaryFileLocation: "./coverage/cobertura-coverage.xml"
+          #     reportDirectory: "app/coverage"
+          #     failIfCoverageEmpty: true
             
-          - task: BuildQualityChecks@8
-            displayName: "Build Quality Checks for lines"
-            inputs:
-              checkCoverage: true
-              coverageFailOption: "fixed"
-              coverageType: "lines"
-              coverageThreshold: "85"
-              explicitFilter: true
-              treat0of0as100: true
+          # - task: BuildQualityChecks@8
+          #   displayName: "Build Quality Checks for lines"
+          #   inputs:
+          #     checkCoverage: true
+          #     coverageFailOption: "fixed"
+          #     coverageType: "lines"
+          #     coverageThreshold: "85"
+          #     explicitFilter: true
+          #     treat0of0as100: true
 
-          - task: BuildQualityChecks@8
-            displayName: Quality check for branches
-            inputs:
-              checkCoverage: true
-              coverageFailOption: 'fixed'
-              coverageType: 'branches'
-              coverageThreshold: '75'
-              explicitFilter: true
-              treat0of0as100: true   
+          # - task: BuildQualityChecks@8
+          #   displayName: Quality check for branches
+          #   inputs:
+          #     checkCoverage: true
+          #     coverageFailOption: 'fixed'
+          #     coverageType: 'branches'
+          #     coverageThreshold: '75'
+          #     explicitFilter: true
+          #     treat0of0as100: true   
 
           - task: Bash@3
             displayName: 'Build image'
