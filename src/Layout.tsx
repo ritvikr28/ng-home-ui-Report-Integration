@@ -4,8 +4,8 @@ import React, {
   lazy,
   LazyExoticComponent,
   FC,
-  useState,
-  useEffect
+  useState
+  // useEffect
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -60,8 +60,8 @@ import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
-import gtmAnalytics from "./shared/utils/analytics";
-import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
+// import gtmAnalytics from "./shared/utils/analytics";
+// import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -219,15 +219,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-  const { isPlayed, apiError } = useVideoPlayStatus();
+  // const { isPlayed, apiError } = useVideoPlayStatus();
 
-  useEffect(() => {
-    if (homepageVideoOrgViewIncluded) {
-      if (isPlayed === false && apiError === false) {
-        gtmAnalytics.pushEvent({ event: "showVideo" });
-      }
-    }
-  }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
+  // useEffect(() => {
+  //   if (homepageVideoOrgViewIncluded) {
+  //     if (isPlayed === false && apiError === false) {
+  //       gtmAnalytics.pushEvent({ event: "showVideo" });
+  //     }
+  //   }
+  // }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
 
 
   return (
