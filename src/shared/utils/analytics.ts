@@ -11,6 +11,7 @@ type gtmAnalyticsType = {
   init: (trackingId: string) => void;
   pushPageViewEvent: (pageType?: string) => void;
   pushLogInEvent: () => void;
+  showVideoEvent: () => void;
   pushEvent: (events: object) => void;
   pushVideoEvent: (videoEngagement: number) => void;
 };
@@ -51,6 +52,10 @@ const gtmAnalytics: gtmAnalyticsType = {
       event: "identify_group",
       groupId: getUserOrganisation()
     });
+  },
+
+  showVideoEvent: () => {
+    gtmAnalytics.pushEvent({ event: "showVideo" })
   },
 
   pushEvent: (events: object) => {

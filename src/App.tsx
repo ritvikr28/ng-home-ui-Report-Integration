@@ -6,7 +6,7 @@ import { authService } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
 import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
-import { ILayoutProps, Layout } from "./Layout";
+import { homepageVideoOrgViewIncluded, ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
 import ErrorBoundary from "./shared/components/ErrorBoundary/Index";
 import configureStore from "./redux/store";
@@ -15,6 +15,7 @@ import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
@@ -71,6 +72,15 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     authService.isAuthenticated() ? getFeatureFlags : undefined;
 
   gtmAnalytics.pushLogInEvent();
+
+  const { isPlayed, apiError } = useVideoPlayStatus();
+
+  if (homepageVideoOrgViewIncluded) {
+    if (isPlayed === false && apiError === false) {
+      gtmAnalytics.showVideoEvent();
+    }
+  }
+
 
   if (!initialized) return null;
 

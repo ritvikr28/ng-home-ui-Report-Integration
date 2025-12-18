@@ -4,8 +4,8 @@ import React, {
   lazy,
   LazyExoticComponent,
   FC,
-  useState,
-  useEffect
+  useState
+  // useEffect
 } from "react";
 import { useDispatch } from "react-redux";
 import {
@@ -219,15 +219,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-  const { isPlayed, apiError } = useVideoPlayStatus();
+  // const { isPlayed, apiError } = useVideoPlayStatus();
 
-  useEffect(() => {
-    if (homepageVideoOrgViewIncluded) {
-      if (isPlayed === false && apiError === false) {
-        gtmAnalytics.pushEvent({ event: "showVideo" });
-      }
-    }
-  }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
+  // useEffect(() => {
+  //   if (homepageVideoOrgViewIncluded) {
+  //     if (isPlayed === false && apiError === false) {
+  //       gtmAnalytics.pushEvent({ event: "showVideo" });
+  //     }
+  //   }
+  // }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
 
 
   return (
