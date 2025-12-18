@@ -17,8 +17,10 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
         console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
         if (homepageVideoOrgViewIncluded && !isPlayed && !apiError) {
           const result = await fetchVideoPlayStatus();
-          if (result && result.success) {
-            const playedValue = String(result.isPlayed).toLowerCase() === "true";
+          console.log("response api-------------------", {type1:typeof result.isPlayed})
+          if (result && result.success && result.isPlayed) {
+            const playedValue = result.isPlayed;
+            console.log("played value-------------------", {type: typeof isPlayed,result});
             setIsPlayed(playedValue);
             setApiError(false);
           } else {

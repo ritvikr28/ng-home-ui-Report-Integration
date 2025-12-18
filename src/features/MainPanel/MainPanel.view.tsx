@@ -119,6 +119,8 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   const shouldShowVideo =
     !apiError &&
     isPlayed === false;
+
+    console.log("shouldShowVideo from mainpanel-------------------", {isPlayed, homepageVideoOrgViewIncluded,shouldShowVideo})
   
   function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) {
     const { detail: { percentWatched, lastPercentWatched } } = event

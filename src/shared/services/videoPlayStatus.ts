@@ -4,7 +4,7 @@ import apiUrls from "../hook/ApiConfig.json";
 
 export interface IVideoPlayStatusResult {
   success: boolean;
-  isPlayed: boolean | string | null;
+  isPlayed: boolean;
 }
 
 export const fetchVideoPlayStatus = async (): Promise<IVideoPlayStatusResult> => {
@@ -21,8 +21,8 @@ export const fetchVideoPlayStatus = async (): Promise<IVideoPlayStatusResult> =>
       };
     }
 
-    return { success: false, isPlayed: null };
+    return { success: false, isPlayed: false };
   } catch {
-    return { success: false, isPlayed: null };
+    return { success: false, isPlayed: false };
   }
 };
