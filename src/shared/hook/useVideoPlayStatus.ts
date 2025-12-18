@@ -12,21 +12,26 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
   const [apiError, setApiError] = useState<boolean>(false);
 
   useEffect(() => {
-    async function videoPlayStaus() {
-      const result = await fetchVideoPlayStatus();
-      if (result && result.success) {
-        const playedValue = String(result.isPlayed).toLowerCase() === "true";
-        setIsPlayed(playedValue);
-        setApiError(false);
-       
-      } else {
+    (async () => {
+      try {
+        console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
+        if (homepageVideoOrgViewIncluded && !isPlayed && !apiError) {
+          const result = await fetchVideoPlayStatus();
+          if (result && result.success) {
+            const playedValue = String(result.isPlayed).toLowerCase() === "true";
+            setIsPlayed(playedValue);
+            setApiError(false);
+          } else {
+            setIsPlayed(false);
+            setApiError(true);
+          }
+        }
+      } catch (error) {
         setIsPlayed(false);
         setApiError(true);
+        console.log(error);
       }
-    }
-    if (homepageVideoOrgViewIncluded && !isPlayed && !apiError) {
-      videoPlayStaus();
-    }
+    })();
   }, []);
 
   return { isPlayed, apiError };
