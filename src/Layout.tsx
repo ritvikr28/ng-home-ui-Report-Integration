@@ -30,7 +30,7 @@ import {
   SchoolGroupRedirect
 } from "@essnextgen/ui-application-kit";
 import {
-  
+
   Loader,
   LoaderType
 } from "@essnextgen/ui-kit";
@@ -73,8 +73,8 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
 );
 
 
- export const homepageVideoOrgViewIncluded: boolean =
-    isOrganisationInVariant("HomePageVideoFlag");
+export const homepageVideoOrgViewIncluded: boolean =
+  isOrganisationInVariant("HomePageVideoFlag");
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -95,15 +95,15 @@ export const getMenus: (
   data: IModulePermission[],
   globalMenus: IApplicationMenu[]
 ) => {
-  const menusWithPermission: IApplicationMenu[] = globalMenus.filter(
-    (menu: IApplicationMenu) =>
-      data.some(
-        (x: IModulePermission) =>
-          x.code === menu.appCode || menu.allowedRoles.includes("admin")
-      )
-  );
-  return menusWithPermission;
-};
+    const menusWithPermission: IApplicationMenu[] = globalMenus.filter(
+      (menu: IApplicationMenu) =>
+        data.some(
+          (x: IModulePermission) =>
+            x.code === menu.appCode || menu.allowedRoles.includes("admin")
+        )
+    );
+    return menusWithPermission;
+  };
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
@@ -199,10 +199,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.all
   );
 
-    const hasDMSPermissions: boolean = authService.isAuthorised(
+  const hasDMSPermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "View" }],
     MatchPermissions.all
-    );
+  );
 
   const requiredSystemStatusViewPermission: Permission[] = [
     { Securable: "NG.AlertEmails.List", Operation: "View" }
@@ -222,13 +222,14 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const { isPlayed, apiError } = useVideoPlayStatus();
 
   useEffect(() => {
-    if (!isPlayed && !apiError && homepageVideoOrgViewIncluded) {
-      gtmAnalytics.pushEvent({ event: "showVideo" });
-
+    if (homepageVideoOrgViewIncluded) {
+      if (isPlayed === false && apiError === false) {
+        gtmAnalytics.pushEvent({ event: "showVideo" });
+      }
     }
-  }, []);
-  
-  
+  }, [isPlayed, apiError, homepageVideoOrgViewIncluded]);
+
+
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -236,7 +237,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
         <Header
           isRenderOnFrame
           menuFilterHandler={menuFilterHandler}
-          onClickLogo={() => {}}
+          onClickLogo={() => { }}
           useSchoolPermission
           simsMenuData={[]}
         />
@@ -259,9 +260,9 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             component={
               isServiceInitiated
                 ? renderHomePage(
-                    hasNewHomePagePermission,
-                    isRenderSimsConnectedBanner
-                  )
+                  hasNewHomePagePermission,
+                  isRenderSimsConnectedBanner
+                )
                 : EmptyComponent
             }
           />
@@ -352,7 +353,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             path="/inviteusers"
             render={() =>
               hasInviteUserOrgView &&
-              (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
+                (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
                 <InviteUsersLogic />
               ) : (
                 <Redirect to="/unauthorized" />
@@ -374,21 +375,21 @@ const renderHomePage: (
   hasNewHomePagePermission: boolean
   // isRenderSimsConnectedBanner: boolean
 ) => {
-  // if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
-  //   return () => (
-  //     <HomePageForSimsConnectedNormalUser
-  //       isRenderSimsConnectedBanner={isRenderSimsConnectedBanner}
-  //     />
-  //   );
-  // }
-  if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
-    return SIMSIDAdminPageView;
-  }
-  if (hasNewHomePagePermission) {
-    return NewHomepageView;
-  }
-  return UnAuthorisedAccess;
-};
+    // if (!isAuthzUserAdmin() && !hasNewHomePagePermission) {
+    //   return () => (
+    //     <HomePageForSimsConnectedNormalUser
+    //       isRenderSimsConnectedBanner={isRenderSimsConnectedBanner}
+    //     />
+    //   );
+    // }
+    if (!hasNewHomePagePermission && isAuthzUserAdmin()) {
+      return SIMSIDAdminPageView;
+    }
+    if (hasNewHomePagePermission) {
+      return NewHomepageView;
+    }
+    return UnAuthorisedAccess;
+  };
 
 /* eslint-enable */
 /* istanbul ignore next */

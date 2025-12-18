@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchVideoPlayStatus } from "../services/videoPlayStatus";
+import { homepageVideoOrgViewIncluded } from "../../Layout";
 
 export interface UseVideoPlayStatusResult {
   isPlayed: boolean;
@@ -23,7 +24,9 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
         setApiError(true);
       }
     }
-    videoPlayStaus();
+    if (homepageVideoOrgViewIncluded && !isPlayed && !apiError) {
+      videoPlayStaus();
+    }
   }, []);
 
   return { isPlayed, apiError };
