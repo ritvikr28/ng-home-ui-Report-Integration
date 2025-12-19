@@ -1102,6 +1102,7 @@ const getDialogTitle = () => {
                                  setSelectedCheckBoxIds([]);
                                 setAllSelectedDocs([]);
                                 setIsClearSelectedCheckbox(true);
+                                setTableKey(prev => prev + 1);
                             }
                         }}
                     />
@@ -1137,6 +1138,7 @@ const getDialogTitle = () => {
                                 setSelectedCheckBoxIds([]);
                                 setAllSelectedDocs([]);
                                 setIsClearSelectedCheckbox(true);
+                                setTableKey(prev => prev + 1);
                             }
                         }}
                     />
