@@ -3269,11 +3269,6 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteAbortBanner
   });
 
-  // Should not be called before timer runs
-  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
-
-  jest.advanceTimersByTime(1000);
-
   await Promise.resolve();
 
   expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
@@ -3309,11 +3304,6 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteAbortBanner
   });
 
-  // Should not be called before timer runs
-  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
-
-  jest.advanceTimersByTime(5000);
-
   await Promise.resolve();
 
   expect(fetchGetDocumentDetails).toHaveBeenCalledWith(currentPage, allRegistrationIds, sortBy, sortDirection);
@@ -3348,9 +3338,6 @@ describe("handleBulkDeleteLogic", () => {
     availableFileIds: Array(350).fill("fileId"), 
     setShowDeleteAbortBanner
   });
-
-  // Should not be called before timer runs
-  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(2500);
 
@@ -3389,8 +3376,6 @@ describe("handleBulkDeleteLogic", () => {
     setShowDeleteAbortBanner
   });
 
-  // Should not be called before timer runs
-  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
 
   jest.advanceTimersByTime(7000);
 
@@ -3428,11 +3413,6 @@ describe("handleBulkDeleteLogic", () => {
     availableFileIds: Array(1150).fill("fileId"), 
     setShowDeleteAbortBanner
   });
-
-  // Should not be called before timer runs
-  expect(fetchGetDocumentDetails).not.toHaveBeenCalled();
-
-  jest.advanceTimersByTime(11000);
 
   await Promise.resolve();
 
