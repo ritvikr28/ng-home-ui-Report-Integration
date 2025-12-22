@@ -8,14 +8,20 @@ interface StaffTimetableAndRegisterDetailsContextType {
   refetch: () => void;
 }
 
+interface StaffTimetableAndRegisterDetailsProviderProps {
+  children: React.ReactNode;
+  hasAccess?: boolean;
+}
+
 const StaffTimetableAndRegisterDetailsContext = createContext<StaffTimetableAndRegisterDetailsContextType | undefined>(undefined);
 
-export const StaffTimetableAndRegisterDetailsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const StaffTimetableAndRegisterDetailsProvider: React.FC<StaffTimetableAndRegisterDetailsProviderProps> = ({ children, hasAccess }) => {
   const [data, setData] = useState<IStaffTimetableAndRegisterDetailsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
   const fetchData = async () => {
+    if (!hasAccess) return;
     setIsLoading(true);
     setIsError(false);
     try {
@@ -31,8 +37,14 @@ export const StaffTimetableAndRegisterDetailsProvider: React.FC<{ children: Reac
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (hasAccess) {
+      fetchData();
+    } else {
+      setData(null);
+      setIsLoading(false);
+      setIsError(false);
+    }
+  }, [hasAccess]);
 
   return (
     <StaffTimetableAndRegisterDetailsContext.Provider value={{ data, isLoading, isError, refetch: fetchData }}>
