@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { withAITracking } from "@microsoft/applicationinsights-react-js";
-import { authService } from "@essnextgen/auth-ui";
+import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
 import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
@@ -13,7 +13,7 @@ import configureStore from "./redux/store";
 import translationEn from "./locales/en/translation.json";
 import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
-import { envConfig, getUserOrganisation, service } from "./shared/utils";
+import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
 
@@ -21,6 +21,11 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
+
+   const hasNewHomePagePermission: boolean = authService.isAuthorised(
+      [{ Securable: "NG.Homepage.Access", Operation: "View" }],
+      MatchPermissions.all
+    );
   const [initialized, setInitialized] = useState(false);
 
   // Priority: dropdown (localStorage) → browser → fallback
@@ -78,16 +83,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
 
 
   useEffect(() => {
-    if (homepageVideoOrgViewIncluded) {
-      if (isPlayed === false && apiError === false && homepageVideoOrgViewIncluded) {
-        console.log("inside if condition-------------------------", { isPlayed, apiError });
+    if (hasNewHomePagePermission && homepageVideoOrgViewIncluded) {
+    
+      if ( isPlayed === false && apiError === false && homepageVideoOrgViewIncluded) {
+        console.log("isPlayed apiError", { isPlayed, apiError });
         gtmAnalytics.showVideoEvent();
       }
     }
   }, [isPlayed, homepageVideoOrgViewIncluded])
-
-  console.log("App initialized:---------------------------", { orgid, homepageVideoOrgViewIncluded, isPlayed, apiError });
-
 
   if (!initialized) return null;
 

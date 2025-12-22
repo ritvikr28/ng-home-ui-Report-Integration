@@ -27,7 +27,7 @@ describe('fetchVideoPlayStatus', () => {
       data: {},
     });
     const result = await fetchVideoPlayStatus();
-    expect(result).toEqual({ success: false, isPlayed: null });
+    expect(result).toEqual({ success: false, isPlayed: false });
   });
 
   it('returns success false and isPlayed null when status is not 200', async () => {
@@ -36,13 +36,13 @@ describe('fetchVideoPlayStatus', () => {
       data: { payload: { isPlayed: 'test-value' } },
     });
     const result = await fetchVideoPlayStatus();
-    expect(result).toEqual({ success: false, isPlayed: null });
+    expect(result).toEqual({ success: false, isPlayed: false });
   });
 
   it('returns success false and isPlayed null when an error is thrown', async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce(new Error('fail'));
-    const result = await fetchVideoPlayStatus();
-    expect(result).toEqual({ success: false, isPlayed: null });
+  (service.get as jest.Mock).mockRejectedValueOnce(new Error('fail'));
+  const result = await fetchVideoPlayStatus();
+  expect(result).toEqual({ success: false, isPlayed: false });
   });
 });
 
@@ -57,7 +57,7 @@ describe('fetchVideoPlayStatus - optional chaining coverage', () => {
       data: undefined,
     });
     const result = await fetchVideoPlayStatus();
-    expect(result).toEqual({ success: false, isPlayed: null });
+    expect(result).toEqual({ success: false, isPlayed: false });
   });
 
   it('returns success false and isPlayed null when status 200 but data is null', async () => {
@@ -66,6 +66,6 @@ describe('fetchVideoPlayStatus - optional chaining coverage', () => {
       data: null,
     });
     const result = await fetchVideoPlayStatus();
-    expect(result).toEqual({ success: false, isPlayed: null });
+    expect(result).toEqual({ success: false, isPlayed: false });
   });
 });
