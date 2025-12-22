@@ -1,5 +1,5 @@
-import SltViewBettView from "./SltViewBett.view";
 import { render, waitFor } from "@testing-library/react";
+import SltViewBettView from "./SltViewBett.view";
 
 jest.mock("@essnextgen/ui-kit", () => ({
   Divider: () => <div data-testid="divider" />,
