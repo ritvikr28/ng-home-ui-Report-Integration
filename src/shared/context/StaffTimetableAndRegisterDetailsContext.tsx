@@ -10,7 +10,7 @@ interface StaffTimetableAndRegisterDetailsContextType {
 
 interface StaffTimetableAndRegisterDetailsProviderProps {
   children: React.ReactNode;
-  hasAccess?: boolean;
+  hasAccess: boolean;
 }
 
 const StaffTimetableAndRegisterDetailsContext = createContext<StaffTimetableAndRegisterDetailsContextType | undefined>(undefined);
