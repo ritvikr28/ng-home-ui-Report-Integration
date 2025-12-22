@@ -7,6 +7,8 @@ import MainPanel from "../../MainPanel.logic";
 import MainPanelView from "../../MainPanel.view";
 import * as flagrUtils from "../../../../shared/utils/flagr-utils";
 
+jest.mock("../../TakeRegisters/TakeRegister.view", () => () => <div data-testid="reg-error-loader" />);
+
 const mockSchoolDetails: ISchoolNameDataResponse = {
   schoolName: "test",
   externalId: "9008a156-0c85-4d1c-9eca-d6eb3ae84e15",
