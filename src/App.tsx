@@ -17,15 +17,16 @@ import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
 
+export const hasNewHomePagePermission: boolean = authService.isAuthorised(
+  [{ Securable: "NG.Homepage.Access", Operation: "View" }],
+  MatchPermissions.all
+);
+
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
   baseRouteName,
 }: ILayoutProps) => {
 
-   const hasNewHomePagePermission: boolean = authService.isAuthorised(
-      [{ Securable: "NG.Homepage.Access", Operation: "View" }],
-      MatchPermissions.all
-    );
   const [initialized, setInitialized] = useState(false);
 
   // Priority: dropdown (localStorage) → browser → fallback
