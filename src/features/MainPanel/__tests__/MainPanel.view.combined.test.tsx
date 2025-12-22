@@ -1,7 +1,3 @@
-// Always mock useVideoPlayStatus to avoid destructuring errors in all tests
-beforeEach(() => {
-  (useVideoPlayStatusHook.useVideoPlayStatus as jest.Mock).mockReturnValue({ isPlayed: false, apiError: false });
-});
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import MainPanelView from '../MainPanel.view';
 import gtmAnalytics from '../../../shared/utils/analytics';
@@ -14,6 +10,9 @@ jest.mock('../../../shared/services/videoPlayStatusSave');
 jest.mock('../../../shared/services/videoPlayStatus');
 jest.mock('../../../shared/hook/useVideoPlayStatus');
 
+beforeEach(() => {
+  (useVideoPlayStatusHook.useVideoPlayStatus as jest.Mock).mockReturnValue({ isPlayed: false, apiError: false });
+});
 // Extend the Window interface for test handler storage
 declare global {
   interface Window {

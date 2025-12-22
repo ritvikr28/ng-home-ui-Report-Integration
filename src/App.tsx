@@ -13,7 +13,7 @@ import configureStore from "./redux/store";
 import translationEn from "./locales/en/translation.json";
 import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
-import { envConfig, getUserOrganisation, isAuthzUserAdmin, service } from "./shared/utils";
+import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
 
@@ -79,8 +79,6 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   gtmAnalytics.pushLogInEvent();
 
   const { isPlayed, apiError } = useVideoPlayStatus();
-  const orgid = getUserOrganisation();
-
 
   useEffect(() => {
     if (hasNewHomePagePermission && homepageVideoOrgViewIncluded) {
