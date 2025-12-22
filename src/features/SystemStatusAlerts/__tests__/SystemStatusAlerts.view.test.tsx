@@ -57,8 +57,10 @@ describe("SystemStatusAlertsView Component", () => {
   });
 
   it("renders NotifyExceptionView when error handled", async () => {
+    // Provide a mock error object with the expected structure
+    const mockError = { response: { data: { code: 'SOME_CODE' } } };
     mockFetchEmailAlertStatus.mockImplementationOnce((handleException) => {
-      handleException();
+      handleException(mockError);
       return Promise.resolve(mockResponse);
     });
 

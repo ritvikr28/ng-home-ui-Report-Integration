@@ -110,9 +110,10 @@ test("handles errors during data fetching", async () => {
   jest.spyOn(authService, "getUsername").mockImplementation(() => "John");
   jest.spyOn(console, "error").mockImplementation(() => {});
   jest.spyOn(mediaQuery, 'useMediaQuery').mockImplementation(() => false);
-  (useFetchSchoolNameData as jest.Mock).mockRejectedValueOnce(
-    new Error("Mocked error")
-  );
+
+  // Mock error with response.data.code structure
+  const mockError = { response: { data: { code: "validation_error" } } };
+  (useFetchSchoolNameData as jest.Mock).mockRejectedValueOnce(mockError);
 
   setIsError(true);
 
