@@ -1090,7 +1090,7 @@ const getDialogTitle = () => {
                         }
                         loading={isPreDialogLoading}
                         onClose={() => {
-                            if (alreadyDeletedFileCount > 0) {
+                            if (alreadyDeletedFileCount > 0 || ( (totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0 && isHeaderBoxChecked)) {
                                 fetchGetDocumentDetails(
                                     currentPage,
                                     getAllRegistrationIds(selectedFormats),
