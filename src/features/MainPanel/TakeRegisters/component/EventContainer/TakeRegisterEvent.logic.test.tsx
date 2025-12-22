@@ -17,9 +17,9 @@ describe("TakeRegisterEvent", () => {
 
   it("renders loader initially", () => {
     render(
-      <StaffTimetableAndRegisterDetailsProvider>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <TakeRegisterEvent isOpen />
-      </StaffTimetableAndRegisterDetailsProvider>
+  </StaffTimetableAndRegisterDetailsProvider>
     );
     expect(screen.getByText(/Loading.../i)).toBeInTheDocument();
   });
@@ -29,9 +29,9 @@ describe("TakeRegisterEvent", () => {
       payload: { registerDetailResponse: mockRegisterDetails }
     });
     render(
-      <StaffTimetableAndRegisterDetailsProvider>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <TakeRegisterEvent isOpen />
-      </StaffTimetableAndRegisterDetailsProvider>
+  </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
@@ -41,9 +41,9 @@ describe("TakeRegisterEvent", () => {
   it("renders error state when API fails", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
     render(
-      <StaffTimetableAndRegisterDetailsProvider>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <TakeRegisterEvent isOpen />
-      </StaffTimetableAndRegisterDetailsProvider>
+  </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();
@@ -53,9 +53,9 @@ describe("TakeRegisterEvent", () => {
   it("renders error state when API returns invalid data", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockResolvedValue({ payload: {} });
     render(
-      <StaffTimetableAndRegisterDetailsProvider>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <TakeRegisterEvent isOpen />
-      </StaffTimetableAndRegisterDetailsProvider>
+  </StaffTimetableAndRegisterDetailsProvider>
     );
     await waitFor(() => {
       expect(screen.queryByText(/Loading.../i)).not.toBeInTheDocument();

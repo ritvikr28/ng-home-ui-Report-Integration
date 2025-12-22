@@ -60,6 +60,20 @@ const requiredPupilProfilePermissions: Permission[] = [
   }
 ];
 
+const canViewTimetable = authService.isAuthorised(
+  [
+    { Securable: "NG.Homepage.Timetable", Operation: "View" }
+  ],
+  MatchPermissions.all
+);
+const canViewRegisters = authService.isAuthorised(
+  [
+    { Securable: "NG.Homepage.Registers", Operation: "View" }
+  ],
+  MatchPermissions.all
+);
+const hasTimetableOrRegisterAccess = canViewTimetable || canViewRegisters;
+
 const requiredSchoolOverviewPermissions: Permission[] = [
   {
     Securable: "NG.Homepage.SchoolOverview",
@@ -160,24 +174,24 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         </GridItem>
       </Grid>
 
-      <StaffTimetableAndRegisterDetailsProvider>
-        {authService.isAuthorised(
-          requiredStaffTimeTablePermissions,
-          MatchPermissions.all
-        ) &&
-          isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
-        {authService.isAuthorised(
-          requiredRegisterPermissions,
-          MatchPermissions.all
-        ) && (
-            <>
-              <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-              <div className="new-divider-spacing">
-                <Divider />
-              </div>
-            </>
-          )}
-      </StaffTimetableAndRegisterDetailsProvider>
+          <StaffTimetableAndRegisterDetailsProvider hasAccess={hasTimetableOrRegisterAccess}>
+            {authService.isAuthorised(
+              requiredStaffTimeTablePermissions,
+              MatchPermissions.all
+            ) &&
+              isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
+            {authService.isAuthorised(
+              requiredRegisterPermissions,
+              MatchPermissions.all
+            ) && (
+                <>
+                  <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+                  <div className="new-divider-spacing">
+                    <Divider />
+                  </div>
+                </>
+              )}
+          </StaffTimetableAndRegisterDetailsProvider>
       {authService.isAuthorised(
         requiredPupilProfilePermissions,
         MatchPermissions.all
