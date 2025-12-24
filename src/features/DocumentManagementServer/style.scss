@@ -80,13 +80,18 @@
 
   .grid-wrapper {
     .filter-tool-view .filter-btn {
-      margin-right: 8px;
-      margin-top: 24px;
-      text-overflow: ellipsis;
+        margin-right: 8px;
+        margin-top: 24px;
+        text-overflow: ellipsis;
         white-space: nowrap;
         display: inline-block;
-    }
-
+      }
+    
+      .filter-tool-view .tag-list-container {
+        .search-tagList .essui-icon-button {
+          display: none !important;
+        }
+      }
     .heading-title {
       margin-bottom: 20px;
     }
@@ -499,6 +504,13 @@
     padding: 6px;
     overflow: auto;
   }} 
+}
+
+
+@media (min-width:300px) and (max-width: 500px) {
+  .dms-layout .grid-wrapper .filter-tool-view .dropdown { 
+    max-width: 56% !important;
+  }
 }
 
 @media (max-width: 600px), (max-height: 600px) {
