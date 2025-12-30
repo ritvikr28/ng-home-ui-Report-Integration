@@ -415,6 +415,12 @@
     "save" : "Arbed",
     "pleaseWaitLoader" : "Arhoswch os gwelwch yn dda"
   },
+  "SIMS7Redirects":{
+    "title" : "SIMS 7 Redirects",
+    "subTitle" : "Manage modules that open directly in Next Gen from SIMS 7. Data will remain synced for migrated modules. Please ensure relevant users have valid NG accounts and appropriate access. More modules will be available for configuration soon.",
+    "secondSubheadingwithLink" :"Link for more details placeholder",
+    "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name"
+  },
   "HomePageForSimsConnectedNormalUser": {
     "welcomeToSims": "Croeso i SIMS",
     "needAccessToSimsNextGen": "Angen mynediad i SIMS Next Gen?",
