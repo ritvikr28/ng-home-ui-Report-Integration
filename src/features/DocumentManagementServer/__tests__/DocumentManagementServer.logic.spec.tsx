@@ -3794,8 +3794,8 @@ describe("handleApply", () => {
   let setSelectedCheckBoxIds: jest.Mock;
   let setPrevSelectedDocs: jest.Mock;
   let setSelectedEntities: jest.Mock;
-  let setSortBy: jest.Mock; // <-- add this
-  let setSortDirection: jest.Mock; // <-- add this
+  let setSortBy: jest.Mock; 
+  let setSortDirection: jest.Mock; 
   let setIsInitialLoad: jest.Mock; 
 
   beforeEach(() => {

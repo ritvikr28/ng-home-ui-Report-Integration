@@ -61,7 +61,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     headerTxtTrunctLength: 50,
     isSimpleText: true,
     isColumnSorting: true,
-    // isColumnSortAscFirst: true,
     anyComponent: (e: any) => (
       <>
         <EllipsisWithTooltip
@@ -104,7 +103,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     showValAs: ShowValAs.CustomeComponent,
     isHeaderTextTruncate: false,
     headerTxtTrunctLength: 20,
-    // isColumnSortAscFirst: true,
     isColumnSorting: true,
     columnWidth: "144px",
     isTextTruncate: false,
@@ -151,8 +149,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
     isColumnSorting: true,
-    // Show Desc on initial load, Asc when user clicks again
-    // isColumnSortAscFirst: !(isInitialLoad && sortBy === "DateAdded"),
     isColumnSortByDefault: true,
   },
   {
@@ -163,7 +159,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isColumnSorting: true,
     isTextTruncate: false,
     isHeaderTextTruncate: false,
-    // isColumnSortAscFirst: true,
     headerTxtTrunctLength: 50,
     columnWidth: "120px",
     anyComponent: (e: any) => (
@@ -187,7 +182,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isTextTruncate: false,
     isHeaderTextTruncate: false,
     headerTxtTrunctLength: 50,
-    // isColumnSortAscFirst: true,
     columnWidth: "129px",
     anyComponent: (e: any) => {
           if (
