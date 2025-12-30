@@ -294,7 +294,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             setIsInitialLoad(false);
         }
         if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
-            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
+            setIsInitialLoad(true);
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo)
+            setIsInitialLoad(false);
         }
         applySummaryTagClass();
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
@@ -648,7 +650,10 @@ const handleApplyWrapper = (referenceExternalIds: string[], categories?: ISelect
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
     setPrevSelectedDocs,
-    setSelectedEntities
+    setSelectedEntities,
+    setSortBy,
+    setSortDirection,
+    setIsInitialLoad
   });
 };
 
@@ -1340,6 +1345,7 @@ const getDialogTitle = () => {
                                     setExcludedCheckBoxIds([]);
                                     setPrevSelectedDocs([]);
                                     setTableKey(prev => prev + 1);
+                                    setIsInitialLoad(true);
                                     handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId)
                                     setIsSearchTriggered(true);
                                     setSelectedFormats([]);

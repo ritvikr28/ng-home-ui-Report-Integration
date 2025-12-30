@@ -103,7 +103,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     showValAs: ShowValAs.CustomeComponent,
     isHeaderTextTruncate: false,
     headerTxtTrunctLength: 20,
-
     isColumnSorting: true,
     columnWidth: "144px",
     isTextTruncate: false,
@@ -1397,6 +1396,9 @@ export function handleApply({
   setSelectedCheckBoxIds,
   setPrevSelectedDocs,
   setSelectedEntities,
+  setSortBy,
+  setSortDirection,
+  setIsInitialLoad
 }: {
   referenceExternalIds: string[],
   categories?: any[],
@@ -1422,7 +1424,10 @@ export function handleApply({
   setIsHeaderBoxChecked: (v: boolean) => void,
   setSelectedCheckBoxIds: (v: string[]) => void,
   setPrevSelectedDocs: (v: any[]) => void,
-  setSelectedEntities: (v: any[]) => void
+  setSelectedEntities: (v: any[]) => void,
+  setSortBy: (v: string) => void,
+  setSortDirection: (v: "Asc" | "Desc") => void,
+  setIsInitialLoad: (v: boolean) => void
 }) {
   const appliedCategories = categories ?? selectedCategories;
   validateAndApplyFilter({
@@ -1450,6 +1455,9 @@ export function handleApply({
     setSearchTerm("");
     setSearchText("");
     setTableKey((prev) => prev + 1);
+    setSortBy("DateAdded");
+    setSortDirection("Desc");
+    setIsInitialLoad(true);
   }
   if (setSelectedEntities) {
     setSelectedEntities(selectedEntity || []);
