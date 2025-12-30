@@ -3794,6 +3794,9 @@ describe("handleApply", () => {
   let setSelectedCheckBoxIds: jest.Mock;
   let setPrevSelectedDocs: jest.Mock;
   let setSelectedEntities: jest.Mock;
+  let setSortBy: jest.Mock; // <-- add this
+  let setSortDirection: jest.Mock; // <-- add this
+  let setIsInitialLoad: jest.Mock; 
 
   beforeEach(() => {
     setSearchInput = jest.fn();
@@ -3815,6 +3818,9 @@ describe("handleApply", () => {
     setSelectedCheckBoxIds = jest.fn();
     setPrevSelectedDocs = jest.fn();
     setSelectedEntities = jest.fn();
+    setIsInitialLoad = jest.fn();
+    setSortBy = jest.fn();
+    setSortDirection = jest.fn();
     jest.spyOn(logicModule, "validateAndApplyFilter").mockImplementation(() => {});
   });
   it("calls validateAndApplyFilter and resets search when referenceExternalIds is not empty", () => {
@@ -3843,7 +3849,10 @@ describe("handleApply", () => {
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
       setPrevSelectedDocs,
-      setSelectedEntities
+      setSelectedEntities,
+      setIsInitialLoad,
+      setSortBy,
+      setSortDirection
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3880,7 +3889,10 @@ describe("handleApply", () => {
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
       setPrevSelectedDocs,
-      setSelectedEntities
+      setSelectedEntities,
+      setIsInitialLoad,
+      setSortBy,
+      setSortDirection
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat1" }]);
@@ -3917,7 +3929,10 @@ describe("handleApply", () => {
       setIsHeaderBoxChecked,
       setSelectedCheckBoxIds,
       setPrevSelectedDocs,
-      setSelectedEntities
+      setSelectedEntities,
+      setIsInitialLoad,
+      setSortBy,
+      setSortDirection
     });
 
     expect(setSelectedCategories).toHaveBeenCalledWith([{ id: "cat2" }]);
@@ -3948,7 +3963,10 @@ describe("handleApply", () => {
     setIsHeaderBoxChecked,
     setSelectedCheckBoxIds,
     setPrevSelectedDocs,  
-    setSelectedEntities
+    setSelectedEntities,
+    setIsInitialLoad,
+    setSortBy,
+    setSortDirection
   });
 
   // Check that setTableKey was called with a function
