@@ -59,8 +59,7 @@ import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
-// import gtmAnalytics from "./shared/utils/analytics";
-// import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
+import Sims7RedirectionsLayout from "./pages/Sims7Redirections/Sims7RedirectionsLayout.logic";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -218,7 +217,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-  
+
+  const hasSIMS7RedirectsOrgView: boolean =
+    isOrganisationInVariant("Sims7RedirectsFlag");
+
+  console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -291,13 +294,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
           <ProtectedRoute exact path="/uam" component={UAM} />
-          {/* {sendNotificationFlagr && (
-            <ProtectedRoute
-              exact
-              path="/notification"
-              component={SendNotification}
-            />
-          )} */}
           {sendNotificationFlagr && (
             <ProtectedRoute
               exact
@@ -305,6 +301,16 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={NotificationsLogic}
             />
           )}
+
+          {hasSIMS7RedirectsOrgView &&
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/sims7redirections"
+              component={Sims7RedirectionsLayout}
+            />
+          }
+
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact
