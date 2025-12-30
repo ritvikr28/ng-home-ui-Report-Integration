@@ -845,7 +845,6 @@ switch (dialogType) {
 
     const handleFilterOnClick = () => {
         setIsFilterDialogOpen(true);
-    //    setIsInitialLoad(true);
         setSelectedDateRange({ fromDate: dateRange?.fromDate || "", toDate: dateRange?.toDate || "" });
         setTagListArray(tagListArray)
     };
@@ -1492,7 +1491,6 @@ const getDialogTitle = () => {
                                             setSelectedRelatedTo={setSelectedRelatedTo}
                                             tagListArray={tagListArray}
                                             setTagListArray={setTagListArray}
-                                            // setIsInitialLoad={setIsInitialLoad}
                                         />
                                     </>
                                 }
