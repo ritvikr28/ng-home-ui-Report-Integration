@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from "@testing-library/react";
 import * as uiKit from "@essnextgen/ui-kit";
-import Sims7RedirectionsPage from "./Sims7RedirectionsPage.view";
-import Sims7RedirectionsLayout from "./Sims7RedirectionsLayout.logic";
+import Sims7RedirectionsPage from "../Sims7RedirectionsPage.view";
+import Sims7RedirectionsLayout from "../Sims7RedirectionsLayout.logic";
 
 describe("Sims7RedirectionsPage", () => {
   it("renders sidebar toggle button in mobile view and toggles sidebar", () => {

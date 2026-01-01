@@ -131,3 +131,27 @@
 .sims7-redirections .text-tag {
   gap: 32px !important;
 }
+
+.heading-category {
+  font-weight: 600;
+  font-size: 14px;
+  gap: 8px;
+}
+
+.details-category {
+  font-weight: 400;
+  font-size: 16px;
+  gap: 8px;
+}
+
+.view-mode-with-edit-button {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.view-mode-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}

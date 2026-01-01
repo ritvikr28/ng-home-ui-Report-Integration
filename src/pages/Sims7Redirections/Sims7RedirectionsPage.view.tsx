@@ -19,13 +19,34 @@ import {
     useTranslation,
     UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import Sims7RedirectionsSidePanel from "./Sims7RedirectionsSidePanel";
+import { homeurl } from "../InviteUsers/InviteUsersProps";
 import {
     sims7RedirectionsTableHeaders,
     sims7RedirectionsTableData
 } from "./Sims7RedirectionsPage.data";
-import { homeurl } from "../InviteUsers/InviteUsersProps";
 
 export const Sims7RedirectionsPage = () => {
+    const [isSidePanelOpen, setIsSidePanelOpen] = useState(false);
+    const [sidePanelMode, setSidePanelMode] = useState<'view' | 'edit'>('view');
+    const [selectedRow, setSelectedRow] = useState<any>(null);
+
+    const handleCloseSidePanel = () => {
+        setIsSidePanelOpen(false);
+        setSelectedRow(null);
+    };
+
+    const handleViewClick = (rowData: any) => {
+        setSelectedRow(rowData);
+        setSidePanelMode('view');
+        setIsSidePanelOpen(true);
+    };
+
+    const handleEditClick = (rowData: any) => {
+        setSelectedRow(rowData);
+        setSidePanelMode('edit');
+        setIsSidePanelOpen(true);
+    };
 
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
@@ -52,22 +73,22 @@ export const Sims7RedirectionsPage = () => {
     };
 
     const sims7RedirectionsBreadcrumbs: IBreadcrumbLink[] = [
-    {
-          active: true,
-          linkName: `${t("homePage.appTitle")}`,
-          path: "/"
+        {
+            active: true,
+            linkName: `${t("homePage.appTitle")}`,
+            path: "/"
         },
         {
-          active: false,
-          linkName: `${t("breadcrumbsadminconsole")}`,
-          path: homeurl
+            active: false,
+            linkName: `${t("breadcrumbsadminconsole")}`,
+            path: homeurl
         },
         {
-          active: false,
-          linkName: `${t("SIMS7Redirects.title")}`,
-          path: "/"
+            active: false,
+            linkName: `${t("SIMS7Redirects.title")}`,
+            path: "/"
         }
-];
+    ];
 
     return (
         <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users sims7-redirections">
@@ -111,9 +132,7 @@ export const Sims7RedirectionsPage = () => {
                 <ControlledList
                     tooltipBottomAligned={true}
                     data-testid="controlled-list"
-                    globalNotificationMsgBannerObject={
-                        null
-                    }
+                    globalNotificationMsgBannerObject={null}
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
@@ -127,9 +146,7 @@ export const Sims7RedirectionsPage = () => {
                                 className="base-class"
                                 color={ButtonColor.Utility}
                                 data-testid="filter"
-                                onClick={() => {
-
-                                }}
+                                onClick={() => { }}
                                 size={ButtonSize.Small}
                                 iconName="filter"
                                 iconColor={IconColor.Neutral800}
@@ -139,8 +156,8 @@ export const Sims7RedirectionsPage = () => {
                             </Button>
                         </div>
                     }
-
-                    emptyStateMsg=""
+                    emptyStateMsg={t("SIMS7Redirects.emptyStateMsg")}
+                    isShowEmptyAddBtn={false}
                     onAddEventBtnClick={() => { }}
                     groupTagsEnabled
                     headingText={t("SIMS7Redirects.title")}
@@ -160,7 +177,8 @@ export const Sims7RedirectionsPage = () => {
                     lastColHeaderAlign="center"
                     paginationMinCountToHideNextPreviousBtn={0}
                     isShowPrimaryBtn={false}
-                    resultNotFoundMessage=""
+                    isShowdynamictableNoMsg
+                    emptyRowResponseMessage={`${t("SIMS7Redirects.emptyRowResponseMessage")}`}
                     showConfirmDialog
                     tableBodyData={sims7RedirectionsTableData}
                     tableFirstColumnWidth="10px"
@@ -169,9 +187,7 @@ export const Sims7RedirectionsPage = () => {
                     isSorting={true}
                     sortByDefault={false}
                     sortAscFirst={false}
-                    sortingOnClickEvent={() => {
-
-                    }}
+                    sortingOnClickEvent={() => { }}
                     templatePropsConfirmation={{
                         cancelText: "Cancel",
                         contentText: "You have unsaved changes that will be lost.",
@@ -186,7 +202,14 @@ export const Sims7RedirectionsPage = () => {
                     isOpenConfirmationDialog={false}
                     isIconRightAligned={true}
                     isShowOverflowMenuCol={true}
-                    onClickOverflowItem={(e, selected) => console.log("Clicked overflow item:", selected)}
+                    onClickOverflowItem={(e, rowData) => {
+                        const text = (e.target as HTMLElement).innerText.trim();
+                        if (text === "View") {
+                            handleViewClick(rowData);
+                        } else if (text === "Edit") {
+                            handleEditClick(rowData);
+                        }
+                    }}
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
                     isSearchHideClearIcon={true}
                     dynamicTableLoader={false}
@@ -206,16 +229,22 @@ export const Sims7RedirectionsPage = () => {
                     secondaryButtonTitle="Close"
                     isShowCheckboxCol={false}
                     isShowThirdElement={true}
-                    isShowdynamictableNoMsg
-                    emptyRowResponseMessage=""
                     emptyRowResponseCode={ResponseCode.Info}
                     isPagination={false}
                     paginationCount={5}
                     paginationOnChange={() => { }}
                 />
+
+                <Sims7RedirectionsSidePanel
+                    isOpen={isSidePanelOpen}
+                    onClose={handleCloseSidePanel}
+                    mode={sidePanelMode}
+                    selectedRow={selectedRow}
+                    t={t}
+                    setSidePanelMode={setSidePanelMode}
+                />
             </div>
         </div>
     );
-};
-
+}
 export default Sims7RedirectionsPage;

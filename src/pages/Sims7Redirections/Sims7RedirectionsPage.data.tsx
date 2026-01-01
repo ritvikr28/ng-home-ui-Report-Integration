@@ -82,6 +82,11 @@ export const sims7RedirectionsTableHeaders = [
         isTextTruncate: false,
         isColumnSorting: true,
         isColumnSortByDefault: true,
+    },
+    {
+        text: "Reason for changes",
+        isShow: false,
+        showValAs: ShowValAs.Text
     }
 ];
 
@@ -115,9 +120,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -133,9 +137,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -147,13 +150,13 @@ export const sims7RedirectionsTableData = [
         modifiedBy: "Chris Green",
         effectiveDate: "15 Mar 2026",
         status: "Reversing",
+        reasonForChanges: "System update",
         tooltipMessage: "Behaviour reversing",
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -165,13 +168,13 @@ export const sims7RedirectionsTableData = [
         modifiedBy: "Morgan Lee",
         effectiveDate: "20 Apr 2026",
         status: "Not migrated",
+        reasonForChanges: "Budget constraints",
         tooltipMessage: "Not migrated yet",
         cellStatus: "warning",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -187,9 +190,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -205,9 +207,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -217,15 +218,14 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "Cover",
         sims7Module: "Cover",
         modifiedBy: "Liam White",
-        effectiveDate: "05 Jul 2026",
+        effectiveDate: "05 Jul 2026",   
         status: "Planned",
         tooltipMessage: "Cover planned",
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -241,9 +241,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -252,16 +251,16 @@ export const sims7RedirectionsTableData = [
         category: "Options",
         nextGenModule: "Options",
         sims7Module: "Options",
-        modifiedBy: "Noah Gray",
-        effectiveDate: "15 Sep 2026",
+        modifiedBy: "-",
+        effectiveDate: "-",
         status: "Not migrated",
+        reasonForChanges: "Pending approval",
         tooltipMessage: "Options not migrated",
         cellStatus: "warning",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -277,9 +276,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -293,11 +291,10 @@ export const sims7RedirectionsTableData = [
         status: "Permanent",
         tooltipMessage: "Reporting permanent",
         cellStatus: "success",
-        actions: {
+       actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -313,9 +310,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -327,13 +323,13 @@ export const sims7RedirectionsTableData = [
         modifiedBy: "Ella Indigo",
         effectiveDate: "04 Jan 2027",
         status: "Reversing",
+        reasonForChanges: "System update",
         tooltipMessage: "Student details reversing",
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -349,9 +345,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "warning",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -367,9 +362,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -385,9 +379,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     },
@@ -403,9 +396,8 @@ export const sims7RedirectionsTableData = [
         cellStatus: "neutral",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" },
-                { disabled: false, isSelected: false, text: "Make active", value: "Active" },
-                { disabled: false, isSelected: false, text: "Make inactive", value: "Inactive", isShowDivider: true }
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
             ]
         }
     }
