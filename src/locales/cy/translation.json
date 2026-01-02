@@ -421,7 +421,8 @@
     "secondSubheadingwithLink" :"Link for more details placeholder",
     "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name",
     "emptyStateMsg":"No SIMS7 Redirect entries found.",
-    "emptyRowResponseMessage":"No data to display"
+    "emptyRowResponseMessage":"No data to display",
+    "emptyFilterMessage":"No SIMS7 Redirect entries found for selected filters."
   },
   "HomePageForSimsConnectedNormalUser": {
     "welcomeToSims": "Croeso i SIMS",

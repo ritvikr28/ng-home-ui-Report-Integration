@@ -56,8 +56,12 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                 ) : null}
                             </div>
                             <div>
-                                <div className="heading-category">SIMS7 module</div>
+                                <div className="heading-category">SIMS 7 module</div>
                                 <div className="details-category">{selectedRow.sims7Module}</div>
+                            </div>
+                            <div>
+                                <div className="heading-category">Redirect to open in Next Gen</div>
+                                <div className="details-category">{selectedRow.status === 'Not migrated' ? 'No' : 'Yes'}</div>
                             </div>
                             {selectedRow.modifiedBy && selectedRow.modifiedBy !== '-' && (
                                 <div>
@@ -65,10 +69,6 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                     <div className="details-category">{selectedRow.modifiedBy}</div>
                                 </div>
                             )}
-                            <div>
-                                <div className="heading-category">Redirect to open in Next Gen</div>
-                                <div className="details-category">{selectedRow.status === 'Not migrated' ? 'No' : 'Yes'}</div>
-                            </div>
                             {(selectedRow.status !== 'Not migrated' && selectedRow.effectiveDate && selectedRow.effectiveDate !== '-') || (selectedRow.status === 'Not migrated' && selectedRow.effectiveDate && selectedRow.effectiveDate !== '-') ? (
                                 <div>
                                     <div className="heading-category">Effective date</div>

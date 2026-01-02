@@ -48,7 +48,7 @@ export const sims7RedirectionsTableHeaders = [
         }
     },
     {
-        text: "SIMS7 module",
+        text: "SIMS 7 module",
         isShow: true,
         showValAs: ShowValAs.TextWithTag,
         isTextTruncate: true,
@@ -254,7 +254,6 @@ export const sims7RedirectionsTableData = [
         modifiedBy: "-",
         effectiveDate: "-",
         status: "Not migrated",
-        reasonForChanges: "Pending approval",
         tooltipMessage: "Options not migrated",
         cellStatus: "warning",
         actions: {

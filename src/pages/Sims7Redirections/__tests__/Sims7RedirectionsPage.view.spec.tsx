@@ -30,7 +30,7 @@ describe("Sims7RedirectionsPage", () => {
   it("renders table with correct headers and data", () => {
     render(<Sims7RedirectionsPage />);
     expect(screen.getByText(/Next Gen module/i)).toBeInTheDocument();
-    expect(screen.getByText(/SIMS7 module/i)).toBeInTheDocument();
+    expect(screen.getByText(/SIMS 7 module/i)).toBeInTheDocument();
   });
 
   it("shows truncated text and tooltip for long Next Gen module values", async () => {
