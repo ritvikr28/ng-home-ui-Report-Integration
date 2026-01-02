@@ -25,7 +25,7 @@ describe("Sims7RedirectionsSidePanel", () => {
         expect(screen.getByText("Student")).toBeInTheDocument();
         expect(screen.getByText("Next Gen module")).toBeInTheDocument();
         expect(screen.getByText("Pupil Data")).toBeInTheDocument();
-        expect(screen.getByText("SIMS7 module")).toBeInTheDocument();
+        expect(screen.getByText("SIMS 7 module")).toBeInTheDocument();
         expect(screen.getByText("Pupil Data1")).toBeInTheDocument();
         expect(screen.getByText("Modified by")).toBeInTheDocument();
         expect(screen.getByText("John Doe")).toBeInTheDocument();

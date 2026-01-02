@@ -155,3 +155,20 @@
   flex-direction: column;
   gap: 24px;
 }
+
+.sims7-redirections .dialog-content {
+  padding-left: 4px;
+  display: block;
+}
+
+.sims7-redirections .dialog-with-dropdown {
+  height: 350px;
+  padding-left: 4px;
+}
+
+.sims7-redirections .dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 24px;
+  margin-top: 32px;
+}
