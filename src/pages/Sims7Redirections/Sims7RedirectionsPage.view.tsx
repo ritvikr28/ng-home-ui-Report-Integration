@@ -58,6 +58,7 @@ export const Sims7RedirectionsPage = () => {
     const [isSidePanelOpen, setIsSidePanelOpen] = React.useState(false);
     const [sidePanelMode, setSidePanelMode] = React.useState<'view' | 'edit'>('view');
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
+    // const [dropdownResetKey, setDropdownResetKey] = React.useState(0);
     const [isSidebarOpen, setIsSidebarOpen]: [
         boolean,
         React.Dispatch<React.SetStateAction<boolean>>
@@ -86,8 +87,10 @@ export const Sims7RedirectionsPage = () => {
     }
     const handleCloseDialog = () => setIsDialogOpen(false);
     const handleClearAll = () => {
+        setIsDropDownOpen(false);
         setIsDialogOpen(true);
         setSelectedItems([]);
+        // setDropdownResetKey(prev => prev + 1); // force Dropdown to remount/close
     };
 
     const handleApplyDialog = () => {
@@ -330,6 +333,7 @@ export const Sims7RedirectionsPage = () => {
                         <>
                             <FormLabel>Status</FormLabel>
                             <Dropdown
+                                //  key={dropdownResetKey}
                                 multiSelect={true}
                                 selectedItems={selectedItems}
                                 onSelectMultiple={(e: React.SyntheticEvent, selected: ISelectedItem[]) =>
