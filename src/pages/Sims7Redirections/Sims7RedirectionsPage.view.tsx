@@ -157,7 +157,7 @@ export const Sims7RedirectionsPage = () => {
     ];
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const pageSize = 5; // same as paginationCount
+    const pageSize = 40; // same as paginationCount
     const paginatedTableData = React.useMemo(() => {
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
@@ -328,7 +328,7 @@ export const Sims7RedirectionsPage = () => {
 
                 />
 
-                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true}>
+                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true} title="Filter by">
                     <DialogContent className={isDropDownOpen ? "dialog-with-dropdown" : "dialog-content"}>
                         <>
                             <FormLabel>Status</FormLabel>
@@ -357,7 +357,7 @@ export const Sims7RedirectionsPage = () => {
                     </DialogContent>
                     <DialogFooter className="dialog-actions">
                         <Button dataTestId="close-btn" onClick={handleClearAll} color={ButtonColor.Secondary}>
-                            clear All
+                            Clear all
                         </Button>
                         <Button dataTestId="close-btn" onClick={handleApplyDialog}>
                             Apply

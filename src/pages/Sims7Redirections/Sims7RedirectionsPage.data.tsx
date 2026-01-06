@@ -160,24 +160,24 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    {
-        id: "5",
-        category: "Dinner money",
-        nextGenModule: "Dinner Money",
-        sims7Module: "Dinner Money",
-        modifiedBy: "Morgan Lee",
-        effectiveDate: "20 Apr 2026",
-        status: "Not migrated",
-        reasonForChanges: "Budget constraints",
-        tooltipMessage: "Not migrated yet",
-        cellStatus: "warning",
-        actions: {
-            options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-            ]
-        }
-    },
+    // {
+    //     id: "5",
+    //     category: "Dinner money",
+    //     nextGenModule: "Dinner Money",
+    //     sims7Module: "Dinner Money",
+    //     modifiedBy: "Morgan Lee",
+    //     effectiveDate: "20 Apr 2026",
+    //     status: "Not migrated",
+    //     reasonForChanges: "Budget constraints",
+    //     tooltipMessage: "Not migrated yet",
+    //     cellStatus: "warning",
+    //     actions: {
+    //         options: [
+    //             { disabled: false, isSelected: false, text: " View", value: "View" },
+    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+    //         ]
+    //     }
+    // },
     {
         id: "6",
         category: "Personnel",
@@ -246,23 +246,23 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    {
-        id: "10",
-        category: "Options",
-        nextGenModule: "Options",
-        sims7Module: "Options",
-        modifiedBy: "-",
-        effectiveDate: "-",
-        status: "Not migrated",
-        tooltipMessage: "Options not migrated",
-        cellStatus: "warning",
-        actions: {
-            options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-            ]
-        }
-    },
+    // {
+    //     id: "10",
+    //     category: "Options",
+    //     nextGenModule: "Options",
+    //     sims7Module: "Options",
+    //     modifiedBy: "-",
+    //     effectiveDate: "-",
+    //     status: "Not migrated",
+    //     tooltipMessage: "Options not migrated",
+    //     cellStatus: "warning",
+    //     actions: {
+    //         options: [
+    //             { disabled: false, isSelected: false, text: " View", value: "View" },
+    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+    //         ]
+    //     }
+    // },
     {
         id: "11",
         category: "Profiles",
@@ -332,23 +332,23 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    {
-        id: "15",
-        category: "Medical",
-        nextGenModule: "Medical",
-        sims7Module: "Medical",
-        modifiedBy: "Ava Orange",
-        effectiveDate: "09 Feb 2027",
-        status: "Not migrated",
-        tooltipMessage: "Medical not migrated",
-        cellStatus: "warning",
-        actions: {
-            options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-            ]
-        }
-    },
+    // {
+    //     id: "15",
+    //     category: "Medical",
+    //     nextGenModule: "Medical",
+    //     sims7Module: "Medical",
+    //     modifiedBy: "Ava Orange",
+    //     effectiveDate: "09 Feb 2027",
+    //     status: "Not migrated",
+    //     tooltipMessage: "Medical not migrated",
+    //     cellStatus: "warning",
+    //     actions: {
+    //         options: [
+    //             { disabled: false, isSelected: false, text: " View", value: "View" },
+    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+    //         ]
+    //     }
+    // },
     {
         id: "16",
         category: "Consent",
