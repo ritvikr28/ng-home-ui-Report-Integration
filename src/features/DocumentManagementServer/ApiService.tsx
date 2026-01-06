@@ -174,6 +174,20 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
+export const FetchStudentsData = async (): Promise<any> =>{
+  try{
+    const baseUrl ="http://localhost:5010"
+    const url = `validation/api/v1/student/getstudents/students`;
+    const response: AxiosResponse = await service.get(url,baseUrl);
+    console.log(response.data);
+    return response; 
+  }catch(err){
+    console.error("Error fetching PT data:", err);
+    return {};
+  }
+};
+
+
 export const validation = async (payload: { request: any }): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);

@@ -60,6 +60,7 @@ import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
 import Sims7RedirectionsLayout from "./pages/Sims7Redirections/Sims7RedirectionsLayout.logic";
+import StudentsView from "./features/DocumentManagementServer/PTView";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
@@ -258,6 +259,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 : EmptyComponent
             }
           />
+          <Route exact path ="/StudentView" component={StudentsView} />
           {/* eslint-enable */}
           <ProtectedRoute exact path="/noAccess" component={NoAccess} />
           <ProtectedRoute
@@ -301,7 +303,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={NotificationsLogic}
             />
           )}
-
+   
           {hasSIMS7RedirectsOrgView &&
             <ProtectedRoute
               exact
