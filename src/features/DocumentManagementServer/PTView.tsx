@@ -49,7 +49,7 @@ const StudentsView: React.FC = () => {
             <TableRow> 
               <TableCell header>Attendance ID</TableCell> 
               <TableCell header>Student ID</TableCell> 
-              <TableCell header>Attendance Date</TableCell> 
+              <TableCell header>Date</TableCell> 
               <TableCell header>Status</TableCell> 
               <TableCell header>Is Excused</TableCell> 
               <TableCell header>Notes</TableCell> 
