@@ -6,14 +6,14 @@ import {
   ActionCard,
   Grid,
   GridItem,
-  useMediaQuery,
+  useMediaQuery
 } from "@essnextgen/ui-kit";
 import { SectionTitle } from "../../SectionTitle/SectionTitle";
 /* eslint-disable */
 import "../style.scss";
 import {
   UseTranslationResponse,
-  useTranslation,
+  useTranslation
 } from "@essnextgen/ui-intl-kit";
 import { envConfig } from "../../../utils";
 import { hasFeaturePermission } from "@essnextgen/ui-flagr";
