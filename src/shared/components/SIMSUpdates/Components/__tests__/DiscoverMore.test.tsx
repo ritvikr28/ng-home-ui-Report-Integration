@@ -65,7 +65,7 @@ describe("DiscoverMoreView Component", () => {
     fireEvent.click(actionCardLink);
     expect(actionCardLink).toHaveAttribute(
       "href",
-      "https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
+      "https://www.parentpaygroup.com/product-updates/"
     );
   });
 
