@@ -56,18 +56,22 @@ export const service: ServiceType = {
   setInterceptor() {
     this.instance.interceptors.response.use(
       (response) => response,
-      (error) => {
-        let message: string[] = [];
-        if (error.response?.status === 401) {
-          window.sessionStorage.removeItem("auth");
-        } else if (error.response?.data?.code === "validation_error") {
-          message = getErrorMessage(error);
-        }
-        const customError: Error = new Error();
-        return Promise.reject(
-          Object.assign(customError, { ...error, message })
-        );
-      }
+          (error) => {
+            let message: string[] = [];
+            if (error.response?.status === 401) {
+              window.sessionStorage.removeItem("auth");
+            } else if (
+              error.response &&
+              error.response.data &&
+              error.response.data.code === "validation_error"
+            ) {
+              message = getErrorMessage(error);
+            }
+            const customError: Error = new Error();
+            return Promise.reject(
+              Object.assign(customError, { ...error, message })
+            );
+          }
     );
   },
   get(path: string, externalUrl?: string, headers?: any) {
