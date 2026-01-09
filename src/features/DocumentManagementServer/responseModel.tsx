@@ -7,6 +7,7 @@ export interface SingleDocumentDetail {
   registrationId: number;
   fileId: string;
   personExternalId: string;
+  documentRealatedTo?: number;
   documentInfo: {
     fileName: string;
     isSelectedForPrepareDownload: boolean;
@@ -28,6 +29,7 @@ export interface DocumentBasicDetails {
   data: SingleDocumentDetail[];
   status: number;
   statusCode: number;
+  isGetBulkDeleteApiSuccess?: boolean;
 }
 
 
@@ -42,11 +44,15 @@ export interface DocumentManagementServerProps {
   sortDirection?: string;
   referenceExternalId?: string[];
   documentRealatedTo?: number;
+  isGetBulkDeleteApiSuccess?: boolean;
 }
 
 export interface tableDataProps {
   id: string;
-  Document: string;
+   Document: {
+    name: string;
+    isProtected: boolean;
+  };
   Relatedto: string[];
   Category: string;
   Addedby: string;

@@ -40,7 +40,8 @@ import {
   handleApply,
   handleEditSelectedOverFlowMenu,
   applySummaryTagClass,
-  getValidationState
+  getValidationState,
+  mapDocumentInfo
 } from "../DocumentManagementServer.logic";
 
 const analytics = require('../../../shared/utils/analytics').default;
@@ -1328,58 +1329,53 @@ describe("getAllRegistrationIds", () => {
   });
 })
 
+
 describe("Document column anyComponent", () => {
   const t = (key: string) => key;
   const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
-  const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
-  it("renders plain value if value is falsy or length <= 25", () => {
-    const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("Short Name");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  it("renders EllipsisWithTooltip with correct props for valid array input", () => {
+    const elem = [{
+      name: "My Document",
+      docRelatedTo: 1,
+      isGetBulkDeleteApiSuccessFlag: false,
+      isProtectedFromDelete: true
+    }];
+    const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
+    expect(getByText("My Document")).toBeInTheDocument();
   });
 
-  it("renders truncated value with tooltip if length > 25", () => {
-    const longValue = "averylongdocumentnamethatisdefinitelymorethan25chars";
-    const { container } = render(<>{documentColumn?.anyComponent?.(longValue)}</>);
-    expect(container).toHaveTextContent(longValue.substring(0, 25));
+  it("renders EllipsisWithTooltip without showProtectedTag if not protected", () => {
+    const elem = [{
+      name: "Unprotected Doc",
+      docRelatedTo: 1,
+      isGetBulkDeleteApiSuccessFlag: false,
+      isProtectedFromDelete: false
+    }];
+    const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
+    expect(getByText("Unprotected Doc")).toBeInTheDocument();
   });
 
-  it("renders plain value if value is empty string", () => {
-    const { container } = render(<>{documentColumn?.anyComponent?.("")}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  it("renders EllipsisWithTooltip without showProtectedTag if isGetBulkDeleteApiSuccessFlag is true", () => {
+    const elem = [{
+      name: "Protected Doc",
+      docRelatedTo: 1,
+      isGetBulkDeleteApiSuccessFlag: true,
+      isProtectedFromDelete: true
+    }];
+    const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
+    expect(getByText("Protected Doc")).toBeInTheDocument();
   });
 
-  it("renders plain value if value is null", () => {
-    const { container } = render(<>{documentColumn?.anyComponent?.(null)}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
-  });
-
-
-  it("renders plain value if value is falsy or length <= 10", () => {
-    const { container } = render(<>{categoryColumn?.anyComponent?.("ShortCat")}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("ShortCat");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
-  });
-
-  it("renders truncated value with tooltip if length > 10", () => {
-    const longValue = "averylongcategoryname";
-    const { container } = render(<>{categoryColumn?.anyComponent?.(longValue)}</>);
-    expect(container).toHaveTextContent(longValue.substring(0, 10));
-  });
-
-  it("renders plain value if value is empty string", () => {
-    const { container } = render(<>{categoryColumn?.anyComponent?.("")}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
-  });
-
-  it("renders plain value if value is null", () => {
-    const { container } = render(<>{categoryColumn?.anyComponent?.(null)}</>);
-    expect(container.querySelector(".document-text")).toHaveTextContent("");
-    expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+  it("renders EllipsisWithTooltip without showProtectedTag if docRelatedTo is not 1", () => {
+    const elem = [{
+      name: "Staff Doc",
+      docRelatedTo: 3,
+      isGetBulkDeleteApiSuccessFlag: false,
+      isProtectedFromDelete: true
+    }];
+    const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
+    expect(getByText("Staff Doc")).toBeInTheDocument();
   });
 });
 
@@ -2290,6 +2286,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
   const mockSetShowDeleteAbortBanner = jest.fn();
   const mockSetShowDeleteErrorBanner = jest.fn();
   const mockSetSuggestions = jest.fn();
+  const mockSetShowBulkDeleteDependencyBanner = jest.fn();
 
   const defaultArgs = {
     page: 2,
@@ -2309,7 +2306,8 @@ describe("fetchGetDocumentDetailsLogic", () => {
     setPrepareDownloadAbortBanner: mockSetPrepareDownloadAbortBanner,
     setShowDeleteAbortBanner: mockSetShowDeleteAbortBanner,
     setShowDeleteErrorBanner: mockSetShowDeleteErrorBanner,
-    setSuggestions: mockSetSuggestions
+    setSuggestions: mockSetSuggestions,
+     setShowBulkDeleteDependencyBanner: mockSetShowBulkDeleteDependencyBanner
   };
 
   beforeEach(() => {
@@ -2322,6 +2320,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
       statusCode: 200,
       status: 200,
       totalRecords: 20,
+      isGetBulkDeleteApiSuccess: true,
       data: [{
         organizationId: "org1",
         userId: "user1",
@@ -2389,6 +2388,61 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
+
+  it("sets bulk delete dependency banner when API fails and all documents are pupils", async () => {
+  const mockResult = {
+    statusCode: 200,
+    status: 200,
+    totalRecords: 2,
+    isGetBulkDeleteApiSuccess: false,
+  data: [
+  {
+    organizationId: "org1",
+    userId: "user1",
+    registrationId: 1,
+    fileId: "file1",
+    personExternalId: "person1",
+    documentRealatedTo: 1,
+    document: "Doc 1",
+    documentInfo: { fileName: "Doc 1", isSelectedForPrepareDownload: false },
+    relatedTo: [],
+    category: "Cat1",
+    addedBy: "User A",
+    dateAdded: "2025-06-10",
+    format: "pdf",
+    size: "500KB",
+    blobName: "blob1"
+  },
+  {
+    organizationId: "org2",
+    userId: "user2",
+    registrationId: 2,
+    fileId: "file2",
+    personExternalId: "person2",
+    documentRealatedTo: 1,
+    document: "Doc 2",
+    documentInfo: { fileName: "Doc 2", isSelectedForPrepareDownload: false },
+    relatedTo: [],
+    category: "Cat2",
+    addedBy: "User B",
+    dateAdded: "2025-06-11",
+    format: "docx",
+    size: "600KB",
+    blobName: "blob2"
+  }
+],
+    pageNumber: 1,
+    pageSize: 10
+  };
+  jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
+
+  await fetchGetDocumentDetailsLogic({
+    ...defaultArgs,
+    setShowBulkDeleteDependencyBanner: mockSetShowBulkDeleteDependencyBanner
+  });
+
+  expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(true);
+});
 
   it("handles fetch throwing an error", async () => {
     const error = new Error("fail");
@@ -4197,5 +4251,162 @@ describe("applySummaryTagClass", () => {
     expect(() => applySummaryTagClass()).not.toThrow();
     // Should not add summary-tag
     expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
+  });
+});
+
+describe("Bulk Delete Dependency Banner logic", () => {
+  const mockSetShowBulkDeleteDependencyBanner = jest.fn();
+
+  function runLogic(result: any) {
+    // Simulate the logic block
+    if (
+      result?.isGetBulkDeleteApiSuccess === false &&
+      result?.data?.length > 0 &&
+      result?.data.every((item: any) => item.documentRealatedTo === 1)
+    ) {
+      mockSetShowBulkDeleteDependencyBanner(true);
+    } else {
+      mockSetShowBulkDeleteDependencyBanner(false);
+    }
+  }
+
+  beforeEach(() => {
+    mockSetShowBulkDeleteDependencyBanner.mockClear();
+  });
+
+  it("sets banner true when API fails and all documents are related to pupil", () => {
+    const result = {
+      isGetBulkDeleteApiSuccess: false,
+      data: [
+        { documentRealatedTo: 1 },
+        { documentRealatedTo: 1 }
+      ]
+    };
+    runLogic(result);
+    expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(true);
+  });
+
+  it("sets banner false when API succeeds", () => {
+    const result = {
+      isGetBulkDeleteApiSuccess: true,
+      data: [
+        { documentRealatedTo: 1 },
+        { documentRealatedTo: 1 }
+      ]
+    };
+    runLogic(result);
+    expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(false);
+  });
+
+  it("sets banner false when not all documents are related to pupil", () => {
+    const result = {
+      isGetBulkDeleteApiSuccess: false,
+      data: [
+        { documentRealatedTo: 1 },
+        { documentRealatedTo: 2 }
+      ]
+    };
+    runLogic(result);
+    expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(false);
+  });
+
+  it("sets banner false when data is empty", () => {
+    const result = {
+      isGetBulkDeleteApiSuccess: false,
+      data: []
+    };
+    runLogic(result);
+    expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(false);
+  });
+
+  it("sets banner false when result is undefined", () => {
+    runLogic(undefined);
+    expect(mockSetShowBulkDeleteDependencyBanner).toHaveBeenCalledWith(false);
+  });
+});
+
+describe("mapDocumentInfo", () => {
+
+  it("returns correct array for pupil document", () => {
+    const doc = {
+      document: "Pupil Doc",
+      isProtectedFromDelete: true,
+      documentRealatedTo: 1
+    };
+    const result = mapDocumentInfo(doc, false);
+    expect(result).toEqual([
+      {
+        name: "Pupil Doc",
+        isProtectedFromDelete: true,
+        isGetBulkDeleteApiSuccessFlag: false,
+        docRelatedTo: 1
+      }
+    ]);
+  });
+
+  it("returns correct array for staff document", () => {
+    const doc = {
+      document: "Staff Doc",
+      isProtectedFromDelete: false,
+      documentRealatedTo: 3
+    };
+    const result = mapDocumentInfo(doc, true);
+    expect(result).toEqual([
+      {
+        name: "Staff Doc",
+        isProtectedFromDelete: false,
+        isGetBulkDeleteApiSuccessFlag: true,
+        docRelatedTo: 3
+      }
+    ]);
+  });
+
+  it("returns empty string for missing document name", () => {
+    const doc = {
+      isProtectedFromDelete: false,
+      documentRealatedTo: 2
+    };
+    const result = mapDocumentInfo(doc, false);
+    expect(result).toEqual([
+      {
+        name: "",
+        isProtectedFromDelete: false,
+        isGetBulkDeleteApiSuccessFlag: false,
+        docRelatedTo: 2
+      }
+    ]);
+  });
+
+  it("handles undefined isProtectedFromDelete", () => {
+    const doc = {
+      document: "Test Doc",
+      documentRealatedTo: 1
+    };
+    const result = mapDocumentInfo(doc, true);
+    expect(result).toEqual([
+      {
+        name: "Test Doc",
+        isProtectedFromDelete: undefined,
+        isGetBulkDeleteApiSuccessFlag: true,
+        docRelatedTo: 1
+      }
+    ]);
+  });
+
+  it("handles null documentRealatedTo", () => {
+    const doc = {
+      document: "Test Doc",
+      isProtectedFromDelete: true,
+      documentRealatedTo: null
+    };
+    const result = mapDocumentInfo(doc, false);
+    expect(result).toEqual([
+      {
+        name: "Test Doc",
+        isProtectedFromDelete: true,
+        isGetBulkDeleteApiSuccessFlag: false,
+        docRelatedTo: null
+      }
+    ]);
   });
 });

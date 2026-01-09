@@ -6,7 +6,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
+import { getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass, mapDocumentInfo } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -103,6 +103,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [tagListArray, setTagListArray] = useState<SelectedItem[]>([]);
     const [selectedEntities, setSelectedEntities] = useState<any[]>([]);
     const [isViewDownloadError, setIsViewDownloadError] = useState(false);
+    const [showBulkDeleteDependencyBanner, setShowBulkDeleteDependencyBanner] = useState(false);
+
 
 
     const hasDMSDeletePermissions: boolean = authService.isAuthorised(
@@ -187,14 +189,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
             id: doc?.fileId,
-            Document: doc?.document,
+            // Document: doc?.documentInfo.fileName,
+            Document: mapDocumentInfo(doc, docData?.isGetBulkDeleteApiSuccess),
             Relatedto: mapRelatedArr(doc) || "",
             Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
             Addedby: doc?.addedBy || "",
             "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
             Format: doc?.format,
             Size: doc?.size,
-            isShowCheckBox: true
+            isShowCheckBox: true,
         }));
         }
 
@@ -369,7 +372,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         setPrepareDownloadAbortBanner,
         setShowDeleteAbortBanner,
         setShowDeleteErrorBanner,
-        setSuggestions
+        setSuggestions,
+        setShowBulkDeleteDependencyBanner
     });
     };
 
@@ -573,6 +577,14 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             message:t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
             autoclose: true,
             onClickClose: () => setShowDeleteAbortBanner(false)
+    },
+    {
+            isShow: showBulkDeleteDependencyBanner,
+            variant: "warning",
+            title: t("DocumentManagementServer.deletingDocumentsTemporarilyUnavailable"),   
+            message: t("DocumentManagementServer.deletingDocumentsTemporarilyUnavailableMessage"),
+            autoclose: true,
+            onClickClose: () => setShowBulkDeleteDependencyBanner(false)
     }
     ];
 
@@ -1496,7 +1508,7 @@ const getDialogTitle = () => {
                                 }
                                 searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={getTableHeadersData(t)}
+                                tableHeadersData={getTableHeadersData(t )}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
                                 titleConfirmation={getTitleConfirmation(t,dialogType, availableFileCount, docData?.totalRecords || 0)}

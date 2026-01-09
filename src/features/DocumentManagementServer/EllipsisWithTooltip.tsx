@@ -13,6 +13,7 @@ interface Props {
   isTooltipNeeded: boolean;
   totalItems: any[];
   colName: string;
+  showProtectedTag: boolean;
 }
 
 export const EllipsisWithTooltip: React.FC<Props> = ({
@@ -20,7 +21,8 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   className,
   isTooltipNeeded,
   totalItems = [],
-  colName = ""
+  colName = "",
+  showProtectedTag = false,
 }) => {
   const [hrefUrl, setHrefUrl] = React.useState<string>("/");
   const [relatedName, setRelatedName] = React.useState<string>("");
@@ -160,6 +162,15 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
           id="name"
           className="relatedto-tag"
           text={yearRegTag}
+        />
+      )}
+      {showProtectedTag && colName === "document" && (
+        <Tag
+          dataTestId="name"
+          id="name"
+          className="protected-tag"
+          text="Protected"
+          // size="small"
         />
       )}
       {renderExtraItemsTooltip()}
