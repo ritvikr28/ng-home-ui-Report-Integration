@@ -40,22 +40,17 @@ export const getUsersData: (
     url += `&InvitationStatus=${selectedStatus?.value}`;
   }
 
-  try {
-    const response: any = await service.get(url);
-    if (response?.data[0]?.payload?.length === 0) {
-      if (setNoDataTextToDisplay) {
-        setNoDataTextToDisplay(
-          searchTerm
-            ? NoDataMessage.noDataOnSearch(searchTerm)
-            : NoDataMessage.noDataToDisplay
-        );
-      }
+  const response: any = await service.get(url);
+  if (response?.data[0]?.payload?.length === 0) {
+    if (setNoDataTextToDisplay) {
+      setNoDataTextToDisplay(
+        searchTerm
+          ? NoDataMessage.noDataOnSearch(searchTerm)
+          : NoDataMessage.noDataToDisplay
+      );
     }
-    return response?.data;
-  } catch (error: any) {
-    // Re-throw as Error with message for test compatibility
-    throw new Error(error?.message || "API Error");
   }
+  return response?.data;
 };
 
 export const postSendInvitation = async (props: IPostSendInvitation) => {

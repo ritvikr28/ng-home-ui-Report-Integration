@@ -35,8 +35,9 @@ describe("InviteUsersUtils", () => {
       });
 
       const props = { pageNumber: 1, pageSize: 10 };
-      await expect(InviteUsersUtils.getUsersData(props)).rejects.toThrow(
-        "API Error"
+      await expect(InviteUsersUtils.getUsersData(props)).rejects.toHaveProperty(
+        "response.data.code",
+        "validation_error"
       );
     });
   });
