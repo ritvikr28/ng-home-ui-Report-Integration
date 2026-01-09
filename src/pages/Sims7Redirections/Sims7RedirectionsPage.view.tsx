@@ -54,7 +54,7 @@ export const Sims7RedirectionsPage = () => {
     const [selectedItems, setSelectedItems] = React.useState<ISelectedItem[]>([]);
     const [searchTagList, setSearchTagList] = React.useState<ISelectedItem[]>([]);
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-    const [isDropDownOpen, setIsDropDownOpen] = React.useState(false);
+    // const [isDropDownOpen, setIsDropDownOpen] = React.useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = React.useState(false);
     const [sidePanelMode, setSidePanelMode] = React.useState<'view' | 'edit'>('view');
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
@@ -87,7 +87,7 @@ export const Sims7RedirectionsPage = () => {
     }
     const handleCloseDialog = () => setIsDialogOpen(false);
     const handleClearAll = () => {
-        setIsDropDownOpen(false);
+        // setIsDropDownOpen(false);
         setIsDialogOpen(true);
         setSelectedItems([]);
         // setDropdownResetKey(prev => prev + 1); // force Dropdown to remount/close
@@ -100,7 +100,7 @@ export const Sims7RedirectionsPage = () => {
                 text: item.text ?? ""
             }))
         );
-        setIsDropDownOpen(false);
+        // setIsDropDownOpen(false);
         setIsDialogOpen(false);
     };
 
@@ -329,7 +329,7 @@ export const Sims7RedirectionsPage = () => {
                 />
 
                 <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true} title="Filter by">
-                    <DialogContent className={isDropDownOpen ? "dialog-with-dropdown" : "dialog-content"}>
+                    <DialogContent className="dialog-with-dropdown">
                         <>
                             <FormLabel>Status</FormLabel>
                             <Dropdown
@@ -340,7 +340,7 @@ export const Sims7RedirectionsPage = () => {
                                     setSelectedItems(selected)
                                 }
                                 isFixedMultiSelect={true}
-                                onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
+                                // onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
                             >
                                 {dropdownItems.map(item => (
                                     <DropdownItem

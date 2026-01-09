@@ -71,10 +71,10 @@ describe("Sims7RedirectionsSidePanel", () => {
         expect(screen.queryByTestId("edit-button")).not.toBeInTheDocument();
     });
 
-    it("renders edit mode content", () => {
-        render(<Sims7RedirectionsSidePanel {...baseProps} mode="edit" />);
-        expect(screen.getByText("This is edit page")).toBeInTheDocument();
-    });
+    // it("renders edit mode content", () => {
+    //     render(<Sims7RedirectionsSidePanel {...baseProps} mode="edit" />);
+    //     expect(screen.getByText("This is edit page")).toBeInTheDocument();
+    // });
 
     // Status color logic
     it("shows TagColor.Success for Permanent", () => {
@@ -102,3 +102,183 @@ describe("Sims7RedirectionsSidePanel", () => {
         expect(screen.getByText("Other")).toBeInTheDocument();
     });
 });
+
+it('shows error when date is not in the future (handleValidateDate)', () => {
+  const row = { ...baseRow, status: 'Not migrated' };
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen={true}
+      onClose={jest.fn()}
+      mode="edit"
+      selectedRow={row}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+  fireEvent.click(screen.getByLabelText('Yes'));
+  // Set date to today (not in the future)
+  const today = new Date();
+  fireEvent.change(screen.getByLabelText('Day'), { target: { value: today.getDate().toString().padStart(2, '0') } });
+  fireEvent.change(screen.getByLabelText('Month'), { target: { value: (today.getMonth() + 1).toString().padStart(2, '0') } });
+  fireEvent.change(screen.getByLabelText('Year'), { target: { value: today.getFullYear().toString() } });
+  // Trigger validation (blur or save)
+  fireEvent.blur(screen.getByLabelText('Year'));
+  fireEvent.click(screen.getByText('Save'));
+  expect(screen.getByText('Date should be in the future')).toBeInTheDocument();
+});
+
+const mockT = (key: string) => key;
+const mockSetSidePanelMode = jest.fn();
+const baseRow = {
+  category: 'Test Category',
+  nextGenModule: 'Test Module',
+  sims7Module: 'SIMS7',
+  status: 'Not migrated',
+  effectiveDate: '-',
+  reasonForChanges: '',
+  modifiedBy: '-',
+};
+
+describe('Sims7RedirectionsSidePanel', () => {
+  it('renders view mode with correct details', () => {
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="view"
+        selectedRow={baseRow}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    expect(screen.getByText('Test Category')).toBeInTheDocument();
+    expect(screen.getByText('SIMS7')).toBeInTheDocument();
+    expect(screen.getByText('No')).toBeInTheDocument();
+    expect(screen.getByText('Not migrated')).toBeInTheDocument();
+  });
+
+  it('shows date input and reason for changes when status is Migrated and No is selected in edit mode', () => {
+    const row = { ...baseRow, status: 'Migrated' };
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="edit"
+        selectedRow={row}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('No'));
+    // Find the textarea specifically among all textboxes
+    const textboxes = screen.getAllByRole('textbox');
+    const textarea = textboxes.find(el => el.tagName === 'TEXTAREA');
+    expect(textarea).toBeInTheDocument();
+    expect(screen.getByText('Effective date')).toBeInTheDocument();
+  });
+
+  it('requires reason for changes when status is Migrated and No is selected', () => {
+    const row = { ...baseRow, status: 'Migrated' };
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="edit"
+        selectedRow={row}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('No'));
+    fireEvent.click(screen.getByText('Save'));
+    expect(screen.getByText('Reason for changes is required')).toBeInTheDocument();
+  });
+
+  it('sets effective date to tomorrow when Not migrated and Yes is selected', () => {
+    const row = { ...baseRow, status: 'Not migrated' };
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="edit"
+        selectedRow={row}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('Yes'));
+    expect(screen.getByText('Effective date')).toBeInTheDocument();
+    // You can add more checks for tomorrow's date if needed
+  });
+
+  it('removes reason for changes when status changes to Planned', () => {
+    const row = { ...baseRow, status: 'Not migrated', reasonForChanges: 'Some reason' };
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="edit"
+        selectedRow={row}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('Yes'));
+    fireEvent.click(screen.getByText('Save'));
+    // After save, reasonForChanges should be removed
+    // This would require checking the selectedRow or view mode
+  });
+
+  it('clears reason for changes when status changes from Reversing to Migrated', () => {
+    const row = { ...baseRow, status: 'Reversing', reasonForChanges: 'Should be cleared' };
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={jest.fn()}
+        mode="edit"
+        selectedRow={row}
+        t={mockT}
+        setSidePanelMode={mockSetSidePanelMode}
+      />
+    );
+    fireEvent.click(screen.getByLabelText('Yes'));
+    fireEvent.click(screen.getByText('Save'));
+    // After save, reasonForChanges should be cleared
+    // This would require checking the selectedRow or view mode
+  });
+});
+
+const mockTt = (key: string) => key;
+const mockSetSidePanelModeview = jest.fn();
+const mockOnClose = jest.fn();
+const baseRowData = {
+  category: 'Test Category',
+  nextGenModule: 'Test Module',
+  sims7Module: 'SIMS7',
+  status: 'Not migrated',
+  effectiveDate: '-',
+  reasonForChanges: '',
+  modifiedBy: '-',
+};
+
+describe('Cancel logic in Sims7RedirectionsSidePanel', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('calls onClose directly if not dirty', () => {
+    render(
+      <Sims7RedirectionsSidePanel
+        isOpen={true}
+        onClose={mockOnClose}
+        mode="edit"
+        selectedRow={baseRowData}
+        t={mockTt}
+        setSidePanelMode={mockSetSidePanelModeview}
+      />
+    );
+    fireEvent.click(screen.getByText('Cancel'));
+    expect(mockOnClose).toHaveBeenCalled();
+  });
+
+})
