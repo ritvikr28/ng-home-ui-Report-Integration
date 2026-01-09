@@ -510,7 +510,6 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                             <div className="details-category">
                                                 <Textarea
                                                     id="textarea-1"
-                                                    placeholderText="Description ..."
                                                     value={reasonForChanges}
                                                     onChange={e => {
                                                         setIsDirty(true);
