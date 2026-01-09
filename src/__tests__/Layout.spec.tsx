@@ -97,7 +97,9 @@ describe("AppRoutes", () => {
   test("Should not fetches app module permissions and catch the error", async () => {    
     const getAppModulePermissionMock: any = jest
       .spyOn(getAppModulesPermissions, "default")
-      .mockRejectedValueOnce(new Error("Error"));
+      .mockRejectedValueOnce({
+        response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+      });
     render(
       <Provider store={configureStore()}>
         <Router history={history}>

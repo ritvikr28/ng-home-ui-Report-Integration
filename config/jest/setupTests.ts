@@ -11,6 +11,20 @@ IntlProvider.init({
   }
 });
 
+jest.mock('../../src/shared/utils/api-service', () => ({
+  service: {
+    get: jest.fn(() => Promise.reject({
+      response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+    })),
+    post: jest.fn(),
+    put: jest.fn(),
+    delete: jest.fn(),
+    init: jest.fn(),
+    config: jest.fn(),
+    setInterceptor: jest.fn(),
+  }
+}));
+
 window.IntersectionObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),

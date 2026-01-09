@@ -30,7 +30,9 @@ describe("InviteUsersUtils", () => {
     });
 
     it("should handle API errors gracefully", async () => {
-      (service.get as jest.Mock).mockRejectedValue(new Error("API Error"));
+      (service.get as jest.Mock).mockRejectedValue({
+        response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+      });
 
       const props = { pageNumber: 1, pageSize: 10 };
       await expect(InviteUsersUtils.getUsersData(props)).rejects.toThrow(
@@ -102,7 +104,9 @@ describe("InviteUsersUtils", () => {
     });
 
     it("should handle errors and show error banner", async () => {
-      (service.get as jest.Mock).mockRejectedValue(new Error("API Error"));
+      (service.get as jest.Mock).mockRejectedValue({
+        response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+      });
 
       const setTotalPage = jest.fn();
       const setShowErrorBanner = jest.fn();
@@ -977,7 +981,9 @@ describe("debouncedAutosuggest", () => {
   });
 
   it("should handle API errors and set error state", async () => {
-    (service.get as jest.Mock).mockRejectedValue(new Error("API Error"));
+    (service.get as jest.Mock).mockRejectedValue({
+      response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+    });
     debouncedAutosuggest(
       event,
       setSearchLoader,

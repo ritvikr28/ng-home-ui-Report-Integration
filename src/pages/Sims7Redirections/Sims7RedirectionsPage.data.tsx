@@ -114,14 +114,13 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "Attendance with very long name",
         sims7Module: "Attendance",
         modifiedBy: "Jane Smith",
-        effectiveDate: "05 Jan 2026",
+        effectiveDate: "05 Dec 2025",
         status: "Permanent",
         tooltipMessage: "Attendance migrated",
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+                { disabled: false, isSelected: false, text: " View", value: "View" }
             ]
         }
     },
@@ -160,31 +159,31 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    // {
-    //     id: "5",
-    //     category: "Dinner money",
-    //     nextGenModule: "Dinner Money",
-    //     sims7Module: "Dinner Money",
-    //     modifiedBy: "Morgan Lee",
-    //     effectiveDate: "20 Apr 2026",
-    //     status: "Not migrated",
-    //     reasonForChanges: "Budget constraints",
-    //     tooltipMessage: "Not migrated yet",
-    //     cellStatus: "warning",
-    //     actions: {
-    //         options: [
-    //             { disabled: false, isSelected: false, text: " View", value: "View" },
-    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-    //         ]
-    //     }
-    // },
+    {
+        id: "5",
+        category: "Dinner money",
+        nextGenModule: "Dinner Money",
+        sims7Module: "Dinner Money",
+        modifiedBy: "Morgan Lee",
+        effectiveDate: "20 Oct 2025",
+        status: "Not migrated",
+        reasonForChanges: "Budget constraints",
+        tooltipMessage: "Not migrated yet",
+        cellStatus: "warning",
+        actions: {
+            options: [
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+            ]
+        }
+    },
     {
         id: "6",
         category: "Personnel",
         nextGenModule: "Personnel",
         sims7Module: "Personnel",
         modifiedBy: "Sam Patel",
-        effectiveDate: "25 May 2026",
+        effectiveDate: "25 May 2025",
         status: "Migrated",
         tooltipMessage: "Personnel migrated",
         cellStatus: "success",
@@ -201,14 +200,13 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "Timetable",
         sims7Module: "Timetable",
         modifiedBy: "Priya Singh",
-        effectiveDate: "30 Jun 2026",
+        effectiveDate: "30 Jun 2025",
         status: "Permanent",
         tooltipMessage: "Timetable permanent",
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+                { disabled: false, isSelected: false, text: " View", value: "View" }
             ]
         }
     },
@@ -237,6 +235,7 @@ export const sims7RedirectionsTableData = [
         modifiedBy: "Olivia Black",
         effectiveDate: "10 Aug 2026",
         status: "Reversing",
+         reasonForChanges: "But to some bugs appear",
         tooltipMessage: "Exams reversing",
         cellStatus: "neutral",
         actions: {
@@ -246,30 +245,30 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    // {
-    //     id: "10",
-    //     category: "Options",
-    //     nextGenModule: "Options",
-    //     sims7Module: "Options",
-    //     modifiedBy: "-",
-    //     effectiveDate: "-",
-    //     status: "Not migrated",
-    //     tooltipMessage: "Options not migrated",
-    //     cellStatus: "warning",
-    //     actions: {
-    //         options: [
-    //             { disabled: false, isSelected: false, text: " View", value: "View" },
-    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-    //         ]
-    //     }
-    // },
+    {
+        id: "10",
+        category: "Options",
+        nextGenModule: "Options",
+        sims7Module: "Options",
+        modifiedBy: "-",
+        effectiveDate: "-",
+        status: "Not migrated",
+        tooltipMessage: "Options not migrated",
+        cellStatus: "warning",
+        actions: {
+            options: [
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+            ]
+        }
+    },
     {
         id: "11",
         category: "Profiles",
         nextGenModule: "Profiles",
         sims7Module: "Profiles",
         modifiedBy: "Emma Blue",
-        effectiveDate: "20 Oct 2026",
+        effectiveDate: "20 Oct 2025",
         status: "Migrated",
         tooltipMessage: "Profiles migrated",
         cellStatus: "success",
@@ -286,14 +285,13 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "Reporting",
         sims7Module: "Reporting",
         modifiedBy: "Lucas Red",
-        effectiveDate: "25 Nov 2026",
+        effectiveDate: "25 Nov 2025",
         status: "Permanent",
         tooltipMessage: "Reporting permanent",
         cellStatus: "success",
        actions: {
             options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+                { disabled: false, isSelected: false, text: " View", value: "View" }
             ]
         }
     },
@@ -303,7 +301,7 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "SEN",
         sims7Module: "SEN",
         modifiedBy: "Mia Violet",
-        effectiveDate: "30 Dec 2026",
+        effectiveDate: "30 Mar 2026",
         status: "Planned",
         tooltipMessage: "SEN planned",
         cellStatus: "neutral",
@@ -332,30 +330,30 @@ export const sims7RedirectionsTableData = [
             ]
         }
     },
-    // {
-    //     id: "15",
-    //     category: "Medical",
-    //     nextGenModule: "Medical",
-    //     sims7Module: "Medical",
-    //     modifiedBy: "Ava Orange",
-    //     effectiveDate: "09 Feb 2027",
-    //     status: "Not migrated",
-    //     tooltipMessage: "Medical not migrated",
-    //     cellStatus: "warning",
-    //     actions: {
-    //         options: [
-    //             { disabled: false, isSelected: false, text: " View", value: "View" },
-    //             { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
-    //         ]
-    //     }
-    // },
+    {
+        id: "15",
+        category: "Medical",
+        nextGenModule: "Medical",
+        sims7Module: "Medical",
+        modifiedBy: "Ava Orange",
+        effectiveDate: "09 Nov 2025",
+        status: "Not migrated",
+        tooltipMessage: "Medical not migrated",
+        cellStatus: "warning",
+        actions: {
+            options: [
+                { disabled: false, isSelected: false, text: " View", value: "View" },
+                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+            ]
+        }
+    },
     {
         id: "16",
         category: "Consent",
         nextGenModule: "Parental Consent",
         sims7Module: "Parental Consent",
         modifiedBy: "Sophia Pink",
-        effectiveDate: "14 Mar 2027",
+        effectiveDate: "14 Mar 2025",
         status: "Migrated",
         tooltipMessage: "Consent migrated",
         cellStatus: "success",
@@ -372,14 +370,13 @@ export const sims7RedirectionsTableData = [
         nextGenModule: "User Management",
         sims7Module: "User Management",
         modifiedBy: "William Gold",
-        effectiveDate: "19 Apr 2027",
+        effectiveDate: "19 Apr 2025",
         status: "Permanent",
         tooltipMessage: "User management permanent",
         cellStatus: "success",
         actions: {
             options: [
-                { disabled: false, isSelected: false, text: " View", value: "View" },
-                { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+                { disabled: false, isSelected: false, text: " View", value: "View" }
             ]
         }
     },

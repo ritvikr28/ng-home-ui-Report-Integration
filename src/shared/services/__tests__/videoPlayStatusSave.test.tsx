@@ -44,7 +44,9 @@ describe('saveVideoPlayStatus', () => {
   });
 
   it('returns null when an error is thrown', async () => {
-    (service.post as jest.Mock).mockRejectedValueOnce(new Error('fail'));
+    (service.post as jest.Mock).mockRejectedValueOnce({
+      response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+    });
     const result = await saveVideoPlayStatus();
     expect(result).toBeNull();
   });
