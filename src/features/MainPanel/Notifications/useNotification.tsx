@@ -1,13 +1,19 @@
-import { useState, useMemo, useEffect, useRef } from "react";
-import { notificationTableRows } from "./helper";
+import { useState, useMemo, useEffect } from "react";
 
-const PAGE_SIZE = 40;
+export const PAGE_SIZE = 5;
 const getNotificationId = (notification: any) => notification?.id ?? notification?.Id;
 
-export const useNotification = () => {
+export const formattedDate = (dateStr: string) => (new Date(dateStr).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric'
+})
+);
+
+export const useNotification = ({ tableData, totalTableData }: { tableData: any[], totalTableData: number }) => {
     const [filterBtnClicked, setFilterBtnClicked] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [notifications, setNotifications] = useState(notificationTableRows);
+    const [notifications, setNotifications] = useState(tableData);
     const [selectedNotificationIds, setSelectedNotificationIds] = useState<string[]>([]);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [pendingDeletionIds, setPendingDeletionIds] = useState<string[]>([]);
@@ -23,27 +29,27 @@ export const useNotification = () => {
         startDate?: string;
         endDate?: string;
     }>({});
-    const [isSearching, setIsSearching] = useState(false);
+    const [isSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
     const [sortBy, setSortBy] = useState<string>("DateReceived");
     const [sortDirection, setSortDirection] = useState<string>("Desc");
 
-    const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    // const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const parseDate = (dateStr: string): Date | null => {
-        if (!dateStr) return null;
-        const months: { [key: string]: number } = {
-            "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "May": 4, "Jun": 5,
-            "Jul": 6, "Aug": 7, "Sep": 8, "Oct": 9, "Nov": 10, "Dec": 11
-        };
-        const parts = dateStr.trim().split(" ");
-        if (parts.length !== 3) return null;
-        const day = parseInt(parts[0], 10);
-        const month = months[parts[1]];
-        const year = parseInt(parts[2], 10);
-        if (Number.isNaN(day) || Number.isNaN(year) || month === undefined) return null;
-        return new Date(year, month, day);
-    };
+    // const parseDate = (dateStr: string): Date | null => {
+    //     if (!dateStr) return null;
+    //     const months: { [key: string]: number } = {
+    //         "Jan": 0, "Feb": 1, "Mar": 2, "Apr": 3, "May": 4, "Jun": 5,
+    //         "Jul": 6, "Aug": 7, "Sep": 8, "Oct": 9, "Nov": 10, "Dec": 11
+    //     };
+    //     const parts = dateStr.trim().split(" ");
+    //     if (parts.length !== 3) return null;
+    //     const day = parseInt(parts[0], 10);
+    //     const month = months[parts[1]];
+    //     const year = parseInt(parts[2], 10);
+    //     if (Number.isNaN(day) || Number.isNaN(year) || month === undefined) return null;
+    //     return new Date(year, month, day);
+    // };
 
     const parseFilterDate = (dateStr: string): Date | null => {
         if (!dateStr) return null;
@@ -55,134 +61,133 @@ export const useNotification = () => {
         if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) return null;
         return new Date(year, month, day);
     };
+    // const filteredRows = useMemo(() => {
+    //     let rows = tableData ? tableData : [];
 
-    const filteredRows = useMemo(() => {
-        let rows = notifications;
+    //     // if (filters.status && filters.status.length > 0) {
+    //     //     rows = rows.filter(row => {
+    //     //         const rowStatus = row.Status?.toLowerCase() || "";
+    //     //         return filters.status?.some(status => status.toLowerCase() === rowStatus);
+    //     //     });
+    //     // }
 
-        if (filters.status && filters.status.length > 0) {
-            rows = rows.filter(row => {
-                const rowStatus = row.Status?.toLowerCase() || "";
-                return filters.status?.some(status => status.toLowerCase() === rowStatus);
-            });
-        }
+    //     // if (filters.priority && filters.priority.length > 0) {
+    //     //     rows = rows.filter(row => {
+    //     //         const rowPriority = row.Priority?.toLowerCase() || "";
+    //     //         return filters.priority?.some(priority => priority.toLowerCase() === rowPriority);
+    //     //     });
+    //     // }
 
-        if (filters.priority && filters.priority.length > 0) {
-            rows = rows.filter(row => {
-                const rowPriority = row.Priority?.toLowerCase() || "";
-                return filters.priority?.some(priority => priority.toLowerCase() === rowPriority);
-            });
-        }
+    //     // if (filters.startDate || filters.endDate) {
+    //     //     const startDate = filters.startDate ? parseFilterDate(filters.startDate) : null;
+    //     //     const endDate = filters.endDate ? parseFilterDate(filters.endDate) : null;
 
-        if (filters.startDate || filters.endDate) {
-            const startDate = filters.startDate ? parseFilterDate(filters.startDate) : null;
-            const endDate = filters.endDate ? parseFilterDate(filters.endDate) : null;
+    //     //     rows = rows.filter(row => {
+    //     //         const rowDate = parseDate(row.DateReceived);
+    //     //         if (!rowDate) return false;
 
-            rows = rows.filter(row => {
-                const rowDate = parseDate(row.DateReceived);
-                if (!rowDate) return false;
+    //     //         if (startDate && endDate) {
+    //     //             const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
+    //     //             const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
+    //     //             const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
+    //     //             return rowTime >= startTime && rowTime <= endTime;
+    //     //         }
+    //     //         if (startDate) {
+    //     //             const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
+    //     //             const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
+    //     //             return rowTime >= startTime;
+    //     //         }
+    //     //         if (endDate) {
+    //     //             const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
+    //     //             const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
+    //     //             return rowTime <= endTime;
+    //     //         }
 
-                if (startDate && endDate) {
-                    const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
-                    const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
-                    const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
-                    return rowTime >= startTime && rowTime <= endTime;
-                }
-                if (startDate) {
-                    const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
-                    const startTime = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate()).getTime();
-                    return rowTime >= startTime;
-                }
-                if (endDate) {
-                    const rowTime = new Date(rowDate.getFullYear(), rowDate.getMonth(), rowDate.getDate()).getTime();
-                    const endTime = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate()).getTime();
-                    return rowTime <= endTime;
-                }
+    //     //         return true;
+    //     //     });
+    //     // }
 
-                return true;
-            });
-        }
+    //     // // Apply search (title only)
+    //     // if (searchTerm.trim()) {
+    //     //     rows = rows.filter(row =>
+    //     //         row.Notification.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    //     //     );
+    //     // }
 
-        // Apply search (title only)
-        if (searchTerm.trim()) {
-            rows = rows.filter(row =>
-                row.Notification.toLowerCase().includes(searchTerm.trim().toLowerCase())
-            );
-        }
+    //     // if (sortBy && rows.length > 0) {
+    //     //     rows = [...rows].sort((a, b) => {
+    //     //         let comparison = 0;
 
-        if (sortBy && rows.length > 0) {
-            rows = [...rows].sort((a, b) => {
-                let comparison = 0;
+    //     //         switch (sortBy) {
+    //     //             case "DateReceived": {
+    //     //                 const dateA = parseDate(a.DateReceived);
+    //     //                 const dateB = parseDate(b.DateReceived);
+    //     //                 if (!dateA && !dateB) return 0;
+    //     //                 if (!dateA) return 1;
+    //     //                 if (!dateB) return -1;
+    //     //                 comparison = dateA.getTime() - dateB.getTime();
+    //     //                 break;
+    //     //             }
+    //     //             case "Priority": {
+    //     //                 const priorityOrder = { "Low": 3, "Medium": 2, "High": 1 };
+    //     //                 const priorityA = priorityOrder[a.Priority as keyof typeof priorityOrder] || 0;
+    //     //                 const priorityB = priorityOrder[b.Priority as keyof typeof priorityOrder] || 0;
+    //     //                 comparison = priorityA - priorityB;
+    //     //                 break;
+    //     //             }
+    //     //             case "Status": {
+    //     //                 const statusOrder = { "Read": 2, "Unread": 1 };
+    //     //                 const statusA = statusOrder[a.Status as keyof typeof statusOrder] || 0;
+    //     //                 const statusB = statusOrder[b.Status as keyof typeof statusOrder] || 0;
+    //     //                 comparison = statusA - statusB;
+    //     //                 break;
+    //     //             }
+    //     //             default:
+    //     //                 return 0;
+    //     //         }
 
-                switch (sortBy) {
-                    case "DateReceived": {
-                        const dateA = parseDate(a.DateReceived);
-                        const dateB = parseDate(b.DateReceived);
-                        if (!dateA && !dateB) return 0;
-                        if (!dateA) return 1;
-                        if (!dateB) return -1;
-                        comparison = dateA.getTime() - dateB.getTime();
-                        break;
-                    }
-                    case "Priority": {
-                        const priorityOrder = { "Low": 3, "Medium": 2, "High": 1 };
-                        const priorityA = priorityOrder[a.Priority as keyof typeof priorityOrder] || 0;
-                        const priorityB = priorityOrder[b.Priority as keyof typeof priorityOrder] || 0;
-                        comparison = priorityA - priorityB;
-                        break;
-                    }
-                    case "Status": {
-                        const statusOrder = { "Read": 2, "Unread": 1 };
-                        const statusA = statusOrder[a.Status as keyof typeof statusOrder] || 0;
-                        const statusB = statusOrder[b.Status as keyof typeof statusOrder] || 0;
-                        comparison = statusA - statusB;
-                        break;
-                    }
-                    default:
-                        return 0;
-                }
+    //     //         return sortDirection === "Asc" ? comparison : -comparison;
+    //     //     });
+    //     // }
 
-                return sortDirection === "Asc" ? comparison : -comparison;
-            });
-        }
+    //     return rows;
+    // }, [notifications, searchTerm, filters, sortBy, sortDirection]);
 
-        return rows;
-    }, [notifications, searchTerm, filters, sortBy, sortDirection]);
+    // useEffect(() => {
+    //     setIsSearching(true);
+    //     if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
-    useEffect(() => {
-        setIsSearching(true);
-        if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    //     searchTimeout.current = setTimeout(() => {
+    //         setIsSearching(false);
+    //         const hasSearchTerm = searchTerm.trim().length > 0;
+    //         const hasFilters = (filters.status && filters.status.length > 0) ||
+    //             (filters.priority && filters.priority.length > 0) ||
+    //             filters.startDate ||
+    //             filters.endDate;
 
-        searchTimeout.current = setTimeout(() => {
-            setIsSearching(false);
-            const hasSearchTerm = searchTerm.trim().length > 0;
-            const hasFilters = (filters.status && filters.status.length > 0) || 
-                              (filters.priority && filters.priority.length > 0) || 
-                              filters.startDate || 
-                              filters.endDate;
-            
-            if (filteredRows.length === 0 && (hasSearchTerm || hasFilters)) {
-                setNoResults(true);
-            } else {
-                setNoResults(false);
-            }
-            setCurrentPage(1);
-        }, 300);
+    //         if (filteredRows.length === 0 && (hasSearchTerm || hasFilters)) {
+    //             setNoResults(true);
+    //         } else {
+    //             setNoResults(false);
+    //         }
+    //         setCurrentPage(1);
+    //     }, 300);
 
-        return () => {
-            if (searchTimeout.current) clearTimeout(searchTimeout.current);
-        };
-    }, [searchTerm, filters, filteredRows.length]);
+    //     return () => {
+    //         if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    //     };
+    // }, [searchTerm, filters, filteredRows.length]);
 
-    useEffect(() => {
-        if (isClearSelectedCheckbox) {
-            const timeout = setTimeout(() => setIsClearSelectedCheckbox(false), 0);
-            return () => clearTimeout(timeout);
-        }
-        return undefined;
-    }, [isClearSelectedCheckbox]);
+    // useEffect(() => {
+    //     if (isClearSelectedCheckbox) {
+    //         const timeout = setTimeout(() => setIsClearSelectedCheckbox(false), 0);
+    //         return () => clearTimeout(timeout);
+    //     }
+    //     return undefined;
+    // }, [isClearSelectedCheckbox]);
 
-    const totalNotifications = filteredRows.length;
-    const totalOriginalNotifications = notifications.length;
+    const totalNotifications = totalTableData;
+    const totalOriginalNotifications = notifications;
     const totalPages = totalNotifications > 0 ? Math.ceil(totalNotifications / PAGE_SIZE) : 1;
 
     useEffect(() => {
@@ -195,9 +200,9 @@ export const useNotification = () => {
         }
     }, [currentPage, totalNotifications, totalPages]);
 
-    useEffect(() => {
-        setSelectedNotificationIds((prev) => prev.filter((id) => filteredRows.some((item) => getNotificationId(item) === id)));
-    }, [filteredRows]);
+    // useEffect(() => {
+    //     setSelectedNotificationIds((prev) => prev.filter((id) => filteredRows.some((item) => getNotificationId(item) === id)));
+    // }, [filteredRows]);
 
     useEffect(() => {
         if (!showDeleteToast) {
@@ -210,8 +215,8 @@ export const useNotification = () => {
     const paginatedNotifications = useMemo(() => {
         const startIndex = (currentPage - 1) * PAGE_SIZE;
         const endIndex = startIndex + PAGE_SIZE;
-        return filteredRows.slice(startIndex, endIndex);
-    }, [filteredRows, currentPage]);
+        return tableData && tableData.slice(startIndex, endIndex);
+    }, [tableData, currentPage]);
 
     const handlePageChange = (event: any, page: number) => {
         setCurrentPage(page);
@@ -381,20 +386,19 @@ export const useNotification = () => {
         setSortDirection(newDirection);
     };
 
-    const handleClearSearch = () => {
-        setSearchTerm("");
-        setNoResults(false);
-        const hasActiveFilters = (filters.status && filters.status.length > 0) || (filters.priority && filters.priority.length > 0) || filters.startDate || filters.endDate;
-        if (!hasActiveFilters) {
-            setSortBy("DateReceived");
-            setSortDirection("Desc");
-        }
-    };
+    // const handleClearSearch = () => {
+    //     setSearchTerm("");
+    //     setNoResults(false);
+    //     const hasActiveFilters = (filters.status && filters.status.length > 0) || (filters.priority && filters.priority.length > 0) || filters.startDate || filters.endDate;
+    //     if (!hasActiveFilters) {
+    //         setSortBy("DateReceived");
+    //         setSortDirection("Desc");
+    //     }
+    // };
 
-    
+
     const searchTagList = useMemo(() => {
         const tags: Array<{ text: string; categoryName: string; closeObj: { name: string; id: number; value?: string } }> = [];
-        
         if (filters.status && filters.status.length > 0) {
             filters.status.forEach((status) => {
                 const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
@@ -405,7 +409,7 @@ export const useNotification = () => {
                 });
             });
         }
-        
+
         if (filters.priority && filters.priority.length > 0) {
             filters.priority.forEach((priority) => {
                 const priorityLabel = priority.charAt(0).toUpperCase() + priority.slice(1);
@@ -416,20 +420,20 @@ export const useNotification = () => {
                 });
             });
         }
-        
+
         if (filters.startDate || filters.endDate) {
             const startDate = filters.startDate ? parseFilterDate(filters.startDate) : null;
             const endDate = filters.endDate ? parseFilterDate(filters.endDate) : null;
-            
+
             const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-            
+
             const formatDate = (date: Date) => {
                 const day = date.getDate().toString().padStart(2, '0');
                 const month = monthNames[date.getMonth()];
                 const year = date.getFullYear();
                 return `${day} ${month} ${year}`;
             };
-            
+
             let dateLabel = '';
             if (startDate && endDate) {
                 dateLabel = `${formatDate(startDate)} to ${formatDate(endDate)}`;
@@ -438,7 +442,7 @@ export const useNotification = () => {
             } else if (endDate) {
                 dateLabel = formatDate(endDate);
             }
-            
+
             if (dateLabel) {
                 tags.push({
                     text: dateLabel,
@@ -447,7 +451,7 @@ export const useNotification = () => {
                 });
             }
         }
-        
+
         return tags;
     }, [filters]);
 
@@ -462,7 +466,7 @@ export const useNotification = () => {
         handlePageChange,
         searchTerm,
         handleSearchChange,
-        handleClearSearch,
+        // handleClearSearch,
         filters,
         handleFilterChange,
         handleRemoveFilter,
@@ -485,6 +489,7 @@ export const useNotification = () => {
         isNoSelectionMode,
         sortBy,
         sortDirection,
-        handleSort
+        handleSort,
+        setNoResults
     };
 };

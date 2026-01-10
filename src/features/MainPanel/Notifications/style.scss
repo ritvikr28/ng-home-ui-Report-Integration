@@ -13,13 +13,13 @@ body {
   scrollbar-width: thin;
 }
 
-.notification-layout-header .essui-grid-col--sm-4 {
-  flex-basis: unset !important;
-}
-
-
 .notification-controlledlist-width .essui-dropdown-container {
   display: none;
+}
+
+.notification-layout-header .filter-tool-view {
+  display: flex;
+  gap: 8px;
 }
 
 .notification-layout-header {
@@ -50,7 +50,7 @@ body {
   #edit-selected-btn {
     height: 40px !important;
     width: 100% !important;
-    margin-left: 10px !important;
+    // margin-left: 10px !important;
     // padding-top: 0 !important;
   }
 
@@ -113,6 +113,10 @@ body {
   margin-right: 10px;
 }
 
+.notification-layout .essui-link:visited {
+  color: #2177c2;
+}
+
 @media (min-width: 768px) and (max-width: 1023.9px) {
   .notification-layout-header {
     margin-left: 16px;
@@ -122,7 +126,12 @@ body {
 
     #edit-selected-btn {
       margin-left: 0 !important;
+      margin-top: 24px !important;
     }
+  }
+
+  .filter-btn-clc {
+    margin-top: 24px;
   }
 
 }
@@ -181,10 +190,8 @@ body {
 
 .notification-layout-header .filter-tool-grid-container.essui-grid-container {
   row-gap: 16px !important;
-}
-
-.notification-layout-header .essui-grid-col--sm-4 {
-  flex-basis: unset !important;
+  display: flex !important;
+  gap: 8px !important;
 }
 
 .view-text-style {
@@ -210,8 +217,12 @@ body {
   width: 100% !important;
 }
 
-@media (min-width: 1025px) {
+@media (min-width: 1024px) {
   .notification-controls {
+    margin-top: 24px;
+  }
+
+  .filter-btn-clc {
     margin-top: 24px;
   }
 }

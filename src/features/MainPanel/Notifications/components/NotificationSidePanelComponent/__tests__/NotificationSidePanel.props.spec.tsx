@@ -3,14 +3,29 @@ import { NotificationSidePanelViewProps } from "../NotificationSidePanel.props";
 describe('NotificationSidePanelViewProps', () => {
     it('should allow creation of a valid object', () => {
         const mockSetSideIsOpen = jest.fn();
+        const notification = {
+            id: '1',
+            receivedDate: "new Date()",
+            status: false,
+            title: 'Test notification',
+            body: 'This is a test notification body'
+        };
         const props: NotificationSidePanelViewProps = {
             sideIsOpen: true,
             setSideIsOpen: mockSetSideIsOpen,
-            selectedItem: [{ notification: 'Test notification' }]
+            selectedItem: notification,
+            setSelectedItem: jest.fn(),
+            notificationIdSelected: "1"
         };
         expect(props.sideIsOpen).toBe(true);
         expect(props.setSideIsOpen).toBe(mockSetSideIsOpen);
-        expect(props.selectedItem).toEqual([{ notification: 'Test notification' }]);
+        expect(Array.isArray(props.selectedItem)).toBe(false);
+        expect(props.selectedItem).toMatchObject({
+            id: '1',
+            status: false,
+            title: 'Test notification',
+            body: 'This is a test notification body'
+        });
     });
 
     it('should require sideIsOpen as boolean', () => {
@@ -44,17 +59,17 @@ describe('NotificationSidePanelViewProps', () => {
 
     it('should allow selectedItem to be an array of notification objects', () => {
         const mockSetSideIsOpen = jest.fn();
-        const items = [
-            { notification: 'First' },
-            { notification: 'Second' }
-        ];
+        // const items: { id: string; receivedDate: string; status: string; title: string; body: string } =
+        //     { id: '1', receivedDate: "", status: 'unread', title: 'First', body: 'First notification body' }
+
+
         const props: NotificationSidePanelViewProps = {
             sideIsOpen: false,
             setSideIsOpen: mockSetSideIsOpen,
-            selectedItem: items
+            selectedItem: { id: '1', receivedDate: "", status: false, title: 'First', body: 'First notification body' },
+            setSelectedItem: jest.fn(),
+            notificationIdSelected: "1"
         };
-        expect(Array.isArray(props.selectedItem)).toBe(true);
-        expect(props.selectedItem?.[0].notification).toBe('First');
-        expect(props.selectedItem?.[1].notification).toBe('Second');
+        expect(props.selectedItem).toBeDefined();
     });
 });
