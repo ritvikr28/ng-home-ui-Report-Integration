@@ -1,0 +1,27 @@
+.notification-text {
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.static-message {
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+}
+
+.sidepanel-title-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.sidepanel-date-atbottom {
+  float: inline-end;
+  color: #5e5e5e;
+}
+
+.notification-layout-header .essui-grid-col--sm-4 {
+  max-width: 600px !important;
+}

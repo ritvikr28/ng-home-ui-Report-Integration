@@ -1,0 +1,6 @@
+[
+  { "env": "dev", "url": "https://dev.home.sims.co.uk/web" },
+  { "env": "qa", "url": "https://qa.home.sims.co.uk/web" },
+  { "env": "prod", "url": "https://www.home.sims.co.uk/web" },
+  { "env": "perf", "url": "https://pre.home.sims.co.uk/web" }
+]

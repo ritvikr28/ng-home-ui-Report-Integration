@@ -6,7 +6,8 @@ export const getNotificationTableHeadersData = (
   setSideIsOpen?: (isOpen: boolean) => void,
   setSelectedItem?: (item: any) => void,
   sortBy: string = "DateReceived",
-  sortDirection: string = "Desc"
+  sortDirection: string = "Desc",
+  setNotificationIdSelected?: (id: string) => void
 ): {
   text: string;
   isShow: boolean;
@@ -91,22 +92,26 @@ export const getNotificationTableHeadersData = (
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       columnWidth: "129px",
-      anyComponent: (e: any) => (
-        <>
-          {/* eslint-disable jsx-a11y/anchor-is-valid */}
-          <Link
-            dataTestId="test-id"
-            id="element-id"
-            onClick={() => {
-              if (setSelectedItem) setSelectedItem(e);
-              if (setSideIsOpen) setSideIsOpen(true);
-            }}
-            target="_self"
-          >
-            View
-          </Link>
-        </>
-      )
+      anyComponent: (e: any) => {
+        const item = JSON.parse(e);
+        return (
+          <>
+            {/* eslint-disable jsx-a11y/anchor-is-valid */}
+            <Link
+              dataTestId="test-id"
+              id="element-id"
+              onClick={() => {
+                if (setSelectedItem) setSelectedItem(e);
+                if (setNotificationIdSelected) setNotificationIdSelected(item.id);
+                if (setSideIsOpen) setSideIsOpen(true);
+              }}
+              target="_self"
+            >
+              View
+            </Link>
+          </>
+        )
+      }
     }
   ];
 
