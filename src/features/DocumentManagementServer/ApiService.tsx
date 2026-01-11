@@ -174,7 +174,6 @@ export const viewDownload = async (): Promise<any> => {
   }
 };
 
-
 export const validation = async (payload: { request: any }): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);

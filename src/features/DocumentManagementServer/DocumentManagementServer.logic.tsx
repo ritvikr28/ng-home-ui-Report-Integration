@@ -48,26 +48,9 @@ export function mapDocumentInfo(doc: any, isGetBulkDeleteApiSuccessFlag: any): a
     name: doc.document || "",
     isProtectedFromDelete: doc.isProtectedFromDelete,
     isGetBulkDeleteApiSuccessFlag,
-    docRelatedTo: doc.documentRealatedTo
   }];
   return documentInfoArr;
 }
-
-// export function mapDocumentInfo(doc: any, isGetBulkDeleteApiSuccessFlag: any): any[] {
-//   let documentInfoArr: any ;
-
-//   // if(doc.documentRealatedTo === 1){
-//     documentInfoArr = [{
-//       name: doc.document ||"",
-//       isProtectedFromDelete: doc.isProtectedFromDelete ,
-//       isGetBulkDeleteApiSuccessFlag: isGetBulkDeleteApiSuccessFlag,
-//       docRelatedTo: doc.documentRealatedTo
-//     }];
-//   // }
-//   // console.log(doc,isGetBulkDeleteApiSuccessFlag,documentInfoArr,docRelatedTo,"MapDocumentInfo doc");
-//   return documentInfoArr;
-
-// }
 
 export const getTableHeadersData = (t: any): TableHeader[] => [
   {
@@ -89,39 +72,16 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isColumnSorting: true,
     txtTrunctLength: 26,
     anyComponent: (e: any) => {
-      const docRelatedTo = e[0].docRelatedTo === 1;
-      const isGetBulkDeleteApiSuccessFlag = e[0].isGetBulkDeleteApiSuccessFlag === true;
       return (
-        console.log(e,docRelatedTo, isGetBulkDeleteApiSuccessFlag, e[0].isGetBulkDeleteApiSuccessFlag,"-------> logic docs"),
         <>
-       {(docRelatedTo && isGetBulkDeleteApiSuccessFlag )? (
-            <EllipsisWithTooltip
-              text={e[0].name}
-              className="relatedto-main"
-              isTooltipNeeded={!!e[0].name}
-              totalItems={[e[0].name]}
-              colName="document"
-              showProtectedTag={!!(e[0].isProtectedFromDelete)}
-            />
-          ) : (
-            <EllipsisWithTooltip
-              text={e[0].name}
-              className="relatedto-main"
-              isTooltipNeeded={!!e[0].name}
-              totalItems={[e[0].name]}
-              colName="document"
-              showProtectedTag={false}
-            />
-          )
-    }
-          {/* <EllipsisWithTooltip
+          <EllipsisWithTooltip
             text={e[0].name}
             className="relatedto-main"
             isTooltipNeeded={!!e[0].name}
             totalItems={[e[0].name]}
             colName="document"
             showProtectedTag={!!(e[0].isProtectedFromDelete)}
-          /> */}
+          />
         </>
       );
     

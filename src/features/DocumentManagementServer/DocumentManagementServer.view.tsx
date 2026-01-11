@@ -189,7 +189,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
             id: doc?.fileId,
-            // Document: doc?.documentInfo.fileName,
             Document: mapDocumentInfo(doc, docData?.isGetBulkDeleteApiSuccess),
             Relatedto: mapRelatedArr(doc) || "",
             Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
@@ -197,7 +196,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
             Format: doc?.format,
             Size: doc?.size,
-            isShowCheckBox: true,
+            isShowCheckBox: true
         }));
         }
 
@@ -1508,7 +1507,7 @@ const getDialogTitle = () => {
                                 }
                                 searchOnClickClose={handleTagClose}
                                 tableFirstColumnWidth="10px"
-                                tableHeadersData={getTableHeadersData(t )}
+                                tableHeadersData={getTableHeadersData(t)}
                                 sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
                                 templatePropsConfirmation={dialogConfig}
                                 titleConfirmation={getTitleConfirmation(t,dialogType, availableFileCount, docData?.totalRecords || 0)}

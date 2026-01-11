@@ -516,7 +516,9 @@
     "Okay": "Iawn",
     "all": "Popeth",
     "oneOrMoreSelectedDocumentsCannotBeDeleted": "Ni ellir dileu un neu fwy o ddogfennau a ddewiswyd gan eu bod yn cael eu paratoi i'w lawrlwytho ar hyn o bryd. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "oneOrMoreSelectedDocumentsCannotBeDownloaded": "Ni ellir lawrlwytho un neu fwy o'r dogfennau a ddewiswyd gan eu bod eisoes wedi'u dileu. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth."
+    "oneOrMoreSelectedDocumentsCannotBeDownloaded": "Ni ellir lawrlwytho un neu fwy o'r dogfennau a ddewiswyd gan eu bod eisoes wedi'u dileu. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+     "deletingDocumentsTemporarilyUnavailable":"Deleting documents temporarily unavailable",
+    "deletingDocumentsTemporarilyUnavailableMessage":"We're currently experiencing a technical issue that's preventing documents from being deleted. You can still download documents. Please try again later. and If the issue persists please get in touch with our support team."
   },
   "Filter": {
     "heading": "Chwilio uwch",

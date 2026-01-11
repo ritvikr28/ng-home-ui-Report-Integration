@@ -7,7 +7,6 @@ export interface SingleDocumentDetail {
   registrationId: number;
   fileId: string;
   personExternalId: string;
-  documentRealatedTo?: number;
   documentInfo: {
     fileName: string;
     isSelectedForPrepareDownload: boolean;
@@ -49,10 +48,7 @@ export interface DocumentManagementServerProps {
 
 export interface tableDataProps {
   id: string;
-   Document: {
-    name: string;
-    isProtected: boolean;
-  };
+  Document: string;
   Relatedto: string[];
   Category: string;
   Addedby: string;
