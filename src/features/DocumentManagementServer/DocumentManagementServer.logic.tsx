@@ -84,9 +84,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
           />
         </>
       );
-    
-    }
-    
+      }  
   },
   {
     text: t("DocumentManagementServer.relatedColumn"),
