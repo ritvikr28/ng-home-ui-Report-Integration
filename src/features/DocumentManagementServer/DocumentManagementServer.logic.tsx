@@ -419,12 +419,12 @@ export async function fetchGetDocumentDetailsLogic({
       setCurrentPage(page);
       setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
       setShowSearchError(false);
-      // console.log(result, "result in logic file");
+      console.log(result, "result in logic file");
 
         if (
           result?.isGetBulkDeleteApiSuccess === false &&
           result?.data?.length > 0 &&
-          result?.data.every((item: any) => item.documentRealatedTo === 1)
+          result?.data[0]?.documentRealatedTo === 1
         ) {
           setShowBulkDeleteDependencyBanner(true);
         } else {

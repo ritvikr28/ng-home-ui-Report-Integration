@@ -19,6 +19,7 @@ export interface SingleDocumentDetail {
   format: string;
   size: string;
   blobName: string;
+  documentRealatedTo: number;
 }
 // Represents the entire API response from getdocumentdetails
 export interface DocumentBasicDetails {
