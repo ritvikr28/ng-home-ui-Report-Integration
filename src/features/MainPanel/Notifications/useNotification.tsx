@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 
-export const PAGE_SIZE = 5;
+export const PAGE_SIZE = 40;
 const getNotificationId = (notification: any) => notification?.id ?? notification?.Id;
 
 export const formattedDate = (dateStr: string) => (new Date(dateStr).toLocaleDateString('en-GB', {
