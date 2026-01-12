@@ -43,11 +43,10 @@ export function mapRelatedArr(doc: any): any[] {
   return relatedArr;
 }
 
-export function mapDocumentInfo(doc: any, isGetBulkDeleteApiSuccessFlag: any): any[] {
+export function mapDocumentInfo(doc: any): any[] {
   const documentInfoArr = [{
     name: doc.document || "",
     isProtectedFromDelete: doc.isProtectedFromDelete,
-    isGetBulkDeleteApiSuccessFlag,
   }];
   return documentInfoArr;
 }
@@ -71,20 +70,16 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isSimpleText: false,
     isColumnSorting: true,
     txtTrunctLength: 26,
-    anyComponent: (e: any) => {
-      return (
-        <>
-          <EllipsisWithTooltip
-            text={e[0].name}
-            className="relatedto-main"
-            isTooltipNeeded={!!e[0].name}
-            totalItems={[e[0].name]}
-            colName="document"
-            showProtectedTag={!!(e[0].isProtectedFromDelete)}
-          />
-        </>
-      );
-      }  
+    anyComponent: (e: any) => (
+      <EllipsisWithTooltip
+        text={e[0].name}
+        className="relatedto-main"
+        isTooltipNeeded={!!e[0].name}
+        totalItems={[e[0].name]}
+        colName="document"
+        showProtectedTag={!!(e[0].isProtectedFromDelete)}
+      />
+    )
   },
   {
     text: t("DocumentManagementServer.relatedColumn"),

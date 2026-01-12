@@ -2335,10 +2335,11 @@ describe("fetchGetDocumentDetailsLogic", () => {
         dateAdded: "2025-06-10",
         format: "pdf",
         size: "500KB",
-        blobName: "blob1"
+        blobName: "blob1",
+        documentRealatedTo: 1,
       }],
       pageNumber: 1,
-      pageSize: 10
+      pageSize: 10,
     };
     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
@@ -4331,15 +4332,13 @@ describe("mapDocumentInfo", () => {
     const doc = {
       document: "Pupil Doc",
       isProtectedFromDelete: true,
-      documentRealatedTo: 1
     };
-    const result = mapDocumentInfo(doc, false);
+    const result = mapDocumentInfo(doc);
     expect(result).toEqual([
       {
         name: "Pupil Doc",
         isProtectedFromDelete: true,
-        isGetBulkDeleteApiSuccessFlag: false,
-        docRelatedTo: 1
+        // isGetBulkDeleteApiSuccessFlag: false,
       }
     ]);
   });
@@ -4348,15 +4347,13 @@ describe("mapDocumentInfo", () => {
     const doc = {
       document: "Staff Doc",
       isProtectedFromDelete: false,
-      documentRealatedTo: 3
     };
-    const result = mapDocumentInfo(doc, true);
+    const result = mapDocumentInfo(doc);
     expect(result).toEqual([
       {
         name: "Staff Doc",
         isProtectedFromDelete: false,
-        isGetBulkDeleteApiSuccessFlag: true,
-        docRelatedTo: 3
+        // isGetBulkDeleteApiSuccessFlag: true,
       }
     ]);
   });
@@ -4364,15 +4361,13 @@ describe("mapDocumentInfo", () => {
   it("returns empty string for missing document name", () => {
     const doc = {
       isProtectedFromDelete: false,
-      documentRealatedTo: 2
     };
-    const result = mapDocumentInfo(doc, false);
+    const result = mapDocumentInfo(doc);
     expect(result).toEqual([
       {
         name: "",
         isProtectedFromDelete: false,
-        isGetBulkDeleteApiSuccessFlag: false,
-        docRelatedTo: 2
+        // isGetBulkDeleteApiSuccessFlag: false,
       }
     ]);
   });
@@ -4380,15 +4375,13 @@ describe("mapDocumentInfo", () => {
   it("handles undefined isProtectedFromDelete", () => {
     const doc = {
       document: "Test Doc",
-      documentRealatedTo: 1
     };
-    const result = mapDocumentInfo(doc, true);
+    const result = mapDocumentInfo(doc);
     expect(result).toEqual([
       {
         name: "Test Doc",
         isProtectedFromDelete: undefined,
-        isGetBulkDeleteApiSuccessFlag: true,
-        docRelatedTo: 1
+        // isGetBulkDeleteApiSuccessFlag: true,
       }
     ]);
   });
@@ -4397,15 +4390,13 @@ describe("mapDocumentInfo", () => {
     const doc = {
       document: "Test Doc",
       isProtectedFromDelete: true,
-      documentRealatedTo: null
     };
-    const result = mapDocumentInfo(doc, false);
+    const result = mapDocumentInfo(doc);
     expect(result).toEqual([
       {
         name: "Test Doc",
         isProtectedFromDelete: true,
-        isGetBulkDeleteApiSuccessFlag: false,
-        docRelatedTo: null
+        // isGetBulkDeleteApiSuccessFlag: false,
       }
     ]);
   });

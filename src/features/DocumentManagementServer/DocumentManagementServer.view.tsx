@@ -189,7 +189,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         } else if (docData?.data) {
         tableData = docData?.data.map((doc: any) => ({
             id: doc?.fileId,
-            Document: mapDocumentInfo(doc, docData?.isGetBulkDeleteApiSuccess),
+            Document: mapDocumentInfo(doc),
             Relatedto: mapRelatedArr(doc) || "",
             Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
             Addedby: doc?.addedBy || "",
