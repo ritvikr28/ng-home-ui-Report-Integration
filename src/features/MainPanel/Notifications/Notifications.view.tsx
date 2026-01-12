@@ -315,7 +315,7 @@ const NotificationView = () => {
                                 emptyRowResponseCode={ResponseCode.Info}
                                 isPagination={shouldShowPagination}
                                 paginationCount={totalPages}
-                                paginationOnChange={!tableDataError ? handlePageChange : undefined}
+                                paginationOnChange={handlePageChange }
                                 paginationPage={currentPage}
                                 onChangeListCheckBox={(index: number, id: string) => handleListCheckboxChange(index, id)}
                                 onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
