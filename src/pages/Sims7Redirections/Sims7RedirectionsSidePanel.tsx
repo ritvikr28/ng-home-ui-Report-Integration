@@ -529,11 +529,6 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                         </Button>
                                     </div>
                                 )}
-                                {true && (
-                                    //<div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                                        <Notification status={NotificationStatus.SUCCESSTOAST} title="Changes saved" />
-                                    //</div>
-                                )}
                             </div>
                         )
                         }
@@ -733,9 +728,9 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                             </div>
                         )}
                     </div>
-                    {/* {showSuccessToast && (
+                    {showSuccessToast && (
                         <Notification status={NotificationStatus.SUCCESSTOAST} title="Changes saved" />
-                    )} */}
+                    )}
                     <Dialog
                         isOpen={showCancelDialog}
                         onClose={handleCancelDialogClose}
