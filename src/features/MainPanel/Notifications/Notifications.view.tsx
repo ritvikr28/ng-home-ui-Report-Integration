@@ -88,6 +88,7 @@ const NotificationView = () => {
                     } else {
                         setNoResults(true);
                         setTableDataError(true);
+                        setTableData([]);
                     }
                 })
                 .finally(() => setIsTableBodyLoading(false));
@@ -137,7 +138,7 @@ const NotificationView = () => {
         }
     };
 
-    const shouldShowPagination = totalTableData !== 0
+    const shouldShowPagination = !tableDataError && totalTableData !== 0
     // > 1 && paginatedNotifications.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
@@ -308,13 +309,13 @@ const NotificationView = () => {
                                 isShowCheckboxCol={true}
                                 isShowThirdElement={true}
                                 isShowdynamictableNoMsg={
-                                    (totalNotifications === 0 || !noResults) || !isSearching || !tableDataError
+                                    (totalNotifications === 0 || !noResults) || !isSearching || tableDataError
                                 }
                                 emptyRowResponseMessage={getEmptyStateMessage()}
                                 emptyRowResponseCode={ResponseCode.Info}
                                 isPagination={shouldShowPagination}
                                 paginationCount={totalPages}
-                                paginationOnChange={handlePageChange}
+                                paginationOnChange={!tableDataError ? handlePageChange : undefined}
                                 paginationPage={currentPage}
                                 onChangeListCheckBox={(index: number, id: string) => handleListCheckboxChange(index, id)}
                                 onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
