@@ -126,7 +126,6 @@ body {
 
     #edit-selected-btn {
       margin-left: 0 !important;
-      margin-top: 24px !important;
     }
   }
 
@@ -139,10 +138,6 @@ body {
 @media (min-device-width: 320px) and (max-device-width: 599px) {
   .dropdown {
     max-width: 37% !important;
-  }
-
-  .notification-layout-header #edit-selected-btn {
-    margin-left: 8px !important;
   }
 }
 

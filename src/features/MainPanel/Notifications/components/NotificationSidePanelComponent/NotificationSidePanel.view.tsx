@@ -57,7 +57,7 @@ const NotificationSidePanelView: React.FC<NotificationSidePanelViewProps> = ({ s
                                     <div className="static-message" data-testid="static-message">{selectedItem ? selectedItem.body : null}</div>
                                 </div>
                                 <div className="sidepanel-date-atbottom">
-                                    {selectedItem && formattedDate(selectedItem.receivedDate)}
+                                    {!sidePanelAPIError && selectedItem && formattedDate(selectedItem.receivedDate)}
                                 </div>
                             </>
                         )}
