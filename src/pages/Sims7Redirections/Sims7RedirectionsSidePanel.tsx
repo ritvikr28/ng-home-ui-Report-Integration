@@ -259,6 +259,11 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     };
 
     const handleSave = () => {
+        // If nothing has changed, just switch to view mode
+        if (!isDirty) {
+            setSidePanelMode('view');
+            return;
+        }
         // If status is 'Reversing' and redirectToNextGen is 'yes', change status to 'Migrated', set redirectToNextGen to 'yes', and clear reasonForChanges
         if (selectedRow.status === 'Reversing' && redirectToNextGen === 'yes') {
             selectedRow.status = 'Migrated';

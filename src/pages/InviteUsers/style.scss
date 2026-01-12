@@ -242,8 +242,28 @@
 }
 
 .sims7-redirections .essui.animationmsg.open {
-  margin-left: 150px;
+  @media (min-width: 1200px) and (max-width: 1699px) {
+    margin-left: 155px;
+  }
+
+  @media (min-width: 2300px) {
+    margin-left: 540px;
+  }
+
+  @media (min-width: 2000px) and (max-width: 2299px) {
+    margin-left: 410px;
+  }
+
+  @media (min-width: 1800px) and (max-width: 1999px) {
+    margin-left: 340px;
+  }
+
+  @media (min-width: 1700px) and (max-width: 1799px) {
+    margin-left: 240px;
+  }
 }
+
+//position: 'fixed', right: 40, top: 40, zIndex: 9999 
 
 @media only screen and (min-width: 768px) and (max-width: 1023px) {
   .sims7-redirections .filter-tool-view .dropdown {
