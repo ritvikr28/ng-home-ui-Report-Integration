@@ -17,69 +17,68 @@
       "description": "Cofnodwch bresenoldeb mewn gwersi neu sesiwn neu chwiliwch am gofrestr i'w chwblhau.",
       "link": "",
       "linkText": ""
-      
-    },    
+    },
     "PupilProfile": {
       "title": "Proffil y disgybl",
       "description": "Gallwch ddod o hyd i broffil disgybl trwy nodi o leiaf ddau lythyren o enw dewisol y disgybl. Bydd ein chwiliad manwl yn eich galluogi i gael gwybodaeth sylfaenol am ddisgyblion a gwybodaeth gyswllt yn gyflymach.",
       "link": "",
       "linkText": ""
-    },    
+    },
     "PrimaryAssessment": {
       "title": "Asesiadau cynradd",
       "description": "Cofnodi asesiadau tymhorol neu hanner tymor mewn darllen, ysgrifennu a mathemateg disgyblion ym mlwyddyn 1-6. Gweld mewnwelediadau ynghylch perfformiad dosbarth a grŵp blwyddyn ac olrhain cynnydd disgyblion.",
       "link": "",
       "linkText": ""
-    },  
+    },
     "StaffProfile": {
       "title": "Proffil Staff",
       "description": "Chwiliwch drwy'r holl aelodau staff presennol yn yr ysgol a chael mynediad at eu proffil cyhoeddus.",
       "link": "",
       "linkText": ""
     },
-    "SchoolManagement":{
+    "SchoolManagement": {
       "title": "Calendars",
       "description": "Plan, manage and track all your school and work events in one safe place",
       "link": "",
       "linkText": ""
     },
-    "AssessmentMarksheets":{
+    "AssessmentMarksheets": {
       "title": "My Markbook",
       "description": "A fast and intuitive new way for teachers to record their own assessments for the classes they teach",
       "link": "",
       "linkText": ""
     },
-    "PupilAttendance":{
+    "PupilAttendance": {
       "title": "Pupil Attendance",
       "description": "Pupil Attendance description",
       "link": "",
       "linkText": ""
     },
-    "CustomGroups":{
+    "CustomGroups": {
       "title": "Grwpiau wedi'u personoli",
       "description": "Crëwch, rheolwch a gwelwch eich grwpiau disgyblion wedi'u personoli eich hun. Mae'r holl ddata yn cydamseru yn ôl i SIMS 7, gan sicrhau monitro ac adrodd effeithiol ar eich grwpiau.",
       "link": "",
       "linkText": ""
     },
-    "ManagePermissions":{
+    "ManagePermissions": {
       "title": "Manage Permissions",
       "description": "View permission groups and their members, and easily edit the group permissions to meet your school's needs.",
       "link": "",
       "linkText": ""
     },
-    "Seatingplans":{
+    "Seatingplans": {
       "title": "Seating Plans",
       "description": "Create room layouts and seating plans for your classes and lessons",
       "link": "",
       "linkText": ""
     },
-    "Conduct":{
+    "Conduct": {
       "title": "Ymddygiad",
       "description": "Creu a chynnal gwarhaddiadau parhaol a phenodol.",
       "link": "",
       "linkText": ""
     },
-    "FMSReporting":{
+    "FMSReporting": {
       "title": "Adrodd FMS",
       "description": "Cynhyrchu adroddiadau ariannol yn reddfol y gellir eu drilio, eu hallforio, eu harbed a'u rhannu'n hawdd.",
       "link": "",
@@ -110,14 +109,13 @@
       "item1": {
         "title": "Reached this page using a link?",
         "content": "Please check the spelling is correct and try reloading the page"
-       
       },
       "item2": {
         "title": "Go back to home page",
         "content": "Click ",
         "content1": "here",
         "content2": " to go back to home page"
-      }      
+      }
     }
   },
   "noAccess": {
@@ -149,39 +147,38 @@
   "RefreshDB_T": {
     "headingTitle": "Ailosodwch y cronfeydd data Next Gen a SIMS7 ",
     "description": "Rheoli'r cronfeydd data i ddarparu llechen lân ar gyfer arddangosiadau. Cwblhewch y 4 cam er mwyn ailosod y cronfeydd data.",
-    "RefreshDB":"Adnewyddu Cronfa Ddata",
+    "RefreshDB": "Adnewyddu Cronfa Ddata",
     "moduleBlock": {
       "detachDB": {
         "content": "A yw'r gronfa ddata SIMS7 wedi’i hatodi?",
         "content1": "Cliciwch ar Ydw i atodi",
         "content2": "Datgysylltu cronfa ddata SIMS7"
       },
-      "DeleteNGData":{
+      "DeleteNGData": {
         "title": "Dileu data Next Gen",
         "button1": "Parhau",
         "button2": "Dileu",
         "description": "Bydd dileu'r data Next Gen yn clirio'r holl gofnodion a bydd yr holl ddata cysylltiedig yn mynd am byth ar ôl ei ddileu."
       },
-      "attachDB":{
+      "attachDB": {
         "title": "A yw'r gronfa ddata SIMS7 wedi'i datgysylltu?",
         "button": "Cliciwch ar Ydw i ddatgysylltu",
         "content": "Cysylltu cronfa ddata SIMS7"
       },
-      "syncProcess":{
+      "syncProcess": {
         "title": "Cysoni data SIMS7 gyda chronfa ddata Next Gen"
-        
       },
-      "notifyException":{
+      "notifyException": {
         "title": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cwblhau eich cais. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
         "content": "Methu â phrosesu'r cais."
       },
-      "status":{
+      "status": {
         "content": "Wedi'i dileu",
         "content1": "Wedi'i chysylltu",
         "content2": "Ar y Gweill",
         "content3": "Wedi'i datgysylltu"
       },
-      "modal":{
+      "modal": {
         "content": "Cysoni Data yn llwyddiannus",
         "content1": "Cysoni Data wedi methu",
         "content2": "Cysoni Data ar y gweill",
@@ -194,45 +191,43 @@
         "button3": "Nac ydy",
         "button4": "Canslo"
       }
-  	}
+    }
   },
   "SystemStatus_T": {
     "headingTitle": "Statws y system a rhybuddion",
     "description": "Monitro statws allweddol y system a chofrestru ar gyfer rhybuddion e-bost pan fydd statws yn newid.",
-    "moduleBlock" : {
-      "notifyException":{
+    "moduleBlock": {
+      "notifyException": {
         "title": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cwblhau eich cais. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth",
         "content": "Gwybodaeth ddim ar gael."
       },
-      "ErrorMessagesDataSync":{
-        "content1":"Rydym wedi nodi mater posibl a allai fod yn atal data rhag cysoni rhwng SIMS Next Gen a SIMS 7. Yr achos mwyaf cyffredin yw problem gyda'ch gweinydd SSM. Bydd ailgychwyn y gwasanaeth SSM yn datrys hyn yn aml.",
-        "content2":"Beth i'w wneud nesaf:",
-        "content3":"Ailgychwyn eich gweinydd SSM:",
-        "content4":"KB0012954 - Datrys problemau",
-        "content5":"Gwiriwch fod y gweinydd SSM yn rhedeg",
-        "content6":"Gwiriwch y statws cysoni",
-        "content7":"Gall eich darparwr cymorth TG neu SIMS gynorthwyo os oes angen.",
-        "content8":"Gellir dod o hyd i gyfarwyddiadau ar ailgychwyn eich gweinydd SSM yma",
-        "content9":"Os yw'r gweinydd yn weithredol, gwiriwch y statws cysoni.",
-        "content10":"Ar ôl 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS."
-
+      "ErrorMessagesDataSync": {
+        "content1": "Rydym wedi nodi mater posibl a allai fod yn atal data rhag cysoni rhwng SIMS Next Gen a SIMS 7. Yr achos mwyaf cyffredin yw problem gyda'ch gweinydd SSM. Bydd ailgychwyn y gwasanaeth SSM yn datrys hyn yn aml.",
+        "content2": "Beth i'w wneud nesaf:",
+        "content3": "Ailgychwyn eich gweinydd SSM:",
+        "content4": "KB0012954 - Datrys problemau",
+        "content5": "Gwiriwch fod y gweinydd SSM yn rhedeg",
+        "content6": "Gwiriwch y statws cysoni",
+        "content7": "Gall eich darparwr cymorth TG neu SIMS gynorthwyo os oes angen.",
+        "content8": "Gellir dod o hyd i gyfarwyddiadau ar ailgychwyn eich gweinydd SSM yma",
+        "content9": "Os yw'r gweinydd yn weithredol, gwiriwch y statws cysoni.",
+        "content10": "Ar ôl 2 awr, gwiriwch fod data yn cysoni nawr. Os yw'r broblem yn parhau, yna cofnodwch achos gyda'ch darparwr cymorth SIMS."
       },
-      "ErrorMessagesSSMPackage":{
-        "content1":"Nid yw pecyn cynnal SSM eich ysgol wedi'i ddiweddaru eto i'r fersiwn ddiweddaraf, a ryddhawyd dros 72 awr yn ôl. Er mwyn cadw'ch system yn ddiogel, yn effeithlon ac yn gyfredol, rydym yn argymell uwchraddio cyn gynted â phosib.",
-        "content2":"Beth sy'n Newydd:",
-        "content3":"Fersiwn Diweddaraf:",
-        "content4":"Eich Fersiwn Cyfredol:",
-        "content5":"Bydd diweddaru i'r fersiwn newydd hwn yn dod â:",
-        "content6":"Gwell perfformiad",
-        "content7":"Atgyweiriadau Bygiau",
-        "content8":"Nodweddion diogelwch gwell",
-        "content9":"Sut i Uwchraddio:",
-        "content10":"Am arweiniad cam wrth gam, cyfeiriwch at yr erthygl wybodaeth sylfaen atodedig:",
-        "content11":"SIMS - Paratoi SSM (Rheolwr Gwasanaethau SIMS) ar gyfer Next Gen | Grŵp ParentPay.",
-        "content12":"Cysylltwch â'ch darparwr cymorth TG neu SIMS os oes angen cymorth arnoch gyda hyn.",
-        "content13":"An unknown issue has occurred. Please contact your support team for further assistance."
+      "ErrorMessagesSSMPackage": {
+        "content1": "Nid yw pecyn cynnal SSM eich ysgol wedi'i ddiweddaru eto i'r fersiwn ddiweddaraf, a ryddhawyd dros 72 awr yn ôl. Er mwyn cadw'ch system yn ddiogel, yn effeithlon ac yn gyfredol, rydym yn argymell uwchraddio cyn gynted â phosib.",
+        "content2": "Beth sy'n Newydd:",
+        "content3": "Fersiwn Diweddaraf:",
+        "content4": "Eich Fersiwn Cyfredol:",
+        "content5": "Bydd diweddaru i'r fersiwn newydd hwn yn dod â:",
+        "content6": "Gwell perfformiad",
+        "content7": "Atgyweiriadau Bygiau",
+        "content8": "Nodweddion diogelwch gwell",
+        "content9": "Sut i Uwchraddio:",
+        "content10": "Am arweiniad cam wrth gam, cyfeiriwch at yr erthygl wybodaeth sylfaen atodedig:",
+        "content11": "SIMS - Paratoi SSM (Rheolwr Gwasanaethau SIMS) ar gyfer Next Gen | Grŵp ParentPay.",
+        "content12": "Cysylltwch â'ch darparwr cymorth TG neu SIMS os oes angen cymorth arnoch gyda hyn.",
+        "content13": "An unknown issue has occurred. Please contact your support team for further assistance."
       }
-
     },
     "DataSyncAlertName": "Cydamseru data",
     "DataSyncLiveInfo": "Mae data’n cael ei gydamseru rhwng SIMS 7 a SIMS Next Gen.",
@@ -243,30 +238,29 @@
     "WarningMessage": "Gwall cysylltiad",
     "Yes": "Ydw",
     "No": "Nac ydy",
-    "Live": "Byw",  
+    "Live": "Byw",
     "Fail": "Methu",
     "SSMPackage": "Pecyn SSM",
     "Activateemail": "Gweithredwch e-bost",
     "Deactivateemail": "Datgysylltwch e-bost",
-    "Unabletosubscribetoemail":"Methu tanysgrifio i e-bost",
-    "Unabletounsubscribetoemail":"Methu dad-danysgrifio o e-bost",
-    "Changessaved":"Cadwyd y newidiadau",
-    "NoData":"Dim data",
-    "Status":"Statws",
-    "Information":"Gyswllt",
-    "Close":"Cau",
-    "Alert":"Rhybudd",
-    "EmailAlerts":"E-bost Rhybuddion",
-    "View":"Golwg",
+    "Unabletosubscribetoemail": "Methu tanysgrifio i e-bost",
+    "Unabletounsubscribetoemail": "Methu dad-danysgrifio o e-bost",
+    "Changessaved": "Cadwyd y newidiadau",
+    "NoData": "Dim data",
+    "Status": "Statws",
+    "Information": "Gyswllt",
+    "Close": "Cau",
+    "Alert": "Rhybudd",
+    "EmailAlerts": "E-bost Rhybuddion",
+    "View": "Golwg",
     "FailedAlertTitleActivate": "Methu actifadu rhybudd e-bost",
     "FailedAlertTitleDeactivate": "Methu dadactifadu rhybudd e-bost",
     "FailedAlertMessage": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag {{action}}. Rhowch gynnig arall arni yn nes ymlaen. Os yw’r broblem yn parhau, cysylltwch â’n tîm cymorth."
-
   },
   "quickLink": {
     "headingTitle": "Dolenni cyflym",
     "quicklinkText": "Mynediad un clic hawdd. Bydd ffafrio eitemau yn sicrhau bod eich hoff ddewisiadau bob amser yn weladwy.",
-    "quicklinkTableColumnName":"Enw",
+    "quicklinkTableColumnName": "Enw",
     "quicklinkTableColumStarred": "Gyda seren",
     "quicklinkseeall": "Gweld popeth",
     "classview": "Golwg Dosbarth",
@@ -276,153 +270,148 @@
     "himsg": "Helo",
     "welcomemsg": "croeso nôl!"
   },
-  "staffTimetable": 
-  {
+  "staffTimetable": {
     "stafftimetablelink": "Eich amserlen o’r hyn sydd i ddod",
-    "stafftimetablelinktext":"Gweld amserlen lawn"
+    "stafftimetablelinktext": "Gweld amserlen lawn"
   },
-  "errorfallback":
-  {
-    "error-loading":"Llwytho wedi methu",
+  "errorfallback": {
+    "error-loading": "Llwytho wedi methu",
     "error-loading-text": "Rhywbeth wedi mynd o'i le"
   },
-  "takeRegister":
-  {
-    "takeregisterlink":"Eich cofrestri",
-    "takeregistertext":"Gweld pob cofrestr"
+  "takeRegister": {
+    "takeregisterlink": "Eich cofrestri",
+    "takeregistertext": "Gweld pob cofrestr"
   },
-  "discoverMore":
-  {
-    "simsupdatetext":"Diweddariadau SIMS Next Gen",
-    "simsupdatemoretext":"Gwybod mwy am SIMS Next Gen",
+  "discoverMore": {
+    "simsupdatetext": "Diweddariadau SIMS Next Gen",
+    "simsupdatemoretext": "Gwybod mwy am SIMS Next Gen",
     "mobilesimsupdatetext": "More updates",
     "mobilesimsupdatemoretext": "Gwybod mwy gyda SIMS Next Gen",
-    "primarytext":"Beth sy'n newydd?",
-    "secondarytext":"Y diweddaraf ar SIMS Next Gen - cyhoeddiadau newydd, cofrestrwch ar gyfer mynediad cynnar, a darganfod beth sy'n newydd.",
+    "primarytext": "Beth sy'n newydd?",
+    "secondarytext": "Y diweddaraf ar SIMS Next Gen - cyhoeddiadau newydd, cofrestrwch ar gyfer mynediad cynnar, a darganfod beth sy'n newydd.",
     "primarytextsimsnextgen": "Mapio SIMS Next Gen",
     "secondarytextsimsnextgen": "Dod i wybod beth sydd ar y gorwel a sut rydyn ni'n gwella SIMS ar fapio Next Gen.",
-    "primaryvideotext":"Fideos o Beth sy'n newydd",
-    "secondaryvideotext":"Arddangos y modiwlau a'r nodweddion diweddaraf - eich helpu i gael y gorau o'ch MIS cwmwl newydd."
+    "primaryvideotext": "Fideos o Beth sy'n newydd",
+    "secondaryvideotext": "Arddangos y modiwlau a'r nodweddion diweddaraf - eich helpu i gael y gorau o'ch MIS cwmwl newydd."
   },
-  "homeStaffTimeTableEventTiles" :
-  {
+  "homeStaffTimeTableEventTiles": {
     "time": "Amser",
-    "staff":"Staff",
+    "staff": "Staff",
     "coverstaff": "Staff Cyflenwi",
-    "location" :"Lleoliad",
-    "classview":"Golwg Dosbarth",
+    "location": "Lleoliad",
+    "classview": "Golwg Dosbarth",
     "register": "cofrestr",
-    "takeregister":"Cymryd cofrestr",
-    "close":"Cau"
+    "takeregister": "Cymryd cofrestr",
+    "close": "Cau"
   },
-  "searchpage" :
-  {
-   "searchHelper": "Chwilio yn ôl enw cyntaf neu olaf",
-   "searchBar":"Am fwy o ganlyniadau cliciwch 'enter'",
+  "searchpage": {
+    "searchHelper": "Chwilio yn ôl enw cyntaf neu olaf",
+    "searchBar": "Am fwy o ganlyniadau cliciwch 'enter'",
     "pupilprofile": "Proffil Disgybl"
   },
-   "breadcrumbshome":"Cartref",
-  "breadcrumbsadminconsole":"Consol gweinyddol",
-  "attendanceoverview" : {
-    "authorisedabsence" : "Absenoldeb wedi’i awdurdodi",
+  "breadcrumbshome": "Cartref",
+  "breadcrumbsadminconsole": "Consol gweinyddol",
+  "attendanceoverview": {
+    "authorisedabsence": "Absenoldeb wedi’i awdurdodi",
     "unauthorisedabsence": "Absenoldeb heb ei awdurdodi",
     "persistentabsence": "Absenoldeb mynych",
     "currentyearaverage": "Cyfartaledd y flwyddyn bresennol",
     "previousyearaverage": "Cyfartaledd y flwyddyn flaenorol",
-    "nationalaverage":"Cyfartaledd cenedlaethol",
-    "overallattendance":"Presenoldeb cyffredinol",
-    "moreattendanceinsights":"Mwy o fewnwelediadau presenoldeb",
+    "nationalaverage": "Cyfartaledd cenedlaethol",
+    "overallattendance": "Presenoldeb cyffredinol",
+    "moreattendanceinsights": "Mwy o fewnwelediadau presenoldeb",
     "attendanceoverviewheading": "Trosolwg presenoldeb"
   },
-  "pupildemographics":{
-    "pupilsonroll":"Myfyrwyr wedi’u cofrestru",
-    "pupilpremium":"Premiwm disgybl",
-    "freeschoolmeals":"Prydau Ysgol am Ddim",
-    "pupildemographicsheading":"Demograffeg disgyblion"
+  "pupildemographics": {
+    "pupilsonroll": "Myfyrwyr wedi’u cofrestru",
+    "pupilpremium": "Premiwm disgybl",
+    "freeschoolmeals": "Prydau Ysgol am Ddim",
+    "pupildemographicsheading": "Demograffeg disgyblion"
   },
-  "classviewbanner":{
-    "title":"Eisiau mwy o amser i addysgu?",
-    "classviewtext":"Mae gwybodaeth allweddol disgyblion a thasgau hanfodol yn yr ystafell ddosbarth bellach i gyd mewn un lle.",
-    "classviewlinktext":"Golwg Dosbarth Agored",
-    "learnmorelinktext":"Dysgu mwy"
+  "classviewbanner": {
+    "title": "Eisiau mwy o amser i addysgu?",
+    "classviewtext": "Mae gwybodaeth allweddol disgyblion a thasgau hanfodol yn yr ystafell ddosbarth bellach i gyd mewn un lle.",
+    "classviewlinktext": "Golwg Dosbarth Agored",
+    "learnmorelinktext": "Dysgu mwy"
   },
-  "simsNextGenLinksBanner":{
-    "heading":"Mynediad uniongyrchol i'r Lansiwr Connected",
-    "subHeading":"Gallwch nawr gyrchu'ch cyfres o gynhyrchion SIMS yn hawdd … a mwy! Cliciwch ar yr eicon 3 dot ar frig dde y dudalen hon."
+  "simsNextGenLinksBanner": {
+    "heading": "Mynediad uniongyrchol i'r Lansiwr Connected",
+    "subHeading": "Gallwch nawr gyrchu'ch cyfres o gynhyrchion SIMS yn hawdd … a mwy! Cliciwch ar yr eicon 3 dot ar frig dde y dudalen hon."
   },
   "initialadmin": {
     "limitedaccesssims": "Mae gennych fynediad cyfyngedig i SIMS Next Gen",
     "whattodonext": "Beth i'w wneud nesaf:",
     "invitestaffmembers": "Gwahodd aelodau staff ",
-    "invitestaffdescription":"Gallwch wahodd aelodau staff i gael mynediad at SIMS Next Gen trwy ddewis yr opsiwn Gwahodd Staff yn y panel ochr chwith neu o'r brif ddewislen.",
+    "invitestaffdescription": "Gallwch wahodd aelodau staff i gael mynediad at SIMS Next Gen trwy ddewis yr opsiwn Gwahodd Staff yn y panel ochr chwith neu o'r brif ddewislen.",
     "contactsimsmanager": "Cysylltu â'ch Rheolwr System SIMS 7",
-    "contactsimsdescription":"I gael mynediad at fwy o nodweddion SIMS Next Gen, gofynnwch i'ch Rheolwr System SIMS 7 aseinio'r grwpiau diogelwch angenrheidiol i chi."
-   },
-    "sltviewbettheading": "Penawdau'r ysgol",
-    "adminconsole":
-  {
-    "abouttext" : "Rheoli holl brosesau cefndir a gosodiadau modiwlau yn ganolog o'r consol Gweinyddol."
+    "contactsimsdescription": "I gael mynediad at fwy o nodweddion SIMS Next Gen, gofynnwch i'ch Rheolwr System SIMS 7 aseinio'r grwpiau diogelwch angenrheidiol i chi."
   },
-  "takeregister" :{
-  "noregistertoday": "Dim cofrestrau heddiw",
-  "nomoreregister": "Dim mwy o gofrestrau",
-  "completed":"wedi'i Gwblhau",
-  "ready":"Parod"
+  "sltviewbettheading": "Penawdau'r ysgol",
+  "adminconsole": {
+    "abouttext": "Rheoli holl brosesau cefndir a gosodiadau modiwlau yn ganolog o'r consol Gweinyddol."
   },
-  "stafftimetable":{
+  "takeregister": {
+    "noregistertoday": "Dim cofrestrau heddiw",
+    "nomoreregister": "Dim mwy o gofrestrau",
+    "completed": "wedi'i Gwblhau",
+    "ready": "Parod"
+  },
+  "stafftimetable": {
     "noeventdisplay": "Dim digwyddiadau i'w dangos",
-    "nomoreevent":"Dim mwy o ddigwyddiadau"
+    "nomoreevent": "Dim mwy o ddigwyddiadau"
   },
-  "sltviewbelt" :{
-    "schoolheadlines":"Penawdau'r ysgol"
+  "sltviewbelt": {
+    "schoolheadlines": "Penawdau'r ysgol"
   },
-  "inviteUsers":{
-    "title" : "Gwahodd Defnyddwyr",
-    "subTitle" : "Gwahodd defnyddwyr SIMS 7 i gael mynediad at SIMS Next gen",
-    "userDetailsSims7" : "Rheolir manylion y defnyddiwr yn SIMS7",
-    "userEmailManagement" : "I reoli enw a rôl e-bost y defnyddiwr, ewch i SIMS7.",
-    "searchUser" : "Chwilio am ddefnyddiwr",
-    "searchByName" : "Chwilio yn ôl enw",
-    "editSelected" : "Golygu’r rhai sydd wedi’u dewis",
-    "name" : "Enw",
-    "email" : "E-bost",
-    "userType" : "Math defnyddiwr",
-    "invitationStatus" : "Statws gwahoddiad",
-    "noDataToDisplay" : "Dim data i'w arddangos",
-    "inviteUser?" : "Gwahodd defnyddiwr?",
-    "inviteUser?Description" : "Anfonir gwahoddiad i'r defnyddiwr hwn i gael mynediad i'r system.",
-    "changesSaved" : "Newidiadau wedi'u cadw",
-    "unableToSave" : "Methu cadw",
-    "unableToSaveDescription" : "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cadw'r newidiadau. Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth. Rydym yn gwerthfawrogi eich amynedd a'ch dealltwriaeth yn ystod y cyfnod hwn.",
-    "unableToInvite" : "Methu gwahodd",
-    "unableToInviteDescription" : "Ni ellid gwahodd rhai defnyddwyr ar y rhestr hon oherwydd problem dechnegol ar ein hochr ni.  Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "unableToInviteUserList" : "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag gwahodd y defnyddwyr canlynol:",
-    "unableToInviteUserListDescription" : "Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "sendInvite" : "Anfon gwahoddiad",
-    "sendInviteDescription" : "{{NoOfusers}} bydd defnyddwyr yn cael gwahoddiadau i gael mynediad i'r system",
-    "notMatchAnyResult" : "Nid oedd eich chwiliad - {{searchTerm}} - yn cyfateb i unrhyw ganlyniadau. Gwnewch yn siŵr bod yr holl eiriau wedi’u sillafu’n gywir.",
-    "noItemsSelected" : "Dim eitemau wedi'u dewis",
-    "selectAtLeastOneItem" : "Dewiswch o leiaf un eitem o'r canlyniadau chwilio i gyflawni'r weithred.",
-    "okay" : "Iawn",
-    "informationUnavailable" : "Gwybodaeth ddim ar gael.",
-    "technicalIssue" : "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r mater technegol yn parhau, cysylltwch â'n tîm cymorth.",
-    "inviteStaff" : "Gwahodd Staff",
-    "inviteStaffDescription" : "Mae Gwahoddiad Staff yn cael ei ddisodli",
-    "learnMoreInviteUsers" : "Dysgu mwy am Gwahodd Defnyddwyr",
-    "invitationConflict" : "Gwrthdaro gwahoddiad",
-    "invitationConflictDescription" : "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID. Cysylltwch â'ch darparwr cymorth SIMS.",
-    "cancel" : "Canslo",
-    "save" : "Arbed",
-    "pleaseWaitLoader" : "Arhoswch os gwelwch yn dda"
+  "inviteUsers": {
+    "title": "Gwahodd Defnyddwyr",
+    "subTitle": "Gwahodd defnyddwyr SIMS 7 i gael mynediad at SIMS Next gen",
+    "userDetailsSims7": "Rheolir manylion y defnyddiwr yn SIMS7",
+    "userEmailManagement": "I reoli enw a rôl e-bost y defnyddiwr, ewch i SIMS7.",
+    "searchUser": "Chwilio am ddefnyddiwr",
+    "searchByName": "Chwilio yn ôl enw",
+    "editSelected": "Golygu’r rhai sydd wedi’u dewis",
+    "name": "Enw",
+    "email": "E-bost",
+    "userType": "Math defnyddiwr",
+    "invitationStatus": "Statws gwahoddiad",
+    "noDataToDisplay": "Dim data i'w arddangos",
+    "inviteUser?": "Gwahodd defnyddiwr?",
+    "inviteUser?Description": "Anfonir gwahoddiad i'r defnyddiwr hwn i gael mynediad i'r system.",
+    "changesSaved": "Newidiadau wedi'u cadw",
+    "unableToSave": "Methu cadw",
+    "unableToSaveDescription": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag cadw'r newidiadau. Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth. Rydym yn gwerthfawrogi eich amynedd a'ch dealltwriaeth yn ystod y cyfnod hwn.",
+    "unableToInvite": "Methu gwahodd",
+    "unableToInviteDescription": "Ni ellid gwahodd rhai defnyddwyr ar y rhestr hon oherwydd problem dechnegol ar ein hochr ni.  Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "unableToInviteUserList": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag gwahodd y defnyddwyr canlynol:",
+    "unableToInviteUserListDescription": "Ceisiwch eto. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "sendInvite": "Anfon gwahoddiad",
+    "sendInviteDescription": "{{NoOfusers}} bydd defnyddwyr yn cael gwahoddiadau i gael mynediad i'r system",
+    "notMatchAnyResult": "Nid oedd eich chwiliad - {{searchTerm}} - yn cyfateb i unrhyw ganlyniadau. Gwnewch yn siŵr bod yr holl eiriau wedi’u sillafu’n gywir.",
+    "noItemsSelected": "Dim eitemau wedi'u dewis",
+    "selectAtLeastOneItem": "Dewiswch o leiaf un eitem o'r canlyniadau chwilio i gyflawni'r weithred.",
+    "okay": "Iawn",
+    "informationUnavailable": "Gwybodaeth ddim ar gael.",
+    "technicalIssue": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r mater technegol yn parhau, cysylltwch â'n tîm cymorth.",
+    "inviteStaff": "Gwahodd Staff",
+    "inviteStaffDescription": "Mae Gwahoddiad Staff yn cael ei ddisodli",
+    "learnMoreInviteUsers": "Dysgu mwy am Gwahodd Defnyddwyr",
+    "invitationConflict": "Gwrthdaro gwahoddiad",
+    "invitationConflictDescription": "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID. Cysylltwch â'ch darparwr cymorth SIMS.",
+    "cancel": "Canslo",
+    "save": "Arbed",
+    "pleaseWaitLoader": "Arhoswch os gwelwch yn dda"
   },
-  "SIMS7Redirects":{
-    "title" : "SIMS 7 Redirects",
-    "subTitle" : "Manage modules that open directly in Next Gen from SIMS 7. Data will remain synced for migrated modules. Please ensure relevant users have valid NG accounts and appropriate access. More modules will be available for configuration soon.",
-    "secondSubheadingwithLink" :"Link for more details placeholder",
+  "SIMS7Redirects": {
+    "title": "SIMS 7 Redirects",
+    "subTitle": "Manage modules that open directly in Next Gen from SIMS 7. Data will remain synced for migrated modules. Please ensure relevant users have valid NG accounts and appropriate access. More modules will be available for configuration soon.",
+    "secondSubheadingwithLink": "Link for more details placeholder",
     "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name",
-    "emptyStateMsg":"No SIMS7 Redirect entries found.",
-    "emptyRowResponseMessage":"No data to display",
-    "emptyFilterMessage":"No SIMS7 Redirect entries found for selected filters."
+    "emptyStateMsg": "No SIMS7 Redirect entries found.",
+    "emptyRowResponseMessage": "No data to display",
+    "emptyFilterMessage": "No SIMS7 Redirect entries found for selected filters.",
+    "DiscardChanges": "Discard changes?",
+    "DiscardChangesDescription": "You have unsaved changes that will be lost."
   },
   "HomePageForSimsConnectedNormalUser": {
     "welcomeToSims": "Croeso i SIMS",
@@ -431,7 +420,7 @@
     "subHeadingPartOne": "Efallai nad oes gennych y caniatâd cywir, neu efallai nad oes gan eich sefydliad drwydded ar gyfer y cynnyrch hwn.",
     "subHeadingPartTwo": "Cysylltwch â'ch gweinyddwr i wirio'ch mynediad neu i gael cymorth."
   },
- "DocumentManagementServer": {
+  "DocumentManagementServer": {
     "headingText": "Dogfennau",
     "adminconsole": "Consol Gweinyddu",
     "Home": "Cartref",
@@ -450,22 +439,22 @@
     "searchBarText": "Defnyddiwch y bar chwilio i ddewis disgybl, aelod o staff, neu ysgol i weld, lawrlwytho neu ddileu dogfennau cysylltiedig.",
     "noItemsSelectedTitle": "Dim eitemau wedi'u dewis",
     "noItemsSelectedMessage": "Dewiswch o leiaf un eitem o'r canlyniadau chwilio i gyflawni'r weithred.",
-    "ClearAll":"Clirio popeth",
+    "ClearAll": "Clirio popeth",
     "clearAllDownloadsTitle": "Clirio'r holl lawrlwythiadau?",
     "deleteDocumentTitle": "Dileu'r ddogfen?",
-    "deleteDocumentsTitle":"Dileu dogfennau?",
-    "prepareAllDocumentsTitle":"Paratoi i lawrlwytho'r holl ddogfennau?",
-    "prepareDownloadTitle":"Paratoi lawrlwytho?",
-    "documentsAppearAfterUploadMsg":"Bydd dogfennau'n ymddangos yma ar ôl iddynt gael eu uwchlwytho.",
-    "informationUnavailable":"Gwybodaeth ddim ar gael.",
+    "deleteDocumentsTitle": "Dileu dogfennau?",
+    "prepareAllDocumentsTitle": "Paratoi i lawrlwytho'r holl ddogfennau?",
+    "prepareDownloadTitle": "Paratoi lawrlwytho?",
+    "documentsAppearAfterUploadMsg": "Bydd dogfennau'n ymddangos yma ar ôl iddynt gael eu uwchlwytho.",
+    "informationUnavailable": "Gwybodaeth ddim ar gael.",
     "prepareSingleDocument": "{{count}} Mae un ddogfen ar fin cael ei paratoi ar gyfer ei lawrlwytho.",
     "prepareMultipleDocuments": "Mae {{all}}{{count}} dogfen ar fin cael eu paratoi i'w lawrlwytho.",
     "emailNotificationTitle": "Paratoi lawrlwythiadau",
     "emailNotificationMessage": "Mae eich lawrlwythiadau'n cael eu paratoi. Gall hyn gymryd ychydig funudau.",
     "failedDownloadTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
     "failedDownloadMessage": "Mae problem dechnegol wedi atal ni rhag paratoi {{files}} i'w lawrlwytho. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "clearAllErrorTitle":"Methu clirio lawrlwythiadau",
-    "clearAllErrorMessage":"Mae problem dechnegol wedi atal ni rhag clirio'r lawrlwythiadau. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "clearAllErrorTitle": "Methu clirio lawrlwythiadau",
+    "clearAllErrorMessage": "Mae problem dechnegol wedi atal ni rhag clirio'r lawrlwythiadau. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "prepareDownloadErrorTitle": "Methu paratoi [dogfen/dogfennau] i'w lawrlwytho",
     "prepareDownloadErrorMessage": "Mae problem dechnegol wedi atal ni rhag paratoi {{files}} i'w lawrlwytho. Os gwelwch yn dda, rhowch gynnig arni eto yn nes ymlaen. Os bydd y broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "downloadsAppearHere": "Bydd ffeiliau rydych chi'n eu lawrlwytho yn ymddangos yma.",
@@ -499,13 +488,13 @@
     "documentsCannotBeDeletedNotification": "Methu dileu {{all}}{{count}} dogfen am eu bod yn cael eu paratoi i'w lawrlwytho. Ceisiwch eto yn nes ymlaen.",
     "documentCannotBeDownloadedMsg": "Ni ellir lawrlwytho'r ddogfen hon gan ei bod wedi'i dileu.",
     "documentsCannotBeDownloadedMsg": "Ni ellir lawrlwytho dogfennau {{all}}{{count}} gan eu bod eisoes wedi'u dileu.",
-    "documentCannotBeDownloadedTitle":"Ni ellir lawrlwytho'r ddogfen",
-    "documentsCannotBeDownloadedTitle":"Ni ellir lawrlwytho dogfennau",
+    "documentCannotBeDownloadedTitle": "Ni ellir lawrlwytho'r ddogfen",
+    "documentsCannotBeDownloadedTitle": "Ni ellir lawrlwytho dogfennau",
     "unableToDelete": "Methu dileu [dogfen/dogfennau]",
-    "noDataToDisplay":"Dim data i'w arddangos.",
+    "noDataToDisplay": "Dim data i'w arddangos.",
     "unableToDeleteDocumentMsg": "Mae problem dechnegol wedi ein hatal rhag dileu'r ddogfen. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "unableToDeleteDocumentsMsg": "Mae problem dechnegol wedi ein hatal rhag dileu'r dogfennau. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "technicalIssueMessage":"Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
+    "technicalIssueMessage": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "documentColumn": "Dogfen",
     "relatedColumn": "Perthyn i",
     "categoryColumn": "Categori",
@@ -539,21 +528,21 @@
     "filterInfoMessage": "Mae problem dechnegol ar ein hochr ni wedi ein hatal rhag arddangos rhywfaint o wybodaeth. Ceisiwch eto yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "selectOption": "Dewiswch opsiwn",
     "Added": "Ychwanegwyd",
-    "toDateMustBeOnOrBefore" : "Rhaid i'r dyddiad i fod ar neu cyn {{date}}",
-    "fromDateMustBeOnOrAfter":"Rhaid i'r dyddiad o fod ar neu ar ôl {{date}}",
+    "toDateMustBeOnOrBefore": "Rhaid i'r dyddiad i fod ar neu cyn {{date}}",
+    "fromDateMustBeOnOrAfter": "Rhaid i'r dyddiad o fod ar neu ar ôl {{date}}",
     "toDateMustBeOnOrAfter": "Rhaid i'r dyddiad fod ar neu ar ôl {{date}}",
     "fromDateRequired": "Mae angen dyddiad o",
     "invalidDate": "Dyddiad annilys",
-    "relatedToRequired":"Mae angen Disgybl, Staff, neu Ysgol.",
+    "relatedToRequired": "Mae angen Disgybl, Staff, neu Ysgol.",
     "fromDateLabel": "O",
     "toDateLabel": "I",
-    "Pupil":"Disgybl",
-    "Staff":"Staff",
-    "School":"Ysgol",
+    "Pupil": "Disgybl",
+    "Staff": "Staff",
+    "School": "Ysgol",
     "pupilName": "Enw'r disgybl",
     "Disgybl": "Disgybl",
-    "disgybal":  "disgybl",
-    "Organisation":"Sefydliad",
+    "disgybal": "disgybl",
+    "Organisation": "Sefydliad",
     "disgyblName": "Enw'r disgybl",
     "staffName": "Enw'r staff",
     "pupils": "disgyblion",

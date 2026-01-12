@@ -40,9 +40,40 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     setSidePanelMode
 }) => {
     const [reasonForChanges, setReasonForChanges] = useState(selectedRow?.reasonForChanges || "");
+    // Store last migrated effective date for toggling logic
+    // const [lastMigratedEffectiveDate, setLastMigratedEffectiveDate] = useState<Date | null>(
+    //     selectedRow?.status === 'Migrated' && selectedRow?.effectiveDate && selectedRow.effectiveDate !== '-' ? (() => {
+    //         const parts = selectedRow.effectiveDate.split(' ');
+    //         if (parts.length === 3) {
+    //             const [day, monthStr, year] = parts;
+    //             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    //             const month = months.indexOf(monthStr);
+    //             if (month !== -1) {
+    //                 return new Date(Number(year), month, Number(day));
+    //             }
+    //         }
+    //         return null;
+    //     })() : null
+    // );
     React.useEffect(() => {
         setReasonForChanges(selectedRow?.reasonForChanges || "");
     }, [selectedRow]);
+    // Update lastMigratedEffectiveDate when selectedRow changes
+    // React.useEffect(() => {
+    //     if (selectedRow?.status === 'Migrated' && selectedRow?.effectiveDate && selectedRow.effectiveDate !== '-') {
+    //         const parts = selectedRow.effectiveDate.split(' ');
+    //         if (parts.length === 3) {
+    //             const [day, monthStr, year] = parts;
+    //             const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    //             const month = months.indexOf(monthStr);
+    //             if (month !== -1) {
+    //                 setLastMigratedEffectiveDate(new Date(Number(year), month, Number(day)));
+    //             }
+    //         }
+    //     } else {
+    //         setLastMigratedEffectiveDate(null);
+    //     }
+    // }, [selectedRow]);
     const [showSuccessToast, setShowSuccessToast] = useState(false);
     const [isDirty, setIsDirty] = useState(false);
     const [dateError, setDateError] = useState<string>("");
@@ -79,6 +110,10 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
             }
         }
     }
+    React.useEffect(() => {
+        setReasonError("");
+        setDateError("");
+    }, [selectedRow, mode]);
 
     const [dateParts, setDateParts] = useState<{ day: string; month: string; year: string }>(() => {
         if (initialEffectiveDate) {
@@ -144,6 +179,15 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                 year: tomorrow.getFullYear().toString()
             });
         }
+        // If toggling back to Migrated (Yes) after previously being Migrated, restore the last effective date
+        // if (val === 'yes' && lastMigratedEffectiveDate) {
+        //     setEffectiveDate(lastMigratedEffectiveDate);
+        //     setDateParts({
+        //         day: lastMigratedEffectiveDate.getDate().toString().padStart(2, '0'),
+        //         month: (lastMigratedEffectiveDate.getMonth() + 1).toString().padStart(2, '0'),
+        //         year: lastMigratedEffectiveDate.getFullYear().toString()
+        //     });
+        // }
     };
 
     const handleDateChange = (arg1: any, arg2?: any, arg3?: any) => {
@@ -241,10 +285,13 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
         ) {
             requireDate = true;
         }
-        // Reason for changes is required if status is Migrated and redirectToNextGen is no, or status is Reversing and redirectToNextGen is no
+        // Reason for changes is required if status is Migrated and redirectToNextGen is no,
+        // or status is Reversing and redirectToNextGen is no,
+        // or status is Not migrated and saving (redirectToNextGen === 'no')
         if (
             (selectedRow.status === 'Migrated' && redirectToNextGen === 'no') ||
-            (selectedRow.status === 'Reversing' && redirectToNextGen === 'no')
+            (selectedRow.status === 'Reversing' && redirectToNextGen === 'no') ||
+            (selectedRow.status === 'Not migrated' && redirectToNextGen === 'no')
         ) {
             requireReason = true;
         }
@@ -266,9 +313,13 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
             }
         }
         setDateError("");
-        if (requireReason && !reasonForChanges.trim()) {
-            setReasonError('Reason for changes is required');
-            return;
+        if (requireReason) {
+            if (!reasonForChanges.trim()) {
+                setReasonError('Reason for changes is required');
+                return;
+            } else {
+                setReasonError("");
+            }
         }
         // Log all details to console
         console.log('Save Details:', {
@@ -345,6 +396,35 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     const handleCancelConfirm = () => {
         setIsDirty(false);
         setShowCancelDialog(false);
+        // Reset all form states to initial values from selectedRow
+        setReasonForChanges(selectedRow?.reasonForChanges || "");
+        setReasonError("");
+        setDateError("");
+        // Reset effectiveDate and dateParts
+        // let initialEffectiveDate = getTomorrow();
+        // if (selectedRow?.effectiveDate && selectedRow.effectiveDate !== '-') {
+        //     const parts = selectedRow.effectiveDate.split(' ');
+        //     if (parts.length === 3) {
+        //         const [day, monthStr, year] = parts;
+        //         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        //         const month = months.indexOf(monthStr);
+        //         if (month !== -1) {
+        //             initialEffectiveDate = new Date(Number(year), month, Number(day));
+        //         }
+        //     }
+        // }
+        // setEffectiveDate(initialEffectiveDate);
+        // setDateParts({
+        //     day: initialEffectiveDate.getDate().toString().padStart(2, '0'),
+        //     month: (initialEffectiveDate.getMonth() + 1).toString().padStart(2, '0'),
+        //     year: initialEffectiveDate.getFullYear().toString()
+        // });
+        // // Reset redirectToNextGen
+        // if (selectedRow?.status === 'Not migrated' || selectedRow?.status === 'Reversing') {
+        //     setRedirectToNextGen('no');
+        // } else {
+        //     setRedirectToNextGen('yes');
+        // }
         onClose();
     };
 
@@ -357,7 +437,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
             isOpen={isOpen}
             onClose={handleCancel}
             isOnClose
-            title={mode === 'view' ? 'View SIMS 7 redirects' : 'Edit Details'}
+            title={mode === 'view' ? 'View SIMS 7 redirects' : 'Edit SIMS 7 redirects'}
             alignHeading
         >
             <SidePanelContent>
@@ -511,9 +591,18 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                 <Textarea
                                                     id="textarea-1"
                                                     value={reasonForChanges}
+                                                    // onChange={e => {
+                                                    //     setIsDirty(true);
+                                                    //     setReasonForChanges(e.target.value);
+                                                    // }}
                                                     onChange={e => {
                                                         setIsDirty(true);
                                                         setReasonForChanges(e.target.value);
+                                                        if (!e.target.value.trim()) {
+                                                            setReasonError('Reason for changes is required');
+                                                        } else {
+                                                            setReasonError("");
+                                                        }
                                                     }}
                                                     validationText={reasonError}
                                                     validationTextLevel={reasonError ? ValidationTextLevel.Error : undefined}
@@ -548,12 +637,22 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     <Textarea
                                                         id="textarea-1"
                                                         value={reasonForChanges}
-                                                        onChange={e => setReasonForChanges(e.target.value)}
+                                                        // onChange={e => setReasonForChanges(e.target.value)}
+                                                        onChange={e => {
+                                                            setReasonForChanges(e.target.value);
+                                                            // if (e.target.value.trim()) {
+                                                            //     setReasonError("");
+                                                            // }
+                                                            if (!e.target.value.trim()) {
+                                                                setReasonError('Reason for changes is required');
+                                                            } else {
+                                                                setReasonError("");
+                                                            }
+                                                        }}
                                                         maxLength={100}
+                                                        validationText={reasonError}
+                                                        validationTextLevel={reasonError ? ValidationTextLevel.Error : undefined}
                                                     />
-                                                    {reasonError && (
-                                                        <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>{reasonError}</div>
-                                                    )}
                                                 </div>
                                             </div>
                                         </>
@@ -602,7 +701,19 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                 <Textarea
                                                     id="textarea-1"
                                                     value={reasonForChanges}
-                                                    onChange={e => setReasonForChanges(e.target.value)}
+                                                    onChange={e => {
+                                                        setReasonForChanges(e.target.value);
+                                                        // if (e.target.value.trim()) {
+                                                        //     setReasonError("");
+                                                        // }
+                                                        if (!e.target.value.trim()) {
+                                                            setReasonError('Reason for changes is required');
+                                                        } else {
+                                                            setReasonError("");
+                                                        }
+                                                    }}
+                                                    validationText={reasonError}
+                                                    validationTextLevel={reasonError ? ValidationTextLevel.Error : undefined}
                                                     maxLength={100}
                                                 />
                                             </div>
@@ -618,10 +729,10 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                         isOpen={showCancelDialog}
                         onClose={handleCancelDialogClose}
                         escapeExits={true}
-                        title="Unsaved changes?"
+                        title={t("SIMS7Redirects.discardChanges")}
                         templateProps={{
                             template: DialogTemplate.Confirmation,
-                            contentText: "You have unsaved changes that will be lost.",
+                            contentText: t("SIMS7Redirects.discardChangesDescription"),
                             onConfirm: handleCancelConfirm,
                             onCancel: handleCancelDialogClose,
                             cancelText: "Cancel",
