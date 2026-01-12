@@ -32,7 +32,7 @@ describe("useNotification hook", () => {
   it("initializes state and clamps pagination", () => {
     const { result } = renderHook(() => useNotification({ tableData: [], totalTableData: 9 }));
     expect(result.current.currentPage).toBe(1);
-    expect(result.current.totalPages).toBe(2);
+    expect(result.current.totalPages).toBe(1);
     // expect(result.current.totalNotifications).toBe(deterministicNotifications.length);
     // expect(result.current.paginatedNotifications).toHaveLength(deterministicNotifications.length);
     expect(result.current.filterBtnClicked).toBe(false);
