@@ -113,6 +113,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     React.useEffect(() => {
         setReasonError("");
         setDateError("");
+        setIsDirty(false);
     }, [selectedRow, mode]);
 
     const [dateParts, setDateParts] = useState<{ day: string; month: string; year: string }>(() => {
@@ -258,6 +259,11 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     };
 
     const handleSave = () => {
+        // If nothing has changed, just switch to view mode
+        if (!isDirty) {
+            setSidePanelMode('view');
+            return;
+        }
         // If status is 'Reversing' and redirectToNextGen is 'yes', change status to 'Migrated', set redirectToNextGen to 'yes', and clear reasonForChanges
         if (selectedRow.status === 'Reversing' && redirectToNextGen === 'yes') {
             selectedRow.status = 'Migrated';
@@ -523,6 +529,11 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                         </Button>
                                     </div>
                                 )}
+                                {true && (
+                                    //<div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+                                        <Notification status={NotificationStatus.SUCCESSTOAST} title="Changes saved" />
+                                    //</div>
+                                )}
                             </div>
                         )
                         }
@@ -597,6 +608,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     // }}
                                                     onChange={e => {
                                                         setIsDirty(true);
+                                                        setIsDirty(true);
                                                         setReasonForChanges(e.target.value);
                                                         if (!e.target.value.trim()) {
                                                             setReasonError('Reason for changes is required');
@@ -639,6 +651,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                         value={reasonForChanges}
                                                         // onChange={e => setReasonForChanges(e.target.value)}
                                                         onChange={e => {
+                                                            setIsDirty(true);
                                                             setReasonForChanges(e.target.value);
                                                             // if (e.target.value.trim()) {
                                                             //     setReasonError("");
@@ -702,10 +715,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     id="textarea-1"
                                                     value={reasonForChanges}
                                                     onChange={e => {
+                                                        setIsDirty(true);
                                                         setReasonForChanges(e.target.value);
-                                                        // if (e.target.value.trim()) {
-                                                        //     setReasonError("");
-                                                        // }
                                                         if (!e.target.value.trim()) {
                                                             setReasonError('Reason for changes is required');
                                                         } else {
@@ -722,9 +733,9 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                             </div>
                         )}
                     </div>
-                    {showSuccessToast && (
+                    {/* {showSuccessToast && (
                         <Notification status={NotificationStatus.SUCCESSTOAST} title="Changes saved" />
-                    )}
+                    )} */}
                     <Dialog
                         isOpen={showCancelDialog}
                         onClose={handleCancelDialogClose}
