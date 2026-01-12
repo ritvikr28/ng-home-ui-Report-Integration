@@ -113,6 +113,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     React.useEffect(() => {
         setReasonError("");
         setDateError("");
+        setIsDirty(false);
     }, [selectedRow, mode]);
 
     const [dateParts, setDateParts] = useState<{ day: string; month: string; year: string }>(() => {
@@ -597,6 +598,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     // }}
                                                     onChange={e => {
                                                         setIsDirty(true);
+                                                        setIsDirty(true);
                                                         setReasonForChanges(e.target.value);
                                                         if (!e.target.value.trim()) {
                                                             setReasonError('Reason for changes is required');
@@ -639,6 +641,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                         value={reasonForChanges}
                                                         // onChange={e => setReasonForChanges(e.target.value)}
                                                         onChange={e => {
+                                                            setIsDirty(true);
                                                             setReasonForChanges(e.target.value);
                                                             // if (e.target.value.trim()) {
                                                             //     setReasonError("");
@@ -702,10 +705,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     id="textarea-1"
                                                     value={reasonForChanges}
                                                     onChange={e => {
+                                                        setIsDirty(true);
                                                         setReasonForChanges(e.target.value);
-                                                        // if (e.target.value.trim()) {
-                                                        //     setReasonError("");
-                                                        // }
                                                         if (!e.target.value.trim()) {
                                                             setReasonError('Reason for changes is required');
                                                         } else {
