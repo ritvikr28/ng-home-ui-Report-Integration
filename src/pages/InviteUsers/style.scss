@@ -181,14 +181,54 @@
   margin-top: 32px;
 }
 
-/* stylelint-disable-next-line selector-class-pattern */
-.sims7-redirections .reaction-yes .essui-radio__checkmark {
-  transform: translate(-52%, -48%);
+@media only screen and (min-width: 1024px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-52%, -48%);
+  }
 }
 
-/* stylelint-disable-next-line selector-class-pattern */
-.sims7-redirections .reaction-no .essui-radio__checkmark {
-  transform: translate(-48%, -48%);
+@media (min-width: 1400px) and (max-width: 1599px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-52%, -48%);
+  }
+}
+
+@media (min-width: 1800px) and (max-width: 1999px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 1700px) and (max-width: 1799px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 2000px) and (max-width: 2299px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-53%, -51%);
+  }
+}
+
+@media (min-width: 2300px) {
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 2300px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-no .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
 }
 
 .sims7-redirections .essui-reaction-button-group {
@@ -213,6 +253,6 @@
 
 @media only screen and (min-width: 1024px) and (max-width: 1025px) {
   .sims7-redirections .filter-tool-view .dropdown {
-    margin-top: 40px;
+    margin-top: 16px;
   }
 }
