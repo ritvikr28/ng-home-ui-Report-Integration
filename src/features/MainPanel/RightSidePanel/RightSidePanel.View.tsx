@@ -150,7 +150,7 @@ export const RightSidePanelView: (
             </div>
 
             <div>
-              { StaffTTClassView && EventTypeCode !== 'TTNTPer' && (
+              { StaffTTClassView && EventTypeCode !== 'TTNTPer' && BaseGroupId !== '00000000-0000-0000-0000-000000000000' && (
                     <div data-testid="class-view">
                       <Link
                         dataTestId="class-view-button"
