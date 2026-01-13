@@ -156,8 +156,34 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
         setDateParts(partsObj);
     }, [selectedRow]);
 
+    // Helper to check if form is dirty compared to selectedRow
+    const isFormDirty = (redirect: string, date: Date | null, reason: string) => {
+        // For Not migrated, only redirectToNextGen matters
+        if (selectedRow.status === 'Not migrated') {
+            return (redirect !== (selectedRow.status === 'Not migrated' || selectedRow.status === 'Reversing' ? 'no' : 'yes'));
+        }
+        // For other statuses, compare all relevant fields
+        return (
+            redirect !== (selectedRow.status === 'Not migrated' || selectedRow.status === 'Reversing' ? 'no' : 'yes') ||
+            (date && selectedRow.effectiveDate !== '-' && date.toDateString() !== (() => {
+                if (selectedRow.effectiveDate && selectedRow.effectiveDate !== '-') {
+                    const parts = selectedRow.effectiveDate.split(' ');
+                    if (parts.length === 3) {
+                        const [day, monthStr, year] = parts;
+                        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                        const month = months.indexOf(monthStr);
+                        if (month !== -1) {
+                            return new Date(Number(year), month, Number(day)).toDateString();
+                        }
+                    }
+                }
+                return '';
+            })()) ||
+            (reason !== (selectedRow.reasonForChanges || ''))
+        );
+    };
+
     const handleRedirectToNextGenChange = (_e: React.SyntheticEvent<Element, Event>, value: string | number) => {
-        setIsDirty(true);
         const val = value as string;
         setRedirectToNextGen(val);
         // If status is Not migrated and selecting Yes, set effective date to tomorrow
@@ -180,19 +206,11 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                 year: tomorrow.getFullYear().toString()
             });
         }
-        // If toggling back to Migrated (Yes) after previously being Migrated, restore the last effective date
-        // if (val === 'yes' && lastMigratedEffectiveDate) {
-        //     setEffectiveDate(lastMigratedEffectiveDate);
-        //     setDateParts({
-        //         day: lastMigratedEffectiveDate.getDate().toString().padStart(2, '0'),
-        //         month: (lastMigratedEffectiveDate.getMonth() + 1).toString().padStart(2, '0'),
-        //         year: lastMigratedEffectiveDate.getFullYear().toString()
-        //     });
-        // }
+        // Recalculate isDirty
+        setIsDirty(isFormDirty(val, effectiveDate, reasonForChanges));
     };
 
     const handleDateChange = (arg1: any, arg2?: any, arg3?: any) => {
-        setIsDirty(true);
         let day, month, year;
         if (typeof arg1 === 'object' && arg1 !== null && 'day' in arg1 && 'month' in arg1 && 'year' in arg1) {
             day = arg1.day;
@@ -216,6 +234,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
         if (!formattedDay && !formattedMonth && !formattedYear) {
             setEffectiveDate(null);
             setDateError('Date is required');
+            setIsDirty(isFormDirty(redirectToNextGen, null, reasonForChanges));
             return;
         }
         if (
@@ -227,6 +246,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
         ) {
             setEffectiveDate(null);
             setDateError('Invalid Date');
+            setIsDirty(isFormDirty(redirectToNextGen, null, reasonForChanges));
             return;
         }
 
@@ -238,10 +258,12 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
         ) {
             setEffectiveDate(null);
             setDateError('Invalid Date');
+            setIsDirty(isFormDirty(redirectToNextGen, null, reasonForChanges));
             return;
         }
         setEffectiveDate(dateObj);
         setDateError("");
+        setIsDirty(isFormDirty(redirectToNextGen, dateObj, reasonForChanges));
     };
 
     const handleValidateDate = (date: Date) => {
@@ -602,10 +624,10 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     //     setReasonForChanges(e.target.value);
                                                     // }}
                                                     onChange={e => {
-                                                        setIsDirty(true);
-                                                        setIsDirty(true);
-                                                        setReasonForChanges(e.target.value);
-                                                        if (!e.target.value.trim()) {
+                                                        const val = e.target.value;
+                                                        setReasonForChanges(val);
+                                                        setIsDirty(isFormDirty(redirectToNextGen, effectiveDate, val));
+                                                        if (!val.trim()) {
                                                             setReasonError('Reason for changes is required');
                                                         } else {
                                                             setReasonError("");
@@ -646,12 +668,10 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                         value={reasonForChanges}
                                                         // onChange={e => setReasonForChanges(e.target.value)}
                                                         onChange={e => {
-                                                            setIsDirty(true);
-                                                            setReasonForChanges(e.target.value);
-                                                            // if (e.target.value.trim()) {
-                                                            //     setReasonError("");
-                                                            // }
-                                                            if (!e.target.value.trim()) {
+                                                            const val = e.target.value;
+                                                            setReasonForChanges(val);
+                                                            setIsDirty(isFormDirty(redirectToNextGen, effectiveDate, val));
+                                                            if (!val.trim()) {
                                                                 setReasonError('Reason for changes is required');
                                                             } else {
                                                                 setReasonError("");
@@ -710,9 +730,10 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                                                     id="textarea-1"
                                                     value={reasonForChanges}
                                                     onChange={e => {
-                                                        setIsDirty(true);
-                                                        setReasonForChanges(e.target.value);
-                                                        if (!e.target.value.trim()) {
+                                                        const val = e.target.value;
+                                                        setReasonForChanges(val);
+                                                        setIsDirty(isFormDirty(redirectToNextGen, effectiveDate, val));
+                                                        if (!val.trim()) {
                                                             setReasonError('Reason for changes is required');
                                                         } else {
                                                             setReasonError("");
