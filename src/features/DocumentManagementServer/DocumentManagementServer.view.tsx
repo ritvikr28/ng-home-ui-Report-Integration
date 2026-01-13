@@ -507,6 +507,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
         setPrepareDownloadAbortBanner(false);
         setShowDeleteErrorBanner(false);
         setShowErrorBanner(false);
+        setShowBulkDeleteDependencyBanner(false);
         };
 
         useEffect(() => {

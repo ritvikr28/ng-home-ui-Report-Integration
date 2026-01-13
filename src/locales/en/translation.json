@@ -575,7 +575,8 @@
     "oneOrMoreSelectedDocumentsCannotBeDeleted": "One or more selected documents cannot be deleted as they are currently being prepared for download. Please try again later. If the issue persists, please get in touch with our support team.",
     "oneOrMoreSelectedDocumentsCannotBeDownloaded": "One or more selected documents cannot be downloaded as they have already been deleted. Please try again later. If the issue persists, please get in touch with our support team.",
     "deletingDocumentsTemporarilyUnavailable":"Deleting documents temporarily unavailable",
-    "deletingDocumentsTemporarilyUnavailableMessage":"We're currently experiencing a technical issue that's preventing documents from being deleted. You can still download documents. Please try again later. and If the issue persists please get in touch with our support team."
+    "deletingDocumentsTemporarilyUnavailableMessage":"We're currently experiencing a technical issue that's preventing documents from being deleted. You can still download documents. Please try again later. and If the issue persists please get in touch with our support team.",
+    "Protected":"Protected"
   }, 
   "Filter": {
     "heading": "Advanced search",
