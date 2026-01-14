@@ -286,14 +286,14 @@ const SystemStatusAlertsView: React.FC = () => {
               : t("SystemStatus_T.FailedAlertTitleActivate")
           }
           message={
-            <span
-              dangerouslySetInnerHTML={{
-                __html: t("SystemStatus_T.FailedAlertMessage", {
-                  action: selectedAlert?.emailSubscribed ? "unsubscribing to the email alert" : "subscribing to the email alert",
-                }),
-              }}
-            />
-          }
+            <span>
+              {t("SystemStatus_T.FailedAlertMessage", {
+                action: selectedAlert?.emailSubscribed
+                  ? "unsubscribing to the email alert"
+                  : "subscribing to the email alert",
+              })}
+            </span>
+            }
           onClickClose={() => setErrorNote(null)}
         />
       )}
