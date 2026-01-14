@@ -233,11 +233,11 @@ export const BulkInviteErrBanner = ({
   return (
     <>
       <p>
-        {`${t("inviteUsers.unableToInviteUserList")}`}
+        {`${t("invitePerson.unableToInvitePersonList")}`}
       </p>
       <p>&nbsp; • &nbsp; {emails}</p>
       <p>
-        {`${t("inviteUsers.unableToInviteUserListDescription")}`}
+        {`${t("invitePerson.unableToInvitePersonListDescription")}`}
       </p>
     </>
   );

@@ -54,32 +54,32 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
-    const editSelectedOptions: OptionsEntity[] = [
+  const editSelectedOptions: OptionsEntity[] = [
     {
       disabled: false,
-      text: `${t("inviteUsers.sendInvite")}`, 
+      text: `${t("invitePerson.sendInvite")}`,
       value: "SendInvite",
       isShowDivider: false,
       isSelected: false
     }
   ];
 
-  const getTableDataArry = (data:any)=>{
+  const getTableDataArry = (data: any) => {
     let tdata = data
-    if(data.length > 0){
-      tdata = data.map((item:any)=>({
-          ...item,
-          actions: {
+    if (data.length > 0) {
+      tdata = data.map((item: any) => ({
+        ...item,
+        actions: {
           options: [
             {
               disabled: false,
               isSelected: false,
-              text: `${t("inviteUsers.sendInvite")}`,
+              text: `${t("invitePerson.sendInvite")}`,
               value: "SendInvite"
             }
           ]
         }
-        }))
+      }))
     }
     return tdata
   }
@@ -119,7 +119,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     },
     {
       active: false,
-      linkName: `${t("inviteUsers.title")}`,
+      linkName: `${t("invitePerson.title")}`,
       path: "/"
     }
   ];
@@ -133,7 +133,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       columnWidth: "10px"
     },
     {
-      text: `${t("inviteUsers.name")}`,
+      text: `${t("invitePerson.name")}`,
       isShow: true,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
@@ -145,7 +145,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       isColumnSortByDefault: true
     },
     {
-      text: `${t("inviteUsers.email")}`,
+      text: `${t("invitePerson.email")}`,
       isShow: true,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
@@ -156,7 +156,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       columnWidth: "325px"
     },
     {
-      text: `${t("inviteUsers.userType")}`,
+      text: `${t("invitePerson.personType")}`,
       isShow: true,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
@@ -166,7 +166,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       columnWidth: "165px"
     },
     {
-      text: `${t("inviteUsers.invitationStatus")}`,
+      text: `${t("invitePerson.invitationStatus")}`,
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       anyComponent: (propsI: any) => {
@@ -257,7 +257,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
     string,
     React.Dispatch<React.SetStateAction<string>>
-  ] = useState<string>(`${t("inviteUsers.noDataToDisplay")}`);
+  ] = useState<string>(`${t("invitePerson.noDataToDisplay")}`);
   const statusFilterRef = useRef<ISelectedItem>({
     text: InvitationStatusFilterOptions.NotInvited,
     value: "Not invited"
@@ -327,7 +327,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setDataUpdated(false);
         setShowToast(true);
         setSelectedRowItems([]);
-        setToastMessage(`${t("inviteUsers.changesSaved")}`);
+        setToastMessage(`${t("invitePerson.changesSaved")}`);
       });
       setTimeout(() => setShowToast(false), 9000);
     }
@@ -335,7 +335,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
 
   const handleClearSearch: () => void = () => {
     setShowErrorBanner(false);
-    setNoDataTextToDisplay(`${t("inviteUsers.noDataToDisplay")}`);
+    setNoDataTextToDisplay(`${t("invitePerson.noDataToDisplay")}`);
     setSearchTerm("");
     setSearchAndStatusFilter((prev) => ({
       ...prev,
@@ -464,7 +464,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
           onCloseSideNavigationPanel={closeSidebar}
           isOpenSideNavigation={isSidebarOpen}
           defaultSelectedMenu={{
-            text: `${t("inviteUsers.title")}`,
+            text: `${t("invitePerson.title")}`,
             value: window.location.href
           }}
         />
@@ -500,7 +500,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             isBreadCrumbEnable={false}
             isMessageCenterAligned={false}
             isShowAutoSuggest
-            isMobileViewBreadcrumb 
+            isMobileViewBreadcrumb
             onChangeAllCheckBox={() => null}
             isShowFourthElement={false}
             dynamictableIconName={
@@ -512,12 +512,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               columnName: string
             ) => {
               if (
-                columnName === `${t("inviteUsers.email")}` ||
-                columnName === `${t("inviteUsers.name")}`
+                columnName === `${t("invitePerson.email")}` ||
+                columnName === `${t("invitePerson.name")}`
               ) {
                 setshowInvitationConflictBanner(false);
                 const apiColumnName =
-                  columnName === `${t("inviteUsers.name")}`
+                  columnName === `${t("invitePerson.name")}`
                     ? "Forename"
                     : "EmailId";
                 let newDirection = true;
@@ -555,9 +555,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             dynamicTableLoader={isLoader}
             filterDDLOptions={filterOptions}
             isIconRightAligned
-            editSelectedBtnTitle={`${t("inviteUsers.editSelected")}`}
-            headingText={`${t("inviteUsers.title")}`}
-            subHeadingText={`${t("inviteUsers.subTitle")}`}
+            editSelectedBtnTitle={`${t("invitePerson.editSelected")}`}
+            headingText={`${t("invitePerson.title")}`}
+            subHeadingText={`${t("invitePerson.subTitle")}`}
             id="Inviteusers-list"
             filterDDLuseAutoWidth
             filterDDLisSelected
@@ -569,7 +569,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               }));
               setCurrentPage(1);
             }}
-            filterDDLlabel={`${t("inviteUsers.invitationStatus")}`}
+            filterDDLlabel={`${t("invitePerson.invitationStatus")}`}
             filterDDLplaceholder="Select"
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
@@ -585,8 +585,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             paginationOnChange={handlePageChange}
             paginationPage={currentPage}
             paginationMinCountToHideNextPreviousBtn={0}
-            searchHeadingText={`${t("inviteUsers.searchUser")}`}
-            searchPlaceholderText={`${t("inviteUsers.searchByName")}`}
+            searchHeadingText={`${t("invitePerson.searchPerson")}`}
+            searchPlaceholderText={`${t("invitePerson.searchByName")}`}
             firstColHeaderAlign="center"
             searchIsLoader={isSearchLoader}
             isSearchHideClearIcon={
@@ -631,19 +631,19 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             emptyRowType={TableRowType.Info}
             emptyRowResponseCode={ResponseCode.Info}
             emptyRowResponseMessage={noDataTextToDisplay}
-            secondaryButtonTitle={`${t("inviteUsers.cancel")}`}
+            secondaryButtonTitle={`${t("invitePerson.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
-            tableBodyData={ getTableDataArry(usersTableData) || []}
+            tableBodyData={getTableDataArry(usersTableData) || []}
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
             tableHeadersData={getTableHeadersData}
             tableLastColumnWidth="10px"
             editSelectedOptions={editSelectedOptions}
-            onEditSelectedBtnClick={() => {}}
+            onEditSelectedBtnClick={() => { }}
             onEditSelectedOverFlowMenu={(e: any) => {
-              if (e.target?.innerHTML === `${t("inviteUsers.sendInvite")}`) {
+              if (e.target?.innerHTML === `${t("invitePerson.sendInvite")}`) {
                 if (selectedCheckBoxIds.length === 0) {
                   setShowDialog(true);
                 } else {
@@ -659,17 +659,17 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               setShowConfirmDialog(false);
             }}
             templatePropsConfirmation={{
-              cancelText: `${t("inviteUsers.cancel")}`,
+              cancelText: `${t("invitePerson.cancel")}`,
               contentText:
                 source === "Bulk"
                   ? ""
-                  : `${t("inviteUsers.inviteUser?Description")}`,
+                  : `${t("invitePerson.invitePerson?Description")}`,
               isNotificationanner: source === "Bulk",
-              notificationTitle: `${t("inviteUsers.sendInviteDescription", {
+              notificationTitle: `${t("invitePerson.sendInviteDescription", {
                 NoOfusers: selectedCheckBoxIds.length
               })}`,
               notificationStatus: NotificationStatus.WARNING,
-              okText: `${t("inviteUsers.save")}`,
+              okText: `${t("invitePerson.save")}`,
               onCancel: (): void => {
                 setShowConfirmDialog(false);
               },
@@ -678,13 +678,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 const requestBody: IRequestBodyType = {
                   externalId: selectedRowItems.map((item) => item?.id)
                 };
-                
+
                 gtmAnalytics.pushEvent({
                   event: "change_saved",
                   changeType: "Invite Users",
                   changeValue: selectedRowItems.length.toString()
                 });
-                                
+
                 handleSendInvite({
                   requestBody,
                   setLoader,
@@ -694,8 +694,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               },
               template: DialogTemplate.Confirmation
             }}
-            titleConfirmation={`${t("inviteUsers.inviteUser?")}`}
-            dynamicTableLoaderText={`${t("inviteUsers.pleaseWaitLoader")}`}
+            titleConfirmation={`${t("invitePerson.inviteConsumer?")}`}
+            dynamicTableLoaderText={`${t("invitePerson.pleaseWaitLoader")}`}
             toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
             toastNotificationTitle={toastMessage}
             showToastNotification={showToast}
@@ -717,34 +717,34 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               {
                 isShow: !!showErrorBanner,
                 variant: "warning",
-                title: `${t("inviteUsers.informationUnavailable")}`,
-                message: `${t("inviteUsers.technicalIssue")}`,
+                title: `${t("invitePerson.informationUnavailable")}`,
+                message: `${t("invitePerson.technicalIssue")}`,
                 autoclose: true
               },
               {
                 isShow: !!showInvitationConflictBanner,
                 variant: "warning",
-                title: `${t("inviteUsers.invitationConflict")}`,
-                message: `${t("inviteUsers.invitationConflictDescription")}`,
+                title: `${t("invitePerson.invitationConflict")}`,
+                message: `${t("invitePerson.invitationConflictDescription")}`,
                 autoclose: true
               },
               {
                 isShow: !!showInviteErrBanner && source !== "Bulk",
                 variant: "warning",
-                title: `${t("inviteUsers.unableToSave")}`,
-                message: `${t("inviteUsers.unableToSaveDescription")}`,
+                title: `${t("invitePerson.unableToSave")}`,
+                message: `${t("invitePerson.unableToSaveDescription")}`,
                 autoclose: true
               },
               {
                 isShow: !!showInviteErrBanner && source === "Bulk",
                 variant: "warning",
-                title: `${t("inviteUsers.unableToInvite")}`,
+                title: `${t("invitePerson.unableToInvite")}`,
                 message: BulkInviteErrBanner({ selectedRowItems }),
                 autoclose: true
               }
             ]}
             onClickOverflowItem={(e: any, selectedRow: any) => {
-              if (e.target?.innerHTML === `${t("inviteUsers.sendInvite")}`) {
+              if (e.target?.innerHTML === `${t("invitePerson.sendInvite")}`) {
                 setSource("Overflow");
                 setShowConfirmDialog(true);
                 setSelectedRowItems([selectedRow]);

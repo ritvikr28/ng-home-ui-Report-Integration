@@ -296,7 +296,7 @@ const simsIdAdminQuickLink: () => JSX.Element = () => {
             }}
             style={{ cursor: "pointer" }}
           >
-            {t("quickLink.inviteUsers")}
+            {t("quickLink.invitePerson")}
           </div>
         )}
       </div>
