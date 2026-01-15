@@ -375,7 +375,7 @@
     "email": "E-bost",
     "userType": "Math defnyddiwr",
     "invitationStatus": "Statws gwahoddiad",
-    "invitationRequestDate": "Invitation request date",
+    "inviteRequestDate": "Invitation request date",
     "noDataToDisplay": "Dim data i'w arddangos",
     "inviteUser?": "Gwahodd defnyddiwr?",
     "inviteUser?Description": "Anfonir gwahoddiad i'r defnyddiwr hwn i gael mynediad i'r system.",
