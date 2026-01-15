@@ -450,7 +450,7 @@
     "email": "Email",
     "userType": "User type",
     "invitationStatus": "Invitation status",
-    "invitationRequestDate": "Invitation request date",
+    "inviteRequestDate": "Invitation request date",
     "noDataToDisplay": "No data to display",
     "inviteUser?": "Invite user?",
     "inviteUser?Description": "This user will be sent an invite to access the system.",
