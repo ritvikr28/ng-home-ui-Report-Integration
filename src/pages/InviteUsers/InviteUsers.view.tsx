@@ -527,11 +527,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 columnName === `${t("inviteUsers.inviteRequestDate")}`
               ) {
                 setshowInvitationConflictBanner(false);
-                const apiColumnName =
-                  columnName === `${t("inviteUsers.name")}`
-                    ? "Forename" :
-                    columnName === `${t("inviteUsers.inviteRequestDate")}`
-                    ? "RequestDate" : "EmailId";
+                let apiColumnName = "EmailId";
+                if (columnName === `${t("inviteUsers.name")}`) {
+                    apiColumnName = "Forename";
+                }
+                else if (columnName === `${t("inviteUsers.inviteRequestDate")}`) {
+                    apiColumnName = "RequestDate";
+                }
                 let newDirection = true;
 
                 if (sortBy === apiColumnName) {
