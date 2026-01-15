@@ -532,7 +532,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                     apiColumnName = "Forename";
                 }
                 else if (columnName === `${t("inviteUsers.inviteRequestDate")}`) {
-                    apiColumnName = "RequestDate";
+                    apiColumnName = "InviteRequestDate";
                 }
                 let newDirection = true;
 
