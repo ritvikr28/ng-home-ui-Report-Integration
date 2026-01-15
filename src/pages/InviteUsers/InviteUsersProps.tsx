@@ -133,7 +133,7 @@ export interface IInviteUserDetails {
   externalId: string;
   forename: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null;
+  inviteRequestDate: Date | null | undefined;
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
