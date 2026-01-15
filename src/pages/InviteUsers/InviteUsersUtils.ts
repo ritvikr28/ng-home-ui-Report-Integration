@@ -175,7 +175,7 @@ export const inviteUsersSorting = async (
     case "E-bost":
       apiColumnName = "EmailId";
       break;
-    case "Invite request date":
+    case "Invitation request date":
       apiColumnName = "InviteRequestDate";
       break;
     default:
