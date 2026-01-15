@@ -122,3 +122,5 @@ cypress/videos
 storybook-static/
 app/public/assets/images/spritemap.svg
 
+/.vs
+/src/.vs
