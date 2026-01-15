@@ -623,7 +623,7 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             emailId: undefined,
             userType: undefined,
             invitationStatus: undefined,
-            inviteRequestDate: undefined
+            inviteRequestDate: null
           }
         ]
       }
@@ -642,7 +642,7 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
     expect(result[0].emailId).toBeUndefined();
     expect(result[0].userType).toBeUndefined();
     expect(result[0].invitationStatus).toBeUndefined();
-    expect(result[0].inviteRequestDate).toBeUndefined();
+    expect(result[0].inviteRequestDate).toBe(null);
   });
 
   it("should map actions.options correctly", async () => {
