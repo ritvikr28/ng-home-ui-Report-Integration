@@ -20,13 +20,20 @@ const mockCheckBox = jest.fn(({ id, label, onChange, value, dataTestId }: any) =
     </div>
 ));
 
+
+jest.mock("@essnextgen/ui-kit", () => ({
+    FormLabel: (props: any) => mockFormLabel(props),
+    CheckBox: (props: any) => mockCheckBox(props),
+    DateInput: (props: any) => mockDateInput(props),
+}));
+
 const mockDateInput = jest.fn(({ id, dataTestId, day, month, year }: any) => (
     <div data-testid={dataTestId} id={id}>
         <input
             data-testid="test-id"
             type="text"
             value={`${day || ""}/${month || ""}/${year || ""}`}
-            onChange={() => {}}
+            onChange={() => { }}
         />
     </div>
 ));
@@ -48,12 +55,23 @@ describe("DialogContent", () => {
         setStartDate: mockSetStartDate,
         endDate: "",
         setEndDate: mockSetEndDate,
-        status: [] as string[],
-        setStatus: mockSetStatus,
-        priority: [] as string[],
-        setPriority: mockSetPriority,
         startDateError: "",
+        status: [] as string[],
+        setStatus: jest.fn(),
+        priority: [] as string[],
+        setPriority: jest.fn(),
     };
+    // const defaultProps = {
+    //     startDate: "",
+    //     setStartDate: mockSetStartDate,
+    //     endDate: "",
+    //     setEndDate: mockSetEndDate,
+    //     status: [] as string[],
+    //     setStatus: mockSetStatus,
+    //     priority: [] as string[],
+    //     setPriority: mockSetPriority,
+    //     startDateError: "",
+    // };
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -963,6 +981,48 @@ describe("DialogContent", () => {
             const { container } = render(<DialogContent {...defaultProps} />);
             const prioritySection = container.querySelector(".priority-checkboxes")?.parentElement;
             expect(prioritySection).toHaveStyle({ marginTop: "24px" });
+        });
+    });
+
+
+    describe("DialogContent", () => {
+        // const mockSetStartDate = jest.fn();
+        // const mockSetEndDate = jest.fn();
+
+        // const defaultProps = {
+        //     startDate: "",
+        //     setStartDate: mockSetStartDate,
+        //     endDate: "",
+        //     setEndDate: mockSetEndDate,
+        //     startDateError: "",
+        //     status: [] as string[],
+        //     setStatus: jest.fn(),
+        //     priority: [] as string[],
+        //     setPriority: jest.fn(),
+        // };
+
+        beforeEach(() => {
+            jest.clearAllMocks();
+            jest.useFakeTimers();
+            document.body.innerHTML = "";
+        });
+
+        afterEach(() => {
+            jest.runOnlyPendingTimers();
+            jest.useRealTimers();
+        });
+
+        it("renders all main labels and checkboxes", () => {
+            render(<DialogContent {...defaultProps} />);
+            expect(screen.getByText("Status")).toBeInTheDocument();
+            expect(screen.getByText("Priority")).toBeInTheDocument();
+            expect(screen.getByText("Start date")).toBeInTheDocument();
+            expect(screen.getByText("End date")).toBeInTheDocument();
+            expect(screen.getByTestId("status-read")).toBeInTheDocument();
+            expect(screen.getByTestId("status-unread")).toBeInTheDocument();
+            expect(screen.getByTestId("priority-low")).toBeInTheDocument();
+            expect(screen.getByTestId("priority-medium")).toBeInTheDocument();
+            expect(screen.getByTestId("priority-high")).toBeInTheDocument();
         });
     });
 });
