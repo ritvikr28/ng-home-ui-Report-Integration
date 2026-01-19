@@ -187,6 +187,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       headerTxtTrunctLength: 50,
       isColumnSorting: false,
       columnWidth: "206px"
+    },
+    {
+      text: `${t("inviteUsers.inviteRequestDate")}`,
+      isShow: true,
+      showValAs: ShowValAs.Text,
+      isTextTruncate: false,
+      isHeaderTextTruncate: false,
+      headerTxtTrunctLength: 50,
+      isColumnSorting: true,
+      columnWidth: "165px"
     }
   ];
 
@@ -250,8 +260,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   }>({
     searchText: "",
     selectedStatus: {
-      text: InvitationStatusFilterOptions.NotInvited,
-      value: "Not invited"
+      text: InvitationStatusFilterOptions.All,
+      value: "All"
     }
   });
   const [noDataTextToDisplay, setNoDataTextToDisplay]: [
@@ -259,8 +269,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>(`${t("invitePerson.noDataToDisplay")}`);
   const statusFilterRef = useRef<ISelectedItem>({
-    text: InvitationStatusFilterOptions.NotInvited,
-    value: "Not invited"
+    text: InvitationStatusFilterOptions.All,
+    value: "All"
   });
 
   useEffect(() => {
@@ -512,14 +522,18 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               columnName: string
             ) => {
               if (
-                columnName === `${t("invitePerson.email")}` ||
-                columnName === `${t("invitePerson.name")}`
+                columnName === `${t("inviteUsers.email")}` ||
+                columnName === `${t("inviteUsers.name")}` ||
+                columnName === `${t("inviteUsers.inviteRequestDate")}`
               ) {
                 setshowInvitationConflictBanner(false);
-                const apiColumnName =
-                  columnName === `${t("invitePerson.name")}`
-                    ? "Forename"
-                    : "EmailId";
+                let apiColumnName = "EmailId";
+                if (columnName === `${t("inviteUsers.name")}`) {
+                    apiColumnName = "Forename";
+                }
+                else if (columnName === `${t("inviteUsers.inviteRequestDate")}`) {
+                    apiColumnName = "InviteRequestDate";
+                }
                 let newDirection = true;
 
                 if (sortBy === apiColumnName) {
@@ -573,8 +587,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             filterDDLplaceholder="Select"
             filterDDLselectedItem={
               searchAndStatusFilter?.selectedStatus || {
-                text: InvitationStatusFilterOptions.NotInvited,
-                value: "Not invited"
+                text: InvitationStatusFilterOptions.All,
+                value: "All"
               }
             }
             filterDDLdisabled={false}
@@ -634,7 +648,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             secondaryButtonTitle={`${t("invitePerson.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
-            tableBodyData={getTableDataArry(usersTableData) || []}
+            tableBodyData={ getTableDataArry(usersTableData) || [] }
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"

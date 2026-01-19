@@ -55,7 +55,8 @@ describe("InviteUsersUtils", () => {
                 surname: "Doe",
                 emailId: "john.doe@example.com",
                 userType: "Admin",
-                invitationStatus: "Pending"
+                invitationStatus: "Pending",
+                inviteRequestDate: undefined
               }
             ]
           }
@@ -86,6 +87,7 @@ describe("InviteUsersUtils", () => {
           emailId: "john.doe@example.com",
           userType: "Admin",
           invitationStatus: "Pending",
+          inviteRequestDate: undefined,
           actions: {
             options: [
               {
@@ -141,7 +143,8 @@ describe("fetchInviteUserDetails", () => {
               surname: "Smith",
               emailId: "jane.smith@example.com",
               userType: "User",
-              invitationStatus: "Invitation conflict"
+              invitationStatus: "Invitation conflict",
+              inviteRequestDate: undefined
             }
           ]
         }
@@ -172,6 +175,7 @@ describe("fetchInviteUserDetails", () => {
         emailId: "jane.smith@example.com",
         userType: "User",
         invitationStatus: "Invitation conflict",
+        inviteRequestDate: undefined,
         actions: {
           options: [
             {
@@ -232,7 +236,8 @@ describe("fetchInviteUserDetails", () => {
               surname: "",
               emailId: "Work main email address is missing",
               userType: "User",
-              invitationStatus: "Pending"
+              invitationStatus: "Pending",
+              inviteRequestDate: undefined
             }
           ]
         }
@@ -434,7 +439,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "",
             emailId: "Work main email address is missing",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           },
           {
             externalId: "2",
@@ -442,7 +448,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "Smith",
             emailId: "jane.smith@example.com",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -470,7 +477,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "Email",
             emailId: "Work main email address is missing",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -497,7 +505,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "User",
             emailId: "accepted@example.com",
             userType: "User",
-            invitationStatus: "Accepted"
+            invitationStatus: "Accepted",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -525,7 +534,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "User",
             emailId: "conflict@example.com",
             userType: "User",
-            invitationStatus: "Invitation conflict"
+            invitationStatus: "Invitation conflict",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -553,7 +563,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "Email",
             emailId: "Work main email address is missing",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -581,7 +592,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "Last",
             emailId: "first.last@example.com",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -610,7 +622,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: undefined,
             emailId: undefined,
             userType: undefined,
-            invitationStatus: undefined
+            invitationStatus: undefined,
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -629,6 +642,7 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
     expect(result[0].emailId).toBeUndefined();
     expect(result[0].userType).toBeUndefined();
     expect(result[0].invitationStatus).toBeUndefined();
+    expect(result[0].inviteRequestDate).toBeUndefined();
   });
 
   it("should map actions.options correctly", async () => {
@@ -642,7 +656,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "Test",
             emailId: "action.test@example.com",
             userType: "User",
-            invitationStatus: "Pending"
+            invitationStatus: "Pending",
+            inviteRequestDate: undefined
           }
         ]
       }
@@ -805,6 +820,7 @@ describe("handleSelectedUserData", () => {
         surname: "Test",
         userType: "User",
         invitationStatus: "Pending",
+        inviteRequestDate: undefined,
         actions: { options: [] },
         isShowActionBtn: true,
         isShowCheckBox: true
@@ -818,6 +834,7 @@ describe("handleSelectedUserData", () => {
         surname: "Test",
         userType: "User",
         invitationStatus: "Pending",
+        inviteRequestDate: undefined,
         actions: { options: [] },
         isShowActionBtn: true,
         isShowCheckBox: true
