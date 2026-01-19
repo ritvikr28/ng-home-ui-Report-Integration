@@ -332,7 +332,7 @@
     "quicklinkTableColumStarred": "Starred",
     "quicklinkseeall": "See all",
     "classview": "Class View",
-    "inviteUsers": "Invite Users"
+    "invitePerson": "Invite Users"
   },
   "welcomePage": {
     "himsg": "Hi",
@@ -478,18 +478,18 @@
     "save": "Save",
     "pleaseWaitLoader": "Please wait"
   },
-  "SIMS7Redirects":{
-    "title" : "SIMS 7 Redirects",
-    "subTitle" : "Manage modules that open directly in Next Gen from SIMS 7. Data will remain synced for migrated modules. Please ensure relevant users have valid NG accounts and appropriate access. More modules will be available for configuration soon.",
-    "secondSubheadingwithLink" :"Link for more details placeholder",
+  "SIMS7Redirects": {
+    "title": "SIMS 7 Redirects",
+    "subTitle": "Manage modules that open directly in Next Gen from SIMS 7. Data will remain synced for migrated modules. Please ensure relevant users have valid NG accounts and appropriate access. More modules will be available for configuration soon.",
+    "secondSubheadingwithLink": "Link for more details placeholder",
     "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name",
-    "emptyStateMsg":"No SIMS7 Redirect entries found.",
-    "emptyRowResponseMessage":"No data to display",
-    "emptyFilterMessage":"No SIMS7 Redirect entries found for selected filters.",
-    "discardChanges":"Discard changes?",
-    "discardChangesDescription":"You have unsaved changes that will be lost."
+    "emptyStateMsg": "No SIMS7 Redirect entries found.",
+    "emptyRowResponseMessage": "No data to display",
+    "emptyFilterMessage": "No SIMS7 Redirect entries found for selected filters.",
+    "discardChanges": "Discard changes?",
+    "discardChangesDescription": "You have unsaved changes that will be lost."
   },
-  "HomePageForSimsConnectedNormalUser": {
+  "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Welcome to SIMS",
     "needAccessToSimsNextGen": "Need access to SIMS Next Gen?",
     "contactYourAdministrator": "Contact your administrator",

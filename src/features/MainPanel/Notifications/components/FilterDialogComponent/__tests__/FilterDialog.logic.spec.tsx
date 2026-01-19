@@ -490,3 +490,154 @@ describe("FilterDialogLogic", () => {
         });
     });
 });
+
+describe("startDateError logic", () => {
+    it("should set startDateError to 'startDateRequired' if endDate is set but startDate is empty", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ endDate: "2024-12-31" }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        // startDate is empty, endDate is set
+        // startDateError should be "startDateRequired"
+        expect(mockFilterDialogView).toHaveBeenLastCalledWith(
+            expect.objectContaining({ startDateError: "startDateRequired" })
+        );
+    });
+
+    it("should clear startDateError if both startDate and endDate are set", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ startDate: "2024-01-01", endDate: "2024-12-31" }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        expect(mockFilterDialogView).toHaveBeenLastCalledWith(
+            expect.objectContaining({ startDateError: "" })
+        );
+    });
+
+    it("should clear startDateError if neither startDate nor endDate are set", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{}}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        expect(mockFilterDialogView).toHaveBeenLastCalledWith(
+            expect.objectContaining({ startDateError: "" })
+        );
+    });
+
+    it("should not call onApply if startDateError is set", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ endDate: "2024-12-31" }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        fireEvent.click(screen.getByTestId("apply-btn"));
+        expect(mockOnApply).not.toHaveBeenCalled();
+        expect(mockSetFilterBtnClicked).not.toHaveBeenCalled();
+    });
+});
+
+describe("state setters from view", () => {
+    it("should update status when setStatus is called from view", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{}}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        // get the last call's props
+        const lastProps = mockFilterDialogView.mock.calls[mockFilterDialogView.mock.calls.length - 1][0];
+        lastProps.setStatus(["read", "unread"]);
+        // re-render to reflect state change
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ status: ["read", "unread"] }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        const allStatuses = screen.getAllByTestId("status");
+        expect(allStatuses[allStatuses.length - 1]).toHaveTextContent(JSON.stringify(["read", "unread"]));
+    });
+
+    it("should update priority when setPriority is called from view", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{}}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        const lastProps = mockFilterDialogView.mock.calls[mockFilterDialogView.mock.calls.length - 1][0];
+        lastProps.setPriority(["high"]);
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ priority: ["high"] }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        const allPriorities = screen.getAllByTestId("priority");
+        expect(allPriorities[allPriorities.length - 1]).toHaveTextContent(JSON.stringify(["high"]));
+    });
+
+    it("should update startDate and endDate when setStartDate/setEndDate are called from view", () => {
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{}}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        const lastProps = mockFilterDialogView.mock.calls[mockFilterDialogView.mock.calls.length - 1][0];
+        lastProps.setStartDate("2024-01-01");
+        lastProps.setEndDate("2024-12-31");
+        render(
+            <FilterDialogLogic
+                setFilterBtnClicked={mockSetFilterBtnClicked}
+                filters={{ startDate: "2024-01-01", endDate: "2024-12-31" }}
+                onApply={mockOnApply}
+                onClear={mockOnClear}
+            />
+        );
+        const allStartDates = screen.getAllByTestId("start-date");
+        const allEndDates = screen.getAllByTestId("end-date");
+        expect(allStartDates[allStartDates.length - 1]).toHaveTextContent("2024-01-01");
+        expect(allEndDates[allEndDates.length - 1]).toHaveTextContent("2024-12-31");
+    });
+});
+
+describe("filters prop defaulting", () => {
+    it("should not throw if filters prop is omitted", () => {
+        expect(() =>
+            render(
+                <FilterDialogLogic
+                    setFilterBtnClicked={mockSetFilterBtnClicked}
+                    filters={{}} // Provide default empty filters
+                    onApply={mockOnApply}
+                    onClear={mockOnClear}
+                />
+            )
+        ).not.toThrow();
+    });
+});

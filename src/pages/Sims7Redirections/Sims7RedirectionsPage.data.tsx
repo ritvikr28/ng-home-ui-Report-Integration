@@ -1,4 +1,4 @@
-import { ShowValAs, TagColor, Link, Tooltip } from "@essnextgen/ui-kit";
+import { ShowValAs, TagColor, Tooltip } from "@essnextgen/ui-kit";
 
 export const sims7RedirectionsTableHeaders = [
     {
@@ -26,24 +26,24 @@ export const sims7RedirectionsTableHeaders = [
                 return (
                     <Tooltip content={<span>{value}</span>}>
                         <span>
-                            <Link
+                            <a
                                 href={`https://example.com/module/${encodeURIComponent(value)}`}
                                 target="_blank"
                                 className="truncated-link"
+                                rel="noopener noreferrer"
                             >
                                 {displayText}
-                            </Link>
+                            </a>
                         </span>
                     </Tooltip>
                 );
             }
             return (
-                <Link
-                    href={`https://example.com/module/${encodeURIComponent(value)}`}
+                <a href={`https://example.com/module/${encodeURIComponent(value)}`}
                     target="_blank"
-                >
+                    rel="noopener noreferrer">
                     {displayText}
-                </Link>
+                </a>
             );
         }
     },

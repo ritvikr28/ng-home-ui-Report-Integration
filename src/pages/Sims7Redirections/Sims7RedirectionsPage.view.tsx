@@ -10,7 +10,6 @@ import {
     IconColor,
     NotificationStatus,
     ResponseCode,
-    Link,
     Breadcrumbs,
     useMediaQuery,
     IBreadcrumbLink,
@@ -255,9 +254,9 @@ export const Sims7RedirectionsPage = () => {
                     isShowSecondSubheadingWithLink
                     isFullWidthForSecondSubHeading
                     secondSubheadingwithLink={
-                        <Link href="https://example.com" target="_blank" >
+                        <a href="https://example.com" target="_blank" rel="noopener noreferrer">
                             {`${t("SIMS7Redirects.secondSubheadingwithLink")}`}
-                        </Link>
+                        </a>
                     }
                     id="controlled-list"
                     isBreadCrumbEnable={false}

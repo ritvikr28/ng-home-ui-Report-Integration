@@ -23,16 +23,16 @@ const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
     <Dialog
       dataTestId="test-id"
       id="invite-user-element-id"
-      title={`${t("inviteUsers.noItemsSelected")}`}
+      title={`${t("invitePerson.noItemsSelected")}`}
       onClose={() => setShowDialog(false)}
       className="invite-user-dialog-footer"
     >
       <DialogContent>
-        {`${t("inviteUsers.selectAtLeastOneItem")}`}
+        {`${t("invitePerson.selectAtLeastOneItem")}`}
       </DialogContent>
       <DialogFooter>
         <Button dataTestId="close-btn" onClick={() => setShowDialog(false)}>
-          {`${t("inviteUsers.okay")}`}
+          {`${t("invitePerson.okay")}`}
         </Button>
       </DialogFooter>
     </Dialog>

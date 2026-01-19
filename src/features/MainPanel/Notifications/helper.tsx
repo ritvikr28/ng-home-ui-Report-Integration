@@ -93,7 +93,14 @@ export const getNotificationTableHeadersData = (
       showValAs: ShowValAs.CustomeComponent,
       columnWidth: "129px",
       anyComponent: (e: any) => {
-        const item = JSON.parse(e);
+        // const item = JSON.parse(e);
+        if (!e || typeof e !== "string") return <div />;
+        let item: any;
+        try {
+          item = JSON.parse(e);
+        } catch {
+          return <div />;
+        }
         return (
           <>
             {/* eslint-disable jsx-a11y/anchor-is-valid */}
@@ -110,7 +117,7 @@ export const getNotificationTableHeadersData = (
               View
             </Link>
           </>
-        )
+        );
       }
     }
   ];
@@ -304,7 +311,7 @@ export const generateNotificationData = (): {
       iconName: hasIcon ? "chat" : undefined
     });
   }
-  
+
   notifications.sort((a, b) => {
     const dateA = new Date(a.DateReceived);
     const dateB = new Date(b.DateReceived);

@@ -54,29 +54,30 @@ jest.mock("../dialog-helper", () => ({
     )),
 }));
 
-describe("FilterDialogView", () => {
-    const mockSetStatus = jest.fn();
-    const mockSetPriority = jest.fn();
-    const mockSetStartDate = jest.fn();
-    const mockSetEndDate = jest.fn();
-    const mockOnApply = jest.fn();
-    const mockOnClear = jest.fn();
-    const mockOnClose = jest.fn();
+const mockSetStatus = jest.fn();
+const mockSetPriority = jest.fn();
+const mockSetStartDate = jest.fn();
+const mockSetEndDate = jest.fn();
+const mockOnApply = jest.fn();
+const mockOnClear = jest.fn();
+const mockOnClose = jest.fn();
 
-    const defaultProps = {
-        status: ["read"],
-        setStatus: mockSetStatus,
-        priority: ["high"],
-        setPriority: mockSetPriority,
-        startDate: "2024-01-01",
-        setStartDate: mockSetStartDate,
-        endDate: "2024-12-31",
-        setEndDate: mockSetEndDate,
-        startDateError: "",
-        onApply: mockOnApply,
-        onClear: mockOnClear,
-        onClose: mockOnClose,
-    };
+const defaultProps = {
+    status: ["read"],
+    setStatus: mockSetStatus,
+    priority: ["high"],
+    setPriority: mockSetPriority,
+    startDate: "2024-01-01",
+    setStartDate: mockSetStartDate,
+    endDate: "2024-12-31",
+    setEndDate: mockSetEndDate,
+    startDateError: "",
+    onApply: mockOnApply,
+    onClear: mockOnClear,
+    onClose: mockOnClose,
+};
+
+describe("FilterDialogView", () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
@@ -97,7 +98,7 @@ describe("FilterDialogView", () => {
         it("should render dialog with correct props", () => {
             render(<FilterDialogView {...defaultProps} />);
             const dialog = screen.getByTestId("test-id");
-            
+
             expect(dialog).toHaveClass("dialog-class");
             expect(dialog).toHaveAttribute("id", "element-id");
             expect(dialog).toHaveAttribute("data-testid", "test-id");
@@ -111,7 +112,7 @@ describe("FilterDialogView", () => {
         it("should render Content component from dialog-helper with correct props", () => {
             render(<FilterDialogView {...defaultProps} />);
             const MockContent = jest.mocked(DialogHelper.DialogContent);
-            
+
             expect(MockContent).toHaveBeenCalledWith(
                 expect.objectContaining({
                     startDate: "2024-01-01",
@@ -151,12 +152,12 @@ describe("FilterDialogView", () => {
             render(<FilterDialogView {...defaultProps} />);
             const dialog = screen.getByTestId("test-id");
             expect(dialog).toHaveAttribute("data-is-open", "true");
-            
+
             const closeTrigger = screen.getByTestId("dialog-close-trigger");
             fireEvent.click(closeTrigger);
-            
+
             expect(mockOnClose).toHaveBeenCalledTimes(1);
-            
+
             const dialogMock = mockDialog as unknown as jest.Mock;
             const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
             expect(lastCall[0].isOpen).toBe(false);
@@ -168,11 +169,11 @@ describe("FilterDialogView", () => {
         it("should call onApply and set isDialogOpen to false when Apply button is clicked", () => {
             render(<FilterDialogView {...defaultProps} />);
             const applyButton = screen.getByTestId("apply-btn");
-            
+
             fireEvent.click(applyButton);
-            
+
             expect(mockOnApply).toHaveBeenCalledTimes(1);
-            
+
             const dialogMock = mockDialog as unknown as jest.Mock;
             const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
             expect(lastCall[0].isOpen).toBe(false);
@@ -183,9 +184,9 @@ describe("FilterDialogView", () => {
         it("should call onClear when Clear all button is clicked", () => {
             render(<FilterDialogView {...defaultProps} />);
             const clearButton = screen.getByTestId("clear-all-btn");
-            
+
             fireEvent.click(clearButton);
-            
+
             expect(mockOnClear).toHaveBeenCalledTimes(1);
         });
 
@@ -193,9 +194,9 @@ describe("FilterDialogView", () => {
             render(<FilterDialogView {...defaultProps} />);
             const clearButton = screen.getByTestId("clear-all-btn");
             const dialog = screen.getByTestId("test-id");
-            
+
             fireEvent.click(clearButton);
-            
+
             expect(mockOnClear).toHaveBeenCalledTimes(1);
             expect(dialog).toHaveAttribute("data-is-open", "true");
             expect(mockOnClose).not.toHaveBeenCalled();
@@ -218,10 +219,10 @@ describe("FilterDialogView", () => {
                 onClear: jest.fn(),
                 onClose: jest.fn(),
             };
-            
+
             render(<FilterDialogView {...customProps} />);
             const MockContent = jest.mocked(DialogHelper.DialogContent);
-            
+
             expect(MockContent).toHaveBeenCalledWith(
                 expect.objectContaining({
                     startDate: "2023-06-01",
@@ -244,5 +245,27 @@ describe("FilterDialogView", () => {
             const { container } = render(<FilterDialogView {...defaultProps} />);
             expect(container.firstChild).toBeInTheDocument();
         });
+    });
+});
+
+describe("handleApply with startDateError", () => {
+    it("should NOT call onApply or close dialog if startDateError is present", () => {
+        // const mockOnApply = jest.fn(); // Define mockOnApply in this scope
+        const propsWithError = {
+            ...defaultProps,
+            onApply: mockOnApply, // Pass the mock function to props
+            startDateError: "Some error"
+        };
+        render(<FilterDialogView {...propsWithError} />);
+        const applyButton = screen.getByTestId("apply-btn");
+
+        fireEvent.click(applyButton);
+
+        expect(mockOnApply).not.toHaveBeenCalled();
+
+        // Dialog should remain open
+        const dialogMock = mockDialog as unknown as jest.Mock;
+        const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
+        expect(lastCall[0].isOpen).toBe(true);
     });
 });
