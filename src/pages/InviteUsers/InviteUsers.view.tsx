@@ -189,7 +189,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       columnWidth: "206px"
     },
     {
-      text: `${t("inviteUsers.inviteRequestDate")}`,
+      text: `${t("invitePerson.inviteRequestDate")}`,
       isShow: true,
       showValAs: ShowValAs.Text,
       isTextTruncate: false,
@@ -522,16 +522,16 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               columnName: string
             ) => {
               if (
-                columnName === `${t("inviteUsers.email")}` ||
-                columnName === `${t("inviteUsers.name")}` ||
-                columnName === `${t("inviteUsers.inviteRequestDate")}`
+                columnName === `${t("invitePerson.email")}` ||
+                columnName === `${t("invitePerson.name")}` ||
+                columnName === `${t("invitePerson.inviteRequestDate")}`
               ) {
                 setshowInvitationConflictBanner(false);
                 let apiColumnName = "EmailId";
-                if (columnName === `${t("inviteUsers.name")}`) {
+                if (columnName === `${t("invitePerson.name")}`) {
                     apiColumnName = "Forename";
                 }
-                else if (columnName === `${t("inviteUsers.inviteRequestDate")}`) {
+                else if (columnName === `${t("invitePerson.inviteRequestDate")}`) {
                     apiColumnName = "InviteRequestDate";
                 }
                 let newDirection = true;
