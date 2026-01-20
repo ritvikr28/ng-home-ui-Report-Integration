@@ -20,7 +20,7 @@ export interface SyncDataViewProps {
   syncDataStatus: string; // Receive the status as a prop
 }
 
-export const FetchSyncStatus = async (
+export const FetchSyncStatus: (handleException: () => void, history: any) => Promise<ISchoolDetailsDRApiResponse | null> = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory>
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
@@ -28,7 +28,7 @@ export const FetchSyncStatus = async (
     const schoolData: ISchoolNameDataResponse | null =
       await useFetchSchoolNameData();
     const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-    const orgId = getUserOrganisation();
+    const orgId : string = getUserOrganisation();
 
     const response: AxiosResponse<ISchoolDetailsDRApiResponse> = await service.get(
       `${envConfig.BASE_URL}/TrainingDB/GetSyncStatus/${orgId}?orgName=${orgName}`
@@ -36,7 +36,7 @@ export const FetchSyncStatus = async (
     return response.data;
   } catch (err: any) {
     if (err.response) {
-      const statusCode = err.response.status;
+      const statusCode : number = err.response.status;
       console.log(`API call failed with status code: ${statusCode}`);
       if (statusCode === 401) {
         errorHandler.handle401Error(statusCode, history);
@@ -57,7 +57,7 @@ export const FetchSyncStatus = async (
 };
 
 // precheck status
-export const FetchPrecheckStatus = async (
+export const FetchPrecheckStatus : (handleException: () => void, history: any) => Promise<IPrecheckStatusApiResponse | null> = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory>
 ): Promise<IPrecheckStatusApiResponse | null> => {
@@ -65,7 +65,7 @@ export const FetchPrecheckStatus = async (
     const schoolData: ISchoolNameDataResponse | null =
       await useFetchSchoolNameData();
     const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-    const orgId = getUserOrganisation();
+    const orgId : string = getUserOrganisation();
 
     const response: AxiosResponse<IPrecheckStatusApiResponse> =
       await service.get(
@@ -74,7 +74,7 @@ export const FetchPrecheckStatus = async (
     return response.data;
   } catch (err: any) {
     if (err.response) {
-      const statusCode = err.response.status;
+      const statusCode : number = err.response.status;
       console.log(`API call failed with status code: ${statusCode}`);
       if (statusCode === 401) {
         errorHandler.handle401Error(statusCode, history);
@@ -94,7 +94,7 @@ export const FetchPrecheckStatus = async (
   }
 };
 
-export const TriggerSync = async (
+export const TriggerSync : (handleException: () => void, history: any) => Promise<ISchoolDetailsDRApiResponse | null> = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory>
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
@@ -124,7 +124,7 @@ export const TriggerSync = async (
     return response.data;
   } catch (err: any) {
     if (err.response) {
-      const statusCode = err.response.status;
+      const statusCode : number = err.response.status;
       console.log(`API call failed with status code: ${statusCode}`);
       if (statusCode === 401) {
         errorHandler.handle401Error(statusCode, history);
@@ -145,7 +145,7 @@ export const TriggerSync = async (
 }
 
 // Handle button click
-export const handleButtonClick = async (
+export const handleButtonClick : (handleException: () => void, setSyncStatus: React.Dispatch<React.SetStateAction<string>>, setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>, setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>, clicked: boolean, setClicked: React.Dispatch<React.SetStateAction<boolean>>, inProgressStatus: (value: string) => void, setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>, setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, history: ReturnType<typeof useHistory>, syncDataStatus: string) => Promise<void>  = async (
   handleException: () => void,
   setSyncStatus: React.Dispatch<React.SetStateAction<string>>,
   setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>,
@@ -158,7 +158,7 @@ export const handleButtonClick = async (
   history: ReturnType<typeof useHistory>,// Pass the history object
   syncDataStatus: string
 
-) => {
+) : Promise<void> => {
   try {
     setIsLoading(true);
     if (syncDataStatus === "Completed") {
@@ -225,7 +225,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   syncDataStatus
 
 }) => {
-  const history = useHistory(); // Initialize history
+  const history :any  = useHistory(); // Initialize history
   const [syncStatus, setSyncStatus]: [
     string,
     React.Dispatch<React.SetStateAction<string>>
@@ -255,11 +255,11 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
-  const initializeSteps = async (): Promise<void> => {
+  const initializeSteps : () => Promise<void> = async (): Promise<void> => {
     try {
 
-      const precheckResponse = await FetchPreCheckStatus(handleException, history);
-      const response = await FetchSyncStatus(handleException, history);
+      const precheckResponse : IPrecheckStatusApiResponse | null = await FetchPreCheckStatus(handleException, history);
+      const response : ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if (response?.uiStatus === "Completed" && precheckResponse?.syncCompletedSeenStatus === "Not Seen") {
         setSyncStatus("Completed");
 
@@ -280,7 +280,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 
   useEffect(() => {
 
-    const intervalId = setInterval(() => {
+    const intervalId : ReturnType<typeof setInterval> = setInterval(() => {
       initializeSteps();
     }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
 
@@ -352,7 +352,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
 
           } catch (err: any) {
             if (err.response) {
-              const statusCode = err.response.status;
+              const statusCode : number = err.response.status;
               console.log(`API call failed with status code: ${statusCode}`);
               if (statusCode === 401) {
                 errorHandler.handle401Error(statusCode, history);

@@ -2,7 +2,6 @@ import { Tag, TagSize, TagColor, Card, CardType, FormLabel } from "@essnextgen/u
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import React, { useState, ComponentType, useEffect } from "react";
-import { AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
 import RefreshDatabase from "./RefreshDatabase";
 import DetachDatabaseView from "./DetachDatabase.view";
@@ -10,94 +9,15 @@ import DeleteNGDataView from "./DeleteNGData.view";
 import AttachDatabaseView from "./AttachDatabase.view";
 import SyncDataView from "./SyncData.view";
 import NotifyExceptionView from "./NotifyException.view";
-import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
-import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
-import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
+import { FetchPreCheckStatus, handleComplete, Item } from "./RefreshDatabaseUtils";
 
-interface Item {
-  title: string;
-  component: ComponentType<any>;
-}
 
 let items: Item[];
 
-export const FetchPreCheckStatus = async (
-  handleException: () => void,
-  history: ReturnType<typeof useHistory>
-): Promise<IPrecheckStatusApiResponse | null> => {
-  const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
-  const orgName: string = schoolData == null ? "" : schoolData.schoolName;
-  const orgId = getUserOrganisation();
-
-  try {
-    const response: AxiosResponse<IPrecheckStatusApiResponse> =
-      await service.get(
-        `${envConfig.BASE_URL}/TrainingDB/PreCheckStatus/${orgId}?orgName=${orgName}`
-      );
-    return response.data;
-  } catch (err: any) {
-    if (err.response) {
-      const statusCode = err.response.status;
-      console.log(`API call failed with status code: ${statusCode}`);
-      if (statusCode === 401) {
-        history.push("/unauthorized"); // Use the passed history object
-      } else {
-        handleException();
-      }
-    }
-    else if (err.message && err.message.includes("Invalid token")) {
-      console.log("Invalid token detected. Redirecting...");
-      history.replace("/unauthorized");
-    }
-    else {
-      console.log("API call failed without a response from the server.");
-    }
-    console.log("Failed to fetch the status");
-    return null;
-  }
-};
-
-export interface IHandleCompleteProps {
-  index: number;
-  value: string;
-  flagValues: string[];
-  setFlagValues: React.Dispatch<React.SetStateAction<string[]>>;
-  setActiveIndex: React.Dispatch<React.SetStateAction<number>>;
-}
-
-// The function now uses the HandleCompleteParams interface for its parameters
-export const handleComplete: (props: IHandleCompleteProps) => string = (
-  props: IHandleCompleteProps
-) => {
-  const {
-    index,
-    value,
-    flagValues,
-    setFlagValues,
-    setActiveIndex
-  }: IHandleCompleteProps = props;
-
-  // Update the flag for the completed step
-  const updatedFlags: string[] = [...flagValues];
-  updatedFlags[index] = value; // Set the flag value for the completed step
-  setFlagValues(updatedFlags);
-
-  // Check if all steps are completed
-  if (index === items.length - 1) {
-    // Reset to step 1
-    setActiveIndex(0);
-    setFlagValues(new Array(items.length).fill(""));
-  } else {
-    // Move to the next step
-    setActiveIndex(index + 1);
-  }
-  return updatedFlags[index];
-}
-
 const RefreshDatabaseView: () => JSX.Element = () => {
 
-  const history = useHistory();
+  const history : any = useHistory();
 
   const [activeIndex, setActiveIndex]: [
     number,
@@ -131,30 +51,30 @@ const RefreshDatabaseView: () => JSX.Element = () => {
   ] = useState<boolean>(false);
 
   // Function to handle setting the notification state when an exception occurs
-  const handleException = () => {
+  const handleException : () => void = () => {
     setEnableNotification(true); // Enable notification on exception
   };
 
   useEffect(() => {
-    const initializeSteps = async () => {
+    const initializeSteps : () => Promise<void> = async () => {
       try {
         const precheckStatus: IPrecheckStatusApiResponse | null =
           await FetchPreCheckStatus(handleException, history);
 
-        if (precheckStatus && precheckStatus.statusCode === 200) {
-          const statuses = [
-            precheckStatus.dbDetachedStatus || "",
-            precheckStatus.deleteNGDataStatus || "",
-            precheckStatus.dbReAttachedStatus || "",
-            precheckStatus.syncDataStatus || "",
-            precheckStatus.syncCompletedSeenStatus || ""
+        if (precheckStatus && precheckStatus?.statusCode === 200) {
+          const statuses : string[] = [
+            precheckStatus?.dbDetachedStatus || "",
+            precheckStatus?.deleteNGDataStatus || "",
+            precheckStatus?.dbReAttachedStatus || "",
+            precheckStatus?.syncDataStatus || "",
+            precheckStatus?.syncCompletedSeenStatus || ""
           ];
 
           // Map statuses to corresponding step labels
-          const initialFlags = statuses.map((status, index) => {
+          const initialFlags : string[] = statuses?.map((status, index) => {
             if (index === 3) { // Assuming syncDataStatus is at index 3
               if (status === "Active") return "";
-              if (status === "Completed" && precheckStatus.syncCompletedSeenStatus === "Seen")
+              if (status === "Completed" && precheckStatus?.syncCompletedSeenStatus === "Seen")
                 return "";
               if (status === "Completed") {
                 clearInterval(intervalId); // Stop auto-refresh
@@ -174,7 +94,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           setFlagValues(initialFlags);
 
           // Determine the active step
-          let activeStep = initialFlags.findIndex((flag) => flag === "In Progress" || flag === "Completed"); // Find the first step that is in progress or not started
+          let activeStep : number = initialFlags?.findIndex((flag) => flag === "In Progress" || flag === "Completed"); // Find the first step that is in progress or not started
           if (activeStep === -1) {
             activeStep = initialFlags.findIndex((flag) => flag === "");
           }
@@ -196,7 +116,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     // Initial fetch
     initializeSteps();
     // Set up interval for auto-refresh
-    const intervalId = setInterval(() => {
+    const intervalId :any = setInterval(() => {
       initializeSteps();
     }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
 
@@ -221,7 +141,7 @@ const RefreshDatabaseView: () => JSX.Element = () => {
           {items.map((item, index) => {
             const CurrentComponent: ComponentType<any> = item.component;
             const isActive = index === activeIndex;
-            const syncDataStatus = flagValues[3];
+            const syncDataStatus : string = flagValues[3];
             return (
               <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
                 <div className="list-item" style={{ padding: "16px" }}>
@@ -248,11 +168,12 @@ const RefreshDatabaseView: () => JSX.Element = () => {
                           value,
                           flagValues,
                           setFlagValues,
-                          setActiveIndex
+                          setActiveIndex,
+                          items
                         })
                       }
                       inProgressStatus={(value: string) => {
-                        const updatedFlags = [...flagValues];
+                        const updatedFlags : string[] = [...flagValues];
                         updatedFlags[index] = value; // Update "In progress" status
                         setFlagValues(updatedFlags);
                       }}

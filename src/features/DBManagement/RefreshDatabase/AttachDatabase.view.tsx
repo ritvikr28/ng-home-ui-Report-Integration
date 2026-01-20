@@ -16,14 +16,14 @@ import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/sc
 import { ISchoolDetailsDRApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { errorHandler } from "../../../shared/utils/errorHandler";
 
-export const FetchIsAttached = async (
+export const FetchIsAttached : (handleException: () => void, history: any) => Promise<ISchoolDetailsDRApiResponse | null>  = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory> // Accept history to handle redirects
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
     try {
       const schoolData: ISchoolNameDataResponse | null =
         await useFetchSchoolNameData();
-      const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+      const orgName: string = schoolData == null ? "" : schoolData?.schoolName;
 
       const requestData: {
         operationIndicator: string;
@@ -46,7 +46,7 @@ export const FetchIsAttached = async (
       return response.data;
     } catch (err: any) {
       if (err.response) {
-        const statusCode = err.response.status;
+        const statusCode : number = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
           errorHandler.handle401Error(statusCode, history);
@@ -83,10 +83,10 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
   
-    const history = useHistory(); // Initialize useHistory
+    const history : any = useHistory(); // Initialize useHistory
 
 
-  const handleSetIsAttached = async () => {
+  const handleSetIsAttached : () => Promise<void> = async () => {
     // Get Re-attached status
     const response: ISchoolDetailsDRApiResponse | null =
       await FetchIsAttached(handleException, history);
@@ -102,7 +102,7 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
       }
   };
 
-  const handleSelectionChange = async (value: string) => {
+  const handleSelectionChange : (value: string) => Promise<void> = async (value: string) => {
     setSelectedValue(value as string);
     const isAttached = value === "Yes";
     if (isAttached) {

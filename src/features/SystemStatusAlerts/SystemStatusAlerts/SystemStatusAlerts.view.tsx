@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, RefObject } from "react";
 import {
   Table,
   TableBody,
@@ -29,18 +29,11 @@ import { useHistory } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { activateEmailAlert, fetchEmailAlertStatus, systemStatusOverflowMenuOutSideClickHandler } from "./SystemStatusService";
 import NotifyExceptionView from "./NotifyException.view";
+import { ISystemStatusAlertResponse } from "../../../shared/model/SystemStatus/responsemodel";
+import { Alert } from "../interface";
+import SystemStatusAlertsTableComponent from "./SystemStatusAlertsTableComponent";
 
-interface Alert {
-  id: string;
-  // status: "Green" | "Red" | "Yellow";
-  status: "Green" | "Red" | "Yellow" | "Connection error";
-  alertName: string;
-  information: string;
-  emailSubscribed: boolean;
-  latestSSMHostVersion: string;
-  currentSSMHostVersion: string;
-  isErrorResponse?: boolean;
-}
+
 export const getClassNameToHandleOverFlowPostion = (
   index: number,
   length: number
@@ -55,37 +48,37 @@ const requiredSystemStatusUpdatePermission: Permission[] = [
   { Securable: "NG.AlertEmails.List", Operation: "Update" },
   { Securable: "NG.AlertEmails.List", Operation: "Write" }
 ];
-const canUpdateSystemStatus = authService.isAuthorised(
+const canUpdateSystemStatus : boolean = authService.isAuthorised(
   requiredSystemStatusUpdatePermission,
   MatchPermissions.any
 );
 const SystemStatusAlertsView: React.FC = () => {
-  const [sidePanelIsOpen, setSidePanelOpen] = useState<boolean>(false);
-  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [loading1, setLoading1] = useState<boolean>(false);
-  const [errorText, setErrorText] = useState<string | null>(null);
-  const [errorNote, setErrorNote] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [overflowMenuIndex, setOverflowMenuIndex] = useState<string>("");
-  const overflowMenuRef = useRef<HTMLSpanElement>(null);
+  const [sidePanelIsOpen, setSidePanelOpen] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [selectedAlert, setSelectedAlert] : [Alert | null, React.Dispatch<React.SetStateAction<Alert | null>>] = useState<Alert | null>(null);
+  const [alerts, setAlerts] : [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>] = useState<Alert[]>([]);
+  const [loading, setLoading] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [loading1, setLoading1] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [errorText, setErrorText] : [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [errorNote, setErrorNote] : [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] : [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [overflowMenuIndex, setOverflowMenuIndex] : [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+  const overflowMenuRef : React.RefObject<HTMLSpanElement> = useRef<HTMLSpanElement>(null);
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const [enableNotification, setEnableNotification] = useState<boolean>(false);
 
-  const history = useHistory();
-  const handleException = () => {
+  const history : ReturnType<typeof useHistory> = useHistory();
+  const handleException : () => void = () => {
     setEnableNotification(true);
   };
-  const fetchAlerts = async () => {
+  const fetchAlerts : () => Promise<void> = async () => {
     setLoading(true);
     setErrorText(null);
 
     try {
-      const response = await fetchEmailAlertStatus(handleException, history);
+      const response : ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(handleException, history);
 
       if (response) {
-        const { listenerData, ssmHostData } = response;
+        const { listenerData, ssmHostData } : ISystemStatusAlertResponse = response;
 
         // Determine listener status
         let listenerStatus: "Green" | "Connection error" | "Red" = "Red";
@@ -215,11 +208,11 @@ const SystemStatusAlertsView: React.FC = () => {
 
 
 
-  const handleActionClick = (action: string, alert: Alert) => {
+  const handleActionClick : (action: string, alert: Alert) => void = (action: string, alert: Alert) => {
     if (action === "Activate Email" || action === "Deactivate Email") {
       const emailSubscribed = action === "Deactivate Email";
       // Determine emailType based on alert.id
-      const emailType = alert.id === "1" ? "SYNC" : "SSM";
+      const emailType : "SYNC" | "SSM" = alert.id === "1" ? "SYNC" : "SSM";
       setSelectedAlert(alert);
       setLoading1(true);
       activateEmailAlert(
@@ -307,20 +300,20 @@ const SystemStatusAlertsView: React.FC = () => {
         />
       )}
       {(() => {
-        let content;
+        let content : React.ReactNode;
 
         if (loading) {
           content = <div className="loading">Loading...</div>;
         } else if (alerts.length > 0) {
           content = (
-            <TableComponent
+            <SystemStatusAlertsTableComponent
               alerts={alerts}
               overflowMenuIndex={overflowMenuIndex}
               setOverflowMenuIndex={setOverflowMenuIndex}
               overflowMenuRef={overflowMenuRef}
               handleActionClick={handleActionClick}
               t={t}
-            
+            canUpdateSystemStatus={canUpdateSystemStatus}
             />
           );
         } else {
@@ -446,193 +439,6 @@ const SystemStatusAlertsView: React.FC = () => {
     </div>
   );
 };
-
-const TableComponent: React.FC<{
-  alerts: Alert[];
-  overflowMenuIndex: string;
-  setOverflowMenuIndex: React.Dispatch<React.SetStateAction<string>>;
-  overflowMenuRef: React.RefObject<HTMLSpanElement>;
-  handleActionClick: (action: string, alert: Alert) => void;
-
-  t: (key: string) => string;
-  
-}> = ({
-  alerts,
-  overflowMenuIndex,
-  setOverflowMenuIndex,
-  overflowMenuRef,
-  handleActionClick,
-  t
-  
-}) => {
-    const systemStatusOverFlowBtnRef = useRef<(HTMLButtonElement | null)[]>([]);
-    const [systemStatusOverflowPosition, setSystemStatusOverflowPosition] = useState<{
-      left: number;
-      top: number;
-    } | null>(null);
-
-    const getTableStatus = (status: string): TableStatus => {
-      if (status === "Yellow" || status === "Connection error") return TableStatus.WARNING;
-      if (status === "Red") return TableStatus.CRITICAL;
-      return TableStatus.SUCCESS;
-    };
-
-    const getStatusLabel = (status: string): string => {
-      if (status === "Connection error") return t("SystemStatus_T.WarningMessage");
-      if (status === "Yellow") return t("SystemStatus_T.NoData");
-      if (status === "Green") return t("SystemStatus_T.Live");
-      return t("SystemStatus_T.Fail");
-    };
-
-    const getEmailSubscriptionText = (alert: Alert): string => {
-      if (alert?.isErrorResponse || alert?.status === "Connection error") {
-        return "-";
-      }
-      return alert?.emailSubscribed ? t("SystemStatus_T.Yes") : t("SystemStatus_T.No");
-    };
-
-
-    const handleOverflowMenuClick = (index: number) => {
-      if (overflowMenuIndex === `overflow-${index}`) {
-        setOverflowMenuIndex("");
-        setSystemStatusOverflowPosition(null);
-      } else {
-        const rect =
-          systemStatusOverFlowBtnRef.current[index]?.getBoundingClientRect();
-        if (rect) {
-          setSystemStatusOverflowPosition({
-            left: rect.left,
-            top: rect.bottom
-          });
-        }
-        setOverflowMenuIndex(`overflow-${index}`);
-      }
-    };
-
-    return (
-      <TableWrapper className="system-status-table-wrapper">
-        <Table className="status-table" isStatus>
-          <TableHead>
-            <TableRow>
-              <TableCell header className="status-table-cell">
-                {t("SystemStatus_T.Status")}
-              </TableCell>
-              <TableCell header>{t("SystemStatus_T.Alert")}</TableCell>
-              <TableCell header>{t("SystemStatus_T.Information")}</TableCell>
-              <TableCell header>{t("SystemStatus_T.EmailAlerts")}</TableCell>
-              <TableCell header className="last-cell-header" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {alerts.map((alert, index) => {
-              const status = getTableStatus(alert.status);
-              const statusLabel = getStatusLabel(alert.status);
-              return (
-                <TableRow key={alert?.id}>
-                  <TableCell status={status}>{statusLabel}</TableCell>
-                  <TableCell>{alert?.alertName}</TableCell>
-                  <TableCell
-                    className={
-                      alert.isErrorResponse ? "information-column-error" : ""
-                    }
-                  >
-                    {alert.isErrorResponse ? (
-                      <div className="warning--alt">
-                        <Icon
-                          color={IconColor.Warning300}
-                          dataTestId="btn-90"
-                          id="variable-2"
-                          name="warning--alt"
-                          size={16}
-                        />
-                        <span> {t("SystemStatus_T.WarningMessage")}</span>
-                      </div>
-                    ) : (
-                      alert?.information
-                    )}
-                  </TableCell>
-                  <TableCell>{getEmailSubscriptionText(alert)}</TableCell>
-                  
-                  <TableCell>
-                    <div className="system-status-overflow-btn-wrapper">
-                      {(!canUpdateSystemStatus || alert?.isErrorResponse || alert?.status === "Connection error") ? (
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick("View", alert)}
-                          className="view-link-as-button"
-                        >
-                          {t("SystemStatus_T.View")}
-                        </button>
-                      ) : (
-                        <>
-                          <Button
-                            ref={(el) => {
-                              systemStatusOverFlowBtnRef.current[index] = el;
-                            }}
-                            size={ButtonSize.Small}
-                            color={
-                              overflowMenuIndex === `overflow-${index}`
-                                ? ButtonColor.Primary
-                                : ButtonColor.Utility
-                            }
-                            onClick={() => handleOverflowMenuClick(index)}
-                            iconName="overflow-menu--horizontal"
-                            ariaLabel="Overflow menu"
-                            className={`btn-option${overflowMenuIndex === `overflow-${index}` ? " system-status-overflow-btn-active" : ""}`}
-                          />
-                          {overflowMenuIndex === `overflow-${index}` && (
-                            <span
-                              ref={overflowMenuRef}
-                              style={{
-                                left: (systemStatusOverflowPosition?.left ?? 0) - 150,
-                                top: systemStatusOverflowPosition?.top
-                              }}
-                              className="overflow-menu-position"
-                            >
-                              <OverflowMenu
-                                dataTestId="childcare-overflow-menu"
-                                id={`childcare-overflow-menu-${index}`}
-                                onClick={(e, selectedValue) =>
-                                  handleActionClick(
-                                    (selectedValue as { value: string }).value,
-                                    alert
-                                  )
-                                }
-                                className={`${getClassNameToHandleOverFlowPostion(
-                                  index,
-                                  alerts.length
-                                )} system-status-overflow-menu`}
-                              >
-                                <OverflowMenuItem value="View">
-                                  {t("SystemStatus_T.View")}
-                                </OverflowMenuItem>
-                                <OverflowMenuItem
-                                  value={
-                                    alert.emailSubscribed
-                                      ? "Deactivate Email"
-                                      : "Activate Email"
-                                  }
-                                >
-                                  {alert.emailSubscribed
-                                    ? t("SystemStatus_T.Deactivateemail")
-                                    : t("SystemStatus_T.Activateemail")}
-                                </OverflowMenuItem>
-                              </OverflowMenu>
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableWrapper>
-    );
-  };
 
 export default SystemStatusAlertsView;
 
