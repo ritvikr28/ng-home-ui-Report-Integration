@@ -41,7 +41,7 @@ export interface ITableBodyDataType {
   email: string;
   userType: string;
   invitationStatus: string;
-  invitationRequestDate: Date | null;
+  inviteRequestDate: Date | null;
   actions: {
     options: ITableOptions[];
   };
