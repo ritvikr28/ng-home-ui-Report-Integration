@@ -38,7 +38,7 @@ const mockInviteUserProps: InviteUserProps = {
       emailId: "john.doe@example.com",
       userType: "Staff",
       invitationStatus: "Not invited",
-      inviteRequestDate: new Date("12/12/2025")
+      inviteRequestDate: new Date("12/12/2025").toDateString()
     }
   ],
   setUsersTableData: jest.fn(),
