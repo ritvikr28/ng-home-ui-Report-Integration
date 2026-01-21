@@ -83,7 +83,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
     const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-    const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
+    const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string[]>([]);
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
     const [showDeleteAbortBanner, setShowDeleteAbortBanner] = useState(false);
@@ -289,17 +289,17 @@ const DocumentManagementServerView: () => JSX.Element = () => {
  
         if (!isFilterDialogOpen && isSearchTriggered && searchText) {
             setIsInitialLoad(true);
-            fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRelatedTo);
+            fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRealatedTo);
  
             setIsInitialLoad(false);
         }
         if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
             setIsInitialLoad(true);
-            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRelatedTo)
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRealatedTo)
             setIsInitialLoad(false);
         }
         applySummaryTagClass();
-    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRealatedTo, isSearchTriggered]);
 
     useEffect(() => {
         // Only run when opening the side panel for "prepare"
@@ -350,7 +350,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     sortByCol: string = sortBy,
     sortOrder = sortDirection,
     refExternalId: string[] = searchRefExternalId,
-    relatedTo: number = documentRelatedTo
+    relatedTo: number = documentRealatedTo
     ) => {
     fetchGetDocumentDetailsLogic({
         page,
@@ -445,7 +445,7 @@ const onEditSelectedOverFlowMenu = (e: React.SyntheticEvent, selectedItem: ISele
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRelatedTo,
+    documentRealatedTo,
     validation,
     setRestrictedFileCount,
     setAlreadyDeletedFileCount,
@@ -604,7 +604,7 @@ const hasCompletedFiles = viewData.some(item => item.status?.toLowerCase() === '
             allRegistrationIds,
             dateRange,
             searchRefExternalId,
-            documentRelatedTo,
+            documentRealatedTo,
             currentPage,
             sortBy,
             sortDirection,
@@ -713,7 +713,7 @@ switch (dialogType) {
                 sortBy,
                 sortDirection,
                 searchRefExternalId,
-                documentRelatedTo
+                documentRealatedTo
             );
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
@@ -774,7 +774,7 @@ switch (dialogType) {
                 sortBy,
                 sortDirection,
                 searchRefExternalId,
-                documentRelatedTo
+                documentRealatedTo
             );
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
@@ -795,7 +795,7 @@ switch (dialogType) {
           docData,
           allRegistrationIds,
           searchRefExternalId,
-          documentRelatedTo,
+          documentRealatedTo,
           excludedCheckBoxIds,
           isHeaderBoxChecked,
           allSelectedDocs,
@@ -1102,7 +1102,7 @@ const getDialogTitle = () => {
                                     sortBy,
                                     sortDirection,
                                     searchRefExternalId,
-                                    documentRelatedTo
+                                    documentRealatedTo
                                 );
                                  setSelectedCheckBoxIds([]);
                                 setAllSelectedDocs([]);
@@ -1138,7 +1138,7 @@ const getDialogTitle = () => {
                                     sortBy,
                                     sortDirection,
                                     searchRefExternalId,
-                                    documentRelatedTo
+                                    documentRealatedTo
                                 );
                                 setSelectedCheckBoxIds([]);
                                 setAllSelectedDocs([]);

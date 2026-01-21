@@ -12,7 +12,7 @@ import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
-    if (doc.documentRelatedTo === 1) {
+    if (doc.documentRealatedTo === 1) {
       // Pupils
       relatedArr = doc.relatedTo.map((pupil: any) => ({
         type: "pupil",
@@ -22,7 +22,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: pupil.learnerExternalId || "",
         isLeaver:pupil?.onRollState || ""
       }));
-    } else if (doc.documentRelatedTo === 3) {
+    } else if (doc.documentRealatedTo === 3) {
       // Staff
       relatedArr = doc.relatedTo.map((staff: any) => ({
         type: "staff",
@@ -31,7 +31,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: staff.externalId || "",
         isLeaver: staff?.onRollState || ""
       }));
-    } else if (doc.documentRelatedTo === 2) {
+    } else if (doc.documentRealatedTo === 2) {
       // School
       relatedArr = doc.relatedTo.map((school: any) => ({
         type: "school",
@@ -61,16 +61,15 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     headerTxtTrunctLength: 50,
     isSimpleText: true,
     isColumnSorting: true,
-    txtTrunctLength: 26,
     anyComponent: (e: any) => (
       <>
-      <EllipsisWithTooltip
-        text={e}
-        className=" relatedto-main"
-        isTooltipNeeded={!!(e && e.length === 1)}
-        totalItems={[e]}
-        colName="document"
-      />
+        <EllipsisWithTooltip
+          text={e}
+          className=" relatedto-main"
+          isTooltipNeeded={!!(e && e.length === 1)}
+          totalItems={[e]}
+          colName="document"
+        />
       </>
     )
   },
@@ -84,7 +83,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     columnWidth: "261px",
     txtTrunctLength: 35,
     isColumnSorting: false,
-    anyComponent: (e: any) =>(
+    anyComponent: (e: any) => (
       <>
         {(!e || !Array.isArray(e) || !e.length) ? null : (
           <EllipsisWithTooltip
@@ -96,7 +95,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
           />
         )}
       </>
-      )
+    )
   },
   {
     text: t("DocumentManagementServer.categoryColumn"),
@@ -392,7 +391,7 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRelatedTo: relatedTo || 0
+      documentRealatedTo: relatedTo || 0
     });
     if (result && result?.statusCode === 200) {
       setDocData(result);
@@ -804,7 +803,7 @@ export function buildSelectedDocs(
   docData: any,
   categoryId: number[],
   searchRefExternalId: string[],
-  documentRelatedTo: number,
+  documentRealatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
@@ -831,7 +830,7 @@ export function buildSelectedDocs(
       referenceExternalId:
         entity.learnerExternalId || entity.externalId || entity.organisationId,
       relatedTo: entity,
-      documentRelatedTo,
+      documentRealatedTo,
     }));
 
     // Deduplicate by referenceExternalId
@@ -866,7 +865,7 @@ export function buildSelectedDocs(
         currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
-          documentRelatedTo,
+          documentRealatedTo,
           categoryId,
           fromDate,
           toDate,
@@ -926,7 +925,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRelatedTo,
+  documentRealatedTo,
   currentPage,
   sortBy,
   sortDirection,
@@ -950,7 +949,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRelatedTo: number,
+  documentRealatedTo: number,
   currentPage: number,
   sortBy: string,
   sortDirection: string,
@@ -979,7 +978,7 @@ export const handleBulkDeleteLogic = async ({
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
-    documentRelatedTo,
+    documentRelatedTo: documentRealatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
       : allSelectedDocs
@@ -1480,7 +1479,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRelatedTo,
+  documentRealatedTo,
   validation,
   setRestrictedFileCount,
   setAlreadyDeletedFileCount,
@@ -1506,7 +1505,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRelatedTo: number,
+  documentRealatedTo: number,
   validation: (payload: any) => Promise<any>,
   setRestrictedFileCount: (v: number) => void,
   setAlreadyDeletedFileCount: (v: number) => void,
@@ -1538,7 +1537,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: searchRefExternalId,
-        documentRelatedTo,
+        documentRelatedTo: documentRealatedTo,
         fileDetails,
         excludedFileDetails,
       });
