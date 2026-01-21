@@ -92,7 +92,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link2"
-            href="https://help.parentpaygroup.com/csm?id=ppg_emp_taxonomy_topic_customer&topic_id=6120c5de1b335250dffc2f04b24bcb12&in_context=true"
+            href="https://www.parentpaygroup.com/product-updates/"
             target="_blank"
             {...rel}
           >
@@ -109,7 +109,7 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link
             dataTestId="link3"
-            href="https://help.parentpaygroup.com/csm/en/%25short_descr?id=copy_of_kb_article_view_1&sysparm_article=KB0012256"
+            href="https://www.parentpaygroup.com/sims-next-gen-roadmap/"
             target="_blank"
             {...rel}
           >

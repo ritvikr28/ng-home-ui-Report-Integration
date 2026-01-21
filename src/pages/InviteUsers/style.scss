@@ -128,6 +128,8 @@
   margin-bottom: 24px !important;
 }
 
+////////////////// SIMS7 REDIRECTIONS PAGE STYLES //////////////////
+
 .sims7-redirections .text-tag {
   gap: 32px !important;
 }
@@ -156,6 +158,12 @@
   gap: 24px;
 }
 
+.edit-mode-content {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
 .sims7-redirections .dialog-content {
   padding-left: 4px;
   display: block;
@@ -171,4 +179,122 @@
   justify-content: flex-end;
   gap: 24px;
   margin-top: 32px;
+}
+
+@media only screen and (min-width: 1024px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-52%, -48%);
+  }
+}
+
+@media (min-width: 1400px) and (max-width: 1599px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-52%, -48%);
+  }
+}
+
+@media (min-width: 1800px) and (max-width: 1999px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 1700px) and (max-width: 1799px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 2000px) and (max-width: 2299px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-53%, -51%);
+  }
+}
+
+@media (min-width: 2300px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-yes .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+@media (min-width: 1600px) and (max-width: 2000px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-no .essui-radio__checkmark {
+    left: 50% !important;
+  }
+}
+
+@media (min-width: 2000px) and (max-width: 2299px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-no .essui-radio__checkmark {
+    transform: translate(-52%, -50%);
+  }
+}
+
+@media (min-width: 2300px) {
+
+  /* stylelint-disable-next-line selector-class-pattern */
+  .sims7-redirections .reaction-no .essui-radio__checkmark {
+    transform: translate(-48%, -52%);
+  }
+}
+
+.sims7-redirections .essui-reaction-button-group {
+  width: 40%;
+  gap: 16px;
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+.sims7-redirections .essui-overflow-menu__item .list-item__checkbox {
+  margin-right: 0;
+}
+
+.sims7-redirections .essui.animationmsg.open {
+  @media (min-width: 1200px) and (max-width: 1699px) {
+    margin-left: 155px;
+  }
+
+  @media (min-width: 2300px) {
+    margin-left: 540px;
+  }
+
+  @media (min-width: 2000px) and (max-width: 2299px) {
+    margin-left: 410px;
+  }
+
+  @media (min-width: 1800px) and (max-width: 1999px) {
+    margin-left: 340px;
+  }
+
+  @media (min-width: 1700px) and (max-width: 1799px) {
+    margin-left: 240px;
+  }
+}
+
+//position: 'fixed', right: 40, top: 40, zIndex: 9999 
+
+@media only screen and (min-width: 768px) and (max-width: 1023px) {
+  .sims7-redirections .filter-tool-view .dropdown {
+    margin-top: 24px;
+  }
+}
+
+@media only screen and (min-width: 1024px) and (max-width: 1025px) {
+  .sims7-redirections .filter-tool-view .dropdown {
+    margin-top: 16px;
+  }
 }

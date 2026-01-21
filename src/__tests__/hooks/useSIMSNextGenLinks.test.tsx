@@ -99,7 +99,9 @@ describe("fetchLinks", () => {
   });
 
   it("returns false on API error", async () => {
-    (service.get as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
+    (service.get as jest.Mock).mockRejectedValueOnce({
+      response: { data: { code: 'validation_error', reason: { some: ['error'] } } }
+    });
     const result = await fetchLinks();
     expect(result).toBe(false);
   });

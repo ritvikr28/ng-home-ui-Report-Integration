@@ -348,7 +348,7 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   </MemoryRouter>);
 
   // type search query
-  const input = await screen.findByTestId("search-autocomplete-input");
+  const input = await screen.getByTestId("search-autocomplete-input");
   fireEvent.change(input, { target: { value: "Alfie" } });
   fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
  

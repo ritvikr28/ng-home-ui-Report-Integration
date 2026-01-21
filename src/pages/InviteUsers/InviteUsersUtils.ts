@@ -108,6 +108,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,
+        inviteRequestDate: item?.InviteRequestDate,
         actions: {
           options: [
             {
@@ -173,6 +174,9 @@ export const inviteUsersSorting = async (
     case "Email":
     case "E-bost":
       apiColumnName = "EmailId";
+      break;
+    case "Invitation request date":
+      apiColumnName = "InviteRequestDate";
       break;
     default:
       apiColumnName = columnName;

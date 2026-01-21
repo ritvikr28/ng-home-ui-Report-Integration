@@ -10,7 +10,6 @@ import {
     IconColor,
     NotificationStatus,
     ResponseCode,
-    Link,
     Breadcrumbs,
     useMediaQuery,
     IBreadcrumbLink,
@@ -54,10 +53,11 @@ export const Sims7RedirectionsPage = () => {
     const [selectedItems, setSelectedItems] = React.useState<ISelectedItem[]>([]);
     const [searchTagList, setSearchTagList] = React.useState<ISelectedItem[]>([]);
     const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-    const [isDropDownOpen, setIsDropDownOpen] = React.useState(false);
+    // const [isDropDownOpen, setIsDropDownOpen] = React.useState(false);
     const [isSidePanelOpen, setIsSidePanelOpen] = React.useState(false);
     const [sidePanelMode, setSidePanelMode] = React.useState<'view' | 'edit'>('view');
     const [selectedRow, setSelectedRow] = React.useState<any>(null);
+    // const [dropdownResetKey, setDropdownResetKey] = React.useState(0);
     const [isSidebarOpen, setIsSidebarOpen]: [
         boolean,
         React.Dispatch<React.SetStateAction<boolean>>
@@ -86,8 +86,10 @@ export const Sims7RedirectionsPage = () => {
     }
     const handleCloseDialog = () => setIsDialogOpen(false);
     const handleClearAll = () => {
+        // setIsDropDownOpen(false);
         setIsDialogOpen(true);
         setSelectedItems([]);
+        // setDropdownResetKey(prev => prev + 1); // force Dropdown to remount/close
     };
 
     const handleApplyDialog = () => {
@@ -97,7 +99,7 @@ export const Sims7RedirectionsPage = () => {
                 text: item.text ?? ""
             }))
         );
-        setIsDropDownOpen(false);
+        // setIsDropDownOpen(false);
         setIsDialogOpen(false);
     };
 
@@ -154,7 +156,7 @@ export const Sims7RedirectionsPage = () => {
     ];
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const pageSize = 5; // same as paginationCount
+    const pageSize = 40; // same as paginationCount
     const paginatedTableData = React.useMemo(() => {
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
@@ -252,9 +254,9 @@ export const Sims7RedirectionsPage = () => {
                     isShowSecondSubheadingWithLink
                     isFullWidthForSecondSubHeading
                     secondSubheadingwithLink={
-                        <Link href="https://example.com" target="_blank" >
+                        <a href="https://example.com" target="_blank" rel="noopener noreferrer">
                             {`${t("SIMS7Redirects.secondSubheadingwithLink")}`}
-                        </Link>
+                        </a>
                     }
                     id="controlled-list"
                     isBreadCrumbEnable={false}
@@ -325,18 +327,19 @@ export const Sims7RedirectionsPage = () => {
 
                 />
 
-                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true}>
-                    <DialogContent className={isDropDownOpen ? "dialog-with-dropdown" : "dialog-content"}>
+                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true} title="Filter by">
+                    <DialogContent className="dialog-with-dropdown">
                         <>
                             <FormLabel>Status</FormLabel>
                             <Dropdown
+                                //  key={dropdownResetKey}
                                 multiSelect={true}
                                 selectedItems={selectedItems}
                                 onSelectMultiple={(e: React.SyntheticEvent, selected: ISelectedItem[]) =>
                                     setSelectedItems(selected)
                                 }
                                 isFixedMultiSelect={true}
-                                onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
+                                // onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
                             >
                                 {dropdownItems.map(item => (
                                     <DropdownItem
@@ -353,7 +356,7 @@ export const Sims7RedirectionsPage = () => {
                     </DialogContent>
                     <DialogFooter className="dialog-actions">
                         <Button dataTestId="close-btn" onClick={handleClearAll} color={ButtonColor.Secondary}>
-                            clear All
+                            Clear all
                         </Button>
                         <Button dataTestId="close-btn" onClick={handleApplyDialog}>
                             Apply

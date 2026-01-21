@@ -41,6 +41,7 @@ export interface ITableBodyDataType {
   email: string;
   userType: string;
   invitationStatus: string;
+  inviteRequestDate: Date | null;
   actions: {
     options: ITableOptions[];
   };
@@ -127,13 +128,12 @@ export const getTableHeadersData: TableHeader[] = [
   }
 ];
 
-
-
 export interface IInviteUserDetails {
   emailId: string;
   externalId: string;
   forename: string;
   invitationStatus: string;
+  inviteRequestDate: Date | null | undefined;
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
@@ -171,6 +171,7 @@ export enum InvitationStatusFilterOptions {
   NotInvited = "Not-invited",
   InvitationExpired = "Invitation expired",
   InvitationConflict = "Invitation conflict",
+  InviteRequested = "Invite requested",
   Invited = "Invited",
   Accepted = "Accepted"
 }
@@ -203,11 +204,16 @@ export const filterOptions: IFilterOptions[] = [
   },
   {
     id: "5",
+    text: InvitationStatusFilterOptions.InviteRequested,
+    value: InvitationStatusFilterOptions.InviteRequested
+  },
+  {
+    id: "6",
     text: InvitationStatusFilterOptions.Invited,
     value: InvitationStatusFilterOptions.Invited
   },
   {
-    id: "6",
+    id: "7",
     text: InvitationStatusFilterOptions.Accepted,
     value: InvitationStatusFilterOptions.Accepted
   }
@@ -233,11 +239,11 @@ export const BulkInviteErrBanner = ({
   return (
     <>
       <p>
-        {`${t("inviteUsers.unableToInviteUserList")}`}
+        {`${t("invitePerson.unableToInvitePersonList")}`}
       </p>
       <p>&nbsp; • &nbsp; {emails}</p>
       <p>
-        {`${t("inviteUsers.unableToInviteUserListDescription")}`}
+        {`${t("invitePerson.unableToInvitePersonListDescription")}`}
       </p>
     </>
   );
