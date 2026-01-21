@@ -46,7 +46,6 @@ describe("EllipsisWithTooltip Component", () => {
         isTooltipNeeded={true}
         totalItems={[text]}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -66,7 +65,6 @@ describe("EllipsisWithTooltip Component", () => {
         isTooltipNeeded={true}
         totalItems={[text]}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -86,7 +84,6 @@ describe("EllipsisWithTooltip Component", () => {
         isTooltipNeeded={true}
         totalItems={[text]}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -109,7 +106,6 @@ describe("EllipsisWithTooltip Component", () => {
         isTooltipNeeded={false}
         totalItems={[text]}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -128,7 +124,6 @@ describe("EllipsisWithTooltip Component", () => {
         isTooltipNeeded={false}
         totalItems={[text]}
         colName="documents"
-        showProtectedTag={false}
       />
     );
 
@@ -152,7 +147,6 @@ describe("EllipsisWithTooltip Component", () => {
         className=""
         isTooltipNeeded={true}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -178,7 +172,6 @@ describe("EllipsisWithTooltip Component", () => {
         className=""
         isTooltipNeeded={true}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -198,7 +191,6 @@ describe("EllipsisWithTooltip Component", () => {
         className=""
         isTooltipNeeded={false}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
     expect(screen.queryByText(/^\+\d/)).not.toBeInTheDocument();
@@ -229,7 +221,6 @@ describe("EllipsisWithTooltip", () => {
         {...baseProps}
         text={staff}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -254,7 +245,6 @@ describe("EllipsisWithTooltip", () => {
         {...baseProps}
         text={pupil}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -279,7 +269,6 @@ describe("EllipsisWithTooltip", () => {
         {...baseProps}
         text={pupil}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 
@@ -301,7 +290,6 @@ describe("EllipsisWithTooltip", () => {
         {...baseProps}
         text={pupil}
         colName="relatedTo"
-        showProtectedTag={false}
       />
     );
 

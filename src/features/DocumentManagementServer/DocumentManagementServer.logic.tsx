@@ -43,14 +43,6 @@ export function mapRelatedArr(doc: any): any[] {
   return relatedArr;
 }
 
-export function mapDocumentInfo(doc: any): any[] {
-  const documentInfoArr = [{
-    name: doc.document || "",
-    isProtectedFromDelete: doc.isProtectedFromDelete,
-  }];
-  return documentInfoArr;
-}
-
 export const getTableHeadersData = (t: any): TableHeader[] => [
   {
     text: "Id",
@@ -67,18 +59,19 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isHeaderTextTruncate: false,
     columnWidth: "267px",
     headerTxtTrunctLength: 50,
-    isSimpleText: false,
+    isSimpleText: true,
     isColumnSorting: true,
     txtTrunctLength: 26,
     anyComponent: (e: any) => (
+      <>
       <EllipsisWithTooltip
-        text={e[0].name}
-        className="relatedto-main"
-        isTooltipNeeded={!!e[0].name}
-        totalItems={[e[0].name]}
+        text={e}
+        className=" relatedto-main"
+        isTooltipNeeded={!!(e && e.length === 1)}
+        totalItems={[e]}
         colName="document"
-        showProtectedTag={!!(e[0].isProtectedFromDelete)}
       />
+      </>
     )
   },
   {
@@ -100,7 +93,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
             isTooltipNeeded={!!(e.length === 1)}
             totalItems={e}
             colName="relatedTo"
-            showProtectedTag={false}
           />
         )}
       </>
@@ -124,7 +116,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
             isTooltipNeeded={!!(e && e.length === 1)}
             totalItems={[e]}
             colName="category"
-            showProtectedTag={false}
           />
         )}
       </>
@@ -148,7 +139,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
           isTooltipNeeded={!!(e && e.length === 1)}
           totalItems={[e]}
           colName="addedBy"
-          showProtectedTag={false}
         />
       </>
     )
@@ -180,7 +170,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
           isTooltipNeeded={!!(e && e.length === 1)}
           totalItems={[e]}
           colName="format"
-          showProtectedTag={false}
         />
       </>
     )
@@ -212,7 +201,6 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
         isTooltipNeeded={!!(value && value.length === 1)}
         totalItems={[value]}
         colName="category"
-        showProtectedTag={false}
       />
     );
   }
@@ -369,8 +357,7 @@ export async function fetchGetDocumentDetailsLogic({
   setPrepareDownloadAbortBanner,
   setShowDeleteAbortBanner,
   setShowDeleteErrorBanner,
-  setSuggestions,
-  setShowBulkDeleteDependencyBanner
+  setSuggestions
 }: {
   page: number;
   categories: number[];
@@ -389,7 +376,6 @@ export async function fetchGetDocumentDetailsLogic({
   setShowDeleteAbortBanner: (v: boolean) => void;
   setShowDeleteErrorBanner: (v: boolean) => void;
   setSuggestions: (v: Suggestion[]) => void;
-  setShowBulkDeleteDependencyBanner: (v: boolean) => void;
 }) {
   setIsSearchDataLoading(true);
   setPrepareDownloadAbortBanner(false);
@@ -406,25 +392,13 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRelatedTo: relatedTo || 0,
-      isGetBulkDeleteApiSuccess: true
+      documentRelatedTo: relatedTo || 0
     });
     if (result && result?.statusCode === 200) {
       setDocData(result);
       setCurrentPage(page);
       setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
       setShowSearchError(false);
-      console.log(result, "result in logic file");
-
-        if (
-          result?.isGetBulkDeleteApiSuccess === false &&
-          result?.data?.length > 0 &&
-          result?.data[0]?.documentRelatedTo === 1
-        ) {
-          setShowBulkDeleteDependencyBanner(true);
-        } else {
-          setShowBulkDeleteDependencyBanner(false);
-        }
     } else {
       setShowSearchError(true);
       

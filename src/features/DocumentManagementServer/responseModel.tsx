@@ -19,7 +19,6 @@ export interface SingleDocumentDetail {
   format: string;
   size: string;
   blobName: string;
-  documentRelatedTo: number;
 }
 // Represents the entire API response from getdocumentdetails
 export interface DocumentBasicDetails {
@@ -29,7 +28,6 @@ export interface DocumentBasicDetails {
   data: SingleDocumentDetail[];
   status: number;
   statusCode: number;
-  isGetBulkDeleteApiSuccess?: boolean;
 }
 
 
@@ -44,7 +42,6 @@ export interface DocumentManagementServerProps {
   sortDirection?: string;
   referenceExternalId?: string[];
   documentRelatedTo?: number;
-  isGetBulkDeleteApiSuccess?: boolean;
 }
 
 export interface tableDataProps {

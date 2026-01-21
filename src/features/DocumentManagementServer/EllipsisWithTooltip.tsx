@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import {
   Tooltip,
   TooltipAlign,
@@ -14,7 +13,6 @@ interface Props {
   isTooltipNeeded: boolean;
   totalItems: any[];
   colName: string;
-  showProtectedTag: boolean;
 }
 
 export const EllipsisWithTooltip: React.FC<Props> = ({
@@ -22,11 +20,9 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   className,
   isTooltipNeeded,
   totalItems = [],
-  colName = "",
-  showProtectedTag = false,
+  colName = ""
 }) => {
   const [hrefUrl, setHrefUrl] = React.useState<string>("/");
-  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const [relatedName, setRelatedName] = React.useState<string>("");
   const [yearRegTag, setYearRegTag] = React.useState<string>("");
   const { ref, isEllipsed } = useIsEllipsed({ deps: [text?.name] }) as {
@@ -164,15 +160,6 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
           id="name"
           className="relatedto-tag"
           text={yearRegTag}
-        />
-      )}
-      {showProtectedTag && colName === "document" && (
-        <Tag
-          dataTestId="name"
-          id="name"
-          className="protected-tag"
-          text={t("DocumentManagementServer.Protected")}
-          // size="small"
         />
       )}
       {renderExtraItemsTooltip()}
