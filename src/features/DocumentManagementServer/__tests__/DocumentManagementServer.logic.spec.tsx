@@ -1328,51 +1328,23 @@ describe("getAllRegistrationIds", () => {
   });
 })
 
-
 describe("Document column anyComponent", () => {
   const t = (key: string) => key;
   const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
     const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
-  // it("renders EllipsisWithTooltip with correct props for valid array input", () => {
-  //   const elem = [{
-  //     name: "My Document",
-  //     docRelatedTo: 1,
-  //     isGetBulkDeleteApiSuccessFlag: false,
-  //     isProtectedFromDelete: true
-  //   }];
-  //   const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
-  //   expect(getByText("My Document")).toBeInTheDocument();
     it("renders plain value if value is falsy or length <= 25", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("Short Name");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
-  // it("renders EllipsisWithTooltip without showProtectedTag if not protected", () => {
-  //   const elem = [{
-  //     name: "Unprotected Doc",
-  //     docRelatedTo: 1,
-  //     isGetBulkDeleteApiSuccessFlag: false,
-  //     isProtectedFromDelete: false
-  //   }];
-  //   const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
-  //   expect(getByText("Unprotected Doc")).toBeInTheDocument();
     it("renders truncated value with tooltip if length > 25", () => {
     const longValue = "averylongdocumentnamethatisdefinitelymorethan25chars";
     const { container } = render(<>{documentColumn?.anyComponent?.(longValue)}</>);
     expect(container).toHaveTextContent(longValue.substring(0, 25));
   });
 
-  // it("renders EllipsisWithTooltip without showProtectedTag if isGetBulkDeleteApiSuccessFlag is true", () => {
-  //   const elem = [{
-  //     name: "Protected Doc",
-  //     docRelatedTo: 1,
-  //     isGetBulkDeleteApiSuccessFlag: true,
-  //     isProtectedFromDelete: true
-  //   }];
-  //   const { getByText } = render(<>{documentColumn?.anyComponent?.(elem)}</>);
-  //   expect(getByText("Protected Doc")).toBeInTheDocument();
     it("renders plain value if value is empty string", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("")}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("");
@@ -1413,7 +1385,6 @@ describe("Document column anyComponent", () => {
 });
 
 describe("Size column anyComponent", () => {
-  const t = (key: string) => key;
   const sizeColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.sizeColumn");
 
   it("renders nothing if value is undefined", () => {
@@ -1579,7 +1550,6 @@ describe("handleTagCloseLogic", () => {
 });
 
 describe("tableData mapping for relatedTo types", () => {
-  const t = (key: string) => key; // mock translation function
   const relatedToColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.relatedColumn");
   const renderRelated = relatedToColumn?.anyComponent;
 
@@ -2882,7 +2852,6 @@ describe('getCompletedPartitionKeys', () => {
 });
 
 describe("Added by column anyComponent", () => {
-  const t = (key: string) => key; // mock translation function
   const addedByColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
 
   test("renders plain value if length <= 12", () => {
@@ -3588,32 +3557,7 @@ describe("handleBulkDeleteLogic", () => {
   
 });
 
-describe("getTitleConfirmation", () => {
-  const t = jest.fn(key => key);
-  it('returns "Clear all downloads?" for "clearAll"', () => {
-    expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
-  });
 
-  it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
-  });
-
-  it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
-  });
-
-  it('returns "Prepare Download?" for other values', () => {
-    expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-    expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-    expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-
-  });
-   it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
-    const result = getTitleConfirmation(t, "prepare", 5, 5);
-    expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
-    expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
-  });
-});
 
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
@@ -4150,7 +4094,6 @@ describe("handleEditSelectedOverFlowMenu", () => {
   });
 
   it("clears suggestions and loading for whitespace-only input", () => {
-    const t = (key: string) => key;
     const event = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
@@ -4229,7 +4172,31 @@ describe("applySummaryTagClass", () => {
     expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
   });
 });
+});
 
+describe("getTitleConfirmation", () => {
+  const t = jest.fn(key => key);
+  it('returns "Clear all downloads?" for "clearAll"', () => {
+    expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
+  });
 
+  it('returns "Delete Document?" for "delete" when a single file is selected', () => {
+    expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
+  });
 
+  it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
+    expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
+  });
+
+  it('returns "Prepare Download?" for other values', () => {
+    expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+
+  });
+   it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
+    const result = getTitleConfirmation(t, "prepare", 5, 5);
+    expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
+    expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
+  });
 });

@@ -979,7 +979,7 @@ export const handleBulkDeleteLogic = async ({
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
-    documentRelatedTo: documentRelatedTo,
+    documentRelatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
       : allSelectedDocs
@@ -1538,7 +1538,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: searchRefExternalId,
-        documentRelatedTo: documentRelatedTo,
+        documentRelatedTo,
         fileDetails,
         excludedFileDetails,
       });
