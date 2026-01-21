@@ -25,7 +25,7 @@ const documentResponse: SingleDocumentDetail[] = [
     format: 'png',
     size: '2 KB',
     blobName: 'App_427E150E',
-    documentRealatedTo: 1,
+    documentRelatedTo: 1,
   }
 ];
 

@@ -1671,7 +1671,7 @@ describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
     const doc = {
       isLeaver: "",
-      documentRealatedTo: 1,
+      documentRelatedTo: 1,
       relatedTo: [
         {
           preferredForename: 'Ben',
@@ -1697,7 +1697,7 @@ describe('mapRelatedArr', () => {
 
   it('maps staff correctly', () => {
     const doc = {
-      documentRealatedTo: 3,
+      documentRelatedTo: 3,
       relatedTo: [
         {
           preferredForename: 'Alice',
@@ -1722,7 +1722,7 @@ describe('mapRelatedArr', () => {
 
   it('maps school correctly', () => {
     const doc = {
-      documentRealatedTo: 2,
+      documentRelatedTo: 2,
       relatedTo: [
         {
           schoolName: 'Greenwood High',
@@ -2336,7 +2336,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
         format: "pdf",
         size: "500KB",
         blobName: "blob1",
-        documentRealatedTo: 1,
+        documentRelatedTo: 1,
       }],
       pageNumber: 1,
       pageSize: 10,
@@ -2403,7 +2403,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
     registrationId: 1,
     fileId: "file1",
     personExternalId: "person1",
-    documentRealatedTo: 1,
+    documentRelatedTo: 1,
     document: "Doc 1",
     documentInfo: { fileName: "Doc 1", isSelectedForPrepareDownload: false },
     relatedTo: [],
@@ -2420,7 +2420,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
     registrationId: 2,
     fileId: "file2",
     personExternalId: "person2",
-    documentRealatedTo: 1,
+    documentRelatedTo: 1,
     document: "Doc 2",
     documentInfo: { fileName: "Doc 2", isSelectedForPrepareDownload: false },
     relatedTo: [],
@@ -2570,7 +2570,7 @@ describe("buildSelectedDocs", () => {
           selectAll: true,
           downloadCriteria: {
             referenceMappingDetails: [],
-            documentRealatedTo: 1,
+            documentRelatedTo: 1,
             categoryId: [1,2],
             fromDate: "2025-01-01",
             toDate: "2025-01-02"
@@ -3125,7 +3125,7 @@ describe("handleBulkDeleteLogic", () => {
   const allRegistrationIds = [101, 102];
   const dateRange = { fromDate: "2025-01-01", toDate: "2025-01-02" };
   const searchRefExternalId = ["ref1"];
-  const documentRealatedTo = 1;
+  const documentRelatedTo = 1;
   const currentPage = 1;
   const sortBy = "Document";
   const sortDirection = "Asc";
@@ -3155,7 +3155,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3194,7 +3194,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3228,7 +3228,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3269,7 +3269,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3304,7 +3304,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3339,7 +3339,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3374,7 +3374,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3411,7 +3411,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3449,7 +3449,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3483,7 +3483,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3517,7 +3517,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3551,7 +3551,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3587,7 +3587,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -4069,7 +4069,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     allRegistrationIds: [1, 2],
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
     searchRefExternalId: ["ref1"],
-    documentRealatedTo: 1,
+    documentRelatedTo: 1,
   };
 
   it("shows dialog if nothing selected", async () => {

@@ -12,7 +12,7 @@ import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
-    if (doc.documentRealatedTo === 1) {
+    if (doc.documentRelatedTo === 1) {
       // Pupils
       relatedArr = doc.relatedTo.map((pupil: any) => ({
         type: "pupil",
@@ -22,7 +22,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: pupil.learnerExternalId || "",
         isLeaver:pupil?.onRollState || ""
       }));
-    } else if (doc.documentRealatedTo === 3) {
+    } else if (doc.documentRelatedTo === 3) {
       // Staff
       relatedArr = doc.relatedTo.map((staff: any) => ({
         type: "staff",
@@ -31,7 +31,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: staff.externalId || "",
         isLeaver: staff?.onRollState || ""
       }));
-    } else if (doc.documentRealatedTo === 2) {
+    } else if (doc.documentRelatedTo === 2) {
       // School
       relatedArr = doc.relatedTo.map((school: any) => ({
         type: "school",
@@ -406,7 +406,7 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRealatedTo: relatedTo || 0,
+      documentRelatedTo: relatedTo || 0,
       isGetBulkDeleteApiSuccess: true
     });
     if (result && result?.statusCode === 200) {
@@ -419,7 +419,7 @@ export async function fetchGetDocumentDetailsLogic({
         if (
           result?.isGetBulkDeleteApiSuccess === false &&
           result?.data?.length > 0 &&
-          result?.data[0]?.documentRealatedTo === 1
+          result?.data[0]?.documentRelatedTo === 1
         ) {
           setShowBulkDeleteDependencyBanner(true);
         } else {
@@ -830,7 +830,7 @@ export function buildSelectedDocs(
   docData: any,
   categoryId: number[],
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
@@ -857,7 +857,7 @@ export function buildSelectedDocs(
       referenceExternalId:
         entity.learnerExternalId || entity.externalId || entity.organisationId,
       relatedTo: entity,
-      documentRealatedTo,
+      documentRelatedTo,
     }));
 
     // Deduplicate by referenceExternalId
@@ -892,7 +892,7 @@ export function buildSelectedDocs(
         currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
-          documentRealatedTo,
+          documentRelatedTo,
           categoryId,
           fromDate,
           toDate,
@@ -952,7 +952,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   currentPage,
   sortBy,
   sortDirection,
@@ -976,7 +976,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   currentPage: number,
   sortBy: string,
   sortDirection: string,
@@ -1005,7 +1005,7 @@ export const handleBulkDeleteLogic = async ({
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
-    documentRelatedTo: documentRealatedTo,
+    documentRelatedTo: documentRelatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
       : allSelectedDocs
@@ -1506,7 +1506,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   validation,
   setRestrictedFileCount,
   setAlreadyDeletedFileCount,
@@ -1532,7 +1532,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   validation: (payload: any) => Promise<any>,
   setRestrictedFileCount: (v: number) => void,
   setAlreadyDeletedFileCount: (v: number) => void,
@@ -1564,7 +1564,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: searchRefExternalId,
-        documentRelatedTo: documentRealatedTo,
+        documentRelatedTo: documentRelatedTo,
         fileDetails,
         excludedFileDetails,
       });

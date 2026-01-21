@@ -19,7 +19,7 @@ export interface SingleDocumentDetail {
   format: string;
   size: string;
   blobName: string;
-  documentRealatedTo: number;
+  documentRelatedTo: number;
 }
 // Represents the entire API response from getdocumentdetails
 export interface DocumentBasicDetails {
@@ -43,7 +43,7 @@ export interface DocumentManagementServerProps {
   sortBy?: string;
   sortDirection?: string;
   referenceExternalId?: string[];
-  documentRealatedTo?: number;
+  documentRelatedTo?: number;
   isGetBulkDeleteApiSuccess?: boolean;
 }
 
@@ -104,7 +104,7 @@ export interface DocumentCategoryResponse {
 
 export interface ReferenceMappingDetail {
   refernceExternalId: string;
-  documentRealatedTo: string;
+  documentRelatedTo: string;
   relatedTo: any[];
 }
 
