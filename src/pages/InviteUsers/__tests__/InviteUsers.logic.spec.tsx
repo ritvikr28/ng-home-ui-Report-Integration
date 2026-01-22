@@ -67,15 +67,15 @@ describe("InviteUsersLogic", () => {
     expect(typeof header?.anyComponent).toBe("function");
   });
 
-  it("anyComponent renders ValidationText for 'Invitation conflict'", () => {
+  it("anyComponent renders ValidationText for 'Invite conflict'", () => {
     const header = getTableHeadersData.find(
       (h) => h.text === "Invitation status"
     );
-    const result = header?.anyComponent("Invitation conflict");
+    const result = header?.anyComponent("Invite conflict");
     const { getByTestId } = render(<>{result}</>);
     const validationText = getByTestId("mock-validation-text");
     expect(validationText).toBeInTheDocument();
-    expect(validationText).toHaveTextContent("Invitation conflict");
+    expect(validationText).toHaveTextContent("Invite conflict");
     expect(validationText).toHaveClass("invite-user-status");
     expect(validationText.getAttribute("textLevel")).toBe(
       ValidationTextLevel.Warning
