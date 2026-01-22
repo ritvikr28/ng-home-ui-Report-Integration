@@ -33,7 +33,8 @@ import { ISystemStatusAlertResponse } from "../../../shared/model/SystemStatus/r
 import { Alert } from "../interface";
 import SystemStatusAlertsTableComponent from "./SystemStatusAlertsTableComponent";
 
-
+ type AlertsState = [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>];
+type BooleanState = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 export const getClassNameToHandleOverFlowPostion = (
   index: number,
   length: number
@@ -56,9 +57,9 @@ const canUpdateSystemStatus : boolean = authService.isAuthorised(
 const SystemStatusAlertsView: React.FC = () => {
   const [sidePanelIsOpen, setSidePanelOpen] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [selectedAlert, setSelectedAlert] : [Alert | null, React.Dispatch<React.SetStateAction<Alert | null>>] = useState<Alert | null>(null);
-  const [alerts, setAlerts] : [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>] = useState<Alert[]>([]);
-  const [loading, setLoading] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
-  const [loading1, setLoading1] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [alerts, setAlerts]: AlertsState = useState<Alert[]>([]);
+  const [loading, setLoading]: BooleanState = useState<boolean>(true);
+  const [loading1, setLoading1]: BooleanState = useState<boolean>(false);
   const [errorText, setErrorText]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   const [errorNote, setErrorNote]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   const [successMessage, setSuccessMessage]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
