@@ -20,6 +20,25 @@ import { Alert } from "../interface";
 import { getClassNameToHandleOverFlowPostion } from "./SystemStatusAlerts.view";
 import SystemStatusTableCellActions from "./SystemStatusTableCellActions";
 
+const InformationTableCell: React.FC<{ alert: Alert; t: (key: string) => string }> = ({ alert, t }) => (
+  <TableCell className={alert.isErrorResponse ? "information-column-error" : ""}>
+    {alert.isErrorResponse ? (
+      <div className="warning--alt">
+        <Icon
+          color={IconColor.Warning300}
+          dataTestId="btn-90"
+          id="variable-2"
+          name="warning--alt"
+          size={16}
+        />
+        <span> {t("SystemStatus_T.WarningMessage")}</span>
+      </div>
+    ) : (
+      alert?.information
+    )}
+  </TableCell>
+);
+
 const SystemStatusAlertsTableComponent: React.FC<{
   alerts: Alert[];
   overflowMenuIndex: string;
@@ -64,24 +83,7 @@ const SystemStatusAlertsTableComponent: React.FC<{
           }
           return alert?.emailSubscribed ? t("SystemStatus_T.Yes") : t("SystemStatus_T.No");
         };
-    
-    
-        const handleOverflowMenuClick : (index: number) => void = (index: number) => {
-          if (overflowMenuIndex === `overflow-${index}`) {
-            setOverflowMenuIndex("");
-            setSystemStatusOverflowPosition(null);
-          } else {
-            const rect: DOMRect | undefined | null  =
-            systemStatusOverFlowBtnRef && systemStatusOverFlowBtnRef.current &&  systemStatusOverFlowBtnRef.current[index]?.getBoundingClientRect();
-            if (rect) {
-              setSystemStatusOverflowPosition({
-                left: rect.left,
-                top: rect.bottom
-              });
-            }
-            setOverflowMenuIndex(`overflow-${index}`);
-          }
-        };
+  
   return (
     <TableWrapper className="system-status-table-wrapper">
            <Table className="status-table" isStatus>
@@ -104,26 +106,7 @@ const SystemStatusAlertsTableComponent: React.FC<{
                    <TableRow key={alert?.id}>
                      <TableCell status={status}>{statusLabel}</TableCell>
                      <TableCell>{alert?.alertName}</TableCell>
-                     <TableCell
-                       className={
-                         alert.isErrorResponse ? "information-column-error" : ""
-                       }
-                     >
-                       {alert.isErrorResponse ? (
-                         <div className="warning--alt">
-                           <Icon
-                             color={IconColor.Warning300}
-                             dataTestId="btn-90"
-                             id="variable-2"
-                             name="warning--alt"
-                             size={16}
-                           />
-                           <span> {t("SystemStatus_T.WarningMessage")}</span>
-                         </div>
-                       ) : (
-                         alert?.information
-                       )}
-                     </TableCell>
+                     <InformationTableCell alert={alert} t={t} />
                      <TableCell>{getEmailSubscriptionText(alert)}</TableCell>
                      
                      <TableCell>

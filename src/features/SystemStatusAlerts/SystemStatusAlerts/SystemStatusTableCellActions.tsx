@@ -33,7 +33,7 @@ const SystemStatusTableCellActions: React.FC<SystemStatusTableCellActionsProps> 
   getClassNameToHandleOverFlowPostion,
   alertsLength
 }) => {
-  const handleOverflowMenuClick = (idx: number) => {
+  const handleOverflowMenuClick: (idx: number) => void = (idx) => {
     if (overflowMenuIndex === `overflow-${idx}`) {
       setOverflowMenuIndex("");
       setSystemStatusOverflowPosition(null);

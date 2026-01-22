@@ -160,7 +160,7 @@ export interface HandleButtonClickParams {
   syncDataStatus: string;
 }
 
-export const handleButtonClick = async ({
+export const handleButtonClick: ({ handleException, setSyncStatus, setShowSyncCompleteDialog, setShowSyncDialog, clicked, setClicked, inProgressStatus, setShowSyncFailedDialog, setIsLoading, history, syncDataStatus }: HandleButtonClickParams) => Promise<void> = async ({
   handleException,
   setSyncStatus,
   setShowSyncCompleteDialog,

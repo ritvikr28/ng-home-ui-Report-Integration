@@ -21,7 +21,7 @@ export interface ActionHandlers {
 }
 
 // Helper function to handle email activation/deactivation
-const handleEmailAction = (
+const handleEmailAction: (alert: Alert, action: string, handlers: Pick<ActionHandlers, "setSelectedAlert" | "setLoading1" | "activateEmailAlert" | "fetchAlerts" | "setSuccessMessage" | "setErrorNote" | "t">) => void = (
   alert: Alert,
   action: string,
   handlers: Pick<ActionHandlers, "setSelectedAlert" | "setLoading1" | "activateEmailAlert" | "fetchAlerts" | "setSuccessMessage" | "setErrorNote" | "t">
@@ -48,7 +48,7 @@ const handleEmailAction = (
 };
 
 // Export the refactored handleActionClick function
-export const handleActionClick = (
+export const handleActionClick: (action: string, alert: Alert, handlers: ActionHandlers) => void = (
   action: string,
   alert: Alert,
   handlers: ActionHandlers

@@ -44,7 +44,6 @@ export const getClassNameToHandleOverFlowPostion = (
   return "template-menu-popover";
 };
 
-type StringStateTuple = [string | null, React.Dispatch<React.SetStateAction<string | null>>];
 
 const requiredSystemStatusUpdatePermission: Permission[] = [
   { Securable: "NG.AlertEmails.List", Operation: "Update" },
@@ -60,9 +59,9 @@ const SystemStatusAlertsView: React.FC = () => {
   const [alerts, setAlerts] : [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>] = useState<Alert[]>([]);
   const [loading, setLoading] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [loading1, setLoading1] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [errorText, setErrorText]: StringStateTuple = useState<string | null>(null);
-  const [errorNote, setErrorNote]: StringStateTuple = useState<string | null>(null);
-  const [successMessage, setSuccessMessage]: StringStateTuple = useState<string | null>(null);
+  const [errorText, setErrorText]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [errorNote, setErrorNote]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
   const [overflowMenuIndex, setOverflowMenuIndex] : [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const overflowMenuRef : React.RefObject<HTMLSpanElement> = useRef<HTMLSpanElement>(null);
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
