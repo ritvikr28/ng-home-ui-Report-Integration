@@ -108,7 +108,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,
-        inviteRequestDate: item?.InviteRequestDate,
+        inviteRequestDate: item?.inviteRequestDate,
         actions: {
           options: [
             {
