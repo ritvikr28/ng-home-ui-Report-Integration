@@ -58,11 +58,11 @@ const SystemStatusAlertsView: React.FC = () => {
   const [sidePanelIsOpen, setSidePanelOpen] : [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [selectedAlert, setSelectedAlert] : [Alert | null, React.Dispatch<React.SetStateAction<Alert | null>>] = useState<Alert | null>(null);
   const [alerts, setAlerts]: AlertsState = useState<Alert[]>([]);
-  const [loading, setLoading]: BooleanState = useState<boolean>(true);
-  const [loading1, setLoading1]: BooleanState = useState<boolean>(false);
-  const [errorText, setErrorText]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
-  const [errorNote, setErrorNote]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
+  const [loading, setLoading]: any = useState<boolean>(true);
+  const [loading1, setLoading1]: any = useState<boolean>(false);
+  const [errorText, setErrorText]: any = useState<string | null>(null);
+  const [errorNote, setErrorNote]: any = useState<string | null>(null);
+  const [successMessage, setSuccessMessage]: any = useState<string | null>(null);
   const [overflowMenuIndex, setOverflowMenuIndex] : [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const overflowMenuRef : React.RefObject<HTMLSpanElement> = useRef<HTMLSpanElement>(null);
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
