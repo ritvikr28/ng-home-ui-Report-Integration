@@ -2338,7 +2338,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
         blobName: "blob1"
       }],
       pageNumber: 1,
-      pageSize: 1
+      pageSize: 10
     };
     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
