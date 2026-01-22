@@ -301,7 +301,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={NotificationsLogic}
             />
           )}
-
+   
           {hasSIMS7RedirectsOrgView &&
             <ProtectedRoute
               exact
