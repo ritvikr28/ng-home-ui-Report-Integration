@@ -18,6 +18,7 @@ import {
 import "../style.scss";
 import { Alert } from "../interface";
 import { getClassNameToHandleOverFlowPostion } from "./SystemStatusAlerts.view";
+import SystemStatusTableCellActions from "./SystemStatusTableCellActions";
 
 const SystemStatusAlertsTableComponent: React.FC<{
   alerts: Alert[];
@@ -39,7 +40,7 @@ const SystemStatusAlertsTableComponent: React.FC<{
   
 }) => {
       const systemStatusOverFlowBtnRef : React.RefObject<(HTMLButtonElement | null)[]> = useRef<(HTMLButtonElement | null)[]>([]);
-        const [systemStatusOverflowPosition, setSystemStatusOverflowPosition] = useState<{
+        const [systemStatusOverflowPosition, setSystemStatusOverflowPosition]: [{ left: number; top: number } | null, React.Dispatch<React.SetStateAction<{ left: number; top: number } | null>>] = useState<{
           left: number;
           top: number;
         } | null>(null);
@@ -126,77 +127,21 @@ const SystemStatusAlertsTableComponent: React.FC<{
                      <TableCell>{getEmailSubscriptionText(alert)}</TableCell>
                      
                      <TableCell>
-                       <div className="system-status-overflow-btn-wrapper">
-                         {(!canUpdateSystemStatus || alert?.isErrorResponse || alert?.status === "Connection error") ? (
-                           <button
-                             type="button"
-                             onClick={() => handleActionClick("View", alert)}
-                             className="view-link-as-button"
-                           >
-                             {t("SystemStatus_T.View")}
-                           </button>
-                         ) : (
-                           <>
-                             <Button
-                               ref={(el) => {
-                                 if(systemStatusOverFlowBtnRef.current) 
-                                   systemStatusOverFlowBtnRef.current[index] = el;
-                                 
-                               }}
-                               size={ButtonSize.Small}
-                               color={
-                                 overflowMenuIndex === `overflow-${index}`
-                                   ? ButtonColor.Primary
-                                   : ButtonColor.Utility
-                               }
-                               onClick={() => handleOverflowMenuClick(index)}
-                               iconName="overflow-menu--horizontal"
-                               ariaLabel="Overflow menu"
-                               className={`btn-option${overflowMenuIndex === `overflow-${index}` ? " system-status-overflow-btn-active" : ""}`}
-                             />
-                             {overflowMenuIndex === `overflow-${index}` && (
-                               <span
-                                 ref={overflowMenuRef}
-                                 style={{
-                                   left: (systemStatusOverflowPosition?.left ?? 0) - 150,
-                                   top: systemStatusOverflowPosition?.top
-                                 }}
-                                 className="overflow-menu-position"
-                               >
-                                 <OverflowMenu
-                                   dataTestId="childcare-overflow-menu"
-                                   id={`childcare-overflow-menu-${index}`}
-                                   onClick={(e, selectedValue) =>
-                                     handleActionClick(
-                                       (selectedValue as { value: string }).value,
-                                       alert
-                                     )
-                                   }
-                                   className={`${getClassNameToHandleOverFlowPostion(
-                                     index,
-                                     alerts.length
-                                   )} system-status-overflow-menu`}
-                                 >
-                                   <OverflowMenuItem value="View">
-                                     {t("SystemStatus_T.View")}
-                                   </OverflowMenuItem>
-                                   <OverflowMenuItem
-                                     value={
-                                       alert.emailSubscribed
-                                         ? "Deactivate Email"
-                                         : "Activate Email"
-                                     }
-                                   >
-                                     {alert.emailSubscribed
-                                       ? t("SystemStatus_T.Deactivateemail")
-                                       : t("SystemStatus_T.Activateemail")}
-                                   </OverflowMenuItem>
-                                 </OverflowMenu>
-                               </span>
-                             )}
-                           </>
-                         )}
-                       </div>
+                       <SystemStatusTableCellActions
+                         alert={alert}
+                         index={index}
+                         canUpdateSystemStatus={canUpdateSystemStatus}
+                         handleActionClick={handleActionClick}
+                         t={t}
+                         overflowMenuIndex={overflowMenuIndex}
+                         setOverflowMenuIndex={setOverflowMenuIndex}
+                         overflowMenuRef={overflowMenuRef}
+                         systemStatusOverFlowBtnRef={systemStatusOverFlowBtnRef}
+                         systemStatusOverflowPosition={systemStatusOverflowPosition}
+                         setSystemStatusOverflowPosition={setSystemStatusOverflowPosition}
+                         getClassNameToHandleOverFlowPostion={getClassNameToHandleOverFlowPostion}
+                         alertsLength={alerts.length}
+                       />
                      </TableCell>
    
                    </TableRow>

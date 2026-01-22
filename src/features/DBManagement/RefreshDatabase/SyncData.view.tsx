@@ -11,7 +11,7 @@ import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/resp
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
 import { errorHandler } from "../../../shared/utils/errorHandler";
-import { FetchPreCheckStatus } from "./RefreshDatabase.view";
+import { FetchPreCheckStatus } from "./RefreshDatabaseUtils";
 
 export interface SyncDataViewProps {
   inProgressStatus: (value: string) => void;
@@ -145,20 +145,34 @@ export const TriggerSync : (handleException: () => void, history: any) => Promis
 }
 
 // Handle button click
-export const handleButtonClick : (handleException: () => void, setSyncStatus: React.Dispatch<React.SetStateAction<string>>, setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>, setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>, clicked: boolean, setClicked: React.Dispatch<React.SetStateAction<boolean>>, inProgressStatus: (value: string) => void, setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>, setIsLoading: React.Dispatch<React.SetStateAction<boolean>>, history: ReturnType<typeof useHistory>, syncDataStatus: string) => Promise<void>  = async (
-  handleException: () => void,
-  setSyncStatus: React.Dispatch<React.SetStateAction<string>>,
-  setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>,
-  clicked: boolean,
-  setClicked: React.Dispatch<React.SetStateAction<boolean>>,
-  inProgressStatus: (value: string) => void,
-  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  history: ReturnType<typeof useHistory>,// Pass the history object
-  syncDataStatus: string
 
-) : Promise<void> => {
+export interface HandleButtonClickParams {
+  handleException: () => void;
+  setSyncStatus: React.Dispatch<React.SetStateAction<string>>;
+  setShowSyncCompleteDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSyncDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  clicked: boolean;
+  setClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  inProgressStatus: (value: string) => void;
+  setShowSyncFailedDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  history: ReturnType<typeof useHistory>;
+  syncDataStatus: string;
+}
+
+export const handleButtonClick = async ({
+  handleException,
+  setSyncStatus,
+  setShowSyncCompleteDialog,
+  setShowSyncDialog,
+  clicked,
+  setClicked,
+  inProgressStatus,
+  setShowSyncFailedDialog,
+  setIsLoading,
+  history,
+  syncDataStatus
+}: HandleButtonClickParams): Promise<void> => {
   try {
     setIsLoading(true);
     if (syncDataStatus === "Completed") {
@@ -188,7 +202,6 @@ export const handleButtonClick : (handleException: () => void, setSyncStatus: Re
     setSyncStatus("In Progress");
 
     if (clicked) {
-
       const response: ISchoolDetailsDRApiResponse | null = await FetchSyncStatus(handleException, history);
       if (response?.statusCode === 200) {
         if (response.uiStatus === "Completed") {
@@ -300,7 +313,7 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
         className="btn-full-width"
         size={ButtonSize.Small}
         color={ButtonColor.Utility}
-        onClick={() => handleButtonClick(
+        onClick={() => handleButtonClick({
           handleException,
           setSyncStatus,
           setShowSyncCompleteDialog,
@@ -309,9 +322,10 @@ const SyncDataView: React.FC<SyncDataViewProps> = ({
           setClicked,
           inProgressStatus,
           setShowSyncFailedDialog,
-          setIsLoading, history, syncDataStatus
-        )}
-
+          setIsLoading,
+          history,
+          syncDataStatus
+        })}
         disabled={isLoading || showSyncCompleteDialog}
       >
         {isLoading ? "Loading.." : "Sync"}
