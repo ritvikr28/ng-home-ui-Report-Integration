@@ -80,7 +80,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
     if (setshowInvitationConflictBanner) {
       setshowInvitationConflictBanner(
         InviteUsersData[0]?.payload.some(
-          (x: any) => x?.invitationStatus === "Invitation conflict"
+          (x: any) => x?.invitationStatus === "Invite conflict"
         )
       );
     }
