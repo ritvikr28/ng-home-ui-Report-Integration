@@ -5,8 +5,7 @@ import "./carousalstyle.scss";
 
 /* eslint-disable */
 const TakeRegisterEvent: ({ isOpen, setIsOpen }: any) => JSX.Element = ({ isOpen }) => {
-  const { data, isLoading, isError } = useStaffTimetableAndRegisterDetails();
-
+  const { data, isLoading, isError }: { data: any; isLoading: boolean; isError: boolean } = useStaffTimetableAndRegisterDetails();
   const now = new Date();
 
 const isSameLocalDate = (d1: Date, d2: Date) =>
@@ -14,13 +13,13 @@ const isSameLocalDate = (d1: Date, d2: Date) =>
   d1.getMonth() === d2.getMonth() &&
   d1.getDate() === d2.getDate();
 
-const registerEventData = (data?.payload?.registerDetailResponse || [])
-  .filter(event => {
+const registerEventData:any[] = (data?.payload?.registerDetailResponse || [])
+  .filter((event: { eventStart: string | number | Date; eventEnd: string | number | Date; }) => {
     const eventStart = new Date(event.eventStart);
     const eventEnd = new Date(event.eventEnd);
     return isSameLocalDate(eventStart, now) && eventEnd >= now;
   })
-  .sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime());
+  .sort((a:any, b:any) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime());
 
   if (isLoading) {
     return (

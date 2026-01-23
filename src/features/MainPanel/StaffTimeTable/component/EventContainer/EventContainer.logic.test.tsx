@@ -4,8 +4,35 @@ import { StaffTimetableAndRegisterDetailsProvider } from "../../../../../shared/
 import * as registerService from "../../../../../shared/services/registersDomain/registerEventsDetails";
 import * as staffService from "../../../../../shared/services/staffDomain/staffServices";
 
+type SomeType = {
+  externalId: string;
+  eventStart: string;
+  eventEnd: string;
+  eventDescription: string;
+  eventInstanceExternalId: string;
+  levelCode: string | null;
+  eventTypeCode: string;
+  subjectColor: string | null;
+  yearGroupColor: string | null;
+  userPreference: string;
+  yearGroupId: string;
+  classPeriodExternalId: string;
+  group: object;
+  room: object;
+  subject: object;
+  supervisors: Array<{ externalId: string; forename: string; surname: string }>;
+  isCovered: boolean;
+  isCovering: boolean;
+  originalStaffExternalID: string | null;
+  coveringStaffExternalID: string | null;
+  yearGroupExternalId: string | null;
+  staff: { externalId: string; forename: string; surname: string };
+  roomCover: any;
+};
+
 describe("formatCoverStaffName", () => {
-  const baseEventData = {
+  // Define a minimal type for baseEventData used in tests
+  const baseEventData: SomeType = {
     externalId: "evt1",
     eventStart: "2023-01-01T09:00:00Z",
     eventEnd: "2023-01-01T10:00:00Z",
@@ -32,7 +59,7 @@ describe("formatCoverStaffName", () => {
   };
 
   it("returns cover staff names when isCovered && !isCovering", async () => {
-    const mockStaffDetails = {
+    const mockStaffDetails: { payload: Array<{ externalId: string; forename: string; surname: string }> } = {
       payload: [
         { externalId: "COV1", forename: "Alice", surname: "Brown" },
         { externalId: "COV2", forename: "Bob", surname: "White" }
@@ -46,52 +73,52 @@ describe("formatCoverStaffName", () => {
       isCovered: true,
       isCovering: false
     };
-    const result = await formatCoverStaffName(eventData);
+    const result: string = await formatCoverStaffName(eventData);
     expect(staffService.fetchStaffDetails).toHaveBeenCalledWith(["COV1", "COV2"]);
     expect(result).toBe("Alice Brown, Bob White");
   });
 
   it("returns supervisor name when !isCovered && isCovering", async () => {
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "orig1",
       coveringStaffExternalID: "cov1",
       isCovered: false,
       isCovering: true
     };
-    const result = await formatCoverStaffName(eventData);
+    const result: string = await formatCoverStaffName(eventData);
     expect(result).toBe("Jane Smith");
   });
 
   it("returns empty string if no originalStaffExternalID or coveringStaffExternalID", async () => {
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "",
       coveringStaffExternalID: "",
       isCovered: false,
       isCovering: false
     };
-    const result = await formatCoverStaffName(eventData);
+    const result: string = await formatCoverStaffName(eventData);
     expect(result).toBe("");
   });
 
   it("returns empty string if no cover staff found", async () => {
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue({ payload: [] });
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "orig1",
       coveringStaffExternalID: "cov1",
       isCovered: true,
       isCovering: false
     };
-    const result = await formatCoverStaffName(eventData);
+    const result: string = await formatCoverStaffName(eventData);
     expect(result).toBe("");
   });
 });
 jest.mock("../../../../../shared/services/registersDomain/registerEventsDetails");
 jest.mock("../../../../../shared/services/staffDomain/staffServices");
 
-const mockEvent = {
+const mockEvent: SomeType = {
   externalId: "1",
   eventStart: new Date().toISOString(),
   eventEnd: new Date(Date.now() + 3600000).toISOString(),
@@ -102,17 +129,31 @@ const mockEvent = {
   roomCover: { roomCode: "RC1" },
   classPeriodExternalId: "cpid",
   eventInstanceExternalId: "eid",
-  supervisors: [{ forename: "John", surname: "Doe" }],
+  supervisors: [{
+    forename: "John", surname: "Doe",
+    externalId: ""
+  }],
   originalStaffExternalID: "S1",
   coveringStaffExternalID: "S2",
   isCovered: false,
   isCovering: false,
-  subjectColor: "primary"
+  subjectColor: "primary",
+  levelCode: null,
+  yearGroupColor: null,
+  userPreference: "",
+  yearGroupId: "",
+  subject: {},
+  yearGroupExternalId: null,
+  staff: {
+    externalId: "",
+    forename: "",
+    surname: ""
+  }
 };
 
 
 describe("formatStaffName", () => {
-  const baseEventData = {
+  const baseEventData: SomeType = {
     externalId: "evt1",
     eventStart: "2023-01-01T09:00:00Z",
     eventEnd: "2023-01-01T10:00:00Z",
@@ -139,47 +180,47 @@ describe("formatStaffName", () => {
   };
 
   it("returns the original staff's full name when found", async () => {
-    const mockStaffDetails = {
+    const mockStaffDetails: { payload: Array<{ externalId: string; forename: string; surname: string }> } = {
       payload: [
         { externalId: "ABC123", forename: "John", surname: "Doe" }
       ]
     };
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue(mockStaffDetails);
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "abc123",
       coveringStaffExternalID: "xyz789",
       isCovered: false,
       isCovering: true
     };
-    const result = await formatStaffName(eventData);
+    const result: string = await formatStaffName(eventData);
     expect(staffService.fetchStaffDetails).toHaveBeenCalledWith(["abc123"]);
     expect(result).toBe("John Doe");
   });
 
   it("returns empty string if original staff not found", async () => {
-    const mockStaffDetails = { payload: [] };
+    const mockStaffDetails: { payload: Array<{ externalId: string; forename: string; surname: string }> } = { payload: [] };
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue(mockStaffDetails);
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "abc123",
       coveringStaffExternalID: "xyz789",
       isCovered: false,
       isCovering: true
     };
-    const result = await formatStaffName(eventData);
+    const result: string = await formatStaffName(eventData);
     expect(result).toBe("");
   });
 
   it("returns supervisor name if branch not matched", async () => {
-    const eventData = {
+    const eventData: SomeType = {
       ...baseEventData,
       originalStaffExternalID: "",
       coveringStaffExternalID: "",
       isCovered: false,
       isCovering: false
     };
-    const result = await formatStaffName(eventData);
+    const result: string = await formatStaffName(eventData);
     expect(result).toBe("Jane Smith");
   });
 
