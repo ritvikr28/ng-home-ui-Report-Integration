@@ -41,7 +41,7 @@ export interface ITableBodyDataType {
   email: string;
   userType: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null | undefined;
+  inviteRequestDate: string | undefined;
   actions: {
     options: ITableOptions[];
   };
@@ -133,7 +133,7 @@ export interface IInviteUserDetails {
   externalId: string;
   forename: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null | undefined;
+  inviteRequestDate: string | undefined;
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
