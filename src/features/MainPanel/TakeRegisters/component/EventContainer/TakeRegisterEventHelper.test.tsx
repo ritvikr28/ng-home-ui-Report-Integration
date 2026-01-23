@@ -47,13 +47,13 @@ jest.mock("../../../../../shared/utils", () => ({
   getUserOrganisation: () => "org-456"
 }));
 
-const pushEventMock = jest.fn();
+const pushEventMock: jest.Mock = jest.fn();
 jest.mock("../../../../../shared/utils/analytics", () => ({
   __esModule: true,
   default: { pushEvent: (...args: any[]) => pushEventMock(...args) }
 }));
 
-const loggerInfoMock = jest.fn();
+const loggerInfoMock: jest.Mock = jest.fn();
 jest.mock("../../../../../shared/components/AppInsights", () => ({
   __esModule: true,
   logger: { info: (...args: any[]) => loggerInfoMock(...args) }
@@ -61,12 +61,12 @@ jest.mock("../../../../../shared/components/AppInsights", () => ({
 
 describe("TakeRegisterEventHelper", () => {
   it("getShowRegisterSecondaryTextFlag returns correct value", () => {
-    const flagValue = helper.getShowRegisterSecondaryTextFlag();
+    const flagValue: boolean = helper.getShowRegisterSecondaryTextFlag();
     expect(flagValue).toBe(true); // Based on the mock that returns true
   });
 
   it("renderNoRegisterMessage renders correct message", () => {
-    const t = (key: string) => key;
+    const t: (key: string) => string = (key: string) => key;
     render(helper.renderNoRegisterMessage(t));
     expect(screen.getByText("takeregister.noregistertoday")).toBeInTheDocument();
   });
@@ -78,7 +78,7 @@ describe("TakeRegisterEventHelper", () => {
       group: { externalId: "gid" },
       eventInstanceExternalId: "eid"
     } as unknown as IRegistersDetails;
-    const url = helper.generateRegisterUrl(item);
+    const url: string = helper.generateRegisterUrl(item);
     expect(url).toContain("/take-register/desc/gid/eid");
   });
 
@@ -89,7 +89,7 @@ describe("TakeRegisterEventHelper", () => {
       group: { externalId: "gid" },
       eventInstanceExternalId: "eid"
     } as unknown as IRegistersDetails;
-    const url = helper.generateRegisterUrl(item);
+    const url: string = helper.generateRegisterUrl(item);
     expect(url).toContain("/take-register/cpid/gid/eid");
   });
 
@@ -98,7 +98,7 @@ describe("TakeRegisterEventHelper", () => {
       group: { shortName: "VeryLongGroupName" },
       room: { roomName: "RoomName" }
     } as unknown as IRegistersDetails;
-    const text = helper.getPrimaryText(item, true);
+    const text: string = helper.getPrimaryText(item, true);
     expect(text.endsWith("..."))
       .toBe(true);
   });
@@ -108,7 +108,7 @@ describe("TakeRegisterEventHelper", () => {
       group: { shortName: "7E/Gg" },
       room: { roomName: "Humanities Room 4" }
     } as unknown as IRegistersDetails;
-    const text = helper.getPrimaryText(item, false);
+    const text: string = helper.getPrimaryText(item, false);
     expect(text).toBe("7E/Gg | Humanities Room 4");
   });
 
@@ -117,7 +117,7 @@ describe("TakeRegisterEventHelper", () => {
       group: { shortName: "7C/Ggb" },
       room: null
     } as unknown as IRegistersDetails;
-    const text = helper.getPrimaryText(item, false);
+    const text: string = helper.getPrimaryText(item, false);
     expect(text).toBe("7C/Ggb");
   });
 
@@ -127,7 +127,7 @@ describe("TakeRegisterEventHelper", () => {
       eventStart: "2025-10-07T11:45:00",
       eventEnd: "2025-10-07T12:15:00"
     } as unknown as IRegistersDetails;
-    const text = helper.getSecondaryText(item);
+    const text: string = helper.getSecondaryText(item);
     expect(text).toBe("2Tue:7 | 11:45 - 12:15");
   });
 
@@ -137,7 +137,7 @@ describe("TakeRegisterEventHelper", () => {
       eventStart: "",
       eventEnd: ""
     } as unknown as IRegistersDetails;
-    const text = helper.getSecondaryText(item);
+    const text: string = helper.getSecondaryText(item);
     expect(text).toBe("AM");
   });
 
@@ -169,7 +169,7 @@ describe("TakeRegisterEventHelper", () => {
         { eventDescription: "PM", eventStart: "2024-01-01T13:00:00Z", eventEnd: "2024-01-01T14:00:00Z" }
       ] as unknown as IRegistersDetails[];
       
-      const result = helper.filterAndSortRegisterData(data);
+      const result: IRegistersDetails[] = helper.filterAndSortRegisterData(data);
       expect(result).toHaveLength(2);
       expect(result[0].eventDescription).toBe("AM");
       expect(result[1].eventDescription).toBe("PM");
@@ -182,7 +182,7 @@ describe("TakeRegisterEventHelper", () => {
         { eventDescription: "1Fri:9", eventStart: "2024-01-01T08:00:00Z", eventEnd: "2024-01-01T09:00:00Z" }
       ] as unknown as IRegistersDetails[];
       
-      const result = helper.filterAndSortRegisterData(data);
+      const result: IRegistersDetails[] = helper.filterAndSortRegisterData(data);
       expect(result).toHaveLength(1);
       expect(result[0].eventDescription).toBe("1Fri:9");
     });
@@ -194,7 +194,7 @@ describe("TakeRegisterEventHelper", () => {
         { eventDescription: "1Fri:9", eventStart: "2024-01-01T08:00:00Z", eventEnd: "2024-01-01T09:00:00Z" }
       ] as unknown as IRegistersDetails[];
       
-      const result = helper.filterAndSortRegisterData(data);
+      const result: IRegistersDetails[] = helper.filterAndSortRegisterData(data);
       expect(result).toHaveLength(3);
       expect(result[0].eventDescription).toBe("1Fri:9");
       expect(result[1].eventDescription).toBe("AM");
@@ -210,9 +210,9 @@ describe("TakeRegisterEventHelper", () => {
 
   describe("setDefaultAndCurrentSlide", () => {
     it("sets last slide when index < 0", () => {
-      const spy = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(-1);
+      const spy: jest.SpyInstance = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(-1);
       const ref: any = { current: { goToSlide: jest.fn() } };
-      const setCurrentSlide = jest.fn();
+      const setCurrentSlide: React.Dispatch<React.SetStateAction<number>> = jest.fn();
       const data = new Array(5).fill(null) as unknown as IRegistersDetails[];
       helper.setDefaultAndCurrentSlide(ref, data, setCurrentSlide);
       expect(ref.current.goToSlide).toHaveBeenCalledWith(5);
@@ -221,9 +221,9 @@ describe("TakeRegisterEventHelper", () => {
     });
 
     it("sets to last when in last few slides", () => {
-      const spy = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(3); // len 5 -> last few
+      const spy: jest.SpyInstance = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(3); // len 5 -> last few
       const ref: any = { current: { goToSlide: jest.fn() } };
-      const setCurrentSlide = jest.fn();
+      const setCurrentSlide: React.Dispatch<React.SetStateAction<number>> = jest.fn();
       const data = new Array(5).fill(null) as unknown as IRegistersDetails[];
       helper.setDefaultAndCurrentSlide(ref, data, setCurrentSlide);
       expect(ref.current.goToSlide).toHaveBeenCalledWith(3);
@@ -232,9 +232,9 @@ describe("TakeRegisterEventHelper", () => {
     });
 
     it("sets to found index otherwise", () => {
-      const spy = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(1);
+      const spy: jest.SpyInstance = jest.spyOn(helper, "findCurrentIndex").mockReturnValue(1);
       const ref: any = { current: { goToSlide: jest.fn() } };
-      const setCurrentSlide = jest.fn();
+      const setCurrentSlide: React.Dispatch<React.SetStateAction<number>> = jest.fn();
       const data = new Array(5).fill(null) as unknown as IRegistersDetails[];
       helper.setDefaultAndCurrentSlide(ref, data, setCurrentSlide);
       expect(ref.current.goToSlide).toHaveBeenCalledWith(1);
@@ -249,7 +249,7 @@ describe("TakeRegisterEventHelper", () => {
       const ref: any = { current: { next: jest.fn() } };
       const data = new Array(5).fill(null) as unknown as IRegistersDetails[];
       let current = 1;
-      const setCurrent = (updater: any) => { current = updater(current); };
+      const setCurrent: React.Dispatch<React.SetStateAction<number>> = (updater: any) => { current = updater(current); };
       helper.nextSlide(ref, data, setCurrent as any);
       expect(ref.current.next).toHaveBeenCalled();
       expect(current).toBe(3);
@@ -260,7 +260,7 @@ describe("TakeRegisterEventHelper", () => {
       jest.spyOn(helper, "getSlidesToShow").mockReturnValue(2);
       const ref: any = { current: { previous: jest.fn() } };
       let current = 3;
-      const setCurrent = (updater: any) => { current = updater(current); };
+      const setCurrent: React.Dispatch<React.SetStateAction<number>> = (updater: any) => { current = updater(current); };
       helper.previousSlide(ref, current, setCurrent as any);
       expect(ref.current.previous).toHaveBeenCalled();
       expect(current).toBe(1);
@@ -269,7 +269,7 @@ describe("TakeRegisterEventHelper", () => {
 
     it("previousSlide does nothing when currentSlide is 0", () => {
       const ref: any = { current: { previous: jest.fn() } };
-      const setCurrent = jest.fn();
+      const setCurrent: React.Dispatch<React.SetStateAction<number>> = jest.fn();
       helper.previousSlide(ref, 0, setCurrent);
       expect(ref.current.previous).not.toHaveBeenCalled();
       expect(setCurrent).not.toHaveBeenCalled();
@@ -302,10 +302,10 @@ describe("TakeRegisterEventHelper", () => {
         { eventDescription: "AM", group: { shortName: "7A" }, room: { roomName: "R1" }, isCompleted: true } as unknown as IRegistersDetails,
         { eventDescription: "PM", group: { shortName: "7B" }, room: { roomName: "R2" }, isCompleted: false } as unknown as IRegistersDetails
       ];
-      const t = (k: string) => k;
+      const t: (k: string) => string = (k: string) => k;
       const ref: any = { current: { goToSlide: jest.fn(), next: jest.fn(), previous: jest.fn() } };
-      const onClick = jest.fn();
-      const el = helper.renderCarousel(items, false, ref, {} as any, onClick, t);
+      const onClick:any = jest.fn();
+      const el: React.ReactElement = helper.renderCarousel(items, false, ref, {} as any, onClick, t);
       render(el);
 
       // Two action cards + one no-more card

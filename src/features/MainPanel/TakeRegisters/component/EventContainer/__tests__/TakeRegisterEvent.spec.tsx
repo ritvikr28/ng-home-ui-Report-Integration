@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ActionCard } from "@essnextgen/ui-kit";
 import TakeRegisterEventView from "../TakeRegisterEvent.view";
 
-const mockTakeRegisterData = [
+const mockTakeRegisterData: any[] = [
   {
     externalId: "37fe774b-52cd-4ed8-88ff-7f621f443168",
     eventStart: "2023-10-31T09:31:00",
@@ -170,7 +170,7 @@ test("should render the Action Card", () => {
 });
 
 test("renders without errors", () => {
-  const { container } = render(
+  const { container }: RenderResult = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -182,12 +182,12 @@ test("renders without errors", () => {
 
 test("render tile on basis of time", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-11-29:13:58.00"));
-  const setCurrentSlide = jest.fn();
+  const setCurrentSlide: jest.Mock = jest.fn();
   const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
 
-  const { container } = render(
+  const { container }: RenderResult = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -201,11 +201,11 @@ test("render tile on basis of time", () => {
 
 test("render second tile as first", () => {
   jest.useFakeTimers().setSystemTime(new Date("2023-10-31:9:30.00"));
-  const setCurrentSlide = jest.fn();
+  const setCurrentSlide: jest.Mock = jest.fn();
   const useStateMock: any = (init: any) => [init, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { container }: any = render(
+  const { container }: RenderResult = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -250,7 +250,7 @@ test.skip("click the next button should render next tile", () => {
   const useStateMock: any = () => [1, setCurrentSlide];
 
   jest.spyOn(React, "useState").mockImplementation(useStateMock);
-  const { getByTestId } = render(
+  const { getByTestId }: RenderResult = render(
     <TakeRegisterEventView
       apiError={false}
       apiRegsiterEventData={mockTakeRegisterData}
@@ -267,7 +267,7 @@ test("disables the previous button when api returns null", () => {
   const { getByTestId }: any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen />
   );
-  const previousButton = getByTestId("btn-previous");
+  const previousButton: HTMLElement = getByTestId("btn-previous");
 
   expect(previousButton).toBeDisabled();
 });
@@ -276,7 +276,7 @@ test("disables the next button when api returns null", () => {
   const { getByTestId }: any = render(
     <TakeRegisterEventView apiError={false} apiRegsiterEventData={null} isOpen />
   );
-  const nextButton = getByTestId("btn-next");
+  const nextButton: HTMLElement = getByTestId("btn-next");
 
   expect(nextButton).toBeDisabled();
 });

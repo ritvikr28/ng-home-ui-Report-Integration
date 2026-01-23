@@ -60,13 +60,13 @@ const requiredPupilProfilePermissions: Permission[] = [
   }
 ];
 
-const canViewTimetable = authService.isAuthorised(
+const canViewTimetable: boolean = authService.isAuthorised(
   [
     { Securable: "NG.Homepage.Timetable", Operation: "View" }
   ],
   MatchPermissions.all
 );
-const canViewRegisters = authService.isAuthorised(
+const canViewRegisters: boolean = authService.isAuthorised(
   [
     { Securable: "NG.Homepage.Registers", Operation: "View" }
   ],
@@ -107,12 +107,10 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen(!isOpen);
   };
 
-  const { isPlayed, apiError } = useVideoPlayStatus();
-  const [videoStatusSaved, setVideoStatusSaved] = useState<boolean>(false);
+  const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
+  const [videoStatusSaved, setVideoStatusSaved]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
-
-
-  async function handlePlay() {
+  async function handlePlay(): Promise<void> {
     gtmAnalytics.pushEvent({ event: "playVideo" });
     if (!videoStatusSaved) {
       try {
@@ -124,20 +122,21 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     }
   }
 
-  function handleOnEnded() {
+  function handleOnEnded(): void {
   gtmAnalytics.pushVideoEvent(100);
   };
 
-  function handleOnPause() {}
-
+  function handleOnPause(): void {
+    // Intentionally left blank: pause event is not required
+  }
   const shouldShowVideo =
     !apiError &&
     isPlayed === false;
   
-  function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) {
-    const { detail: { percentWatched, lastPercentWatched } } = event
-    const percentage = percentWatched * 100;
-    const lastPercentage = lastPercentWatched * 100;
+  function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }): void {
+    const { detail: { percentWatched, lastPercentWatched } }: { detail: { percentWatched: number; lastPercentWatched: number; }; } = event
+    const percentage: number = percentWatched * 100;
+    const lastPercentage: number = lastPercentWatched * 100;
  
     const milestones = [5, 25, 50, 75, 95];
     milestones.forEach((milestone) => {
