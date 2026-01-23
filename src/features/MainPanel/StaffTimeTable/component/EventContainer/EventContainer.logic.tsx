@@ -79,7 +79,7 @@ const getConditionalContent:(isError: boolean, isLoading: boolean, data: any, t:
 };
 
 
-const EventContainer = ({ isOpen }: any): JSX.Element | null => {
+const EventContainer: React.FC<{ isOpen: boolean }> = ({ isOpen }): JSX.Element | null => {
   const { data, isLoading, isError }: { data: any; isLoading: boolean; isError: boolean } = useStaffTimetableAndRegisterDetails();
   const [selectedItem, setSelectedItem]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
   const [isOpenPanel, setIsOpenPanel]: [Record<string, boolean>, React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
