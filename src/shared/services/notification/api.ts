@@ -4,18 +4,22 @@ import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
 
-export const getNotificationTableData = async ({ PageSize, PageNumber }: { PageSize: number, PageNumber: number }): Promise<any> => {
-  const orgId = getUserOrganisation();
-  const receiverId = authService.getUserId();
+export const getNotificationTableData: ({ PageSize, PageNumber }: {
+  PageSize: number;
+  PageNumber: number;
+}) => Promise<any> = async ({ PageSize, PageNumber }: { PageSize: number, PageNumber: number }): Promise<any> => {
+
+  const orgId: string = getUserOrganisation();
+  const receiverId: string | null = authService.getUserId();
   // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
   // authService.getUserId();
-  const uerName = authService.getUsername();
+  const userName: string | null = authService.getUsername();
 
-  console.log({ orgId, receiverId, uerName });
+  console.log({ orgId, receiverId, userName });
   try {
-    const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}`;
-    const baseUrl = buildApplicationUrl(apiUrls);
-    const response = await service.get(path, baseUrl);
+    const path: string = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}`;
+    const baseUrl: string = buildApplicationUrl(apiUrls);
+    const response: any = await service.get(path, baseUrl);
     return response.data;
   } catch (err: any) {
     console.log("Error fetching notification table data:", err);
@@ -28,31 +32,31 @@ export const getNotificationTableData = async ({ PageSize, PageNumber }: { PageS
   }
 };
 
-export const getViewData = async (notificationId?: string): Promise<any> => {
-  const orgId = getUserOrganisation();
+export const getViewData: (notificationId?: string | undefined) => Promise<any> = async (notificationId?: string): Promise<any> => {
+  const orgId: string = getUserOrganisation();
 
   try {
-    const path = `/v1/notification/notification-by-id?NotificationId=${notificationId}&OrganisationId=${orgId}`;
-    const baseUrl = buildApplicationUrl(apiUrls);
-    const response = await service.get(path, baseUrl);
+    const path: string = `/v1/notification/notification-by-id?NotificationId=${notificationId}&OrganisationId=${orgId}`;
+    const baseUrl: string = buildApplicationUrl(apiUrls);
+    const response: any = await service.get(path, baseUrl);
     return response.data;
   } catch (err: any) {
     return { error: true, status: err.response.status }
   }
 }
 
-export const markAsRead = async (notificationId: string): Promise<any> => {
+export const markAsRead: (notificationId: string) => Promise<any> = async (notificationId: string): Promise<any> => {
   const requestData: {
     NotificationId: string;
   } = {
     NotificationId: notificationId,
   };
-  const orgId = getUserOrganisation();
+  const orgId: string = getUserOrganisation();
 
   try {
-    const baseUrl = buildApplicationUrl(apiUrls);
-    const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
-    const response = await service.put(path, requestData);
+    const baseUrl: string = buildApplicationUrl(apiUrls);
+    const path: string = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
+    const response: any = await service.put(path, requestData);
     console.log("Mark As Read Response:", response.data.payload);
     return response.data;
   } catch {

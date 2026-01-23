@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import FilterDialogView from "./FilterDialog.view";
+import { FilterStates } from "./FilterDialog.props";
 
 interface FilterDialogLogicProps {
     setFilterBtnClicked: (val: boolean) => void;
@@ -18,17 +19,27 @@ interface FilterDialogLogicProps {
     onClear: () => void;
 }
 
-const FilterDialogLogic = ({
-    setFilterBtnClicked,
-    filters = {},
-    onApply,
-    onClear
-}: FilterDialogLogicProps) => {
-    const [status, setStatus] = useState<string[]>(filters.status || []);
-    const [priority, setPriority] = useState<string[]>(filters.priority || []);
-    const [startDate, setStartDate] = useState(filters.startDate || "");
-    const [endDate, setEndDate] = useState(filters.endDate || "");
-    const [startDateError, setStartDateError] = useState<string>("");
+const isNonEmptyString = (value?: string): boolean => !!value && value.trim() !== "";
+
+const getInitialState = (filters: FilterDialogLogicProps["filters"]) => ({
+    status: filters.status || [],
+    priority: filters.priority || [],
+    startDate: filters.startDate || "",
+    endDate: filters.endDate || ""
+});
+
+const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
+    const initial: {
+        status: string[];
+        priority: string[];
+        startDate: string;
+        endDate: string;
+    } = getInitialState(filters);
+    const [status, setStatus]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>(initial.status);
+    const [priority, setPriority]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>(initial.priority);
+    const [startDate, setStartDate]: [string, Dispatch<SetStateAction<string>>] = useState<string>(initial.startDate);
+    const [endDate, setEndDate]: [string, Dispatch<SetStateAction<string>>] = useState<string>(initial.endDate);
+    const [startDateError, setStartDateError]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
 
     useEffect(() => {
         setStatus(filters.status || []);
@@ -38,31 +49,53 @@ const FilterDialogLogic = ({
         setStartDateError("");
     }, [filters]);
 
-    useEffect(() => {
-        const hasEndDate = endDate && endDate.trim() !== "";
-        const hasStartDate = startDate && startDate.trim() !== "";
-        
-        if (hasEndDate && !hasStartDate) {
-            setStartDateError("startDateRequired");
-        } else {
-            setStartDateError("");
-        }
-    }, [startDate, endDate]);
-
-    const handleApply = () => {
-        if (startDateError) {
-            return;
-        }
-        onApply({
-            status: status.length > 0 ? status : undefined,
-            priority: priority.length > 0 ? priority : undefined,
-            startDate: startDate || undefined,
-            endDate: endDate || undefined
-        });
-        setFilterBtnClicked(false);
+    return {
+        status, setStatus,
+        priority, setPriority,
+        startDate, setStartDate,
+        endDate, setEndDate,
+        startDateError, setStartDateError
     };
+};
 
-    const handleClear = () => {
+const validateStartDate: (startDate: string, endDate: string) => string = (startDate: string, endDate: string): string => {
+    if (isNonEmptyString(endDate) && !isNonEmptyString(startDate)) {
+        return "startDateRequired";
+    }
+    return "";
+};
+
+const FilterDialogLogic: ({ setFilterBtnClicked, filters, onApply, onClear }: FilterDialogLogicProps) => JSX.Element = ({
+    setFilterBtnClicked,
+    filters = {},
+    onApply,
+    onClear
+}: FilterDialogLogicProps): JSX.Element => {
+    const {
+        status, setStatus,
+        priority, setPriority,
+        startDate, setStartDate,
+        endDate, setEndDate,
+        startDateError, setStartDateError
+    }: FilterStates = useFilterStates(filters);
+
+    useEffect(() => {
+        setStartDateError(validateStartDate(startDate, endDate));
+    }, [startDate, endDate, setStartDateError, endDate]);
+
+    const handleApply: () => void
+        = () => {
+            if (startDateError) return;
+            onApply({
+                ...(status.length ? { status } : {}),
+                ...(priority.length ? { priority } : {}),
+                ...(isNonEmptyString(startDate) ? { startDate } : {}),
+                ...(isNonEmptyString(endDate) ? { endDate } : {})
+            });
+            setFilterBtnClicked(false);
+        };
+
+    const handleClear: () => void = () => {
         setStatus([]);
         setPriority([]);
         setStartDate("");
@@ -77,9 +110,7 @@ const FilterDialogLogic = ({
         setFilterBtnClicked(false);
     };
 
-    const handleClose = () => {
-        setFilterBtnClicked(false);
-    };
+    const handleClose: () => void = () => setFilterBtnClicked(false);
 
     return (
         <FilterDialogView

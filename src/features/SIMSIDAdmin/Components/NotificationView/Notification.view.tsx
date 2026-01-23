@@ -4,7 +4,7 @@ import SIMSConnectedLauncher from "../../../../shared/components/Notification-me
 import { useSimsConnectedBanner } from "../../../../shared/hooks/useSimsConnectedBanner";
 
 const NotificationView: React.FC<INotificationProps> = () => {
-  const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
+  const [isRenderSimsConnectedBanner]: [boolean, boolean] = useSimsConnectedBanner();
   return (
     isRenderSimsConnectedBanner ? (
       <div data-testid="notification-test-id">

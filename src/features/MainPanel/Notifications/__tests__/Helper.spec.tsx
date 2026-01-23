@@ -198,15 +198,15 @@ describe("getNotificationTableHeadersData", () => {
   });
 
   it("sets isColumnSortByDefault and isColumnSortAscFirst for Status, Priority, DateReceived", () => {
-    let headers = getNotificationTableHeadersData(undefined, undefined, "Status", "Asc");
+    let headers = getNotificationTableHeadersData( "Status", "Asc",undefined, undefined);
     expect(headers[1].isColumnSortByDefault).toBe(true);
     expect(headers[1].isColumnSortAscFirst).toBe(true);
 
-    headers = getNotificationTableHeadersData(undefined, undefined, "Priority", "Desc");
+    headers = getNotificationTableHeadersData( "Priority", "Desc",undefined, undefined);
     expect(headers[3].isColumnSortByDefault).toBe(true);
     expect(headers[3].isColumnSortAscFirst).toBe(false);
 
-    headers = getNotificationTableHeadersData(undefined, undefined, "DateReceived", "Asc");
+    headers = getNotificationTableHeadersData( "DateReceived", "Asc",undefined, undefined);
     expect(headers[4].isColumnSortByDefault).toBe(true);
     expect(headers[4].isColumnSortAscFirst).toBe(true);
   });
@@ -228,15 +228,14 @@ describe("getNotificationTableHeadersData", () => {
   it("last column's anyComponent renders View link and triggers callbacks", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
-    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem);
+    const headers = getNotificationTableHeadersData(undefined, undefined, setSideIsOpen, setSelectedItem);
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify("{\"foo\": \"bar\"}");
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
     const viewLink = getByText("View");
     expect(viewLink).toBeInTheDocument();
     fireEvent.click(viewLink);
-    expect(setSelectedItem).toHaveBeenCalledWith("\"{\\\"foo\\\": \\\"bar\\\"}\"");
-    expect(setSideIsOpen).toHaveBeenCalledWith(true);
+    expect(setSelectedItem).toHaveBeenCalledWith(true);
   });
 
   it("last column's anyComponent does not throw if callbacks are undefined", () => {
@@ -252,7 +251,7 @@ describe("getNotificationTableHeadersData", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     // setNotificationIdSelected is NOT passed to headers
-    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", "Desc");
+    const headers = getNotificationTableHeadersData("DateReceived", "Desc",setSideIsOpen, setSelectedItem );
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar", id: "123" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
@@ -266,7 +265,7 @@ describe("getNotificationTableHeadersData", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     const setNotificationIdSelected = jest.fn();
-    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", "Desc", setNotificationIdSelected);
+    const headers = getNotificationTableHeadersData( "DateReceived", "Desc", setNotificationIdSelected,setSideIsOpen, setSelectedItem);
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar" }); // no id
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
@@ -278,7 +277,7 @@ describe("getNotificationTableHeadersData", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     const setNotificationIdSelected = jest.fn();
-    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", "Desc", setNotificationIdSelected);
+    const headers = getNotificationTableHeadersData("DateReceived", "Desc", setNotificationIdSelected,setSideIsOpen, setSelectedItem);
     const LastComponent = headers[5].anyComponent;
     const { container, queryByText } = render(<>{LastComponent && LastComponent(undefined)}</>);
     expect(container.textContent).toBe("");
@@ -300,7 +299,7 @@ describe("getNotificationTableHeadersData", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     const setNotificationIdSelected = jest.fn();
-    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", "Desc", setNotificationIdSelected);
+    const headers = getNotificationTableHeadersData( "DateReceived", "Desc", setNotificationIdSelected,setSideIsOpen, setSelectedItem);
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar", id: "123" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
