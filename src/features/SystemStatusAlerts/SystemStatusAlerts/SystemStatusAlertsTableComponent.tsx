@@ -6,11 +6,6 @@ import {
   TableHead,
   TableRow,
   TableWrapper,
-  Button,
-  ButtonSize,
-  ButtonColor,
-  OverflowMenu,
-  OverflowMenuItem,
   TableStatus,
   Icon,
   IconColor

@@ -1,10 +1,10 @@
-import { ComponentType } from "react";
-import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
+import React, { ComponentType } from "react";
 import { useHistory } from "react-router-dom";
+import { AxiosResponse } from "axios";
+import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { envConfig, getUserOrganisation, service } from "../../../shared/utils";
-import { AxiosResponse } from "axios";
  
 export interface Item {
   title: string;

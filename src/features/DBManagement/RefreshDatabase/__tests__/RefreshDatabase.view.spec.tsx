@@ -1,11 +1,8 @@
 import { render, screen } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { service } from "../../../../shared/utils";
-import RefreshDatabaseView, {
-  handleComplete,
-  IHandleCompleteProps,
-  FetchPreCheckStatus
-} from "../RefreshDatabase.view"; // Adjust the import path accordingly
+import RefreshDatabaseView from "../RefreshDatabase.view"; // Adjust the import path accordingly
+import { FetchPreCheckStatus, handleComplete, IHandleCompleteProps } from "../RefreshDatabaseUtils";
 
 // Mock dependencies
 jest.mock("../DetachDatabase.view", () => () => <div>DetachDatabaseView</div>);
@@ -107,42 +104,60 @@ describe("RefreshDatabaseView Component", () => {
   });
 
   it("should correctly execute handleComplete function", () => {
+    const mockSetFlagValues = jest.fn();
+    const mockSetActiveIndex = jest.fn();
     const mockHandleCompleteProps: IHandleCompleteProps = {
       index: 0,
       value: "Detached",
       flagValues: ["", "Deleted", "Attached", "Completed"],
-      setFlagValues: jest.fn(),
-      setActiveIndex: jest.fn(),
+      setFlagValues: mockSetFlagValues,
+      setActiveIndex: mockSetActiveIndex,
+      items: [
+        { title: "step1", component: jest.fn() },
+        { title: "step2", component: jest.fn() },
+        { title: "step3", component: jest.fn() },
+        { title: "step4", component: jest.fn() }
+      ],
     };
 
     const result = handleComplete(mockHandleCompleteProps);
-    expect(mockHandleCompleteProps.setFlagValues).toHaveBeenCalledWith([
+    expect(mockSetFlagValues).toHaveBeenCalledWith([
       "Detached",
       "Deleted",
       "Attached",
       "Completed"
     ]);
-    expect(mockHandleCompleteProps.setActiveIndex).toHaveBeenCalledWith(1);
+    expect(mockSetActiveIndex).toHaveBeenCalledWith(1);
     expect(result).toBe("Detached");
   });
 
   it("handles completion of the final step and resets the workflow", () => {
+    const mockSetFlagValues = jest.fn();
+    const mockSetActiveIndex = jest.fn();
     const mockHandleCompleteProps: IHandleCompleteProps = {
       index: 3,
       value: "Completed",
       flagValues: ["Detached", "Deleted", "Attached", ""],
-      setFlagValues: jest.fn(),
-      setActiveIndex: jest.fn(),
+      setFlagValues: mockSetFlagValues,
+      setActiveIndex: mockSetActiveIndex,
+      items: [
+        { title: "step1", component: jest.fn() },
+        { title: "step2", component: jest.fn() },
+        { title: "step3", component: jest.fn() },
+        { title: "step4", component: jest.fn() }
+      ],
     };
 
     const result = handleComplete(mockHandleCompleteProps);
-    expect(mockHandleCompleteProps.setFlagValues).toHaveBeenCalledWith([
-      "",
-      "",
-      "",
-      ""
+    // The function first updates the flags, then resets them
+    expect(mockSetFlagValues).toHaveBeenNthCalledWith(1, [
+      "Detached",
+      "Deleted",
+      "Attached",
+      "Completed"
     ]);
-    expect(mockHandleCompleteProps.setActiveIndex).toHaveBeenCalledWith(0);
+    expect(mockSetActiveIndex).toHaveBeenCalledWith(0);
+    expect(mockSetFlagValues).toHaveBeenNthCalledWith(2, ["", "", "", ""]);
     expect(result).toBe("Completed");
   });
 

@@ -1,16 +1,8 @@
-import React, { useState, useEffect, useRef, RefObject } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableWrapper,
   Button,
   ButtonSize,
   ButtonColor,
-  OverflowMenu,
-  OverflowMenuItem,
   SidePanel,
   SidePanelContent,
   SidePanelFooter,
@@ -18,10 +10,7 @@ import {
   Notification,
   NotificationStatus,
   Loader,
-  LoaderType,
-  TableStatus,
-  Icon,
-  IconColor
+  LoaderType
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
@@ -34,7 +23,6 @@ import { Alert } from "../interface";
 import SystemStatusAlertsTableComponent from "./SystemStatusAlertsTableComponent";
 
  type AlertsState = [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>];
-type BooleanState = [boolean, React.Dispatch<React.SetStateAction<boolean>>];
 export const getClassNameToHandleOverFlowPostion = (
   index: number,
   length: number
