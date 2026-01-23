@@ -6,7 +6,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, ControlledList, DialogTemplate, NotificationStatus, ShowActionAs, useMediaQuery, Suggestion, ResponseCode, TableRowType, ISelectedItem, Loader, LoaderType, SelectedItem } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { getAllRegistrationIds, getCategoryArr, getResultNotFoundMsg, getTableHeadersData, getVisibleTagsWithSummary, handlePageChange, handleSearchChange, handleSuggestionClick, handleTagCloseLogic, onBreadcrumbClick, mapRelatedArr, filterNonEmptySuggestions, prepareDownload, fetchViewDownloadData, closeSidePanel, buildSelectedDocs, fetchGetDocumentDetailsLogic, handleClearAllConfirm, getCompletedPartitionKeys, fileDownload, handleBulkDeleteLogic, buildValidationPayload, getTitleConfirmation, getDateTag, handleApply, handleEditSelectedOverFlowMenu, applySummaryTagClass } from "./DocumentManagementServer.logic"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, fileDownload, getTableHeadersData, getTitleConfirmation, handleSearchChange, onBreadcrumbClick, prepareDownload } from "./DocumentManagementServer.logic"
 import "./style.scss"
 import { tableDataProps, ViewDownloadItem } from "./responseModel"
 import { homeurl, pageSizeNumber } from "../../../public/Constants"
@@ -15,6 +15,8 @@ import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiServic
 import FilterDialog from "../../shared/components/Filter/Filter"
 import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog"
 import gtmAnalytics from "../../shared/utils/analytics";
+import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick } from "./DocumentManagementServer.api";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, applySummaryTagClass, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys } from "./DocumentManagementServer.utils";
  
 
 export const breadcrumbActionsList = (t: (key: string) => string) => [
