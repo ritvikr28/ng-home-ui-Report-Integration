@@ -13,19 +13,19 @@ interface StaffTimetableAndRegisterDetailsProviderProps {
   hasAccess: boolean;
 }
 
-const StaffTimetableAndRegisterDetailsContext = createContext<StaffTimetableAndRegisterDetailsContextType | undefined>(undefined);
+const StaffTimetableAndRegisterDetailsContext: React.Context<StaffTimetableAndRegisterDetailsContextType | undefined> = createContext<StaffTimetableAndRegisterDetailsContextType | undefined>(undefined);
 
 export const StaffTimetableAndRegisterDetailsProvider: React.FC<StaffTimetableAndRegisterDetailsProviderProps> = ({ children, hasAccess }) => {
-  const [data, setData] = useState<IStaffTimetableAndRegisterDetailsResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [data, setData]: [IStaffTimetableAndRegisterDetailsResponse | null, React.Dispatch<React.SetStateAction<IStaffTimetableAndRegisterDetailsResponse | null>>] = useState<IStaffTimetableAndRegisterDetailsResponse | null>(null);
+  const [isLoading, setIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
+  const [isError, setIsError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 
-  const fetchData = async () => {
+  const fetchData: () => Promise<void> = async () => {
     if (!hasAccess) return;
     setIsLoading(true);
     setIsError(false);
     try {
-      const result = await FetchStaffTimetableAndRegisterDetails();
+      const result: IStaffTimetableAndRegisterDetailsResponse | null = await FetchStaffTimetableAndRegisterDetails();
       setData(result);
       setIsError(!result);
     } catch {
@@ -53,8 +53,8 @@ export const StaffTimetableAndRegisterDetailsProvider: React.FC<StaffTimetableAn
   );
 };
 
-export const useStaffTimetableAndRegisterDetails = () => {
-  const context = useContext(StaffTimetableAndRegisterDetailsContext);
+export const useStaffTimetableAndRegisterDetails: () => StaffTimetableAndRegisterDetailsContextType = () => {
+  const context: StaffTimetableAndRegisterDetailsContextType | undefined = useContext(StaffTimetableAndRegisterDetailsContext);
   if (!context) {
     throw new Error("useStaffTimetableAndRegisterDetails must be used within a StaffTimetableAndRegisterDetailsProvider");
   }
