@@ -168,10 +168,10 @@ describe("SyncDataView Component", () => {
       setShowSyncDialog: mockSetShowSyncDialog,
       clicked: true,
       setClicked: mockSetClicked,
-      inProgressStatus: inProgressStatus,
+      inProgressStatus,
       setShowSyncFailedDialog: mockSetShowSyncFailedDialog,
-      setIsLoading: setIsLoading,
-      history: history,
+      setIsLoading,
+      history,
       syncDataStatus: ""
     });
 
@@ -243,10 +243,10 @@ describe("SyncDataView Component", () => {
       setShowSyncDialog: mockSetShowSyncDialog,
       clicked: true,
       setClicked: mockSetClicked,
-      inProgressStatus: inProgressStatus,
+      inProgressStatus,
       setShowSyncFailedDialog: mockSetShowSyncFailedDialog,
-      setIsLoading: setIsLoading,
-      history: history,
+      setIsLoading,
+      history,
       syncDataStatus: "Completed"
     });
     render(
