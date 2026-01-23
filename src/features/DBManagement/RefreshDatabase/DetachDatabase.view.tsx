@@ -102,7 +102,7 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   };
 
   const handleSelectionChange : (value: string) => Promise<ISyncCompletedSeenStatusResponse | undefined> = async (value: string) => {
-    setSelectedValue(value as string);
+    setSelectedValue(value);
     const isDetached = value === "Yes";
     if (isDetached) {
       await handleSetIsDetached();

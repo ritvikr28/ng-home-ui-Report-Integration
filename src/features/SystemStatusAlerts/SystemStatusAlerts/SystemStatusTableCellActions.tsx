@@ -53,9 +53,9 @@ const SystemStatusTableCellActions: React.FC<SystemStatusTableCellActionsProps> 
   };
 
   // useCallback to avoid direct mutation in render
-  const setOverflowBtnRef = useCallback(
+  const setOverflowBtnRef: (el: HTMLButtonElement | null) => void = useCallback(
     (el: HTMLButtonElement | null) => {
-      const refArr = systemStatusOverFlowBtnRef.current;
+      const refArr: (HTMLButtonElement | null)[] | null = systemStatusOverFlowBtnRef.current;
       if (refArr) {
         refArr[index] = el;
       }
