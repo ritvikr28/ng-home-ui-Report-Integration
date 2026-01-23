@@ -29,7 +29,8 @@ import Sims7RedirectionsSidePanel from "./Sims7RedirectionsSidePanel";
 import { homeurl } from "../InviteUsers/InviteUsersProps";
 import {
     sims7RedirectionsTableHeaders,
-    sims7RedirectionsTableData
+    sims7RedirectionsTableData,
+    Sims7RedirectionsTableRow
 } from "./Sims7RedirectionsPage.data";
 
 interface DropdownItemType {
@@ -45,54 +46,57 @@ const dropdownItems: DropdownItemType[] = [
     { id: "5", text: "Reversing", value: "reversing" }
 ];
 
-export const Sims7RedirectionsPage = () => {
+export const Sims7RedirectionsPage: React.FC = () => {
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
-    const originalTableData = sims7RedirectionsTableData;
-    const [selectedItems, setSelectedItems] = React.useState<ISelectedItem[]>([]);
-    const [searchTagList, setSearchTagList] = React.useState<ISelectedItem[]>([]);
-    const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+    const originalTableData: Sims7RedirectionsTableRow[] = sims7RedirectionsTableData;
+    const [selectedItems, setSelectedItems]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+    const [searchTagList, setSearchTagList]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+    const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
     // const [isDropDownOpen, setIsDropDownOpen] = React.useState(false);
-    const [isSidePanelOpen, setIsSidePanelOpen] = React.useState(false);
-    const [sidePanelMode, setSidePanelMode] = React.useState<'view' | 'edit'>('view');
-    const [selectedRow, setSelectedRow] = React.useState<any>(null);
+    const [isSidePanelOpen, setIsSidePanelOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
+    const [sidePanelMode, setSidePanelMode]: ['view' | 'edit', React.Dispatch<React.SetStateAction<'view' | 'edit'>>] = React.useState<'view' | 'edit'>('view');
+    const [selectedRow, setSelectedRow]: [Sims7RedirectionsTableRow | null, React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow | null>>] = React.useState<Sims7RedirectionsTableRow | null>(null);
     // const [dropdownResetKey, setDropdownResetKey] = React.useState(0);
     const [isSidebarOpen, setIsSidebarOpen]: [
         boolean,
         React.Dispatch<React.SetStateAction<boolean>>
     ] = useState<boolean>(!isMobileView);
 
-    const handleCloseSidePanel = () => {
+    const handleCloseSidePanel: () => void = () => {
         setIsSidePanelOpen(false);
         setSelectedRow(null);
     };
 
-    const handleViewClick = (rowData: any) => {
+    const handleViewClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData: Sims7RedirectionsTableRow) => {
         setSelectedRow(rowData);
         setSidePanelMode('view');
         setIsSidePanelOpen(true);
     };
 
-    const handleEditClick = (rowData: any) => {
+    const handleEditClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData: Sims7RedirectionsTableRow) => {
         setSelectedRow(rowData);
         setSidePanelMode('edit');
         setIsSidePanelOpen(true);
     };
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog: () => void = () => {
         setSelectedItems(searchTagList);
         setIsDialogOpen(true);
     }
-    const handleCloseDialog = () => setIsDialogOpen(false);
-    const handleClearAll = () => {
+    const handleCloseDialog: () => void = () => {
+        setIsDialogOpen(false);
+    };
+
+    const handleClearAll: () => void = () => {
         // setIsDropDownOpen(false);
         setIsDialogOpen(true);
         setSelectedItems([]);
         // setDropdownResetKey(prev => prev + 1); // force Dropdown to remount/close
     };
 
-    const handleApplyDialog = () => {
+    const handleApplyDialog: () => void = () => {
         setSearchTagList(
             selectedItems.map(item => ({
                 ...item,
@@ -103,7 +107,7 @@ export const Sims7RedirectionsPage = () => {
         setIsDialogOpen(false);
     };
 
-    const filteredTableData = React.useMemo(() => {
+    const filteredTableData: Sims7RedirectionsTableRow[] = React.useMemo(() => {
         if (!searchTagList.length) {
             return originalTableData;
         }
@@ -115,14 +119,14 @@ export const Sims7RedirectionsPage = () => {
             permanent: "Permanent",
             reversing: "Reversing"
         };
-        const selectedDisplayValues = searchTagList.map(item => valueToDisplay[item.value ?? ""]);
+        const selectedDisplayValues: string[] = searchTagList.map(item => valueToDisplay[item.value ?? ""]);
 
         return originalTableData.filter(row =>
             selectedDisplayValues.includes(row.status)
         );
     }, [searchTagList, originalTableData]);
 
-    const closeSidebar: () => void = (): void => {
+    const closeSidebar: () => void = () => {
         setIsSidebarOpen(false);
     };
 
@@ -133,7 +137,7 @@ export const Sims7RedirectionsPage = () => {
         document.body.classList.add("no-scroll");
     }, []);
 
-    const toggleSidebar: () => void = (): void => {
+    const toggleSidebar: () => void = () => {
         setIsSidebarOpen((prev: boolean): boolean => !prev);
     };
 
@@ -155,19 +159,20 @@ export const Sims7RedirectionsPage = () => {
         }
     ];
 
-    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
     const pageSize = 40; // same as paginationCount
-    const paginatedTableData = React.useMemo(() => {
+    const paginatedTableData: Sims7RedirectionsTableRow[] = React.useMemo(() => {
         const startIndex = (currentPage - 1) * pageSize;
         const endIndex = startIndex + pageSize;
         return filteredTableData.slice(startIndex, endIndex);
     }, [filteredTableData, currentPage]);
-    const handlePaginationChange = (
-        _event: ChangeEvent<unknown>,
+    const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (
+        _event: React.ChangeEvent<unknown>,
         page: number
-    ) => {
+    ): void => {
         setCurrentPage(page);
     };
+
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTagList]);
@@ -293,7 +298,7 @@ export const Sims7RedirectionsPage = () => {
                     isIconRightAligned={true}
                     isShowOverflowMenuCol={true}
                     onClickOverflowItem={(e, rowData) => {
-                        const text = (e.target as HTMLElement).innerText.trim();
+                        const text: string = (e.target as HTMLElement).innerText.trim();
                         if (text === "View") {
                             handleViewClick(rowData);
                         } else if (text === "Edit") {
@@ -339,7 +344,7 @@ export const Sims7RedirectionsPage = () => {
                                     setSelectedItems(selected)
                                 }
                                 isFixedMultiSelect={true}
-                                // onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
+                            // onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
                             >
                                 {dropdownItems.map(item => (
                                     <DropdownItem
