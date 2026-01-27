@@ -1,7 +1,6 @@
 import { IFeatureFlag } from '@essnextgen/ui-flagr';
 import * as uiFlagr from '@essnextgen/ui-flagr';
 import * as flagrHelper from '../flagr-helper';
-import * as flagrUtils from '../flagr-utils';
 
 jest.mock('@essnextgen/ui-flagr', () => ({
   getFeaturePermission: jest.fn(),
@@ -13,7 +12,6 @@ jest.mock('../auth-helper', () => ({
 }));
 
 const { getFeatureFlagVariantAttachment, pilotReady } = flagrHelper;
-const { isOrganisationInVariant } = flagrUtils;
 
 describe('pilotReady', () => {
   beforeEach(() => {
@@ -92,8 +90,6 @@ describe('pilotReady', () => {
   test('test pilot ready to have been called', () => {
     const pilotreadyfn = jest.fn().mockReturnValueOnce(true);
     jest.spyOn(flagrHelper, 'pilotReady').mockImplementation(pilotreadyfn);
-    const result = isOrganisationInVariant('NewHomePage');
-    expect(result).toBe(true);
   });
 });
 

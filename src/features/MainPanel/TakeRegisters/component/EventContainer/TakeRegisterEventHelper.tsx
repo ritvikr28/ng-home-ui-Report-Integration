@@ -82,7 +82,7 @@ export const renderCarousel: (
     keyBoardControl
     customTransition="all .5"
     transitionDuration={50}
-    containerClass={getShowRegisterSecondaryTextFlag() ? "carousel-container reg-css-new" : "carousel-container reg-css-old"}
+     containerClass="carousel-container reg-css-new"
     removeArrowOnDeviceType={["tablet", "mobile"]}
     itemClass="carousel-item-padding-40-px"
   >
@@ -345,7 +345,5 @@ export const getSecondaryText: (
   const endTime = item.eventEnd ? formatTime(item.eventEnd) : '';
   const timePeriod = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
   
-  return getShowRegisterSecondaryTextFlag()
-    ? `${item.eventDescription || ''}${timePeriod}`
-    : '';
+ return `${item.eventDescription || ''}${timePeriod}`;
 };
