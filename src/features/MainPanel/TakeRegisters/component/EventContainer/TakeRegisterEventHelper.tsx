@@ -9,11 +9,6 @@ import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/re
 import { responsive } from "./carousel";
 import "./carousalstyle.scss";
 
-export const getShowRegisterSecondaryTextFlag: () => boolean = () => hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "RegisterSecondaryText"
-);
-
 export const setDefaultAndCurrentSlide: (
   carouselRef: React.RefObject<Carousel>,
   apiRegsiterEventData: IRegistersDetails[],

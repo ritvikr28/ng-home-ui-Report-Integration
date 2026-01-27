@@ -60,10 +60,6 @@ jest.mock("../../../../../shared/components/AppInsights", () => ({
 }));
 
 describe("TakeRegisterEventHelper", () => {
-  it("getShowRegisterSecondaryTextFlag returns correct value", () => {
-    const flagValue = helper.getShowRegisterSecondaryTextFlag();
-    expect(flagValue).toBe(true); // Based on the mock that returns true
-  });
 
   it("renderNoRegisterMessage renders correct message", () => {
     const t = (key: string) => key;
