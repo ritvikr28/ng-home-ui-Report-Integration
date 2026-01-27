@@ -170,11 +170,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       anyComponent: (propsI: any) => {
-        if (propsI === "Invitation conflict") {
+        if (propsI === "Invite conflict") {
           return (
             <ValidationText
               className="invite-user-status"
-              text="Invitation conflict"
+              text="Invite conflict"
               textLevel={ValidationTextLevel.Warning}
             />
           );

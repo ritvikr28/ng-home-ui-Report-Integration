@@ -1331,27 +1331,28 @@ describe("getAllRegistrationIds", () => {
 describe("Document column anyComponent", () => {
   const t = (key: string) => key;
   const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
-  const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
+    const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
-  it("renders plain value if value is falsy or length <= 25", () => {
+    it("renders plain value if value is falsy or length <= 25", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("Short Name");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
   });
 
-  it("renders truncated value with tooltip if length > 25", () => {
+    it("renders truncated value with tooltip if length > 25", () => {
     const longValue = "averylongdocumentnamethatisdefinitelymorethan25chars";
     const { container } = render(<>{documentColumn?.anyComponent?.(longValue)}</>);
     expect(container).toHaveTextContent(longValue.substring(0, 25));
   });
 
-  it("renders plain value if value is empty string", () => {
+    it("renders plain value if value is empty string", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.("")}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
+
   });
 
-  it("renders plain value if value is null", () => {
+   it("renders plain value if value is null", () => {
     const { container } = render(<>{documentColumn?.anyComponent?.(null)}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
@@ -1380,11 +1381,10 @@ describe("Document column anyComponent", () => {
     const { container } = render(<>{categoryColumn?.anyComponent?.(null)}</>);
     expect(container.querySelector(".document-text")).toHaveTextContent("");
     expect(container.querySelector("[data-testid='tooltip-eventtime']")).toBeNull();
-  });
+
 });
 
 describe("Size column anyComponent", () => {
-  const t = (key: string) => key;
   const sizeColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.sizeColumn");
 
   it("renders nothing if value is undefined", () => {
@@ -1550,7 +1550,6 @@ describe("handleTagCloseLogic", () => {
 });
 
 describe("tableData mapping for relatedTo types", () => {
-  const t = (key: string) => key; // mock translation function
   const relatedToColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.relatedColumn");
   const renderRelated = relatedToColumn?.anyComponent;
 
@@ -1675,7 +1674,7 @@ describe('mapRelatedArr', () => {
   it('maps pupils correctly', () => {
     const doc = {
       isLeaver: "",
-      documentRealatedTo: 1,
+      documentRelatedTo: 1,
       relatedTo: [
         {
           preferredForename: 'Ben',
@@ -1701,7 +1700,7 @@ describe('mapRelatedArr', () => {
 
   it('maps staff correctly', () => {
     const doc = {
-      documentRealatedTo: 3,
+      documentRelatedTo: 3,
       relatedTo: [
         {
           preferredForename: 'Alice',
@@ -1726,7 +1725,7 @@ describe('mapRelatedArr', () => {
 
   it('maps school correctly', () => {
     const doc = {
-      documentRealatedTo: 2,
+      documentRelatedTo: 2,
       relatedTo: [
         {
           schoolName: 'Greenwood High',
@@ -2339,7 +2338,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
         blobName: "blob1"
       }],
       pageNumber: 1,
-      pageSize: 10
+      pageSize: 1
     };
     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
@@ -2389,6 +2388,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
     expect(mockSetIsSearchDataLoading).toHaveBeenCalledWith(false);
   });
+
 
   it("handles fetch throwing an error", async () => {
     const error = new Error("fail");
@@ -2515,7 +2515,7 @@ describe("buildSelectedDocs", () => {
           selectAll: true,
           downloadCriteria: {
             referenceMappingDetails: [],
-            documentRealatedTo: 1,
+            documentRelatedTo: 1,
             categoryId: [1,2],
             fromDate: "2025-01-01",
             toDate: "2025-01-02"
@@ -2852,7 +2852,6 @@ describe('getCompletedPartitionKeys', () => {
 });
 
 describe("Added by column anyComponent", () => {
-  const t = (key: string) => key; // mock translation function
   const addedByColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
 
   test("renders plain value if length <= 12", () => {
@@ -3070,7 +3069,7 @@ describe("handleBulkDeleteLogic", () => {
   const allRegistrationIds = [101, 102];
   const dateRange = { fromDate: "2025-01-01", toDate: "2025-01-02" };
   const searchRefExternalId = ["ref1"];
-  const documentRealatedTo = 1;
+  const documentRelatedTo = 1;
   const currentPage = 1;
   const sortBy = "Document";
   const sortDirection = "Asc";
@@ -3100,7 +3099,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3139,7 +3138,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3173,7 +3172,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3214,7 +3213,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3249,7 +3248,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3284,7 +3283,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3319,7 +3318,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3356,7 +3355,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3394,7 +3393,7 @@ describe("handleBulkDeleteLogic", () => {
     allRegistrationIds,
     dateRange,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     currentPage,
     sortBy,
     sortDirection,
@@ -3428,7 +3427,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3462,7 +3461,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3496,7 +3495,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3532,7 +3531,7 @@ describe("handleBulkDeleteLogic", () => {
       allRegistrationIds,
       dateRange,
       searchRefExternalId,
-      documentRealatedTo,
+      documentRelatedTo,
       currentPage,
       sortBy,
       sortDirection,
@@ -3558,32 +3557,7 @@ describe("handleBulkDeleteLogic", () => {
   
 });
 
-describe("getTitleConfirmation", () => {
-  const t = jest.fn(key => key);
-  it('returns "Clear all downloads?" for "clearAll"', () => {
-    expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
-  });
 
-  it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-    expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
-  });
-
-  it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-    expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
-  });
-
-  it('returns "Prepare Download?" for other values', () => {
-    expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-    expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-    expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-
-  });
-   it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
-    const result = getTitleConfirmation(t, "prepare", 5, 5);
-    expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
-    expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
-  });
-});
 
 describe("addUniqueTagItem", () => {
   let setTagListArray: jest.Mock;
@@ -4014,7 +3988,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     allRegistrationIds: [1, 2],
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
     searchRefExternalId: ["ref1"],
-    documentRealatedTo: 1,
+    documentRelatedTo: 1,
   };
 
   it("shows dialog if nothing selected", async () => {
@@ -4120,7 +4094,6 @@ describe("handleEditSelectedOverFlowMenu", () => {
   });
 
   it("clears suggestions and loading for whitespace-only input", () => {
-    const t = (key: string) => key;
     const event = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
@@ -4197,5 +4170,33 @@ describe("applySummaryTagClass", () => {
     expect(() => applySummaryTagClass()).not.toThrow();
     // Should not add summary-tag
     expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
+  });
+});
+});
+
+describe("getTitleConfirmation", () => {
+  const t = jest.fn(key => key);
+  it('returns "Clear all downloads?" for "clearAll"', () => {
+    expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
+  });
+
+  it('returns "Delete Document?" for "delete" when a single file is selected', () => {
+    expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
+  });
+
+  it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
+    expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
+  });
+
+  it('returns "Prepare Download?" for other values', () => {
+    expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+    expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+
+  });
+   it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
+    const result = getTitleConfirmation(t, "prepare", 5, 5);
+    expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
+    expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
   });
 });

@@ -80,7 +80,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
     if (setshowInvitationConflictBanner) {
       setshowInvitationConflictBanner(
         InviteUsersData[0]?.payload.some(
-          (x: any) => x?.invitationStatus === "Invitation conflict"
+          (x: any) => x?.invitationStatus === "Invite conflict"
         )
       );
     }
@@ -108,7 +108,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,
-        inviteRequestDate: item?.InviteRequestDate,
+        inviteRequestDate: item?.inviteRequestDate,
         actions: {
           options: [
             {

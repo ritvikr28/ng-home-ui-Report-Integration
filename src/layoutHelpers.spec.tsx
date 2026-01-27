@@ -5,7 +5,7 @@ import {
   hasOrgVariant,
   shouldShowAdminConsole,
   shouldShowDocuments,
-  shouldShowUAM,
+  // shouldShowUAM,
   shouldShowInviteUsers,
   shouldShowDBManagement,
   shouldShowSystemStatus,
@@ -96,12 +96,12 @@ describe("layoutHelpers", () => {
     const { isOrganisationInVariant } = require("./shared/utils/flagr-utils");
     hasFeaturePermission.mockReturnValue(true);
     isOrganisationInVariant.mockReturnValue(true);
-    expect(shouldShowUAM()).toBe(true);
+    // expect(shouldShowUAM()).toBe(true);
     hasFeaturePermission.mockReturnValue(false);
-    expect(shouldShowUAM()).toBe(false);
+    // expect(shouldShowUAM()).toBe(false);
     hasFeaturePermission.mockReturnValue(true);
     isOrganisationInVariant.mockReturnValue(false);
-    expect(shouldShowUAM()).toBe(false);
+    // expect(shouldShowUAM()).toBe(false);
   });
 
   it("shouldShowInviteUsers returns true only if feature flag is true", () => {

@@ -24,7 +24,7 @@ const documentResponse: SingleDocumentDetail[] = [
     dateAdded: '11/25/2024 10:04:54',
     format: 'png',
     size: '2 KB',
-    blobName: 'App_427E150E',
+    blobName: 'App_427E150E'
   }
 ];
 
