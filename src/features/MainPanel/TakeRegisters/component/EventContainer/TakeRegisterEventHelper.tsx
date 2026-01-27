@@ -1,7 +1,6 @@
 import Carousel from "react-multi-carousel";
 import { ActionCard, TagColor } from "@essnextgen/ui-kit";
 import React from "react";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { envConfig, getUser, getUserOrganisation } from "../../../../../shared/utils";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { logger } from "../../../../../shared/components/AppInsights";
