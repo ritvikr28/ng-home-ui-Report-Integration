@@ -79,12 +79,12 @@ export interface ILayoutProps {
   baseRouteName: string;
 }
 
-declare global {
-  interface Window {
-    userpilot: any;
-    sharedStorage: any;
-  }
-}
+// declare global {
+//   interface Window {
+//     userpilot: any;
+//     sharedStorage: any;
+//   }
+// }
 
 export const getMenus: (
   data: IModulePermission[],
@@ -102,6 +102,84 @@ export const getMenus: (
     );
     return menusWithPermission;
   };
+
+const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, isAuthzUserAdmin, hasDMSPermissions }: {
+  hasAdminConsoleFlagrPermission: boolean;
+  hasAdminConsolePermissions: boolean;
+  isAuthzUserAdmin: boolean;
+  hasDMSPermissions: boolean;
+}) => JSX.Element = ({
+  hasAdminConsoleFlagrPermission,
+  hasAdminConsolePermissions,
+  isAuthzUserAdmin,
+  hasDMSPermissions
+}: {
+  hasAdminConsoleFlagrPermission: boolean;
+  hasAdminConsolePermissions: boolean;
+  isAuthzUserAdmin: boolean;
+  hasDMSPermissions: boolean;
+}): JSX.Element => (
+    <>
+      {hasAdminConsoleFlagrPermission && (
+        <ProtectedRoute
+          exact
+          path="/AdminConsole"
+          render={() =>
+            hasAdminConsolePermissions || isAuthzUserAdmin ? (
+              <AdminConsole />
+            ) : (
+              <Redirect to="/unauthorized" />
+            )
+          }
+        />
+      )}
+      {hasAdminConsoleFlagrPermission && (
+        <ProtectedRoute
+          exact
+          path="/documents"
+          render={() =>
+            hasAdminConsolePermissions && hasDMSPermissions ? (
+              <DocumentManagementServer />
+            ) : (
+              <Redirect to="/unauthorized" />
+            )
+          }
+        />
+      )}
+    </>
+  );
+
+const SystemStatusRoute: ({ hasSystemStatusPermission, hasSystemStatusOrgPermission, canViewSystemStatus, canUpdateSystemStatus }: {
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}) => JSX.Element | null = ({
+  hasSystemStatusPermission,
+  hasSystemStatusOrgPermission,
+  canViewSystemStatus,
+  canUpdateSystemStatus
+}: {
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}): JSX.Element | null =>
+    hasSystemStatusPermission && hasSystemStatusOrgPermission ? (
+      <ProtectedRoute
+        exact
+        path="/systemstatus"
+        render={() =>
+          canViewSystemStatus || canUpdateSystemStatus ? (
+            <SystemStatus />
+          ) : (
+            <UnAuthorisedAccess />
+          )
+        }
+      />
+    ) : null;
+
+
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
@@ -265,11 +343,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             path="/unauthorized"
             component={UnAuthorisedAccess}
           />
-          {hasAdminConsoleFlagrPermission && (
+          {/* {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/AdminConsole"
+             /* path="/AdminConsole"
               render={() =>
                 hasAdminConsolePermissions || isAuthzUserAdmin() ? (
                   <AdminConsole />
@@ -278,12 +356,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 )
               }
             />
-          )}
-          {hasAdminConsoleFlagrPermission && (
+          )} */}
+          {/* {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/documents"
+              /*path="/documents"
               render={() =>
                 (hasAdminConsolePermissions && hasDMSPermissions) ? (
                   <DocumentManagementServer />
@@ -292,7 +370,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 )
               }
             />
-          )}
+          )} */}
+          <AdminConsoleRoutes
+            hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
+            hasAdminConsolePermissions={hasAdminConsolePermissions}
+            isAuthzUserAdmin={isAuthzUserAdmin()}
+            hasDMSPermissions={hasDMSPermissions}
+          />
           <ProtectedRoute exact path="/uam" component={UAM} />
           {sendNotificationFlagr && (
             <ProtectedRoute
@@ -329,7 +413,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={DBManagement}
             />
           )}
-          {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
+          {/* {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
             <ProtectedRoute
               exact
               path="/systemstatus"
@@ -341,7 +425,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 )
               }
             />
-          )}
+          )} */}
+          <SystemStatusRoute
+            hasSystemStatusPermission={hasSystemStatusPermission}
+            hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
+            canViewSystemStatus={canViewSystemStatus}
+            canUpdateSystemStatus={canUpdateSystemStatus}
+          />
           <ProtectedRoute
             exact
             /* istanbul ignore next */

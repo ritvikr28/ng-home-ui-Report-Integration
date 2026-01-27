@@ -24,7 +24,7 @@ export const hasNewHomePagePermission: boolean = authService.isAuthorised(
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
 
   const [initialized, setInitialized]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
@@ -35,7 +35,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     navigator.language.split("-")[0] ||
     "en";
 
-  const [langCode] : [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(getInitialLang);
+  const [langCode]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(getInitialLang);
 
   useEffect(() => {
     const initI18n: () => Promise<void> = async () => {
@@ -49,12 +49,12 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             en: {
               ...uiKitTranslation.en,
               ...uiAppKitTranslation.en,
-              ...translationEn,
+              ...translationEn
             },
             cy: {
               ...uiKitTranslation.cy,
               ...uiAppKitTranslation.cy,
-              ...translationCy,
+              ...translationCy
             },
           },
         }).init({ lng: langCode });
