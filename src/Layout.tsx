@@ -48,7 +48,7 @@ import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
-//import UAM from "./features/AdminConsole/UAM.view";
+// import UAM from "./features/AdminConsole/UAM.view";
 import {
   isOrganisationInVariant,
   isOrganisationInVariantForAnyOrAll
