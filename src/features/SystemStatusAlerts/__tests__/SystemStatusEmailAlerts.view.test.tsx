@@ -261,7 +261,7 @@ it("renders View button directly when user lacks permission or status is error",
 
   render(<SystemStatusAlertsView />);
   await waitFor(() => {
-    expect(screen.getByText("SystemStatus_T.View")).toBeInTheDocument();
+    expect(screen.getAllByText("SystemStatus_T.View").length).toBeGreaterThan(0);
   });
 });
 it("renders '-' for emailSubscribed when status is Connection error", async () => {

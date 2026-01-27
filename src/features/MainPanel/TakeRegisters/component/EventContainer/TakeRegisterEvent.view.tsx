@@ -21,8 +21,7 @@
   } from "../../../../../shared/utils";
   import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
   import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData, getShowRegisterSecondaryTextFlag } from "./TakeRegisterEventHelper";
-
-
+import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 
   const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     apiRegsiterEventData,
@@ -35,7 +34,7 @@
     const [currentSlide, setCurrentSlide]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(apiRegsiterEventData && apiRegsiterEventData.length > 0 ? 0 : 0);
     const [carouselData, setCarouselData]: [typeof responsive, React.Dispatch<React.SetStateAction<typeof responsive>>] = useState<typeof responsive>(responsive);
 
-    const filteredAndSortedData = React.useMemo(() => 
+    const filteredAndSortedData: IRegistersDetails[] | null = React.useMemo(() => 
       getShowRegisterSecondaryTextFlag()
         ? filterAndSortRegisterData(apiRegsiterEventData || [])
         : (apiRegsiterEventData || [])

@@ -1,17 +1,53 @@
 import { ShowValAs, TagColor, Tooltip } from "@essnextgen/ui-kit";
+import { ReactNode } from "react";
 
-export const sims7RedirectionsTableHeaders = [
+export interface Sims7RedirectionsTableRow {
+    id: string;
+    category: string;
+    nextGenModule: string;
+    sims7Module: string;
+    modifiedBy: string;
+    effectiveDate: string;
+    status: string;
+    tooltipMessage: string;
+    cellStatus: string;
+    actions: {
+        options: {
+            disabled: boolean;
+            isSelected: boolean;
+            text: string;
+            value: string;
+        }[];
+    };
+    reasonForChanges?: string;
+}
+
+export interface Sims7RedirectionsTableHeader {
+    text: string;
+    isShow: boolean;
+    showValAs: ShowValAs;
+    isTextTruncate?: boolean;
+    anyComponent?: (value: string) => ReactNode;
+    alignSpecific?: boolean;
+    columnWidth?: string;
+    tagColor?: TagColor;
+    statusColors?: Record<string, TagColor>;
+    isColumnSorting?: boolean;
+    isColumnSortByDefault?: boolean;
+}
+
+export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
     {
         text: "ID",
         isShow: false,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false,
+        isTextTruncate: false
     },
     {
         text: "Category",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false,
+        isTextTruncate: false
     },
 
     {
@@ -20,8 +56,8 @@ export const sims7RedirectionsTableHeaders = [
         showValAs: ShowValAs.CustomeComponent,
         anyComponent: (value: string) => {
             if (!value) return null;
-            const isTruncated = value.length > 19;
-            const displayText = isTruncated ? `${value.slice(0, 19)}…` : value;
+            const isTruncated: boolean = value.length > 19;
+            const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
             if (isTruncated) {
                 return (
                     <Tooltip content={<span>{value}</span>}>
@@ -60,13 +96,13 @@ export const sims7RedirectionsTableHeaders = [
         text: "Modified by",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false,
+        isTextTruncate: false
     },
     {
         text: "Effective date",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false,
+        isTextTruncate: false
     },
     {
         text: "Status",
@@ -81,7 +117,7 @@ export const sims7RedirectionsTableHeaders = [
         },
         isTextTruncate: false,
         isColumnSorting: true,
-        isColumnSortByDefault: true,
+        isColumnSortByDefault: true
     },
     {
         text: "Reason for changes",
@@ -90,7 +126,7 @@ export const sims7RedirectionsTableHeaders = [
     }
 ];
 
-export const sims7RedirectionsTableData = [
+export const sims7RedirectionsTableData: Sims7RedirectionsTableRow[] = [
     {
         id: "1",
         category: "Student",

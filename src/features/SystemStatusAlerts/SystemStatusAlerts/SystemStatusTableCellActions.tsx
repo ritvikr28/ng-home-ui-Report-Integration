@@ -1,5 +1,5 @@
-import React from "react";
-import { Button, ButtonSize, ButtonColor, OverflowMenu, OverflowMenuItem, IconColor } from "@essnextgen/ui-kit";
+import React, { useCallback } from "react";
+import { Button, ButtonSize, ButtonColor, OverflowMenu, OverflowMenuItem } from "@essnextgen/ui-kit";
 import { Alert } from "../interface";
 
 interface SystemStatusTableCellActionsProps {
@@ -52,6 +52,17 @@ const SystemStatusTableCellActions: React.FC<SystemStatusTableCellActionsProps> 
     }
   };
 
+  // useCallback to avoid direct mutation in render
+  const setOverflowBtnRef: (el: HTMLButtonElement | null) => void = useCallback(
+    (el: HTMLButtonElement | null) => {
+      const refArr: (HTMLButtonElement | null)[] | null = systemStatusOverFlowBtnRef.current;
+      if (refArr) {
+        refArr[index] = el;
+      }
+    },
+    [systemStatusOverFlowBtnRef, index]
+  );
+
   return (
     <div className="system-status-overflow-btn-wrapper">
       {(!canUpdateSystemStatus || alert?.isErrorResponse || alert?.status === "Connection error") ? (
@@ -65,10 +76,7 @@ const SystemStatusTableCellActions: React.FC<SystemStatusTableCellActionsProps> 
       ) : (
         <>
           <Button
-            ref={el => {
-              if (systemStatusOverFlowBtnRef.current)
-                systemStatusOverFlowBtnRef.current[index] = el;
-            }}
+            ref={setOverflowBtnRef}
             size={ButtonSize.Small}
             color={
               overflowMenuIndex === `overflow-${index}`

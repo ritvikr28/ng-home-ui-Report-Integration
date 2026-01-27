@@ -103,7 +103,7 @@ const AttachDatabaseView: React.FC<AttachDatabaseViewProps> = ({
   };
 
   const handleSelectionChange : (value: string) => Promise<void> = async (value: string) => {
-    setSelectedValue(value as string);
+    setSelectedValue(value);
     const isAttached = value === "Yes";
     if (isAttached) {
       await handleSetIsAttached();

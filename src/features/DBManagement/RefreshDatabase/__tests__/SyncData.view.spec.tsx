@@ -161,19 +161,19 @@ describe("SyncDataView Component", () => {
     (service.get as jest.Mock).mockResolvedValue({
       data: mockResponse,
     });
-    handleButtonClick(
-      mockHandleException,
-      mockSetSyncStatus,
-      mockSetShowSyncCompleteDialog,
-      mockSetShowSyncDialog,
-      true,
-      mockSetClicked,
+    handleButtonClick({
+      handleException: mockHandleException,
+      setSyncStatus: mockSetSyncStatus,
+      setShowSyncCompleteDialog: mockSetShowSyncCompleteDialog,
+      setShowSyncDialog: mockSetShowSyncDialog,
+      clicked: true,
+      setClicked: mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog,
+      setShowSyncFailedDialog: mockSetShowSyncFailedDialog,
       setIsLoading,
       history,
-      ""
-    );
+      syncDataStatus: ""
+    });
 
     render(
       <SyncDataView
@@ -236,19 +236,19 @@ describe("SyncDataView Component", () => {
       data: mockResponse,
     });
 
-    handleButtonClick(
-      mockHandleException,
-      mockSetSyncStatus,
-      mockSetShowSyncCompleteDialog,
-      mockSetShowSyncDialog,
-      true,
-      mockSetClicked,
+    handleButtonClick({
+      handleException: mockHandleException,
+      setSyncStatus: mockSetSyncStatus,
+      setShowSyncCompleteDialog: mockSetShowSyncCompleteDialog,
+      setShowSyncDialog: mockSetShowSyncDialog,
+      clicked: true,
+      setClicked: mockSetClicked,
       inProgressStatus,
-      mockSetShowSyncFailedDialog,
+      setShowSyncFailedDialog: mockSetShowSyncFailedDialog,
       setIsLoading,
       history,
-      "Completed"
-    );
+      syncDataStatus: "Completed"
+    });
     render(
       <SyncDataView
         handleException={handleExceptionMock}

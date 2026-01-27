@@ -5,9 +5,9 @@ import EventContainerView from '../EventContainer.view';
 
 
 describe('EventContainerView component', () => {
-const setIsOpen = jest.fn();
-const togglePanel=jest.fn();
-const mockProps = {
+const setIsOpen: jest.Mock = jest.fn();
+const togglePanel: jest.Mock = jest.fn();
+const mockProps: { [key: string]: any } = {
     SchoolEventexternalId: '123',
     EventTitle: 'Test Event',
     EventTime: {
@@ -148,17 +148,17 @@ const mockProps = {
         EventDescription={mockProps.EventDescription}
       />);
 
-    const eventCard = getByTestId('eventid0');
+    const eventCard: HTMLElement = getByTestId('eventid0');
     expect(eventCard).toHaveClass('essui-event essui-event--primary event-primary-text event-highlight-0');
   });
   test('should have the correct styling for selected items with index 1', async() => {
-    const togglePanel1 = jest.fn();
-    const props = {
+    const togglePanel1: jest.Mock = jest.fn();
+    const props: { index: number; EventCardColor: string } = {
        index: 1,
       EventCardColor: 'improvement'
     };
 
-    const component = <EventContainerView
+    const component: JSX.Element = <EventContainerView
       SchoolEventexternalId="1"
       EventTitle="Title: Some description: 1"
       EventTime={{
@@ -183,8 +183,8 @@ const mockProps = {
       SelectedItem="1"
       EventDescription="test"
       />;
-  const { getByTestId } = render(component);
-    const element = getByTestId('eventid2');
+  const { getByTestId }: RenderResult = render(component);
+    const element: HTMLElement = getByTestId('eventid2');
     userEvent.click(getByTestId('eventid2'));
   expect(togglePanel1).toHaveBeenCalled();
   expect(togglePanel1).toHaveBeenCalledWith("1");

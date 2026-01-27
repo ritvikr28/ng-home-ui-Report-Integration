@@ -3,10 +3,27 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import Sims7RedirectionsSidePanel from "../Sims7RedirectionsSidePanel";
 
 describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
-  const baseProps = {
+  type SelectedRowType = {
+    category: string;
+    nextGenModule: string;
+    sims7Module: string;
+    modifiedBy: string;
+    effectiveDate: string;
+    status: string;
+    reasonForChanges: string;
+  };
+  interface BaseProps {
+    isOpen: boolean;
+    onClose: jest.Mock<any, any>;
+    mode: "edit" | "view";
+    selectedRow: SelectedRowType;
+    t: (key: string) => string;
+    setSidePanelMode: jest.Mock<any, any>;
+  }
+  const baseProps: BaseProps = {
     isOpen: true,
     onClose: jest.fn(),
-    mode: "edit" as const,
+    mode: "edit",
     selectedRow: {
       category: "TestCat",
       nextGenModule: "TestMod",
@@ -14,10 +31,10 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
       modifiedBy: "-",
       effectiveDate: "-",
       status: "Planned",
-      reasonForChanges: "",
+      reasonForChanges: ""
     },
     t: (key: string) => key,
-    setSidePanelMode: jest.fn(),
+    setSidePanelMode: jest.fn()
   };
 
   it("shows effective date input for Planned status and yes redirect", () => {

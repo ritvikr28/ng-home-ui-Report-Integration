@@ -441,6 +441,8 @@
   "invitePerson": {
     "title": "Invite Users",
     "subTitle": "Invite SIMS 7 users to access SIMS Next Gen",
+    "userDetailsSims7": "User details are managed in SIMS7",
+    "userEmailManagement": "To manage user email name and role, please access SIMS7.",
     "personDetailsSims7": "User details are managed in SIMS7",
     "personEmailManagement": "To manage user email name and role, please access SIMS7.",
     "searchPerson": "Search user",
@@ -452,6 +454,7 @@
     "invitationStatus": "Invitation status",
     "inviteRequestDate": "Invitation request date",
     "noDataToDisplay": "No data to display",
+    "invitePerson?": "Invite user?",
     "inviteConsumer?": "Invite user?",
     "invitePerson?Description": "This user will be sent an invite to access the system.",
     "changesSaved": "Changes saved",

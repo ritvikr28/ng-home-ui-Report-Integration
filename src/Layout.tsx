@@ -106,7 +106,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
 }: ILayoutProps) => {
-  const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
+  const [isRenderSimsConnectedBanner]: [boolean, boolean] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
   const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -209,11 +209,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     { Securable: "NG.AlertEmails.List", Operation: "Update" },
     { Securable: "NG.AlertEmails.List", Operation: "Write" }
   ];
-  const canViewSystemStatus = authService.isAuthorised(
+  const canViewSystemStatus: boolean = authService.isAuthorised(
     requiredSystemStatusViewPermission,
     MatchPermissions.any
   );
-  const canUpdateSystemStatus = authService.isAuthorised(
+  const canUpdateSystemStatus: boolean = authService.isAuthorised(
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
