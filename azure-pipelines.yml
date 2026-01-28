@@ -1,5 +1,5 @@
 trigger:
-- main
+- kiuwan-new-change
 
 schedules:
   - cron: "30 01 * * 3"
