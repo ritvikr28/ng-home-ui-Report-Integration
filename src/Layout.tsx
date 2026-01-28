@@ -70,10 +70,6 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
   "SendNotification"
 );
 
-
-export const homepageVideoOrgViewIncluded: boolean =
-  isOrganisationInVariant("HomePageVideoFlag");
-
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
@@ -158,9 +154,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       history.push("/auth");
     }
   };
-
-  const hasInviteUserOrgView: boolean =
-    isOrganisationInVariant("InviteUserView");
 
   const hasInviteUserPermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.UserManagement.Invite", Operation: "View" }],
@@ -350,8 +343,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             /* istanbul ignore next */
             path="/inviteusers"
             render={() =>
-              hasInviteUserOrgView &&
-                (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
+              (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
                 <InviteUsersLogic />
               ) : (
                 <Redirect to="/unauthorized" />

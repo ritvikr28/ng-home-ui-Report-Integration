@@ -10,7 +10,6 @@ import {
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {
   TFunction,
   useTranslation,
@@ -22,7 +21,6 @@ import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/Schoo
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
-import { envConfig } from "../../../../../shared/utils";
 
 const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any) => {
   const { data, isLoading, isError } = useStaffTimetableAndRegisterDetails();
@@ -98,7 +96,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any
     })
     .sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime())
     .slice(0, 6);
-    
+
   return returnEventContainer({
     schoolEventsData,
     isOpen,
@@ -155,15 +153,10 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
   };
 };
 
-const hasStaffTimeTableV2: boolean = hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "IsStaffV2"
-);
-
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode: string = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
+  const roomCode: string = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 
@@ -250,29 +243,29 @@ const formateventPeriodNum = (
 };
 
 const renderNoEventsCard: (t?: TFunction<"translation", undefined>) => JSX.Element = (t) => (
-    <Grid>
-      <GridItem
-        key="no-events" // Ensure unique key for each item
-        sm
-        md={2}
-        lg={2}
-        className="c-clear-padding"
-      >
-        <div className="new-event-card-box">
-          <EventCard
-            dataTestId="no-events-today"
-            id="no-events-today-id"
-            primaryText=""
-            secondaryText=""
-            status={EventCardStatus.DEFAULT}
-            title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
-            inputHeight={67}
-            className="dynamiceventcard event-primary-text no-events no-events-staff"
-          />
-        </div>
-      </GridItem>
-    </Grid>
-  );
+  <Grid>
+    <GridItem
+      key="no-events" // Ensure unique key for each item
+      sm
+      md={2}
+      lg={2}
+      className="c-clear-padding"
+    >
+      <div className="new-event-card-box">
+        <EventCard
+          dataTestId="no-events-today"
+          id="no-events-today-id"
+          primaryText=""
+          secondaryText=""
+          status={EventCardStatus.DEFAULT}
+          title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
+          inputHeight={67}
+          className="dynamiceventcard event-primary-text no-events no-events-staff"
+        />
+      </div>
+    </GridItem>
+  </Grid>
+);
 
 const returnEventContainer: React.FC<{
   schoolEventsData: IStaffTimeTableEventsResponse[];
@@ -373,7 +366,7 @@ const returnEventContainer: React.FC<{
                   primaryText=""
                   secondaryText=""
                   status={EventCardStatus.DEFAULT}
-                  title= {t("stafftimetable.nomoreevent")} 
+                  title={t("stafftimetable.nomoreevent")}
                   inputHeight={67}
                 />
               </div>

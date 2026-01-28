@@ -6,7 +6,6 @@ import {
   shouldShowAdminConsole,
   shouldShowDocuments,
   // shouldShowUAM,
-  shouldShowInviteUsers,
   shouldShowDBManagement,
   shouldShowSystemStatus,
   renderHomePage,
@@ -102,14 +101,6 @@ describe("layoutHelpers", () => {
     hasFeaturePermission.mockReturnValue(true);
     isOrganisationInVariant.mockReturnValue(false);
     // expect(shouldShowUAM()).toBe(false);
-  });
-
-  it("shouldShowInviteUsers returns true only if feature flag is true", () => {
-    const { hasFeaturePermission } = require("@essnextgen/ui-flagr");
-    hasFeaturePermission.mockReturnValue(true);
-    expect(shouldShowInviteUsers()).toBe(true);
-    hasFeaturePermission.mockReturnValue(false);
-    expect(shouldShowInviteUsers()).toBe(false);
   });
 
   it("shouldShowDBManagement returns true only if both feature flag and org variant are true", () => {

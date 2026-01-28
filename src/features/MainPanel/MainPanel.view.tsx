@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Divider, Grid, GridItem } from "@essnextgen/ui-kit";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { WistiaPlayer } from "@wistia/wistia-player-react";
 import { useVideoPlayStatus } from "../../shared/hook/useVideoPlayStatus";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
@@ -12,8 +11,6 @@ import "./style.scss";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import SltViewBett from "./SltViewBETT/SltViewBett.view";
-import { envConfig } from "../../shared/utils";
-import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import gtmAnalytics from '../../shared/utils/analytics';
@@ -92,16 +89,16 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
-  const SLTviewBETT: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "SLTviewBETT"
-  );
+  // const SLTviewBETT: boolean = hasFeaturePermission(
+  //   `${envConfig.APPLICATION}`,
+  //   "SLTviewBETT"
+  // );
 
-  const homepageVideoOrgViewIncluded: boolean =
-    isOrganisationInVariant("HomePageVideoFlag");
+  // const homepageVideoOrgViewIncluded: boolean =
+  //   isOrganisationInVariant("HomePageVideoFlag");
 
-  const hasSLTviewOrgPermission: boolean =
-    isOrganisationInVariant("SLTviewBETTORG");
+  // const hasSLTviewOrgPermission: boolean =
+  //   isOrganisationInVariant("SLTviewBETTORG");
 
   const togglePanel: () => void = () => {
     setIsOpen(!isOpen);
@@ -202,8 +199,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {SLTviewBETT &&
-        hasSLTviewOrgPermission &&
+       {
         authService.isAuthorised(
           requiredSchoolOverviewPermissions,
           MatchPermissions.all
@@ -216,7 +212,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {homepageVideoOrgViewIncluded && shouldShowVideo && (
+      {shouldShowVideo && (
         <div className="wistia-palyer-video-class">
           <WistiaPlayer mediaId="w9mg776ol6"
             onPlay={() => handlePlay()}

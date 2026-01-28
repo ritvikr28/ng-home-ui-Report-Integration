@@ -29,9 +29,6 @@ export const shouldShowDocuments = () =>
 //   export const shouldShowUAM = () =>
 //     hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
 
-export const shouldShowInviteUsers: () => boolean = () =>
-    hasFeatureFlag("InviteUserView");
-
 export const shouldShowDBManagement = () =>
     hasFeatureFlag("RefreshDBORG") && hasOrgVariant("RefreshDBORG");
 
