@@ -1,18 +1,12 @@
 import Carousel from "react-multi-carousel";
 import { ActionCard, TagColor } from "@essnextgen/ui-kit";
 import React from "react";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { envConfig, getUser, getUserOrganisation } from "../../../../../shared/utils";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { logger } from "../../../../../shared/components/AppInsights";
 import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
 import { responsive } from "./carousel";
 import "./carousalstyle.scss";
-
-export const getShowRegisterSecondaryTextFlag: () => boolean = () => hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "RegisterSecondaryText"
-);
 
 export const setDefaultAndCurrentSlide: (
   carouselRef: React.RefObject<Carousel>,
@@ -82,7 +76,7 @@ export const renderCarousel: (
     keyBoardControl
     customTransition="all .5"
     transitionDuration={50}
-    containerClass={getShowRegisterSecondaryTextFlag() ? "carousel-container reg-css-new" : "carousel-container reg-css-old"}
+     containerClass="carousel-container reg-css-new"
     removeArrowOnDeviceType={["tablet", "mobile"]}
     itemClass="carousel-item-padding-40-px"
   >
@@ -346,7 +340,5 @@ export const getSecondaryText: (
   const endTime: string = item.eventEnd ? formatTime(item.eventEnd) : '';
   const timePeriod: string = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
   
-  return getShowRegisterSecondaryTextFlag()
-    ? `${item.eventDescription || ''}${timePeriod}`
-    : '';
+ return `${item.eventDescription || ''}${timePeriod}`;
 };

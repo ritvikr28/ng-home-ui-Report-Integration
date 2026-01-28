@@ -10,7 +10,6 @@ import {
   useMediaQuery
 } from "@essnextgen/ui-kit";
 import dayjs from "dayjs";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {
   TFunction,
   useTranslation,
@@ -22,8 +21,6 @@ import { IStaffTimeTableEventsResponse } from "../../../../../shared/model/Schoo
 import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
-import { envConfig } from "../../../../../shared/utils";
-
 
 // Helper: filter and sort today's events
 const getTodayEvents: (events: IStaffTimeTableEventsResponse[]) => IStaffTimeTableEventsResponse[] = (events: IStaffTimeTableEventsResponse[]): IStaffTimeTableEventsResponse[] => {
@@ -188,15 +185,10 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
   };
 };
 
-const hasStaffTimeTableV2: boolean = hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "IsStaffV2"
-);
-
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode: string = hasStaffTimeTableV2 ? staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode : staffTimeTableEventData?.room?.roomCode;
+  const roomCode: string = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 

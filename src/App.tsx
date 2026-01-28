@@ -6,7 +6,7 @@ import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
 import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
-import { homepageVideoOrgViewIncluded, ILayoutProps, Layout } from "./Layout";
+import { ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
 import ErrorBoundary from "./shared/components/ErrorBoundary/Index";
 import configureStore from "./redux/store";
@@ -82,14 +82,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
 
   useEffect(() => {
-    if (hasNewHomePagePermission && homepageVideoOrgViewIncluded) {
+    if (hasNewHomePagePermission) {
     
-      if ( isPlayed === false && apiError === false && homepageVideoOrgViewIncluded) {
+      if ( isPlayed === false && apiError === false) {
         console.log("isPlayed apiError", { isPlayed, apiError });
         gtmAnalytics.showVideoEvent();
       }
     }
-  }, [isPlayed, homepageVideoOrgViewIncluded])
+  }, [isPlayed])
 
   if (!initialized) return null;
 

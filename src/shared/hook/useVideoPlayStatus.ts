@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { fetchVideoPlayStatus } from "../services/videoPlayStatus";
-import { homepageVideoOrgViewIncluded } from "../../Layout";
+// import { homepageVideoOrgViewIncluded } from "../../Layout";
 import { hasNewHomePagePermission } from "../../App";
 
 export interface UseVideoPlayStatusResult {
@@ -15,8 +15,8 @@ export function useVideoPlayStatus(): UseVideoPlayStatusResult {
   useEffect(() => {
     (async () => {
       try {
-        console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
-        if (hasNewHomePagePermission && homepageVideoOrgViewIncluded) {
+        // console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
+        if (hasNewHomePagePermission) {
           const result = await fetchVideoPlayStatus();
           if (result && result.success) {
             const playedValue = result.isPlayed;

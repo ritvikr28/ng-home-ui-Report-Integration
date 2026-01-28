@@ -13,7 +13,6 @@ import {
   SidePanelFooter
 } from "@essnextgen/ui-kit";
 import "./style.scss";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import {
   useTranslation,
   UseTranslationResponse
@@ -59,10 +58,7 @@ export const RightSidePanelView: (
   const handlePanelClose:()=>void = () => {
     togglePanel(SchoolEventexternalId);
   };
-  const StaffTTClassView: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "StaffTTClassViewBtn"
-  );
+
   const onTRButtonClick: () => void = () => {
     const url: string = (EventTypeCode === "AttendanceSession")
       ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
@@ -150,7 +146,7 @@ export const RightSidePanelView: (
             </div>
 
             <div>
-              { StaffTTClassView && EventTypeCode !== 'TTNTPer' && BaseGroupId !== '00000000-0000-0000-0000-000000000000' && (
+              { EventTypeCode !== 'TTNTPer' && BaseGroupId !== '00000000-0000-0000-0000-000000000000' && (
                     <div data-testid="class-view">
                       <Link
                         dataTestId="class-view-button"
