@@ -12,100 +12,40 @@ import NotifyExceptionView from "./NotifyException.view";
 import { IPrecheckStatusApiResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 import { FetchPreCheckStatus, handleComplete, Item } from "./RefreshDatabaseUtils";
 
-
 let items: Item[];
 
 const RefreshDatabaseView: () => JSX.Element = () => {
-
-  const history : any = useHistory();
-
-  const [activeIndex, setActiveIndex]: [
-    number,
-    React.Dispatch<React.SetStateAction<number>>
-  ] = useState<number>(0);
-
-  const { t }: UseTranslationResponse<"translation", undefined> =
-    useTranslation();
-
-  // Define items with the components to be rendered
+  const history: any = useHistory();
+  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   items = [
     { title: t("RefreshDB_T.moduleBlock.detachDB.content2"), component: DetachDatabaseView },
     { title: t("RefreshDB_T.moduleBlock.DeleteNGData.title"), component: DeleteNGDataView },
     { title: t("RefreshDB_T.moduleBlock.attachDB.content"), component: AttachDatabaseView },
     { title: t("RefreshDB_T.moduleBlock.syncProcess.title"), component: SyncDataView }
   ];
-
-  const [flagValues, setFlagValues]: [
-    string[],
-    React.Dispatch<React.SetStateAction<string[]>>
-  ] = useState<string[]>(new Array(items.length).fill(""));
-
-  const [loading, setLoading]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(true);
-
-  const [enableNotification, setEnableNotification]: [
-    boolean,
-    React.Dispatch<React.SetStateAction<boolean>>
-  ] = useState<boolean>(false);
-
-  // Function to handle setting the notification state when an exception occurs
-  const handleException : () => void = () => {
-    setEnableNotification(true); // Enable notification on exception
-  };
+  const [flagValues, setFlagValues] = useState<string[]>(new Array(items.length).fill(""));
+  const [loading, setLoading] = useState<boolean>(true);
+  const [enableNotification, setEnableNotification] = useState<boolean>(false);
+  const handleException = () => setEnableNotification(true);
 
   useEffect(() => {
-    const initializeSteps : () => Promise<void> = async () => {
+    let intervalId: any;
+    const initializeSteps = async () => {
       try {
-        const precheckStatus: IPrecheckStatusApiResponse | null =
-          await FetchPreCheckStatus(handleException, history);
-
+        const precheckStatus: IPrecheckStatusApiResponse | null = await FetchPreCheckStatus(handleException, history);
         if (precheckStatus && precheckStatus?.statusCode === 200) {
-          const statuses : string[] = [
+          const statuses: string[] = [
             precheckStatus?.dbDetachedStatus || "",
             precheckStatus?.deleteNGDataStatus || "",
             precheckStatus?.dbReAttachedStatus || "",
             precheckStatus?.syncDataStatus || "",
             precheckStatus?.syncCompletedSeenStatus || ""
           ];
-
-          // Map statuses to corresponding step labels
-          const initialFlags : string[] = statuses?.map((status, index) => {
-            if (index === 3) { // Assuming syncDataStatus is at index 3
-              if (status === "Active") return "";
-              if (status === "Completed" && precheckStatus?.syncCompletedSeenStatus === "Seen")
-                return "";
-              if (status === "Completed") {
-                clearInterval(intervalId); // Stop auto-refresh
-                return "Completed";
-              }
-
-              if (status === "Not Started" || status === "In Progress") return "In Progress";
-              return ""; // Default to empty if unrecognized
-            }
-            if (status === "Detached") return t("RefreshDB_T.moduleBlock.status.content3");
-            if (status === "Deleted") return t("RefreshDB_T.moduleBlock.status.content");
-            if (status === "Attached") return t("RefreshDB_T.moduleBlock.status.content1");
-            if (status === "In Progress") return t("RefreshDB_T.moduleBlock.status.content2");
-
-            return ""; // Default to empty if unrecognized
-          });
+          const initialFlags = mapStatusesToFlags(statuses, precheckStatus, t, intervalId);
           setFlagValues(initialFlags);
-
-          // Determine the active step
-          let activeStep : number = initialFlags?.findIndex((flag) => flag === "In Progress" || flag === "Completed"); // Find the first step that is in progress or not started
-          if (activeStep === -1) {
-            activeStep = initialFlags.findIndex((flag) => flag === "");
-          }
-
-          if (activeStep === -1) {
-            activeStep = items.length - 1; // Default to the last step if all are complete
-
-          }
+          const activeStep = getActiveStep(initialFlags, items.length);
           setActiveIndex(activeStep);
-          // Stop auto-refresh if specific conditions are met
-
         }
       } catch (error) {
         console.log("Error fetching precheck status:");
@@ -113,16 +53,12 @@ const RefreshDatabaseView: () => JSX.Element = () => {
         setLoading(false);
       }
     };
-    // Initial fetch
     initializeSteps();
-    // Set up interval for auto-refresh
-    const intervalId :any = setInterval(() => {
+    intervalId = setInterval(() => {
       initializeSteps();
-    }, window.REFRESH_INTERVAL || 60000); // Refresh every 10 seconds
-
+    }, window.REFRESH_INTERVAL || 60000);
     return () => clearInterval(intervalId);
-  }, [history]); // Add history as a dependency
-
+  }, [history]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -138,58 +74,101 @@ const RefreshDatabaseView: () => JSX.Element = () => {
       )}
       <div id="list-item">
         <Card id='refreshDB-card' type={CardType.Default}>
-          {items.map((item, index) => {
-            const CurrentComponent: ComponentType<any> = item.component;
-            const isActive = index === activeIndex;
-            const syncDataStatus : string = flagValues[3];
-            return (
-              <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
-                <div className="list-item" style={{ padding: "16px" }}>
-                  <div style={{ display: "flex" }}>
-                    <FormLabel id='default-list-item' >
-                      {`${index + 1}. ${item.title}`}
-                    </FormLabel>
-                    {flagValues[index].trim() !== "" && (
-                      <span style={{ marginLeft: "10px" }} >
-                        <Tag
-                          size={TagSize.Small}
-                          color={TagColor.Success}
-                          text={flagValues[index]}
-                        />
-                      </span>
-                    )}
-                  </div>
-
-                  {isActive && (
-                    <CurrentComponent
-                      status={(value: string) =>
-                        handleComplete({
-                          index,
-                          value,
-                          flagValues,
-                          setFlagValues,
-                          setActiveIndex,
-                          items
-                        })
-                      }
-                      inProgressStatus={(value: string) => {
-                        const updatedFlags : string[] = [...flagValues];
-                        updatedFlags[index] = value; // Update "In progress" status
-                        setFlagValues(updatedFlags);
-                      }}
-                      // Pass handleException to trigger notification in case of exception
-                      handleException={handleException}
-                      syncDataStatus={syncDataStatus}
-                    />
-                  )}
-                </div>
-                <div className="item-separator" />
-              </div>
-            );
-          })}
+          {items.map((item, index) => (
+            <ListItem
+              key={index}
+              item={item}
+              index={index}
+              isActive={index === activeIndex}
+              flagValues={flagValues}
+              setFlagValues={setFlagValues}
+              setActiveIndex={setActiveIndex}
+              stepItems={items}
+              handleException={handleException}
+              syncDataStatus={flagValues[3]}
+            />
+          ))}
         </Card>
       </div>
     </>
+  );
+};
+
+function mapStatusesToFlags(statuses: string[], precheckStatus: IPrecheckStatusApiResponse, t: any, intervalId: any) {
+  return statuses.map((status, index) => {
+    if (index === 3) { // syncDataStatus
+      if (status === "Active") return "";
+      if (status === "Completed" && precheckStatus?.syncCompletedSeenStatus === "Seen") return "";
+      if (status === "Completed") {
+        clearInterval(intervalId);
+        return "Completed";
+      }
+      if (status === "Not Started" || status === "In Progress") return "In Progress";
+      return "";
+    }
+    if (status === "Detached") return t("RefreshDB_T.moduleBlock.status.content3");
+    if (status === "Deleted") return t("RefreshDB_T.moduleBlock.status.content");
+    if (status === "Attached") return t("RefreshDB_T.moduleBlock.status.content1");
+    if (status === "In Progress") return t("RefreshDB_T.moduleBlock.status.content2");
+    return "";
+  });
+}
+
+function getActiveStep(initialFlags: string[], itemsLength: number) {
+  let activeStep = initialFlags.findIndex((flag) => flag === "In Progress" || flag === "Completed");
+  if (activeStep === -1) {
+    activeStep = initialFlags.findIndex((flag) => flag === "");
+  }
+  if (activeStep === -1) {
+    activeStep = itemsLength - 1;
+  }
+  return activeStep;
+}
+
+const ListItem = ({ item, index, isActive, flagValues, setFlagValues, setActiveIndex, stepItems, handleException, syncDataStatus }: any) => {
+  const CurrentComponent: ComponentType<any> = item.component;
+  return (
+    <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
+      <div className="list-item" style={{ padding: "16px" }}>
+        <div style={{ display: "flex" }}>
+          <FormLabel id='default-list-item' >
+            {`${index + 1}. ${item.title}`}
+          </FormLabel>
+          {flagValues[index].trim() !== "" && (
+            <span style={{ marginLeft: "10px" }} >
+              <Tag
+                size={TagSize.Small}
+                color={TagColor.Success}
+                text={flagValues[index]}
+              />
+            </span>
+          )}
+        </div>
+
+        {isActive && (
+          <CurrentComponent
+            status={(value: string) =>
+              handleComplete({
+                index,
+                value,
+                flagValues,
+                setFlagValues,
+                setActiveIndex,
+                items: stepItems
+              })
+            }
+            inProgressStatus={(value: string) => {
+              const updatedFlags: string[] = [...flagValues];
+              updatedFlags[index] = value;
+              setFlagValues(updatedFlags);
+            }}
+            handleException={handleException}
+            syncDataStatus={syncDataStatus}
+          />
+        )}
+      </div>
+      <div className="item-separator" />
+    </div>
   );
 };
 

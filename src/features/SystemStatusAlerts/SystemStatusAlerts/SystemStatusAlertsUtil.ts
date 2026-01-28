@@ -3,7 +3,7 @@ import { Alert } from "../interface";
 import { ISystemStatusAlertResponse } from "../../../shared/model/SystemStatus/responsemodel";
 
 // Utility to fetch alerts and set state, refactored for import
-export const fetchAlertsUtil = async (
+export const fetchAlertsUtil: (setLoading: React.Dispatch<React.SetStateAction<boolean>>, setErrorText: React.Dispatch<React.SetStateAction<string | null>>, setAlerts: React.Dispatch<React.SetStateAction<Alert[]>>, fetchEmailAlertStatus: (handleException: () => void, history: any) => Promise<ISystemStatusAlertResponse | null>, handleException: () => void, history: any, t: (key: string) => string) => Promise<void> = async (
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   setErrorText: React.Dispatch<React.SetStateAction<string | null>>,
   setAlerts: React.Dispatch<React.SetStateAction<Alert[]>>,
