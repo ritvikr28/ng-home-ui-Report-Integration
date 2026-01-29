@@ -3,12 +3,8 @@ import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
-import { NotificationTableParams } from "./api.props";
 
-export const getNotificationTableData: ({ PageSize, PageNumber }: {
-  PageSize: number;
-  PageNumber: number;
-}) => Promise<any> = async ({ PageSize, PageNumber }: NotificationTableParams): Promise<any> =>  {
+export const getNotificationTableData: (PageSize: number, PageNumber: number) => Promise<any> = async (PageSize: number, PageNumber: number): Promise<any> =>  {
 
   const orgId: string = getUserOrganisation();
   const receiverId: string | null = authService.getUserId();

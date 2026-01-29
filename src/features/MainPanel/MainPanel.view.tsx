@@ -139,7 +139,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
-  const handlePlay = React.useCallback(async (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => {
+  const handlePlay: (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => Promise<void> = React.useCallback(async (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => {
     gtmAnalytics.pushEvent({ event: "playVideo" });
     if (!videoStatusSaved) {
       try {
