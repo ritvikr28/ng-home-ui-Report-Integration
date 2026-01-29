@@ -275,29 +275,29 @@ const formateventPeriodNum = (
 };
 
 const renderNoEventsCard: (t?: TFunction<"translation", undefined>) => JSX.Element = (t) => (
-    <Grid>
-      <GridItem
-        key="no-events" // Ensure unique key for each item
-        sm
-        md={2}
-        lg={2}
-        className="c-clear-padding"
-      >
-        <div className="new-event-card-box">
-          <EventCard
-            dataTestId="no-events-today"
-            id="no-events-today-id"
-            primaryText=""
-            secondaryText=""
-            status={EventCardStatus.DEFAULT}
-            title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
-            inputHeight={67}
-            className="dynamiceventcard event-primary-text no-events no-events-staff"
-          />
-        </div>
-      </GridItem>
-    </Grid>
-  );
+  <Grid>
+    <GridItem
+      key="no-events" // Ensure unique key for each item
+      sm
+      md={2}
+      lg={2}
+      className="c-clear-padding"
+    >
+      <div className="new-event-card-box">
+        <EventCard
+          dataTestId="no-events-today"
+          id="no-events-today-id"
+          primaryText=""
+          secondaryText=""
+          status={EventCardStatus.DEFAULT}
+          title={t && t("stafftimetable.noeventdisplay") || "No events to display"}
+          inputHeight={67}
+          className="dynamiceventcard event-primary-text no-events no-events-staff"
+        />
+      </div>
+    </GridItem>
+  </Grid>
+);
 
 const returnEventContainer: React.FC<{
   schoolEventsData: IStaffTimeTableEventsResponse[];
@@ -398,7 +398,7 @@ const returnEventContainer: React.FC<{
                   primaryText=""
                   secondaryText=""
                   status={EventCardStatus.DEFAULT}
-                  title= {t("stafftimetable.nomoreevent")} 
+                  title={t("stafftimetable.nomoreevent")}
                   inputHeight={67}
                 />
               </div>

@@ -230,15 +230,15 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         )}
 
       {shouldShowVideo && (
-        <div className="wistia-palyer-video-class">
-          <WistiaPlayer mediaId="w9mg776ol6"
-            onPlay={() => handlePlay(videoStatusSaved, setVideoStatusSaved)}
-            onEnded={() => gtmAnalytics.pushVideoEvent(100)}
-            onPause={() => { }}
-            onPercentWatchedChange={handlePercentWatchedChange}
-          />
-        </div>
-      )}
+          <div className="wistia-palyer-video-class">
+            <WistiaPlayer mediaId="w9mg776ol6"
+              onPlay={() => handlePlay(videoStatusSaved, setVideoStatusSaved)}
+              onEnded={() => gtmAnalytics.pushVideoEvent(100)}
+              onPause={() => { }}
+              onPercentWatchedChange={handlePercentWatchedChange}
+            />
+          </div>
+        )}
 
       <div className="sims-section-footer c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />
