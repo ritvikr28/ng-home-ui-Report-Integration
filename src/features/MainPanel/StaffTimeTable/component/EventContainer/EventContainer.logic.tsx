@@ -188,7 +188,7 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode: string = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
+  const roomCode = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 
