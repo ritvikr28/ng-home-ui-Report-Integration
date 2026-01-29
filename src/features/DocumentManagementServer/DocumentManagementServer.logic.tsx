@@ -318,10 +318,10 @@ export async function fetchGetDocumentDetailsLogic({
       referenceExternalId: refExternalId,
       documentRealatedTo: relatedTo || 0
     });
-    if (result && result?.statusCode === 200) {
+    if (result && typeof (result as any).statusCode === "number" && (result as any).statusCode === 200) {
       setDocData(result);
       setCurrentPage(page);
-      setTotalPage(Math.ceil(result?.totalRecords / pageSizeNumber));
+      setTotalPage(Math.ceil((result as any)?.totalRecords / pageSizeNumber));
       setShowSearchError(false);
     } else {
       setShowSearchError(true);
@@ -474,7 +474,10 @@ const pupilImgString = 'Pupil Photo';
 
 export const getStaffProfilePhoto = async (staffId: string) => {
   const response = await fetchStaffProfilePhoto(staffId);
-  return response?.data ?? "";
+  if (response && 'data' in response) {
+    return response.data ?? "";
+  }
+  return "";
 }
 export const formatSuggestions = async (payload: any[], t: (key: string) => string): Promise<Suggestion[]> => {
   if (!payload) return [];

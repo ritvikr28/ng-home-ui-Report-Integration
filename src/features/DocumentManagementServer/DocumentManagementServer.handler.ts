@@ -701,3 +701,95 @@ export function closeSidePanel(
     downloadPollingIntervalRef.current = null;
   }
 }
+
+export function getNotificationMsgBannerObject(
+  t: (key: string, options?: any) => string,
+  showErrorBanner: boolean,
+  showSearchError: boolean,
+  showDeleteErrorBanner: boolean,
+  showDeleteAbortBanner: boolean,
+  availableFileCount: number,
+  setShowDeleteErrorBanner: (v: boolean) => void,
+  setShowDeleteAbortBanner: (v: boolean) => void
+) {
+  return [
+    {
+      isShow: showErrorBanner || showSearchError,
+      variant: "warning",
+      title: t("DocumentManagementServer.informationUnavailable"),
+      message: t("DocumentManagementServer.technicalIssueMessage"),
+      autoclose: true
+    },
+    {
+      isShow: showDeleteErrorBanner,
+      variant: "warning",
+      title: t("DocumentManagementServer.unableToDelete"),
+      message: t("DocumentManagementServer.unableToDeleteDocumentMsg", {
+        type: availableFileCount === 1 ? "document" : "documents"
+      }),
+      autoclose: false,
+      onClickClose: () => setShowDeleteErrorBanner(false)
+    },
+    {
+      isShow: showDeleteAbortBanner,
+      variant: "warning",
+      title: t("DocumentManagementServer.unableToDelete"),
+      message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
+      autoclose: true,
+      onClickClose: () => setShowDeleteAbortBanner(false)
+    }
+  ];
+}
+
+export async function handlePrepareDownload({
+  selectedDocs,
+  prepareDownload,
+  gtmAnalytics,
+  setPrepareDownloadAbortBanner,
+  setPrepareDownloadError,
+  setShowEmailNotification,
+  setIsSidePanelLoader,
+  totalSelectedCount,
+}: {
+  selectedDocs: any[];
+  prepareDownload: (docs: any[]) => Promise<number[]>;
+  gtmAnalytics: any;
+  setPrepareDownloadAbortBanner: (v: boolean) => void;
+  setPrepareDownloadError: (v: boolean) => void;
+  setShowEmailNotification: (v: boolean) => void;
+  setIsSidePanelLoader: (v: boolean) => void;
+  totalSelectedCount: number;
+}) {
+  try {
+    const statuses = await prepareDownload(selectedDocs);
+    gtmAnalytics.pushEvent({
+      event: "key_action",
+      actionType: "prepare_download",
+    });
+    setPrepareDownloadAbortBanner(false);
+    if (statuses.some((status: number) => status !== 204 && status !== 409)) {
+      setPrepareDownloadError(true);
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        messageText: "Unable to prepare for download",
+      });
+    } else if (statuses.some((status: number) => status === 409)) {
+      setPrepareDownloadAbortBanner(true);
+      gtmAnalytics.pushEvent({
+        event: "error_message",
+        messageText: "Unable to prepare for download",
+      });
+    } else if (totalSelectedCount > 1) {
+      setShowEmailNotification(true);
+    }
+  } catch {
+    setIsSidePanelLoader(false);
+    setPrepareDownloadError(true);
+    setPrepareDownloadAbortBanner(false);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      messageText: "Unable to prepare for download",
+    });
+  }
+}
+

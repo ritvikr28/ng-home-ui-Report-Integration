@@ -1,22 +1,30 @@
-
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../shared/utils";
-import { deleteDocumentRequest, DocumentBasicDetails, DocumentCategoryResponse, DocumentManagementServerProps, DocumentPrepareDownload } from "./responseModel";
-import {PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS} from "../../ApiConfig.json"
+import {
+  deleteDocumentRequest,
+  DocumentBasicDetails,
+  DocumentCategoryResponse,
+  DocumentManagementServerProps,
+  DocumentPrepareDownload
+} from "./responseModel";
+import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../ApiConfig.json";
+
+// Helper type for error responses
+type ErrorResponse = { status?: number; detail?: string; error?: string };
 
 export const fetchDocumentDetails = async ({
   pageNumber,
   pageSize,
   categoryId = [],
-  fromDate = '',
-  toDate = '',
-  sortBy = 'DateAdded',
-  sortDirection = 'Desc',
+  fromDate = "",
+  toDate = "",
+  sortBy = "DateAdded",
+  sortDirection = "Desc",
   referenceExternalId = [],
   documentRealatedTo = 0
-}: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
+}: DocumentManagementServerProps): Promise<DocumentBasicDetails | ErrorResponse | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
@@ -32,7 +40,7 @@ export const fetchDocumentDetails = async ({
         sortDirection,
         referenceExternalId,
         documentRealatedTo
-      },
+      }
     };
 
     const responseData: AxiosResponse<DocumentBasicDetails> =
@@ -42,7 +50,7 @@ export const fetchDocumentDetails = async ({
     }
     return null;
   } catch (err: any) {
-    return err?.response?.data ;
+    return err?.response?.data ?? { status: 500, detail: "Unknown server error" };
   }
 };
 
@@ -73,73 +81,36 @@ export const fetchDMSSuggestions = async (
     const url = `/validation/api/v1/file/search/autocomplete?${params}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response?.data;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching DMS suggestions:", err);
     return {};
   }
 };
 
-// export const fetchFilterCategory = async (documentRealatedTo: number | null): Promise<any> => {
-//   try {
-//     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-//     const param = documentRealatedTo !== null ? `?DocumentRealatedTo=${encodeURIComponent(documentRealatedTo)}` : '';
-//     const url = `/validation/api/v1/applicationregistration${param}`;
-//     const response: AxiosResponse = await service.get(url, baseUrl);
-//     return response?.data;
-//   } catch (err) {
-//     console.error("Error fetching DMS suggestions:", err);
-//     return {};
-//   }
-// }
-
-
-export const fetchDocumentCategory = async (payload: { CategoryRequest: any }) => {
+export const fetchDocumentCategory = async (
+  payload: { CategoryRequest: any }
+): Promise<DocumentCategoryResponse | ErrorResponse> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/data-export/get-linked-files-category-by-id`;
     const responseData: AxiosResponse<DocumentCategoryResponse> = await service.post(url, payload, { baseURL: baseUrl });
     return responseData?.data;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching document categories:", err);
-    if (typeof err === "object" && err !== null && "response" in err) {
-      // @ts-ignore
-      return err.response?.data ?? { status: 500, detail: "Unknown server error" };
+    if (err?.response?.data) {
+      return err.response.data;
     }
     return { status: 500, detail: "Unknown server error" };
   }
 };
 
-export const prepareAndDownloadFile = async (payload: { request: any }) => {
+export const prepareAndDownloadFile = async (
+  payload: { request: any }
+): Promise<number | undefined> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/preparedownload`;
     const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
-
-    return responseData?.status; 
-  } catch (error: any) {
-   
-    if (error?.response?.status) {
-      return error.response.status;
-    }
-  }
-  return payload?.request?.status; 
-};
-
-export const deleteFiles = async (payload: { request: any }) => {
-  try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
-    const url = `/validation/api/v1/file/bulkdelete`;
-    const responseData: AxiosResponse<deleteDocumentRequest> = await axios.delete(
-  `${baseUrl}${url}`,
-  {
-    data: payload,
-    headers: {
-      "Content-Type": "application/json-patch+json",
-      Authorization: `Bearer ${authService.getAuthTokens()}`
-    }
-  }
-);
-
     return responseData?.status;
   } catch (error: any) {
     if (error?.response?.status) {
@@ -149,44 +120,75 @@ export const deleteFiles = async (payload: { request: any }) => {
   return payload?.request?.status;
 };
 
-export const bulkDownload = async (blobName: string, fileName: string): Promise<any> => {
+export const deleteFiles = async (
+  payload: { request: any }
+): Promise<number> => {
+  try {
+    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/bulkdelete`;
+    const responseData: AxiosResponse<deleteDocumentRequest> = await axios.delete(
+      `${baseUrl}${url}`,
+      {
+        data: payload,
+        headers: {
+          "Content-Type": "application/json-patch+json",
+          Authorization: `Bearer ${authService.getAuthTokens()}`
+        }
+      }
+    );
+    return responseData?.status;
+  } catch (error: any) {
+    if (error?.response?.status) {
+      return error.response.status;
+    }
+  }
+  return payload?.request?.status;
+};
+
+export const bulkDownload = async (
+  blobName: string,
+  fileName: string
+): Promise<any> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodeURIComponent(blobName)}${fileName ? `&BulkDownloadRequest.FileName=${encodeURIComponent(fileName)}` : ""}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response.data;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error in bulk download:", err);
     return null;
   }
 };
 
-
-export const viewDownload = async (): Promise<any> => {
+export const viewDownload = async (): Promise<AxiosResponse | ErrorResponse> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/viewDownload`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching view downloads data:", err);
-    return {};
+    return { status: 500, detail: "Unknown server error" };
   }
 };
 
-export const validation = async (payload: { request: any }): Promise<any> => {
+export const validation = async (
+  payload: { request: any }
+): Promise<AxiosResponse | ErrorResponse> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/getfilevalidation`;
     const response: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
     return response;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching view downloads data:", err);
-    return {};
+    return { status: 500, detail: "Unknown server error" };
   }
 };
 
-export const clearAllFiles = async (payload: { request: { partitionKey: string[] } }): Promise<any> => {
+export const clearAllFiles = async (
+  payload: { request: { partitionKey: string[] } }
+): Promise<number | string[] | ErrorResponse> => {
   try {
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `validation/api/v1/file/clearall`;
@@ -201,20 +203,21 @@ export const clearAllFiles = async (payload: { request: { partitionKey: string[]
   return payload?.request?.partitionKey;
 };
 
-export const fetchStaffProfilePhoto = async (externalId: string): Promise<any> => {
+export const fetchStaffProfilePhoto = async (
+  externalId: string
+): Promise<AxiosResponse | ErrorResponse> => {
   try {
     const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
     const url = `/api/v1/personThumbnailImage/${externalId}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response;
-  } catch (err) {
+  } catch (err: any) {
     console.error("Error fetching staff profile photo:", err);
-    return {};
+    return { status: 500, detail: "Unknown server error" };
   }
 };
 
-
-export const fileDownloadInstance: AxiosInstance = axios.create({ 
+export const fileDownloadInstance: AxiosInstance = axios.create({
   baseURL: buildApplicationUrl(PLATFORM_BASEURLS),
   responseType: "blob",
   headers: {
@@ -222,17 +225,12 @@ export const fileDownloadInstance: AxiosInstance = axios.create({
   }
 });
 
-export const downloadFile: (
+export const downloadFile = async (
   isApplication?: string,
   isSection?: string,
   fileId?: string
-) => Promise<Blob> = async (
-  isApplication?: string,
-  isSection?: string,
-  fileId?: string
-) => {
+): Promise<Blob> => {
   const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
   const response = await fileDownloadInstance.get(url);
   return response.data;
 };
-
