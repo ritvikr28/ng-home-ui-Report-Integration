@@ -55,8 +55,8 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
               ...uiKitTranslation.cy,
               ...uiAppKitTranslation.cy,
               ...translationCy
-            },
-          },
+            }
+          }
         }).init({ lng: langCode });
         console.log("[i18n Init] Successfully initialized with lang:", langCode);
         setInitialized(true);

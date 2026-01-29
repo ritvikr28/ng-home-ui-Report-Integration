@@ -95,11 +95,12 @@ function canShowPupilProfile(): boolean {
   return authService.isAuthorised(requiredPupilProfilePermissions, MatchPermissions.all);
 }
 
-function canShowSLTviewBETT(SLTviewBETT: boolean, hasSLTviewOrgPermission: boolean): boolean {
+function canShowSLTviewBETT(): boolean {
   return (
-    SLTviewBETT &&
-    hasSLTviewOrgPermission &&
-    authService.isAuthorised(requiredSchoolOverviewPermissions, MatchPermissions.all)
+    authService.isAuthorised(
+      requiredSchoolOverviewPermissions,
+      MatchPermissions.all
+    )
   );
 }
 
@@ -114,17 +115,6 @@ function canShowSLTviewBETT(SLTviewBETT: boolean, hasSLTviewOrgPermission: boole
 //     }
 //   }
 // }
-const handlePlay = React.useCallback(async (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => {
-  gtmAnalytics.pushEvent({ event: "playVideo" });
-  if (!videoStatusSaved) {
-    try {
-      await saveVideoPlayStatus();
-      setVideoStatusSaved(true);
-    } catch (e) {
-      console.error("Video Played");
-    }
-  }
-}, []);
 
 function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }): void {
   const { detail: { percentWatched, lastPercentWatched } }: { detail: { percentWatched: number; lastPercentWatched: number; }; } = event
@@ -148,6 +138,18 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     isOpen,
     setIsOpen
   }: IMainPanelProps = props;
+
+  const handlePlay = React.useCallback(async (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => {
+    gtmAnalytics.pushEvent({ event: "playVideo" });
+    if (!videoStatusSaved) {
+      try {
+        await saveVideoPlayStatus();
+        setVideoStatusSaved(true);
+      } catch (e) {
+        console.error("Video Played");
+      }
+    }
+  }, []);
 
   // const SLTviewBETT: boolean = hasFeaturePermission(
   //   `${envConfig.APPLICATION}`,
@@ -217,11 +219,8 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         </>
       )}
 
-       {
-        authService.isAuthorised(
-          requiredSchoolOverviewPermissions,
-          MatchPermissions.all
-        ) && (
+      {
+        canShowSLTviewBETT() && (
           <>
             <SltViewBett />
             <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>

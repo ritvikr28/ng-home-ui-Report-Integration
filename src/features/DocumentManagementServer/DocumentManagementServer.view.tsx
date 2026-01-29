@@ -1256,7 +1256,7 @@ const getDialogTitle = () => {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
-                                isAllSelectedAcrossPagination={true}
+                                isAllSelectedAcrossPagination
                                 totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);

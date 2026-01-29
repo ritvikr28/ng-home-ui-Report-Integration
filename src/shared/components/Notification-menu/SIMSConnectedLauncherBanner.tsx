@@ -12,7 +12,7 @@ export const SIMSConnectedLauncher: () => JSX.Element = () => {
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   const orgId: string | undefined = getUserOrganisation();
 
-  const handleExit = (): void => {
+  const handleExit: () => void = (): void => {
     try {
       const storedBanners: Banner[] = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
       const updatedBanners: Banner[] = storedBanners.filter((item: Banner) => item.orgId !== orgId);

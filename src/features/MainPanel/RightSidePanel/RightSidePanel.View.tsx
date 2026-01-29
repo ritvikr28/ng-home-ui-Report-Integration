@@ -17,17 +17,143 @@ import {
   useTranslation,
   UseTranslationResponse
 } from "@essnextgen/ui-intl-kit";
+import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { IRightSidePanelViewProps } from "./RightSidePanelViewProps";
 import { envConfig } from "../../../shared/utils/constants";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { logger } from "../../../shared/components/AppInsights";
 import { getUser, getUserOrganisation } from "../../../shared/utils";
 
+const ClassViewLink: ({ StaffTTClassView, EventTypeCode, BaseGroupId, classViewURL, handleClassViewClick, t }: any) => JSX.Element | null = ({
+  StaffTTClassView,
+  EventTypeCode,
+  BaseGroupId,
+  classViewURL,
+  handleClassViewClick,
+  t
+}: any) => {
+  if (
+    !StaffTTClassView ||
+    EventTypeCode === "TTNTPer" ||
+    BaseGroupId === "00000000-0000-0000-0000-000000000000"
+  ) {
+    return null;
+  }
+  return (
+    <div data-testid="class-view">
+      <Link
+        dataTestId="class-view-button"
+        id="class-view-button"
+        href={classViewURL}
+        onClick={handleClassViewClick}
+      >
+        {t("homeStaffTimeTableEventTiles.classview")}
+      </Link>
+    </div>
+  );
+};
 
+// Helper: Register Section
+const RegisterSection: ({ isPupilSectionEnable, GroupDescription, t, onTRButtonClick }: any) => JSX.Element | null = ({
+  isPupilSectionEnable,
+  GroupDescription,
+  t,
+  onTRButtonClick
+}: any) =>
+  isPupilSectionEnable ? (
+    <div
+      data-testid="register-label"
+      className="essui-global-typography-default-subtitle margin-24 div-container"
+    >
+      <span data-testid="register-text">
+        {GroupDescription ?? ""} {t("homeStaffTimeTableEventTiles.register")}
+      </span>
+      <span data-testid="take-reg">
+        <Button
+          dataTestId="take-reg-button"
+          size={ButtonSize.Small}
+          color={ButtonColor.Secondary}
+          onClick={onTRButtonClick}
+        >
+          {t("homeStaffTimeTableEventTiles.takeregister")}
+        </Button>
+      </span>
+    </div>
+  ) : null;
 
-export const RightSidePanelView: (
-  props: IRightSidePanelViewProps
-) => JSX.Element = (props: IRightSidePanelViewProps) => {
+// Helper: Error or Loader Section
+const ErrorOrLoaderSection = ({
+  errCodeMessage,
+  pupilDetailErrorCodeMessage,
+  isLoader
+}: any) => {
+  if (errCodeMessage) {
+    return (
+      <div
+        data-testid="error-label"
+        className="essui-global-typography-default-body"
+      >
+        {pupilDetailErrorCodeMessage}
+      </div>
+    );
+  }
+  if (isLoader) {
+    return (
+      <Loader
+        dataTestId="error-loader"
+        className="loader-wrapper"
+        loaderText="Loading..."
+        loaderType={LoaderType.Circular}
+      />
+    );
+  }
+  return null;
+};
+
+// Helper: Pupil List
+const PupilList: ({ GroupMembersData }: any) => JSX.Element | null = ({ GroupMembersData }: any) => {
+  if (!GroupMembersData || GroupMembersData.length === 0) return null;
+  return (
+    <div className="parent">
+      {GroupMembersData.map((pupil: any, index: number) => (
+        <span className="child" key={pupil.pupilExternalId || index}>
+          <Avatar
+            imagePath={
+              pupil.personImage && pupil.personImage.imagePath
+                ? pupil.personImage.imagePath
+                : ""
+            }
+            showDefaultAvatar={false}
+            dataTestId={`avtar-${index}`}
+          />
+          <Link
+            dataTestId={`link-${index}`}
+            href={`${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`}
+            target="_self"
+          >
+            <span
+              data-testId={`link-click-${index}`}
+              onClick={() =>
+                gtmAnalytics.pushEvent({
+                  event: "click",
+                  linkText: "[RemovedPupilName]",
+                  linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
+                  clickType: "link",
+                  clickLocation: "right_bar"
+                })
+              }
+            >
+              {pupil.personalInfo.preferredForename}{" "}
+              {pupil.personalInfo.preferredSurname}
+            </span>
+          </Link>
+        </span>
+      ))}
+    </div>
+  );
+};
+
+export const RightSidePanelView: (props: IRightSidePanelViewProps) => JSX.Element = (props: IRightSidePanelViewProps) => {
   const {
     SchoolEventexternalId,
     EventTitle,
@@ -52,19 +178,26 @@ export const RightSidePanelView: (
     classViewURL
   }: IRightSidePanelViewProps = props;
 
-  const { t }: UseTranslationResponse<"translation", undefined> =
-  useTranslation();
+  const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
-  const handlePanelClose:()=>void = () => {
+  const handlePanelClose: () => void = () => {
     togglePanel(SchoolEventexternalId);
   };
 
-  const onTRButtonClick: () => void = () => {
-    const url: string = (EventTypeCode === "AttendanceSession")
-      ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
-      : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
+  const StaffTTClassView: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "StaffTTClassViewBtn"
+  );
 
-    logger.info(`Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`)
+  const onTRButtonClick: () => void = () => {
+    const url: string =
+      EventTypeCode === "AttendanceSession"
+        ? `${envConfig.REGISTER_BASE_URL}/take-register/${EventPeriodNo}/${BaseGroupId}/${EventInstanceExternalId}`
+        : `${envConfig.REGISTER_BASE_URL}/take-register/${ClassPeriodExternalId}/${BaseGroupId}/${EventInstanceExternalId}`;
+
+    logger.info(
+      `Click on registers -${url} organisationId- ${getUserOrganisation()} userId- ${getUser()}`
+    );
 
     gtmAnalytics.pushEvent({
       event: "click",
@@ -73,9 +206,8 @@ export const RightSidePanelView: (
       clickType: "button",
       clickLocation: "right_bar"
     });
-    window.location.href = url
+    window.location.href = url;
   };
-
 
   return (
     <div
@@ -145,21 +277,14 @@ export const RightSidePanelView: (
               {Location}
             </div>
 
-            <div>
-              { EventTypeCode !== 'TTNTPer' && BaseGroupId !== '00000000-0000-0000-0000-000000000000' && (
-                    <div data-testid="class-view">
-                      <Link
-                        dataTestId="class-view-button"
-                        id="class-view-button"
-                        href={classViewURL}
-                        onClick={handleClassViewClick}
-                      >
-                       {t("homeStaffTimeTableEventTiles.classview")}
-                      </Link>
-                    </div>
-                  )
-              }
-            </div>
+            <ClassViewLink
+              StaffTTClassView={StaffTTClassView}
+              EventTypeCode={EventTypeCode}
+              BaseGroupId={BaseGroupId}
+              classViewURL={classViewURL}
+              handleClassViewClick={handleClassViewClick}
+              t={t}
+            />
 
             <div data-testid="horizontal-panel-divider" className="divider-right-panel">
               <Divider
@@ -172,49 +297,19 @@ export const RightSidePanelView: (
               />
             </div>
 
-            {isPupilSectionEnable &&
-            <div
-              data-testid="register-label"
-              className="essui-global-typography-default-subtitle margin-24 div-container"
-            >
-              <span data-testid="register-text">
-                {GroupDescription === null || GroupDescription === undefined
-                  ? ""
-                  : GroupDescription}{" "}
-                {t("homeStaffTimeTableEventTiles.register")}
-              </span>
-
-              <span data-testid="take-reg">
-                <Button
-                  dataTestId="take-reg-button"
-                  size={ButtonSize.Small}
-                  color={ButtonColor.Secondary}
-                  onClick={onTRButtonClick}
-                >
-                   {t("homeStaffTimeTableEventTiles.takeregister")}
-                </Button>
-              </span>
-            </div>
-}
+            <RegisterSection
+              isPupilSectionEnable={isPupilSectionEnable}
+              GroupDescription={GroupDescription}
+              t={t}
+              onTRButtonClick={onTRButtonClick}
+            />
 
             <div>
-              {errCodeMessage ? (
-                <div
-                  data-testid="error-label"
-                  className="essui-global-typography-default-body"
-                >
-                  {pupilDetailErrorCodeMessage}
-                </div>
-              ) : (
-                isLoader && (
-                  <Loader
-                    dataTestId="error-loader"
-                    className="loader-wrapper"
-                    loaderText="Loading..."
-                    loaderType={LoaderType.Circular}
-                  />
-                )
-              )}
+              <ErrorOrLoaderSection
+                errCodeMessage={errCodeMessage}
+                pupilDetailErrorCodeMessage={pupilDetailErrorCodeMessage}
+                isLoader={isLoader}
+              />
 
               {isLoader ? (
                 <Loader
@@ -224,42 +319,11 @@ export const RightSidePanelView: (
                   loaderType={LoaderType.Circular}
                 />
               ) : (
-                GroupMembersData &&
-                GroupMembersData.length > 0 && (
-                  <>
-                    <div className="parent">
-                      {GroupMembersData.map((pupil, index) => (
-                        <span className="child">
-                          <Avatar
-                            imagePath={
-                              pupil.personImage && pupil.personImage.imagePath
-                                ? pupil.personImage.imagePath
-                                : ""
-                            }
-                            showDefaultAvatar={false}
-                            dataTestId={`avtar-${index}`}
-                          />
-                          <Link
-                            dataTestId={`link-${index}`}
-                            href={`${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`}
-                            target="_self"
-                          >
-                            <span data-testId={`link-click-${index}`} onClick={() => gtmAnalytics.pushEvent({
-                              event: "click",
-                              linkText: "[RemovedPupilName]",
-                              linkUrl: `${envConfig.LEARNER_UI_URL}/profile/${pupil.pupilExternalId}`,
-                              clickType: "link",
-                              clickLocation: "right_bar"
-                            })}>
-                              {pupil.personalInfo.preferredForename}{" "}
-                              {pupil.personalInfo.preferredSurname}
-                            </span>
-                          </Link>
-                        </span>
-                      ))}
-                    </div>
-                  </>
-                )
+                <PupilList
+                  GroupMembersData={GroupMembersData}
+                  envConfig={envConfig}
+                  gtmAnalytics={gtmAnalytics}
+                />
               )}
             </div>
           </div>
@@ -269,7 +333,7 @@ export const RightSidePanelView: (
           <Button
             size={ButtonSize.Medium}
             className="btn-full-width"
-            onClick={() => handlePanelClose()}
+            onClick={handlePanelClose}
             id="close-button-id"
             dataTestId="close-button"
           >

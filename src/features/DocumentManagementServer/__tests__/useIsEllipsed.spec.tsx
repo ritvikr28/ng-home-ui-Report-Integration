@@ -43,7 +43,7 @@ describe("EllipsisWithTooltip Component", () => {
       <EllipsisWithTooltip
         text={text}
         className=""
-        isTooltipNeeded={true}
+        isTooltipNeeded
         totalItems={[text]}
         colName="relatedTo"
       />
@@ -62,7 +62,7 @@ describe("EllipsisWithTooltip Component", () => {
       <EllipsisWithTooltip
         text={text}
         className=""
-        isTooltipNeeded={true}
+        isTooltipNeeded
         totalItems={[text]}
         colName="relatedTo"
       />
@@ -81,7 +81,7 @@ describe("EllipsisWithTooltip Component", () => {
       <EllipsisWithTooltip
         text={text}
         className=""
-        isTooltipNeeded={true}
+        isTooltipNeeded
         totalItems={[text]}
         colName="relatedTo"
       />
@@ -145,7 +145,7 @@ describe("EllipsisWithTooltip Component", () => {
         text={text}
         totalItems={totalItems}
         className=""
-        isTooltipNeeded={true}
+        isTooltipNeeded
         colName="relatedTo"
       />
     );
@@ -170,7 +170,7 @@ describe("EllipsisWithTooltip Component", () => {
         text={text}
         totalItems={totalItems}
         className=""
-        isTooltipNeeded={true}
+        isTooltipNeeded
         colName="relatedTo"
       />
     );

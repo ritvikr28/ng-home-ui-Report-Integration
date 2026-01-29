@@ -22,7 +22,7 @@ export const WhatsNewBanner: () => JSX.Element = () => {
     }
   }, [orgId]);
 
-  const handleExit = (): void => {
+  const handleExit: () => void = (): void => {
     try {
         const storedBanners: Banner[] = JSON.parse(localStorage.getItem("classViewBannerClosed") || "[]");
         const updatedBanners: Banner[] = storedBanners.filter((item: Banner) => item.orgId !== orgId);

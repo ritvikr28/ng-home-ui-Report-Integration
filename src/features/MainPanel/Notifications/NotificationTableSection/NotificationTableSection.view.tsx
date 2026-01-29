@@ -90,7 +90,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
         >
             <div className="notification-filters-wrapper">
                 <ControlledList
-                    tooltipBottomAligned={true}
+                    tooltipBottomAligned
                     data-testid="controlled-list"
                     globalNotificationMsgBannerObject={[
                         {
@@ -105,9 +105,9 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
-                    isShowSearch={true}
-                    isShowFirstElement={true}
-                    isShowFourthElement={true}
+                    isShowSearch
+                    isShowFirstElement
+                    isShowFourthElement
                     filterCustumeElem2={
                         <div className="notification-controls">
                             <Button
@@ -171,7 +171,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     }}
                     titleConfirmation="Discard changes disduasi?"
                     isOpenConfirmationDialog={false}
-                    isIconRightAligned={true}
+                    isIconRightAligned
                     isShowOverflowMenuCol={false}
                     searchHeadingText="Search by notification title"
                     isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
@@ -180,8 +180,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     handleCloseSidePanel={() => setSideIsOpen(false)}
                     onClickOverflowItem={() => { }}
                     secondaryButtonTitle="Close"
-                    isShowCheckboxCol={true}
-                    isShowThirdElement={true}
+                    isShowCheckboxCol
+                    isShowThirdElement
                     isShowdynamictableNoMsg={
                         (totalNotifications === 0 || !noResults) || !isSearching || tableDataError
                     }

@@ -6,7 +6,7 @@ import { fetchVideoPlayStatus } from '../services/videoPlayStatus';
 
 // Mock dependencies
 jest.mock('../services/videoPlayStatus', () => ({
-  fetchVideoPlayStatus: jest.fn(),
+  fetchVideoPlayStatus: jest.fn()
 }));
 describe('useVideoPlayStatus', () => {
   beforeEach(() => {

@@ -3,11 +3,12 @@ import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
+import { NotificationTableParams } from "./api.props";
 
 export const getNotificationTableData: ({ PageSize, PageNumber }: {
   PageSize: number;
   PageNumber: number;
-}) => Promise<any> = async ({ PageSize, PageNumber }: { PageSize: number, PageNumber: number }): Promise<any> => {
+}) => Promise<any> = async ({ PageSize, PageNumber }: NotificationTableParams): Promise<any> =>  {
 
   const orgId: string = getUserOrganisation();
   const receiverId: string | null = authService.getUserId();
@@ -17,7 +18,7 @@ export const getNotificationTableData: ({ PageSize, PageNumber }: {
 
   console.log({ orgId, receiverId, userName });
   try {
-    const path: string = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}`;
+    const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}`;
     const baseUrl: string = buildApplicationUrl(apiUrls);
     const response: any = await service.get(path, baseUrl);
     return response.data;
@@ -36,7 +37,7 @@ export const getViewData: (notificationId?: string | undefined) => Promise<any> 
   const orgId: string = getUserOrganisation();
 
   try {
-    const path: string = `/v1/notification/notification-by-id?NotificationId=${notificationId}&OrganisationId=${orgId}`;
+    const path = `/v1/notification/notification-by-id?NotificationId=${notificationId}&OrganisationId=${orgId}`;
     const baseUrl: string = buildApplicationUrl(apiUrls);
     const response: any = await service.get(path, baseUrl);
     return response.data;
@@ -49,13 +50,13 @@ export const markAsRead: (notificationId: string) => Promise<any> = async (notif
   const requestData: {
     NotificationId: string;
   } = {
-    NotificationId: notificationId,
+    NotificationId: notificationId
   };
   const orgId: string = getUserOrganisation();
 
   try {
     const baseUrl: string = buildApplicationUrl(apiUrls);
-    const path: string = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
+    const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
     const response: any = await service.put(path, requestData);
     console.log("Mark As Read Response:", response.data.payload);
     return response.data;

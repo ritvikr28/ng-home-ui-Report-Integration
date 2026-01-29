@@ -10,7 +10,7 @@ export const NewHomePageBanner: React.FC<BannerProps> = ({
     showClassViewNotification,
     setShowClassViewNotification
 }) => {
-    const [hasConnectedLauncher, isLoading] = useSimsConnectedBanner();
+    const [hasConnectedLauncher, isLoading]:[boolean, boolean] = useSimsConnectedBanner();
 
     // Restore previous behavior: hide class view notification immediately after loading completes
     useEffect(() => {

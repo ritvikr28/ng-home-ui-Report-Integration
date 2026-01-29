@@ -99,20 +99,17 @@ export const getMenus: (
     return menusWithPermission;
   };
 
-const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, isAuthzUserAdmin, hasDMSPermissions }: {
+const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, hasDMSPermissions }: {
   hasAdminConsoleFlagrPermission: boolean;
   hasAdminConsolePermissions: boolean;
-  isAuthzUserAdmin: boolean;
   hasDMSPermissions: boolean;
 }) => JSX.Element = ({
   hasAdminConsoleFlagrPermission,
   hasAdminConsolePermissions,
-  isAuthzUserAdmin,
   hasDMSPermissions
 }: {
   hasAdminConsoleFlagrPermission: boolean;
   hasAdminConsolePermissions: boolean;
-  isAuthzUserAdmin: boolean;
   hasDMSPermissions: boolean;
 }): JSX.Element => (
     <>
@@ -121,7 +118,7 @@ const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePerm
           exact
           path="/AdminConsole"
           render={() =>
-            hasAdminConsolePermissions || isAuthzUserAdmin ? (
+            hasAdminConsolePermissions || isAuthzUserAdmin() ? (
               <AdminConsole />
             ) : (
               <Redirect to="/unauthorized" />
@@ -354,7 +351,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              /*path="/documents"
+              /* path="/documents"
               render={() =>
                 (hasAdminConsolePermissions && hasDMSPermissions) ? (
                   <DocumentManagementServer />
@@ -367,11 +364,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           <AdminConsoleRoutes
             hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
             hasAdminConsolePermissions={hasAdminConsolePermissions}
-            isAuthzUserAdmin={isAuthzUserAdmin()}
             hasDMSPermissions={hasDMSPermissions}
           />
-          <ProtectedRoute exact path="/uam" component={UAM} />
-          */}
           {sendNotificationFlagr && (
             <ProtectedRoute
               exact

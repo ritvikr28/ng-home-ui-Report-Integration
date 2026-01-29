@@ -69,7 +69,7 @@ const gtmAnalytics: gtmAnalyticsType = {
       event: "stopVideo",
       videoEngagement: percent
     });
-  },
+  }
 };
 
 export default gtmAnalytics;

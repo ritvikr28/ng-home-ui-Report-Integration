@@ -32,7 +32,7 @@ describe("NewHomePageBanner", () => {
         mockUseSimsConnectedBanner.mockReturnValue([false, true]);
         render(
             <NewHomePageBanner
-                showClassViewNotification={true}
+                showClassViewNotification
                 setShowClassViewNotification={setShowClassViewNotification}
             />
         );
@@ -44,7 +44,7 @@ describe("NewHomePageBanner", () => {
         mockUseSimsConnectedBanner.mockReturnValue([true, false]);
         render(
             <NewHomePageBanner
-                showClassViewNotification={true}
+                showClassViewNotification
                 setShowClassViewNotification={setShowClassViewNotification}
             />
         );
@@ -57,7 +57,7 @@ describe("NewHomePageBanner", () => {
         mockUseSimsConnectedBanner.mockReturnValue([false, false]);
         render(
             <NewHomePageBanner
-                showClassViewNotification={true}
+                showClassViewNotification
                 setShowClassViewNotification={setShowClassViewNotification}
             />
         );
@@ -82,7 +82,7 @@ describe("NewHomePageBanner", () => {
         mockUseSimsConnectedBanner.mockReturnValue([false, false]);
         render(
             <NewHomePageBanner
-                showClassViewNotification={true}
+                showClassViewNotification
                 setShowClassViewNotification={setShowClassViewNotification}
             />
         );
