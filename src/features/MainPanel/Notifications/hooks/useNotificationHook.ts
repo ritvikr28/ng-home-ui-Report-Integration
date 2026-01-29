@@ -15,7 +15,7 @@ export function useNotificationTableData(
     useEffect(() => {
         if (!sideIsOpen) {
             setIsTableBodyLoading(true);
-            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage })
+            getNotificationTableData(PAGE_SIZE, currentPage)
                 .then((data) => {
                     if (!data.error) {
                         setTableData(data.payload);

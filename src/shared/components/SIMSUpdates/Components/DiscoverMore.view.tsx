@@ -15,8 +15,7 @@ import {
   UseTranslationResponse,
   useTranslation
 } from "@essnextgen/ui-intl-kit";
-import { envConfig } from "../../../utils";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
+
 const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
@@ -64,7 +63,6 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
       </Grid>
 
       <Grid className={"new-footer-actioncards c-clear-padding"}>
-        {hasFeaturePermission(`${envConfig.APPLICATION}`, "VideoTile") && (
           <GridItem
             md
             sm={6}
@@ -87,7 +85,6 @@ const DiscoverMoreView: ({ isOpen }: any) => JSX.Element = ({ isOpen }) => {
               />
             </Link>
           </GridItem>
-        )}
 
         <GridItem md sm={6} lg className="new-actioncard c-clear-padding-left">
           <Link

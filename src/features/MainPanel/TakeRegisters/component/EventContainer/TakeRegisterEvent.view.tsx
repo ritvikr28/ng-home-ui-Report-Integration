@@ -20,9 +20,9 @@
     envConfig
   } from "../../../../../shared/utils";
   import { SectionTitle } from "../../../../../shared/components/SectionTitle/SectionTitle";
-  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData, getShowRegisterSecondaryTextFlag } from "./TakeRegisterEventHelper";
-import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
-
+  import { handleRegisterClick, isButtonDisabled, nextSlide, previousSlide, renderCarousel, renderNoRegisterMessage, setDefaultAndCurrentSlide, filterAndSortRegisterData } from "./TakeRegisterEventHelper";
+  import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/responsemodels";
+  
   const TakeRegisterEventView: React.FC<IRegisterViewProps> = ({
     apiRegsiterEventData,
     apiError,
@@ -35,9 +35,7 @@ import { IRegistersDetails } from "../../../../../shared/model/RegisterDomain/re
     const [carouselData, setCarouselData]: [typeof responsive, React.Dispatch<React.SetStateAction<typeof responsive>>] = useState<typeof responsive>(responsive);
 
     const filteredAndSortedData: IRegistersDetails[] | null = React.useMemo(() => 
-      getShowRegisterSecondaryTextFlag()
-        ? filterAndSortRegisterData(apiRegsiterEventData || [])
-        : (apiRegsiterEventData || [])
+        filterAndSortRegisterData(apiRegsiterEventData || [])
       , [apiRegsiterEventData]);
 
     useEffect(() => {

@@ -1,5 +1,6 @@
 /* eslint-disable no-useless-escape, array-callback-return, dot-notation */
 import { ApplicationConfig } from "@essnextgen/ui-application-kit";
+import { AxiosResponse } from "axios";
 import { service, UpdateEnvConfig } from "../shared/utils";
 
 declare global {
@@ -24,8 +25,8 @@ declare global {
   }
 }
 
-export const fetchConfigData = async () => {
-  const response = await service.get(
+export const fetchConfigData: () => Promise<any> = async () => {
+  const response: AxiosResponse<any, any> = await service.get(
     "config.js",
     ApplicationConfig.buildApplicationUrl([
       { env: "dev", url: "https://dev-mfe.home.sims.co.uk" },
@@ -34,12 +35,12 @@ export const fetchConfigData = async () => {
       { env: "perf", url: "https://pre-mfe.home.sims.co.uk" }
     ])
   );
-  const configKeyValues = response.data.split("\n");
+  const configKeyValues: any = response.data.split("\n");
   const configItem: any = {};
   configKeyValues.forEach((keyValue: string) => {
-    const keyValueSplit = keyValue.split("= ");
-    const key = keyValueSplit[0].replace("window.", "").replace('"', "").trim();
-    const value = keyValueSplit[1]
+    const keyValueSplit: string[] = keyValue.split("= ");
+    const key: string = keyValueSplit[0].replace("window.", "").replace('"', "").trim();
+    const value: string = keyValueSplit[1]
       ? keyValueSplit[1].trim().substr(1, keyValueSplit[1].length - 1)
       : "";
     configItem[key] = value.replace('"', "");

@@ -102,7 +102,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [hasFetchedViewDownload, setHasFetchedViewDownload] = useState(false);
     const [showDeleteErrorBanner, setShowDeleteErrorBanner] = useState(false);
     const downloadPollingIntervalRef = React.useRef<ReturnType<typeof setInterval> | null>(null);
-    const [documentRealatedTo, setDocumentRelatedTo] = useState<number>(0)
+    const [documentRelatedTo, setDocumentRelatedTo] = useState<number>(0)
     const [searchRefExternalId, setSearchRefExternalId] = useState<string[]>([]);
     const [showDeleteSuccessToast, setShowDeleteSuccessToast] = useState(false);
     const [showDeleteAbortBanner, setShowDeleteAbortBanner] = useState(false);
@@ -177,7 +177,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     sortByCol: string = sortBy,
     sortOrder = sortDirection,
     refExternalId: string[] = searchRefExternalId,
-    relatedTo: number = documentRealatedTo
+    relatedTo: number = documentRelatedTo
     ) => {
     fetchGetDocumentDetailsLogic({
         page, categories, sortByCol, sortOrder, dateRange, refExternalId, relatedTo, setDocData, setCurrentPage, setTotalPage, setShowSearchError, 

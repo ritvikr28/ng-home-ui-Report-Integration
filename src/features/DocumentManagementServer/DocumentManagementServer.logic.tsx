@@ -28,15 +28,16 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     headerTxtTrunctLength: 50,
     isSimpleText: true,
     isColumnSorting: true,
+    txtTrunctLength: 26,
     anyComponent: (e: any) => (
       <>
-        <EllipsisWithTooltip
-          text={e}
-          className=" relatedto-main"
-          isTooltipNeeded={!!(e && e.length === 1)}
-          totalItems={[e]}
-          colName="document"
-        />
+      <EllipsisWithTooltip
+        text={e}
+        className=" relatedto-main"
+        isTooltipNeeded={!!(e && e.length === 1)}
+        totalItems={[e]}
+        colName="document"
+      />
       </>
     )
   },
@@ -50,7 +51,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     columnWidth: "261px",
     txtTrunctLength: 35,
     isColumnSorting: false,
-    anyComponent: (e: any) => (
+    anyComponent: (e: any) =>(
       <>
         {(!e || !Array.isArray(e) || !e.length) ? null : (
           <EllipsisWithTooltip
@@ -62,7 +63,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
           />
         )}
       </>
-    )
+      )
   },
   {
     text: t("DocumentManagementServer.categoryColumn"),
@@ -316,7 +317,7 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRealatedTo: relatedTo || 0
+      documentRelatedTo: relatedTo || 0
     });
     if (result && typeof (result as any).statusCode === "number" && (result as any).statusCode === 200) {
       setDocData(result);
@@ -604,7 +605,7 @@ export function buildSelectedDocs(
   docData: any,
   categoryId: number[],
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
@@ -631,7 +632,7 @@ export function buildSelectedDocs(
       referenceExternalId:
         entity.learnerExternalId || entity.externalId || entity.organisationId,
       relatedTo: entity,
-      documentRealatedTo,
+      documentRelatedTo,
     }));
 
     // Deduplicate by referenceExternalId
@@ -666,7 +667,7 @@ export function buildSelectedDocs(
         currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
-          documentRealatedTo,
+          documentRelatedTo,
           categoryId,
           fromDate,
           toDate,

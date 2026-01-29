@@ -12,12 +12,12 @@ import { FetchSchoolInsights } from "../../../shared/services/schoolInsightsDoma
 
 const SltViewBettView: () => JSX.Element = () => {
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
-  const [data, setData] = useState<ISchoolInsightsResponse | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData]: [ISchoolInsightsResponse | null, React.Dispatch<React.SetStateAction<ISchoolInsightsResponse | null>>] = useState<ISchoolInsightsResponse | null>(null);
+  const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [error, setError]: [string | null, React.Dispatch<React.SetStateAction<string | null>>] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData: () => Promise<void> = async () => {
       const result: ISchoolInsightsResponse | null = await FetchSchoolInsights(true);
       if (result) {
         setData(result);

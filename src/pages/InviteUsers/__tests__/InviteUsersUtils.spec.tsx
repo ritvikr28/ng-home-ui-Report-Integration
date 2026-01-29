@@ -143,7 +143,7 @@ describe("fetchInviteUserDetails", () => {
               surname: "Smith",
               emailId: "jane.smith@example.com",
               userType: "User",
-              invitationStatus: "Invitation conflict",
+              invitationStatus: "Invite conflict",
               inviteRequestDate: undefined
             }
           ]
@@ -174,7 +174,7 @@ describe("fetchInviteUserDetails", () => {
         name: "Jane Smith",
         emailId: "jane.smith@example.com",
         userType: "User",
-        invitationStatus: "Invitation conflict",
+        invitationStatus: "Invite conflict",
         inviteRequestDate: undefined,
         actions: {
           options: [
@@ -534,7 +534,7 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
             surname: "User",
             emailId: "conflict@example.com",
             userType: "User",
-            invitationStatus: "Invitation conflict",
+            invitationStatus: "Invite conflict",
             inviteRequestDate: undefined
           }
         ]

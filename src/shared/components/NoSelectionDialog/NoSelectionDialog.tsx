@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation,UseTranslationResponse } from "@essnextgen/ui-intl-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { Button, Dialog, DialogContent, DialogFooter, NotificationStatus, Notification, Loader, LoaderType } from "@essnextgen/ui-kit";
 // import './style.scss'
 
@@ -12,8 +12,16 @@ interface INoSelectionDialogProps {
   onClose: () => void;
 }
 
-const NoSelectionDialog = (props: INoSelectionDialogProps) => {
-  const { setShowDialog, message, title, notificationTitle, loading, onClose } = props;
+const NoSelectionDialog: {
+  (props: INoSelectionDialogProps): JSX.Element;
+  defaultProps: {
+    message: string;
+    title: string;
+    notificationTitle: string;
+    loading: boolean;
+  };
+} = (props: INoSelectionDialogProps) => {
+  const { setShowDialog, message, title, notificationTitle, loading, onClose }: INoSelectionDialogProps = props;
   const { t }: UseTranslationResponse<"translation", undefined> =
         useTranslation();
   if (loading) {
@@ -69,7 +77,7 @@ NoSelectionDialog.defaultProps = {
   message: "",
   title: "",
   notificationTitle: "",
-  loading: false,
+  loading: false
 };
 
 export default NoSelectionDialog;

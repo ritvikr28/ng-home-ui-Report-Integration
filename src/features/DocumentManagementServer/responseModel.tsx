@@ -41,7 +41,7 @@ export interface DocumentManagementServerProps {
   sortBy?: string;
   sortDirection?: string;
   referenceExternalId?: string[];
-  documentRealatedTo?: number;
+  documentRelatedTo?: number;
 }
 
 export interface tableDataProps {
@@ -101,7 +101,7 @@ export interface DocumentCategoryResponse {
 
 export interface ReferenceMappingDetail {
   refernceExternalId: string;
-  documentRealatedTo: string;
+  documentRelatedTo: string;
   relatedTo: any[];
 }
 

@@ -6,7 +6,7 @@ import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
 import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
-import { homepageVideoOrgViewIncluded, ILayoutProps, Layout } from "./Layout";
+import { ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
 import ErrorBoundary from "./shared/components/ErrorBoundary/Index";
 import configureStore from "./redux/store";
@@ -24,7 +24,7 @@ export const hasNewHomePagePermission: boolean = authService.isAuthorised(
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
 
   const [initialized, setInitialized]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
@@ -35,7 +35,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     navigator.language.split("-")[0] ||
     "en";
 
-  const [langCode] : [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(getInitialLang);
+  const [langCode]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(getInitialLang);
 
   useEffect(() => {
     const initI18n: () => Promise<void> = async () => {
@@ -49,14 +49,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             en: {
               ...uiKitTranslation.en,
               ...uiAppKitTranslation.en,
-              ...translationEn,
+              ...translationEn
             },
             cy: {
               ...uiKitTranslation.cy,
               ...uiAppKitTranslation.cy,
-              ...translationCy,
-            },
-          },
+              ...translationCy
+            }
+          }
         }).init({ lng: langCode });
         console.log("[i18n Init] Successfully initialized with lang:", langCode);
         setInitialized(true);
@@ -82,14 +82,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
 
   useEffect(() => {
-    if (hasNewHomePagePermission && homepageVideoOrgViewIncluded) {
+    if (hasNewHomePagePermission) {
     
-      if ( isPlayed === false && apiError === false && homepageVideoOrgViewIncluded) {
+      if ( isPlayed === false && apiError === false) {
         console.log("isPlayed apiError", { isPlayed, apiError });
         gtmAnalytics.showVideoEvent();
       }
     }
-  }, [isPlayed, homepageVideoOrgViewIncluded])
+  }, [isPlayed])
 
   if (!initialized) return null;
 

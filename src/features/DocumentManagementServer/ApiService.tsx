@@ -23,8 +23,8 @@ export const fetchDocumentDetails = async ({
   sortBy = "DateAdded",
   sortDirection = "Desc",
   referenceExternalId = [],
-  documentRealatedTo = 0
-}: DocumentManagementServerProps): Promise<DocumentBasicDetails | ErrorResponse | null> => {
+  documentRelatedTo = 0
+}: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
     const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
@@ -39,8 +39,8 @@ export const fetchDocumentDetails = async ({
         sortBy,
         sortDirection,
         referenceExternalId,
-        documentRealatedTo
-      }
+        documentRelatedTo
+      },
     };
 
     const responseData: AxiosResponse<DocumentBasicDetails> =

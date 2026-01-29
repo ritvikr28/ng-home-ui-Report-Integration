@@ -1,9 +1,10 @@
 import React, { lazy, Suspense, useEffect } from "react";
 import ReactDOM from "react-dom";
-import singleSpaReact from "single-spa-react";
+import singleSpaReact, { ReactAppOrParcel } from "single-spa-react";
 import singleSpaLeakedGlobals from "single-spa-leaked-globals";
 import { fetchConfigData, SetupEnvConfig } from "./ConfigHelper";
 import packageJson from "../../package.json";
+import { ILayoutProps } from "../Layout";
 
 // SetupEnvConfig();
 const initializeVariable:()=>void=async()=>{
@@ -11,9 +12,13 @@ const initializeVariable:()=>void=async()=>{
   await SetupEnvConfig(data); 
 };
 
-const App = lazy(() => import("../App"));
+const App: React.LazyExoticComponent<React.ComponentClass<ILayoutProps, any>> = lazy(() => import("../App"));
 
-const appVersions = {
+const appVersions: {
+    uiKit: string;
+    uiApplicationKit: string;
+    authUi: string;
+} = {
   uiKit: packageJson.dependencies["@essnextgen/ui-kit"],
   uiApplicationKit: packageJson.dependencies["@essnextgen/ui-application-kit"],
   authUi: packageJson.dependencies["@essnextgen/auth-ui"]
@@ -60,7 +65,7 @@ const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({
   ]
 });
 
-const lifecycles = singleSpaReact({
+const lifecycles: ReactAppOrParcel<any> = singleSpaReact({
   React,
   ReactDOM,
   rootComponent: Root,
@@ -71,9 +76,9 @@ const lifecycles = singleSpaReact({
   }
 });
 
-export const bootstrap = [
+export const bootstrap: any[] = [
   leakedGlobalsLifecycles.bootstrap,
   lifecycles.bootstrap
 ];
-export const mount = [leakedGlobalsLifecycles.mount, lifecycles.mount];
-export const unmount = [leakedGlobalsLifecycles.unmount, lifecycles.unmount];
+export const mount: any[] = [leakedGlobalsLifecycles.mount, lifecycles.mount];
+export const unmount: any[] = [leakedGlobalsLifecycles.unmount, lifecycles.unmount];

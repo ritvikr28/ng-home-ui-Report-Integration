@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Divider, Grid, GridItem } from "@essnextgen/ui-kit";
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { WistiaPlayer } from "@wistia/wistia-player-react";
 import { useVideoPlayStatus } from "../../shared/hook/useVideoPlayStatus";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
@@ -12,8 +11,6 @@ import "./style.scss";
 import { IMainPanelProps } from "./MainPanelProps";
 import Search from "./PupilProfileSearch/Search.logic";
 import SltViewBett from "./SltViewBETT/SltViewBett.view";
-import { envConfig } from "../../shared/utils";
-import { isOrganisationInVariant } from "../../shared/utils/flagr-utils";
 import { SIMSupdatesView } from "../../shared/components/SIMSUpdates/SIMSupdates.view";
 import { FilledLeftPanelIcon } from "../../shared/components/CommonElement/FilledButton";
 import gtmAnalytics from '../../shared/utils/analytics';
@@ -81,6 +78,56 @@ const requiredSchoolOverviewPermissions: Permission[] = [
   }
 ];
 
+function canShowStaffTimetable(isSchoolPrimary: boolean): boolean {
+
+  return (
+    authService.isAuthorised(requiredStaffTimeTablePermissions, MatchPermissions.all) &&
+    isSchoolPrimary === false
+  );
+}
+
+function canShowRegister(): boolean {
+
+  return authService.isAuthorised(requiredRegisterPermissions, MatchPermissions.all);
+}
+
+function canShowPupilProfile(): boolean {
+  return authService.isAuthorised(requiredPupilProfilePermissions, MatchPermissions.all);
+}
+
+function canShowSLTviewBETT(): boolean {
+  return (
+    authService.isAuthorised(
+      requiredSchoolOverviewPermissions,
+      MatchPermissions.all
+    )
+  );
+}
+
+// async function handlePlay(videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void): Promise<void> {
+//   gtmAnalytics.pushEvent({ event: "playVideo" });
+//   if (!videoStatusSaved) {
+//     try {
+//       await saveVideoPlayStatus();
+//       setVideoStatusSaved(true);
+//     } catch (e) {
+//       console.error("Video Played");
+//     }
+//   }
+// }
+
+function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }): void {
+  const { detail: { percentWatched, lastPercentWatched } }: { detail: { percentWatched: number; lastPercentWatched: number; }; } = event
+  const percentage = percentWatched * 100;
+  const lastPercentage = lastPercentWatched * 100;
+  const milestones = [5, 25, 50, 75, 95];
+  milestones.forEach((milestone) => {
+    if (percentage >= milestone && lastPercentage < milestone) {
+      gtmAnalytics.pushVideoEvent(milestone);
+    }
+  });
+}
+
 const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
   props: IMainPanelProps
 ) => {
@@ -92,25 +139,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen
   }: IMainPanelProps = props;
 
-  const SLTviewBETT: boolean = hasFeaturePermission(
-    `${envConfig.APPLICATION}`,
-    "SLTviewBETT"
-  );
-
-  const homepageVideoOrgViewIncluded: boolean =
-    isOrganisationInVariant("HomePageVideoFlag");
-
-  const hasSLTviewOrgPermission: boolean =
-    isOrganisationInVariant("SLTviewBETTORG");
-
-  const togglePanel: () => void = () => {
-    setIsOpen(!isOpen);
-  };
-
-  const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
-  const [videoStatusSaved, setVideoStatusSaved]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-
-  async function handlePlay(): Promise<void> {
+  const handlePlay: (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => Promise<void> = React.useCallback(async (videoStatusSaved: boolean, setVideoStatusSaved: (v: boolean) => void) => {
     gtmAnalytics.pushEvent({ event: "playVideo" });
     if (!videoStatusSaved) {
       try {
@@ -120,31 +149,30 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         console.error("Video Played");
       }
     }
-  }
+  }, []);
 
-  function handleOnEnded(): void {
-  gtmAnalytics.pushVideoEvent(100);
+  // const SLTviewBETT: boolean = hasFeaturePermission(
+  //   `${envConfig.APPLICATION}`,
+  //   "SLTviewBETT"
+  // );
+
+  // const homepageVideoOrgViewIncluded: boolean =
+  //   isOrganisationInVariant("HomePageVideoFlag");
+
+  // const hasSLTviewOrgPermission: boolean =
+  //   isOrganisationInVariant("SLTviewBETTORG");
+
+  const togglePanel: () => void = () => {
+    setIsOpen(!isOpen);
   };
 
-  function handleOnPause(): void {
-    // Intentionally left blank: pause event is not required
-  }
+  const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
+  const [videoStatusSaved, setVideoStatusSaved]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+
   const shouldShowVideo =
     !apiError &&
     isPlayed === false;
-  
-  function handlePercentWatchedChange(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }): void {
-    const { detail: { percentWatched, lastPercentWatched } }: { detail: { percentWatched: number; lastPercentWatched: number; }; } = event
-    const percentage: number = percentWatched * 100;
-    const lastPercentage: number = lastPercentWatched * 100;
- 
-    const milestones = [5, 25, 50, 75, 95];
-    milestones.forEach((milestone) => {
-      if (percentage >= milestone && lastPercentage < milestone) {
-        gtmAnalytics.pushVideoEvent(milestone);
-      }
-    });
-  };
 
   return (
     <div>
@@ -171,42 +199,28 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         </GridItem>
       </Grid>
 
-          <StaffTimetableAndRegisterDetailsProvider hasAccess={hasTimetableOrRegisterAccess}>
-            {authService.isAuthorised(
-              requiredStaffTimeTablePermissions,
-              MatchPermissions.all
-            ) &&
-              isSchoolPrimary === false && <StaffTimeTableView isOpen={isOpen} />}
-            {authService.isAuthorised(
-              requiredRegisterPermissions,
-              MatchPermissions.all
-            ) && (
-                <>
-                  <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
-                  <div className="new-divider-spacing">
-                    <Divider />
-                  </div>
-                </>
-              )}
-          </StaffTimetableAndRegisterDetailsProvider>
-      {authService.isAuthorised(
-        requiredPupilProfilePermissions,
-        MatchPermissions.all
-      ) && (
+      <StaffTimetableAndRegisterDetailsProvider hasAccess={hasTimetableOrRegisterAccess}>
+        {isSchoolPrimary !== undefined && canShowStaffTimetable(isSchoolPrimary) && <StaffTimeTableView isOpen={isOpen} />}
+        {canShowRegister() && (
           <>
-            <Search isOpen={isOpen} />
-            <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
+            <TakeRegisterView isOpen={isOpen} setIsOpen={setIsOpen} />
+            <div className="new-divider-spacing">
               <Divider />
             </div>
           </>
         )}
+      </StaffTimetableAndRegisterDetailsProvider>
+      {canShowPupilProfile() && (
+        <>
+          <Search isOpen={isOpen} />
+          <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
+            <Divider />
+          </div>
+        </>
+      )}
 
-      {SLTviewBETT &&
-        hasSLTviewOrgPermission &&
-        authService.isAuthorised(
-          requiredSchoolOverviewPermissions,
-          MatchPermissions.all
-        ) && (
+      {
+        canShowSLTviewBETT() && (
           <>
             <SltViewBett />
             <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
@@ -215,16 +229,16 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
           </>
         )}
 
-      {homepageVideoOrgViewIncluded && shouldShowVideo && (
-        <div className="wistia-palyer-video-class">
-          <WistiaPlayer mediaId="w9mg776ol6"
-            onPlay={() => handlePlay()}
-            onEnded={() => handleOnEnded()}
-            onPause={() => handleOnPause()}
-            onPercentWatchedChange={(event: { detail: { percentWatched: number; lastPercentWatched: number; }; }) => handlePercentWatchedChange(event)}
-          />
-        </div>
-      )}
+      {shouldShowVideo && (
+          <div className="wistia-palyer-video-class">
+            <WistiaPlayer mediaId="w9mg776ol6"
+              onPlay={() => handlePlay(videoStatusSaved, setVideoStatusSaved)}
+              onEnded={() => gtmAnalytics.pushVideoEvent(100)}
+              onPause={() => { }}
+              onPercentWatchedChange={handlePercentWatchedChange}
+            />
+          </div>
+        )}
 
       <div className="sims-section-footer c-clear-padding">
         <SIMSupdatesView isOpen={isOpen} />

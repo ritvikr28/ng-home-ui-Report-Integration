@@ -22,19 +22,18 @@ export const isUserAdmin: () => boolean = () => {
   return false;
 };
 export const getQuickLinkSecurablesList: () => Permission[] = () => {
-  const permissionToken =  window.sessionStorage.getItem('PERMISSIONS') || '';
-  if(permissionToken!=='')
-  {
+  const permissionToken = window.sessionStorage.getItem('PERMISSIONS') || '';
+  if (permissionToken !== '') {
     const allowedPermissions: Permission[] = JSON.parse(
       atob(permissionToken)
-    ) 
-    
-    const quickLinksPermissions:Permission[] =
-    allowedPermissions.filter((x: Permission)=> ((x.Securable==="NG.Homepage.QuickLink.Teacher" && x.Operation==="View")|| 
-     (x.Securable==="NG.Homepage.QuickLink.SLT" && x.Operation==="View") || (x.Securable==="NG.Homepage.QuickLink.Admin" &&  x.Operation==="View"))
-  )
+    )
+
+    const quickLinksPermissions: Permission[] =
+      allowedPermissions.filter((x: Permission) => ((x.Securable === "NG.Homepage.QuickLink.Teacher" && x.Operation === "View") ||
+        (x.Securable === "NG.Homepage.QuickLink.SLT" && x.Operation === "View") || (x.Securable === "NG.Homepage.QuickLink.Admin" && x.Operation === "View"))
+      )
     return quickLinksPermissions;
-  } 
+  }
 
   return [];
 };
@@ -55,30 +54,30 @@ export const getUserEmail: () => string = () => {
     const decodedToken: any = decodeToken(idToken);
 
     if (!isEmpty(decodedToken)) {
-      const subField = decodedToken.sub; 
+      const subField: any = decodedToken.sub;
       if (subField) {
-        const parts = subField.split("|"); 
-        return parts[2] || ""; 
+        const parts:any = subField.split("|");
+        return parts[2] || "";
       }
     }
   }
 
   return ""; // Return an empty string if the token is invalid or missing
 };
- /* istanbul ignore next */
+/* istanbul ignore next */
 export const getUser: () => string = () => {
   const authToken: string | null = authService.getAuthTokens();
- /* istanbul ignore next */
+  /* istanbul ignore next */
   if (authToken) {
     const decodedToken: any = decodeToken(authToken);
-     /* eslint-disable */
+    /* eslint-disable */
     return decodedToken["SIMSCX/ExternalID"] === undefined &&
       decodedToken.userorganisationidentifier === undefined
       ? ""
       : decodedToken["SIMSCX/ExternalID"] !== undefined
-      ? decodedToken["SIMSCX/ExternalID"]
-      : decodedToken.userorganisationidentifier.split("|")[0];
-       /* eslint-enable */
+        ? decodedToken["SIMSCX/ExternalID"]
+        : decodedToken.userorganisationidentifier.split("|")[0];
+    /* eslint-enable */
   }
   return "";
 };
