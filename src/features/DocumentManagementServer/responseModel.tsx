@@ -1,5 +1,5 @@
 // Represents each row in the document table
-import { Suggestion } from "@essnextgen/ui-kit";
+import { DialogTemplate, NotificationStatus, Suggestion } from "@essnextgen/ui-kit";
 import React from "react";
 
 export interface SingleDocumentDetail {
@@ -233,3 +233,114 @@ export type FetchGetDocumentDetailsLogicParams = {
   setShowDeleteErrorBanner: (v: boolean) => void;
   setSuggestions: (v: Suggestion[]) => void;
 };
+
+// Dialog types used across the app
+export type DialogType = "clearAll" | "delete" | "prepareDownload";
+
+// Dialog config returned to UI
+export interface DialogConfig {
+  cancelText: string;
+  okText?: string;
+  contentText: string;
+  isNotificationanner: boolean;
+  notificationTitle: string;
+  notificationStatus: NotificationStatus;
+  onCancel: () => void;
+  onConfirm: () => void | Promise<void>;
+  template: DialogTemplate;
+}
+
+type MaybePromise<T> = T | Promise<T>;
+export type ErrorResponse = { status?: number; detail?: string; error?: string };
+
+
+export interface GetDialogConfigParams {
+  dialogType: DialogType | null;
+  t: (key: string, options?: Record<string, any>) => string;
+
+  availableFileCount: number;
+  alreadyDeletedFileCount: number;
+  restrictedFileCount: number;
+  totalSelectedCount: number;
+
+  docData?: { totalRecords: number };
+  viewData: any;
+
+  isHeaderBoxChecked: boolean;
+  selectedFormats: string[];
+
+  currentPage: number;
+  sortBy: string;
+  sortDirection: string;
+  searchRefExternalId?: string;
+  documentRelatedTo?: string;
+
+  selectedCheckBoxIds: string[];
+  excludedCheckBoxIds: string[];
+  allSelectedDocs: any[];
+
+  dateRange: any;
+  selectedEntities: any;
+  availableFileIds: string[];
+
+  // setters
+  setShowConfirmDialog: (v: boolean) => void;
+  setClearAllError: (v: boolean) => void;
+  setShowToastNotification: (v: boolean) => void;
+  setViewData: (v: any) => void;
+  setHasFetchedViewDownload: (v: boolean) => void;
+  setIsViewDownloadError: (v: boolean) => void;
+  setShowEmailNotification: (v: boolean) => void;
+
+  setSelectedCheckBoxIds: (v: string[]) => void;
+  setAllSelectedDocs: (v: any[]) => void;
+  setIsClearSelectedCheckbox: (v: boolean) => void;
+  setIsHeaderBoxChecked: (v: boolean) => void;
+  setPrevSelectedDocs: (v: any[]) => void;
+  setExcludedCheckBoxIds: (v: string[]) => void;
+  setTableKey: (cb: (v: number) => number) => void;
+
+  setIsDialogLoading: (v: boolean) => void;
+  setIsGlobalLoaderModel: (v: boolean) => void;
+  setPrepareDownloadError: (v: boolean) => void;
+  setPrepareDownloadAbortBanner: (v: boolean) => void;
+  setIsSidePanelLoader: (v: boolean) => void;
+  setIsSidePanelOpen: (v: boolean) => void;
+  setSidePanelOpenReason: (v: "prepare") => void;
+
+  handleClearAllConfirm: (args: any) => Promise<void>;
+  handleBulkDelete: () => MaybePromise<void>;
+  buildSelectedDocs: (...args: any[]) => any[];
+  prepareDownload: (docs: any[]) => Promise<number[]>;
+
+  fetchViewDownloadData: () => void;
+  clearAllFiles: (payload: {
+   request: { partitionKey: string[] };
+ }) => Promise<number | string[] | ErrorResponse>;
+
+  viewDownload: any;
+  downloadPollingIntervalRef: React.MutableRefObject<any>;
+
+  fetchGetDocumentDetails: (
+    page: number,
+    registrationIds: any[],
+    sortBy: string,
+    sortDirection: string,
+    refExternalId: string[],
+    searchRefExternalId?: string,
+    documentRelatedTo?: string
+  ) => void;
+
+  gtmAnalytics: {
+    pushEvent: (event: Record<string, any>) => void;
+  };
+
+  allRegistrationIds: any[];
+  getCompletedPartitionKeys: (viewData: {
+    status?: string | undefined;
+    partitionKey?: string | undefined;
+  }[]) => string[];
+  contentText: JSX.Element;
+  getAllRegistrationIds: (selectedFormats: any[]) => any[];
+  referenceExternalId: string[];
+}

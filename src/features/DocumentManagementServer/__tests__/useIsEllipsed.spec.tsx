@@ -20,7 +20,7 @@ jest.mock("@essnextgen/ui-kit", () => ({
   Tag: ({ text }: any) => <span data-testid="tag">{text}</span>,
 }));
 
-const mockEllipsed = (value: boolean) => {
+const mockEllipsed: (value: boolean) => void = (value: boolean) => {
   mockUseIsEllipsed.mockReturnValue({
     ref: { current: document.createElement("span") },
     isEllipsed: value,
@@ -32,12 +32,12 @@ describe("EllipsisWithTooltip Component", () => {
     jest.clearAllMocks();
   });
 
-  const baseText = { name: "Benjamin Doe", referenceExternalId: "123" };
+  const baseText: { name: string; referenceExternalId: string } = { name: "Benjamin Doe", referenceExternalId: "123" };
 
 
   it("renders staff link correctly", () => {
     mockEllipsed(true);
-    const text = { ...baseText, type: "staff", staffCode: "A1" };
+    const text: { name: string; referenceExternalId: string; type: string; staffCode: string } = { ...baseText, type: "staff", staffCode: "A1" };
 
     render(
       <EllipsisWithTooltip
@@ -49,7 +49,7 @@ describe("EllipsisWithTooltip Component", () => {
       />
     );
 
-    const link = screen.getByRole("link", { name: /Benjamin Doe/i });
+    const link: HTMLElement = screen.getByRole("link", { name: /Benjamin Doe/i });
     expect(link).toHaveAttribute("href", "/staff/profile/123");
     expect(screen.getByTestId("tooltip")).toBeInTheDocument();
   });

@@ -97,15 +97,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setHasFetchedViewDownload,
     setIsViewDownloadError,
     setPrevSelectedDocs,
-    
-    } = useDocumentManagementState(t); // <-- Add this custom hook or state provider
-   
+
+    }: React.SetStateAction<any> = useDocumentManagementState(t); // <-- Add this custom hook or state provider
+
     const hasDMSDeletePermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "Delete" }],
     MatchPermissions.all
     );
 
-    const location = useLocation();
+    const location: Location = useLocation();
     
     const categoryArr: any[] = getCategoryArr(selectedFormats);
     const dateTagArr: any[] = getDateTag(dateRange);
@@ -148,7 +148,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
         handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
 
-    const fetchGetDocumentDetails = (
+    const fetchGetDocumentDetails: (page: number, categories: number[], sortByCol?: string, sortOrder?: string, refExternalId?: string[]) => void = (
     page: number,
     categories: number[],
     sortByCol: string = sortBy,
@@ -178,9 +178,9 @@ const onEditSelectedOverFlowMenu: (e: React.SyntheticEvent, selectedItem: ISelec
   });
 };
 
-const hasCompletedFiles: boolean = viewData.some(item => item.status?.toLowerCase() === 'complete');
+const hasCompletedFiles: boolean = viewData.some((item: { status: string; }) => item.status?.toLowerCase() === 'complete');
 
-    const handleSearchClose = () => {
+    const handleSearchClose: () => void = () => {
         setSearchInput("");
         setSearchTerm("");
         setSearchText("");
@@ -201,7 +201,7 @@ const hasCompletedFiles: boolean = viewData.some(item => item.status?.toLowerCas
         setAllSelectedDocs([]);
         setIsClearSelectedCheckbox(true);
         setIsInitialLoad(true);
-        setTableKey(prev => prev + 1);
+        setTableKey((prev: number) => prev + 1);
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
         setPrevSelectedDocs([]);
@@ -264,6 +264,7 @@ const hasCompletedFiles: boolean = viewData.some(item => item.status?.toLowerCas
     handleBulkDelete, setPrepareDownloadError, setPrepareDownloadAbortBanner, setSidePanelOpenReason, setIsSidePanelOpen,
     buildSelectedDocs, selectedCheckBoxIds, allSelectedDocs, dateRange, selectedEntities, prepareDownload,
     totalSelectedCount, restrictedFileCount, excludedCheckBoxIds, availableFileIds,
+    fetchGetDocumentDetails, gtmAnalytics, allRegistrationIds, referenceExternalId: searchRefExternalId
     });
 
     const handleFilterOnClick: () => void = () => {
@@ -345,7 +346,7 @@ const hasCompletedFiles: boolean = viewData.some(item => item.status?.toLowerCas
                         setSelectedCheckBoxIds([]);
                         setAllSelectedDocs([]);
                         setIsClearSelectedCheckbox(true);
-                        setTableKey(prev => prev + 1);
+                        setTableKey((prev: number) => prev + 1);
                     }}
                     />
                 <GridItem className={(!isMobileView) ? "side-width" : "no-side-width"}>

@@ -1,15 +1,15 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 interface UseIsEllipsedProps {
   deps?: any[];
 }
 
 export const useIsEllipsed = ({ deps = [] }: UseIsEllipsedProps = {}) => {
-  const ref = useRef<HTMLElement | null>(null);
-  const [isEllipsed, setIsEllipsed] = useState(false);
+  const ref: React.RefObject<HTMLElement | null> = useRef<HTMLElement | null>(null);
+  const [isEllipsed, setIsEllipsed]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 
   useEffect(() => {
-    const el = ref.current;
+    const el: HTMLElement | null = ref.current;
     /* istanbul ignore next */
     if (!el) return;
 
@@ -17,14 +17,14 @@ export const useIsEllipsed = ({ deps = [] }: UseIsEllipsedProps = {}) => {
     let resizeObs: ResizeObserver | null = null;
 
     /* istanbul ignore next */
-    const checkEllipsis = () => {
+    const checkEllipsis: () => void = () => {
       if (!el) return;
-      const hasEllipsis = el.scrollWidth > el.clientWidth;
+      const hasEllipsis: boolean = el.scrollWidth > el.clientWidth;
       // Prevent it from flipping back to false unless it really changes
       setIsEllipsed((prev) => (hasEllipsis ? true : prev));
     };
 
-    const measure = () => {
+    const measure: () => void = () => {
       if (frameId) cancelAnimationFrame(frameId);
       frameId = requestAnimationFrame(checkEllipsis);
     };
@@ -36,7 +36,7 @@ export const useIsEllipsed = ({ deps = [] }: UseIsEllipsedProps = {}) => {
     resizeObs.observe(el);
 
     // Fallback check after layout stabilizes
-    const timer = setTimeout(measure, 200);
+    const timer: any = setTimeout(measure, 200);
     
     // eslint-disable-next-line
     return () => {

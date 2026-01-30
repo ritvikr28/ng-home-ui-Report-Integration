@@ -22,10 +22,10 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   totalItems = [],
   colName = ""
 }) => {
-  const [hrefUrl, setHrefUrl] = React.useState<string>("/");
-  const [relatedName, setRelatedName] = React.useState<string>("");
-  const [yearRegTag, setYearRegTag] = React.useState<string>("");
-  const { ref, isEllipsed } = useIsEllipsed({ deps: [text?.name] }) as {
+  const [hrefUrl, setHrefUrl]: [string, React.Dispatch<React.SetStateAction<string>>] = React.useState<string>("/");
+  const [relatedName, setRelatedName]: [string, React.Dispatch<React.SetStateAction<string>>] = React.useState<string>("");
+  const [yearRegTag, setYearRegTag]: [string, React.Dispatch<React.SetStateAction<string>>] = React.useState<string>("");
+  const { ref, isEllipsed }: { ref: React.RefObject<HTMLAnchorElement | HTMLSpanElement>; isEllipsed: boolean; } = useIsEllipsed({ deps: [text?.name] }) as {
     ref: React.RefObject<HTMLAnchorElement | HTMLSpanElement>;
     isEllipsed: boolean;
   };
@@ -37,7 +37,7 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
     return "/";
   };
 
-  const getDisplayName = (t: any): string => {
+  const getDisplayName: (t: any) => string = (t: any): string => {
     if (!t?.name) return "";
     if (t.type === "staff") return `${t.name}${t.staffCode ? ` | ${t.staffCode}` : ""}`;
     return t.name;
@@ -45,7 +45,7 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
 
   const getYearRegText = (isLeaver?: string, year?: string, reg?: string, separator: string = ""): string => {
     if (!year && !reg) return "";
-    const prefix = separator ? ` ${separator} ` : "";
+    const prefix: string = separator ? ` ${separator} ` : "";
     const isLeaverFlag = isLeaver?.toLowerCase() === "leaver";
     if (isLeaverFlag) return `${prefix} (${year})${reg ? ` / (${reg})` : ""}`;
     return `${prefix} ${year}${reg ? ` / ${reg}` : ""}`;
@@ -65,11 +65,11 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
   }, [text]);
 
 
-  const renderMainContent = () => {
-    const tooltipContent =
+  const renderMainContent: () => JSX.Element | null = () => {
+    const tooltipContent: JSX.Element | null =
       ((isTooltipNeeded ?? true) || colName !== "relatedTo") && isEllipsed ? <span>{text?.name || text}</span> : null;
 
-    let content;
+    let content: JSX.Element;
     if (colName === "relatedTo" && (text?.type === "staff" || text?.type === "pupil")) {
       content = (
         <a
@@ -114,7 +114,7 @@ export const EllipsisWithTooltip: React.FC<Props> = ({
     );
   };
 
-  const renderExtraItemsTooltip = () => {
+  const renderExtraItemsTooltip: () => JSX.Element | null = () => {
     if (totalItems.length <= 1) {
       // Keeps layout stable but visually hidden
       return <div style={{ width: 0, height: 0, overflow: "hidden" }} />;

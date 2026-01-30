@@ -14,7 +14,7 @@ import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../ApiConfig.json";
 // Helper type for error responses
 type ErrorResponse = { status?: number; detail?: string; error?: string };
 
-export const fetchDocumentDetails = async ({
+export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Promise<DocumentBasicDetails | null> = async ({
   pageNumber,
   pageSize,
   categoryId = [],
@@ -27,9 +27,9 @@ export const fetchDocumentDetails = async ({
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
 
-    const payload = {
+    const payload: any = {
       documentsRequest: {
         pageNumber,
         pageSize,
@@ -54,7 +54,7 @@ export const fetchDocumentDetails = async ({
   }
 };
 
-export const fetchDMSSuggestions = async (
+export const fetchDMSSuggestions: (searchText: string, fromDate: string, toDate: string, categoryId: number[] | null, documentRelatedTo?: number | string) => Promise<any> = async (
   searchText: string,
   fromDate: string,
   toDate: string,
@@ -62,9 +62,9 @@ export const fetchDMSSuggestions = async (
   documentRelatedTo?: number | string
 ): Promise<any> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
 
-    const params = [
+    const params: string = [
       `AutoCompleteRequest.SearchText=${encodeURIComponent(searchText)}`,
       ...(categoryId && categoryId.length > 0
         ? categoryId.map(id => `AutoCompleteRequest.CategoryId=${encodeURIComponent(id)}`)
@@ -87,11 +87,11 @@ export const fetchDMSSuggestions = async (
   }
 };
 
-export const fetchDocumentCategory = async (
+export const fetchDocumentCategory: (payload: { CategoryRequest: any }) => Promise<DocumentCategoryResponse | ErrorResponse> = async (
   payload: { CategoryRequest: any }
 ): Promise<DocumentCategoryResponse | ErrorResponse> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/data-export/get-linked-files-category-by-id`;
     const responseData: AxiosResponse<DocumentCategoryResponse> = await service.post(url, payload, { baseURL: baseUrl });
     return responseData?.data;
@@ -104,11 +104,11 @@ export const fetchDocumentCategory = async (
   }
 };
 
-export const prepareAndDownloadFile = async (
+export const prepareAndDownloadFile: (payload: { request: any }) => Promise<number | undefined> = async (
   payload: { request: any }
 ): Promise<number | undefined> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/preparedownload`;
     const responseData: AxiosResponse<DocumentPrepareDownload> = await service.post(url, payload, { baseURL: baseUrl });
     return responseData?.status;
@@ -120,11 +120,11 @@ export const prepareAndDownloadFile = async (
   return payload?.request?.status;
 };
 
-export const deleteFiles = async (
+export const deleteFiles: (payload: { request: any }) => Promise<number> = async (
   payload: { request: any }
 ): Promise<number> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/bulkdelete`;
     const responseData: AxiosResponse<deleteDocumentRequest> = await axios.delete(
       `${baseUrl}${url}`,
@@ -145,12 +145,12 @@ export const deleteFiles = async (
   return payload?.request?.status;
 };
 
-export const bulkDownload = async (
+export const bulkDownload: (blobName: string, fileName: string) => Promise<any> = async (
   blobName: string,
   fileName: string
 ): Promise<any> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodeURIComponent(blobName)}${fileName ? `&BulkDownloadRequest.FileName=${encodeURIComponent(fileName)}` : ""}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response.data;
@@ -160,9 +160,9 @@ export const bulkDownload = async (
   }
 };
 
-export const viewDownload = async (): Promise<AxiosResponse | ErrorResponse> => {
+export const viewDownload: () => Promise<AxiosResponse | ErrorResponse> = async (): Promise<AxiosResponse | ErrorResponse> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/viewDownload`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response;
@@ -172,11 +172,11 @@ export const viewDownload = async (): Promise<AxiosResponse | ErrorResponse> => 
   }
 };
 
-export const validation = async (
+export const validation: (payload: { request: any }) => Promise<AxiosResponse | ErrorResponse> = async (
   payload: { request: any }
 ): Promise<AxiosResponse | ErrorResponse> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `/validation/api/v1/file/getfilevalidation`;
     const response: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
     return response;
@@ -186,11 +186,11 @@ export const validation = async (
   }
 };
 
-export const clearAllFiles = async (
+export const clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number | string[] | ErrorResponse> = async (
   payload: { request: { partitionKey: string[] } }
 ): Promise<number | string[] | ErrorResponse> => {
   try {
-    const baseUrl = buildApplicationUrl(PLATFORM_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     const url = `validation/api/v1/file/clearall`;
     const responseData: AxiosResponse = await service.post(url, payload, { baseURL: baseUrl });
     return responseData?.status;
@@ -203,11 +203,11 @@ export const clearAllFiles = async (
   return payload?.request?.partitionKey;
 };
 
-export const fetchStaffProfilePhoto = async (
+export const fetchStaffProfilePhoto: (externalId: string) => Promise<AxiosResponse | ErrorResponse> = async (
   externalId: string
 ): Promise<AxiosResponse | ErrorResponse> => {
   try {
-    const baseUrl = buildApplicationUrl(STAFFPROFILE_BASEURLS);
+    const baseUrl: string = buildApplicationUrl(STAFFPROFILE_BASEURLS);
     const url = `/api/v1/personThumbnailImage/${externalId}`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response;
@@ -225,7 +225,7 @@ export const fileDownloadInstance: AxiosInstance = axios.create({
   }
 });
 
-export const downloadFile = async (
+export const downloadFile: (isApplication?: string, isSection?: string, fileId?: string) => Promise<Blob> = async (
   isApplication?: string,
   isSection?: string,
   fileId?: string

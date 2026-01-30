@@ -51,7 +51,7 @@ describe('fetchDocumentDetails', () => {
   test('should return data on successful fetch', async () => {
     jest.spyOn(service, 'post').mockResolvedValueOnce(mockAxiosResponse);
 
-    const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
+    const result: DocumentBasicDetails | null = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
 
     expect(result).toEqual(mockAxiosResponse.data);
     expect(service.post).toHaveBeenCalledTimes(1);

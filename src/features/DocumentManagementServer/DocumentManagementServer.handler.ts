@@ -6,17 +6,17 @@ import { relatedToEnum } from "../../../public/Constants";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { isValidDate } from "../../shared/utils/commonFunctions";
 
-export const handlePageChange = (
-  _event: any,
-  page: number,
-  setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
-  setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>
+export const handlePageChange: (event: any, page: number, setCurrentPage: React.Dispatch<React.SetStateAction<number>>, setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>) => void = (
+  event,
+  page,
+  setCurrentPage,
+  setIsSearchDataLoading
 ) => {
   setIsSearchDataLoading(true);
   setCurrentPage(page);
 };
 
-export const handleSearchChange = (
+export const handleSearchChange: any = (
   t: (key: string) => string,
   e: React.ChangeEvent<HTMLInputElement>,
   categoryId: number[] | null,
@@ -30,7 +30,7 @@ export const handleSearchChange = (
   documentRelatedTo?: number,
   setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  const { value } = e.target;
+  const { value }: { value: string } = e.target;
   setSearchTerm(value);
 
   if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
@@ -72,7 +72,7 @@ export const handleSearchChange = (
 };
 
 
-export const handleSuggestionClick = async (
+export const handleSuggestionClick: any = async (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
@@ -101,7 +101,7 @@ export const handleSuggestionClick = async (
     });
 };
 
-export const handleTagCloseLogic = (
+export const handleTagCloseLogic: any = (
   e: React.SyntheticEvent,
   text: string,
   closeObj: { name?: string; id?: string | number },
@@ -161,11 +161,11 @@ export function addUniqueTagItem({
   }
 
   // Always normalize the ID for comparison
-  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
-  
-  const alreadyExists = tagListArray.some(
+  const newId: string = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
+
+  const alreadyExists: boolean = tagListArray.some(
     (tag) => {
-      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      const tagId: string = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
       return tagId === newId;
     }
   );
@@ -242,8 +242,8 @@ export function handleApply({
   setSortBy: (v: string) => void,
   setSortDirection: (v: "Asc" | "Desc") => void,
   setIsInitialLoad: (v: boolean) => void
-}) {
-  const appliedCategories = categories ?? selectedCategories;
+}): any {
+  const appliedCategories: any[] = categories ?? selectedCategories;
   validateAndApplyFilter({
     selectedDateRange,
     isDateError,
@@ -314,7 +314,7 @@ export function validateAndApplyFilter({
   setIsHeaderBoxChecked: (v: boolean) => void;
   setSelectedCheckBoxIds: (v: string[]) => void;
   setPrevSelectedDocs: (v: any[]) => void;
-}) {
+}) : void {
   if (
     (selectedDateRange?.fromDate && !isValidDate(selectedDateRange?.fromDate)) ||
     (selectedDateRange?.toDate && !isValidDate(selectedDateRange?.toDate))
@@ -355,7 +355,7 @@ export function validateAndApplyFilter({
   setPrevSelectedDocs([]);
 }
 
-export const handleBulkDeleteLogic = async ({
+export const handleBulkDeleteLogic: any = async ({
   allSelectedDocs,
   docData,
   allRegistrationIds,
@@ -408,7 +408,7 @@ export const handleBulkDeleteLogic = async ({
   setShowDeleteSuccessToast(false);
   if (setIsSearchDataLoading) setIsSearchDataLoading(true);
   setShowDeleteAbortBanner(false);
-  const payload = mapToBulkDeletePayload({
+  const payload: any = mapToBulkDeletePayload ({
     isSelectAll: !!isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
@@ -427,7 +427,7 @@ export const handleBulkDeleteLogic = async ({
     excludedFileDetails:
       isHeaderBoxChecked && excludedCheckBoxIds?.length > 0 && excludedCheckBoxIds?.length < (docData?.totalRecords ?? 0)
         ? excludedCheckBoxIds.map(fileId => {
-          const matchingDoc = allSelectedDocs.find((doc) => doc.fileId === fileId);
+          const matchingDoc: any = allSelectedDocs.find((doc) => doc.fileId === fileId);
           return {
             fileId,
             externalId: matchingDoc?.externalId ?? "",
@@ -437,7 +437,7 @@ export const handleBulkDeleteLogic = async ({
         : []
   });
   try {
-    const status = await deleteFiles(payload);
+    const status: number = await deleteFiles(payload);
     if (status === 204) {
       setShowToastNotification(true);
       setShowConfirmDialog(false);
@@ -479,7 +479,7 @@ export const handleBulkDeleteLogic = async ({
 };
 
 
-export const handleEditSelectedOverFlowMenu = async ({
+export const handleEditSelectedOverFlowMenu: any = async ({
   selectedItem,
   totalSelectedCount,
   setShowDialog,
@@ -542,9 +542,9 @@ export const handleEditSelectedOverFlowMenu = async ({
     } else {
       setShowRestrictedDeleteDialog(true);
       setIsPreDialogLoading(true);
-      const excludedFileDetails = isHeaderBoxChecked ? allSelectedDocs : [];
-      const fileDetails = isHeaderBoxChecked ? [] : allSelectedDocs || [];
-      const validationPayload = buildValidationPayloadFn({
+      const excludedFileDetails: any[] = isHeaderBoxChecked ? allSelectedDocs : [];
+      const fileDetails: any[] = isHeaderBoxChecked ? [] : allSelectedDocs || [];
+      const validationPayload: any = buildValidationPayloadFn({
         isSelectAll: !!isHeaderBoxChecked,
         userActivity: selectedItem.value === "Prepare download" ? "PrepareDownload" : "BulkDelete",
         categoryIds: allRegistrationIds,
@@ -556,7 +556,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         excludedFileDetails,
       });
 
-      const result = await validation(validationPayload);
+      const result: any = await validation(validationPayload);
       if (result?.status !== 200 && result?.status !== 204) {
         setIsPreDialogLoading(false);
         setShowRestrictedDeleteDialog(false);
@@ -567,10 +567,10 @@ export const handleEditSelectedOverFlowMenu = async ({
           messageText: "Information unavailable"
         });
       } else {
-        const restricted = result?.data?.restrictedFileCount ?? 0;
-        const alreadyDeleted = result?.data?.alreadyDeletedFileCount ?? 0;
-        const available = result?.data?.availableFileCount ?? 0;
-        const availableFileIds = result?.data?.availableFileIds ?? [];
+        const restricted: number = result?.data?.restrictedFileCount ?? 0;
+        const alreadyDeleted: number = result?.data?.alreadyDeletedFileCount ?? 0;
+        const available: number = result?.data?.availableFileCount ?? 0;
+        const availableFileIds: string[] = result?.data?.availableFileIds ?? [];
 
         setRestrictedFileCount(restricted);
         setAlreadyDeletedFileCount(alreadyDeleted);
@@ -650,11 +650,11 @@ export async function handleClearAllConfirm({
   getCompletedPartitionKeys: (viewData: any[]) => string[],
   setIsViewDownloadError: (v: boolean) => void,
   setShowEmailNotification: (v: boolean) => void
-}) {
-  const completedPartitionKeys = clearAllGetCompletedPartitionKeys(clearAllViewData);
+}): Promise<void> {
+  const completedPartitionKeys: string[] = clearAllGetCompletedPartitionKeys(clearAllViewData);
   setIsSidePanelLoader(true);
   try {
-    const response = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+    const response: number = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
 
     if (response === 204) {
       setViewData([]);
@@ -693,7 +693,7 @@ export async function handleClearAllConfirm({
 export function closeSidePanel(
   setIsSidePanelOpen: (v: boolean) => void,
   downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>
-) {
+): void {
   setIsSidePanelOpen(false);
   if (downloadPollingIntervalRef.current) {
     clearInterval(downloadPollingIntervalRef.current);
@@ -712,7 +712,7 @@ export function getNotificationMsgBannerObject(
   availableFileCount: number,
   setShowDeleteErrorBanner: (v: boolean) => void,
   setShowDeleteAbortBanner: (v: boolean) => void
-) {
+): any[] {
   return [
     {
       isShow: showErrorBanner || showSearchError,
@@ -758,9 +758,9 @@ export async function handlePrepareDownload({
   setShowEmailNotification: (v: boolean) => void;
   setIsSidePanelLoader: (v: boolean) => void;
   totalSelectedCount: number;
-}) {
+}): Promise<void> {
   try {
-    const statuses = await prepareDownload(selectedDocs);
+    const statuses: number[] = await prepareDownload(selectedDocs);
     gtmAnalytics.pushEvent({
       event: "key_action",
       actionType: "prepare_download",

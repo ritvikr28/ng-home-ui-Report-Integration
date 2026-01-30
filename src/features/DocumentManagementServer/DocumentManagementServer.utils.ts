@@ -2,7 +2,7 @@ import React from "react";
 import dayjs from "dayjs";
 import { DialogTemplate, NotificationStatus, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
-import { Category } from "./responseModel";
+import { Category, DialogConfig, GetDialogConfigParams } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { homeurl } from "../../../public/Constants";
 
@@ -55,7 +55,7 @@ export function reduceCategories(res: any[]): Category[] {
 
 export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
      selectedFormats?.flatMap(item => {
-        const regId = item?.data?.categoryId;
+        const regId: string | string[] | undefined = item?.data?.categoryId;
         if (Array.isArray(regId)) {
             return regId;
         }
@@ -72,9 +72,9 @@ export function getCompletedPartitionKeys(viewData: Array<{ status?: string; par
     .map(item => item.partitionKey ?? "")
 }
 
-export const getVisibleTagsWithSummary = (tags: any[], maxVisible: number = 3) => {
+export const getVisibleTagsWithSummary: (tags: any[], maxVisible: number) => any[] = (tags, maxVisible = 3) => {
   if (tags.length <= maxVisible) return tags;
-  const visibleTags = tags.slice(0, maxVisible);
+  const visibleTags: any[] = tags.slice(0, maxVisible);
   const remainingCount = tags.length - maxVisible;
   visibleTags.push({
     text: `+${remainingCount}`,
@@ -117,7 +117,15 @@ export const getCategoryArr = (selectedFormats: any[]) =>
  };
   
 
- export const getResultNotFoundMsg = (
+export const getResultNotFoundMsg: (
+  t: any,
+  searchText: string,
+  docData: any,
+  searchTerm: string,
+  showErrorBanner: boolean,
+  isSearchTriggered: boolean,
+  showSearchError: boolean
+) => string | undefined = (
    t:any,
    searchText: string,
    docData: any,
@@ -138,17 +146,17 @@ export const getCategoryArr = (selectedFormats: any[]) =>
    }
    return undefined;
  };
-  
-export const filterNonEmptySuggestions = (suggestions: Suggestion[]) =>
+
+export const filterNonEmptySuggestions: (suggestions: Suggestion[]) => Suggestion[] = (suggestions) =>
   suggestions.filter(s => s?.values.length > 0);
 
 // Has items check
-export const hasItems = (suggestions: Suggestion[]): boolean =>
+export const hasItems: (suggestions: Suggestion[]) => boolean = (suggestions) =>
   suggestions?.some(({ values }) => values?.length > 0);
 
-export function applySummaryTagClass() {
+export function applySummaryTagClass(): void {
   document.querySelectorAll('#taglist-id .search-tagList').forEach(tag => {
-    const span = tag.querySelector('.essui-tag span');
+    const span: HTMLSpanElement | null = tag.querySelector('.essui-tag span');
     if (span && span.textContent && span.textContent.trim().startsWith('+')) {
       tag.classList.add('summary-tag');
     } else {
@@ -162,7 +170,7 @@ export function getValidationState(
   searchSelectionError: string,
   showSearchError: boolean,
   t: (key: string) => string
-) {
+): { validationText: string; validationTextLevel: ValidationTextLevel | undefined } {
   let validationText = "";
   if (searchSelectionError) {
     validationText = searchSelectionError;
@@ -182,9 +190,9 @@ export function getValidationState(
   return { validationText, validationTextLevel };
 }
 
-export function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+export function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: any, ...args: Parameters<T>): void {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
@@ -204,7 +212,7 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
       alreadyDeletedFileCount + restrictedFileCount + availableFileCount &&
       isHeaderBoxChecked)
   ) {
-    const deletedCount =
+    const deletedCount: number =
       totalSelectedCount >
         alreadyDeletedFileCount + restrictedFileCount + availableFileCount &&
       isHeaderBoxChecked
@@ -221,7 +229,7 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
 };
 
 
-  export const getEmptyStateMsg = (showErrorBanner: boolean, searchText: string, isSearchTriggered: boolean, showSearchError: boolean, issearchDataLoading: boolean, isSearchLoading: boolean, t: TFunction<"translation", undefined>) => {
+  export const getEmptyStateMsg: any = (showErrorBanner: boolean, searchText: string, isSearchTriggered: boolean, showSearchError: boolean, issearchDataLoading: boolean, isSearchLoading: boolean, t: TFunction<"translation", undefined>) => {
         if (showErrorBanner ||  ((searchText || !isSearchTriggered) && showSearchError)) return t("DocumentManagementServer.informationUnavailable");
         if (issearchDataLoading || isSearchLoading) return undefined;
 
@@ -233,8 +241,8 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
         return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
     };
 
-  export const handleSorting = (columnName: string, sortBy: string, setSortBy: React.Dispatch<React.SetStateAction<string>>, sortDirection: string, setSortDirection: React.Dispatch<React.SetStateAction<string>>, t: TFunction<"translation", undefined>) => {
-            let apiColumnName = columnName;
+  export const handleSorting: any = (columnName: string, sortBy: string, setSortBy: React.Dispatch<React.SetStateAction<string>>, sortDirection: string, setSortDirection: React.Dispatch<React.SetStateAction<string>>, t: TFunction<"translation", undefined>) => {
+            let apiColumnName: string = columnName;
             switch (columnName) {
                 case t("DocumentManagementServer.dateAddedColumn"):
                     apiColumnName = "DateAdded";
@@ -270,8 +278,8 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
             });
         };
 
-  export const handleOnChangeAllCheckBox = (e: any, setIsHeaderBoxChecked: React.Dispatch<React.SetStateAction<boolean>>, setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setExcludedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string;}[]>>) => {
-        const isChecked = e.target.checked;
+  export const handleOnChangeAllCheckBox: any = (e: any, setIsHeaderBoxChecked: React.Dispatch<React.SetStateAction<boolean>>, setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setExcludedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string;}[]>>) => {
+        const isChecked: boolean = e.target.checked;
         setIsHeaderBoxChecked(isChecked);
         if (!isChecked) {
             setSelectedCheckBoxIds([]);
@@ -283,18 +291,18 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
 
     }
 
-   export const handleOnChangeCheckBox = (index: number, id: string, docData: any, selectedCheckBoxIds: string[], setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>) => {
-            const isAlreadySelectedIds = selectedCheckBoxIds?.includes(id);
+   export const handleOnChangeCheckBox: any = (index: number, id: string, docData: any, selectedCheckBoxIds: string[], setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>) => {
+            const isAlreadySelectedIds: boolean = selectedCheckBoxIds?.includes(id);
             if (isAlreadySelectedIds) {
                 setSelectedCheckBoxIds(selectedCheckBoxIds?.filter(exId => exId !== id));
             } else {
                 setSelectedCheckBoxIds([...selectedCheckBoxIds, id]);
             }
-    
-        const doc = docData?.data?.find((d: any) => d.fileId === id);
-    
+
+        const doc: any = docData?.data?.find((d: any) => d.fileId === id);
+
         setSelectedCheckBoxIds((prevSelectedIds) => {
-            const updatedCheckBoxIds = [...prevSelectedIds];
+            const updatedCheckBoxIds: string[] = [...prevSelectedIds];
             if (updatedCheckBoxIds?.includes(id)) {
                 return updatedCheckBoxIds?.filter((selectedId) => selectedId !== id);
             }
@@ -303,7 +311,7 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
     
         setAllSelectedDocs((prevDocs) => {
             if (doc) {
-                const isAlreadySelected = prevDocs?.some((item) => item.fileId === id);
+                const isAlreadySelected: boolean = prevDocs?.some((item) => item.fileId === id);
                 if (isAlreadySelected) {
                     
                     return prevDocs?.filter((item) => item.fileId !== id);
@@ -358,8 +366,6 @@ export function getDialogConfig({
   downloadPollingIntervalRef,
   setIsViewDownloadError,
   setShowEmailNotification,
-  contentText,
-  alreadyDeletedFileCount,
   currentPage,
   selectedFormats,
   sortBy,
@@ -388,38 +394,39 @@ export function getDialogConfig({
   selectedEntities,
   prepareDownload,
   totalSelectedCount,
-  restrictedFileCount,
   excludedCheckBoxIds,
   availableFileIds,
-  ...rest
-}: any) {
+  fetchGetDocumentDetails,
+  allRegistrationIds,
+  referenceExternalId
+}: GetDialogConfigParams): DialogConfig | null {
+  if (!dialogType) return null;
+
   switch (dialogType) {
     case "clearAll":
       return {
         cancelText: t("DocumentManagementServer.keepAll"),
+        okText: t("DocumentManagementServer.ClearAll"),
         contentText: t("DocumentManagementServer.clearAllDescription"),
         isNotificationanner: false,
         notificationTitle: "",
         notificationStatus: NotificationStatus.WARNING,
-        okText: t("DocumentManagementServer.ClearAll"),
-        onCancel: (): void => { setShowConfirmDialog(false); },
-        onConfirm: async (): Promise<void> => {
+        onCancel: () => setShowConfirmDialog(false),
+        onConfirm: async () => {
           setClearAllError(false);
           await handleClearAllConfirm({
             viewData,
             clearAllFiles,
             setShowToastNotification,
             fetchViewDownloadData,
-            setIsSidePanelLoader,
             setViewData,
             setHasFetchedViewDownload,
             viewDownload,
             downloadPollingIntervalRef,
             setClearAllError,
             setShowConfirmDialog,
-            getCompletedPartitionKeys,
             setIsViewDownloadError,
-            setShowEmailNotification
+            setShowEmailNotification,
           });
         },
         template: DialogTemplate.Confirmation,
@@ -429,36 +436,35 @@ export function getDialogConfig({
       return {
         cancelText: t("DocumentManagementServer.keepIt"),
         okText: t("DocumentManagementServer.Delete"),
-        contentText,
+        contentText: "",
         isNotificationanner: true,
-        notificationTitle: availableFileCount === 1
-          ? t("DocumentManagementServer.documentWillBeGoneForever", { count: availableFileCount })
-          : t("DocumentManagementServer.documentsWillBeGoneForever", {
-            all: availableFileCount === docData?.totalRecords || (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? t("DocumentManagementServer.All") : "",
-            count: (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? totalSelectedCount : availableFileCount
-          }),
+        notificationTitle: t(
+          availableFileCount === 1
+            ? "DocumentManagementServer.documentWillBeGoneForever"
+            : "DocumentManagementServer.documentsWillBeGoneForever",
+          { count: availableFileCount }
+        ),
         notificationStatus: NotificationStatus.WARNING,
-        onCancel: (): void => {
+        onCancel: () => {
           setShowConfirmDialog(false);
-          if (alreadyDeletedFileCount > 0) {
-            rest.fetchGetDocumentDetails(
-              currentPage,
-              getAllRegistrationIds(selectedFormats),
-              sortBy,
-              sortDirection,
-              searchRefExternalId,
-              documentRelatedTo
-            );
-            setSelectedCheckBoxIds([]);
-            setAllSelectedDocs([]);
-            setIsClearSelectedCheckbox(true);
-            setIsHeaderBoxChecked(false);
-            setPrevSelectedDocs([]);
-            setExcludedCheckBoxIds([]);
-            setTableKey((prev: number) => prev + 1);
-          }
+          fetchGetDocumentDetails(
+            currentPage,
+            getAllRegistrationIds(selectedFormats),
+            sortBy,
+            sortDirection,
+            referenceExternalId,
+            searchRefExternalId,
+            documentRelatedTo
+          );
+          setSelectedCheckBoxIds([]);
+          setAllSelectedDocs([]);
+          setIsClearSelectedCheckbox(true);
+          setIsHeaderBoxChecked(false);
+          setPrevSelectedDocs([]);
+          setExcludedCheckBoxIds([]);
+          setTableKey(v => v + 1);
         },
-        onConfirm: async (): Promise<void> => {
+        onConfirm: async () => {
           setIsDialogLoading(true);
           setIsGlobalLoaderModel(true);
           await handleBulkDelete();
@@ -471,63 +477,28 @@ export function getDialogConfig({
         template: DialogTemplate.Confirmation,
       };
 
-    default:
+    case "prepareDownload":
       return {
         cancelText: t("DocumentManagementServer.Cancel"),
-        contentText: (() => {
-          if (alreadyDeletedFileCount > 0) {
-            return alreadyDeletedFileCount === 1
-              ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: alreadyDeletedFileCount })
-              : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: alreadyDeletedFileCount });
-          }
-          if (docData?.totalRecords !== (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) {
-            const deletedCount = (docData?.totalRecords > (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length) && isHeaderBoxChecked) ? (docData?.totalRecords - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length)) : alreadyDeletedFileCount;
-            if (deletedCount === 1) {
-              return t("DocumentManagementServer.documentCannotBeDownloaded", { count: deletedCount });
-            }
-            if (deletedCount > 1) {
-              return t("DocumentManagementServer.documentsCannotBeDownloaded", { count: deletedCount });
-            }
-            return "";
-          }
-          return "";
-        })(),
-        isNotificationanner: true,
-        notificationTitle:
-          availableFileCount === 1
-            ? t("DocumentManagementServer.prepareSingleDocument", { count: availableFileCount })
-            : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: availableFileCount }),
-        notificationStatus: NotificationStatus.WARNING,
         okText: t("DocumentManagementServer.PrepareDownload"),
-        onCancel: (): void => {
-          setShowConfirmDialog(false);
-          if (alreadyDeletedFileCount > 0) {
-            rest.fetchGetDocumentDetails(
-              currentPage,
-              getAllRegistrationIds(selectedFormats),
-              sortBy,
-              sortDirection,
-              searchRefExternalId,
-              documentRelatedTo
-            );
-            setSelectedCheckBoxIds([]);
-            setAllSelectedDocs([]);
-            setIsClearSelectedCheckbox(true);
-            setIsHeaderBoxChecked(false);
-            setPrevSelectedDocs([]);
-            setExcludedCheckBoxIds([]);
-          }
-        },
-        onConfirm: (): void => {
+        contentText: "",
+        isNotificationanner: true,
+        notificationTitle: t("DocumentManagementServer.prepareMultipleDocuments", {
+          count: availableFileCount,
+        }),
+        notificationStatus: NotificationStatus.WARNING,
+        onCancel: () => setShowConfirmDialog(false),
+        onConfirm: () => {
           setPrepareDownloadError(false);
           setPrepareDownloadAbortBanner(false);
           setIsSidePanelLoader(true);
           setSidePanelOpenReason("prepare");
           setIsSidePanelOpen(true);
+
           const selectedDocs = buildSelectedDocs(
             selectedCheckBoxIds,
             docData,
-            rest.allRegistrationIds,
+            allRegistrationIds,
             searchRefExternalId,
             documentRelatedTo,
             excludedCheckBoxIds,
@@ -539,42 +510,23 @@ export function getDialogConfig({
           );
 
           prepareDownload(selectedDocs)
-            .then((statuses: number[]) => {
-              rest.gtmAnalytics.pushEvent({
-                event: "key_action",
-                actionType: "prepare_download"
-              });
-              setPrepareDownloadAbortBanner(false);
-              if (statuses.some((status: number) => status !== 204 && status !== 409)) {
+            .then(statuses => {
+              gtmAnalytics.pushEvent({ event: "key_action", actionType: "prepare_download" });
+              if (statuses.some(s => s !== 204 && s !== 409)) {
                 setPrepareDownloadError(true);
-                rest.gtmAnalytics.pushEvent({
-                  event: "error_message",
-                  messageText: "Unable to prepare for download"
-                });
-              } else if (statuses.some((status: number) => status === 409)) {
-                setPrepareDownloadAbortBanner(true);
-                rest.gtmAnalytics.pushEvent({
-                  event: "error_message",
-                  messageText: "Unable to prepare for download"
-                });
               } else if (totalSelectedCount > 1) {
                 setShowEmailNotification(true);
               }
             })
-            .catch(() => {
-              setIsSidePanelLoader(false);
-              setPrepareDownloadError(true);
-              setPrepareDownloadAbortBanner(false);
-              rest.gtmAnalytics.pushEvent({
-                event: "error_message",
-                messageText: "Unable to prepare for download"
-              });
-            });
+            .catch(() => setPrepareDownloadError(true));
         },
         template: DialogTemplate.Confirmation,
       };
-  }
+  default:
+      return null;
+    }
 }
+
 
 
 export function getDeleteDialogMessages({
@@ -593,7 +545,7 @@ export function getDeleteDialogMessages({
   alreadyDeletedFileCount: number,
   excludedCheckBoxIds: any[],
   isHeaderBoxChecked: boolean
-}) {
+}): string[] {
   const messages: string[] = [];
 
   if (restrictedFileCount > 0) {
@@ -626,7 +578,7 @@ export function getDeleteDialogMessages({
         (excludedCheckBoxIds?.length || 0)) &&
     isHeaderBoxChecked
   ) {
-    const deletedCount =
+    const deletedCount: number =
       docData?.totalRecords >
         alreadyDeletedFileCount +
           restrictedFileCount +

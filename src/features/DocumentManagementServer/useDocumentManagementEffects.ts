@@ -3,7 +3,7 @@ import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "./DocumentManagementServer.utils";
 
 
-export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void) {
+export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("isViewDownload") === "true") {
@@ -14,7 +14,7 @@ export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelO
 }
 
 
-export function useScrollToTopOnPageChange(currentPage: number) {
+export function useScrollToTopOnPageChange(currentPage: number): void {
   useEffect(() => {
     let scrolled = false;
     const mainPanel = document.querySelector('.clc-dms-isopen') as HTMLElement | null;
@@ -35,7 +35,7 @@ export function useScrollToTopOnPageChange(currentPage: number) {
   }, [currentPage]);
 }
 
-export function useBodyNoScroll(isMobileView: boolean) {
+export function useBodyNoScroll(isMobileView: boolean): void {
   useEffect(() => {
     if (!isMobileView) {
       document.body.classList.add("no-scroll");
@@ -47,9 +47,9 @@ export function useBodyNoScroll(isMobileView: boolean) {
 
 export function useSummaryTagMutationObserver(
   deps: any[]
-) {
+): void {
   useEffect(() => {
-    const tagListNode = document.getElementById("taglist-id");
+    const tagListNode: HTMLElement | null = document.getElementById("taglist-id");
     if (!tagListNode) {
       return () => {};
     }
@@ -71,7 +71,7 @@ export function useSummaryTagMutationObserver(
   }, deps);
 }
 
-export function useSetTotalPageOnDocData(docData: any, setTotalPage: (n: number) => void, pageSizeNumber: number) {
+export function useSetTotalPageOnDocData(docData: any, setTotalPage: (n: number) => void, pageSizeNumber: number): void {
   useEffect(() => {
     if (docData && docData?.totalRecords) {
       const totalPages = Math.ceil(docData.totalRecords / pageSizeNumber);
@@ -117,9 +117,9 @@ export function useFetchDocsEffect({
   allRegistrationIds,
   fetchGetDocumentDetails,
   setIsInitialLoad,
-}: UseFetchDocsEffectParams) {
+}: UseFetchDocsEffectParams): void {
   useEffect(() => {
-    const allRegistrationId = getAllRegistrationIds(selectedFormats);
+    const allRegistrationId: number[] = getAllRegistrationIds(selectedFormats);
 
     if (!isFilterDialogOpen && isSearchTriggered && searchText) {
       setIsInitialLoad(true);
@@ -191,7 +191,7 @@ export function useSidePanelViewDownloadEffect({
   downloadPollingIntervalRef,
   setIsViewDownloadError,
   setShowEmailNotification
-}: UseSidePanelViewDownloadEffectParams) {
+}: UseSidePanelViewDownloadEffectParams): void {
   useEffect(() => {
     // Only run when opening the side panel for "prepare"
     if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
@@ -199,7 +199,7 @@ export function useSidePanelViewDownloadEffect({
       setIsSidePanelLoader(true);
 
       // Wait for 2 seconds before calling view download API
-      const timer = setTimeout(() => {
+      const timer: any = setTimeout(() => {
         fetchViewDownloadData({
           showLoader: false,
           setIsSidePanelLoader,
@@ -268,10 +268,10 @@ export function useTotalSelectedCountEffect({
   setAllSelectedDocs,
   setExcludedCheckBoxIds,
   setTotalSelectedCount
-}: UseTotalSelectedCountEffectParams) {
+}: UseTotalSelectedCountEffectParams): void {
   useEffect(() => {
     const excludedCount = excludedCheckBoxIds.length || 0;
-    const computedTotalSelectedCount = (() => {
+    const computedTotalSelectedCount: number = (() => {
       if (!docData?.totalRecords) return 0;
       if (docData?.totalRecords === excludedCount) {
         setIsHeaderBoxChecked(false);
@@ -321,7 +321,7 @@ export interface UseSearchTermEffectParams {
   setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export function useSearchTermEffect(params: UseSearchTermEffectParams) {
+export function useSearchTermEffect(params: UseSearchTermEffectParams): void {
   const {
     searchTerm,
     selectedFormats,
@@ -335,7 +335,7 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams) {
     setShowSearchError,
     setIsSearchLoading,
     setShowErrorBanner
-  } = params;
+  }: UseSearchTermEffectParams = params;
 
   useEffect(() => {
     if (searchTerm?.length > 1 && !showSearchError && !isSearchTriggered) {
@@ -369,10 +369,10 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams) {
   ]);
 }
 
-export function useSetFailedFileNameOnCancelled(viewData: any[], setFailedFileName: (names: string[]) => void) {
+export function useSetFailedFileNameOnCancelled(viewData: any[], setFailedFileName: (names: string[]) => void): void {
   useEffect(() => {
     if (viewData && viewData.length > 0) {
-      const cancelledFiles = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
+      const cancelledFiles: any[] = viewData.filter(item => item.status?.toLowerCase() === 'cancel');
       if (cancelledFiles.length > 0) {
         setFailedFileName(cancelledFiles.map(file => file.name).filter(Boolean) as string[]);
       }

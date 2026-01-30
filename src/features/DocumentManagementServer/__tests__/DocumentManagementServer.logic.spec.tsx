@@ -25,17 +25,17 @@ jest.mock("@essnextgen/ui-kit", () => ({
 beforeAll(() => {
   global.ResizeObserver = global.ResizeObserver || class {
     // eslint-disable-next-line
-    observe() { void this; }
+    observe(): void { void this; }
     // eslint-disable-next-line
-    unobserve() { void this; }
+    unobserve(): void { void this; }
     // eslint-disable-next-line
-    disconnect() { void this; }
+    disconnect(): void { void this; }
   };
 });
 
 describe("getTableHeadersData", () => {
-  const t = (key: string) => key; 
-  const headers = logicModule.getTableHeadersData(t);
+  const t: (key: string) => string = (key: string) => key;
+  const headers: ReturnType<typeof logicModule.getTableHeadersData> = logicModule.getTableHeadersData(t);
 //   const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
 
 

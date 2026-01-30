@@ -152,7 +152,7 @@ jest.mock('focus-trap-react', () => ({
 }));
 
 jest.mock("../DocumentManagementServer.logic", () => {
-  const original = jest.requireActual("../DocumentManagementServer.logic");
+  const original: any = jest.requireActual("../DocumentManagementServer.logic");
   return {
     __esModule: true,
     ...original,
@@ -174,16 +174,16 @@ jest.mock("../ApiService", () => ({
   fetchStaffProfilePhoto: jest.fn(),
   validation: jest.fn(),
 }));
- 
- 
-const mockCategories = [
+
+
+const mockCategories: Array<{ application: string; registrationId: number[]; section: string[] }> = [
   { application: "App1", registrationId: [1], section: ["Section1"] },
   { application: "App2", registrationId: [1], section: ["Section2"] },
   { application: "App3", registrationId: [1], section: ["Section3"] },
   { application: "App4", registrationId: [1], section: ["Section4"] }
 ];
- 
-const mockDocData = {
+
+const mockDocData: { statusCode: number; totalRecords: number; data: Array<{ fileId: string; document: string; category: string; addedBy: string; dateAdded: string; format: string; size: string; registrationId: number; relatedTo: Array<any>; }> } = {
   statusCode: 200,
   totalRecords: 2,
   data: [
@@ -211,8 +211,8 @@ const mockDocData = {
     }
   ],
 };
- 
-const zipFileDownloadMockData = {
+
+const zipFileDownloadMockData: { statusCode: number; payload: string; errorMessage: null } = {
   statusCode: 200,
   payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
   errorMessage: null
@@ -264,9 +264,9 @@ const zipFileDownloadMockData = {
     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
     /* eslint-disable */
     global.ResizeObserver = global.ResizeObserver || class {
-      observe() { }
-      unobserve() { }
-      disconnect() { }
+      observe(): void { }
+      unobserve(): void { }
+      disconnect(): void { }
     };
     /* eslint-enable */
   })

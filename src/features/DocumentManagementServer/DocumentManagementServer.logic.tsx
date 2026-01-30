@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ShowValAs, Tag, Suggestion, ISearchItemProp, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader } from "@essnextgen/ui-kit";
+import { ShowValAs, Tag, Suggestion, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader, SuggestionItem } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
  import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "./responseModel";
@@ -8,112 +8,108 @@ import { pageSizeNumber } from "../../../public/Constants";
 import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
 
+const renderSingleValue = (
+  value: string | undefined,
+  colName: string
+) => {
+  if (!value) return null;
+
+  return (
+    <EllipsisWithTooltip
+      text={value}
+      className="relatedto-main"
+      isTooltipNeeded={value.length === 1}
+      totalItems={[value]}
+      colName={colName}
+    />
+  );
+};
+
+const renderArrayValue = (
+  value: unknown,
+  colName: string
+) => {
+  if (!Array.isArray(value) || value.length === 0 || !value[0]) {
+    return null;
+  }
+
+  const firstValue = value[0];
+
+  return (
+    <EllipsisWithTooltip
+      text={firstValue}
+      className="relatedto-main"
+      isTooltipNeeded={value.length === 1}
+      totalItems={value}
+      colName={colName}
+    />
+  );
+};
+
+const renderSizeValue = (value: unknown) => {
+  if (typeof value === "undefined" || value === null) return null;
+
+  const resolvedValue = Array.isArray(value) ? value[0] : value;
+  if (!resolvedValue) return null;
+
+  return (
+    <EllipsisWithTooltip
+      text={resolvedValue}
+      className="relatedto-main"
+      isTooltipNeeded={resolvedValue.length === 1}
+      totalItems={[resolvedValue]}
+      colName="category"
+    />
+  );
+};
+
 export const getTableHeadersData = (t: any): TableHeader[] => [
   {
     text: "Id",
     isShow: false,
     showValAs: ShowValAs.Text,
     isTextTruncate: false,
-    columnWidth: "16px"
+    columnWidth: "16px",
   },
   {
     text: t("DocumentManagementServer.documentColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    isTextTruncate: false,
-    isHeaderTextTruncate: false,
     columnWidth: "267px",
-    headerTxtTrunctLength: 50,
-    isSimpleText: true,
     isColumnSorting: true,
-    txtTrunctLength: 26,
-    anyComponent: (e: any) => (
-      <>
-      <EllipsisWithTooltip
-        text={e}
-        className=" relatedto-main"
-        isTooltipNeeded={!!(e && e.length === 1)}
-        totalItems={[e]}
-        colName="document"
-      />
-      </>
-    )
+    anyComponent: (e: string) => renderSingleValue(e, "document"),
   },
   {
     text: t("DocumentManagementServer.relatedColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    isTextTruncate: true,
-    isHeaderTextTruncate: false,
-    headerTxtTrunctLength: 17,
     columnWidth: "261px",
-    txtTrunctLength: 35,
     isColumnSorting: false,
-    anyComponent: (e: any) =>(
-      <>
-        {(!e || !Array.isArray(e) || !e.length) ? null : (
-          <EllipsisWithTooltip
-            text={e[0]}
-            className=" relatedto-main"
-            isTooltipNeeded={!!(e.length === 1)}
-            totalItems={e}
-            colName="relatedTo"
-          />
-        )}
-      </>
-      )
+    anyComponent: (e: unknown) => renderArrayValue(e, "relatedTo"),
   },
   {
     text: t("DocumentManagementServer.categoryColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    isHeaderTextTruncate: false,
-    headerTxtTrunctLength: 20,
-    isColumnSorting: true,
     columnWidth: "144px",
-    isTextTruncate: false,
-    anyComponent: (e: any) => (
-      <>
-        {typeof e === 'undefined' ? null : (
-          <EllipsisWithTooltip
-            text={e}
-            className=" relatedto-main"
-            isTooltipNeeded={!!(e && e.length === 1)}
-            totalItems={[e]}
-            colName="category"
-          />
-        )}
-      </>
-    )
+    isColumnSorting: true,
+    anyComponent: (e: string | undefined) =>
+      renderSingleValue(e, "category"),
   },
   {
     text: t("DocumentManagementServer.addedByColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    headerTxtTrunctLength: 50,
     columnWidth: "180px",
     isColumnSorting: false,
-    isHeaderTextTruncate: false,
-    isTextTruncate: false,
-    isSimpleText: true,
-    anyComponent: (e: any) => (
-      <>
-        <EllipsisWithTooltip
-          text={e}
-          className=" relatedto-main"
-          isTooltipNeeded={!!(e && e.length === 1)}
-          totalItems={[e]}
-          colName="addedBy"
-        />
-      </>
-    )
+    anyComponent: (e: string) =>
+      renderSingleValue(e, "addedBy"),
   },
   {
     text: t("DocumentManagementServer.dateAddedColumn"),
     isShow: true,
     columnWidth: "140px",
     showValAs: ShowValAs.Text,
-    isTextTruncate: false,
     isColumnSorting: true,
     isColumnSortByDefault: true,
   },
@@ -121,56 +117,21 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     text: t("DocumentManagementServer.formatColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    txtTrunctLength: 12,
-    isColumnSorting: true,
-    isTextTruncate: false,
-    isHeaderTextTruncate: false,
-    headerTxtTrunctLength: 50,
     columnWidth: "120px",
-    anyComponent: (e: any) => (
-      <>
-        <EllipsisWithTooltip
-          text={e}
-          className=" relatedto-main"
-          isTooltipNeeded={!!(e && e.length === 1)}
-          totalItems={[e]}
-          colName="format"
-        />
-      </>
-    )
+    isColumnSorting: true,
+    anyComponent: (e: string) =>
+      renderSingleValue(e, "format"),
   },
   {
     text: t("DocumentManagementServer.sizeColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
-    txtTrunctLength: 12,
-    isColumnSorting: true,
-    isTextTruncate: false,
-    isHeaderTextTruncate: false,
-    headerTxtTrunctLength: 50,
     columnWidth: "129px",
-    anyComponent: (e: any) => {
-          if (
-      typeof e === "undefined" ||
-      e === null ||
-      (Array.isArray(e) && (e.length === 0 || !e[0] || e[0] === "" || typeof e[0] === "undefined" || e[0] === null))
-    ) {
-      return null;
-    }
-    // If array, use first value
-    const value: string | undefined = Array.isArray(e) ? e[0] : e;
-    return (
-      <EllipsisWithTooltip
-        text={value}
-        className=" relatedto-main"
-        isTooltipNeeded={!!(value && value.length === 1)}
-        totalItems={[value]}
-        colName="category"
-      />
-    );
+    isColumnSorting: true,
+    anyComponent: renderSizeValue,
   }
-}
 ];
+
 
 
  
@@ -288,7 +249,7 @@ export async function fetchGetDocumentDetailsLogic({
   setShowDeleteAbortBanner,
   setShowDeleteErrorBanner,
   setSuggestions
-}: FetchGetDocumentDetailsLogicParams) {
+}: FetchGetDocumentDetailsLogicParams): Promise<void> {
   setIsSearchDataLoading(true);
   setPrepareDownloadAbortBanner(false);
   setShowDeleteAbortBanner(false);
@@ -332,7 +293,7 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading(false);
 }
 
-export const fetchViewDownloadData = async ({
+export const fetchViewDownloadData: any = async ({
   showLoader = true,
   setIsSidePanelLoader,
   setViewData,
@@ -398,7 +359,7 @@ export const fetchViewDownloadData = async ({
 };
 
 
-export const fetchDocumentCategoryData = async ({
+export const fetchDocumentCategoryData: any = async ({
   payload,
   setCategoryError,
   setAvailableCategories,
@@ -457,115 +418,157 @@ export const getStaffProfilePhoto = async (staffId: string) => {
   }
   return "";
 }
-export const formatSuggestions: (payload: any[], t: (key: string) => string) => Promise<Suggestion[]> = async (payload: any[], t: (key: string) => string): Promise<Suggestion[]> => {
+
+const buildPupilSuggestion = async (item: any, categoryName: string) => {
+  const text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
+
+  const icon =
+    item?.imagePath === "" ? (
+      <Icon
+        name="user--filled"
+        size={IconSize.Medium}
+        color={IconColor.Neutral400}
+      />
+    ) : (
+      <img
+        src={item.imagePath}
+        alt={pupilImgString}
+        className="dms-search__profile-icon"
+      />
+    );
+
+  const value =
+    (item?.currentYearGroup || item?.currentPrimaryClass) && (
+      <Tag
+        text={[item?.currentYearGroup, item?.currentPrimaryClass]
+          .filter(Boolean)
+          .join(" / ")}
+        color={TagColor.Warning}
+        size={TagSize.Small}
+      />
+    );
+
+  return {
+    text,
+    icon,
+    value,
+    props: {
+      name: text,
+      id: item?.learnerExternalId,
+      categoryName,
+      ...item,
+    },
+  };
+};
+
+const buildStaffSuggestion = async (item: any, categoryName: string) => {
+  const text =
+    [
+      `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
+      item?.staffCode
+    ]
+      .filter(Boolean)
+      .join(" | ") ||
+    item?.name ||
+    "";
+
+  const data = await getStaffProfilePhoto(
+    (item?.externalId ?? "").toLowerCase()
+  );
+
+  const icon =
+    data?.imagePath === "" ? (
+      <Icon
+        name="user--filled"
+        size={IconSize.Medium}
+        color={IconColor.Neutral400}
+      />
+    ) : (
+      <img
+        src={data?.imagePath}
+        alt={staffImgString}
+        className="dms-search__profile-icon"
+      />
+    );
+
+  return {
+    text,
+    icon,
+    value: undefined,
+    props: {
+      name: text,
+      id: item?.externalId,
+      categoryName,
+      ...item,
+    },
+  };
+};
+
+const buildOrganisationSuggestion = (item: any, categoryName: string) => {
+  const text = item?.schoolName || item?.name || "";
+
+  return {
+    text,
+    icon: undefined,
+    value: undefined,
+    props: {
+      name: text,
+      id: item?.orgId,
+      categoryName,
+      ...item,
+    },
+  };
+};
+
+const buildDefaultSuggestion = (item: any, categoryName: string) => ({
+  text: item?.name || "",
+  icon: undefined,
+  value: undefined,
+  props: {
+    name: item?.name,
+    id: item?.id,
+    categoryName,
+    ...item,
+  },
+});
+
+const suggestionBuilders: Record<
+  string,
+  (item: any, categoryName: string) => SuggestionItem | Promise<SuggestionItem>
+> = {
+  Pupil: buildPupilSuggestion,
+  Staff: buildStaffSuggestion,
+  Organisation: buildOrganisationSuggestion,
+};
+
+
+
+export const formatSuggestions = async (
+  payload: any[],
+  t: (key: string) => string
+): Promise<Suggestion[]> => {
   if (!payload) return [];
+
   return Promise.all(
     payload.map(async (category: any) => {
-      const values: any[] = await Promise.all(
-        (category?.values || []).map(async (item: any) => {
-          let text = "";
-          let props: ISearchItemProp = {};
-          let icon: JSX.Element | undefined;
-          let value: JSX.Element | string | undefined;
- 
-          switch (category?.name) {
-            case "Pupil":
-              text = `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""} (${item?.legalName ?? ""})`;
-              icon = (
-                <>
-                  {(item.imagePath === "") ? (
-                    <Icon
-                      name="user--filled"
-                      size={IconSize.Medium}
-                      color={IconColor.Neutral400}
-                    />
-                  ) : (
-                    <img src={item.imagePath} alt={pupilImgString} className="dms-search__profile-icon" />
-                  )}
-                </>
-              );
-              value = ((item?.currentYearGroup || item?.currentRegistration) && (
-                <Tag
-                  text={
-                    [item?.currentYearGroup, item?.currentPrimaryClass]
-                      .filter(Boolean)
-                      .join(" / ")
-                  }
-                  color={TagColor.Warning}
-                  size={TagSize.Small}
-                />
-              ));
-              props = {
-                name: text,
-                id: item?.learnerExternalId,
-                value,
-                categoryName: category.name,
-                ...item
-              };
-              break;
-            case "Staff": {
-              text = [
-                `${item?.preferredForename ?? ""} ${item?.preferredSurname ?? ""}`.trim(),
-                item?.staffCode
-              ]
-                .filter(Boolean)
-                .join(" | ") || item?.name || "";
-              const data: any = await getStaffProfilePhoto((item?.externalId).toLowerCase());
-              icon = (
-                <>
-                  {(data?.imagePath === "") ? (
-                    <Icon
-                      name="user--filled"
-                      size={IconSize.Medium}
-                      color={IconColor.Neutral400}
-                    />
-                  ) : (
-                    <img src={data?.imagePath} alt={staffImgString} className="dms-search__profile-icon" />
-                  )}
-                </>
-              );
-              props = {
-                name: text,
-                id: item?.externalId,
-                categoryName: category.name,
-                ...item
-              };
-              break;
-            }
-            case "Organisation":
-              text = item?.schoolName || item?.name || "";
-              props = {
-                name: text,
-                id: item?.orgId,
-                categoryName: category.name,
-                ...item
-              };
-              break;
-            default:
-              text = item?.name || "";
-              props = {
-                name: item?.name,
-                id: item?.id,
-                categoryName: category.name,
-                ...item
-              };
-          }
-          return {
-            text,
-            icon,
-            props,
-            value,
-          };
+      const values = await Promise.all(
+        (category?.values || []).map((item: any) => {
+          const builder =
+            suggestionBuilders[category?.name] ?? buildDefaultSuggestion;
+
+          return builder(item, category?.name);
         })
       );
+
       return {
-        // name: t(category?.name || ""),
         name: t(`Filter.${category?.name || ""}`),
         values,
       };
     })
   );
 };
+
+
  
 
 export const prepareDownload: (payload: { request: any }[]) => Promise<any[]> = async (payload: { request: any }[]) => {
@@ -575,7 +578,59 @@ export const prepareDownload: (payload: { request: any }[]) => Promise<any[]> = 
   return statuses;
 };
 
- 
+
+type SelectedDoc = {
+  fileId: string;
+  registrationId: number;
+  externalId: string;
+};
+
+type ReferenceMapping = {
+  referenceExternalId: string;
+  relatedTo: any;
+  documentRelatedTo: number;
+};
+
+const isValidArray = (arr: unknown): arr is any[] => Array.isArray(arr);
+
+const dedupeByKey = <T, K extends keyof T>(arr: T[], key: K): T[] =>
+  Array.from(new Map(arr.map(item => [item[key], item])).values());
+
+const buildReferenceMappings = (
+  selectedEntities: any[],
+  searchRefExternalId: string[],
+  documentRelatedTo: number
+): ReferenceMapping[] => {
+  if (!isValidArray(searchRefExternalId) || !isValidArray(selectedEntities)) {
+    return [];
+  }
+
+  return dedupeByKey(
+    selectedEntities.map(entity => ({
+      referenceExternalId:
+        entity.learnerExternalId ||
+        entity.externalId ||
+        entity.organisationId,
+      relatedTo: entity,
+      documentRelatedTo
+    })),
+    "referenceExternalId"
+  );
+};
+
+const filterValidReferenceMappings = (
+  mappings: ReferenceMapping[],
+  selectedDocs: any[]
+): ReferenceMapping[] => {
+  if (!mappings.length || !selectedDocs.length) return mappings;
+
+  const validIds = new Set(
+    selectedDocs.map(d => d.externalId || d.learnerExternalId)
+  );
+
+  return mappings.filter(m => validIds.has(m.referenceExternalId));
+};
+
 
 export function buildSelectedDocs(
   selectedCheckBoxIds: string[],
@@ -585,81 +640,75 @@ export function buildSelectedDocs(
   documentRelatedTo: number,
   excludedCheckBoxIds: string[],
   isHeaderBoxChecked: boolean,
-  allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[],
+  allSelectedDocs: SelectedDoc[],
   dateRange: { fromDate: string; toDate: string },
   selectedEntities: any[],
   availableFileIds: string[]
 ): { request: any }[] {
-  if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
-  if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
-
-  const selectedDocs: any[] = docData.data.filter(
-    (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
-  );
-
-  const fileDetails: any[] = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
-  const excludedIdDetails: any[] =
-    isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
-
-  let referenceMappingDetails: any[] = [];
-
-  // Build mapping from selectedEntities if available
-  if (searchRefExternalId.length > 0 && selectedEntities.length > 0) {
-    referenceMappingDetails = selectedEntities.map(entity => ({
-      referenceExternalId:
-        entity.learnerExternalId || entity.externalId || entity.organisationId,
-      relatedTo: entity,
-      documentRelatedTo,
-    }));
-
-    // Deduplicate by referenceExternalId
-    referenceMappingDetails = Array.from(
-      new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
-    );
+  if (
+    !isValidArray(selectedCheckBoxIds) ||
+    !isValidArray(excludedCheckBoxIds) ||
+    !isValidArray(docData?.data)
+  ) {
+    return [];
   }
 
-  // Filter mappings to only those present in selectedDocs
-  if (selectedDocs.length > 0 && referenceMappingDetails.length > 0) {
-    const validIds = new Set(
-      selectedDocs.map((d: { externalId: any; learnerExternalId: any; }) => d.externalId || d.learnerExternalId)
-    );
-    referenceMappingDetails = referenceMappingDetails.filter((m) =>
-      validIds.has(m.referenceExternalId)
-    );
-  }
-
-  // Final deduplication
-  referenceMappingDetails = Array.from(
-    new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
+  const selectedDocs = docData.data.filter(
+    (d: any) =>
+      selectedCheckBoxIds.includes(d.fileId) &&
+      d.registrationId !== undefined
   );
 
-  const fromDate: string = dateRange?.fromDate ?? "";
-  const toDate: string = dateRange?.toDate ?? "";
-  const currentDateTime: string = new Date().toLocaleString("sv-SE").replace(" ", "T");
+  const fileDetails =
+    !isHeaderBoxChecked && allSelectedDocs.length > 0
+      ? allSelectedDocs.filter(doc =>
+          availableFileIds?.includes(doc.fileId)
+        )
+      : [];
+
+  const excludedFileDetails =
+    isHeaderBoxChecked &&
+    allSelectedDocs.length > 0 &&
+    allSelectedDocs.length < (docData?.totalRecords ?? 0)
+      ? allSelectedDocs
+      : [];
+
+  let referenceMappingDetails = buildReferenceMappings(
+    selectedEntities,
+    searchRefExternalId,
+    documentRelatedTo
+  );
+
+  referenceMappingDetails = filterValidReferenceMappings(
+    referenceMappingDetails,
+    selectedDocs
+  );
+
+  const fromDate = dateRange?.fromDate ?? "";
+  const toDate = dateRange?.toDate ?? "";
+  const currentDateTime = new Date()
+    .toLocaleString("sv-SE")
+    .replace(" ", "T");
 
   return [
     {
       request: {
-        selectAll: !!isHeaderBoxChecked,
+        selectAll: Boolean(isHeaderBoxChecked),
         currentDateTime,
         downloadCriteria: {
           referenceMappingDetails,
           documentRelatedTo,
           categoryId,
           fromDate,
-          toDate,
+          toDate
         },
         fileDetails,
-        excludedFileDetails:
-          isHeaderBoxChecked &&
-          excludedIdDetails.length > 0 &&
-          excludedIdDetails.length < (docData?.totalRecords ?? 0)
-            ? excludedIdDetails
-            : [],
-      },
+        excludedFileDetails
+      }
     }
   ];
 }
+
 
 export function mapToBulkDeletePayload({
   isSelectAll = false,
@@ -679,7 +728,7 @@ export function mapToBulkDeletePayload({
   documentRelatedTo?: number;
   fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
   excludedFileDetails?: { fileId: string; externalId: string }[];
-}) {
+}): { request: any } {
   return {
     request: {
       isSelectAll,
@@ -700,7 +749,7 @@ export function mapToBulkDeletePayload({
 
 
 
-export const debouncedFetchSuggestions = debounce(
+export const debouncedFetchSuggestions: any = debounce(
   async (
     t: (key: string) => string,
     searchText: string,

@@ -171,7 +171,7 @@ const DmsControlledList: React.FC<Props> = (props) => {
     setIsClearSelectedCheckbox
     
     // ...other props
-  } = props;
+  }: React.SetStateAction<any> = props;
 
   return (
     <ControlledList
@@ -299,7 +299,7 @@ const DmsControlledList: React.FC<Props> = (props) => {
         setIsHeaderBoxChecked(false);
         setExcludedCheckBoxIds([]);
         setPrevSelectedDocs([]);
-        setTableKey((prev) => prev + 1);
+        setTableKey((prev: number) => prev + 1);
         setIsInitialLoad(true);
         handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
         setIsSearchTriggered(true);
