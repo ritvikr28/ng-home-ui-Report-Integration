@@ -130,7 +130,7 @@ export interface deleteDocumentRequest {
 
 export interface referenceDetails {
   referenceExternalIds: string[];
-  documentRealatedTo: number;
+  documentRelatedTo: number;
 }
 
 export interface deleteDocumentFilesDetails {
@@ -175,3 +175,40 @@ export interface BuildValidationPayloadParams {
   excludedFileDetails?: ValidationFileDetail[];
 }
 
+export interface DateRange {
+fromDate: string;
+toDate: string;
+}
+
+
+export interface DocumentRow {
+fileId: string;
+document?: string;
+category?: string;
+addedBy?: string;
+dateAdded?: string;
+format?: string;
+size?: string;
+}
+
+
+export interface DocumentData {
+data?: DocumentRow[];
+totalCount?: number;
+}
+
+
+export interface SelectedDocument {
+fileId: string;
+registrationId: number;
+externalId: string;
+}
+
+
+export type SidePanelReason = "prepare" | "view";
+
+export interface BreadcrumbAction {
+  active: boolean;
+  linkName: string;
+  path: string;
+}

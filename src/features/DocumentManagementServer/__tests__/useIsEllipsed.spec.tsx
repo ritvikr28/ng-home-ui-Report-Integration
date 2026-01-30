@@ -1,58 +1,58 @@
-// import React from "react";
-// import { render, screen } from "@testing-library/react";
-// import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
-// import { useIsEllipsed } from "../useIsEllipsed";
+import React from "react";
+import { render, screen } from "@testing-library/react";
+import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
+import { useIsEllipsed } from "../useIsEllipsed";
 
-// // Mock the useIsEllipsed hook
-// jest.mock("../useIsEllipsed");
-// const mockUseIsEllipsed = useIsEllipsed as jest.Mock;
+// Mock the useIsEllipsed hook
+jest.mock("../useIsEllipsed");
+const mockUseIsEllipsed = useIsEllipsed as jest.Mock;
 
-// // Mock Tooltip and Tag from @essnextgen/ui-kit
-// jest.mock("@essnextgen/ui-kit", () => ({
-//   Tooltip: ({ children, content }: any) => (
-//     <div data-testid="tooltip">
-//       {children}
-//       {content && <div data-testid="tooltip-content">{content}</div>}
-//     </div>
-//   ),
-//   TooltipAlign: { Center: "center" },
-//   TooltipPosition: { Bottom: "bottom" },
-//   Tag: ({ text }: any) => <span data-testid="tag">{text}</span>,
-// }));
+// Mock Tooltip and Tag from @essnextgen/ui-kit
+jest.mock("@essnextgen/ui-kit", () => ({
+  Tooltip: ({ children, content }: any) => (
+    <div data-testid="tooltip">
+      {children}
+      {content && <div data-testid="tooltip-content">{content}</div>}
+    </div>
+  ),
+  TooltipAlign: { Center: "center" },
+  TooltipPosition: { Bottom: "bottom" },
+  Tag: ({ text }: any) => <span data-testid="tag">{text}</span>,
+}));
 
-// const mockEllipsed = (value: boolean) => {
-//   mockUseIsEllipsed.mockReturnValue({
-//     ref: { current: document.createElement("span") },
-//     isEllipsed: value,
-//   });
-// };
+const mockEllipsed = (value: boolean) => {
+  mockUseIsEllipsed.mockReturnValue({
+    ref: { current: document.createElement("span") },
+    isEllipsed: value,
+  });
+};
 
-// describe("EllipsisWithTooltip Component", () => {
-//   beforeEach(() => {
-//     jest.clearAllMocks();
-//   });
+describe("EllipsisWithTooltip Component", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   const baseText = { name: "Benjamin Doe", referenceExternalId: "123" };
+  const baseText = { name: "Benjamin Doe", referenceExternalId: "123" };
 
 
-//   it("renders staff link correctly", () => {
-//     mockEllipsed(true);
-//     const text = { ...baseText, type: "staff", staffCode: "A1" };
+  it("renders staff link correctly", () => {
+    mockEllipsed(true);
+    const text = { ...baseText, type: "staff", staffCode: "A1" };
 
-//     render(
-//       <EllipsisWithTooltip
-//         text={text}
-//         className=""
-//         isTooltipNeeded={true}
-//         totalItems={[text]}
-//         colName="relatedTo"
-//       />
-//     );
+    render(
+      <EllipsisWithTooltip
+        text={text}
+        className=""
+        isTooltipNeeded={true}
+        totalItems={[text]}
+        colName="relatedTo"
+      />
+    );
 
-//     const link = screen.getByRole("link", { name: /Benjamin Doe/i });
-//     expect(link).toHaveAttribute("href", "/staff/profile/123");
-//     expect(screen.getByTestId("tooltip")).toBeInTheDocument();
-//   });
+    const link = screen.getByRole("link", { name: /Benjamin Doe/i });
+    expect(link).toHaveAttribute("href", "/staff/profile/123");
+    expect(screen.getByTestId("tooltip")).toBeInTheDocument();
+  });
 
 //   it("renders staff link /", () => {
 //     mockEllipsed(true);
@@ -296,4 +296,4 @@
 //     expect(screen.getByText("(12)")).toBeInTheDocument();
 //   });
 
-// });
+});

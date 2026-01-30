@@ -1,94 +1,60 @@
-// import React from "react";
-// import { act } from "@testing-library/react-hooks";
-// import { render, screen } from "@testing-library/react";
-// import dayjs from "dayjs";
-// import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
-// import * as ApiService from "../ApiService";
-// import * as logicModule from "../DocumentManagementServer.logic";
-// import {
-//   debouncedFetchSuggestions,
-//   fetchDocumentCategoryData,
-//   formatSuggestions,
-//   getAllRegistrationIds,
-//   getCategoryArr,
-//   getDateTag,
-//   getResultNotFoundMsg,
-//   getTableHeadersData,
-//   getVisibleTagsWithSummary,
-//   handlePageChange,
-//   handleSearchChange,
-//   handleSuggestionClick,
-//   handleTagCloseLogic,
-//   hasItems,
-//   loadSuggestions,
-//   onBreadcrumbClick,
-//   mapRelatedArr,
-//   filterNonEmptySuggestions,
-//   getStaffProfilePhoto,
-//   prepareDownload,
-//   reduceCategories,
-//   fetchViewDownloadData,
-//   validateAndApplyFilter,
-//   closeSidePanel,
-//   fetchGetDocumentDetailsLogic,
-//   buildSelectedDocs,
-//   handleClearAllConfirm,
-//   getCompletedPartitionKeys,
-//   handleBulkDeleteLogic,
-//   getTitleConfirmation,
-//   addUniqueTagItem,
-//   handleApply,
-//   handleEditSelectedOverFlowMenu,
-//   applySummaryTagClass,
-//   getValidationState
-// } from "../DocumentManagementServer.logic";
+import React from "react";
+import { act } from "@testing-library/react-hooks";
+import { render, screen } from "@testing-library/react";
+import dayjs from "dayjs";
+import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
+import * as ApiService from "../ApiService";
+import * as logicModule from "../DocumentManagementServer.logic";
+import { handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter, closeSidePanel, handleClearAllConfirm, handleBulkDeleteLogic, addUniqueTagItem, handleApply, handleEditSelectedOverFlowMenu } from "../DocumentManagementServer.handler";
+import { hasItems, getVisibleTagsWithSummary, getCategoryArr, getDateTag, getValidationState, getResultNotFoundMsg, getAllRegistrationIds, mapRelatedArr, filterNonEmptySuggestions, reduceCategories, getCompletedPartitionKeys, applySummaryTagClass } from "../DocumentManagementServer.utils";
 
-// const analytics = require('../../../shared/utils/analytics').default;
 
-// jest.mock("../ApiService");
+const analytics = require('../../../shared/utils/analytics').default;
 
-// jest.mock("@essnextgen/ui-kit", () => ({
-//   ...jest.requireActual("@essnextgen/ui-kit"),
-//   useMediaQuery: jest.fn(),
-//   ApiService: {
-//     fetchDMSSuggestions: jest.fn(),
-//   },
-// }));
+jest.mock("../ApiService");
 
-// // eslint-disable-next-line
-// beforeAll(() => {
-//   global.ResizeObserver = global.ResizeObserver || class {
-//     // eslint-disable-next-line
-//     observe() { void this; }
-//     // eslint-disable-next-line
-//     unobserve() { void this; }
-//     // eslint-disable-next-line
-//     disconnect() { void this; }
-//   };
-// });
+jest.mock("@essnextgen/ui-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-kit"),
+  useMediaQuery: jest.fn(),
+  ApiService: {
+    fetchDMSSuggestions: jest.fn(),
+  },
+}));
 
-// describe("getTableHeadersData", () => {
-//   const t = (key: string) => key; 
-//   const headers = getTableHeadersData(t);
-//   const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
-//   const anyComponent = relatedToColumn?.anyComponent;
+// eslint-disable-next-line
+beforeAll(() => {
+  global.ResizeObserver = global.ResizeObserver || class {
+    // eslint-disable-next-line
+    observe() { void this; }
+    // eslint-disable-next-line
+    unobserve() { void this; }
+    // eslint-disable-next-line
+    disconnect() { void this; }
+  };
+});
 
-//  test("should be an array and contain expected columns", () => {
-//     expect(Array.isArray(headers)).toBe(true);
-//     const expectedColumns = [
-//       "Id",
-//       "DocumentManagementServer.documentColumn",
-//       "DocumentManagementServer.relatedColumn",
-//       "DocumentManagementServer.categoryColumn",
-//       "DocumentManagementServer.addedByColumn",
-//       "DocumentManagementServer.dateAddedColumn",
-//       "DocumentManagementServer.formatColumn",
-//       "DocumentManagementServer.sizeColumn"
-//     ];
-//     expectedColumns.forEach(col => {
-//       expect(headers.find(h => h.text === col)).toBeDefined();
-//     });
-//   });
+describe("getTableHeadersData", () => {
+  const t = (key: string) => key; 
+  const headers = logicModule.getTableHeadersData(t);
+  const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
+  const anyComponent = relatedToColumn?.anyComponent;
+
+ test("should be an array and contain expected columns", () => {
+    expect(Array.isArray(headers)).toBe(true);
+    const expectedColumns = [
+      "Id",
+      "DocumentManagementServer.documentColumn",
+      "DocumentManagementServer.relatedColumn",
+      "DocumentManagementServer.categoryColumn",
+      "DocumentManagementServer.addedByColumn",
+      "DocumentManagementServer.dateAddedColumn",
+      "DocumentManagementServer.formatColumn",
+      "DocumentManagementServer.sizeColumn"
+    ];
+    expectedColumns.forEach(col => {
+      expect(headers.find(h => h.text === col)).toBeDefined();
+    });
+  });
   
 //   test("should contain 'Document' header with anyComponent", () => {
 //     const docHeader = headers.find(h => h.text === "DocumentManagementServer.documentColumn");
@@ -117,7 +83,7 @@
 
 // describe("getTableHeadersData column anyComponent rendering", () => {
 //   const t = (key: string) => key;
-//   const headers = getTableHeadersData(t);
+//   const headers = logicModule.getTableHeadersData(t);
 //   const sizeColumn = headers.find(h => h.text === "Size");
 
 //     test("Category column renders tooltip with value", () => {
@@ -164,9 +130,9 @@
 // describe("formatSuggestions", () => {
 //   it("returns empty array when input is empty", async () => {
 //     const t = (key: string) => key;
-//   expect(await formatSuggestions([], t)).toEqual([]);
-//   expect(await formatSuggestions(undefined as any, t)).toEqual([]);
-//   expect(await formatSuggestions(null as any, t)).toEqual([]);
+//   expect(await logicModule.formatSuggestions([], t)).toEqual([]);
+//   expect(await logicModule.formatSuggestions(undefined as any, t)).toEqual([]);
+//   expect(await logicModule.formatSuggestions(null as any, t)).toEqual([]);
 // });
 
 // it("formats Pupil with neither year group nor primary class", async () => {
@@ -182,7 +148,7 @@
 //       // both missing
 //     }]
 //   }];
-//   const result = await formatSuggestions(input, t);
+//   const result = await logicModule.formatSuggestions(input, t);
 //   expect(result[0].values[0].value).toBeUndefined();
 // });
 
@@ -207,7 +173,7 @@
 //         ]
 //       }
 //     ];
-//     const result = await formatSuggestions(input, t);
+//     const result = await logicModule.formatSuggestions(input, t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Pupil");
 //     expect(result[0].values[0].text).toContain("John Doe (Jonathan Doe)");
@@ -236,7 +202,7 @@
 //         ]
 //       }
 //     ];
-//     const result = await formatSuggestions(input,t);
+//     const result = await logicModule.formatSuggestions(input,t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Staff");
 //     expect(result[0].values[0].text).toContain("Jane Smith");
@@ -261,7 +227,7 @@
 //         ]
 //       }
 //     ];
-//     const result = await formatSuggestions(input, t);
+//     const result = await logicModule.formatSuggestions(input, t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Organisation");
 //     expect(result[0].values[0].text).toBe("Test School");
@@ -286,7 +252,7 @@
 //     }]
 //   }];
 
-//   const suggestions = await formatSuggestions(payload, t);
+//   const suggestions = await logicModule.formatSuggestions(payload, t);
 //   // Render the icon part of the suggestion
 //   render(<>{suggestions[0].values[0].icon}</>);
 //   const img = screen.getByAltText('Pupil Photo');
@@ -308,7 +274,7 @@
 //         ]
 //       }
 //     ];
-//     const result = await formatSuggestions(input, t);
+//     const result = await logicModule.formatSuggestions(input, t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Filter.Other");
 //     expect(result[0].values[0].text).toBe("Other Name");
@@ -326,7 +292,7 @@
 //         values: []
 //       }
 //     ];
-//     const result = await formatSuggestions(input, t);
+//     const result = await logicModule.formatSuggestions(input, t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Document");
 //     expect(result[0].values).toEqual([]);
@@ -353,14 +319,14 @@
 //         name: "Document"
 //       }
 //     ];
-//     const result = await formatSuggestions(input, t);
+//     const result = await logicModule.formatSuggestions(input, t);
 //     expect(result).toHaveLength(1);
 //     expect(result[0].name).toBe("Document");
 //     expect(result[0].values).toEqual([]);
 //   });
 //    test("returns empty when input is empty", async () => {
 //   const t = (key: string) => key;
-//   const result = await formatSuggestions([], t);
+//   const result = await logicModule.formatSuggestions([], t);
 //   expect(result).toEqual([]);
 // });
 // });
@@ -388,9 +354,9 @@
 //     const setShowErrorBanner = jest.fn();
 
 //     // Call debouncedFetchSuggestions multiple times rapidly
-//     debouncedFetchSuggestions(t, "Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
-//     debouncedFetchSuggestions(t, "Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
-//     debouncedFetchSuggestions(t, "Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+//     logicModule.debouncedFetchSuggestions(t, "Doc1", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+//     logicModule.debouncedFetchSuggestions(t, "Doc2", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+//     logicModule.debouncedFetchSuggestions(t, "Doc3", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
 //     // Advance timers by less than debounce time, should not call fetchDMSSuggestions yet
 //     jest.advanceTimersByTime(2999);
@@ -415,7 +381,7 @@
 //   const setShowError = jest.fn();
 //   const setShowErrorBanner = jest.fn();
 
-//   debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+//   logicModule.debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
 //   await act(() => {
 //     jest.advanceTimersByTime(3000);
@@ -433,7 +399,7 @@
 //     const setShowError = jest.fn();
 //     const setShowErrorBanner = jest.fn();
 
-//     debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
+//     logicModule.debouncedFetchSuggestions(t, "Doc", [], "", "", setSearchLoading, setSuggestions, setShowError, setShowErrorBanner);
 
 //     await act(() => {
 //       jest.advanceTimersByTime(3000);
@@ -466,7 +432,7 @@
 //     const setIsSearchLoading = jest.fn();
 //     const setShowErrorBanner = jest.fn();
 
-//     handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
+//     logicModule.handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
 //     return { setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner };
 //   };
@@ -486,7 +452,7 @@
 //   const setIsSearchLoading = jest.fn();
 //   const setShowErrorBanner = jest.fn();
 
-//   handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
+//   logicModule.handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 //   expect(setSuggestions).toHaveBeenCalledWith([]);
 //   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 // });
@@ -506,7 +472,7 @@
 //   const setIsSearchLoading = jest.fn();
 //   const setShowErrorBanner = jest.fn();
 
-//   handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
+//   logicModule.handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
 //   expect(setSuggestions).toHaveBeenCalledWith([]);
 //   expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -521,7 +487,7 @@
 //   const setResetFilterSearch = jest.fn();
 //   const setShowErrorBanner = jest.fn();
 
-//   handleSearchChange(
+//   logicModule.handleSearchChange(
 //     t,
 //     event,
 //     [],
@@ -632,7 +598,7 @@
 
 //     analytics.pushEvent = jest.fn();
 
-//     onBreadcrumbClick("/test");
+//     logicModule.onBreadcrumbClick("/test");
 //     expect(window.location.assign).toHaveBeenCalledWith("/test");
 //     expect(analytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: "click" }));
 //   });
@@ -648,7 +614,7 @@
 //   const setSuggestions = jest.fn();
 //   const setSuggestionsLoading = jest.fn();
 
-//   await loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
+//   await logicModule.loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
 
 //   expect(setSuggestions).toHaveBeenCalledWith(data);
 //   expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
@@ -657,7 +623,7 @@
 //   const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 //   (ApiService.fetchDMSSuggestions as jest.Mock).mockRejectedValue(new Error("fail"));
 
-//   await loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
+//   await logicModule.loadSuggestions("Test", "", "",[],jest.fn(), jest.fn());
 
 //   expect(consoleSpy).toHaveBeenCalled();
 //   consoleSpy.mockRestore();
@@ -669,7 +635,7 @@
 //   const setSuggestions = jest.fn();
 //   const setSuggestionsLoading = jest.fn();
 
-//   await loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
+//   await logicModule.loadSuggestions("Test", "", "", [], setSuggestions, setSuggestionsLoading);
 
 //   expect(setSuggestions).toHaveBeenCalledWith([]);
 //   expect(setSuggestionsLoading).toHaveBeenLastCalledWith(false);
@@ -687,7 +653,7 @@
 //     const setShowErrorBanner = jest.fn();
 //     const t = (key: string) => key;
 
-//     handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
+//     logicModule.handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 
 //     expect(setSuggestions).toHaveBeenCalledWith([]);
 //     expect(setIsSearchLoading).toHaveBeenCalledWith(true);
@@ -701,7 +667,7 @@
 //   const setShowErrorBanner = jest.fn();
 //   const t = (key: string) => key;
 
-//   handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
+//   logicModule.handleSearchChange(t, event, [], "", "", setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner);
 //   expect(setSuggestions).toHaveBeenCalledWith([]);
 //   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 // });
@@ -730,7 +696,7 @@
 
 // describe("getTableHeadersData advanced rendering edge cases", () => {
 //   const t = (key: string) => key; // mock translation function
-//   const headers = getTableHeadersData(t);
+//   const headers = logicModule.getTableHeadersData(t);
 
 //   it("Related to column renders nothing when input is empty array", () => {
 //     const column = headers.find(h => h.text === "DocumentManagementServer.relatedColumn");
@@ -1138,7 +1104,7 @@
 
 //     (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(responseData);
 
-//   const result = await fetchDocumentCategoryData({
+//   const result = await logicModule.fetchDocumentCategoryData({
 //     payload,
 //     setCategoryError,
 //     setAvailableCategories,
@@ -1159,14 +1125,14 @@
 // it('returns empty array when API resolves with null', async () => {
 //   (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(null);
 
-//   const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
+//   const result = await logicModule.fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
 //   expect(result).toEqual([]);
 // });
 
 // it('returns empty array when API throws an error', async () => {
 //   (ApiService.fetchDocumentCategory as jest.Mock).mockRejectedValue(new Error('API failed'));
 
-//   const result = await fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
+//   const result = await logicModule.fetchDocumentCategoryData({payload,setCategoryError,setAvailableCategories, setLocalSelectedCategories,localSelectedCategories});
 //   expect(result).toEqual([]);
 // });
 
@@ -1175,7 +1141,7 @@
 //   // Mock API to return a non-200 status instead of throwing
 //   (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue({ status: 500 });
 
-//   const result = await fetchDocumentCategoryData({
+//   const result = await logicModule.fetchDocumentCategoryData({
 //     payload,
 //     setCategoryError,
 //     setAvailableCategories,
@@ -1330,8 +1296,8 @@
 
 // describe("Document column anyComponent", () => {
 //   const t = (key: string) => key;
-//   const documentColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
-//   const categoryColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
+//   const documentColumn = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.documentColumn");
+//   const categoryColumn = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.categoryColumn");
 
 //   it("renders plain value if value is falsy or length <= 25", () => {
 //     const { container } = render(<>{documentColumn?.anyComponent?.("Short Name")}</>);
@@ -1385,7 +1351,7 @@
 
 // describe("Size column anyComponent", () => {
 //   const t = (key: string) => key;
-//   const sizeColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.sizeColumn");
+//   const sizeColumn = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.sizeColumn");
 
 //   it("renders nothing if value is undefined", () => {
 //     expect(sizeColumn).toBeDefined();
@@ -1551,12 +1517,12 @@
 
 // describe("tableData mapping for relatedTo types", () => {
 //   const t = (key: string) => key; // mock translation function
-//   const relatedToColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.relatedColumn");
+//   const relatedToColumn = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.relatedColumn");
 //   const renderRelated = relatedToColumn?.anyComponent;
 
-//   it("maps pupils correctly when documentRealatedTo === 1", () => {
+//   it("maps pupils correctly when documentRelatedTo === 1", () => {
 //     const doc = {
-//       documentRealatedTo: 1,
+//       documentRelatedTo: 1,
 //       relatedTo: [
 //         {
 //           preferredForename: "John",
@@ -1590,9 +1556,9 @@
 //     expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
 //   });
 
-//   it("maps staff correctly when documentRealatedTo === 3", () => {
+//   it("maps staff correctly when documentRelatedTo === 3", () => {
 //     const doc = {
-//       documentRealatedTo: 3,
+//       documentRelatedTo: 3,
 //       relatedTo: [
 //         {
 //           preferredForename: "Jane",
@@ -1620,9 +1586,9 @@
 //     expect(container.querySelector(".relatedto-link")).toHaveAttribute("href", "/");
 //   });
 
-//   it("maps school correctly when documentRealatedTo === 2", () => {
+//   it("maps school correctly when documentRelatedTo === 2", () => {
 //     const doc = {
-//       documentRealatedTo: 2,
+//       documentRelatedTo: 2,
 //       relatedTo: [
 //         {
 //           schoolName: "Springfield High"
@@ -1644,7 +1610,7 @@
 
 //   it("handles missing fields in relatedTo items", () => {
 //     const doc = {
-//       documentRealatedTo: 1,
+//       documentRelatedTo: 1,
 //       relatedTo: [
 //         {
 //           preferredForename: "OnlyFirst",
@@ -1675,7 +1641,7 @@
 //   it('maps pupils correctly', () => {
 //     const doc = {
 //       isLeaver: "",
-//       documentRealatedTo: 1,
+//       documentRelatedTo: 1,
 //       relatedTo: [
 //         {
 //           preferredForename: 'Ben',
@@ -1701,7 +1667,7 @@
 
 //   it('maps staff correctly', () => {
 //     const doc = {
-//       documentRealatedTo: 3,
+//       documentRelatedTo: 3,
 //       relatedTo: [
 //         {
 //           preferredForename: 'Alice',
@@ -1726,7 +1692,7 @@
 
 //   it('maps school correctly', () => {
 //     const doc = {
-//       documentRealatedTo: 2,
+//       documentRelatedTo: 2,
 //       relatedTo: [
 //         {
 //           schoolName: 'Greenwood High',
@@ -1787,27 +1753,27 @@
 
 //   it("returns data when API resolves with data", async () => {
 //     mockFetch.mockResolvedValue({ data: "photo-url" });
-//     const result = await getStaffProfilePhoto("staff123");
+//     const result = await logicModule.getStaffProfilePhoto("staff123");
 //     expect(result).toBe("photo-url");
 //     expect(mockFetch).toHaveBeenCalledWith("staff123");
 //   });
 
 //   it("returns empty string when API resolves with null", async () => {
 //     mockFetch.mockResolvedValue(null);
-//     const result = await getStaffProfilePhoto("staff456");
+//     const result = await logicModule.getStaffProfilePhoto("staff456");
 //     expect(result).toBe("");
 //   });
 
 //   it("returns empty string when API resolves with no data property", async () => {
 //     mockFetch.mockResolvedValue({});
-//     const result = await getStaffProfilePhoto("staff789");
+//     const result = await logicModule.getStaffProfilePhoto("staff789");
 //     expect(result).toBe("");
 //   });
 
 //   it("returns empty string when API throws", async () => {
 //     mockFetch.mockRejectedValue(new Error("fail"));
 //     // The function does not catch, so this will throw unless we wrap
-//     await expect(getStaffProfilePhoto("staff000")).rejects.toThrow("fail");
+//     await expect(logicModule.getStaffProfilePhoto("staff000")).rejects.toThrow("fail");
 //   });
 // });
 
@@ -1820,14 +1786,14 @@
 
 //   it("returns status from prepareAndDownloadFile (success)", async () => {
 //     (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(204);
-//     const result = await prepareDownload(payload);
+//     const result = await logicModule.prepareDownload(payload);
 //     expect(result).toEqual([204]);
 //     expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
 //   });
 
 //   it("returns status from prepareAndDownloadFile (error)", async () => {
 //     (ApiService.prepareAndDownloadFile as jest.Mock).mockResolvedValueOnce(400);
-//     const result = await prepareDownload(payload);
+//     const result = await logicModule.prepareDownload(payload);
 //     expect(result).toEqual([400]);
 //     expect(ApiService.prepareAndDownloadFile).toHaveBeenCalledWith(payload[0]);
 //   });
@@ -1922,7 +1888,7 @@
 //       status: 200
 //     });
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: true,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -1952,7 +1918,7 @@
 //       status: 200
 //     });
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: true,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -1975,7 +1941,7 @@
 //       status: 200
 //     });
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: true,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -1995,7 +1961,7 @@
 //       status: 400
 //     });
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: true,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -2015,7 +1981,7 @@
 
 //     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: true,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -2038,7 +2004,7 @@
 //       status: 200
 //     });
 
-//     await fetchViewDownloadData({
+//     await logicModule.fetchViewDownloadData({
 //       showLoader: false,
 //       setIsSidePanelLoader,
 //       setViewData,
@@ -2343,7 +2309,7 @@
 //     };
 //     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
-//     await fetchGetDocumentDetailsLogic(defaultArgs);
+//     await logicModule.fetchGetDocumentDetailsLogic(defaultArgs);
 
 //     expect(mockSetDocData).toHaveBeenCalledWith(mockResult);
 //     expect(mockSetCurrentPage).toHaveBeenCalledTimes(1);
@@ -2365,7 +2331,7 @@
 //     };
 //     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
-//     await fetchGetDocumentDetailsLogic(defaultArgs);
+//     await logicModule.fetchGetDocumentDetailsLogic(defaultArgs);
 
 //     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
 //     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
@@ -2383,7 +2349,7 @@
 //     };
 //     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
-//     await fetchGetDocumentDetailsLogic(defaultArgs);
+//     await logicModule.fetchGetDocumentDetailsLogic(defaultArgs);
 
 //     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
 //     expect(mockSetIsSearchLoading).toHaveBeenCalledWith(false);
@@ -2395,7 +2361,7 @@
 //     jest.spyOn(ApiService, "fetchDocumentDetails").mockRejectedValueOnce(error);
 //     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-//     await fetchGetDocumentDetailsLogic(defaultArgs);
+//     await logicModule.fetchGetDocumentDetailsLogic(defaultArgs);
 
 //     expect(consoleSpy).toHaveBeenCalledWith("Error fetching document details:", error);
 //     expect(mockSetShowSearchError).toHaveBeenCalledWith(true);
@@ -2462,15 +2428,15 @@
 //   const categoryRegistrationMap = [1, 2];
 
 //   it("returns empty array if selectedCheckBoxIds is not an array", () => {
-//     expect(buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
-//     expect(buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
-//     expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[],  {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
-//     expect(buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(null as any, { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[],  {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(["1"], { data: [] }, categoryRegistrationMap, [""], 0, null as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
 //   });
 
 //   it("returns empty array if docData.data is not an array", () => {
-//     expect(buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
-//     expect(buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(["1"], { data: undefined }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
+//     expect(logicModule.buildSelectedDocs(["1"], { data: null }, categoryRegistrationMap, [""], 0, ["2"], false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
 //   });
 
 //   it("returns correct request object for valid input", () => {
@@ -2484,7 +2450,7 @@
 //         fileId: "1",
 //         registrationId: 123,
 //         relatedTo: [{ learnerExternalId: "ext1" }],
-//         documentRealatedTo: 1,
+//         documentRelatedTo: 1,
 //         category: "Legal",
 //         fromDate: "2025-01-01",
 //         toDate: "2025-01-02",
@@ -2495,7 +2461,7 @@
 //     const excludedIdDetails = ["2"];
 //     const isHeaderBoxChecked = true;
 
-//     const resultWithExcluded = buildSelectedDocs(
+//     const resultWithExcluded = logicModule.buildSelectedDocs(
 //       ["1"],
 //       docData,
 //       categoryRegistrationMap,
@@ -2515,7 +2481,7 @@
 //           selectAll: true,
 //           downloadCriteria: {
 //             referenceMappingDetails: [],
-//             documentRealatedTo: 1,
+//             documentRelatedTo: 1,
 //             categoryId: [1,2],
 //             fromDate: "2025-01-01",
 //             toDate: "2025-01-02"
@@ -2542,7 +2508,7 @@
 //     const excludedCheckBoxIds = ["1", "2"];
 //     const isHeaderBoxChecked = true;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2573,7 +2539,7 @@
 //     const excludedCheckBoxIds = ["1", "2"];
 //     const isHeaderBoxChecked = false;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2603,7 +2569,7 @@
 //     const excludedCheckBoxIds = ["1"];
 //     const isHeaderBoxChecked = false;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2630,7 +2596,7 @@
 //     const excludedCheckBoxIds: string[] = [];
 //     const isHeaderBoxChecked = true;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2658,7 +2624,7 @@
 //     const excludedCheckBoxIds = ["1", "2"];
 //     const isHeaderBoxChecked = true;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2685,7 +2651,7 @@
 //     const excludedCheckBoxIds = ["1"];
 //     const isHeaderBoxChecked = true;
 
-//     const result = buildSelectedDocs(
+//     const result = logicModule.buildSelectedDocs(
 //       selectedCheckBoxIds,
 //       docData,
 //       categoryRegistrationMap,
@@ -2853,7 +2819,7 @@
 
 // describe("Added by column anyComponent", () => {
 //   const t = (key: string) => key; // mock translation function
-//   const addedByColumn = getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
+//   const addedByColumn = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
 
 //   test("renders plain value if length <= 12", () => {
 //     const value = "ShortName";
@@ -3070,7 +3036,7 @@
 //   const allRegistrationIds = [101, 102];
 //   const dateRange = { fromDate: "2025-01-01", toDate: "2025-01-02" };
 //   const searchRefExternalId = ["ref1"];
-//   const documentRealatedTo = 1;
+//   const documentRelatedTo = 1;
 //   const currentPage = 1;
 //   const sortBy = "Document";
 //   const sortDirection = "Asc";
@@ -3100,7 +3066,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3139,7 +3105,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3173,7 +3139,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3214,7 +3180,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3249,7 +3215,7 @@
 //     allRegistrationIds,
 //     dateRange,
 //     searchRefExternalId,
-//     documentRealatedTo,
+//     documentRelatedTo,
 //     currentPage,
 //     sortBy,
 //     sortDirection,
@@ -3284,7 +3250,7 @@
 //     allRegistrationIds,
 //     dateRange,
 //     searchRefExternalId,
-//     documentRealatedTo,
+//     documentRelatedTo,
 //     currentPage,
 //     sortBy,
 //     sortDirection,
@@ -3319,7 +3285,7 @@
 //     allRegistrationIds,
 //     dateRange,
 //     searchRefExternalId,
-//     documentRealatedTo,
+//     documentRelatedTo,
 //     currentPage,
 //     sortBy,
 //     sortDirection,
@@ -3356,7 +3322,7 @@
 //     allRegistrationIds,
 //     dateRange,
 //     searchRefExternalId,
-//     documentRealatedTo,
+//     documentRelatedTo,
 //     currentPage,
 //     sortBy,
 //     sortDirection,
@@ -3394,7 +3360,7 @@
 //     allRegistrationIds,
 //     dateRange,
 //     searchRefExternalId,
-//     documentRealatedTo,
+//     documentRelatedTo,
 //     currentPage,
 //     sortBy,
 //     sortDirection,
@@ -3428,7 +3394,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3462,7 +3428,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3496,7 +3462,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3532,7 +3498,7 @@
 //       allRegistrationIds,
 //       dateRange,
 //       searchRefExternalId,
-//       documentRealatedTo,
+//       documentRelatedTo,
 //       currentPage,
 //       sortBy,
 //       sortDirection,
@@ -3561,25 +3527,25 @@
 // describe("getTitleConfirmation", () => {
 //   const t = jest.fn(key => key);
 //   it('returns "Clear all downloads?" for "clearAll"', () => {
-//     expect(getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
+//     expect(logicModule.getTitleConfirmation(t,"clearAll", 0, 0)).toBe("DocumentManagementServer.clearAllDownloadsTitle");
 //   });
 
 //   it('returns "Delete Document?" for "delete" when a single file is selected', () => {
-//     expect(getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
+//     expect(logicModule.getTitleConfirmation(t,"delete", 1, 0)).toBe("DocumentManagementServer.deleteDocumentTitle");
 //   });
 
 //   it('returns "Delete Documents?" for "delete" when multiple files are selected', () => {
-//     expect(getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
+//     expect(logicModule.getTitleConfirmation(t,"delete", 2, 0)).toBe("DocumentManagementServer.deleteDocumentsTitle");
 //   });
 
 //   it('returns "Prepare Download?" for other values', () => {
-//     expect(getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-//     expect(getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
-//     expect(getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+//     expect(logicModule.getTitleConfirmation(t,"prepare", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+//     expect(logicModule.getTitleConfirmation(t,"anythingElse", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
+//     expect(logicModule.getTitleConfirmation(t,"", 0, 1)).toBe("DocumentManagementServer.prepareDownloadTitle");
 
 //   });
 //    it('returns prepareAllDocumentsTitle when availableFileCount equals totalRecords and dialogType is not clearAll/delete', () => {
-//     const result = getTitleConfirmation(t, "prepare", 5, 5);
+//     const result = logicModule.getTitleConfirmation(t, "prepare", 5, 5);
 //     expect(result).toBe("DocumentManagementServer.prepareAllDocumentsTitle");
 //     expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
 //   });
@@ -4014,7 +3980,7 @@
 //     allRegistrationIds: [1, 2],
 //     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
 //     searchRefExternalId: ["ref1"],
-//     documentRealatedTo: 1,
+//     documentRelatedTo: 1,
 //   };
 
 //   it("shows dialog if nothing selected", async () => {
@@ -4198,4 +4164,4 @@
 //     // Should not add summary-tag
 //     expect(tagLists[0].classList.contains("summary-tag")).toBe(false);
 //   });
-// });
+});

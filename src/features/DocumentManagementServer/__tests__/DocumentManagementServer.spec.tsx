@@ -1,294 +1,294 @@
-// import React, { useState, useEffect } from "react";
-// import { renderHook } from "@testing-library/react-hooks";
-// import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
-// import { MemoryRouter } from "react-router-dom";
-// import { authService } from "@essnextgen/auth-ui";
-// import DocumentManagementServerView from "../DocumentManagementServer.view";
-// import * as ApiService from "../ApiService";
-// import * as Logic from "../DocumentManagementServer.logic";
+import React, { useState, useEffect } from "react";
+import { renderHook } from "@testing-library/react-hooks";
+import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import { authService } from "@essnextgen/auth-ui";
+import DocumentManagementServerView from "../DocumentManagementServer.view";
+import * as ApiService from "../ApiService";
+import * as Logic from "../DocumentManagementServer.logic";
  
-// jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
+jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
 
-// jest.mock("@essnextgen/auth-ui", () => ({
-//   authService: {
-//     getUsername: jest.fn(() => "TestUser"),
-//     getOrgId: jest.fn(() => "Org123"),
-//     getUserId: jest.fn(() => "User456"),
-//     isAuthorised: jest.fn(() => true),
-//     getAuthTokens: jest.fn(() => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyIsImtpZCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyJ9.eyJpc3MiOiJodHRwczovL3NpbXNpZC1wYXJ0bmVyLXN0c3NlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJwbS1zc28tZWRjNGE3ZWMtNjI0Zi00OWQ0LTkxODEtNTU1YjczMDFlMzNmIiwiZXhwIjoxNjcyMDU2NTk5LCJuYmYiOjE2NzIwNTYyOTksImlhdCI6MTY3MjA1NjI5OSwic2lkIjoiNzMyNzAzZWQ3NzQ5ZTZhZWE3ZjJlN2U0OTdlMDM5ZjQiLCJzdWIiOiIxNDk5MDZ8RjZDMTdBMDItRkVCMC00OUFELTg4MjQtRTZBOTQxOTUwQkFDfEluaXRpYWwuQWRtaW4zMEBzaW1zaWQucGxhY2Vob2xkZXIuaWRlbnRpdHlmb3IuY28udWt8U0lNUyBJRHw2NTNhNDVjZi1hOGY3LTQyM2EtYjEzNC1jOGVjMmE0NGE1OGQiLCJhdXRoX3RpbWUiOjE2NzIwNTYyOTcsImlkcCI6Imlkc3J2IiwiTGFzdExvZ2luVGltZXN0YW1wIjoiRGVjIDI2LCAyMDIyIDEwOjE5OjEzIiwiUGFzc3dvcmRDaGFuZ2VkVGltZXN0YW1wIjoiRGVjIDA4LCAyMDIxIDE3OjAyOjQwIiwic2l0ZSI6IkI0MUJCMkFCIiwibGF1bmNoZXIiOiJ3ZWItYWNjZXNzIiwiU2l0ZVJvbGUiOiJBZG1pbiIsImhvbWVvcmdhbmlzYXRpb25pZGVudGlmaWVyIjoiQjQxQkIyQUItMzk3QS00RkNGLUJBNTktNjE1NkY0NTUzMjY5IiwibXVsdGlwbGVvcmdhbmlzYXRpb25zIjoiZmFsc2UiLCJuYW1lIjoiSW5pdGlhbCBBZG1pbiIsInJvbGUiOiJhZG1pbkBiNDFiYjJhYi0zOTdhLTRmY2YtYmE1OS02MTU2ZjQ1NTMyNjkiLCJhZGRpdGlvbmFscm9sZXNwcmVzZW50IjoiZmFsc2UiLCJ1c2Vyb3JnYW5pc2F0aW9uaWRlbnRpZmllciI6IjlGMEU2RTUyLTVGMjItNDYxRi05RjNCLTYwNEJFRDQxMEU5Q3xCNDFCQjJBQi0zOTdBLTRGQ0YtQkE1OS02MTU2RjQ1NTMyNjl8UyIsInByb3ZpZGVyIjoiU0lNUyBJRCIsInByb3ZpZGVyaWQiOiIxNDk5MDYiLCJwcm92aWRlcm5hbWUiOiJJbml0aWFsIEFkbWluIiwidmVuZG9yaWQiOiIyODYxQTAwMC03OTM0LTQ0QkYtOUY2RS05NkE5MjIyNjZGMzkiLCJhcHBsaWNhdGlvbmlkIjoiMUEyQjMyQzctOUMzOS00Q0NGLUE1ODEtRTI1M0E5RkEwN0E0IiwiYXBwbGljYXRpb25uYW1lIjoiRVNTLVNhdGVsbGl0ZXMtRGV2ZWxvcG1lbnQtU3RhZmYgJiBBZG1pbiIsImFtciI6WyJwYXNzd29yZCJdfQ.0dhbAIzNyXm5oJ679cOuiqwT8RgqcBhEGACfvxfGBLKHSNxvlBKqwmtRNxySYIc4MgH3w2sT4SLpo8yaEihjk9AXzfSPshHKbfAigb82834xnfMAEDnyc0hMT9jaxvfYVw8ZORPsVw68mxAwt4-WTVoUxLy4IK7tpI-Pzc_aFpW-BbMHr9Ctt_ls8EPH8NxJ22LnNbxJPSx3iBn8OwvcCIf2TeJL0fs30_VAm-XMLnF4w2SMbOC5O8CNd-ii6dmDLDriYYVzp-mQ4NiARohGJyDl6IwdgX6wXsSJB78Yy6AmCxUIXPQk4TYg_8wI9a_XNgilY5iMmEV6GXoLtm4e0A")
-//   },
-//   MatchPermissions: {
-//     any: "any", // ← mock value (doesn't matter what)
-//   },
-// }));
+jest.mock("@essnextgen/auth-ui", () => ({
+  authService: {
+    getUsername: jest.fn(() => "TestUser"),
+    getOrgId: jest.fn(() => "Org123"),
+    getUserId: jest.fn(() => "User456"),
+    isAuthorised: jest.fn(() => true),
+    getAuthTokens: jest.fn(() => "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyIsImtpZCI6IldIVmVvZVBuZk5qZnUxZE9HTlFkSWhSN2FCdyJ9.eyJpc3MiOiJodHRwczovL3NpbXNpZC1wYXJ0bmVyLXN0c3NlcnZlci5henVyZXdlYnNpdGVzLm5ldC8iLCJhdWQiOiJwbS1zc28tZWRjNGE3ZWMtNjI0Zi00OWQ0LTkxODEtNTU1YjczMDFlMzNmIiwiZXhwIjoxNjcyMDU2NTk5LCJuYmYiOjE2NzIwNTYyOTksImlhdCI6MTY3MjA1NjI5OSwic2lkIjoiNzMyNzAzZWQ3NzQ5ZTZhZWE3ZjJlN2U0OTdlMDM5ZjQiLCJzdWIiOiIxNDk5MDZ8RjZDMTdBMDItRkVCMC00OUFELTg4MjQtRTZBOTQxOTUwQkFDfEluaXRpYWwuQWRtaW4zMEBzaW1zaWQucGxhY2Vob2xkZXIuaWRlbnRpdHlmb3IuY28udWt8U0lNUyBJRHw2NTNhNDVjZi1hOGY3LTQyM2EtYjEzNC1jOGVjMmE0NGE1OGQiLCJhdXRoX3RpbWUiOjE2NzIwNTYyOTcsImlkcCI6Imlkc3J2IiwiTGFzdExvZ2luVGltZXN0YW1wIjoiRGVjIDI2LCAyMDIyIDEwOjE5OjEzIiwiUGFzc3dvcmRDaGFuZ2VkVGltZXN0YW1wIjoiRGVjIDA4LCAyMDIxIDE3OjAyOjQwIiwic2l0ZSI6IkI0MUJCMkFCIiwibGF1bmNoZXIiOiJ3ZWItYWNjZXNzIiwiU2l0ZVJvbGUiOiJBZG1pbiIsImhvbWVvcmdhbmlzYXRpb25pZGVudGlmaWVyIjoiQjQxQkIyQUItMzk3QS00RkNGLUJBNTktNjE1NkY0NTUzMjY5IiwibXVsdGlwbGVvcmdhbmlzYXRpb25zIjoiZmFsc2UiLCJuYW1lIjoiSW5pdGlhbCBBZG1pbiIsInJvbGUiOiJhZG1pbkBiNDFiYjJhYi0zOTdhLTRmY2YtYmE1OS02MTU2ZjQ1NTMyNjkiLCJhZGRpdGlvbmFscm9sZXNwcmVzZW50IjoiZmFsc2UiLCJ1c2Vyb3JnYW5pc2F0aW9uaWRlbnRpZmllciI6IjlGMEU2RTUyLTVGMjItNDYxRi05RjNCLTYwNEJFRDQxMEU5Q3xCNDFCQjJBQi0zOTdBLTRGQ0YtQkE1OS02MTU2RjQ1NTMyNjl8UyIsInByb3ZpZGVyIjoiU0lNUyBJRCIsInByb3ZpZGVyaWQiOiIxNDk5MDYiLCJwcm92aWRlcm5hbWUiOiJJbml0aWFsIEFkbWluIiwidmVuZG9yaWQiOiIyODYxQTAwMC03OTM0LTQ0QkYtOUY2RS05NkE5MjIyNjZGMzkiLCJhcHBsaWNhdGlvbmlkIjoiMUEyQjMyQzctOUMzOS00Q0NGLUE1ODEtRTI1M0E5RkEwN0E0IiwiYXBwbGljYXRpb25uYW1lIjoiRVNTLVNhdGVsbGl0ZXMtRGV2ZWxvcG1lbnQtU3RhZmYgJiBBZG1pbiIsImFtciI6WyJwYXNzd29yZCJdfQ.0dhbAIzNyXm5oJ679cOuiqwT8RgqcBhEGACfvxfGBLKHSNxvlBKqwmtRNxySYIc4MgH3w2sT4SLpo8yaEihjk9AXzfSPshHKbfAigb82834xnfMAEDnyc0hMT9jaxvfYVw8ZORPsVw68mxAwt4-WTVoUxLy4IK7tpI-Pzc_aFpW-BbMHr9Ctt_ls8EPH8NxJ22LnNbxJPSx3iBn8OwvcCIf2TeJL0fs30_VAm-XMLnF4w2SMbOC5O8CNd-ii6dmDLDriYYVzp-mQ4NiARohGJyDl6IwdgX6wXsSJB78Yy6AmCxUIXPQk4TYg_8wI9a_XNgilY5iMmEV6GXoLtm4e0A")
+  },
+  MatchPermissions: {
+    any: "any", // ← mock value (doesn't matter what)
+  },
+}));
 
-//  jest.mock("@essnextgen/ui-intl-kit", () => ({
-//   ...jest.requireActual("@essnextgen/ui-intl-kit"),
-//   useTranslation: () => ({
-//     t: (key: string, options?: any) => {
-//       if (key === "DocumentManagementServer.ExpiresInDays") {
-//         // Handle pluralization if needed
-//         return `Expires in ${options?.count ?? options?.days ?? "?"} day(s).`;
-//       }
-//       if (key === "DocumentManagementServer.ExpiresToday") {
-//         return "Expires today.";
-//       }
-//       if (key === "DocumentManagementServer.headingText") {
-//         return "Documents";
-//       }
-//       if (key === "DocumentManagementServer.Home") {
-//         return "Home";
-//       }
-//       if (key === "DocumentManagementServer.ViewDownload") {
-//         return "View downloads";
-//       }
-//       if (key === "DocumentManagementServer.sidePanelTitle") {
-//         return "Downloads";
-//       }
-//       if (key === "DocumentManagementServer.subHeadingText") {
-//         return "Bulk download or delete documents for pupils, staff members, or the school.";
-//       }
-//       if (key === "DocumentManagementServer.dateAddedColumn") {
-//         return "Date added";
-//       }
-//       if (key === "DocumentManagementServer.documentColumn") {
-//         return "Document";
-//       }
-//       if (key === "DocumentManagementServer.formatColumn") {
-//         return "Format";
-//       }
-//       if (key === "DocumentManagementServer.sizeColumn") {
-//         return "Size";
-//       }
-//       if (key === "DocumentManagementServer.categoryColumn") {
-//         return "Category";
-//       }
-//       if (key === "DocumentManagementServer.editSelectedBtnTitle") {
-//         return "Actions";
-//       }
-//       if (key === "DocumentManagementServer.PrepareDownload") {
-//         return "Prepare download";
-//       }
-//       if (key === "DocumentManagementServer.ViewDownload") {
-//         return "View download";
-//       }
-//       if (key === "DocumentManagementServer.Delete") {
-//         return "Delete";
-//       }
-//       if (key === "DocumentManagementServer.keepIt") {
-//         return "Keep it";
-//       }
-//       if (key === "DocumentManagementServer.noItemsSelectedMessage") {
-//         return "Please select at least one item from the search results to perform the action.";
-//       }
-//       if (key === "Filter.applyFilters") {
-//         return "Search";
-//       }
-//       if (key === "DocumentManagementServer.documentWillBeGoneForever") {
-//         return `${options?.count ?? "?"} document will be gone forever once deleted.`;
-//       }
-//       if (key === "DocumentManagementServer.documentsWillBeGoneForever") {
-//         return `${options?.all ?? ""}${options?.count ?? "?"} documents will be gone forever once deleted.`;
-//       }
-//       if (key === "DocumentManagementServer.documentsAlreadyDeletedMsg") {
-//         return `${options?.all ?? ""}${options?.count ?? "?"} documents have already been deleted.`;
-//       }
-//       if (key === "DocumentManagementServer.allSelectedDocumentsAlreadyDeleted") {
-//         return "All selected documents have already been deleted.";
-//       }
-//       if (key === "DocumentManagementServer.documentsCannotBeDownloadedMsg") {
-//         return `${options?.all ?? ""}${options?.count ?? "?"} documents cannot be downloaded as they have been deleted.`;
-//       }
-//        if (key === "DocumentManagementServer.documentCannotBeDownloadedMsg") {
-//         return "This document cannot be downloaded as it has been deleted.";
-//       }
-//       if (key === "DocumentManagementServer.prepareSingleDocument") {
-//         return `${options?.count ?? "?"} document is about to be prepared for downloading.`;
-//       }
-//       if (key === "DocumentManagementServer.clearAllDownloadsTitle") {
-//         return "Clear all downloads?";
-//       }
-//       if (key === "DocumentManagementServer.keepAll") {
-//         return "Keep all";
-//       }
-//       if (key === "DocumentManagementServer.documentsCannotBeDownloaded") {
-//         return "documents cannot be downloaded as they have already been deleted.";
-//       }
-//       if (key === "DocumentManagementServer.documentCannotBeDeletedNotification") {
-//         return "This document cannot be deleted as it is currently being prepared for download. Please try again later";
-//       }
-//       if (key === "Filter.invalidDate") {
-//         return "Invalid Date";
-//       }
-//       if (key === "Filter.Pupil") {
-//         return "Pupil";
-//       }
-//       if (key === "Filter.pupilName") {
-//         return "Pupil name";
-//       }
-//       if (key === "DocumentManagementServer.Cancel") {
-//         return "Cancel";
-//       }
-//       if (key === "DocumentManagementServer.Okay") {
-//         return "Okay";
-//       }
-//       if (key === "DocumentManagementServer.informationUnavailable") {
-//         return "Information unavailable";
-//       }
-//       return key;
-//     }
-//   })
-// }));
+ jest.mock("@essnextgen/ui-intl-kit", () => ({
+  ...jest.requireActual("@essnextgen/ui-intl-kit"),
+  useTranslation: () => ({
+    t: (key: string, options?: any) => {
+      if (key === "DocumentManagementServer.ExpiresInDays") {
+        // Handle pluralization if needed
+        return `Expires in ${options?.count ?? options?.days ?? "?"} day(s).`;
+      }
+      if (key === "DocumentManagementServer.ExpiresToday") {
+        return "Expires today.";
+      }
+      if (key === "DocumentManagementServer.headingText") {
+        return "Documents";
+      }
+      if (key === "DocumentManagementServer.Home") {
+        return "Home";
+      }
+      if (key === "DocumentManagementServer.ViewDownload") {
+        return "View downloads";
+      }
+      if (key === "DocumentManagementServer.sidePanelTitle") {
+        return "Downloads";
+      }
+      if (key === "DocumentManagementServer.subHeadingText") {
+        return "Bulk download or delete documents for pupils, staff members, or the school.";
+      }
+      if (key === "DocumentManagementServer.dateAddedColumn") {
+        return "Date added";
+      }
+      if (key === "DocumentManagementServer.documentColumn") {
+        return "Document";
+      }
+      if (key === "DocumentManagementServer.formatColumn") {
+        return "Format";
+      }
+      if (key === "DocumentManagementServer.sizeColumn") {
+        return "Size";
+      }
+      if (key === "DocumentManagementServer.categoryColumn") {
+        return "Category";
+      }
+      if (key === "DocumentManagementServer.editSelectedBtnTitle") {
+        return "Actions";
+      }
+      if (key === "DocumentManagementServer.PrepareDownload") {
+        return "Prepare download";
+      }
+      if (key === "DocumentManagementServer.ViewDownload") {
+        return "View download";
+      }
+      if (key === "DocumentManagementServer.Delete") {
+        return "Delete";
+      }
+      if (key === "DocumentManagementServer.keepIt") {
+        return "Keep it";
+      }
+      if (key === "DocumentManagementServer.noItemsSelectedMessage") {
+        return "Please select at least one item from the search results to perform the action.";
+      }
+      if (key === "Filter.applyFilters") {
+        return "Search";
+      }
+      if (key === "DocumentManagementServer.documentWillBeGoneForever") {
+        return `${options?.count ?? "?"} document will be gone forever once deleted.`;
+      }
+      if (key === "DocumentManagementServer.documentsWillBeGoneForever") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents will be gone forever once deleted.`;
+      }
+      if (key === "DocumentManagementServer.documentsAlreadyDeletedMsg") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents have already been deleted.`;
+      }
+      if (key === "DocumentManagementServer.allSelectedDocumentsAlreadyDeleted") {
+        return "All selected documents have already been deleted.";
+      }
+      if (key === "DocumentManagementServer.documentsCannotBeDownloadedMsg") {
+        return `${options?.all ?? ""}${options?.count ?? "?"} documents cannot be downloaded as they have been deleted.`;
+      }
+       if (key === "DocumentManagementServer.documentCannotBeDownloadedMsg") {
+        return "This document cannot be downloaded as it has been deleted.";
+      }
+      if (key === "DocumentManagementServer.prepareSingleDocument") {
+        return `${options?.count ?? "?"} document is about to be prepared for downloading.`;
+      }
+      if (key === "DocumentManagementServer.clearAllDownloadsTitle") {
+        return "Clear all downloads?";
+      }
+      if (key === "DocumentManagementServer.keepAll") {
+        return "Keep all";
+      }
+      if (key === "DocumentManagementServer.documentsCannotBeDownloaded") {
+        return "documents cannot be downloaded as they have already been deleted.";
+      }
+      if (key === "DocumentManagementServer.documentCannotBeDeletedNotification") {
+        return "This document cannot be deleted as it is currently being prepared for download. Please try again later";
+      }
+      if (key === "Filter.invalidDate") {
+        return "Invalid Date";
+      }
+      if (key === "Filter.Pupil") {
+        return "Pupil";
+      }
+      if (key === "Filter.pupilName") {
+        return "Pupil name";
+      }
+      if (key === "DocumentManagementServer.Cancel") {
+        return "Cancel";
+      }
+      if (key === "DocumentManagementServer.Okay") {
+        return "Okay";
+      }
+      if (key === "DocumentManagementServer.informationUnavailable") {
+        return "Information unavailable";
+      }
+      return key;
+    }
+  })
+}));
 
-// jest.mock("../ApiService", () => ({
-//   fetchDocumentCategory: jest.fn(),
-//   viewDownload: jest.fn(),
-//   prepareAndDownloadFile: jest.fn(),
-// }));
+jest.mock("../ApiService", () => ({
+  fetchDocumentCategory: jest.fn(),
+  viewDownload: jest.fn(),
+  prepareAndDownloadFile: jest.fn(),
+}));
  
-// jest.mock('focus-trap-react', () => ({
-//   __esModule: true,
-//   default: ({ children }: any) => <>{children}</>,
-// }));
+jest.mock('focus-trap-react', () => ({
+  __esModule: true,
+  default: ({ children }: any) => <>{children}</>,
+}));
 
-// jest.mock("../DocumentManagementServer.logic", () => {
-//   const original = jest.requireActual("../DocumentManagementServer.logic");
-//   return {
-//     __esModule: true,
-//     ...original,
-//     fetchGetDocumentDetailsLogic: jest.fn(),
-//     prepareDownload: jest.fn(),
-//     reduceCategories: jest.fn(),
-//     debouncedFetchSuggestions: jest.fn(),
-//     fileDownload: jest.fn(),
-//     fetchDocumentCategoryData: jest.fn(),
-//   };
-// });
+jest.mock("../DocumentManagementServer.logic", () => {
+  const original = jest.requireActual("../DocumentManagementServer.logic");
+  return {
+    __esModule: true,
+    ...original,
+    fetchGetDocumentDetailsLogic: jest.fn(),
+    prepareDownload: jest.fn(),
+    reduceCategories: jest.fn(),
+    debouncedFetchSuggestions: jest.fn(),
+    fileDownload: jest.fn(),
+    fetchDocumentCategoryData: jest.fn(),
+  };
+});
  
-// jest.mock("../ApiService", () => ({
-//   fetchDocumentDetails: jest.fn(),
-//   fetchDMSSuggestions: jest.fn(),
-//   fetchDocumentCategory: jest.fn(),
-//   prepareAndDownloadFile: jest.fn(),
-//   viewDownload: jest.fn(),
-//   fetchStaffProfilePhoto: jest.fn(),
-//   validation: jest.fn(),
-// }));
+jest.mock("../ApiService", () => ({
+  fetchDocumentDetails: jest.fn(),
+  fetchDMSSuggestions: jest.fn(),
+  fetchDocumentCategory: jest.fn(),
+  prepareAndDownloadFile: jest.fn(),
+  viewDownload: jest.fn(),
+  fetchStaffProfilePhoto: jest.fn(),
+  validation: jest.fn(),
+}));
  
  
-// const mockCategories = [
-//   { application: "App1", registrationId: [1], section: ["Section1"] },
-//   { application: "App2", registrationId: [1], section: ["Section2"] },
-//   { application: "App3", registrationId: [1], section: ["Section3"] },
-//   { application: "App4", registrationId: [1], section: ["Section4"] }
-// ];
+const mockCategories = [
+  { application: "App1", registrationId: [1], section: ["Section1"] },
+  { application: "App2", registrationId: [1], section: ["Section2"] },
+  { application: "App3", registrationId: [1], section: ["Section3"] },
+  { application: "App4", registrationId: [1], section: ["Section4"] }
+];
  
-// const mockDocData = {
-//   statusCode: 200,
-//   totalRecords: 2,
-//   data: [
-//     {
-//       fileId: "f1",
-//       document: "Doc1",
-//       category: "cat1",
-//       addedBy: "Admin",
-//       dateAdded: "2025-01-01",
-//       format: "pdf",
-//       size: "10MB",
-//       registrationId: 10,
-//       relatedTo: [],
-//     },
-//     {
-//       fileId: "f2",
-//       document: "Doc2",
-//       category: "cat1",
-//       addedBy: "Admin",
-//       dateAdded: "2025-01-01",
-//       format: "pdf",
-//       size: "10MB",
-//       registrationId: 10,
-//       relatedTo: [],
-//     }
-//   ],
-// };
+const mockDocData = {
+  statusCode: 200,
+  totalRecords: 2,
+  data: [
+    {
+      fileId: "f1",
+      document: "Doc1",
+      category: "cat1",
+      addedBy: "Admin",
+      dateAdded: "2025-01-01",
+      format: "pdf",
+      size: "10MB",
+      registrationId: 10,
+      relatedTo: [],
+    },
+    {
+      fileId: "f2",
+      document: "Doc2",
+      category: "cat1",
+      addedBy: "Admin",
+      dateAdded: "2025-01-01",
+      format: "pdf",
+      size: "10MB",
+      registrationId: 10,
+      relatedTo: [],
+    }
+  ],
+};
  
-// const zipFileDownloadMockData = {
-//   statusCode: 200,
-//   payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
-//   errorMessage: null
-// };
-// const mockSuggestions = {
-//     payload: [
-//       { name: "Pupil", link: "", values: [
-//                 {
-//                     "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-//                     "preferredForename": "Alfie",
-//                     "preferredSurname": "Harries",
-//                     "legalName": "Alfie Harries",
-//                     "currentYearGroup": "Year  4",
-//                     "currentPrimaryClass": "4SL",
-//                     "admissionNumber": "001875",
-//                     "onRollState": "Current",
-//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
-//                 },
-//                 {
-//                     "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-//                     "preferredForename": "Firoz",
-//                     "preferredSurname": "Bhandari",
-//                     "legalName": "Firoz Bhandari",
-//                     "currentYearGroup": "Year  4",
-//                     "currentPrimaryClass": "4SL",
-//                     "admissionNumber": "001861",
-//                     "onRollState": "Current",
-//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
-//                 }] },
-//       { name: "Staff", link: null, values: [] },
-//       { name: "Organisation", link: null, values: [] }
-//     ],
-//     statusCode: 200,
-//   }
+const zipFileDownloadMockData = {
+  statusCode: 200,
+  payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
+  errorMessage: null
+};
+const mockSuggestions = {
+    payload: [
+      { name: "Pupil", link: "", values: [
+                {
+                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+                    "preferredForename": "Alfie",
+                    "preferredSurname": "Harries",
+                    "legalName": "Alfie Harries",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001875",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+                },
+                {
+                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+                    "preferredForename": "Firoz",
+                    "preferredSurname": "Bhandari",
+                    "legalName": "Firoz Bhandari",
+                    "currentYearGroup": "Year  4",
+                    "currentPrimaryClass": "4SL",
+                    "admissionNumber": "001861",
+                    "onRollState": "Current",
+                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+                }] },
+      { name: "Staff", link: null, values: [] },
+      { name: "Organisation", link: null, values: [] }
+    ],
+    statusCode: 200,
+  }
  
-//   beforeEach(() => {
-//     jest.useFakeTimers();
-//     jest.clearAllMocks();
-//     (Logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValue(mockCategories);
-//     (Logic.reduceCategories as jest.Mock).mockReturnValue(mockCategories);
-//     (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
-//       ({ setDocData }: any) => setDocData(mockDocData)
-//     );
-//     (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
-//     (ApiService.viewDownload as jest.Mock).mockResolvedValue({
-//       status: 200,
-//       data: [],
-//     });
-//     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
-//     /* eslint-disable */
-//     global.ResizeObserver = global.ResizeObserver || class {
-//       observe() { }
-//       unobserve() { }
-//       disconnect() { }
-//     };
-//     /* eslint-enable */
-//   })
-// jest.setTimeout(10000);
-//   beforeEach(() => {
-//   jest.clearAllMocks();
-//   jest.clearAllTimers?.();
-//   cleanup();
-// });
+  beforeEach(() => {
+    jest.useFakeTimers();
+    jest.clearAllMocks();
+    (Logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValue(mockCategories);
+    // (Logic.reduceCategories as jest.Mock).mockReturnValue(mockCategories);
+    (Logic.fetchGetDocumentDetailsLogic as jest.Mock).mockImplementation(
+      ({ setDocData }: any) => setDocData(mockDocData)
+    );
+    (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [],
+    });
+    (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
+    /* eslint-disable */
+    global.ResizeObserver = global.ResizeObserver || class {
+      observe() { }
+      unobserve() { }
+      disconnect() { }
+    };
+    /* eslint-enable */
+  })
+jest.setTimeout(10000);
+  beforeEach(() => {
+  jest.clearAllMocks();
+  jest.clearAllTimers?.();
+  cleanup();
+});
  
-// afterEach(() => {
-//   jest.useRealTimers();
-//   cleanup();
-// });
-//   describe("DocumentManagementServerView", () => {
+afterEach(() => {
+  jest.useRealTimers();
+  cleanup();
+});
+  describe("DocumentManagementServerView", () => {
   
-//   it("renders breadcrumbs in desktop view", () => {
-//     render(<MemoryRouter>
-//       <DocumentManagementServerView />
-//     </MemoryRouter>);
-//     expect(screen.getByText("Home")).toBeInTheDocument();
-//   });
+  it("renders breadcrumbs in desktop view", () => {
+    render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+    expect(screen.getByText("Home")).toBeInTheDocument();
+  });
 
 
 //   it("sets failedFileName when cancelled files are present in viewData", async () => {
@@ -1658,4 +1658,4 @@
 //     act(() => result.current.setExcluded([1, 2, 3]));
 //     expect(result.current.totalSelectedCount).toBe(2);
 //   });
-// });
+});

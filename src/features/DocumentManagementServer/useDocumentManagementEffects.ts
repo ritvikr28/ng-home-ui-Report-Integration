@@ -87,7 +87,7 @@ interface UseFetchDocsEffectParams {
   sortBy: string;
   sortDirection: string;
   searchRefExternalId: string[];
-  documentRealatedTo: number;
+  documentRelatedTo: number;
   isSearchTriggered: boolean;
   isFilterDialogOpen: boolean;
   allRegistrationIds: number[];
@@ -110,7 +110,7 @@ export function useFetchDocsEffect({
   sortBy,
   sortDirection,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   isSearchTriggered,
   isFilterDialogOpen,
   allRegistrationIds,
@@ -128,7 +128,7 @@ export function useFetchDocsEffect({
         sortBy,
         sortDirection,
         searchRefExternalId,
-        documentRealatedTo
+        documentRelatedTo
       );
       setIsInitialLoad(false);
     }
@@ -140,7 +140,7 @@ export function useFetchDocsEffect({
         sortBy,
         sortDirection,
         searchRefExternalId,
-        documentRealatedTo
+        documentRelatedTo
       );
       setIsInitialLoad(false);
     }
@@ -155,7 +155,7 @@ export function useFetchDocsEffect({
     sortBy,
     sortDirection,
     searchRefExternalId,
-    documentRealatedTo,
+    documentRelatedTo,
     isSearchTriggered,
     isFilterDialogOpen,
     allRegistrationIds,

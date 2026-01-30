@@ -8,7 +8,7 @@ import { homeurl } from "../../../public/Constants";
 export function mapRelatedArr(doc: any): any[] {
   let relatedArr: any[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
-    if (doc.documentRealatedTo === 1) {
+    if (doc.documentRelatedTo === 1) {
       // Pupils
       relatedArr = doc.relatedTo.map((pupil: any) => ({
         type: "pupil",
@@ -18,7 +18,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: pupil.learnerExternalId || "",
         isLeaver:pupil?.onRollState || ""
       }));
-    } else if (doc.documentRealatedTo === 3) {
+    } else if (doc.documentRelatedTo === 3) {
       // Staff
       relatedArr = doc.relatedTo.map((staff: any) => ({
         type: "staff",
@@ -27,7 +27,7 @@ export function mapRelatedArr(doc: any): any[] {
         referenceExternalId: staff.externalId || "",
         isLeaver: staff?.onRollState || ""
       }));
-    } else if (doc.documentRealatedTo === 2) {
+    } else if (doc.documentRelatedTo === 2) {
       // School
       relatedArr = doc.relatedTo.map((school: any) => ({
         type: "school",
@@ -369,7 +369,7 @@ export function getDialogConfig({
   sortBy,
   sortDirection,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   setSelectedCheckBoxIds,
   setAllSelectedDocs,
   setIsClearSelectedCheckbox,
@@ -451,7 +451,7 @@ export function getDialogConfig({
               sortBy,
               sortDirection,
               searchRefExternalId,
-              documentRealatedTo
+              documentRelatedTo
             );
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
@@ -512,7 +512,7 @@ export function getDialogConfig({
               sortBy,
               sortDirection,
               searchRefExternalId,
-              documentRealatedTo
+              documentRelatedTo
             );
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
@@ -533,7 +533,7 @@ export function getDialogConfig({
             docData,
             rest.allRegistrationIds,
             searchRefExternalId,
-            documentRealatedTo,
+            documentRelatedTo,
             excludedCheckBoxIds,
             isHeaderBoxChecked,
             allSelectedDocs,

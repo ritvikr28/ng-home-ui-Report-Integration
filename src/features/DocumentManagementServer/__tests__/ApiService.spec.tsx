@@ -1,62 +1,62 @@
 
-// import '@testing-library/jest-dom';
-// import axios, { AxiosResponse } from 'axios';
-// import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
-// import { service } from '../../../shared/utils';
-// import { fetchDocumentDetails, fetchDMSSuggestions,  viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation, bulkDownload, fetchDocumentCategory } from '../ApiService';
-// import * as ApiService from '../ApiService';
+import '@testing-library/jest-dom';
+import axios, { AxiosResponse } from 'axios';
+import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
+import { service } from '../../../shared/utils';
+import { fetchDocumentDetails, fetchDMSSuggestions,  viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation, bulkDownload, fetchDocumentCategory } from '../ApiService';
+import * as ApiService from '../ApiService';
 
-// const documentResponse: SingleDocumentDetail[] = [
-//   {
-//     organizationId: 'cd0e52dd',
-//     userId: '9fbe1bcc',
-//     registrationId: 2,
-//     fileId: '427e150',
-//     personExternalId: '00000000',
-//     documentInfo: {
-//       fileName: 'image',
-//       isSelectedForPrepareDownload: true,
-//     },
-//     document: 'image',
-//     relatedTo: null,
-//     category: 'App',
-//     addedBy: 'SIMS-NG',
-//     dateAdded: '11/25/2024 10:04:54',
-//     format: 'png',
-//     size: '2 KB',
-//     blobName: 'App_427E150E',
-//   }
-// ];
+const documentResponse: SingleDocumentDetail[] = [
+  {
+    organizationId: 'cd0e52dd',
+    userId: '9fbe1bcc',
+    registrationId: 2,
+    fileId: '427e150',
+    personExternalId: '00000000',
+    documentInfo: {
+      fileName: 'image',
+      isSelectedForPrepareDownload: true,
+    },
+    document: 'image',
+    relatedTo: null,
+    category: 'App',
+    addedBy: 'SIMS-NG',
+    dateAdded: '11/25/2024 10:04:54',
+    format: 'png',
+    size: '2 KB',
+    blobName: 'App_427E150E',
+  }
+];
 
-// const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
-//   data: {
-//     pageNumber: 1,
-//     pageSize: 40,
-//     totalRecords: 1,
-//     data: documentResponse,
-//     status: 200,
-//     statusCode: 200
-//   },
-//   status: 200,
-//   statusText: 'OK',
-//   headers: {},
-//   config: {},
-// };
+const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
+  data: {
+    pageNumber: 1,
+    pageSize: 40,
+    totalRecords: 1,
+    data: documentResponse,
+    status: 200,
+    statusCode: 200
+  },
+  status: 200,
+  statusText: 'OK',
+  headers: {},
+  config: {},
+};
 
 
-// describe('fetchDocumentDetails', () => {
-//   afterEach(() => {
-//     jest.clearAllMocks();
-//   });
+describe('fetchDocumentDetails', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-//   test('should return data on successful fetch', async () => {
-//     jest.spyOn(service, 'post').mockResolvedValueOnce(mockAxiosResponse);
+  test('should return data on successful fetch', async () => {
+    jest.spyOn(service, 'post').mockResolvedValueOnce(mockAxiosResponse);
 
-//     const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
+    const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
 
-//     expect(result).toEqual(mockAxiosResponse.data);
-//     expect(service.post).toHaveBeenCalledTimes(1);
-//   });
+    expect(result).toEqual(mockAxiosResponse.data);
+    expect(service.post).toHaveBeenCalledTimes(1);
+  });
 
 //   test('should return null when status is not 200', async () => {
 //     const mockFailureResponse: Partial<AxiosResponse<DocumentBasicDetails>> = {
@@ -614,4 +614,4 @@
 //       expect.any(String)
 //     );
 //   });
-// });
+});

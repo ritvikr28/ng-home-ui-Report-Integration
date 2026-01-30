@@ -360,7 +360,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   currentPage,
   sortBy,
   sortDirection,
@@ -384,7 +384,7 @@ export const handleBulkDeleteLogic = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   currentPage: number,
   sortBy: string,
   sortDirection: string,
@@ -413,7 +413,7 @@ export const handleBulkDeleteLogic = async ({
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
-    documentRelatedTo: documentRealatedTo,
+    documentRelatedTo: documentRelatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
       : allSelectedDocs
@@ -492,7 +492,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
-  documentRealatedTo,
+  documentRelatedTo,
   validation,
   setRestrictedFileCount,
   setAlreadyDeletedFileCount,
@@ -518,7 +518,7 @@ export const handleEditSelectedOverFlowMenu = async ({
   allRegistrationIds: any[],
   dateRange: { fromDate: string; toDate: string },
   searchRefExternalId: string[],
-  documentRealatedTo: number,
+  documentRelatedTo: number,
   validation: (payload: any) => Promise<any>,
   setRestrictedFileCount: (v: number) => void,
   setAlreadyDeletedFileCount: (v: number) => void,
@@ -550,7 +550,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: searchRefExternalId,
-        documentRelatedTo: documentRealatedTo,
+        documentRelatedTo: documentRelatedTo,
         fileDetails,
         excludedFileDetails,
       });

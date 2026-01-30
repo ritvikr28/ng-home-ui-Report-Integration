@@ -458,9 +458,9 @@ export const fetchDocumentCategoryData = async ({
 }
 
 
-// export const fetchCategory = async (documentRealatedTo: number | null): Promise<any[]> => {
+// export const fetchCategory = async (documentRelatedTo: number | null): Promise<any[]> => {
 //   try {
-//     const response = await fetchFilterCategory(documentRealatedTo);
+//     const response = await fetchFilterCategory(documentRelatedTo);
 //     return response ?? [];
 //   } catch (err) {
 //     console.error("Error fetching categories:", err);
