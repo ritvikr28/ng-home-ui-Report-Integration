@@ -1,4 +1,5 @@
 // Represents each row in the document table
+import { Suggestion } from "@essnextgen/ui-kit";
 import React from "react";
 
 export interface SingleDocumentDetail {
@@ -212,3 +213,23 @@ export interface BreadcrumbAction {
   linkName: string;
   path: string;
 }
+
+export type FetchGetDocumentDetailsLogicParams = {
+  page: number;
+  categories: number[];
+  sortByCol: string;
+  sortOrder: string;
+  dateRange: { fromDate?: string; toDate?: string };
+  refExternalId: string[];
+  relatedTo: number;
+  setDocData: (v: any) => void;
+  setCurrentPage: (v: number) => void;
+  setTotalPage: (v: number) => void;
+  setShowSearchError: (v: boolean) => void;
+  setIsSearchLoading: (v: boolean) => void;
+  setIsSearchDataLoading: (v: boolean) => void;
+  setPrepareDownloadAbortBanner: (v: boolean) => void;
+  setShowDeleteAbortBanner: (v: boolean) => void;
+  setShowDeleteErrorBanner: (v: boolean) => void;
+  setSuggestions: (v: Suggestion[]) => void;
+};

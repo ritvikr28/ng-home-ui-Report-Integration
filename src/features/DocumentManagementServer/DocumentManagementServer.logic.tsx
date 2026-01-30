@@ -3,7 +3,7 @@ import React from "react";
 import { ShowValAs, Tag, Suggestion, ISearchItemProp, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
- import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchViewDownloadDataParams } from "./responseModel";
+ import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "./responseModel";
 import { pageSizeNumber } from "../../../public/Constants";
 import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
@@ -158,7 +158,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
       return null;
     }
     // If array, use first value
-    const value = Array.isArray(e) ? e[0] : e;
+    const value: string | undefined = Array.isArray(e) ? e[0] : e;
     return (
       <EllipsisWithTooltip
         text={value}
@@ -175,7 +175,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
 
  
 // Breadcrumb logic
-export const onBreadcrumbClick = (path: string) => {
+export const onBreadcrumbClick: (path: string) => void = (path: string) => {
   window.location.assign(path);
   gtmAnalytics.pushEvent({
     event: "click",
@@ -188,7 +188,7 @@ export const onBreadcrumbClick = (path: string) => {
  
  
 // Search input change logic
-export const handleSearchChange = (
+export const handleSearchChange : any = (
   t: (key: string) => string,
   e: React.ChangeEvent<HTMLInputElement>,
   categoryId: number[] | null,
@@ -202,7 +202,7 @@ export const handleSearchChange = (
   documentRelatedTo?: number,
   setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
-  const { value } = e.target;
+  const { value } : { value: string } = e.target;
   setSearchTerm(value);
 
   if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
@@ -242,8 +242,15 @@ export const handleSearchChange = (
     documentRelatedTo
   );
 };
- 
-export const loadSuggestions = async (
+
+export const loadSuggestions: (
+  text: string,
+  fromDate: string,
+  toDate: string,
+  categoryId: number[] | null,
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
+  setSuggestionsLoading: React.Dispatch<React.SetStateAction<boolean>>
+) => Promise<void> = async (
   text: string,
   fromDate: string,
   toDate: string,
@@ -253,7 +260,7 @@ export const loadSuggestions = async (
 ) => {
   try {
     setSuggestionsLoading(true);
-    const result = await fetchDMSSuggestions(text, fromDate, toDate, categoryId);
+    const result: Suggestion[] = await fetchDMSSuggestions(text, fromDate, toDate, categoryId);
     setSuggestions(result);
   } catch (err) {
     console.error("Suggestion fetch failed:", err);
@@ -281,32 +288,14 @@ export async function fetchGetDocumentDetailsLogic({
   setShowDeleteAbortBanner,
   setShowDeleteErrorBanner,
   setSuggestions
-}: {
-  page: number;
-  categories: number[];
-  sortByCol: string;
-  sortOrder: string; 
-  dateRange: { fromDate?: string; toDate?: string };
-  refExternalId: string[];
-  relatedTo: number;
-  setDocData: (v: any) => void;
-  setCurrentPage: (v: number) => void;
-  setTotalPage: (v: number) => void;
-  setShowSearchError: (v: boolean) => void;
-  setIsSearchLoading: (v: boolean) => void;
-  setIsSearchDataLoading: (v: boolean) => void;
-  setPrepareDownloadAbortBanner: (v: boolean) => void;
-  setShowDeleteAbortBanner: (v: boolean) => void;
-  setShowDeleteErrorBanner: (v: boolean) => void;
-  setSuggestions: (v: Suggestion[]) => void;
-}) {
+}: FetchGetDocumentDetailsLogicParams) {
   setIsSearchDataLoading(true);
   setPrepareDownloadAbortBanner(false);
   setShowDeleteAbortBanner(false);
   setShowDeleteErrorBanner(false);
 
   try {
-    const result = await fetchDocumentDetails({
+    const result: any = await fetchDocumentDetails({
       pageNumber: page,
       pageSize: pageSizeNumber,
       fromDate: dateRange?.fromDate,
@@ -343,16 +332,6 @@ export async function fetchGetDocumentDetailsLogic({
   setIsSearchDataLoading(false);
 }
 
-
-
- 
-
-
-
-
-
-
-
 export const fetchViewDownloadData = async ({
   showLoader = true,
   setIsSidePanelLoader,
@@ -362,16 +341,16 @@ export const fetchViewDownloadData = async ({
   setIsViewDownloadError,
   setShowEmailNotification
 }: FetchViewDownloadDataParams) => {
-  const pollingRef = downloadPollingIntervalRef;
+  const pollingRef: React.MutableRefObject<ReturnType<typeof setInterval> | null> = downloadPollingIntervalRef;
   if (showLoader) setIsSidePanelLoader(true);
   setIsViewDownloadError(false); 
   try {
-    const result = await viewDownload();
+    const result: any = await viewDownload();
     if (result?.data && result?.status === 200) {
       setViewData(result.data);
       setIsViewDownloadError(false);
 
-      const hasInProgress = result.data.some(
+      const hasInProgress: boolean = result.data.some(
         (item: { status: string }) =>
           item?.status?.toLowerCase() === "inprogress" ||
           item?.status?.toLowerCase() === "initiated"
@@ -427,16 +406,16 @@ export const fetchDocumentCategoryData = async ({
   localSelectedCategories,
 }: FetchDocumentCategoryDataParams) => {
   try {
-    const response = await fetchDocumentCategory(payload);
+    const response: any = await fetchDocumentCategory(payload);
     setCategoryError(false);
     const isSuccess = response?.status === 200;
     /* eslint-disable */
     if (isSuccess) {
-      const data = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
+      const data: any[] = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
       setAvailableCategories(data || []);
-      const categoryIds = data.map(cat => cat.categoryId);
+      const categoryIds: number[] = data.map(cat => cat.categoryId);
 
-      const filteredFormats = localSelectedCategories?.filter(
+      const filteredFormats: any[] = localSelectedCategories?.filter(
         item => categoryIds?.includes(item?.data?.categoryId)
       );
       setLocalSelectedCategories(filteredFormats || []);
@@ -472,17 +451,17 @@ const staffImgString = 'Staff Photo';
 const pupilImgString = 'Pupil Photo';
 
 export const getStaffProfilePhoto = async (staffId: string) => {
-  const response = await fetchStaffProfilePhoto(staffId);
+  const response: any = await fetchStaffProfilePhoto(staffId);
   if (response && 'data' in response) {
     return response.data ?? "";
   }
   return "";
 }
-export const formatSuggestions = async (payload: any[], t: (key: string) => string): Promise<Suggestion[]> => {
+export const formatSuggestions: (payload: any[], t: (key: string) => string) => Promise<Suggestion[]> = async (payload: any[], t: (key: string) => string): Promise<Suggestion[]> => {
   if (!payload) return [];
   return Promise.all(
     payload.map(async (category: any) => {
-      const values = await Promise.all(
+      const values: any[] = await Promise.all(
         (category?.values || []).map(async (item: any) => {
           let text = "";
           let props: ISearchItemProp = {};
@@ -531,7 +510,7 @@ export const formatSuggestions = async (payload: any[], t: (key: string) => stri
               ]
                 .filter(Boolean)
                 .join(" | ") || item?.name || "";
-              const data = await getStaffProfilePhoto((item?.externalId).toLowerCase());
+              const data: any = await getStaffProfilePhoto((item?.externalId).toLowerCase());
               icon = (
                 <>
                   {(data?.imagePath === "") ? (
@@ -589,8 +568,8 @@ export const formatSuggestions = async (payload: any[], t: (key: string) => stri
 };
  
 
-export const prepareDownload = async (payload: { request: any }[]) => {
-  const statuses = await Promise.all(
+export const prepareDownload: (payload: { request: any }[]) => Promise<any[]> = async (payload: { request: any }[]) => {
+  const statuses: any[] = await Promise.all(
     payload.map(item => prepareAndDownloadFile(item))
   );
   return statuses;
@@ -610,16 +589,16 @@ export function buildSelectedDocs(
   dateRange: { fromDate: string; toDate: string },
   selectedEntities: any[],
   availableFileIds: string[]
-) {
+): { request: any }[] {
   if (!Array.isArray(selectedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
   if (!Array.isArray(excludedCheckBoxIds) || !Array.isArray(docData?.data)) return [];
 
-  const selectedDocs = docData.data.filter(
+  const selectedDocs: any[] = docData.data.filter(
     (d: any) => selectedCheckBoxIds?.includes(d.fileId) && d.registrationId !== undefined
   );
 
-  const fileDetails = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
-  const excludedIdDetails =
+  const fileDetails: any[] = !isHeaderBoxChecked && allSelectedDocs.length > 0 ? allSelectedDocs.filter(doc => availableFileIds?.includes(doc.fileId)) : [];
+  const excludedIdDetails: any[] =
     isHeaderBoxChecked && allSelectedDocs?.length > 0 ? allSelectedDocs : [];
 
   let referenceMappingDetails: any[] = [];
@@ -654,9 +633,9 @@ export function buildSelectedDocs(
     new Map(referenceMappingDetails.map((item) => [item.referenceExternalId, item])).values()
   );
 
-  const fromDate = dateRange?.fromDate ?? "";
-  const toDate = dateRange?.toDate ?? "";
-  const currentDateTime = new Date().toLocaleString("sv-SE").replace(" ", "T");
+  const fromDate: string = dateRange?.fromDate ?? "";
+  const toDate: string = dateRange?.toDate ?? "";
+  const currentDateTime: string = new Date().toLocaleString("sv-SE").replace(" ", "T");
 
   return [
     {
@@ -733,11 +712,11 @@ export const debouncedFetchSuggestions = debounce(
     setShowError: React.Dispatch<React.SetStateAction<boolean>>,
     setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
     documentRelatedTo?: number | string
-  ) => {
+  ): Promise<void> => {
     setSearchLoading(true);
     setShowError(false);
     try {
-      const response = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
+      const response: any = await fetchDMSSuggestions(searchText, fromDate, toDate, categoryId, documentRelatedTo);
       if (!response || response?.statusCode !== 200) {
         setShowErrorBanner(true);
         setSuggestions([]);
@@ -746,8 +725,8 @@ export const debouncedFetchSuggestions = debounce(
           messageText: "Information unavailable"
         });
       } else {
-        const values = response?.payload ?? [];
-        const suggestions = await formatSuggestions(values , t);
+        const values: any[] = response?.payload ?? [];
+        const suggestions: any[] = await formatSuggestions(values , t);
         setSuggestions(suggestions);
         setShowErrorBanner(suggestions?.length === 0);
       }
@@ -797,7 +776,7 @@ export const buildValidationPayload = ({
   
 });
 
-export const getTitleConfirmation = (t: any, dialogType: string, availableFileCount: number, totalRecords: number): string => {
+export const getTitleConfirmation: (t: any, dialogType: string, availableFileCount: number, totalRecords: number) => string = (t, dialogType, availableFileCount, totalRecords) => {
   if (dialogType === "clearAll") return t("DocumentManagementServer.clearAllDownloadsTitle");
   if (dialogType === "delete") {
     return availableFileCount === 1 ? t("DocumentManagementServer.deleteDocumentTitle") : t("DocumentManagementServer.deleteDocumentsTitle");
@@ -805,20 +784,20 @@ export const getTitleConfirmation = (t: any, dialogType: string, availableFileCo
   return availableFileCount === totalRecords && availableFileCount > 1 ? t("DocumentManagementServer.prepareAllDocumentsTitle") : t("DocumentManagementServer.prepareDownloadTitle");
 };
 
-export const fileDownload = async (
+export const fileDownload: (fileId: string, fileName: string, application: string, sectionName: string, blobName?: string) => Promise<void> = async (
   fileId: string,
   fileName: string,
   application: string,
   sectionName: string,
   blobName?: string
 ) => {
-  const isZipFile = (!application && !sectionName && blobName);
+  const isZipFile: string | boolean | undefined = (!application && !sectionName && blobName);
   try {
     if (isZipFile) {
         const response: any = await bulkDownload(blobName!, fileName);
-        if (response?.payload && blobName) { 
-          const url = response.payload;
-          const link = document.createElement("a");
+        if (response?.payload && blobName) {
+          const url: string = response.payload;
+          const link: HTMLAnchorElement = document.createElement("a");
           link.href = url;
           link.download = `${fileName}`;
           document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
@@ -828,9 +807,9 @@ export const fileDownload = async (
           throw new Error("Bulk download failed: No file URL returned.");
       }
     } else {
-      const blob = await downloadFile(application, sectionName, fileId);
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+      const blob: Blob = await downloadFile(application, sectionName, fileId);
+      const url: string = window.URL.createObjectURL(blob);
+      const link: HTMLAnchorElement = document.createElement("a");
       link.href = url;
       link.download = `${fileName}`;
       document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
