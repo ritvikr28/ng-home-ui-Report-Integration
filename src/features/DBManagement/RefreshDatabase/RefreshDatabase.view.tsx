@@ -16,7 +16,7 @@ let items: Item[];
 
 const RefreshDatabaseView: () => JSX.Element = () => {
   const history: any = useHistory();
-  const [activeIndex, setActiveIndex] = useState<number>(0);
+  const [activeIndex, setActiveIndex]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
   items = [
     { title: t("RefreshDB_T.moduleBlock.detachDB.content2"), component: DetachDatabaseView },
@@ -24,14 +24,14 @@ const RefreshDatabaseView: () => JSX.Element = () => {
     { title: t("RefreshDB_T.moduleBlock.attachDB.content"), component: AttachDatabaseView },
     { title: t("RefreshDB_T.moduleBlock.syncProcess.title"), component: SyncDataView }
   ];
-  const [flagValues, setFlagValues] = useState<string[]>(new Array(items.length).fill(""));
-  const [loading, setLoading] = useState<boolean>(true);
-  const [enableNotification, setEnableNotification] = useState<boolean>(false);
-  const handleException = () => setEnableNotification(true);
+  const [flagValues, setFlagValues]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>(new Array(items.length).fill(""));
+  const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [enableNotification, setEnableNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const handleException: () => void = () => setEnableNotification(true);
 
   useEffect(() => {
     let intervalId: any;
-    const initializeSteps = async () => {
+    const initializeSteps: () => Promise<void> = async () => {
       try {
         const precheckStatus: IPrecheckStatusApiResponse | null = await FetchPreCheckStatus(handleException, history);
         if (precheckStatus && precheckStatus?.statusCode === 200) {
@@ -42,9 +42,9 @@ const RefreshDatabaseView: () => JSX.Element = () => {
             precheckStatus?.syncDataStatus || "",
             precheckStatus?.syncCompletedSeenStatus || ""
           ];
-          const initialFlags = mapStatusesToFlags(statuses, precheckStatus, t, intervalId);
+          const initialFlags: string[] = mapStatusesToFlags(statuses, precheckStatus, t, intervalId);
           setFlagValues(initialFlags);
-          const activeStep = getActiveStep(initialFlags, items.length);
+          const activeStep: number = getActiveStep(initialFlags, items.length);
           setActiveIndex(activeStep);
         }
       } catch (error) {
@@ -94,7 +94,12 @@ const RefreshDatabaseView: () => JSX.Element = () => {
   );
 };
 
-function mapStatusesToFlags(statuses: string[], precheckStatus: IPrecheckStatusApiResponse, t: any, intervalId: any) {
+function mapStatusesToFlags(
+  statuses: string[],
+  precheckStatus: IPrecheckStatusApiResponse,
+  t: (key: string) => string,
+  intervalId: any
+): string[] {
   return statuses.map((status, index) => {
     if (index === 3) { // syncDataStatus
       if (status === "Active") return "";
@@ -114,8 +119,8 @@ function mapStatusesToFlags(statuses: string[], precheckStatus: IPrecheckStatusA
   });
 }
 
-function getActiveStep(initialFlags: string[], itemsLength: number) {
-  let activeStep = initialFlags.findIndex((flag) => flag === "In Progress" || flag === "Completed");
+function getActiveStep(initialFlags: string[], itemsLength: number): number {
+  let activeStep: number = initialFlags.findIndex((flag) => flag === "In Progress" || flag === "Completed");
   if (activeStep === -1) {
     activeStep = initialFlags.findIndex((flag) => flag === "");
   }
@@ -125,7 +130,7 @@ function getActiveStep(initialFlags: string[], itemsLength: number) {
   return activeStep;
 }
 
-const ListItem = ({ item, index, isActive, flagValues, setFlagValues, setActiveIndex, stepItems, handleException, syncDataStatus }: any) => {
+const ListItem: ({ item, index, isActive, flagValues, setFlagValues, setActiveIndex, stepItems, handleException, syncDataStatus }: any) => JSX.Element = ({ item, index, isActive, flagValues, setFlagValues, setActiveIndex, stepItems, handleException, syncDataStatus }: any) => {
   const CurrentComponent: ComponentType<any> = item.component;
   return (
     <div key={index} style={{ pointerEvents: isActive ? "auto" : "none" }} >
