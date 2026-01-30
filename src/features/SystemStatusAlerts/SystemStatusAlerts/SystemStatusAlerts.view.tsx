@@ -45,7 +45,7 @@ export const getClassNameToHandleOverFlowPostion = (
 
 
 // Helper function to render notifications and error/success banners
-function renderNotification({ enableNotification, setEnableNotification, errorText, successMessage, setSuccessMessage, errorNote, setErrorNote, selectedAlert, t }: any) {
+function renderNotification({ enableNotification, setEnableNotification, errorText, successMessage, setSuccessMessage, errorNote, setErrorNote, selectedAlert, t }: any): JSX.Element {
   return <>
     {enableNotification && (
       <NotifyExceptionView setDisableNotification={setEnableNotification} />
@@ -89,7 +89,7 @@ function renderNotification({ enableNotification, setEnableNotification, errorTe
 }
 
 // Helper function to handle email alert actions
-function handleEmailAction({ alert, action, t, setSelectedAlert, setLoading1, setSuccessMessage, fetchAlerts, setErrorNote }: any) {
+function handleEmailAction({ alert, action, t, setSelectedAlert, setLoading1, setSuccessMessage, fetchAlerts, setErrorNote }: any): void {
   const emailSubscribed = action === "Deactivate Email";
   const emailType: "SYNC" | "SSM" = alert.id === "1" ? "SYNC" : "SSM";
   setSelectedAlert(alert);
@@ -164,7 +164,7 @@ const SystemStatusAlertsView: React.FC = () => {
   const history: ReturnType<typeof useHistory> = useHistory();
   const handleException: () => void = () => setEnableNotification(true);
 
-  const fetchAlerts = async () => {
+  const fetchAlerts: () => Promise<void> = async () => {
     await fetchAlertsUtil(
       setLoading,
       setErrorText,
@@ -187,7 +187,7 @@ const SystemStatusAlertsView: React.FC = () => {
     );
   }, [overflowMenuIndex]);
 
-  const handleActionClick = (action: string, alert: Alert) => {
+  const handleActionClick: (action: string, alert: Alert) => void= (action: string, alert: Alert) => {
     if (action === "Activate Email" || action === "Deactivate Email") {
       handleEmailAction({
         alert,
