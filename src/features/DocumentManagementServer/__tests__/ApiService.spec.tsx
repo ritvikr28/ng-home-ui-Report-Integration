@@ -1,10 +1,9 @@
 
 import '@testing-library/jest-dom';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails, fetchDMSSuggestions,  viewDownload, fetchStaffProfilePhoto, prepareAndDownloadFile, deleteFiles, validation, bulkDownload, fetchDocumentCategory } from '../ApiService';
-import * as ApiService from '../ApiService';
+import { fetchDocumentDetails } from '../ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -24,7 +23,7 @@ const documentResponse: SingleDocumentDetail[] = [
     dateAdded: '11/25/2024 10:04:54',
     format: 'png',
     size: '2 KB',
-    blobName: 'App_427E150E',
+    blobName: 'App_427E150E'
   }
 ];
 
@@ -40,7 +39,7 @@ const mockAxiosResponse: AxiosResponse<DocumentBasicDetails> = {
   status: 200,
   statusText: 'OK',
   headers: {},
-  config: {},
+  config: {}
 };
 
 

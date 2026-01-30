@@ -19,8 +19,6 @@ interface DmsDialogsProps {
   availableFileCount: number;
   totalSelectedCount: number;
   isHeaderBoxChecked: boolean;
-
-  docData: any;
   isPreDialogLoading: boolean;
 
   onRefreshAfterClose: () => void;
@@ -39,11 +37,9 @@ export const DmsDialogs: React.FC<DmsDialogsProps> = ({
   availableFileCount,
   totalSelectedCount,
   isHeaderBoxChecked,
-  docData,
   isPreDialogLoading,
   onRefreshAfterClose,
-}) => {
-  return (
+}) =>
     <>
       {showDialog && (
         <NoSelectionDialog
@@ -87,5 +83,4 @@ export const DmsDialogs: React.FC<DmsDialogsProps> = ({
         />
       )}
     </>
-  );
-};
+

@@ -1,15 +1,15 @@
-import React from "react";
-import { act } from "@testing-library/react-hooks";
-import { render, screen } from "@testing-library/react";
-import dayjs from "dayjs";
-import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
-import * as ApiService from "../ApiService";
+// import React from "react";
+// import { act } from "@testing-library/react-hooks";
+// import { render, screen } from "@testing-library/react";
+// import dayjs from "dayjs";
+// import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
+// import * as ApiService from "../ApiService";
 import * as logicModule from "../DocumentManagementServer.logic";
-import { handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter, closeSidePanel, handleClearAllConfirm, handleBulkDeleteLogic, addUniqueTagItem, handleApply, handleEditSelectedOverFlowMenu } from "../DocumentManagementServer.handler";
-import { hasItems, getVisibleTagsWithSummary, getCategoryArr, getDateTag, getValidationState, getResultNotFoundMsg, getAllRegistrationIds, mapRelatedArr, filterNonEmptySuggestions, reduceCategories, getCompletedPartitionKeys, applySummaryTagClass } from "../DocumentManagementServer.utils";
+// import { handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter, closeSidePanel, handleClearAllConfirm, handleBulkDeleteLogic, addUniqueTagItem, handleApply, handleEditSelectedOverFlowMenu } from "../DocumentManagementServer.handler";
+// import { hasItems, getVisibleTagsWithSummary, getCategoryArr, getDateTag, getValidationState, getResultNotFoundMsg, getAllRegistrationIds, mapRelatedArr, filterNonEmptySuggestions, reduceCategories, getCompletedPartitionKeys, applySummaryTagClass } from "../DocumentManagementServer.utils";
 
 
-const analytics = require('../../../shared/utils/analytics').default;
+// const analytics = require('../../../shared/utils/analytics').default;
 
 jest.mock("../ApiService");
 
@@ -36,8 +36,8 @@ beforeAll(() => {
 describe("getTableHeadersData", () => {
   const t = (key: string) => key; 
   const headers = logicModule.getTableHeadersData(t);
-  const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
-  const anyComponent = relatedToColumn?.anyComponent;
+//   const relatedToColumn = headers.find(h => h.text === 'DocumentManagementServer.relatedColumn');
+
 
  test("should be an array and contain expected columns", () => {
     expect(Array.isArray(headers)).toBe(true);

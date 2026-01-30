@@ -1,7 +1,8 @@
+import React from "react";
 import dayjs from "dayjs";
-import { Category } from "./responseModel";
-import { Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { DialogTemplate, NotificationStatus, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
+import { Category } from "./responseModel";
 import gtmAnalytics from "../../shared/utils/analytics";
 import { homeurl } from "../../../public/Constants";
 
@@ -63,6 +64,7 @@ export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
         }
         return [];
     }) || [];
+
 
 export function getCompletedPartitionKeys(viewData: Array<{ status?: string; partitionKey?: string }>): string[] {
   return viewData
@@ -337,10 +339,6 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
         }
     ]
 
-
-
-    import { DialogTemplate, NotificationStatus } from "@essnextgen/ui-kit";
-
 export function getDialogConfig({
   dialogType,
   t,
@@ -358,13 +356,11 @@ export function getDialogConfig({
   setHasFetchedViewDownload,
   viewDownload,
   downloadPollingIntervalRef,
-  getCompletedPartitionKeys,
   setIsViewDownloadError,
   setShowEmailNotification,
   contentText,
   alreadyDeletedFileCount,
   currentPage,
-  getAllRegistrationIds,
   selectedFormats,
   sortBy,
   sortDirection,

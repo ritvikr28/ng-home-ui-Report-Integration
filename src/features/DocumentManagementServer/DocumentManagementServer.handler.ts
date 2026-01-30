@@ -1,8 +1,9 @@
+import React from "react";
+import dayjs from "dayjs";
 import { ISearchItemProp, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit";
 import { debouncedFetchSuggestions, mapToBulkDeletePayload } from "./DocumentManagementServer.logic";
 import { relatedToEnum } from "../../../public/Constants";
 import gtmAnalytics from "../../shared/utils/analytics";
-import dayjs from "dayjs";
 import { isValidDate } from "../../shared/utils/commonFunctions";
 
 export const handlePageChange = (
@@ -413,7 +414,7 @@ export const handleBulkDeleteLogic = async ({
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
     referenceExternalIds: searchRefExternalId,
-    documentRelatedTo: documentRelatedTo,
+    documentRelatedTo,
     fileDetails: isHeaderBoxChecked || !allSelectedDocs.length
   ? []
       : allSelectedDocs
@@ -550,7 +551,7 @@ export const handleEditSelectedOverFlowMenu = async ({
         fromDate: dateRange.fromDate,
         toDate: dateRange.toDate,
         referenceExternalIds: searchRefExternalId,
-        documentRelatedTo: documentRelatedTo,
+        documentRelatedTo,
         fileDetails,
         excludedFileDetails,
       });
@@ -744,7 +745,6 @@ export function getNotificationMsgBannerObject(
 export async function handlePrepareDownload({
   selectedDocs,
   prepareDownload,
-  gtmAnalytics,
   setPrepareDownloadAbortBanner,
   setPrepareDownloadError,
   setShowEmailNotification,
@@ -753,7 +753,6 @@ export async function handlePrepareDownload({
 }: {
   selectedDocs: any[];
   prepareDownload: (docs: any[]) => Promise<number[]>;
-  gtmAnalytics: any;
   setPrepareDownloadAbortBanner: (v: boolean) => void;
   setPrepareDownloadError: (v: boolean) => void;
   setShowEmailNotification: (v: boolean) => void;

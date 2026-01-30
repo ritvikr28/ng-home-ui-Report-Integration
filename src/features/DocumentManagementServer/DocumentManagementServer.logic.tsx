@@ -1,12 +1,10 @@
 
 import React from "react";
-import { ShowValAs, Tag, Suggestion, ISearchItemProp, ISelectedItem, Icon, IconColor, IconSize, TagColor, TagSize, SelectedItem, TableHeader, ValidationTextLevel } from "@essnextgen/ui-kit";
-import dayjs from "dayjs";
+import { ShowValAs, Tag, Suggestion, ISearchItemProp, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader } from "@essnextgen/ui-kit";
 import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
 import gtmAnalytics from "../../shared/utils/analytics";
-import {isValidDate} from "../../shared/utils/commonFunctions";
- import { BuildValidationPayloadParams, Category, FetchDocumentCategoryDataParams, FetchViewDownloadDataParams } from "./responseModel";
-import { pageSizeNumber, relatedToEnum } from "../../../public/Constants";
+ import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchViewDownloadDataParams } from "./responseModel";
+import { pageSizeNumber } from "../../../public/Constants";
 import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
 

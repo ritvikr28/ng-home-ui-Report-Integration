@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { renderHook } from "@testing-library/react-hooks";
-import { render, screen, fireEvent, waitFor, act, within, cleanup } from "@testing-library/react";
+import React from "react";
+// import { renderHook } from "@testing-library/react-hooks";
+import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../DocumentManagementServer.view";
@@ -217,36 +217,36 @@ const zipFileDownloadMockData = {
   payload: "https://pazdevpfmdocumentsa.blob.core.windows.net/zipfiles/SIMS_2025-11-17_05-49-21-949-5726c2dc-0b13-4a31-bc42-55212f9be681.zip?sv=2025-05-05&ss=b&srt=o&spr=https&st=2025-11-17T05%3A45%3A38Z&se=2025-11-17T11%3A50%3A38Z&sp=r&sig=KNCUB3ApzNzLwV%2FJa7p4YbJSr%2F6NUOTz7EmguJTwS%2B4%3D&rscd=attachment;filename=SIMS_2025-11-17_11-19-20.zip",
   errorMessage: null
 };
-const mockSuggestions = {
-    payload: [
-      { name: "Pupil", link: "", values: [
-                {
-                    "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
-                    "preferredForename": "Alfie",
-                    "preferredSurname": "Harries",
-                    "legalName": "Alfie Harries",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001875",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
-                },
-                {
-                    "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
-                    "preferredForename": "Firoz",
-                    "preferredSurname": "Bhandari",
-                    "legalName": "Firoz Bhandari",
-                    "currentYearGroup": "Year  4",
-                    "currentPrimaryClass": "4SL",
-                    "admissionNumber": "001861",
-                    "onRollState": "Current",
-                    "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
-                }] },
-      { name: "Staff", link: null, values: [] },
-      { name: "Organisation", link: null, values: [] }
-    ],
-    statusCode: 200,
-  }
+// const mockSuggestions = {
+//     payload: [
+//       { name: "Pupil", link: "", values: [
+//                 {
+//                     "learnerExternalId": "adb3a2c6-5d92-4955-88c8-0e6b5a7b323d",
+//                     "preferredForename": "Alfie",
+//                     "preferredSurname": "Harries",
+//                     "legalName": "Alfie Harries",
+//                     "currentYearGroup": "Year  4",
+//                     "currentPrimaryClass": "4SL",
+//                     "admissionNumber": "001875",
+//                     "onRollState": "Current",
+//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+//                 },
+//                 {
+//                     "learnerExternalId": "04aaedd6-5307-4a4f-abaa-8b2230b3983b",
+//                     "preferredForename": "Firoz",
+//                     "preferredSurname": "Bhandari",
+//                     "legalName": "Firoz Bhandari",
+//                     "currentYearGroup": "Year  4",
+//                     "currentPrimaryClass": "4SL",
+//                     "admissionNumber": "001861",
+//                     "onRollState": "Current",
+//                     "imagePath": "https://pazdevpfmimagesa.blob.core.windows.net/8e3f658d-b952-4e64-bf2b-1eb5733e5416/adb3a2c6-5d92-4955-88c8-0e6b5a7b323d?sv=2025-01-05&se=2025-09-08T16%3A41%3A34Z&sr=b&sp=r&sig=r9EiksyvH7Fw2suLb6OpnKLwZhtpC9tuatLBUiWT6XY%3D%22"
+//                 }] },
+//       { name: "Staff", link: null, values: [] },
+//       { name: "Organisation", link: null, values: [] }
+//     ],
+//     statusCode: 200,
+//   }
  
   beforeEach(() => {
     jest.useFakeTimers();

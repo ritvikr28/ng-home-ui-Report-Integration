@@ -1,6 +1,7 @@
-import { useEffect } from "react";
-import { applySummaryTagClass, getAllRegistrationIds } from "./DocumentManagementServer.utils";
+import React , { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
+import { applySummaryTagClass, getAllRegistrationIds } from "./DocumentManagementServer.utils";
+
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void) {
   useEffect(() => {
@@ -66,7 +67,7 @@ export function useSummaryTagMutationObserver(
     observer.observe(tagListNode, { childList: true, subtree: true });
 
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, deps);
 }
 
@@ -145,7 +146,6 @@ export function useFetchDocsEffect({
       setIsInitialLoad(false);
     }
     applySummaryTagClass();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     currentPage,
     searchText,
@@ -160,7 +160,7 @@ export function useFetchDocsEffect({
     isFilterDialogOpen,
     allRegistrationIds,
     fetchGetDocumentDetails,
-    setIsInitialLoad,
+    setIsInitialLoad
   ]);
 }
 
@@ -190,7 +190,7 @@ export function useSidePanelViewDownloadEffect({
   viewDownload,
   downloadPollingIntervalRef,
   setIsViewDownloadError,
-  setShowEmailNotification,
+  setShowEmailNotification
 }: UseSidePanelViewDownloadEffectParams) {
   useEffect(() => {
     // Only run when opening the side panel for "prepare"
@@ -229,7 +229,7 @@ export function useSidePanelViewDownloadEffect({
         viewDownload,
         downloadPollingIntervalRef,
         setIsViewDownloadError,
-        setShowEmailNotification,
+        setShowEmailNotification
       });
     }
     return undefined;
@@ -244,7 +244,7 @@ export function useSidePanelViewDownloadEffect({
     viewDownload,
     downloadPollingIntervalRef,
     setIsViewDownloadError,
-    setShowEmailNotification,
+    setShowEmailNotification
   ]);
 }
 
@@ -267,7 +267,7 @@ export function useTotalSelectedCountEffect({
   setIsHeaderBoxChecked,
   setAllSelectedDocs,
   setExcludedCheckBoxIds,
-  setTotalSelectedCount,
+  setTotalSelectedCount
 }: UseTotalSelectedCountEffectParams) {
   useEffect(() => {
     const excludedCount = excludedCheckBoxIds.length || 0;
@@ -291,7 +291,7 @@ export function useTotalSelectedCountEffect({
     setIsHeaderBoxChecked,
     setAllSelectedDocs,
     setExcludedCheckBoxIds,
-    setTotalSelectedCount,
+    setTotalSelectedCount
   ]);
 }
 
@@ -319,7 +319,6 @@ export interface UseSearchTermEffectParams {
   setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>;
   setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>;
   setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
-  getAllRegistrationIds: (formats: any[]) => any;
 }
 
 export function useSearchTermEffect(params: UseSearchTermEffectParams) {
@@ -335,8 +334,7 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams) {
     setSuggestions,
     setShowSearchError,
     setIsSearchLoading,
-    setShowErrorBanner,
-    getAllRegistrationIds,
+    setShowErrorBanner
   } = params;
 
   useEffect(() => {
@@ -367,7 +365,7 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams) {
     setShowSearchError,
     setIsSearchLoading,
     setShowErrorBanner,
-    getAllRegistrationIds,
+    getAllRegistrationIds
   ]);
 }
 

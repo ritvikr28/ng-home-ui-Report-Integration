@@ -4,8 +4,6 @@ import { ViewDownloadContent } from "./ViewDownloadContent";
 
 interface DmsSidePanelProps {
   t: any;
-
-  isSidePanelOpen: boolean;
   isSidePanelLoader: boolean;
   hasFetchedViewDownload: boolean;
   isViewDownloadError: boolean;
@@ -57,8 +55,7 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   setFailedFileName,
   fileDownload,
   gtmAnalytics,
-}) => {
-  return (
+}) => 
     <>
       {clearAllError && (
         <Notification
@@ -152,5 +149,5 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
         />
       </div>
     </>
-  );
-};
+  
+

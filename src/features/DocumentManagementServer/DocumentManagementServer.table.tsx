@@ -9,7 +9,7 @@ import {
   ResponseCode,
   TableRowType,
   ISelectedItem,
-  SelectedItem,
+  SelectedItem
 } from "@essnextgen/ui-kit";
 import FilterDialog from "../../shared/components/Filter/Filter";
 import { getTableHeadersData } from "./DocumentManagementServer.logic";
@@ -61,29 +61,10 @@ interface Props {
   handleApplyWrapper: (...args: any[]) => void;
   handleFilterOnClick: () => void;
   isSidePanelOpen: boolean;
-  isSidePanelLoader: boolean;
-  hasFetchedViewDownload: boolean;
-  isViewDownloadError: boolean;
-  viewData: any[];
-  failedFileName: string[];
-  clearAllError: boolean;
-  prepareDownloadError: boolean;
-  prepareDownloadAbortBanner: boolean;
-  downloadError: boolean;
-  showEmailNotification: boolean;
-  showToastNotification: boolean;
   availableFileCount: number;
-  setClearAllError: (v: boolean) => void;
-  setPrepareDownloadError: (v: boolean) => void;
-  setPrepareDownloadAbortBanner: (v: boolean) => void;
-  setDownloadError: (v: boolean) => void;
-  setShowEmailNotification: (v: boolean) => void;
-  setShowToastNotification: (v: boolean) => void;
-  setFailedFileName: (v: string[]) => void;
   handleCloseSidePanel: () => void;
   isDialogLoading: boolean;
   isGlobalLoaderModel: boolean;
-  fileDownload: (...args: any[]) => Promise<any>;
   getTitleConfirmation: (...args: any[]) => string;
   dialogConfig: any;
   dialogType: string;
@@ -105,10 +86,10 @@ interface Props {
   setSearchRefExternalId: (ids: string[]) => void;
   setIsSearchTriggered: (v: boolean) => void;
   setPrevSelectedDocs: (ids: string[]) => void;
-  prevSelectedDocs: string[];
   setIsClearSelectedCheckbox: (v: boolean) => void;
   searchText: string;
   setDateRange: React.Dispatch<React.SetStateAction<any>>;
+  isSidePanelLoader: boolean;
 }
 
 const DmsControlledList: React.FC<Props> = (props) => {
@@ -154,28 +135,9 @@ const DmsControlledList: React.FC<Props> = (props) => {
     setTagListArray,
     handleApplyWrapper,
     isSidePanelOpen,
-    isSidePanelLoader,
-    hasFetchedViewDownload,
-    isViewDownloadError,
-    viewData,
-    failedFileName,
-    clearAllError,
-    prepareDownloadError,
-    prepareDownloadAbortBanner,
-    downloadError,
-    showEmailNotification,
-    showToastNotification,
     availableFileCount,
-    setClearAllError,
-    setPrepareDownloadError,
-    setPrepareDownloadAbortBanner,
-    setDownloadError,
-    setShowEmailNotification,
-    setShowToastNotification,
-    setFailedFileName,
     isDialogLoading,
     isGlobalLoaderModel,
-    fileDownload,
     getTitleConfirmation,
     dialogConfig,
     dialogType,
@@ -188,10 +150,26 @@ const DmsControlledList: React.FC<Props> = (props) => {
     setDialogType,
     setIsSidePanelOpen,
     showConfirmDialog,
-    prevSelectedDocs,
-    setPrevSelectedDocs,
     isSearchTriggered,
-    searchText
+    isSidePanelLoader,
+    isClearSelectedCheckbox,
+    setSelectedCheckBoxIds,
+    setExcludedCheckBoxIds,
+    setPrevSelectedDocs,
+    setAllSelectedDocs,
+    setTableKey,
+    setIsInitialLoad,
+    setSelectedFormats,
+    setSelectedEntities,
+    setSearchTerm,
+    setDateRange,
+    setSearchText,
+    setSearchRefExternalId,
+    setIsSearchTriggered,
+    setIsHeaderBoxChecked,
+    searchText,
+    setIsClearSelectedCheckbox
+    
     // ...other props
   } = props;
 
@@ -211,7 +189,7 @@ const DmsControlledList: React.FC<Props> = (props) => {
       filterDDLOptions={[
         { id: "1", text: "All", value: "All" },
         { id: "2", text: "Active", value: "Active" },
-        { id: "3", text: "Inactive", value: "Inactive" },
+        { id: "3", text: "Inactive", value: "Inactive" }
       ]}
       isShowCheckboxCol
       editSelectedBtnTitle={t("DocumentManagementServer.editSelectedBtnTitle")}
@@ -234,19 +212,19 @@ const DmsControlledList: React.FC<Props> = (props) => {
                 isShowDivider: true,
                 text: t("DocumentManagementServer.Delete"),
                 value: "Delete",
-              },
+              }
             ]
-          : []),
+          : [])
       ]}
       onEditSelectedOverFlowMenu={onEditSelectedOverFlowMenu}
       onEditSelectedBtnClick={() => {}}
       handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
-      isClearSelectedCheckbox={props.isClearSelectedCheckbox}
-      isAllSelectedAcrossPagination={true}
+      isClearSelectedCheckbox={isClearSelectedCheckbox}
+      isAllSelectedAcrossPagination
       totalRecords={docData?.totalRecords || 0}
-      selectedCheckboxIds={props.setSelectedCheckBoxIds}
-      prevselectedCheckboxIds={props.setPrevSelectedDocs}
-      setExcludedCheckBoxIds={props.setExcludedCheckBoxIds}
+      selectedCheckboxIds={setSelectedCheckBoxIds}
+      prevselectedCheckboxIds={setPrevSelectedDocs}
+      setExcludedCheckBoxIds={setExcludedCheckBoxIds}
       onChangeAllCheckBox={onChangeAllCheckBox}
       onChangeListCheckBox={onChangeListCheckBox}
       emptyStateMsg={resultNotFoundMSG}
@@ -265,14 +243,14 @@ const DmsControlledList: React.FC<Props> = (props) => {
           id: "2",
           showActionAs: ShowActionAs.Link,
           title: "Go back to home page",
-        },
+        }
       ]}
       errorPageActionListDescription="Things to try"
       errorPageReasonListDescription="Sorry, We are having trouble connecting."
       errorPageTitle="Service Unavailable"
       errorReasonListItem={[
         { id: "1", reason: "One of our servers could be down" },
-        { id: "2", reason: "Our service could have been disrupted by unforeseen interruptions" },
+        { id: "2", reason: "Our service could have been disrupted by unforeseen interruptions" }
       ]}
       groupTagsEnabled
       headingText={t("DocumentManagementServer.headingText")}
@@ -292,12 +270,12 @@ const DmsControlledList: React.FC<Props> = (props) => {
       emptyRowResponseMessage={resultNotFoundMSG}
       isShowdynamictableNoMsg={
         showSearchError ||
-        (!isSearchTriggered && !props.searchText) ||
+        (!isSearchTriggered && !searchText) ||
         (isSearchTriggered && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0)
       }
       isMessageCenterAligned={false}
       dynamictableIconName={
-        showSearchError && docData?.data?.length === 0 && props.searchText
+        showSearchError && docData?.data?.length === 0 && searchText
           ? "warning--alt"
           : "information"
       }
@@ -312,24 +290,24 @@ const DmsControlledList: React.FC<Props> = (props) => {
       searchDebouncerTreshold={1000}
       searchSuggestions={filteredSuggestions}
       onSearchSuggestionItemClick={(item) => {
-        props.setTagListArray([]);
-        props.setSelectedCategories([]);
-        props.setDateRange({ fromDate: "", toDate: "" });
-        props.setSelectedCheckBoxIds([]);
-        props.setAllSelectedDocs([]);
-        props.setIsClearSelectedCheckbox(true);
-        props.setIsHeaderBoxChecked(false);
-        props.setExcludedCheckBoxIds([]);
-        props.setPrevSelectedDocs([]);
-        props.setTableKey((prev) => prev + 1);
-        props.setIsInitialLoad(true);
-        handleSuggestionClick(item, props.setSearchTerm, props.setSearchText, props.setDocumentRelatedTo, props.setSearchRefExternalId);
-        props.setIsSearchTriggered(true);
-        props.setSelectedFormats([]);
-        props.setSelectedCategories([]);
-        props.setSelectedRelatedTo(undefined);
+        setTagListArray([]);
+        setSelectedCategories([]);
+        setDateRange({ fromDate: "", toDate: "" });
+        setSelectedCheckBoxIds([]);
+        setAllSelectedDocs([]);
+        setIsClearSelectedCheckbox(true);
+        setIsHeaderBoxChecked(false);
+        setExcludedCheckBoxIds([]);
+        setPrevSelectedDocs([]);
+        setTableKey((prev) => prev + 1);
+        setIsInitialLoad(true);
+        handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
+        setIsSearchTriggered(true);
+        setSelectedFormats([]);
+        setSelectedCategories([]);
+        setSelectedRelatedTo(undefined);
         if (item) {
-          props.setSelectedEntities([item]);
+          setSelectedEntities([item]);
         }
       }}
       searchOnChange={handleSearchChange}
@@ -417,8 +395,11 @@ const DmsControlledList: React.FC<Props> = (props) => {
       tableFirstColumnWidth="10px"
       tableHeadersData={getTableHeadersData(t)}
       sortingOnClickEvent={(e, columnName) => handleSorting(columnName)}
+      isSidePanelLoader={isSidePanelLoader}
     />
   );
 };
-
+DmsControlledList.defaultProps = {
+  onChangeAllCheckBox: undefined,
+};
 export default DmsControlledList;
