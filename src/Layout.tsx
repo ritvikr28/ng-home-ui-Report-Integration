@@ -272,13 +272,13 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )}
-          {hasAdminConsoleFlagrPermission && (
+          {(
             <ProtectedRoute
               exact
               /* istanbul ignore next */
               path="/documents"
               render={() =>
-                (hasAdminConsolePermissions && hasDMSPermissions) ? (
+                (hasDMSPermissions) ? (
                   <DocumentManagementServer />
                 ) : (
                   <Redirect to="/unauthorized" />
