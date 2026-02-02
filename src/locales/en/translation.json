@@ -453,6 +453,7 @@
     "inviteRequestDate": "Invitation request date",
     "noDataToDisplay": "No data to display",
     "invitePerson?": "Invite user?",
+    "inviteConsumer?": "Invite user?",
     "invitePerson?Description": "This user will be sent an invite to access the system.",
     "changesSaved": "Changes saved",
     "unableToSave": "Unable to save",
