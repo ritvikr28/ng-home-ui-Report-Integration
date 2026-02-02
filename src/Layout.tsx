@@ -99,18 +99,30 @@ export const getMenus: (
     return menusWithPermission;
   };
 
-const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, hasDMSPermissions }: {
+const AdminConsoleandSystemStatusRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, hasDMSPermissions }: {
   hasAdminConsoleFlagrPermission: boolean;
   hasAdminConsolePermissions: boolean;
   hasDMSPermissions: boolean;
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
 }) => JSX.Element = ({
   hasAdminConsoleFlagrPermission,
   hasAdminConsolePermissions,
-  hasDMSPermissions
+  hasDMSPermissions,
+  hasSystemStatusPermission,
+  hasSystemStatusOrgPermission,
+  canViewSystemStatus,
+  canUpdateSystemStatus
 }: {
   hasAdminConsoleFlagrPermission: boolean;
   hasAdminConsolePermissions: boolean;
   hasDMSPermissions: boolean;
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
 }): JSX.Element => (
     <>
       {hasAdminConsoleFlagrPermission && (
@@ -139,6 +151,12 @@ const AdminConsoleRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePerm
           }
         />
       )}
+      <SystemStatusRoute
+        hasSystemStatusPermission={hasSystemStatusPermission}
+        hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
+        canViewSystemStatus={canViewSystemStatus}
+        canUpdateSystemStatus={canUpdateSystemStatus}
+      />
     </>
   );
 
@@ -361,11 +379,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )} */}
-          <AdminConsoleRoutes
-            hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
-            hasAdminConsolePermissions={hasAdminConsolePermissions}
-            hasDMSPermissions={hasDMSPermissions}
-          />
+          
           {sendNotificationFlagr && (
             <ProtectedRoute
               exact
@@ -373,7 +387,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={NotificationsLogic}
             />
           )}
-   
+
           {hasSIMS7RedirectsOrgView &&
             <ProtectedRoute
               exact
@@ -414,12 +428,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )} */}
-          <SystemStatusRoute
-            hasSystemStatusPermission={hasSystemStatusPermission}
-            hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
-            canViewSystemStatus={canViewSystemStatus}
-            canUpdateSystemStatus={canUpdateSystemStatus}
-          />
+
           <ProtectedRoute
             exact
             /* istanbul ignore next */
@@ -432,6 +441,16 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               )
             }
           />
+          <AdminConsoleandSystemStatusRoutes
+            hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
+            hasAdminConsolePermissions={hasAdminConsolePermissions}
+            hasDMSPermissions={hasDMSPermissions}
+            hasSystemStatusPermission={hasSystemStatusPermission}
+            hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
+            canViewSystemStatus={canViewSystemStatus}
+            canUpdateSystemStatus={canUpdateSystemStatus}
+          />
+
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>
