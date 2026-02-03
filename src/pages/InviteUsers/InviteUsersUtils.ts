@@ -66,14 +66,15 @@ export const postSendInvitation = async (props: IPostSendInvitation) => {
   }
 };
 
-function formatDate(date: Date) {
-  if (date === undefined) {
+function formatDate(dateString: Date) {
+  if (dateString === undefined) {
     return undefined;
   }
-  if (date === null) {
+  if (dateString === null) {
     return "";
   }
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const date = new Date(dateString);
   return `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
 };
 
