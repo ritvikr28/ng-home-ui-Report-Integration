@@ -272,16 +272,19 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )}
-          {(hasDMSPermissions ?
+          {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
               path="/documents"
               render={() =>
-                <DocumentManagementServer />
-
+                (hasAdminConsolePermissions && hasDMSPermissions) ? (
+                  <DocumentManagementServer />
+                ) : (
+                  <Redirect to="/unauthorized" />
+                )
               }
-            /> : <Redirect to="/unauthorized" />
+            />
           )}
            {/* 
           Commenting this code as we already remove the flagr check on this route
