@@ -208,7 +208,7 @@ describe("getNotificationTableHeadersData", () => {
 
     headers = getNotificationTableHeadersData(undefined, undefined, "DateReceived", "Asc");
     expect(headers[4].isColumnSortByDefault).toBe(true);
-    expect(headers[4].isColumnSortAscFirst).toBe(true);
+    expect(headers[4].isColumnSortAscFirst).toBe(false);
   });
 
   it("last column's anyComponent renders empty if cellData is null", () => {

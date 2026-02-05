@@ -107,7 +107,7 @@ it('shows error when date is not in the future (handleValidateDate)', () => {
   const row = { ...baseRow, status: 'Not migrated' };
   render(
     <Sims7RedirectionsSidePanel
-      isOpen={true}
+      isOpen
       onClose={jest.fn()}
       mode="edit"
       selectedRow={row}
@@ -143,7 +143,7 @@ describe('Sims7RedirectionsSidePanel', () => {
   it('renders view mode with correct details', () => {
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="view"
         selectedRow={baseRow}
@@ -161,7 +161,7 @@ describe('Sims7RedirectionsSidePanel', () => {
     const row = { ...baseRow, status: 'Migrated' };
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="edit"
         selectedRow={row}
@@ -181,7 +181,7 @@ describe('Sims7RedirectionsSidePanel', () => {
     const row = { ...baseRow, status: 'Migrated' };
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="edit"
         selectedRow={row}
@@ -198,7 +198,7 @@ describe('Sims7RedirectionsSidePanel', () => {
     const row = { ...baseRow, status: 'Not migrated' };
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="edit"
         selectedRow={row}
@@ -215,7 +215,7 @@ describe('Sims7RedirectionsSidePanel', () => {
     const row = { ...baseRow, status: 'Not migrated', reasonForChanges: 'Some reason' };
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="edit"
         selectedRow={row}
@@ -233,7 +233,7 @@ describe('Sims7RedirectionsSidePanel', () => {
     const row = { ...baseRow, status: 'Reversing', reasonForChanges: 'Should be cleared' };
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={jest.fn()}
         mode="edit"
         selectedRow={row}
@@ -269,7 +269,7 @@ describe('Cancel logic in Sims7RedirectionsSidePanel', () => {
   it('calls onClose directly if not dirty', () => {
     render(
       <Sims7RedirectionsSidePanel
-        isOpen={true}
+        isOpen
         onClose={mockOnClose}
         mode="edit"
         selectedRow={baseRowData}

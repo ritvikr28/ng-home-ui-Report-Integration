@@ -43,7 +43,7 @@ describe("useNotification", () => {
 
         it("should have default sortBy and sortDirection", () => {
             const { result } = getHook();
-            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortBy).toBe("ReceivedDate");
             expect(result.current.sortDirection).toBe("Desc");
         });
 
@@ -217,7 +217,7 @@ describe("useNotification", () => {
                 jest.advanceTimersByTime(350);
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortBy).toBe("ReceivedDate");
         });
     });
 
@@ -822,7 +822,7 @@ describe("useNotification", () => {
                 result.current.handleClearAllFilters();
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortBy).toBe("ReceivedDate");
             expect(result.current.sortDirection).toBe("Desc");
         });
 
@@ -853,7 +853,7 @@ describe("useNotification", () => {
                 result.current.handleSort("Date received");
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortBy).toBe("ReceivedDate");
             expect(result.current.sortDirection).toBe("Asc");
 
             act(() => {

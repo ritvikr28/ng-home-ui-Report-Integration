@@ -30,7 +30,7 @@ const DeleteConfirmationModalView = ({
                 className="delete-confirmation-dialog"
                 dataTestId="delete-confirmation-modal"
                 isOpen={isOpen}
-                escapeExits={true}
+                escapeExits
                 returnFocusOnDeactivate={false}
                 onClose={onClose}
                 title="No items selected"
