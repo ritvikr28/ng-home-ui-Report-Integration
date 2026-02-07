@@ -190,7 +190,7 @@ beforeEach(() => {
 
   it("renders loader initially", () => {
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -204,7 +204,7 @@ beforeEach(() => {
     });
     (staffService.fetchStaffDetails as jest.Mock).mockResolvedValue({ payload: [{ externalId: "S1", forename: "John", surname: "Doe" }] });
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -217,7 +217,7 @@ beforeEach(() => {
   it("renders nothing on error", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
         <EventContainer isOpen />
       </StaffTimetableAndRegisterDetailsProvider>
     );

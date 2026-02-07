@@ -273,9 +273,6 @@ const NotificationView = () => {
                                 sortByDefault={false}
                                 sortAscFirst={false}
                                 sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
-                                    if (columnName === "Notification") {
-                                        return; // TODO: Notification sorting disabled
-                                    }
                                 handleSort(columnName);
                                 }}
                                 templatePropsConfirmation={{

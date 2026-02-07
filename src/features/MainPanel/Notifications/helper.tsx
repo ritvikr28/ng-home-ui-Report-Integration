@@ -6,7 +6,7 @@ export const getNotificationTableHeadersData = (
   setSideIsOpen?: (isOpen: boolean) => void,
   setSelectedItem?: (item: any) => void,
   sortBy: string = "ReceivedDate",
-  sortDirection: string = "Desc",
+  sortDirection: boolean = false,
   setNotificationIdSelected?: (id: string) => void
 ): {
   text: string;
@@ -40,7 +40,7 @@ export const getNotificationTableHeadersData = (
       isColumnSorting: true,
       ...(sortBy === "Status" ? {
         isColumnSortByDefault: true,
-        isColumnSortAscFirst: sortDirection === "Asc"
+        isColumnSortAscFirst: sortDirection
       } : {}),
       anyComponent: (cellData: any) => (
         <div>
@@ -73,7 +73,7 @@ export const getNotificationTableHeadersData = (
       isColumnSorting: true,
       ...(sortBy === "Priority" ? {
         isColumnSortByDefault: true,
-        isColumnSortAscFirst: sortDirection === "Asc"
+        isColumnSortAscFirst: sortDirection
       } : {}),
       columnWidth: "274px"
     },
@@ -85,7 +85,7 @@ export const getNotificationTableHeadersData = (
       headerTxtTrunctLength: 20,
       isColumnSorting: true,
       isColumnSortByDefault: true,
-      isColumnSortAscFirst: sortBy === "ReceivedDate" ? sortDirection === "Asc" : false,
+      isColumnSortAscFirst: sortBy === "ReceivedDate" ? sortDirection : false,
       columnWidth: "274px"
     },
     {

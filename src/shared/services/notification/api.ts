@@ -6,16 +6,14 @@ import { getUserOrganisation } from "../../utils";
 
 export const getNotificationTableData = async ({ PageSize, PageNumber, SortBy,
   SortDirection }: { PageSize: number, PageNumber: number, SortBy?: string;
-  SortDirection?: string; }): Promise<any> => {
+  SortDirection?: boolean; }): Promise<any> => {
   const orgId = getUserOrganisation();
   const receiverId = authService.getUserId();
   // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
   // authService.getUserId();
-  const uerName = authService.getUsername();
-
-  console.log({ orgId, receiverId, uerName });
+  const userName = authService.getUsername();
   try {
-    const direction = SortDirection === "Asc"
+    const direction = SortDirection;
     const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}&SortBy=${SortBy}&Asc=${direction}`;
     const baseUrl = buildApplicationUrl(apiUrls);
     const response = await service.get(path, baseUrl);

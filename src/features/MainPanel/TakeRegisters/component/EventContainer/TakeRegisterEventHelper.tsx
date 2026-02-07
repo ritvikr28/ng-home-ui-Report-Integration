@@ -98,7 +98,7 @@ export const renderCarousel: (
               : t("takeregister.ready")
           }
           isShowTag
-          isTagLeftAligned
+          isTagLeftAligned={true}
           tagColor={
             item.isCompleted ? TagColor.Success : TagColor.Outstanding
           }

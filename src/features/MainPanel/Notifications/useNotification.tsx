@@ -32,7 +32,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
     const [isSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
     const [sortBy, setSortBy] = useState<string>("ReceivedDate");
-    const [sortDirection, setSortDirection] = useState<string>("Desc");
+    const [sortDirection, setSortDirection] = useState<boolean>(false);
 
     // const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -212,27 +212,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
         return () => clearTimeout(timeout);
     }, [showDeleteToast]);
 
-    const sortedNotifications = useMemo(() => {
-    if (!tableData) return [];
-    const sorted = [...tableData].sort((a: any, b: any) => {
-    const key = sortBy;
-    const valA = a[key];
-    const valB = b[key];
-    if (key === "ReceivedDate") {
-      return sortDirection === "Asc"
-        ? new Date(valA).getTime() - new Date(valB).getTime()
-        : new Date(valB).getTime() - new Date(valA).getTime();
-    }
-    if (typeof valA === "string" && typeof valB === "string") {
-      return sortDirection === "Asc"
-        ? valA.localeCompare(valB)
-        : valB.localeCompare(valA);
-    }
-    return 0;
-  });
-  return sorted;
-}, [tableData, sortBy, sortDirection]);
-    const paginatedNotifications = sortedNotifications;
+    const paginatedNotifications = useMemo(() => tableData,[tableData]);
 
     const handlePageChange = (event: any, page: number) => {
         setCurrentPage(page);
@@ -369,7 +349,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
         setFilters({});
         if (!searchTerm.trim()) {
             setSortBy("ReceivedDate");
-            setSortDirection("Desc");
+            setSortDirection(false);
         }
     };
 
@@ -392,13 +372,13 @@ const handleSort = (columnName: string) => {
       default:
       return;
   }
-  let newDirection = "Asc";
-  if (sortBy === apiColumnName) {
-    newDirection = sortDirection === "Asc" ? "Desc" : "Asc";
+   if (sortBy === apiColumnName) {
+    setSortDirection(prev => !prev);
+  } else {
+    setSortDirection(false);
   }
 
   setSortBy(apiColumnName);
-  setSortDirection(newDirection);
 };
 
     // const handleClearSearch = () => {
