@@ -56,6 +56,7 @@ const NotificationView = () => {
     } = useNotification({ tableData, totalTableData });
 
     const handleSearchChangeWithAutoSuggest = (value: string) => {
+        setSearchTerm(value);
 
         const trimmed = value.trim();
         if (trimmed === "") {
@@ -98,6 +99,7 @@ const NotificationView = () => {
                 if (!data.error) {
                     setTableData(data.payload);
                     setTotalTableData(data.total);
+                    setTableDataError(false);
                     if (data.payload.length === 0) {
                         setNoResults(true);
                     } else {
@@ -125,9 +127,7 @@ const NotificationView = () => {
         , [filters]);
 
     const hasSearch = React.useMemo(() => searchTerm.trim().length >= 2, [searchTerm]);
-
     useEffect(() => {
-        console.log("useEffect triggered with ----------------------->>>>>>>>>>>>>>>>>", searchTerm, notificationState.searchCleared);
         if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
             setIsTableBodyLoading(true);
             getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase() })
@@ -135,6 +135,7 @@ const NotificationView = () => {
                     if (!data.error) {
                         setTableData(data.payload);
                         setTotalTableData(data.total);
+                        setTableDataError(false);
                         if (data.payload.length === 0) {
                             setNoResults(true);
                         }
@@ -146,29 +147,29 @@ const NotificationView = () => {
                 })
                 .finally(() => setIsTableBodyLoading(false));
         }
-    }, [notificationState, currentPage]);
+    }, []);
 
-    //  useEffect(() => {
-    //     console.log("useEffect triggered with ----------------------->>>>>>>>>>>>>>>>>", searchTerm, notificationState.searchCleared);
-    //     if (!sideIsOpen || hasSearch) {
-    //         setIsTableBodyLoading(true);
-    //         getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase() })
-    //             .then((data) => {
-    //                 if (!data.error) {
-    //                     setTableData(data.payload);
-    //                     setTotalTableData(data.total);
-    //                     if (data.payload.length === 0) {
-    //                         setNoResults(true);
-    //                     }
-    //                 } else {
-    //                     setNoResults(true);
-    //                     setTableDataError(true);
-    //                     setTableData([]);
-    //                 }
-    //             })
-    //             .finally(() => setIsTableBodyLoading(false));
-    //     }
-    // }, [currentPage, sideIsOpen, hasSearch, notificationState.searchCleared]);
+    useEffect(() => {
+        if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
+            setIsTableBodyLoading(true);
+            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase() })
+                .then((data) => {
+                    if (!data.error) {
+                        setTableData(data.payload);
+                        setTotalTableData(data.total);
+                        setTableDataError(false);
+                        if (data.payload.length === 0) {
+                            setNoResults(true);
+                        }
+                    } else {
+                        setNoResults(true);
+                        setTableDataError(true);
+                        setTableData([]);
+                    }
+                })
+                .finally(() => setIsTableBodyLoading(false));
+        }
+    }, [notificationState, currentPage,sideIsOpen]);
 
     useEffect(() => {
         if (!(searchTerm && hasSearch && isAutoSuggestVisible)) {
@@ -236,7 +237,6 @@ const NotificationView = () => {
     // > 1 && paginatedNotifications.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
-        console.log({ hasSearch, totalNotifications, isSearching, searchSuggestions })
         if (tableDataError) {
             return "No data to display";
         }
@@ -316,7 +316,6 @@ const NotificationView = () => {
                                 // searchOnCloseHandle={handleClearSearch}
                                 searchSuggestions={searchSuggestions}
                                 onSearchSuggestionItemClick={(props: any | null) => {
-                                    console.log("Search suggestion clicked ------------------", props);
                                     if (props) {
                                         // eslint-disable-next-line react/prop-types
                                         setSearchTerm(props.name);
@@ -325,15 +324,17 @@ const NotificationView = () => {
                                         setIsAutoSuggestVisible(false);
                                     }
                                 }}
+                               isSearchHideClearIcon={searchTerm.length === 0}
                                 onSearchKeyDown={(e: React.KeyboardEvent) => {
-                                    console.log("Key pressed in search input ------------------", e.key);
+                                    console.log("Key pressed in search input ------------------", (e.target as HTMLInputElement).value);
+                                    setSearchTerm((e.target as HTMLInputElement).value);
                                     if (e.key === "Enter") {
-                                        console.log("Enter key pressed in search input ------------------", searchTerm);
                                         handleSearchKeyPressed((e.target as HTMLInputElement).value);
                                         setIsAutoSuggestVisible(false);
                                     }
                                 }}
-                                searchDebouncerTreshold={2}
+                                searchValue={searchTerm}
+                                // searchDebouncerTreshold={2}
                                 isShowAutoSuggest={isAutoSuggestVisible}
                                 onKeyUpLenght={2}
                                 isShowFirstElement={true}
@@ -411,7 +412,6 @@ const NotificationView = () => {
                                     setNotificationState({ searchCleared: true });
                                 }}
                                 searchHeadingText="Search by notification title"
-                                isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
                                 dynamicTableLoader={isTableBodyLoading}
                                 onClickSidePnlSecondaryBtn={() => { setSideIsOpen(false) }}
                                 handleCloseSidePanel={() => {
