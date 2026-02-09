@@ -43,8 +43,8 @@ describe("useNotification", () => {
 
         it("should have default sortBy and sortDirection", () => {
             const { result } = getHook();
-            expect(result.current.sortBy).toBe("DateReceived");
-            expect(result.current.sortDirection).toBe("Desc");
+            expect(result.current.sortBy).toBe("ReceivedDate");
+            expect(result.current.sortDirection).toBe(false);
         });
 
         it("should have empty filters and searchTerm", () => {
@@ -217,7 +217,7 @@ describe("useNotification", () => {
                 jest.advanceTimersByTime(350);
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
+            expect(result.current.sortBy).toBe("ReceivedDate");
         });
     });
 
@@ -822,8 +822,8 @@ describe("useNotification", () => {
                 result.current.handleClearAllFilters();
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
-            expect(result.current.sortDirection).toBe("Desc");
+            expect(result.current.sortBy).toBe("ReceivedDate");
+            expect(result.current.sortDirection).toBe(false);
         });
 
         it("should not reset sort when search term exists", () => {
@@ -853,14 +853,14 @@ describe("useNotification", () => {
                 result.current.handleSort("Date received");
             });
 
-            expect(result.current.sortBy).toBe("DateReceived");
-            expect(result.current.sortDirection).toBe("Asc");
+            expect(result.current.sortBy).toBe("ReceivedDate");
+            expect(result.current.sortDirection).toBe(true);
 
             act(() => {
                 result.current.handleSort("Date received");
             });
 
-            expect(result.current.sortDirection).toBe("Desc");
+            expect(result.current.sortDirection).toBe(false);
         });
 
         it("should set new column and reset to asc", () => {
@@ -871,7 +871,7 @@ describe("useNotification", () => {
             });
 
             expect(result.current.sortBy).toBe("Priority");
-            expect(result.current.sortDirection).toBe("Asc");
+            expect(result.current.sortDirection).toBe(false);
         });
 
         it("should return early for invalid column", () => {
