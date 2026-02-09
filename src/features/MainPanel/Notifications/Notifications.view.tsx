@@ -21,7 +21,7 @@ const NotificationView = () => {
         setFilterBtnClicked,
         currentPage,
         totalPages,
-        paginatedNotifications,
+        // paginatedNotifications,
         totalNotifications,
         // totalOriginalNotifications,
         handlePageChange,
@@ -98,8 +98,8 @@ const NotificationView = () => {
     const tableRows =
         React.useMemo(
             () =>
-                Array.isArray(paginatedNotifications)
-                    ? paginatedNotifications.map((notification: TableNotificationProps) => ({
+                Array.isArray(tableData)
+                    ? tableData.map((notification: TableNotificationProps) => ({
                         id: `${notification.id}`,
                         Status: notification.status === false ? 'Unread' : 'Read',
                         Notification: notification.title,
@@ -115,7 +115,7 @@ const NotificationView = () => {
                         }),
                     }))
                     : [],
-            [paginatedNotifications, getNotificationId]
+            [tableData,currentPage,getNotificationId]
         );
 
     const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
@@ -139,7 +139,7 @@ const NotificationView = () => {
     };
 
     const shouldShowPagination = !tableDataError && totalTableData !== 0
-    // > 1 && paginatedNotifications.length > 0 && !noResults;
+    // > 1 && tableData.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
         if (tableDataError) {
@@ -185,7 +185,7 @@ const NotificationView = () => {
                     >
                         <div className="notification-filters-wrapper">
                             <ControlledList
-                                tooltipBottomAligned
+                                tooltipBottomAligned={true}
                                 data-testid="controlled-list"
                                 globalNotificationMsgBannerObject={
                                     [
@@ -202,7 +202,7 @@ const NotificationView = () => {
                                 isAddEventBtnShow={false}
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[]}
-                                isShowSearch
+                                isShowSearch={true}
                                 // searchTerm={searchTerm}
                                 // searchOnChange={(e) => handleSearchChange(e.target.value)}
                                 // searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
@@ -219,8 +219,8 @@ const NotificationView = () => {
                                 //     }
                                 // }}
                                 // searchOnCloseHandle={handleClearSearch}
-                                isShowFirstElement
-                                isShowFourthElement
+                                isShowFirstElement={true}
+                                isShowFourthElement={true}
                                 filterCustumeElem2={
                                     <div className="notification-controls">
                                         <Button
@@ -287,7 +287,7 @@ const NotificationView = () => {
                                 }}
                                 titleConfirmation="Discard changes disduasi?"
                                 isOpenConfirmationDialog={false}
-                                isIconRightAligned
+                                isIconRightAligned={true}
                                 isShowOverflowMenuCol={false}
                                 searchHeadingText="Search by notification title"
                                 isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
@@ -306,14 +306,14 @@ const NotificationView = () => {
                                 // }
                                 onClickOverflowItem={() => { }}
                                 secondaryButtonTitle="Close"
-                                isShowCheckboxCol
-                                isShowThirdElement
+                                isShowCheckboxCol={true}
+                                isShowThirdElement={true}
                                 isShowdynamictableNoMsg={
                                     (totalNotifications === 0 || !noResults) || !isSearching || tableDataError
                                 }
                                 emptyRowResponseMessage={getEmptyStateMessage()}
                                 emptyRowResponseCode={ResponseCode.Info}
-                                isPagination={isTableBodyLoading ? false: shouldShowPagination}
+                                isPagination={shouldShowPagination}
                                 paginationCount={totalPages}
                                 paginationOnChange={handlePageChange }
                                 paginationPage={currentPage}
@@ -360,7 +360,7 @@ const NotificationView = () => {
                 </div>
             </div>
         </div>
-    );
-};
+    )
+}
 
 export default NotificationView;

@@ -1206,7 +1206,7 @@ const getDialogTitle = () => {
                                 globalNotificationMsgBannerObject={NotificationMsgBannerObject}
                                 isShowHeading
                                 isShowSubHeading
-                                isSorting
+                                isSorting={false}
                                 sortByDefault={false}
                                 sortAscFirst={!isInitialLoad}
                                 isIconRightAligned
@@ -1256,7 +1256,7 @@ const getDialogTitle = () => {
                                 onEditSelectedBtnClick={() => {}}
                                 handleCloseDialogConfirmation={() => setShowConfirmDialog(false)}
                                 isClearSelectedCheckbox={isClearSelectedCheckbox}
-                                isAllSelectedAcrossPagination
+                                isAllSelectedAcrossPagination={true}
                                 totalRecords={docData?.totalRecords || 0}
                                 selectedCheckboxIds={(ids: string[]) => {
                                     setSelectedCheckBoxIds(ids);

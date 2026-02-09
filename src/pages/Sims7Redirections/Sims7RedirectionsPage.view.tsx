@@ -213,13 +213,13 @@ export const Sims7RedirectionsPage = () => {
                 </div>
 
                 <ControlledList
-                    tooltipBottomAligned
+                    tooltipBottomAligned={true}
                     data-testid="controlled-list"
                     globalNotificationMsgBannerObject={null}
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
-                    isShowSearch
+                    isShowSearch={true}
                     isShowFirstElement
                     isShowEditSelectedBtn={false}
                     isShowFourthElement={false}
@@ -274,7 +274,7 @@ export const Sims7RedirectionsPage = () => {
                     tableFirstColumnWidth="10px"
                     tableHeadersData={sims7RedirectionsTableHeaders}
                     tableLastColumnWidth="10px"
-                    isSorting
+                    isSorting={true}
                     sortByDefault={false}
                     sortAscFirst={false}
                     sortingOnClickEvent={() => { }}
@@ -290,8 +290,8 @@ export const Sims7RedirectionsPage = () => {
                     }}
                     titleConfirmation="Discard changes disduasi?"
                     isOpenConfirmationDialog={false}
-                    isIconRightAligned
-                    isShowOverflowMenuCol
+                    isIconRightAligned={true}
+                    isShowOverflowMenuCol={true}
                     onClickOverflowItem={(e, rowData) => {
                         const text = (e.target as HTMLElement).innerText.trim();
                         if (text === "View") {
@@ -301,7 +301,7 @@ export const Sims7RedirectionsPage = () => {
                         }
                     }}
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
-                    isSearchHideClearIcon
+                    isSearchHideClearIcon={true}
                     dynamicTableLoader={false}
                     onClickSidePnlSecondaryBtn={() => { }}
                     handleCloseSidePanel={() => { }}
@@ -318,27 +318,27 @@ export const Sims7RedirectionsPage = () => {
                     }
                     secondaryButtonTitle="Close"
                     isShowCheckboxCol={false}
-                    isShowThirdElement
+                    isShowThirdElement={true}
                     emptyRowResponseCode={ResponseCode.Info}
-                    isPagination
+                    isPagination={true}
                     paginationCount={Math.ceil(filteredTableData.length / pageSize)}
                     paginationOnChange={handlePaginationChange}
                     hideCloseBtn
 
                 />
 
-                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits title="Filter by">
+                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits={true} title="Filter by">
                     <DialogContent className="dialog-with-dropdown">
                         <>
                             <FormLabel>Status</FormLabel>
                             <Dropdown
                                 //  key={dropdownResetKey}
-                                multiSelect
+                                multiSelect={true}
                                 selectedItems={selectedItems}
                                 onSelectMultiple={(e: React.SyntheticEvent, selected: ISelectedItem[]) =>
                                     setSelectedItems(selected)
                                 }
-                                isFixedMultiSelect
+                                isFixedMultiSelect={true}
                                 // onClick={() => { setIsDropDownOpen(!isDropDownOpen) }}
                             >
                                 {dropdownItems.map(item => (

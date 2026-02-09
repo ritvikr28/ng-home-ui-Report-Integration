@@ -212,7 +212,11 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
         return () => clearTimeout(timeout);
     }, [showDeleteToast]);
 
-    const paginatedNotifications = useMemo(() => tableData,[tableData]);
+     const paginatedNotifications = useMemo(() => {
+        const startIndex = (currentPage - 1) * PAGE_SIZE;
+        const endIndex = startIndex + PAGE_SIZE;
+        return tableData && tableData.slice(startIndex, endIndex);
+    }, [tableData, currentPage]);
 
     const handlePageChange = (event: any, page: number) => {
         setCurrentPage(page);

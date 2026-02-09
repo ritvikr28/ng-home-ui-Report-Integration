@@ -21,7 +21,7 @@ describe("NoSelectionDialog", () => {
     render(
       <NoSelectionDialog
         setShowDialog={setShowDialog}
-        loading
+        loading={true}
         title="Test Title"
         message="Test Message"
         notificationTitle="Test Notification"
