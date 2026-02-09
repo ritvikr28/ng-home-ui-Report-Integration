@@ -54,8 +54,8 @@ export const useNotification = ({ tableData, totalTableData }: { tableData?: any
     }>({});
     const [isSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
-    const [sortBy, setSortBy] = useState<string>("DateReceived");
-    const [sortDirection, setSortDirection] = useState<string>("Desc");
+    const [sortBy, setSortBy] = useState<string>("ReceivedDate");
+    const [sortDirection, setSortDirection] = useState<boolean>(false);
 
     // const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -235,7 +235,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData?: any
         return () => clearTimeout(timeout);
     }, [showDeleteToast]);
 
-    const paginatedNotifications = useMemo(() => {
+     const paginatedNotifications = useMemo(() => {
         const startIndex = (currentPage - 1) * PAGE_SIZE;
         const endIndex = startIndex + PAGE_SIZE;
         return tableData && tableData.slice(startIndex, endIndex);
@@ -243,6 +243,8 @@ export const useNotification = ({ tableData, totalTableData }: { tableData?: any
 
     const handlePageChange = (event: any, page: number) => {
         setCurrentPage(page);
+         setSelectedNotificationIds([]);
+         setIsClearSelectedCheckbox(true);    
     };
 
     const handleListCheckboxChange = (_index: number, id: string) => {
@@ -373,41 +375,38 @@ export const useNotification = ({ tableData, totalTableData }: { tableData?: any
     const handleClearAllFilters = () => {
         setFilters({});
         if (!searchTerm.trim()) {
-            setSortBy("DateReceived");
-            setSortDirection("Desc");
+            setSortBy("ReceivedDate");
+            setSortDirection(false);
         }
     };
 
-    const handleSort = (columnName: string) => {
-        let apiColumnName = columnName;
-        switch (columnName) {
-            case "Date received": {
-                apiColumnName = "DateReceived";
-                let newDirection = "Desc";
-                if (sortBy === "DateReceived") {
-                    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-                }
-                setSortBy("DateReceived");
-                setSortDirection(newDirection);
-                return;
-            }
-            case "Priority":
-                apiColumnName = "Priority";
-                break;
-            case "Status":
-                apiColumnName = "Status";
-                break;
-            default:
-                return;
-        }
-        let newDirection = "Asc";
-        if (sortBy === apiColumnName) {
-            newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-        }
+const handleSort = (columnName: string) => {
+  let apiColumnName = columnName;
+  switch (columnName) {
+    case "Status":
+      apiColumnName = 
+      "Status";
+      break;
+    case "Notification":
+      apiColumnName = "Notification";
+      break;
+    case "Priority":
+      apiColumnName = "Priority";
+      break;
+    case "Date received":
+      apiColumnName = "ReceivedDate";
+      break;
+      default:
+      return;
+  }
+   if (sortBy === apiColumnName) {
+    setSortDirection(prev => !prev);
+  } else {
+    setSortDirection(false);
+  }
 
-        setSortBy(apiColumnName);
-        setSortDirection(newDirection);
-    };
+  setSortBy(apiColumnName);
+};
 
     // const handleClearSearch = () => {
     //     setSearchTerm("");

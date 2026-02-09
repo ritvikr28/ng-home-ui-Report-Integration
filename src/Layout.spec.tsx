@@ -62,7 +62,7 @@ describe("Layout", () => {
     it("renders Header when isStandaloneApp is true", () => {
         const { getByTestId } = render(
             <MemoryRouter initialEntries={["/"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         expect(getByTestId("header")).toBeInTheDocument();
@@ -77,7 +77,7 @@ describe("Layout", () => {
     it("renders ProtectedRoute for /", () => {
         const { getAllByTestId } = render(
             <MemoryRouter initialEntries={["/"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         expect(getAllByTestId("protected-route").some(el => el.textContent?.includes("/"))).toBe(true);
@@ -86,7 +86,7 @@ describe("Layout", () => {
     it("renders Auth route when isStandaloneApp is true", () => {
         render(
             <MemoryRouter initialEntries={["/auth"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("auth")).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe("Layout", () => {
     it("renders AdminConsole route when permission is true", () => {
         render(
             <MemoryRouter initialEntries={["/AdminConsole"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("admin-console")).toBeInTheDocument();
@@ -104,7 +104,7 @@ describe("Layout", () => {
     it("renders DBManagement route when permission is true", () => {
         render(
             <MemoryRouter initialEntries={["/dbmanagement"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("db-management")).toBeInTheDocument();
@@ -113,7 +113,7 @@ describe("Layout", () => {
     it("renders SystemStatus route when permission is true", () => {
         render(
             <MemoryRouter initialEntries={["/systemstatus"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("system-status")).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("Layout", () => {
     it("renders InviteUsersLogic route when permission is true", () => {
         render(
             <MemoryRouter initialEntries={["/inviteusers"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("invite-users")).toBeInTheDocument();
@@ -131,7 +131,7 @@ describe("Layout", () => {
     it("renders Sims7RedirectionsLayout route when permission is true", () => {
         render(
             <MemoryRouter initialEntries={["/sims7redirections"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("sims7-redirections")).toBeInTheDocument();
@@ -140,7 +140,7 @@ describe("Layout", () => {
     it("renders EarlyAdpterPage for /adminConsole/userManagement", () => {
         render(
             <MemoryRouter initialEntries={["/adminConsole/userManagement"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("early-adopter")).toBeInTheDocument();
@@ -149,7 +149,7 @@ describe("Layout", () => {
     it("renders SchoolGroupRedirect for /schoolRedirect", () => {
         render(
             <MemoryRouter initialEntries={["/schoolRedirect"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("school-group-redirect")).toBeInTheDocument();
@@ -158,7 +158,7 @@ describe("Layout", () => {
     it("renders UAM for /uam", () => {
         render(
             <MemoryRouter initialEntries={["/uam"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("uam")).toBeInTheDocument();
@@ -167,7 +167,7 @@ describe("Layout", () => {
     it("renders UnAuthorisedAccess for /unauthorized", () => {
         render(
             <MemoryRouter initialEntries={["/unauthorized"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("unauthorised-access")).toBeInTheDocument();
@@ -176,7 +176,7 @@ describe("Layout", () => {
     it("renders PageNotFound for unknown route", () => {
         render(
             <MemoryRouter initialEntries={["/unknown"]}>
-                <Layout isStandaloneApp={true} baseRouteName="/" />
+                <Layout isStandaloneApp baseRouteName="/" />
             </MemoryRouter>
         );
         // expect(getByTestId("page-not-found")).toBeInTheDocument();

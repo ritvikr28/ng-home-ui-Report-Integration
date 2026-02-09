@@ -94,7 +94,7 @@ const NotificationView = () => {
 
     const handleSearchKeyPressed = (inputValue: string) => {
         setIsTableBodyLoading(true);
-        getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: inputValue.toLowerCase() })
+        getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: inputValue.toLowerCase(), SortBy: sortBy, SortDirection: sortDirection })
             .then((data) => {
                 if (!data.error) {
                     setTableData(data.payload);
@@ -127,32 +127,32 @@ const NotificationView = () => {
         , [filters]);
 
     const hasSearch = React.useMemo(() => searchTerm.trim().length >= 2, [searchTerm]);
-    useEffect(() => {
-        if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
-            setIsTableBodyLoading(true);
-            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase() })
-                .then((data) => {
-                    if (!data.error) {
-                        setTableData(data.payload);
-                        setTotalTableData(data.total);
-                        setTableDataError(false);
-                        if (data.payload.length === 0) {
-                            setNoResults(true);
-                        }
-                    } else {
-                        setNoResults(true);
-                        setTableDataError(true);
-                        setTableData([]);
-                    }
-                })
-                .finally(() => setIsTableBodyLoading(false));
-        }
-    }, []);
+    // useEffect(() => {
+    //     if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
+    //         setIsTableBodyLoading(true);
+    //         getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase(),SortBy: sortBy, SortDirection: sortDirection  })
+    //             .then((data) => {
+    //                 if (!data.error) {
+    //                     setTableData(data.payload);
+    //                     setTotalTableData(data.total);
+    //                     setTableDataError(false);
+    //                     if (data.payload.length === 0) {
+    //                         setNoResults(true);
+    //                     }
+    //                 } else {
+    //                     setNoResults(true);
+    //                     setTableDataError(true);
+    //                     setTableData([]);
+    //                 }
+    //             })
+    //             .finally(() => setIsTableBodyLoading(false));
+    //     }
+    // }, []);
 
     useEffect(() => {
         if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
             setIsTableBodyLoading(true);
-            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase() })
+            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase(), SortBy: sortBy, SortDirection: sortDirection })
                 .then((data) => {
                     if (!data.error) {
                         setTableData(data.payload);
@@ -169,7 +169,7 @@ const NotificationView = () => {
                 })
                 .finally(() => setIsTableBodyLoading(false));
         }
-    }, [notificationState, currentPage,sideIsOpen]);
+    }, [notificationState, currentPage, sideIsOpen,sortBy, sortDirection]);
 
     useEffect(() => {
         if (!(searchTerm && hasSearch && isAutoSuggestVisible)) {
@@ -233,8 +233,8 @@ const NotificationView = () => {
         }
     };
 
-    const shouldShowPagination = !tableDataError && totalTableData !== 0
-    // > 1 && paginatedNotifications.length > 0 && !noResults;
+    const shouldShowPagination = !tableDataError && totalTableData !== 0 && !isTableBodyLoading
+    // > 1 && tableData.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
         if (tableDataError) {
@@ -324,7 +324,7 @@ const NotificationView = () => {
                                         setIsAutoSuggestVisible(false);
                                     }
                                 }}
-                               isSearchHideClearIcon={searchTerm.length === 0}
+                                isSearchHideClearIcon={searchTerm.length === 0}
                                 onSearchKeyDown={(e: React.KeyboardEvent) => {
                                     console.log("Key pressed in search input ------------------", (e.target as HTMLInputElement).value);
                                     setSearchTerm((e.target as HTMLInputElement).value);
