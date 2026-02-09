@@ -1,3 +1,4 @@
+import { SuggestionItem } from "@essnextgen/ui-kit";
 
 export interface NotificationRowData {
   id: string;
@@ -6,6 +7,11 @@ export interface NotificationRowData {
   priority: string;
   dateReceived: string;
 }
+
+export declare type Suggestion = {
+    name: string;
+    values: Array<SuggestionItem>;
+};
 
 export const PriorityType: Record<string, string> = {
   Tier3: "Low",
