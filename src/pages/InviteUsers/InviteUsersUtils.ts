@@ -66,6 +66,18 @@ export const postSendInvitation = async (props: IPostSendInvitation) => {
   }
 };
 
+function formatDate(dateString: Date) {
+  if (dateString === undefined) {
+    return undefined;
+  }
+  if (dateString === null) {
+    return "";
+  }
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
+
 export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
   const {
     pageSize,
@@ -108,7 +120,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,
-        inviteRequestDate: item?.inviteRequestDate,
+        inviteRequestDate: formatDate(item?.inviteRequestDate),
         actions: {
           options: [
             {

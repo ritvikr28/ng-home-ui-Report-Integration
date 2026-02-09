@@ -56,7 +56,7 @@ describe("InviteUsersUtils", () => {
                 emailId: "john.doe@example.com",
                 userType: "Admin",
                 invitationStatus: "Pending",
-                inviteRequestDate: undefined
+                inviteRequestDate: new Date("2025-10-10T11:55:50.543")
               }
             ]
           }
@@ -87,7 +87,7 @@ describe("InviteUsersUtils", () => {
           emailId: "john.doe@example.com",
           userType: "Admin",
           invitationStatus: "Pending",
-          inviteRequestDate: undefined,
+          inviteRequestDate: "10 Oct 2025",
           actions: {
             options: [
               {
