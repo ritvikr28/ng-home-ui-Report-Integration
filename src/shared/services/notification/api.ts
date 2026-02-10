@@ -4,9 +4,11 @@ import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
 
-export const getNotificationTableData = async ({ PageSize, PageNumber, SearchTerm,SortBy,
-  SortDirection }: { PageSize: number, PageNumber: number, SearchTerm: string,SortBy?: string;
-  SortDirection?: boolean; }): Promise<any> => {
+export const getNotificationTableData = async ({ PageSize, PageNumber, SearchTerm, SortBy,
+  SortDirection }: {
+    PageSize: number, PageNumber: number, SearchTerm: string, SortBy?: string;
+    SortDirection?: boolean;
+  }): Promise<any> => {
   const orgId = getUserOrganisation();
   const receiverId = authService.getUserId();
   // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
@@ -62,9 +64,9 @@ export const markAsRead = async (notificationId: string): Promise<any> => {
 
 export const getSearchAutoSuggestData = async ({ SearchTerm }: { SearchTerm: string }) => {
   const OrganisationId = authService.getOrgId();
-  console.log("OrganisationId", OrganisationId);
+  const receiverId = authService.getUserId();
   try {
-    const path = `/v1/notification/auto-suggestions?SearchTerm=${SearchTerm}&OrganisationId=${OrganisationId}`;
+    const path = `/v1/notification/auto-suggestions?SearchTerm=${SearchTerm}&OrganisationId=${OrganisationId}&ReceiverId=${receiverId}`;
     const baseUrl = buildApplicationUrl(apiUrls);
     const response = await service.get(path, baseUrl);
     return response.data;
