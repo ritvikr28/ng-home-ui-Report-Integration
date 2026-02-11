@@ -10,9 +10,10 @@ import {
   debouncedFetchSuggestions,
   mapToBulkDeletePayload
 } from "./DocumentManagementServer.logic";
-import { relatedToEnum } from "../../../public/Constants";
-import gtmAnalytics from "../../shared/utils/analytics";
-import { isValidDate } from "../../shared/utils/commonFunctions";
+import { relatedToEnum } from "../../../../public/Constants";
+import gtmAnalytics from "../../../shared/utils/analytics";
+import { isValidDate } from "../../../shared/utils/commonFunctions";
+import { HandleSearchChangeParams, HandleTagCloseLogicParams } from "../responseModel";
 
 /* ------------------------------------------------------------------ */
 /* Page & Search                                                       */
@@ -31,33 +32,20 @@ export const handlePageChange: (_: unknown, page: number, setCurrentPage: React.
 const shouldIgnoreSearch = (value: string): boolean =>
   value.trim().length === 0 || value.length < 3;
 
-export const handleSearchChange: (
-  t: (key: string) => string,
-  e: React.ChangeEvent<HTMLInputElement>,
-  categoryId: number[] | null,
-  fromDate: string,
-  toDate: string,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
-  documentRelatedTo?: number,
-  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
-) => void = (
-  t: (key: string) => string,
-  e: React.ChangeEvent<HTMLInputElement>,
-  categoryId: number[] | null,
-  fromDate: string,
-  toDate: string,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
-  documentRelatedTo?: number,
-  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
-): void => {
+export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
+  t,
+  e,
+  categoryId,
+  fromDate,
+  toDate,
+  setSearchTerm,
+  setSuggestions,
+  setShowSearchError,
+  setIsSearchLoading,
+  setShowErrorBanner,
+  documentRelatedTo,
+  setResetFilterSearch
+}: HandleSearchChangeParams): void => {
   const value: string = e.target.value;
   setSearchTerm(value);
 
@@ -90,7 +78,6 @@ export const handleSearchChange: (
     documentRelatedTo
   );
 };
-
 /* ------------------------------------------------------------------ */
 /* Suggestions                                                         */
 /* ------------------------------------------------------------------ */
@@ -143,20 +130,16 @@ const isDateRangeTag = (name?: string, id?: string | number): boolean =>
     /^\d{2} \w{3} \d{4} to (-|\d{2} \w{3} \d{4})$/
   );
 
-export const handleTagCloseLogic: (_: React.SyntheticEvent, __: string, closeObj: { name?: string; id?: string | number }, setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>, setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>, setIsDateError: React.Dispatch<React.SetStateAction<boolean>>, setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>, setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>) => void = (
-  _: React.SyntheticEvent,
-  __: string,
-  closeObj: { name?: string; id?: string | number },
-  setSelectedDateRange: React.Dispatch<
-    React.SetStateAction<{ fromDate: string; toDate: string }>
-  >,
-  setDateRange: React.Dispatch<
-    React.SetStateAction<{ fromDate: string; toDate: string }>
-  >,
-  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>,
-  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>,
-  setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>
-): void => {
+export const handleTagCloseLogic: (params: HandleTagCloseLogicParams) => void = ({
+  event,
+  tagName,
+  closeObj,
+  setSelectedDateRange,
+  setDateRange,
+  setIsDateError,
+  setSelectedCategories,
+  setSelectedFormats
+}: HandleTagCloseLogicParams): void => {
   if (isDateRangeTag(closeObj.name, closeObj.id)) {
     setSelectedDateRange({ fromDate: "", toDate: "" });
     setDateRange({ fromDate: "", toDate: "" });
@@ -261,7 +244,7 @@ export const handleBulkDeleteLogic: (allSelectedDocs: any[], docData: any, allRe
   setIsSearchDataLoading(true);
   setShowDeleteAbortBanner(false);
 
-  const payload = mapToBulkDeletePayload({
+  const payload: any = mapToBulkDeletePayload({
     isSelectAll: isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
@@ -319,23 +302,40 @@ function isDeleteAvailable(available: number): boolean {
   return available > 0;
 }
 
+interface ValidationResultHandlers {
+  setIsPreDialogLoading: (v: boolean) => void;
+  setShowRestrictedDeleteDialog: (v: boolean) => void;
+  setShowDialog: (v: boolean) => void;
+  setShowErrorBanner: (v: boolean) => void;
+  setRestrictedFileCount: (v: number) => void;
+  setAlreadyDeletedFileCount: (v: number) => void;
+  setAvailableFileCount: (v: number) => void;
+  setAvailableFileIds: (v: string[]) => void;
+  setDialogType: (v: string) => void;
+  setIsDialogLoading: (v: boolean) => void;
+  setShowConfirmDialog: (v: boolean) => void;
+  setShowRestrictedPrepareDialog: (v: boolean) => void;
+}
 function handleValidationResult(
   result: any,
   selectedItem: ISelectedItem,
   totalSelectedCount: number,
-  setIsPreDialogLoading: (v: boolean) => void,
-  setShowRestrictedDeleteDialog: (v: boolean) => void,
-  setShowDialog: (v: boolean) => void,
-  setShowErrorBanner: (v: boolean) => void,
-  setRestrictedFileCount: (v: number) => void,
-  setAlreadyDeletedFileCount: (v: number) => void,
-  setAvailableFileCount: (v: number) => void,
-  setAvailableFileIds: (v: string[]) => void,
-  setDialogType: (v: string) => void,
-  setIsDialogLoading: (v: boolean) => void,
-  setShowConfirmDialog: (v: boolean) => void,
-  setShowRestrictedPrepareDialog: (v: boolean) => void
+  handlers: ValidationResultHandlers
 ): void {
+  const {
+    setIsPreDialogLoading,
+    setShowRestrictedDeleteDialog,
+    setShowDialog,
+    setShowErrorBanner,
+    setRestrictedFileCount,
+    setAlreadyDeletedFileCount,
+    setAvailableFileCount,
+    setAvailableFileIds,
+    setDialogType,
+    setIsDialogLoading,
+    setShowConfirmDialog,
+    setShowRestrictedPrepareDialog
+  } : ValidationResultHandlers = handlers; {
   if (result?.status !== 200 && result?.status !== 204) {
     setIsPreDialogLoading(false);
     setShowRestrictedDeleteDialog(false);
@@ -346,6 +346,7 @@ function handleValidationResult(
       messageText: "Information unavailable"
     });
     return;
+  }
   }
 
   const restricted: number = result?.data?.restrictedFileCount ?? 0;
@@ -410,7 +411,7 @@ export const handleEditSelectedOverFlowMenu: any = async ({
   setSidePanelOpenReason,
   setIsSidePanelOpen,
   setAvailableFileIds,
-  setShowErrorBanner,
+  setShowErrorBanner
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -460,7 +461,7 @@ export const handleEditSelectedOverFlowMenu: any = async ({
         referenceExternalIds: searchRefExternalId,
         documentRelatedTo,
         fileDetails,
-        excludedFileDetails,
+        excludedFileDetails
       });
 
       const result: any = await validation(validationPayload);
@@ -469,18 +470,20 @@ export const handleEditSelectedOverFlowMenu: any = async ({
         result,
         selectedItem,
         totalSelectedCount,
-        setIsPreDialogLoading,
-        setShowRestrictedDeleteDialog,
-        setShowDialog,
-        setShowErrorBanner,
-        setRestrictedFileCount,
-        setAlreadyDeletedFileCount,
-        setAvailableFileCount,
-        setAvailableFileIds,
-        setDialogType,
-        setIsDialogLoading,
-        setShowConfirmDialog,
-        setShowRestrictedPrepareDialog
+        {
+          setIsPreDialogLoading,
+          setShowRestrictedDeleteDialog,
+          setShowDialog,
+          setShowErrorBanner,
+          setRestrictedFileCount,
+          setAlreadyDeletedFileCount,
+          setAvailableFileCount,
+          setAvailableFileIds,
+          setDialogType,
+          setIsDialogLoading,
+          setShowConfirmDialog,
+          setShowRestrictedPrepareDialog
+        }
       );
     }
   } else if ((selectedItem?.value?.toLowerCase() === "view download")) {
@@ -543,7 +546,7 @@ export function handleApply({
   setSortDirection: (v: "Asc" | "Desc") => void,
   setIsInitialLoad: (v: boolean) => void,
   setReferenceExternalIds: (v: string[]) => void
-}): any {
+}): void {
   if (
     isDateError ||
     isInvalidDateRange(
@@ -580,7 +583,38 @@ export function closeSidePanel( setIsSidePanelOpen: (v: boolean) => void, downlo
   // eslint-disable-next-line 
 downloadPollingIntervalRef.current = null; } }
 
-export function getNotificationMsgBannerObject( t: (key: string, options?: any) => string, showErrorBanner: boolean, showSearchError: boolean, showDeleteErrorBanner: boolean, showDeleteAbortBanner: boolean, availableFileCount: number, setShowDeleteErrorBanner: (v: boolean) => void, setShowDeleteAbortBanner: (v: boolean) => void ): any[] { 
+interface NotificationMsgBannerParams {
+  t: (key: string, options?: any) => string;
+  showErrorBanner: boolean;
+  showSearchError: boolean;
+  showDeleteErrorBanner: boolean;
+  showDeleteAbortBanner: boolean;
+  availableFileCount: number;
+  setShowDeleteErrorBanner: (v: boolean) => void;
+  setShowDeleteAbortBanner: (v: boolean) => void;
+}
+
+interface NotificationMsgBanner {
+  isShow: boolean;
+  variant: string;
+  title: string;
+  message: string;
+  autoclose: boolean;
+  onClickClose?: () => void;
+}
+
+
+export function getNotificationMsgBannerObject(params: NotificationMsgBannerParams): NotificationMsgBanner[] {
+  const {
+    t,
+    showErrorBanner,
+    showSearchError,
+    showDeleteErrorBanner,
+    showDeleteAbortBanner,
+    availableFileCount,
+    setShowDeleteErrorBanner,
+    setShowDeleteAbortBanner
+  }: NotificationMsgBannerParams = params;
   return [ 
     { 
       isShow: showErrorBanner || showSearchError, 

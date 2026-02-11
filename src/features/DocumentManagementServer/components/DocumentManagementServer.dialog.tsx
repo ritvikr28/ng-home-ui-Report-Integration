@@ -1,6 +1,6 @@
 import React from "react";
-import NoSelectionDialog from "../../shared/components/NoSelectionDialog/NoSelectionDialog";
-import { getDialogTitle } from "./DocumentManagementServer.utils";
+import NoSelectionDialog from "../../../shared/components/NoSelectionDialog/NoSelectionDialog";
+import { getDialogTitle } from "../logic/DocumentManagementServer.utils";
 
 interface DmsDialogsProps {
   t: any;
@@ -38,7 +38,7 @@ export const DmsDialogs: React.FC<DmsDialogsProps> = ({
   totalSelectedCount,
   isHeaderBoxChecked,
   isPreDialogLoading,
-  onRefreshAfterClose,
+  onRefreshAfterClose
 }) =>
     <>
       {showDialog && (
@@ -72,10 +72,10 @@ export const DmsDialogs: React.FC<DmsDialogsProps> = ({
           title={
             alreadyDeletedFileCount === 1
               ? t("DocumentManagementServer.documentCannotBeDownloadedTitle", {
-                  count: alreadyDeletedFileCount,
+                  count: alreadyDeletedFileCount
                 })
               : t("DocumentManagementServer.documentsCannotBeDownloadedTitle", {
-                  count: alreadyDeletedFileCount,
+                  count: alreadyDeletedFileCount
                 })
           }
           loading={isPreDialogLoading}

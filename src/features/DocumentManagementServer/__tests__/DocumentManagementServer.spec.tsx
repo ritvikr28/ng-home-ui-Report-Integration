@@ -3,9 +3,9 @@ import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
-import DocumentManagementServerView from "../DocumentManagementServer.view";
+import DocumentManagementServerView from "../Views/DocumentManagementServer.view";
 import * as ApiService from "../ApiService";
-import * as Logic from "../DocumentManagementServer.logic";
+import * as Logic from "../logic/DocumentManagementServer.logic";
  
 jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
 

@@ -1,6 +1,6 @@
 import React , { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
-import { applySummaryTagClass, getAllRegistrationIds } from "./DocumentManagementServer.utils";
+import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
 
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
@@ -116,7 +116,7 @@ export function useFetchDocsEffect({
   isFilterDialogOpen,
   allRegistrationIds,
   fetchGetDocumentDetails,
-  setIsInitialLoad,
+  setIsInitialLoad
 }: UseFetchDocsEffectParams): void {
   useEffect(() => {
     const allRegistrationId: number[] = getAllRegistrationIds(selectedFormats);
@@ -210,7 +210,7 @@ export function useSidePanelViewDownloadEffect({
           viewDownload,
           downloadPollingIntervalRef,
           setIsViewDownloadError,
-          setShowEmailNotification,
+          setShowEmailNotification
         });
       }, 2000);
 
@@ -303,7 +303,7 @@ export interface UseSearchTermEffectParams {
   isSearchTriggered: boolean;
   handleSearchChange: (
     t: any,
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: { target: { value: string } },
     registrationIds: any,
     fromDate: any,
     toDate: any,
@@ -337,11 +337,17 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams): void {
     setShowErrorBanner
   }: UseSearchTermEffectParams = params;
 
+  // Define a minimal type for your use case
+    type MinimalInputChangeEvent = { target: { value: string } };
+
+    function createInputChangeEvent(value: string): MinimalInputChangeEvent {
+      return { target: { value } };
+    }
   useEffect(() => {
     if (searchTerm?.length > 1 && !showSearchError && !isSearchTriggered) {
       handleSearchChange(
         t,
-        { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
+        createInputChangeEvent(searchTerm),
         getAllRegistrationIds(selectedFormats),
         selectedDateRange?.fromDate,
         selectedDateRange?.toDate,

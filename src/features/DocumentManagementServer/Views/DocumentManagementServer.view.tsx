@@ -5,23 +5,23 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, NotificationStatus, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  getTitleConfirmation, handleSearchChange, onBreadcrumbClick, prepareDownload } from "./DocumentManagementServer.logic"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  getTitleConfirmation, handleSearchChange, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
 import "./style.scss"
-import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "./responseModel"
-import { pageSizeNumber } from "../../../public/Constants"
-import { CapitalizeFirstLetter } from "../../shared/utils/commonFunctions"
-import { viewDownload ,clearAllFiles, deleteFiles, validation} from "./ApiService"
-import gtmAnalytics from "../../shared/utils/analytics";
-import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject } from "./DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys,  handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList } from "./DocumentManagementServer.utils";
-import { useBodyNoScroll, useFetchDocsEffect, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "./useDocumentManagementEffects";
-import { DmsDialogs } from "./DocumentManagementServer.dialog";
-import DmsControlledList from "./DocumentManagementServer.table";
+import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
+import { pageSizeNumber } from "../../../../public/Constants"
+import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions"
+import { viewDownload ,clearAllFiles, deleteFiles, validation} from "../api/ApiService";
+import gtmAnalytics from "../../../shared/utils/analytics";
+import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject } from "../logic/DocumentManagementServer.handler";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys,  handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList } from "../logic/DocumentManagementServer.utils";
+import { useBodyNoScroll, useFetchDocsEffect, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
+import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
+import DmsControlledList from "../components/DocumentManagementServer.table";
 
 const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
   show,
   availableFileCount,
-  t,
+  t
 }: {
   show: boolean;
   availableFileCount: number;
@@ -49,7 +49,7 @@ const SideNavigation: React.FC<{ isOpen: boolean; isMobileView: boolean; visible
   visibleBreadcrumbs,
   handleButtonClick,
   setIsOpen,
-  t,
+  t
 }: any) => (
   <GridItem className={!isMobileView ? "side-width" : "no-side-width"}>
     {!isOpen && (
@@ -71,7 +71,7 @@ const SideNavigation: React.FC<{ isOpen: boolean; isMobileView: boolean; visible
       isOpenSideNavigation={isOpen}
       defaultSelectedMenu={{
         text: "Documents",
-        value: window.location.href,
+        value: window.location.href
       }}
     />
 
@@ -91,7 +91,7 @@ const MainContent: React.FC<{ isMobileView: boolean; isOpen: boolean; visibleBre
   isMobileView,
   isOpen,
   visibleBreadcrumbs,
-  children,
+  children
 }: any) => (
   <GridItem className={isOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
     <div style={{ marginBottom: 16, width: "100%" }}>
@@ -253,7 +253,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         documentRelatedTo, isSearchTriggered, isFilterDialogOpen, allRegistrationIds, fetchGetDocumentDetails, setIsInitialLoad });  
 
     useSidePanelViewDownloadEffect({isSidePanelOpen, sidePanelOpenReason, setShowToastNotification, setIsSidePanelLoader,
-    fetchViewDownloadData, setViewData, setHasFetchedViewDownload, viewDownload, downloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification,
+    fetchViewDownloadData, setViewData, setHasFetchedViewDownload, viewDownload, downloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification
     });
 
 
@@ -310,17 +310,31 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         text: string,
         closeObj: { name?: string; id?: string | number }
             ) => {
-            handleTagCloseLogic( e, text, closeObj, setSelectedDateRange, setDateRange, setIsDateError,
-                setSelectedCategories, setSelectedFormats
-            );
+            handleTagCloseLogic({
+            event: e,
+            tagName: text,
+            closeObj,
+            setSelectedDateRange,
+            setDateRange,
+            setIsDateError,
+            setSelectedCategories,
+            setSelectedFormats
+          });
             setCurrentPage(1);
     };
         useTotalSelectedCountEffect({isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs,
              setIsHeaderBoxChecked, setAllSelectedDocs, setExcludedCheckBoxIds, setTotalSelectedCount});
 
-    const NotificationMsgBannerObject: any = getNotificationMsgBannerObject(
-        t, showErrorBanner, showSearchError, showDeleteErrorBanner, showDeleteAbortBanner, availableFileCount, setShowDeleteErrorBanner, setShowDeleteAbortBanner);
-
+    const NotificationMsgBannerObject: any = getNotificationMsgBannerObject({
+        t,
+        showErrorBanner,
+        showSearchError,
+        showDeleteErrorBanner,
+        showDeleteAbortBanner,
+        availableFileCount,
+        setShowDeleteErrorBanner,
+        setShowDeleteAbortBanner
+    });
     useSearchTermEffect({  searchTerm, selectedFormats, selectedDateRange, showSearchError, isSearchTriggered, handleSearchChange,
         t, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner
     });
@@ -563,7 +577,7 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             setPrevSelectedDocs,
             setIsClearSelectedCheckbox,
             searchText,
-            setDateRange,
+            setDateRange
           }}
         />
       </MainContent>

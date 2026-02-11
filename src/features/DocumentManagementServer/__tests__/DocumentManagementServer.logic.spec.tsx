@@ -4,7 +4,7 @@
 // import dayjs from "dayjs";
 // import { ISelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 // import * as ApiService from "../ApiService";
-import * as logicModule from "../DocumentManagementServer.logic";
+import * as logicModule from "../logic/DocumentManagementServer.logic";
 // import { handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter, closeSidePanel, handleClearAllConfirm, handleBulkDeleteLogic, addUniqueTagItem, handleApply, handleEditSelectedOverFlowMenu } from "../DocumentManagementServer.handler";
 // import { hasItems, getVisibleTagsWithSummary, getCategoryArr, getDateTag, getValidationState, getResultNotFoundMsg, getAllRegistrationIds, mapRelatedArr, filterNonEmptySuggestions, reduceCategories, getCompletedPartitionKeys, applySummaryTagClass } from "../DocumentManagementServer.utils";
 

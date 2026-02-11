@@ -25,13 +25,13 @@ import dayjs from "dayjs";
 import "./style.scss";
 import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
-import { fetchDocumentCategoryData, handleSearchChange } from "../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import { fetchDocumentCategoryData, handleSearchChange } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
-import { addUniqueTagItem } from "../../../features/DocumentManagementServer/DocumentManagementServer.handler";
-import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions } from "../../../features/DocumentManagementServer/DocumentManagementServer.utils";
+import { addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
+import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 
 interface FilterDialogProps {
   dataTestId?: string;

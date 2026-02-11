@@ -1,11 +1,11 @@
 
 import React from "react";
 import { ShowValAs, Tag, Suggestion, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader, SuggestionItem } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
-import gtmAnalytics from "../../shared/utils/analytics";
- import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "./responseModel";
-import { pageSizeNumber } from "../../../public/Constants";
-import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "../api/ApiService";
+import gtmAnalytics from "../../../shared/utils/analytics";
+ import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "../responseModel";
+import { pageSizeNumber } from "../../../../public/Constants";
+import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
 
 const renderSingleValue = (

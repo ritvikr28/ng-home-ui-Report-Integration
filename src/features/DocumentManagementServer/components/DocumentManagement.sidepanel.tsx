@@ -54,7 +54,7 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   setShowToastNotification,
   setFailedFileName,
   fileDownload,
-  gtmAnalytics,
+  gtmAnalytics
 }) => 
     <>
       {clearAllError && (
@@ -71,10 +71,10 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
         <Notification
           status={NotificationStatus.WARNING}
           title={t("DocumentManagementServer.prepareDownloadErrorTitle", {
-            type: availableFileCount === 1 ? "document" : "documents",
+            type: availableFileCount === 1 ? "document" : "documents"
           })}
           message={t("DocumentManagementServer.prepareDownloadErrorMessage", {
-            type: availableFileCount === 1 ? "document" : "documents",
+            type: availableFileCount === 1 ? "document" : "documents"
           })}
           autoclose
           onClickClose={() => setPrepareDownloadError(false)}
@@ -117,7 +117,7 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
           status={NotificationStatus.WARNING}
           title={t("DocumentManagementServer.failedDownloadTitle")}
           message={t("DocumentManagementServer.failedDownloadMessage", {
-            files: failedFileName.join(", "),
+            files: failedFileName.join(", ")
           })}
           autoclose
           onClickClose={() => {

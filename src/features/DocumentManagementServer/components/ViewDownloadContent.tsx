@@ -1,6 +1,6 @@
 import React from "react";
 import { Notification, NotificationStatus, Loader, LoaderType, Button } from "@essnextgen/ui-kit";
-import { ViewDownloadItem } from "./responseModel";
+import { ViewDownloadItem } from "../responseModel";
 
 interface Props {
   t: (key: string, options?: any) => string;
@@ -21,7 +21,7 @@ export const ViewDownloadContent: React.FC<Props> = ({
   viewData,
   fileDownload,
   setDownloadError,
-  gtmAnalytics,
+  gtmAnalytics
 }) => {
   if (isViewDownloadError) {
     return (
@@ -56,7 +56,7 @@ export const ViewDownloadContent: React.FC<Props> = ({
                     return (
                       <span>
                         {t("DocumentManagementServer.ExpiresInDays", {
-                          days: item.fileExpiryDays,
+                          days: item.fileExpiryDays
                         })}
                       </span>
                     );
@@ -85,13 +85,13 @@ export const ViewDownloadContent: React.FC<Props> = ({
                         fileExtension: item?.name?.split(".").pop() || "",
                         fileName: "[RemovedFileName]",
                         linkText: "Download",
-                        linkUrl: "[RemovedLinkUrl]",
+                        linkUrl: "[RemovedLinkUrl]"
                       });
                     } catch (error) {
                       setDownloadError(true);
                       gtmAnalytics.pushEvent({
                         event: "error_message",
-                        messageText: "Unable to download",
+                        messageText: "Unable to download"
                       });
                     }
                   }}

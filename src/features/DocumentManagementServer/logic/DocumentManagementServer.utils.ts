@@ -2,12 +2,53 @@ import React from "react";
 import dayjs from "dayjs";
 import { DialogTemplate, NotificationStatus, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
-import { Category, DialogConfig, GetDialogConfigParams } from "./responseModel";
-import gtmAnalytics from "../../shared/utils/analytics";
-import { homeurl } from "../../../public/Constants";
+import { Category, DialogConfig, GetDialogConfigParams } from "../responseModel";
+import gtmAnalytics from "../../../shared/utils/analytics";
+import { homeurl } from "../../../../public/Constants";
 
-export function mapRelatedArr(doc: any): any[] {
-  let relatedArr: any[] = [];
+// Define types for related entities
+interface RelatedPupil {
+  type: "pupil";
+  name: string;
+  year: string;
+  reg: string;
+  referenceExternalId: string;
+  isLeaver: string;
+}
+
+interface RelatedStaff {
+  type: "staff";
+  name: string;
+  staffCode: string;
+  referenceExternalId: string;
+  isLeaver: string;
+}
+
+interface RelatedSchool {
+  type: "school";
+  name: string;
+  referenceExternalId: string;
+}
+
+type RelatedEntity = RelatedPupil | RelatedStaff | RelatedSchool;
+
+// Optionally, define a minimal doc type for this function
+
+interface DocumentRow {
+fileId: string;
+document?: string;
+category?: string;
+addedBy?: string;
+dateAdded?: string;
+format?: string;
+size?: string;
+relatedTo?: any[];
+documentRelatedTo?: number;
+registrationId?: number;
+externalId?: string;
+}
+export function mapRelatedArr(doc: DocumentRow): RelatedEntity[] {
+  let relatedArr: RelatedEntity[] = [];
   if (Array.isArray(doc.relatedTo) && doc.relatedTo.length > 0) {
     if (doc.documentRelatedTo === 1) {
       // Pupils
@@ -17,7 +58,7 @@ export function mapRelatedArr(doc: any): any[] {
         year: pupil.currentYearGroup || "",
         reg: pupil.currentPrimaryClass || "",
         referenceExternalId: pupil.learnerExternalId || "",
-        isLeaver:pupil?.onRollState || ""
+        isLeaver: pupil?.onRollState || ""
       }));
     } else if (doc.documentRelatedTo === 3) {
       // Staff
@@ -33,7 +74,7 @@ export function mapRelatedArr(doc: any): any[] {
       relatedArr = doc.relatedTo.map((school: any) => ({
         type: "school",
         name: school.schoolName || "",
-        referenceExternalId: school.organisationId || "",
+        referenceExternalId: school.organisationId || ""
       }));
     }
   }
@@ -90,8 +131,8 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     categoryName: cat?.value,
     closeObj: {
       name: cat?.text,
-      id: cat?.data?.categoryId,
-    },
+      id: cat?.data?.categoryId
+    }
   })) || [];
 
   
@@ -111,7 +152,7 @@ export const getCategoryArr = (selectedFormats: any[]) =>
      {
        text,
        categoryName: "Date",
-       closeObj: { name: "Date", id: "dateRange" },
+       closeObj: { name: "Date", id: "dateRange" }
      }
    ];
  };
@@ -170,7 +211,7 @@ export function getValidationState(
   searchSelectionError: string,
   showSearchError: boolean,
   t: (key: string) => string
-): { validationText: string; validationTextLevel: ValidationTextLevel | undefined } {
+): { validationText: string; validationTextLevel: ValidationTextLevel | null } {
   let validationText = "";
   if (searchSelectionError) {
     validationText = searchSelectionError;
@@ -178,13 +219,13 @@ export function getValidationState(
     validationText = t("Filter.informationUnavailable");
   }
 
-  let validationTextLevel: ValidationTextLevel | undefined;
+  let validationTextLevel: ValidationTextLevel | null = null;
   if (searchSelectionError) {
     validationTextLevel = ValidationTextLevel.Error;
   } else if (showSearchError) {
     validationTextLevel = ValidationTextLevel.Warning;
   } else {
-    validationTextLevel = undefined;
+    validationTextLevel = null;
   }
 
   return { validationText, validationTextLevel };
@@ -321,7 +362,7 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
                     {
                         fileId: id,
                         registrationId: Number(doc.registrationId),
-                        externalId: doc.externalId,
+                        externalId: doc.externalId
                     }
                 ];
             }
@@ -426,10 +467,10 @@ export function getDialogConfig({
             setClearAllError,
             setShowConfirmDialog,
             setIsViewDownloadError,
-            setShowEmailNotification,
+            setShowEmailNotification
           });
         },
-        template: DialogTemplate.Confirmation,
+        template: DialogTemplate.Confirmation
       };
 
     case "delete":
@@ -474,7 +515,7 @@ export function getDialogConfig({
           setAllSelectedDocs([]);
           setIsClearSelectedCheckbox(true);
         },
-        template: DialogTemplate.Confirmation,
+        template: DialogTemplate.Confirmation
       };
 
     case "prepareDownload":
@@ -484,7 +525,7 @@ export function getDialogConfig({
         contentText: "",
         isNotificationanner: true,
         notificationTitle: t("DocumentManagementServer.prepareMultipleDocuments", {
-          count: availableFileCount,
+          count: availableFileCount
         }),
         notificationStatus: NotificationStatus.WARNING,
         onCancel: () => setShowConfirmDialog(false),
@@ -520,7 +561,7 @@ export function getDialogConfig({
             })
             .catch(() => setPrepareDownloadError(true));
         },
-        template: DialogTemplate.Confirmation,
+        template: DialogTemplate.Confirmation
       };
   default:
       return null;
@@ -571,12 +612,12 @@ function getExtraDeletedMessage(
   excludedCheckBoxIds: any[],
   isHeaderBoxChecked: boolean
 ): string | null {
-  const totalRecords = docData?.totalRecords ?? 0;
+  const totalRecords: number = docData?.totalRecords ?? 0;
   const excludedCount = excludedCheckBoxIds?.length || 0;
   const sum = alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCount;
 
   if (totalRecords !== sum && isHeaderBoxChecked) {
-    const deletedCount =
+    const deletedCount: number =
       totalRecords > sum && isHeaderBoxChecked
         ? totalRecords - sum
         : alreadyDeletedFileCount;
@@ -617,13 +658,13 @@ export function getDeleteDialogMessages({
 }): string[] {
   const messages: string[] = [];
 
-  const restrictedMsg = getRestrictedMessage(t, restrictedFileCount, availableFileCount, docData);
+  const restrictedMsg: string | null = getRestrictedMessage(t, restrictedFileCount, availableFileCount, docData);
   if (restrictedMsg) messages.push(restrictedMsg);
 
-  const alreadyDeletedMsg = getAlreadyDeletedMessage(t, alreadyDeletedFileCount, docData);
+  const alreadyDeletedMsg: string | null = getAlreadyDeletedMessage(t, alreadyDeletedFileCount, docData);
   if (alreadyDeletedMsg) messages.push(alreadyDeletedMsg);
 
-  const extraDeletedMsg = getExtraDeletedMessage(
+  const extraDeletedMsg: string | null = getExtraDeletedMessage(
     t,
     docData,
     alreadyDeletedFileCount,

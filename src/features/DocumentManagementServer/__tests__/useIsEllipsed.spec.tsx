@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
-import { useIsEllipsed } from "../useIsEllipsed";
+import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
+import { useIsEllipsed } from "../hooks/useIsEllipsed";
 
 // Mock the useIsEllipsed hook
 jest.mock("../useIsEllipsed");

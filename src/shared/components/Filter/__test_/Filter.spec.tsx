@@ -3,7 +3,7 @@ import React from "react";
 import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import dayjs from "dayjs";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
-import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
+import * as logic from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
 import gtmAnalytics from "../../../utils/analytics";
 import * as ApiService from "../../../../features/DocumentManagementServer/ApiService";

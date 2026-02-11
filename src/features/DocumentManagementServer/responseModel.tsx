@@ -344,3 +344,30 @@ export interface GetDialogConfigParams {
   getAllRegistrationIds: (selectedFormats: any[]) => any[];
   referenceExternalId: string[];
 }
+
+
+export interface HandleSearchChangeParams {
+  t: (key: string) => string;
+  e: React.ChangeEvent<HTMLInputElement>;
+  categoryId: number[] | null;
+  fromDate: string;
+  toDate: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
+  documentRelatedTo?: number;
+  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface HandleTagCloseLogicParams {
+  event: React.SyntheticEvent;
+  tagName: string;
+  closeObj: { name?: string; id?: string | number };
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>;
+  setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>;
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+  setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+}

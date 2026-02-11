@@ -5,7 +5,7 @@ import {
   TooltipPosition,
   Tag
 } from "@essnextgen/ui-kit";
-import { useIsEllipsed } from "./useIsEllipsed";
+import { useIsEllipsed } from "../hooks/useIsEllipsed";
 
 interface Props {
   text: any;
@@ -28,13 +28,13 @@ interface Props {
     return t.name;
   };
 
-  const getYearRegText = (isLeaver?: string, year?: string, reg?: string, separator: string = ""): string => {
-    if (!year && !reg) return "";
-    const prefix: string = separator ? ` ${separator} ` : "";
-    const isLeaverFlag = isLeaver?.toLowerCase() === "leaver";
-    if (isLeaverFlag) return `${prefix} (${year})${reg ? ` / (${reg})` : ""}`;
-    return `${prefix} ${year}${reg ? ` / ${reg}` : ""}`;
-  };
+const getYearRegText = (isLeaver?: string, year?: string, reg?: string, separator = "") => {
+  if (!year && !reg) return "";
+  const prefix: string = separator ? ` ${separator} ` : "";
+  const isLeaverFlag = isLeaver?.toLowerCase() === "leaver";
+  if (isLeaverFlag) return `${prefix} (${year})${reg ? ` / (${reg})` : ""}`;
+  return `${prefix} ${year}${reg ? ` / ${reg}` : ""}`;
+};
 
 
 function getTooltipContent(isTooltipNeeded: boolean, colName: string, isEllipsed: boolean, text: any): React.ReactNode {
