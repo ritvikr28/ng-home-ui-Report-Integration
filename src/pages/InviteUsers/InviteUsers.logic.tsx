@@ -3,7 +3,7 @@ import { InviteUserView } from "./InviteUsers.view";
 import { IInviteUserDetails } from "./InviteUsersProps";
 import gtmAnalytics from "../../shared/utils/analytics";
 
-export const InviteUsersLogic = () => {
+export const InviteUsersLogic: () => JSX.Element = () => {
   const [currentPage, setCurrentPage]: [
     number,
     React.Dispatch<React.SetStateAction<number>>
@@ -20,7 +20,7 @@ export const InviteUsersLogic = () => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const [usersTableData, setUsersTableData] = useState<IInviteUserDetails[]>(
+  const [usersTableData, setUsersTableData]: [IInviteUserDetails[], React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>] = useState<IInviteUserDetails[]>(
     []
   );
   const [showInvitationConflictBanner, setshowInvitationConflictBanner]: [

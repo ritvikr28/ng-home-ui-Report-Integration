@@ -15,10 +15,10 @@ interface IInviteUsersDialogProps {
   setShowDialog: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const InviteUsersDialog = (props: IInviteUsersDialogProps) => {
+const InviteUsersDialog: (props: IInviteUsersDialogProps) => JSX.Element = (props: IInviteUsersDialogProps) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-  const { setShowDialog } = props;
+  const { setShowDialog }: { setShowDialog: React.Dispatch<React.SetStateAction<boolean>> } = props;
   return (
     <Dialog
       dataTestId="test-id"
