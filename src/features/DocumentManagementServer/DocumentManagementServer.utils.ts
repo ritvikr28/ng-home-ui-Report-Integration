@@ -449,12 +449,12 @@ export function getDialogConfig({
           setShowConfirmDialog(false);
           fetchGetDocumentDetails(
             currentPage,
-            getAllRegistrationIds(selectedFormats),
+            getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
             sortBy,
             sortDirection,
             referenceExternalId,
-            searchRefExternalId,
-            documentRelatedTo
+            searchRefExternalId?.[0],
+            documentRelatedTo !== undefined ? String(documentRelatedTo) : undefined
           );
           setSelectedCheckBoxIds([]);
           setAllSelectedDocs([]);
@@ -495,7 +495,7 @@ export function getDialogConfig({
           setSidePanelOpenReason("prepare");
           setIsSidePanelOpen(true);
 
-          const selectedDocs = buildSelectedDocs(
+          const selectedDocs: any[] = buildSelectedDocs(
             selectedCheckBoxIds,
             docData,
             allRegistrationIds,
@@ -529,6 +529,75 @@ export function getDialogConfig({
 
 
 
+function getRestrictedMessage(
+  t: (key: string, options?: any) => string,
+  restrictedFileCount: number,
+  availableFileCount: number,
+  docData: any
+): string | null {
+  if (restrictedFileCount > 0) {
+    return restrictedFileCount === 1 && availableFileCount > 0
+      ? t("DocumentManagementServer.singleDocumentCannotBeDeletedNotification", { count: restrictedFileCount })
+      : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
+          all: restrictedFileCount === docData?.totalRecords ? "All " : "",
+          count: restrictedFileCount
+        });
+  }
+  return null;
+}
+
+function getAlreadyDeletedMessage(
+  t: (key: string, options?: any) => string,
+  alreadyDeletedFileCount: number,
+  docData: any
+): string | null {
+  if (alreadyDeletedFileCount > 0) {
+    return alreadyDeletedFileCount === 1
+      ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
+      : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+          all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
+          count: alreadyDeletedFileCount
+        });
+  }
+  return null;
+}
+
+function getExtraDeletedMessage(
+  t: (key: string, options?: any) => string,
+  docData: any,
+  alreadyDeletedFileCount: number,
+  restrictedFileCount: number,
+  availableFileCount: number,
+  excludedCheckBoxIds: any[],
+  isHeaderBoxChecked: boolean
+): string | null {
+  const totalRecords = docData?.totalRecords ?? 0;
+  const excludedCount = excludedCheckBoxIds?.length || 0;
+  const sum = alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCount;
+
+  if (totalRecords !== sum && isHeaderBoxChecked) {
+    const deletedCount =
+      totalRecords > sum && isHeaderBoxChecked
+        ? totalRecords - sum
+        : alreadyDeletedFileCount;
+
+    if (deletedCount === 1) {
+      return t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: deletedCount });
+    } else if (deletedCount > 1) {
+      return t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+        all:
+          alreadyDeletedFileCount === 0 &&
+          restrictedFileCount === 0 &&
+          availableFileCount === 0
+            ? t("DocumentManagementServer.All")
+            : "",
+        count: deletedCount
+      });
+    }
+  }
+  return null;
+}
+
 export function getDeleteDialogMessages({
   t,
   restrictedFileCount,
@@ -548,66 +617,22 @@ export function getDeleteDialogMessages({
 }): string[] {
   const messages: string[] = [];
 
-  if (restrictedFileCount > 0) {
-    messages.push(
-      restrictedFileCount === 1 && availableFileCount > 0
-        ? t("DocumentManagementServer.singleDocumentCannotBeDeletedNotification", { count: restrictedFileCount })
-        : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
-            all: restrictedFileCount === docData?.totalRecords ? "All " : "",
-            count: restrictedFileCount
-          })
-    );
-  }
+  const restrictedMsg = getRestrictedMessage(t, restrictedFileCount, availableFileCount, docData);
+  if (restrictedMsg) messages.push(restrictedMsg);
 
-  if (alreadyDeletedFileCount > 0) {
-    messages.push(
-      alreadyDeletedFileCount === 1
-        ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
-        : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
-            all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
-            count: alreadyDeletedFileCount
-          })
-    );
-  }
+  const alreadyDeletedMsg = getAlreadyDeletedMessage(t, alreadyDeletedFileCount, docData);
+  if (alreadyDeletedMsg) messages.push(alreadyDeletedMsg);
 
-  if (
-    docData?.totalRecords !==
-      (alreadyDeletedFileCount +
-        restrictedFileCount +
-        availableFileCount +
-        (excludedCheckBoxIds?.length || 0)) &&
+  const extraDeletedMsg = getExtraDeletedMessage(
+    t,
+    docData,
+    alreadyDeletedFileCount,
+    restrictedFileCount,
+    availableFileCount,
+    excludedCheckBoxIds,
     isHeaderBoxChecked
-  ) {
-    const deletedCount: number =
-      docData?.totalRecords >
-        alreadyDeletedFileCount +
-          restrictedFileCount +
-          availableFileCount +
-          (excludedCheckBoxIds?.length || 0) && isHeaderBoxChecked
-        ? docData?.totalRecords -
-          (alreadyDeletedFileCount +
-            restrictedFileCount +
-            availableFileCount +
-            (excludedCheckBoxIds?.length || 0))
-        : alreadyDeletedFileCount;
-    if (deletedCount === 1) {
-      messages.push(
-        t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: deletedCount })
-      );
-    } else if (deletedCount > 1) {
-      messages.push(
-        t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
-          all:
-            alreadyDeletedFileCount === 0 &&
-            restrictedFileCount === 0 &&
-            availableFileCount === 0
-              ? t("DocumentManagementServer.All")
-              : "",
-          count: deletedCount
-        })
-      );
-    }
-  }
+  );
+  if (extraDeletedMsg) messages.push(extraDeletedMsg);
 
   return messages;
 }

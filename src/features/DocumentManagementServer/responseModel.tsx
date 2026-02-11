@@ -1,5 +1,5 @@
 // Represents each row in the document table
-import { DialogTemplate, NotificationStatus, Suggestion } from "@essnextgen/ui-kit";
+import { DialogTemplate, ISelectedItem, NotificationStatus, Suggestion } from "@essnextgen/ui-kit";
 import React from "react";
 
 export interface SingleDocumentDetail {
@@ -263,17 +263,17 @@ export interface GetDialogConfigParams {
   restrictedFileCount: number;
   totalSelectedCount: number;
 
-  docData?: { totalRecords: number };
+  docData?: DocumentData;
   viewData: any;
 
   isHeaderBoxChecked: boolean;
-  selectedFormats: string[];
+  selectedFormats: ISelectedItem[];
 
   currentPage: number;
   sortBy: string;
   sortDirection: string;
-  searchRefExternalId?: string;
-  documentRelatedTo?: string;
+  searchRefExternalId?: string[];
+  documentRelatedTo?: number;
 
   selectedCheckBoxIds: string[];
   excludedCheckBoxIds: string[];

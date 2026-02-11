@@ -231,6 +231,6 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   fileId?: string
 ): Promise<Blob> => {
   const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
-  const response = await fileDownloadInstance.get(url);
+  const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
 };
