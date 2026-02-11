@@ -20,24 +20,21 @@ export const hasOrgVariant: (variant: string) => boolean =
     (variant) => isOrganisationInVariant(variant);
 
 
-    export const shouldShowAdminConsole = () =>
-        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
-      
-      export const shouldShowDocuments = () =>
-        hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
-      
-      export const shouldShowUAM = () =>
-        hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
-      
-      export const shouldShowInviteUsers  : () => boolean = () => 
-        hasFeatureFlag("InviteUserView");
-      
-      export const shouldShowDBManagement = () =>
-        hasFeatureFlag("RefreshDBORG") && hasOrgVariant("RefreshDBORG");
+export const shouldShowAdminConsole = () =>
+    hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
 
-      export const shouldShowSystemStatus = () =>
-        hasFeatureFlag("SystemStatusORG") || hasOrgVariant("SystemStatusORG");
-      
+export const shouldShowDocuments = () =>
+    hasFeatureFlag("AdminConsoleView") && hasPermission("NG.AdminConsole.Access", "View");
+
+//   export const shouldShowUAM = () =>
+//     hasFeatureFlag("UAMView") && hasOrgVariant("UAMView");
+
+export const shouldShowDBManagement = () =>
+    hasFeatureFlag("RefreshDBORG") && hasOrgVariant("RefreshDBORG");
+
+export const shouldShowSystemStatus = () =>
+    hasFeatureFlag("SystemStatusORG") || hasOrgVariant("SystemStatusORG");
+
 
 export const renderHomePage: (
     hasNewHomePagePermission: boolean
@@ -74,8 +71,8 @@ export const menuFilterHandler: (
     // eslint-disable-next-line
     t
 ) => // eslint-disable-next-line
-    // const modules = filterAndMapModules(menus, t);
-     menus;
+        // const modules = filterAndMapModules(menus, t);
+        menus;
 
 export const filterAndMapModules: (
     menus: IApplicationMenu[],

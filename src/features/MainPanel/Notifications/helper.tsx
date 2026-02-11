@@ -5,8 +5,8 @@ import { Link, ShowValAs, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
 export const getNotificationTableHeadersData = (
   setSideIsOpen?: (isOpen: boolean) => void,
   setSelectedItem?: (item: any) => void,
-  sortBy: string = "DateReceived",
-  sortDirection: string = "Desc",
+  sortBy: string = "ReceivedDate",
+  sortDirection: boolean = false,
   setNotificationIdSelected?: (id: string) => void
 ): {
   text: string;
@@ -40,7 +40,7 @@ export const getNotificationTableHeadersData = (
       isColumnSorting: true,
       ...(sortBy === "Status" ? {
         isColumnSortByDefault: true,
-        isColumnSortAscFirst: sortDirection === "Asc"
+        isColumnSortAscFirst: sortDirection
       } : {}),
       anyComponent: (cellData: any) => (
         <div>
@@ -61,7 +61,8 @@ export const getNotificationTableHeadersData = (
       headerTxtTrunctLength: 17,
       columnWidth: "274px",
       txtTrunctLength: 35,
-      isColumnSorting: false
+      isColumnSorting: false,
+      isColumnSortByDefault: false,
     },
     {
       text: "Priority",
@@ -72,7 +73,7 @@ export const getNotificationTableHeadersData = (
       isColumnSorting: true,
       ...(sortBy === "Priority" ? {
         isColumnSortByDefault: true,
-        isColumnSortAscFirst: sortDirection === "Asc"
+        isColumnSortAscFirst: sortDirection
       } : {}),
       columnWidth: "274px"
     },
@@ -84,7 +85,7 @@ export const getNotificationTableHeadersData = (
       headerTxtTrunctLength: 20,
       isColumnSorting: true,
       isColumnSortByDefault: true,
-      isColumnSortAscFirst: sortBy === "DateReceived" ? sortDirection === "Asc" : false,
+      isColumnSortAscFirst: sortBy === "ReceivedDate" ? sortDirection : false,
       columnWidth: "274px"
     },
     {
@@ -92,6 +93,7 @@ export const getNotificationTableHeadersData = (
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       columnWidth: "129px",
+      isColumnSorting: false,
       anyComponent: (e: any) => {
         // const item = JSON.parse(e);
         if (!e || typeof e !== "string") return <div />;

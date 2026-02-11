@@ -41,7 +41,7 @@ export interface ITableBodyDataType {
   email: string;
   userType: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null;
+  inviteRequestDate: string | null | undefined;
   actions: {
     options: ITableOptions[];
   };
@@ -108,11 +108,11 @@ export const getTableHeadersData: TableHeader[] = [
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     anyComponent: (props: any) => {
-      if (props === "Invitation conflict") {
+      if (props === "Invite conflict") {
         return (
           <ValidationText
             className="invite-user-status"
-            text="Invitation conflict"
+            text="Invite conflict"
             textLevel={ValidationTextLevel.Warning}
           />
         );
@@ -133,7 +133,7 @@ export interface IInviteUserDetails {
   externalId: string;
   forename: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null | undefined;
+  inviteRequestDate: string | null | undefined;
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
@@ -169,8 +169,8 @@ export interface IPaginationOptions {
 export enum InvitationStatusFilterOptions {
   All = "All",
   NotInvited = "Not-invited",
-  InvitationExpired = "Invitation expired",
-  InvitationConflict = "Invitation conflict",
+  InvitationExpired = "Invite expired",
+  InvitationConflict = "Invite conflict",
   InviteRequested = "Invite requested",
   Invited = "Invited",
   Accepted = "Accepted"

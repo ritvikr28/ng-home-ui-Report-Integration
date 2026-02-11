@@ -61,7 +61,7 @@ const NotificationView = () => {
     const getNotificationId = React.useCallback((notification: any) => notification?.id ?? notification?.Id, []);
 
     const tableHeadersData = React.useMemo(
-        () => getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, sortBy, sortDirection, setNotificationIdSelected),
+        () =>getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, sortBy, sortDirection, setNotificationIdSelected),
         [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
     );
 
@@ -77,7 +77,7 @@ const NotificationView = () => {
     useEffect(() => {
         if (!sideIsOpen) {
             setIsTableBodyLoading(true);
-            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage })
+            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SortBy: sortBy, SortDirection: sortDirection })
                 .then((data) => {
                     if (!data.error) {
                         setTableData(data.payload);
@@ -93,7 +93,7 @@ const NotificationView = () => {
                 })
                 .finally(() => setIsTableBodyLoading(false));
         }
-    }, [currentPage, sideIsOpen]);
+    }, [currentPage, sideIsOpen, sortBy, sortDirection]);
 
     const tableRows =
         React.useMemo(
@@ -115,7 +115,7 @@ const NotificationView = () => {
                         }),
                     }))
                     : [],
-            [tableData, currentPage, getNotificationId]
+            [tableData,currentPage,getNotificationId]
         );
 
     const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
@@ -139,7 +139,7 @@ const NotificationView = () => {
     };
 
     const shouldShowPagination = !tableDataError && totalTableData !== 0
-    // > 1 && paginatedNotifications.length > 0 && !noResults;
+    // > 1 && tableData.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
         if (tableDataError) {
@@ -273,7 +273,7 @@ const NotificationView = () => {
                                 sortByDefault={false}
                                 sortAscFirst={false}
                                 sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
-                                    handleSort(columnName);
+                                handleSort(columnName);
                                 }}
                                 templatePropsConfirmation={{
                                     cancelText: "Cancel",

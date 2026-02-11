@@ -48,7 +48,7 @@ import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
 import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
-import UAM from "./features/AdminConsole/UAM.view";
+// import UAM from "./features/AdminConsole/UAM.view";
 import {
   isOrganisationInVariant,
   isOrganisationInVariantForAnyOrAll
@@ -69,10 +69,6 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
   `${envConfig.APPLICATION}`,
   "SendNotification"
 );
-
-
-export const homepageVideoOrgViewIncluded: boolean =
-  isOrganisationInVariant("HomePageVideoFlag");
 
 export interface ILayoutProps {
   isStandaloneApp: boolean;
@@ -158,9 +154,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
       history.push("/auth");
     }
   };
-
-  const hasInviteUserOrgView: boolean =
-    isOrganisationInVariant("InviteUserView");
 
   const hasInviteUserPermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.UserManagement.Invite", Operation: "View" }],
@@ -293,7 +286,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )}
+           {/* 
+          Commenting this code as we already remove the flagr check on this route
           <ProtectedRoute exact path="/uam" component={UAM} />
+          */}
           {sendNotificationFlagr && (
             <ProtectedRoute
               exact
@@ -347,8 +343,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             /* istanbul ignore next */
             path="/inviteusers"
             render={() =>
-              hasInviteUserOrgView &&
-                (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
+              (isAuthzUserAdmin() || hasInviteUserPermissions) ? (
                 <InviteUsersLogic />
               ) : (
                 <Redirect to="/unauthorized" />
