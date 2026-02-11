@@ -41,12 +41,37 @@ export interface ITableBodyDataType {
   email: string;
   userType: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null | undefined;
+  inviteRequestDate: string | null | undefined;
   actions: {
     options: ITableOptions[];
   };
   isShowActionBtn?: boolean;
 }
+
+export interface IPagination {
+  pageNumber: number;
+  pageSize: number;
+}
+
+export interface InviteUsersSortingOptions {
+  columnName: string;
+  newDirection: boolean;
+  stateSetters: {
+    setSortDirection: React.Dispatch<React.SetStateAction<boolean>>;
+    setSortBy: React.Dispatch<React.SetStateAction<string>>;
+    setUsersTableData: React.Dispatch<React.SetStateAction<any[]>>;
+    setLoader: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
+    setshowInvitationConflictBanner: React.Dispatch<React.SetStateAction<boolean>>;
+  };
+  pagination: IPagination;
+  searchAndStatusFilter?: {
+    searchText: string;
+    selectedStatus: any;
+  };
+
+}
+
 export interface TableHeader {
   text?: string;
   isShow?: boolean;
@@ -133,7 +158,7 @@ export interface IInviteUserDetails {
   externalId: string;
   forename: string;
   invitationStatus: string;
-  inviteRequestDate: Date | null | undefined;
+  inviteRequestDate: string | null | undefined;
   surname: string;
   userType: string;
   isShowActionBtn?: boolean;
@@ -228,14 +253,16 @@ export interface IRequestBodyType {
   externalId: string[];
 }
 
-export const BulkInviteErrBanner = ({
+export const BulkInviteErrBanner: ({ selectedRowItems }: {
+    selectedRowItems: IInviteUserDetails[];
+}) => JSX.Element = ({
   selectedRowItems
 }: {
   selectedRowItems: IInviteUserDetails[];
 }) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
-  const emails = selectedRowItems.map((item) => item.emailId).join("; ");
+  const emails:string = selectedRowItems.map((item) => item.emailId).join("; ");
   return (
     <>
       <p>

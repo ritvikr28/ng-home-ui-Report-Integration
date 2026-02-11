@@ -64,8 +64,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     }
   ];
 
-  const getTableDataArry = (data: any) => {
-    let tdata = data
+  const getTableDataArry: (data: any) => any = (data: any) => {
+    let tdata: any = data;
     if (data.length > 0) {
       tdata = data.map((item: any) => ({
         ...item,
@@ -98,7 +98,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setshowInvitationConflictBanner,
     isSearchLoader,
     setSearchLoader
-  } = props;
+  }: InviteUserProps = props;
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1023.9px)"
   );
@@ -220,13 +220,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>("");
-  const [sortBy, setSortBy] = useState<string>("Forename");
-  const [sortDirection, setSortDirection] = useState<boolean>(true);
+  const [sortBy, setSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Forename");
+  const [sortDirection, setSortDirection]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
   const [showConfirmDialog, setShowConfirmDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const [selectedRowItems, setSelectedRowItems] = useState<any[]>([]);
+  const [selectedRowItems, setSelectedRowItems]: [any[], React.Dispatch<React.SetStateAction<any[]>>] = useState<any[]>([]);
   const [isDataUpdated, setDataUpdated]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -247,14 +247,20 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
-  const [searchSuggestions, setSearchSuggestions] = React.useState<
+  const [searchSuggestions, setSearchSuggestions]: [Suggestion[], React.Dispatch<React.SetStateAction<Suggestion[]>>] = React.useState<
     Suggestion[]
   >([]);
   const [searchTerm, setSearchTerm]: [
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = React.useState<string>("");
-  const [searchAndStatusFilter, setSearchAndStatusFilter] = React.useState<{
+  const [searchAndStatusFilter, setSearchAndStatusFilter]: [{
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }, React.Dispatch<React.SetStateAction<{
+    searchText: string;
+    selectedStatus: ISelectedItem;
+  }>>] = React.useState<{
     searchText: string;
     selectedStatus: ISelectedItem;
   }>({
@@ -268,7 +274,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     string,
     React.Dispatch<React.SetStateAction<string>>
   ] = useState<string>(`${t("invitePerson.noDataToDisplay")}`);
-  const statusFilterRef = useRef<ISelectedItem>({
+  const statusFilterRef: React.MutableRefObject<ISelectedItem> = useRef<ISelectedItem>({
     text: InvitationStatusFilterOptions.All,
     value: "All"
   });
@@ -401,7 +407,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setIsSidebarOpen(false);
   };
 
-  const onBreadcrumbClick = (path: string) => {
+  const onBreadcrumbClick: (path: string) => void = (path: string) => {
     window.location.assign(path);
     gtmAnalytics.pushEvent({
       event: "click",
@@ -412,7 +418,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     });
   };
 
-  const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleOnChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e?.target?.value?.length === 0) {
       handleClearSearch();
     } else {
@@ -431,11 +437,11 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     }
   };
 
-  const [visibleBreadcrumbs, setVisibleBreadcrumbs] =
+  const [visibleBreadcrumbs, setVisibleBreadcrumbs]: [IBreadcrumbLink[], React.Dispatch<React.SetStateAction<IBreadcrumbLink[]>>] =
     useState(breadcrumbActions);
 
   useEffect(() => {
-    const handleResize = () => {
+    const handleResize: () => void = () => {
       if (window.innerWidth < 1024) {
         // md and below
         if (breadcrumbActions.length > 1) {
@@ -529,10 +535,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 setshowInvitationConflictBanner(false);
                 let apiColumnName = "EmailId";
                 if (columnName === `${t("invitePerson.name")}`) {
-                    apiColumnName = "Forename";
+                  apiColumnName = "Forename";
                 }
                 else if (columnName === `${t("invitePerson.inviteRequestDate")}`) {
-                    apiColumnName = "InviteRequestDate";
+                  apiColumnName = "InviteRequestDate";
                 }
                 let newDirection = true;
 
@@ -546,19 +552,23 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 setSortBy(apiColumnName);
                 setSortDirection(newDirection);
 
-                inviteUsersSorting(
+                inviteUsersSorting({
                   columnName,
                   newDirection,
-                  setSortDirection,
-                  setSortBy,
-                  currentPage,
-                  pageSize,
-                  setUsersTableData,
-                  setLoader,
-                  setShowErrorBanner,
-                  setshowInvitationConflictBanner,
+                  stateSetters: {
+                    setSortDirection,
+                    setSortBy,
+                    setUsersTableData,
+                    setLoader,
+                    setShowErrorBanner,
+                    setshowInvitationConflictBanner
+                  },
+                  pagination: {
+                    pageNumber: currentPage,
+                    pageSize
+                  },
                   searchAndStatusFilter
-                );
+                });
               }
             }}
             dynamictableNoMsgColor={ValidationTextLevel.Warning}
@@ -648,7 +658,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
             secondaryButtonTitle={`${t("invitePerson.cancel")}`}
             showConfirmDialog
             ellipsisAfterBoundaryOnly={smallScreen}
-            tableBodyData={ getTableDataArry(usersTableData) || [] }
+            tableBodyData={getTableDataArry(usersTableData) || []}
             isShowEditSelectedBtn
             isShowSearch
             tableFirstColumnWidth="56px"
@@ -782,13 +792,23 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   );
 };
 
-export const NoDataMessage = {
+export const NoDataMessage: {
+  noDataOnSearch: (keyword: string) => string;
+  noDataToDisplay: string;
+} = {
   noDataOnSearch: (keyword: string) =>
     `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
   noDataToDisplay: "No data to display"
 };
 
-export const getValues = (
+export const getValues: (data: IInviteUserDetails[]) => Array<{
+  text: string;
+  props: {
+    externalId: string;
+    name: string;
+  };
+  value: JSX.Element;
+}> = (
   data: IInviteUserDetails[]
 ): Array<{
   text: string;
@@ -798,16 +818,16 @@ export const getValues = (
   };
   value: JSX.Element;
 }> =>
-  data
-    .filter(
-      (record: IInviteUserDetails) =>
-        record?.externalId && record?.externalId !== undefined
-    )
-    .map((record: IInviteUserDetails) => ({
-      text: `${record?.forename} ${record?.surname} `,
-      props: {
-        externalId: record?.externalId,
-        name: `${record?.forename} ${record?.surname}`
-      },
-      value: <></>
-    }));
+    data
+      .filter(
+        (record: IInviteUserDetails) =>
+          record?.externalId && record?.externalId !== undefined
+      )
+      .map((record: IInviteUserDetails) => ({
+        text: `${record?.forename} ${record?.surname} `,
+        props: {
+          externalId: record?.externalId,
+          name: `${record?.forename} ${record?.surname}`
+        },
+        value: <></>
+      }));

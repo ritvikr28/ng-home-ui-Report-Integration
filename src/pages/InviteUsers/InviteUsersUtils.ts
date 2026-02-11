@@ -5,6 +5,7 @@ import {
   IInviteUserData,
   IInviteUserDetails,
   InvitationStatusFilterOptions,
+  InviteUsersSortingOptions,
   IPaginationOptions,
   IPostSendInvitation,
   IRequestBodyType
@@ -21,10 +22,10 @@ export const getUsersData: (
     sortDirection,
     searchAndStatusFilter,
     setNoDataTextToDisplay
-  } = props;
+  }: IPaginationOptions = props;
 
-  const searchTerm = searchAndStatusFilter?.searchText;
-  const selectedStatus = searchAndStatusFilter?.selectedStatus;
+  const searchTerm: string | undefined = searchAndStatusFilter?.searchText;
+  const selectedStatus: ISelectedItem | undefined = searchAndStatusFilter?.selectedStatus;
 
   let url = `/InviteUser/Users?PageNumber=${pageNumber}&PageSize=${pageSize}`;
   if (columnName) {
@@ -53,10 +54,10 @@ export const getUsersData: (
   return response?.data;
 };
 
-export const postSendInvitation = async (props: IPostSendInvitation) => {
+export const postSendInvitation: (props: IPostSendInvitation) => Promise<any> = async (props: IPostSendInvitation) => {
   try {
     const url = `InviteUser/SendInvitation`;
-    const postReqBody = props.requestBody;
+    const postReqBody: IRequestBodyType = props.requestBody;
     const response: any = await service.post(url, postReqBody);
     return response?.data;
   } catch (error) {
@@ -66,14 +67,26 @@ export const postSendInvitation = async (props: IPostSendInvitation) => {
   }
 };
 
-export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
+function formatDate(dateString: Date): string | undefined {
+  if (dateString === undefined) {
+    return undefined;
+  }
+  if (dateString === null) {
+    return "";
+  }
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const date = new Date(dateString);
+  return `${date.getDate().toString().padStart(2, "0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
+};
+
+export const fetchInviteUserDetails: (props: IPaginationOptions) => Promise<any[]> = async (props: IPaginationOptions) => {
   const {
     pageSize,
     setTotalPage,
     setShowErrorBanner,
     setshowInvitationConflictBanner,
     setNoDataTextToDisplay
-  } = props;
+  }: IPaginationOptions = props;
   try {
     const InviteUsersData: any = await getUsersData(props);
 
@@ -108,7 +121,7 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
             : item?.emailId,
         userType: item?.userType,
         invitationStatus: item?.invitationStatus,
-        inviteRequestDate: item?.inviteRequestDate,
+        inviteRequestDate: formatDate(item?.inviteRequestDate),
         actions: {
           options: [
             {
@@ -123,13 +136,13 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
           !(
             item?.invitationStatus === InvitationStatusFilterOptions.Accepted ||
             item?.invitationStatus ===
-              InvitationStatusFilterOptions.InvitationConflict
+            InvitationStatusFilterOptions.InvitationConflict
           ) && item?.emailId !== "Work main email address is missing",
         isShowActionBtn:
           !(
             item?.invitationStatus === InvitationStatusFilterOptions.Accepted ||
             item?.invitationStatus ===
-              InvitationStatusFilterOptions.InvitationConflict
+            InvitationStatusFilterOptions.InvitationConflict
           ) && item?.emailId !== "Work main email address is missing",
         forename: item?.forename,
         surname: item?.surname
@@ -147,26 +160,26 @@ export const fetchInviteUserDetails = async (props: IPaginationOptions) => {
   }
 };
 
-export const inviteUsersSorting = async (
-  columnName: string,
-  sortDirection: boolean,
-  setSortDirection: React.Dispatch<React.SetStateAction<boolean>>,
-  setSortBy: React.Dispatch<React.SetStateAction<string>>,
-  pageNumber: number,
-  pageSize: number,
-  setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>,
-  setLoader: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowErrorBanner?: React.Dispatch<React.SetStateAction<boolean>>,
-  setshowInvitationConflictBanner?: React.Dispatch<
-    React.SetStateAction<boolean>
-  >,
-  searchAndStatusFilter?: {
-    searchText: string;
-    selectedStatus: ISelectedItem;
-  }
+export const inviteUsersSorting: (options: InviteUsersSortingOptions) => Promise<void> = async (
+  options: InviteUsersSortingOptions
 ): Promise<void> => {
-  let apiColumnName = columnName;
-  switch (columnName) {
+  const {
+    // columnName,
+    // newDirection,
+    stateSetters: {
+      setSortDirection,
+      setSortBy,
+      setUsersTableData,
+      setLoader,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner
+    },
+    pagination: { pageNumber, pageSize }
+    // searchAndStatusFilter,
+  }: any = options;
+
+  let apiColumnName: string = options.columnName;
+  switch (apiColumnName) {
     case "Name":
     case "Enw":
       apiColumnName = "Forename";
@@ -179,27 +192,32 @@ export const inviteUsersSorting = async (
       apiColumnName = "InviteRequestDate";
       break;
     default:
-      apiColumnName = columnName;
+      apiColumnName = options.columnName;
       break;
   }
   setSortBy(apiColumnName);
-  setSortDirection(sortDirection);
+  setSortDirection(options.newDirection);
   setLoader(true);
   fetchInviteUserDetails({
     pageNumber,
     pageSize,
     columnName: apiColumnName,
-    sortDirection,
+    sortDirection: options.newDirection,
     setShowErrorBanner,
     setshowInvitationConflictBanner,
-    searchAndStatusFilter
+    searchAndStatusFilter: options.searchAndStatusFilter
   }).then((res) => {
     setLoader(false);
     setUsersTableData(res);
   });
 };
 
-export const handleSendInvite = async ({
+export const handleSendInvite: ({ requestBody, setLoader, setShowInviteErrBanner, setDataUpdated }: {
+  requestBody: IRequestBodyType;
+  setLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
+  setDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;
+}) => Promise<void> = async ({
   requestBody,
   setLoader,
   setShowInviteErrBanner,
@@ -210,18 +228,18 @@ export const handleSendInvite = async ({
   setShowInviteErrBanner: React.Dispatch<React.SetStateAction<boolean>>;
   setDataUpdated: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  setLoader(true);
-  try {
-    await postSendInvitation({
-      requestBody,
-      setShowInviteErrBanner
-    }).then(() => {
-      setDataUpdated(true);
-    });
-  } catch (error) {
-    setLoader(false);
-  }
-};
+    setLoader(true);
+    try {
+      await postSendInvitation({
+        requestBody,
+        setShowInviteErrBanner
+      }).then(() => {
+        setDataUpdated(true);
+      });
+    } catch (error) {
+      setLoader(false);
+    }
+  };
 
 export const handleCheckBoxSelection: (props: {
   id: string;
@@ -232,15 +250,15 @@ export const handleCheckBoxSelection: (props: {
   selectedCheckBoxIds: string[];
   setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
 }) => {
-  const { id, selectedCheckBoxIds, setSelectedCheckBoxIds } = props;
-  const updatedCheckBoxIds = [...selectedCheckBoxIds];
-  if (updatedCheckBoxIds.includes(id)) {
-    updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
-  } else {
-    updatedCheckBoxIds.push(id);
-  }
-  setSelectedCheckBoxIds(updatedCheckBoxIds);
-};
+    const { id, selectedCheckBoxIds, setSelectedCheckBoxIds }: { id: string, selectedCheckBoxIds: string[], setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>> } = props;
+    const updatedCheckBoxIds: string[] = [...selectedCheckBoxIds];
+    if (updatedCheckBoxIds.includes(id)) {
+      updatedCheckBoxIds.splice(updatedCheckBoxIds.indexOf(id), 1);
+    } else {
+      updatedCheckBoxIds.push(id);
+    }
+    setSelectedCheckBoxIds(updatedCheckBoxIds);
+  };
 
 export const handleSelectedUserData: (props: {
   selectedCheckBoxIds: string[];
@@ -251,26 +269,29 @@ export const handleSelectedUserData: (props: {
   usersTableData: IInviteUserDetails[];
   setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>>;
 }) => {
-  const { usersTableData, selectedCheckBoxIds, setUsersTableData } = props;
-  if (usersTableData.length > 0) {
-    const updatedData = usersTableData.map((user: any) => ({
-      ...user,
-      isCheckboxSelected: selectedCheckBoxIds.includes(user.id)
-    }));
-    setUsersTableData(updatedData);
-  }
-};
+    const { usersTableData, selectedCheckBoxIds, setUsersTableData }: { usersTableData: IInviteUserDetails[]; selectedCheckBoxIds: string[]; setUsersTableData: React.Dispatch<React.SetStateAction<IInviteUserDetails[]>> } = props;
+    if (usersTableData.length > 0) {
+      const updatedData: any[] = usersTableData.map((user: any) => ({
+        ...user,
+        isCheckboxSelected: selectedCheckBoxIds.includes(user.id)
+      }));
+      setUsersTableData(updatedData);
+    }
+  };
 
 // Debounce utility
-function debounce<T extends (...args: any[]) => void>(func: T, wait: number) {
+function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (this: any, ...args: Parameters<T>) => void {
   let timeout: ReturnType<typeof setTimeout>;
-  return function (this: any, ...args: Parameters<T>) {
+  return function (this: any, ...args: Parameters<T>): void {
     clearTimeout(timeout);
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
 
-export const debouncedAutosuggest = debounce(
+export const debouncedAutosuggest: (this: any, event: React.ChangeEvent<HTMLInputElement>, setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>, setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>, setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>, searchAndStatusFilter: {
+  searchText: string;
+  selectedStatus: ISelectedItem;
+}) => void = debounce(
   async (
     event: React.ChangeEvent<HTMLInputElement>,
     setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>,
@@ -281,7 +302,7 @@ export const debouncedAutosuggest = debounce(
       selectedStatus: ISelectedItem;
     }
   ) => {
-    const { value } = event.target;
+    const { value }: { value: string } = event.target;
     if (!value || value.trim().length === 0) {
       setSearchLoader(false);
       return;
@@ -294,12 +315,22 @@ export const debouncedAutosuggest = debounce(
         url += `&InvitationStatus=${searchAndStatusFilter?.selectedStatus?.value}`;
       }
       const response: any = await service.get(url);
-      const suggestionList = [
-        {
-          name: "",
-          values: getValues(response?.data)
-        }
-      ];
+      const suggestionList: {
+        name: string;
+        values: {
+          text: string;
+          props: {
+            externalId: string;
+            name: string;
+          };
+          value: JSX.Element;
+        }[];
+      }[] = [
+          {
+            name: "",
+            values: getValues(response?.data)
+          }
+        ];
       setSearchSuggestions(suggestionList);
       setSearchLoader(false);
     } catch (error) {
