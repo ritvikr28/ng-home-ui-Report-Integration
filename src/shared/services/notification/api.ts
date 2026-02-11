@@ -4,16 +4,17 @@ import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
 
-export const getNotificationTableData = async ({ PageSize, PageNumber, SortBy,
-  SortDirection }: { PageSize: number, PageNumber: number, SortBy?: string;
-  SortDirection?: boolean; }): Promise<any> => {
+export const getNotificationTableData = async ({ PageSize, PageNumber, SearchTerm, SortBy,
+  SortDirection }: {
+    PageSize: number, PageNumber: number, SearchTerm: string, SortBy?: string;
+    SortDirection?: boolean;
+  }): Promise<any> => {
   const orgId = getUserOrganisation();
   const receiverId = authService.getUserId();
-  // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
-  // authService.getUserId();
+  
   try {
-    const direction = SortDirection;
-    const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}&SortBy=${SortBy}&Asc=${direction}`;
+     const direction = SortDirection;
+    const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}&SearchTerm=${SearchTerm}&SortBy=${SortBy}&Asc=${direction}`;
     const baseUrl = buildApplicationUrl(apiUrls);
     const response = await service.get(path, baseUrl);
     return response.data;
@@ -58,4 +59,24 @@ export const markAsRead = async (notificationId: string): Promise<any> => {
   } catch {
     return [];
   }
+}
+
+export const getSearchAutoSuggestData = async ({ SearchTerm }: { SearchTerm: string }) => {
+  const OrganisationId = authService.getOrgId();
+  const receiverId = authService.getUserId();
+  try {
+    const path = `/v1/notification/auto-suggestions?SearchTerm=${SearchTerm}&OrganisationId=${OrganisationId}&ReceiverId=${receiverId}`;
+    const baseUrl = buildApplicationUrl(apiUrls);
+    const response = await service.get(path, baseUrl);
+    return response.data;
+  } catch (err: any) {
+    console.log("Error fetching notification table data:", err);
+
+    if (err.response.status === 401) {
+      console.info("Unauthorized access - perhaps redirect to login?", err.response.status);
+
+    }
+    return { error: true, status: err.response.status };
+  }
+
 }
