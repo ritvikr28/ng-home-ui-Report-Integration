@@ -70,17 +70,6 @@ const NotificationView = () => {
             return;
         }
         setIsAutoSuggestVisible(false);
-        /*
-        if (value.trim().length >= 2) {
-            setIsAutoSuggestVisible(true);
-            handleSearchChange(value);
-        } else {
-            setIsAutoSuggestVisible(false);
-            if (value === "") {
-                handleSearchKeyPressed("");
-            }
-        }
-        */
     };
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>("");
@@ -127,27 +116,6 @@ const NotificationView = () => {
         , [filters]);
 
     const hasSearch = React.useMemo(() => searchTerm.trim().length >= 2, [searchTerm]);
-    // useEffect(() => {
-    //     if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
-    //         setIsTableBodyLoading(true);
-    //         getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase(),SortBy: sortBy, SortDirection: sortDirection  })
-    //             .then((data) => {
-    //                 if (!data.error) {
-    //                     setTableData(data.payload);
-    //                     setTotalTableData(data.total);
-    //                     setTableDataError(false);
-    //                     if (data.payload.length === 0) {
-    //                         setNoResults(true);
-    //                     }
-    //                 } else {
-    //                     setNoResults(true);
-    //                     setTableDataError(true);
-    //                     setTableData([]);
-    //                 }
-    //             })
-    //             .finally(() => setIsTableBodyLoading(false));
-    //     }
-    // }, []);
 
     useEffect(() => {
         if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
@@ -178,7 +146,6 @@ const NotificationView = () => {
         }
         setSuggestionLoader(true);
         getSearchAutoSuggestData({ SearchTerm: searchTerm.toLowerCase() }).then((data: any) => {
-            console.log("Auto suggest data ------------------", data);
             const suggestionList = data.payload.length && [
                 {
                     name: "",
@@ -300,20 +267,6 @@ const NotificationView = () => {
                                 isShowSearch={true}
                                 searchTerm={searchTerm}
                                 searchOnChange={(e) => handleSearchChangeWithAutoSuggest(e.target.value)}
-                                // searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
-                                //     if (closeObj) {
-                                //         if (closeObj.id === 1) {
-                                //             handleRemoveFilter('status', closeObj.value);
-                                //         } else if (closeObj.id === 2) {
-                                //             handleRemoveFilter('priority', closeObj.value);
-                                //         } else if (closeObj.id === 3 || closeObj.name === 'Date') {
-                                //             handleRemoveFilter('startDate');
-                                //         }
-                                //     } else {
-                                //         handleClearSearch();
-                                //     }
-                                // }}
-                                // searchOnCloseHandle={handleClearSearch}
                                 searchSuggestions={searchSuggestions}
                                 onSearchSuggestionItemClick={(props: any | null) => {
                                     if (props) {
@@ -326,7 +279,6 @@ const NotificationView = () => {
                                 }}
                                 isSearchHideClearIcon={searchTerm.length === 0}
                                 onSearchKeyDown={(e: React.KeyboardEvent) => {
-                                    console.log("Key pressed in search input ------------------", (e.target as HTMLInputElement).value);
                                     setSearchTerm((e.target as HTMLInputElement).value);
                                     if (e.key === "Enter") {
                                         handleSearchKeyPressed((e.target as HTMLInputElement).value);
@@ -334,7 +286,6 @@ const NotificationView = () => {
                                     }
                                 }}
                                 searchValue={searchTerm}
-                                // searchDebouncerTreshold={2}
                                 isShowAutoSuggest={isAutoSuggestVisible}
                                 onKeyUpLenght={2}
                                 isShowFirstElement={true}

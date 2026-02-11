@@ -11,8 +11,7 @@ export const getNotificationTableData = async ({ PageSize, PageNumber, SearchTer
   }): Promise<any> => {
   const orgId = getUserOrganisation();
   const receiverId = authService.getUserId();
-  // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
-  // authService.getUserId();
+  
   try {
      const direction = SortDirection;
     const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}&SearchTerm=${SearchTerm}&SortBy=${SortBy}&Asc=${direction}`;
