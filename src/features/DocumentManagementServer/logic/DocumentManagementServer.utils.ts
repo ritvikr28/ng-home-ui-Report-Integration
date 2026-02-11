@@ -1,6 +1,6 @@
 import React from "react";
 import dayjs from "dayjs";
-import { DialogTemplate, NotificationStatus, Suggestion, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { DialogTemplate, NotificationStatus, Suggestion, ValidationTextLevel, SelectedItem, ISelectedItem, ISearchItemProp } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
 import { Category, DialogConfig, GetDialogConfigParams } from "../responseModel";
 import gtmAnalytics from "../../../shared/utils/analytics";
@@ -676,4 +676,54 @@ export function getDeleteDialogMessages({
   if (extraDeletedMsg) messages.push(extraDeletedMsg);
 
   return messages;
+}
+
+export function addUniqueTagItem({
+  item,
+  selectedRelatedTo,
+  tagListArray,
+  setTagListArray,
+  setReferenceExternalIds,
+  maxLimit = 5,
+  setAlreadyExistingTags
+}: {
+  item: ISearchItemProp | null;
+  selectedRelatedTo: ISelectedItem | undefined;
+  tagListArray: SelectedItem[];
+  setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
+  setReferenceExternalIds?: React.Dispatch<React.SetStateAction<string[]>>;
+  maxLimit?: number;
+  setAlreadyExistingTags?: React.Dispatch<React.SetStateAction<boolean>>;
+}): void {
+  if (!item) return;
+
+  let idKey = "organisationId";
+  if (selectedRelatedTo?.data?.data.key === "Pupil") {
+    idKey = "learnerExternalId";
+  } else if (selectedRelatedTo?.data?.data.key === "Staff") {
+    idKey = "externalId";
+  }
+
+  // Always normalize the ID for comparison
+  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
+  
+  const alreadyExists = tagListArray.some(
+    (tag) => {
+      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      return tagId === newId;
+    }
+  );
+
+  if (alreadyExists) {
+    if (setAlreadyExistingTags) setAlreadyExistingTags(true);
+    return;
+  }
+  if (tagListArray.length < maxLimit) {
+    setTagListArray([...tagListArray, item as SelectedItem]);
+    if (setReferenceExternalIds && newId) {
+      setReferenceExternalIds((prev) =>
+        prev.includes(newId) ? prev : [...prev, newId]
+      );
+    }
+  }
 }

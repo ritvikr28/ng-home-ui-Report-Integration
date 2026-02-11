@@ -4,7 +4,7 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../Views/DocumentManagementServer.view";
-import * as ApiService from "../ApiService";
+import * as ApiService from "../api/ApiService";
 import * as Logic from "../logic/DocumentManagementServer.logic";
  
 jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
@@ -140,7 +140,7 @@ jest.mock("@essnextgen/auth-ui", () => ({
   })
 }));
 
-jest.mock("../ApiService", () => ({
+jest.mock("../api/ApiService", () => ({
   fetchDocumentCategory: jest.fn(),
   viewDownload: jest.fn(),
   prepareAndDownloadFile: jest.fn(),
@@ -151,8 +151,8 @@ jest.mock('focus-trap-react', () => ({
   default: ({ children }: any) => <>{children}</>,
 }));
 
-jest.mock("../DocumentManagementServer.logic", () => {
-  const original: any = jest.requireActual("../DocumentManagementServer.logic");
+jest.mock("../logic/DocumentManagementServer.logic", () => {
+  const original: any = jest.requireActual("../logic/DocumentManagementServer.logic");
   return {
     __esModule: true,
     ...original,
@@ -165,7 +165,7 @@ jest.mock("../DocumentManagementServer.logic", () => {
   };
 });
  
-jest.mock("../ApiService", () => ({
+jest.mock("../api/ApiService", () => ({
   fetchDocumentDetails: jest.fn(),
   fetchDMSSuggestions: jest.fn(),
   fetchDocumentCategory: jest.fn(),

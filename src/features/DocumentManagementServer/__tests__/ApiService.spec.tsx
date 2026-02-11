@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { fetchDocumentDetails } from '../ApiService';
+import { fetchDocumentDetails } from '../api/ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
   {

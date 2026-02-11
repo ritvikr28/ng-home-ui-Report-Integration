@@ -30,7 +30,7 @@ import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
-import { addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
+import { addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 
 interface FilterDialogProps {

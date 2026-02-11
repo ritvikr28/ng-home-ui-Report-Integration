@@ -11,7 +11,7 @@ import * as logicModule from "../logic/DocumentManagementServer.logic";
 
 // const analytics = require('../../../shared/utils/analytics').default;
 
-jest.mock("../ApiService");
+jest.mock("../api/ApiService");
 
 jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),

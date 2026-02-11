@@ -4,7 +4,7 @@ import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { useIsEllipsed } from "../hooks/useIsEllipsed";
 
 // Mock the useIsEllipsed hook
-jest.mock("../useIsEllipsed");
+jest.mock("../hooks/useIsEllipsed");
 const mockUseIsEllipsed = useIsEllipsed as jest.Mock;
 
 // Mock Tooltip and Tag from @essnextgen/ui-kit
