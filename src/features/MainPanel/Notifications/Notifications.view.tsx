@@ -146,12 +146,15 @@ const NotificationView = () => {
         }
         setSuggestionLoader(true);
         getSearchAutoSuggestData({ SearchTerm: searchTerm.toLowerCase() }).then((data: any) => {
-            const suggestionList = data.payload.length && [
-                {
-                    name: "",
-                    values: getValues(data.payload)
-                }
-            ];
+            let suggestionList: any[] = [];
+            if (Array.isArray(data?.payload) && data.payload.length) {
+                suggestionList = [
+                    {
+                        name: "",
+                        values: getValues(data.payload)
+                    }
+                ];
+            }
             setSuggestionLoader(false);
             setSearchSuggestions(suggestionList);
         });
@@ -210,8 +213,8 @@ const NotificationView = () => {
         // if (!totalNotifications && !isSearching) {
         //     return "No data to display";
         // }
-        if (totalNotifications === 0 && !isSearching && hasSearch && !searchSuggestions.length) {
-            return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+        if (noResults && totalNotifications === 0 && !isSearching && !searchSuggestions.length) {
+        return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
         }
         if (totalNotifications === 0 && !isSearching && hasActiveFilters) {
             return "No notifications found for selected filters.";
@@ -266,6 +269,7 @@ const NotificationView = () => {
                                 filterDDLOptions={[]}
                                 isShowSearch={true}
                                 searchTerm={searchTerm}
+                                setSearchTerm={searchTerm}
                                 searchOnChange={(e) => handleSearchChangeWithAutoSuggest(e.target.value)}
                                 searchSuggestions={searchSuggestions}
                                 onSearchSuggestionItemClick={(props: any | null) => {
