@@ -101,6 +101,7 @@ interface UseFetchDocsEffectParams {
     relatedTo: number
   ) => void;
   setIsInitialLoad: (v: boolean) => void;
+setIsSearchTriggered: (v: boolean) => void;
 }
 
 export function useFetchDocsEffect({
@@ -116,7 +117,8 @@ export function useFetchDocsEffect({
   isFilterDialogOpen,
   allRegistrationIds,
   fetchGetDocumentDetails,
-  setIsInitialLoad
+  setIsInitialLoad,
+  setIsSearchTriggered
 }: UseFetchDocsEffectParams): void {
   useEffect(() => {
     const allRegistrationId: number[] = getAllRegistrationIds(selectedFormats);
@@ -132,6 +134,7 @@ export function useFetchDocsEffect({
         documentRelatedTo
       );
       setIsInitialLoad(false);
+      setIsSearchTriggered(false);
     }
     if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
       setIsInitialLoad(true);
@@ -144,6 +147,7 @@ export function useFetchDocsEffect({
         documentRelatedTo
       );
       setIsInitialLoad(false);
+      setIsSearchTriggered(false);
     }
     applySummaryTagClass();
   }, [

@@ -149,60 +149,7 @@ export const onBreadcrumbClick: (path: string) => void = (path: string) => {
  
  
 // Search input change logic
-export const handleSearchChange : any = (
-  t: (key: string) => string,
-  e: React.ChangeEvent<HTMLInputElement>,
-  categoryId: number[] | null,
-  fromDate: string,
-  toDate: string,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
-  documentRelatedTo?: number,
-  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  const { value } : { value: string } = e.target;
-  setSearchTerm(value);
 
-  if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
-    setResetFilterSearch(true);
-  }
-
-   if (value.trim().length === 0 && value.length > 0) {
-    setSuggestions([]);
-    setIsSearchLoading(false);
-    return;
-  }
-
-  if (value?.length < 3) {
-    setSuggestions([]);
-    setShowSearchError(false);
-    setIsSearchLoading(false);
-    return;
-  }
- 
-  setIsSearchLoading(true);
-  setSuggestions([]);
-  setShowSearchError(false);
-  if (typeof setResetFilterSearch === "function") {
-    setShowErrorBanner(false);
-  }
- 
-  debouncedFetchSuggestions(
-    t,
-    value,
-    categoryId,
-    fromDate,
-    toDate,
-    setIsSearchLoading,
-    setSuggestions,
-    setShowSearchError,
-    setShowErrorBanner,
-    documentRelatedTo
-  );
-};
 
 export const loadSuggestions: (
   text: string,

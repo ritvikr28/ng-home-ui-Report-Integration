@@ -488,8 +488,10 @@
       "contactYourAdministrator": "Contact your administrator",
       "subHeadingPartOne": "You might not have the right permissions, or your organisation may not be licensed for this product.",
       "subHeadingPartTwo": "Please contact your administrator to check your access or get help."
-    },
-    "DocumentManagementServer": {
+    }
+    
+  },
+  "DocumentManagementServer": {
       "headingText": "Documents",
       "adminconsole": "Admin console",
       "Home": "Home",
@@ -613,5 +615,4 @@
       "pupils": "pupils",
       "staffs": "staff members"
     }
-  }
 }

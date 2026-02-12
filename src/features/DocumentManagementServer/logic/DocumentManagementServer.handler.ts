@@ -46,14 +46,27 @@ export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
   documentRelatedTo,
   setResetFilterSearch
 }: HandleSearchChangeParams): void => {
-  const value: string = e.target.value;
+  // Accept both event and string
+  let value: string = "";
+  if (typeof e === "string") {
+    value = e;
+  } else if (e && typeof e.target?.value === "string") {
+    value = e.target.value;
+  } else {
+    if(typeof setSuggestions === "function")
+    setSuggestions([]);
+    if(typeof setIsSearchLoading === "function")
+    setIsSearchLoading(false);
+    return;
+  }
+
   setSearchTerm(value);
 
   if (value.trim() && setResetFilterSearch) {
     setResetFilterSearch(true);
   }
 
-  if (shouldIgnoreSearch(value)) {
+  if (value.trim().length === 0 || value.length < 3) {
     setSuggestions([]);
     setShowSearchError(false);
     setIsSearchLoading(false);
@@ -519,7 +532,7 @@ export function handleApply({
 }: {
   referenceExternalIds: string[],
   categories?: any[],
-  selectedCategories: any[],
+  selectedCategories: ISelectedItem[],
   selectedDateRange: any,
   isDateError: boolean,
   selectedEntity?: any[],

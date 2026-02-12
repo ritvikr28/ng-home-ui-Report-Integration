@@ -5,14 +5,14 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, NotificationStatus, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  getTitleConfirmation, handleSearchChange, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
-import "./style.scss"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
+import "../style.scss"
 import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
 import { pageSizeNumber } from "../../../../public/Constants"
 import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
-import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject } from "../logic/DocumentManagementServer.handler";
+import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
 import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys,  handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList } from "../logic/DocumentManagementServer.utils";
 import { useBodyNoScroll, useFetchDocsEffect, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
@@ -250,7 +250,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     };
 
    useFetchDocsEffect({currentPage, searchText, dateRange, selectedFormats, sortBy, sortDirection, searchRefExternalId,
-        documentRelatedTo, isSearchTriggered, isFilterDialogOpen, allRegistrationIds, fetchGetDocumentDetails, setIsInitialLoad });  
+        documentRelatedTo, isSearchTriggered, isFilterDialogOpen, allRegistrationIds, fetchGetDocumentDetails, setIsInitialLoad, setIsSearchTriggered });  
 
     useSidePanelViewDownloadEffect({isSidePanelOpen, sidePanelOpenReason, setShowToastNotification, setIsSidePanelLoader,
     fetchViewDownloadData, setViewData, setHasFetchedViewDownload, viewDownload, downloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification
@@ -372,10 +372,11 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         );
 
     const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
-    handleApply({ referenceExternalIds, categories, selectedCategories, selectedDateRange, isDateError, selectedEntity, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
+    handleApply({ referenceExternalIds, categories, selectedCategories: categories ?? [], selectedDateRange, isDateError, selectedEntity, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
         setIsFilterDialogOpen, setCurrentPage, setExcludedCheckBoxIds, setAllSelectedDocs, setSearchInput, setSearchTerm, setSearchText, setTableKey, setIsSearchTriggered, setSelectedCategories, setSearchRefExternalId,
         setIsHeaderBoxChecked, setSelectedCheckBoxIds, setPrevSelectedDocs, setSelectedEntities, setSortBy, setSortDirection, setIsInitialLoad, setReferenceExternalIds: setSearchRefExternalId
     });
+    setIsSearchTriggered(true);
     };
 
     const dialogConfig: any = getDialogConfig({
@@ -518,19 +519,22 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             onEditSelectedOverFlowMenu,
             handleSearchClose,
             handleTagClose,
-            handleSearchChange: (e: any) =>
-              handleSearchChange(
+            handleSearchChange: (e: any) =>{
+              handleSearchChange({
                 t,
                 e,
-                getAllRegistrationIds(selectedCategories),
-                selectedDateRange.fromDate,
-                selectedDateRange.toDate,
+                categoryId: getAllRegistrationIds(selectedCategories), // <-- Use categoryId, not getAllRegistrationIds
+                fromDate: selectedDateRange?.fromDate,
+                toDate: selectedDateRange?.toDate,
                 setSearchTerm,
                 setSuggestions,
                 setShowSearchError,
                 setIsSearchLoading,
-                setShowErrorBanner
-              ),
+                setShowErrorBanner,
+                documentRelatedTo: undefined,
+                setResetFilterSearch: undefined
+              })
+            },
             handleSuggestionClick,
             isFilterDialogOpen,
             setIsFilterDialogOpen,
