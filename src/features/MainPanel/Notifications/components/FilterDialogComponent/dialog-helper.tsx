@@ -2,53 +2,56 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+// import { useTranslation } from "@essnextgen/ui-intl-kit";
 import "./style.scss";
 import { DialogContentProps } from "./FilterDialog.props";
 
-export const DialogContent: React.FC<DialogContentProps> = ({ 
-    setStartDate, 
-    setEndDate, 
-    // setStatus, 
-    // status,
-    // setPriority,
-    // priority,
-    // startDate,
-    // endDate,
-    startDateError
+export const DialogContent: React.FC<DialogContentProps> = ({
+  setStartDate,
+  setEndDate,
+  setStatus,
+  status,
+  setPriority,
+  priority,
+  startDate,
+  endDate,
+  startDateError,
+  endDateError,
 }) => {
-    const { t } = useTranslation();
-    // const handleStatusChange = (value: string) => {
-    //     setStatus((prev: string[]) => {
-    //         if (prev.includes(value)) {
-    //             return prev.filter((s: string) => s !== value);
-    //         }
-    //         return [...prev, value];
-    //     });
-    // };
+  const handleStatusChange = (value: string) => {
+    setStatus((prev: string[]) => {
+      if (prev.includes(value)) {
+        return prev.filter((s: string) => s !== value);
+      }
+      return [...prev, value];
+    });
+  };
 
-    // const handlePriorityChange = (value: string) => {
-    //     setPriority((prev: string[]) => {
-    //         if (prev.includes(value)) {
-    //             return prev.filter((p: string) => p !== value);
-    //         }
-    //         return [...prev, value];
-    //     });
-    // };
+  const handlePriorityChange = (value: string) => {
+    setPriority((prev: string[]) => {
+      if (prev.includes(value)) {
+        return prev.filter((p: string) => p !== value);
+      }
+      return [...prev, value];
+    });
+  };
 
-    // const parseDateString = (dateStr: string): { day?: number; month?: number; year?: number } => {
-    //     if (!dateStr) return {};
-    //     const parts = dateStr.split("-");
-    //     if (parts.length !== 3) return {};
-    //     const year = parseInt(parts[0], 10);
-    //     const month = parseInt(parts[1], 10);
-    //     const day = parseInt(parts[2], 10);
-    //     if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) return {};
-    //     return { day, month, year };
-    // };
+  const parseDateString = (
+    dateStr: string
+  ): { day?: number; month?: number; year?: number } => {
+    if (!dateStr) return {};
+    const parts = dateStr.split("-");
+    if (parts.length !== 3) return {};
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+    if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year))
+      return {};
+    return { day, month, year };
+  };
 
-    // const startDateParsed = parseDateString(startDate);
-    // const endDateParsed = parseDateString(endDate);
+  const startDateParsed = parseDateString(startDate);
+  const endDateParsed = parseDateString(endDate);
 
     // const updateCheckboxState = (elementId: string, shouldBeChecked: boolean) => {
     //     const element = document.getElementById(elementId);
@@ -185,111 +188,132 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     //     };
     // }, [priority]);
 
-    return (
-        <div className={`dialog-content-container${startDateError ? ' has-error' : ''}`}>
-            <div>
-                <FormLabel forId="select" className="status-label">
-                    Status
-                </FormLabel>
-                <div className="status-checkboxes">
-                    <CheckBox
-                        dataTestId="status-read"
-                        id="status-read"
-                        label="Read"
-                        onChange={() => {
-                            // handleStatusChange("read");
-                        }}
-                        value="read"
-                    />
-                    <CheckBox
-                        dataTestId="status-unread"
-                        id="status-unread"
-                        label="Unread"
-                        onChange={() => {
-                            // handleStatusChange("unread");
-                        }}
-                        value="unread"
-                    />
-                </div>
-                <div style={{ marginTop: "24px" }}>
-                    <FormLabel forId="select" className="priority-label">
-                        Priority
-                    </FormLabel>
-                    <div className="priority-checkboxes">
-                        <CheckBox
-                            dataTestId="priority-low"
-                            id="priority-low"
-                            label="Low"
-                            onChange={() => {
-                                // handlePriorityChange("low");
-                            }}
-                            value="low"
-                        />
-                        <CheckBox
-                            dataTestId="priority-medium"
-                            id="priority-medium"
-                            label="Medium"
-                            onChange={() => {
-                                // handlePriorityChange("medium");
-                            }}
-                            value="medium"
-                        />
-                        <CheckBox
-                            dataTestId="priority-high"
-                            id="priority-high"
-                            label="High"
-                            onChange={() => {
-                                // handlePriorityChange("high");
-                            }}
-                            value="high"
-                        />
-                    </div>
-                </div>
-            </div>
-            <div className="date-selection">
-                <div className="start-end-date-container">
-                    <FormLabel>
-                        Start date
-                    </FormLabel>
-                    <DateInput
-                        dataTestId="start-date"
-                        id="start-date"
-                        // day={startDateParsed.day}
-                        // month={startDateParsed.month}
-                        // year={startDateParsed.year}
-                        onChange={(day: string | number, month: string | number, year: string | number) => {
-                            const formattedDay = String(day).padStart(2, '0');
-                            const formattedMonth = String(month).padStart(2, '0');
-                            if (setStartDate) setStartDate(`${year}-${formattedMonth}-${formattedDay}`);
-                        }}
-                        onError={() => { }}
-                        onValidateDate={() => { }}
-                        showDatePicker
-                        validationText={startDateError ? t("Filter.startDateRequired") : undefined}
-                        validationTextLevel={startDateError ? ValidationTextLevel.Error : undefined}
-                    />
-                </div>
-                <div className="start-end-date-container">
-                    <FormLabel>
-                        End date
-                    </FormLabel>
-                    <DateInput
-                        dataTestId="end-date"
-                        id="end-date"
-                        // day={endDateParsed.day}
-                        // month={endDateParsed.month}
-                        // year={endDateParsed.year}
-                        onChange={(day: string | number, month: string | number, year: string | number) => {
-                            const formattedDay = String(day).padStart(2, '0');
-                            const formattedMonth = String(month).padStart(2, '0');
-                            if (setEndDate) setEndDate(`${year}-${formattedMonth}-${formattedDay}`);
-                        }}
-                        onError={() => { }}
-                        onValidateDate={() => { }}
-                        showDatePicker
-                    />
-                </div>
-            </div>
+  return (
+    <div
+      className={`dialog-content-container${
+        startDateError ? " has-error" : ""
+      }`}
+    >
+      <div>
+        <FormLabel forId="select" className="status-label">
+          Status
+        </FormLabel>
+        <div className="status-checkboxes">
+          <CheckBox
+            dataTestId="status-read"
+            id="status-read"
+            label="Read"
+            isSelected={status.includes("read")}
+            onChange={() => {
+              handleStatusChange("read");
+            }}
+            value="read"
+          />
+          <CheckBox
+            dataTestId="status-unread"
+            id="status-unread"
+            label="Unread"
+            isSelected={status.includes("unread")}
+            onChange={() => {
+              handleStatusChange("unread");
+            }}
+            value="unread"
+          />
         </div>
-    );
+        <div style={{ marginTop: "24px" }}>
+          <FormLabel forId="select" className="priority-label">
+            Priority
+          </FormLabel>
+          <div className="priority-checkboxes">
+            <CheckBox
+              dataTestId="priority-low"
+              id="priority-low"
+              label="Low"
+              isSelected={priority.includes("low")}
+              onChange={() => {
+                handlePriorityChange("low");
+              }}
+              value="low"
+            />
+            <CheckBox
+              dataTestId="priority-medium"
+              id="priority-medium"
+              label="Medium"
+              isSelected={priority.includes("medium")}
+              onChange={() => {
+                handlePriorityChange("medium");
+              }}
+              value="medium"
+            />
+            <CheckBox
+              dataTestId="priority-high"
+              id="priority-high"
+              label="High"
+              isSelected={priority.includes("high")}
+              onChange={() => {
+                handlePriorityChange("high");
+              }}
+              value="high"
+            />
+          </div>
+        </div>
+      </div>
+      <div className="date-selection">
+        <div className="start-end-date-container">
+          <FormLabel>Start date</FormLabel>
+          <DateInput
+            dataTestId="start-date"
+            id="start-date"
+            day={startDateParsed.day}
+            month={startDateParsed.month}
+            year={startDateParsed.year}
+            onChange={(
+              day: string | number,
+              month: string | number,
+              year: string | number
+            ) => {
+              const formattedDay = String(day).padStart(2, "0");
+              const formattedMonth = String(month).padStart(2, "0");
+              if (setStartDate)
+                setStartDate(`${year}-${formattedMonth}-${formattedDay}`);
+            }}
+            onError={() => {}}
+            onValidateDate={() => {}}
+            showDatePicker
+            validationText={startDateError || undefined}
+            validationTextLevel={
+              startDateError ? ValidationTextLevel.Error : undefined
+            }
+          />
+        </div>
+        <div className="start-end-date-container">
+          <FormLabel>End date</FormLabel>
+          <DateInput
+            dataTestId="end-date"
+            id="end-date"
+            day={endDateParsed.day}
+            month={endDateParsed.month}
+            year={endDateParsed.year}
+            onChange={(
+              day: string | number,
+              month: string | number,
+              year: string | number
+            ) => {
+              const formattedDay = String(day).padStart(2, "0");
+              const formattedMonth = String(month).padStart(2, "0");
+              if (setEndDate)
+                setEndDate(`${year}-${formattedMonth}-${formattedDay}`);
+            }}
+            onError={() => {}}
+            onValidateDate={() => {}}
+            showDatePicker
+            validationText={endDateError || undefined}
+            validationTextLevel={
+              endDateError ? ValidationTextLevel.Error : undefined
+            }
+          />
+        </div>
+      </div>
+    </div>
+  );
 };

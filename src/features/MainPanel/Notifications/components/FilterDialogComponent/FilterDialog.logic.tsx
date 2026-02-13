@@ -28,38 +28,64 @@ const FilterDialogLogic = ({
     const [priority, setPriority] = useState<string[]>(filters.priority || []);
     const [startDate, setStartDate] = useState(filters.startDate || "");
     const [endDate, setEndDate] = useState(filters.endDate || "");
-    const [startDateError, setStartDateError] = useState<string>("");
+    type DateErrors = {
+      from: string;
+      to: string;
+    };
+    const [errors, setErrors] = useState<DateErrors>({
+      from: "",
+      to: "",
+    });
 
     useEffect(() => {
         setStatus(filters.status || []);
         setPriority(filters.priority || []);
         setStartDate(filters.startDate || "");
         setEndDate(filters.endDate || "");
-        setStartDateError("");
+        setErrors({from: "", to: ""});
     }, [filters]);
 
     useEffect(() => {
-        const hasEndDate = endDate && endDate.trim() !== "";
-        const hasStartDate = startDate && startDate.trim() !== "";
-        
-        if (hasEndDate && !hasStartDate) {
-            setStartDateError("startDateRequired");
-        } else {
-            setStartDateError("");
-        }
+      setErrors(validateDateRange(startDate, endDate));
     }, [startDate, endDate]);
+    const validateDateRange = (from: string, to: string): DateErrors => {
+      if (!from && to) {
+        return {
+          from: "startDateRequired",
+          to: "",
+        };
+      }
+      if (!from && !to) {
+        return { from: "", to: "" };
+      }
+      if (from && to) {
+        const [fy, fm, fd] = from.split("-").map(Number);
+        const [ty, tm, td] = to.split("-").map(Number);
+
+        const fromDate = new Date(fy, fm - 1, fd);
+        const toDate = new Date(ty, tm - 1, td);
+
+        if (fromDate > toDate) {
+          return {
+            from: "Date from cannot be after date to",
+            to: "Date to cannot be before date from",
+          };
+        }
+      }
+
+      return { from: "", to: "" };
+    };
 
     const handleApply = () => {
-        if (startDateError) {
-            return;
+        if (!errors.from && !errors.to) {
+            onApply({
+                status: status.length > 0 ? status : undefined,
+                priority: priority.length > 0 ? priority : undefined,
+                startDate: startDate || undefined,
+                endDate: endDate || undefined
+            });
+            setFilterBtnClicked(false);
         }
-        onApply({
-            status: status.length > 0 ? status : undefined,
-            priority: priority.length > 0 ? priority : undefined,
-            startDate: startDate || undefined,
-            endDate: endDate || undefined
-        });
-        setFilterBtnClicked(false);
     };
 
     const handleClear = () => {
@@ -91,10 +117,12 @@ const FilterDialogLogic = ({
             setStartDate={setStartDate}
             endDate={endDate}
             setEndDate={setEndDate}
-            startDateError={startDateError}
+            startDateError={errors.from}
+            endDateError={errors.to}     
             onApply={handleApply}
             onClear={handleClear}
             onClose={handleClose}
+            isFormValid={!errors.from && !errors.to}
         />
     );
 };

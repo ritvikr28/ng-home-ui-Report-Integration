@@ -21,6 +21,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
     const [showDeleteToast, setShowDeleteToast] = useState(false);
     const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState(false);
     const [isNoSelectionMode, setIsNoSelectionMode] = useState(false);
+    const FILTER_STORAGE_KEY = "notificationFilters";
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState<{
@@ -28,7 +29,17 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
         priority?: string[];
         startDate?: string;
         endDate?: string;
-    }>({});
+    }>(() => {
+        try {
+            const stored = localStorage.getItem(FILTER_STORAGE_KEY);
+            return stored ? JSON.parse(stored) : {};
+        } catch {
+            return {};
+        }
+    });
+    useEffect(() => {
+        localStorage.setItem(FILTER_STORAGE_KEY, JSON.stringify(filters));
+    }, [filters]);
     const [isSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);
     const [sortBy, setSortBy] = useState<string>("ReceivedDate");

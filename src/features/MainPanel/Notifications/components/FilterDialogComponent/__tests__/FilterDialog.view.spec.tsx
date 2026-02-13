@@ -72,6 +72,8 @@ const defaultProps = {
     endDate: "2024-12-31",
     setEndDate: mockSetEndDate,
     startDateError: "",
+    endDateError: "",
+    isFormValid: true,
     onApply: mockOnApply,
     onClear: mockOnClear,
     onClose: mockOnClose,
@@ -215,6 +217,8 @@ describe("FilterDialogView", () => {
                 endDate: "2023-06-30",
                 setEndDate: jest.fn(),
                 startDateError: "",
+                endDateError: "",
+                isFormValid: true,
                 onApply: jest.fn(),
                 onClear: jest.fn(),
                 onClose: jest.fn(),
@@ -254,7 +258,9 @@ describe("handleApply with startDateError", () => {
         const propsWithError = {
             ...defaultProps,
             onApply: mockOnApply, // Pass the mock function to props
-            startDateError: "Some error"
+            startDateError: "Some error",
+            endDateError: "",
+            isFormValid: true
         };
         render(<FilterDialogView {...propsWithError} />);
         const applyButton = screen.getByTestId("apply-btn");
