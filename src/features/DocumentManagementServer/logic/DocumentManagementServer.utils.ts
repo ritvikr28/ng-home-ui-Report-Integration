@@ -94,17 +94,19 @@ export function reduceCategories(res: any[]): Category[] {
   ) as Category[];
 }
 
-export const getAllRegistrationIds = (selectedFormats: any[]): any[] =>
-     selectedFormats?.flatMap(item => {
-        const regId: string | string[] | undefined = item?.data?.categoryId;
-        if (Array.isArray(regId)) {
-            return regId;
-        }
-        if (regId) {
-            return [regId];
-        }
-        return [];
-    }) || [];
+export const getAllRegistrationIds = (selectedFormats: any): any[] => {
+  if (!Array.isArray(selectedFormats)) return [];
+  return selectedFormats.flatMap(item => {
+    const regId: string | string[] | undefined = item?.data?.categoryId;
+    if (Array.isArray(regId)) {
+      return regId;
+    }
+    if (regId) {
+      return [regId];
+    }
+    return [];
+  });
+};
 
 
 export function getCompletedPartitionKeys(viewData: Array<{ status?: string; partitionKey?: string }>): string[] {
@@ -705,11 +707,11 @@ export function addUniqueTagItem({
   }
 
   // Always normalize the ID for comparison
-  const newId = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
+  const newId: string = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
   
-  const alreadyExists = tagListArray.some(
+  const alreadyExists: boolean = tagListArray.some(
     (tag) => {
-      const tagId = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
+      const tagId: string = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();
       return tagId === newId;
     }
   );

@@ -32,14 +32,14 @@ import gtmAnalytics from "../../utils/analytics";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
-import { resetDateState, handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel } from "./FilterDialog.utils";
+import { resetDateState, handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, validateDate } from "./FilterDialog.utils";
 import { SearchSection } from "./components/FilterSearch";
 import { FilterDateSection } from "./components/FilterDateSection";
 import { FilterCategoryDropdown } from "./components/FilterCategoryDropdown";
 import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import { fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncDialogStateEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
-interface FilterDialogProps {
+export interface FilterDialogProps {
   dataTestId?: string;
   title: string;
   isOpen: boolean;
@@ -122,7 +122,7 @@ const { validationText, validationTextLevel }: { validationText: string; validat
 
 useFetchSchoolEffect(selectedDisplayKey, () => fetchSchoolData(setSchoolData));
 
-useSyncDialogStateEffect({ isFilterDialogOpen, selectedRelatedTo, setLocalSelectedRelatedTo, setLocalSelectedCategories, setLocalSelectedDateRange, selectedDateRange, setLocalTagListArray, tagListArray, setRelatedToError, setFromDateError, setToDateError });
+useSyncDialogStateEffect({ isFilterDialogOpen, selectedRelatedTo, setLocalSelectedRelatedTo, setLocalSelectedCategories, setLocalSelectedDateRange});
 
 useSyncSelectedKeyEffect(localSelectedRelatedTo, setSelectedKey);
 
@@ -205,8 +205,7 @@ const relatedTo: any[] = Object.entries(relatedToEnum).map(([key, value]) => ({
 }));
 
 const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) =>{
-  const key = localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum | undefined;
-  handleSearchChange({
+   handleSearchChange({
     t,
     e,
     categoryId: getAllRegistrationIds(selectedCategories),
@@ -221,158 +220,6 @@ const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) =>
     setResetFilterSearch: undefined
   });
 }
-
-// const renderRelatedToDropdown = (): JSX.Element => (
-//   <>
-//    <FilterRelatedToDropdown
-//       t={t}
-//       dataTestId={dataTestId}
-//       relatedTo={relatedTo}
-//       localSelectedRelatedTo={localSelectedRelatedTo}
-//       setLocalSelectedRelatedTo={setLocalSelectedRelatedTo}
-//       setRelatedToError={setRelatedToError}
-//       setRefId={setRefId}
-//       setSchoolData={setSchoolData}
-//       setRelatedToSelected={setRelatedToSelected}
-//       setSuggestions={setSuggestions}
-//       setLocalTagListArray={setLocalTagListArray}
-//       setReferenceExternalIds={setReferenceExternalIds}
-//       setSearchTerm={setSearchTerm}
-//       setShowSearchError={setShowSearchError}
-//       setIsDropdownOpen={setIsDropdownOpen}
-//       setSearchSelectionError={setSearchSelectionError}
-//       setLocalSelectedCategories={setLocalSelectedCategories}
-//       setToDateError={setToDateError}
-//       setFromDateError={setFromDateError}
-//       setFromDate={setFromDate}
-//       setToDate={setToDate}
-//       setSelectedDateRange={setSelectedDateRange}
-//       setSearchKey={setSearchKey}
-//       relatedToError={relatedToError}
-//     />
-//   </>
-// );
-
-// const renderCategoryDropdown = ()=> {
-//   <FilterCategoryDropdown
-//     t={t}
-//     dataTestId={dataTestId}
-//     refId={refId}
-//     availableCategories={availableCategories}
-//     localSelectedCategories={localSelectedCategories}
-//     getValidationTextMsg={getValidationTextMsg}
-//     getValidationLevelMsg={getValidationLevelMsg}
-//     onSelectMultipleCategories={onSelectMultipleCategories}
-//     setLocalSelectedCategories={setLocalSelectedCategories}
-//   />
-  
-// };
-
-
-
-// const renderDateSection = (): JSX.Element => (
-//   <FilterDateSection
-//     t={t}
-//     dataTestId={dataTestId}
-//     fromDate={fromDate}
-//     toDate={toDate}
-//     fromDateError={fromDateError}
-//     toDateError={toDateError}
-//     handleDateChange={handleDateChange}
-//     setFromDate={setFromDate}
-//     setFromDateError={setFromDateError}
-//     setToDate={setToDate}
-//     setToDateError={setToDateError}
-// />
-// );
-
-
-
-// const renderSearchSection = (): JSX.Element | null => {
-//   const key = localSelectedRelatedTo?.data?.data?.key;
-//   if (!key || !["Pupil", "Staff"].includes(key)) {
-//     return null;
-//   }
-//   return (
-//     <SearchSection
-//       visible={true}
-//       dataTestId={dataTestId}
-//       searchTerm={searchTerm}
-//       setSearchTerm={setSearchTerm}
-//       suggestions={suggestions}
-//       isSearchLoading={isSearchLoading}
-//       validationText={validationText}
-//       validationTextLevel={validationTextLevel}
-//       tagList={tagListArray}
-//       onItemClick={item => {
-//           handleApplyWrapper({
-//             localSelectedRelatedTo,
-//             setRelatedToError,
-//             t,
-//             selectedKey,
-//             localTagListArray,
-//             setSearchSelectionError,
-//             selectedDisplayKey,
-//             handleDateChange,
-//             setFromDate,
-//             setFromDateError,
-//             fromDate,
-//             toDate,
-//             setIsDateError,
-//             setSelectedDateRange,
-//             setToDateError,
-//             fromDateError,
-//             toDateError,
-//             isDateError,
-//             setSelectedCategories,
-//             localSelectedCategories,
-//             localSelectedDateRange,
-//             setTagListArray,
-//             setSelectedRelatedTo,
-//             setDocumentRelatedTo,
-//             handleApply,
-//             refId,
-//             filterEntities,
-//             setWasApplied,
-//             gtmAnalytics,
-//             selectedDateRange
-//           });
-//   }}
-//       onChange={(e: any) =>   
-//                     handleSearchChange(
-//                       t,
-//                       e,
-//                       getAllRegistrationIds(selectedCategories),
-//                       selectedDateRange?.fromDate,
-//                       selectedDateRange?.toDate,
-//                       setSearchTerm,
-//                       setSuggestions,
-//                       setShowSearchError,
-//                       setIsSearchLoading,
-//                       setShowSearchError
-//                     )}
-//       onRemoveTag={handleRemoveTag}
-//       title={title}
-//       selectedDisplayKey={selectedDisplayKey}
-//       t={t}
-//       isDropdownOpen={isDropdownOpen}
-//       localTagListArray={localTagListArray}
-//       setTagListArray={setTagListArray}
-//       setReferenceExternalIds={setReferenceExternalIds}
-//       setAlreadyExistingTags={setAlreadyExistingTags}
-//       searchKey={searchKey}
-//       getEntityLabel={getEntityLabel}
-//       filteredSuggestions={filteredSuggestions}
-//       showSearchError={showSearchError}
-//       selectedCategories={selectedCategories}
-//       selectedDateRange={selectedDateRange}
-//       setSuggestions={setSuggestions}
-//       handleSearchChange={handleSearchChange}
-//       handleRemoveTag={handleRemoveTag}
-//       placeholder={t("Filter.searchPlaceholder", { entity: selectedDisplayKey })}
-// />
-//   );
-// };
 
 const handleRemoveTagForSection = (
   e: React.SyntheticEvent<Element, Event>,
@@ -430,11 +277,13 @@ return (
     dataTestId={dataTestId}
     onClose={e => {
       handleDialogClose(
-        setLocalSelectedCategories,
-        setLocalSelectedDateRange,
-        setLocalTagListArray,
-        setLocalSelectedRelatedTo,
-        onClose
+        setRelatedToSelected,
+        setRelatedToError,
+        setSearchSelectionError,
+        setSuggestions,
+        onClose,
+        setShowErrorBanner,
+        setShowSearchError
       );
     }}
     title={isLoading ? "" : title}

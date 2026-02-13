@@ -6,6 +6,7 @@ import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { TFunction } from "i18next";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
+import { DateParts } from "./useFilterDialogLogicProps";
 export const getDateString: (date: { day: string; month: string; year: string }) => string = (date) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
 
@@ -48,14 +49,14 @@ interface DateValidationResult {
   toError?: string;
 }
 
-const validateDate = (
+export const validateDate = (
   dateStr: string,
   otherDateStr: string,
   isFrom: boolean,
   t: TFunction
 ): DateValidationResult => {
   if (!dateStr) {
-    return { isValid: false, error: t("Filter.invalidDate") };
+    return { isValid: true };
   }
 
   if (isFutureDate(dateStr)) {
@@ -112,7 +113,96 @@ interface HandleDateChangeParams {
   setToDateError: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export const handleDateChange = ({
+function getValidationError(params: {
+  newDate: DateParts;
+  otherDate: DateParts;
+  isFrom: boolean;
+  t: TFunction;
+}): DateValidationResult | null {
+  const { newDate, otherDate, isFrom, t }: { newDate: DateParts; otherDate: DateParts; isFrom: boolean; t: TFunction } = params;
+
+  if (!newDate.day || !newDate.month || !newDate.year) {
+    return null;
+  }
+
+  const thisDateStr: string = getDateString(newDate);
+  const otherDateStr: string = getDateString(otherDate);
+
+  if (isInvalidInput(newDate)) {
+    return {
+      error: t("Filter.invalidDate"),
+      isValid: false
+    };
+  }
+
+  if (isInvalidFormat(thisDateStr)) {
+    return {
+  error: t("Filter.invalidDate"),
+  isValid: false
+};
+  }
+
+  if (isFutureDate(thisDateStr)) {
+    return {
+  error: isFrom
+    ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
+    : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
+  isValid: false
+};
+  }
+
+  if (isBeforeMinDate(thisDateStr)) {
+    return {
+  error: isFrom
+    ? t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" })
+    : t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }),
+  isValid: false
+};
+  }
+
+  if (isFrom && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
+    return {
+  toError: t("Filter.toDateShouldNotBeBeforeFromDate"),
+  isValid: false
+};
+  }
+
+  if (!isFrom && otherDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
+    return {
+  error: t("Filter.toDateShouldNotBeBeforeFromDate"),
+  isValid: false
+};
+  }
+
+  const result: DateValidationResult = validateDate(thisDateStr, otherDateStr, isFrom, t);
+  if (!result.isValid) return result;
+
+  return null;
+}
+
+
+interface ErrorSetters {
+  setError: React.Dispatch<React.SetStateAction<string>>;
+  setFromDateError: React.Dispatch<React.SetStateAction<string>>;
+  setToDateError: React.Dispatch<React.SetStateAction<string>>;
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+function applyValidationError(
+  validation: DateValidationResult,
+  setters: ErrorSetters
+): void {
+  const { setError, setFromDateError, setToDateError, setIsDateError }: ErrorSetters = setters;
+
+  setError(validation.error || "");
+  if (validation.fromError) setFromDateError(validation.fromError);
+  if (validation.toError) setToDateError(validation.toError);
+
+  setIsDateError(true);
+}
+
+
+export function handleDateChange({
   setDate,
   setError,
   day,
@@ -125,8 +215,8 @@ export const handleDateChange = ({
   t,
   setFromDateError,
   setToDateError
-}: HandleDateChangeParams): void => {
-  const newDate: { day: string; month: string; year: string } = {
+}: HandleDateChangeParams): void {
+  const newDate: DateParts = {
     day: day?.toString() ?? "",
     month: month?.toString() ?? "",
     year: year?.toString() ?? ""
@@ -134,37 +224,62 @@ export const handleDateChange = ({
 
   setDate(newDate);
 
-  if (isZeroDate(newDate) || isYearIncomplete(newDate.year) || isPartialDate(newDate)) {
-    setError(t("Filter.invalidDate"));
+  // Special rule: To Date entered before From Date
+  if (!isFrom && isEmptyDate(otherDate)) {
+    setFromDateError(t("Filter.fromDateRequired"));
+    setToDateError("");
     setIsDateError(true);
     return;
   }
 
-  const thisDateStr: string = getDateString(newDate);
-  const otherDateStr: string = getDateString(otherDate);
+  if (isFrom && isEmptyDate(newDate)) {
+    setFromDateError("");
+  }
 
-  const validation: DateValidationResult = validateDate(thisDateStr, otherDateStr, isFrom, t);
+  const validation: DateValidationResult | null = getValidationError({
+    newDate,
+    otherDate,
+    isFrom,
+    t
+  });
 
-  if (!validation.isValid) {
-    setIsDateError(true);
-    setError(validation.error ?? "");
-    setFromDateError(validation.fromError ?? "");
-    setToDateError(validation.toError ?? "");
+  if (validation) {
+    applyValidationError(validation, {
+      setError,
+      setFromDateError,
+      setToDateError,
+      setIsDateError
+    });
     return;
   }
 
-  // Success case
+  // ✅ Success
   setError("");
   setFromDateError("");
   setToDateError("");
   setIsDateError(false);
 
+  const thisDateStr: string = getDateString(newDate);
+  const otherDateStr: string = getDateString(otherDate);
+
   setSelectedDateRange({
     fromDate: isFrom ? thisDateStr : otherDateStr,
     toDate: !isFrom ? thisDateStr : otherDateStr
   });
-};
+}
 
+
+// --- Helper functions ---
+
+function isEmptyDate(date: { day: string; month: string; year: string }): boolean {
+  return !date.day && !date.month && !date.year;
+}
+
+function isInvalidInput(date: { day: string; month: string; year: string }): boolean {
+  // Only validate if all fields are filled
+  if (!date.day || !date.month || !date.year) return false;
+  return Boolean(isZeroDate(date)) || Boolean(isYearIncomplete(date.year));
+}
 export interface HandleApplyWrapperParams {
   localSelectedRelatedTo: any;
   setRelatedToError: (msg: string) => void;
@@ -320,7 +435,7 @@ export const getEntityLabel: (entity: string) => string = (entity: string) => {
   setRefId: any;
 }
 
-export const clearAll = ({
+export const clearAll: (params: ClearAllParams) => void = ({
   setFromDate,
   setToDate,
   setFromDateError,
@@ -339,25 +454,25 @@ export const clearAll = ({
   setSearchSelectionError,
   setRefId
 }: ClearAllParams) => {
-    resetDateState(setFromDate);
-    resetDateState(setToDate);
-    setFromDateError("");
-    setToDateError("");
-    setIsDateError(false);
-    setRelatedToError("");
-    setSearchTerm("");
-    setSuggestions([]);
-    setShowSearchError(false);
-  
-    setLocalSelectedCategories([]);
-    setLocalSelectedDateRange({ fromDate: "", toDate: "" });
-    setLocalTagListArray([]);
-    setLocalSelectedRelatedTo(undefined);
-    setCategoryError(false);
-    setRelatedToSelected(false);
-    setRelatedToError("");
-    setSearchSelectionError("");
-    setRefId([]);
+  resetDateState(setFromDate);
+  resetDateState(setToDate);
+  setFromDateError("");
+  setToDateError("");
+  setIsDateError(false);
+  setRelatedToError("");
+  setSearchTerm("");
+  setSuggestions([]);
+  setShowSearchError(false);
+
+  setLocalSelectedCategories([]);
+  setLocalSelectedDateRange({ fromDate: "", toDate: "" });
+  setLocalTagListArray([]);
+  setLocalSelectedRelatedTo(undefined);
+  setCategoryError(false);
+  setRelatedToSelected(false);
+  setRelatedToError("");
+  setSearchSelectionError("");
+  setRefId([]);
   };
 
 export const fetchSchoolData: (
@@ -372,19 +487,26 @@ export const fetchSchoolData: (
     setRelatedToError: any,
     setSearchSelectionError: any,
     setSuggestions: any,
-    onClose: any
+    onClose: any,
+    setShowErrorBanner: any,
+    setShowSearchError: any
  ) => void = (
     setRelatedToSelected,
     setRelatedToError,
     setSearchSelectionError,
     setSuggestions,
-    onClose
-  ) => {
+    onClose,
+    setShowErrorBanner,
+    setShowSearchError
+ ) => {
     setRelatedToSelected(false);
     setRelatedToError("");
     setSearchSelectionError("");
     setSuggestions([]);
     onClose();
+    setShowErrorBanner(false);      // <-- Reset error banner
+    setShowSearchError(false);      // <-- Reset search error
+    setSearchSelectionError("");    // <-- Reset search selection error    
   }
 
  export const handleRemoveTag: any = (

@@ -47,7 +47,7 @@ export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
   setResetFilterSearch
 }: HandleSearchChangeParams): void => {
   // Accept both event and string
-  let value: string = "";
+  let value = "";
   if (typeof e === "string") {
     value = e;
   } else if (e && typeof e.target?.value === "string") {

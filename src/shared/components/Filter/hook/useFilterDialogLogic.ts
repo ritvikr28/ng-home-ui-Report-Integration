@@ -472,7 +472,7 @@ export const useSearchEffect: any = ({
 };
 
 
-export const useBuildRefIdsEffect = (
+export const useBuildRefIdsEffect: any = (
   selectedKey: string,
   localTagListArray: any[],
   schoolData: any,
@@ -490,11 +490,11 @@ export const useBuildRefIdsEffect = (
       } else if (selectedKey === "Staff") {
         ids = localTagListArray.map(item => (item as any).externalId).filter(Boolean);
       } else if ((selectedKey === "Organisation" || selectedKey === "School") && schoolData) {
-        const orgId = getUserOrganisation();
+        const orgId: string | undefined = getUserOrganisation();
         ids = orgId ? [orgId] : [];
-        const orgSchoolEntity = {
+        const orgSchoolEntity: any = {
           organisationId: orgId,
-          schoolName: schoolData?.schoolName || "",
+          schoolName: schoolData?.schoolName || ""
         };
         entities = orgSchoolEntity ? [orgSchoolEntity] : [];
       }
