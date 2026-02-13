@@ -4,10 +4,10 @@ import React, { useEffect } from "react";
 import "./style.scss";
 import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
-import { formattedDate, PAGE_SIZE, useNotification } from "./useNotification";
+import { formattedDate, getValues, PAGE_SIZE, useNotification } from "./useNotification";
 import NotificationSidePanelView from "./components/NotificationSidePanelComponent/NotificationSidePanel.view";
 import DeleteConfirmationModalLogic from "./components/DeleteConfirmationModal/DeleteConfirmationModal.logic";
-import { getNotificationTableData } from "../../../shared/services/notification/api";
+import { getNotificationTableData, getSearchAutoSuggestData } from "../../../shared/services/notification/api";
 import { PriorityType, TableNotificationProps } from "./Notifications.props";
 
 
@@ -15,6 +15,7 @@ import { PriorityType, TableNotificationProps } from "./Notifications.props";
 const NotificationView = () => {
     const [tableData, setTableData] = React.useState<any>(null);
     const [totalTableData, setTotalTableData] = React.useState<any>(null);
+    const [notificationState, setNotificationState] = React.useState<{ searchCleared: boolean }>({ searchCleared: false });
 
     const {
         filterBtnClicked,
@@ -26,8 +27,8 @@ const NotificationView = () => {
         // totalOriginalNotifications,
         handlePageChange,
         searchTerm,
-        // handleSearchChange,
-        // handleClearSearch,
+        setSearchTerm,
+        handleSearchChange,
         isSearching,
         noResults,
         setNoResults,
@@ -50,18 +51,60 @@ const NotificationView = () => {
         searchTagList,
         sortBy,
         sortDirection,
-        handleSort
+        handleSort,
+        searchSuggestions, setSearchSuggestions
     } = useNotification({ tableData, totalTableData });
+
+    const handleSearchChangeWithAutoSuggest = (value: string) => {
+        setSearchTerm(value);
+
+        const trimmed = value.trim();
+        if (trimmed === "") {
+            setIsAutoSuggestVisible(false);
+            handleSearchKeyPressed("");
+            return;
+        }
+        if (trimmed.length >= 2) {
+            setIsAutoSuggestVisible(true);
+            handleSearchChange(value);
+            return;
+        }
+        setIsAutoSuggestVisible(false);
+    };
     const [sideIsOpen, setSideIsOpen] = React.useState(false);
     const [selectedItem, setSelectedItem] = React.useState<any>("");
     const [isTableBodyLoading, setIsTableBodyLoading] = React.useState(false);
     const [tableDataError, setTableDataError] = React.useState<any>(false);
     const [notificationIdSelected, setNotificationIdSelected] = React.useState<string | undefined>(undefined);
+    const [suggestionLoader, setSuggestionLoader] = React.useState(false);
     const tableWrapperRef = React.useRef<HTMLDivElement>(null);
     const getNotificationId = React.useCallback((notification: any) => notification?.id ?? notification?.Id, []);
+    const [isAutoSuggestVisible, setIsAutoSuggestVisible] = React.useState(false);
+
+    const handleSearchKeyPressed = (inputValue: string) => {
+        setIsTableBodyLoading(true);
+        getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: inputValue.toLowerCase(), SortBy: sortBy, SortDirection: sortDirection })
+            .then((data) => {
+                if (!data.error) {
+                    setTableData(data.payload);
+                    setTotalTableData(data.total);
+                    setTableDataError(false);
+                    if (data.payload.length === 0) {
+                        setNoResults(true);
+                    } else {
+                        setNoResults(false);
+                    }
+                } else {
+                    setNoResults(true);
+                    setTableDataError(true);
+                    setTableData([]);
+                }
+            })
+            .finally(() => setIsTableBodyLoading(false));
+    };
 
     const tableHeadersData = React.useMemo(
-        () =>getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, sortBy, sortDirection, setNotificationIdSelected),
+        () => getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, sortBy, sortDirection, setNotificationIdSelected),
         [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
     );
 
@@ -72,16 +115,17 @@ const NotificationView = () => {
         filters.endDate
         , [filters]);
 
-    const hasSearch = React.useMemo(() => searchTerm.trim().length > 0, [searchTerm]);
+    const hasSearch = React.useMemo(() => searchTerm.trim().length >= 2, [searchTerm]);
 
     useEffect(() => {
-        if (!sideIsOpen) {
+        if (!sideIsOpen || hasSearch || notificationState.searchCleared) {
             setIsTableBodyLoading(true);
-            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SortBy: sortBy, SortDirection: sortDirection })
+            getNotificationTableData({ PageSize: PAGE_SIZE, PageNumber: currentPage, SearchTerm: searchTerm.toLowerCase(), SortBy: sortBy, SortDirection: sortDirection })
                 .then((data) => {
                     if (!data.error) {
                         setTableData(data.payload);
                         setTotalTableData(data.total);
+                        setTableDataError(false);
                         if (data.payload.length === 0) {
                             setNoResults(true);
                         }
@@ -93,7 +137,28 @@ const NotificationView = () => {
                 })
                 .finally(() => setIsTableBodyLoading(false));
         }
-    }, [currentPage, sideIsOpen, sortBy, sortDirection]);
+    }, [notificationState, currentPage, sideIsOpen,sortBy, sortDirection]);
+
+    useEffect(() => {
+        if (!(searchTerm && hasSearch && isAutoSuggestVisible)) {
+            setIsAutoSuggestVisible(false);
+            return;
+        }
+        setSuggestionLoader(true);
+        getSearchAutoSuggestData({ SearchTerm: searchTerm.toLowerCase() }).then((data: any) => {
+            let suggestionList: any[] = [];
+            if (Array.isArray(data?.payload) && data.payload.length) {
+                suggestionList = [
+                    {
+                        name: "",
+                        values: getValues(data.payload)
+                    }
+                ];
+            }
+            setSuggestionLoader(false);
+            setSearchSuggestions(suggestionList);
+        });
+    }, [searchTerm, isAutoSuggestVisible, sideIsOpen, hasSearch])
 
     const tableRows =
         React.useMemo(
@@ -115,7 +180,7 @@ const NotificationView = () => {
                         }),
                     }))
                     : [],
-            [tableData,currentPage,getNotificationId]
+            [tableData, currentPage, getNotificationId]
         );
 
     const visibleNotificationIds = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
@@ -138,18 +203,18 @@ const NotificationView = () => {
         }
     };
 
-    const shouldShowPagination = !tableDataError && totalTableData !== 0
+    const shouldShowPagination = !tableDataError && totalTableData !== 0 && !isTableBodyLoading
     // > 1 && tableData.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
         if (tableDataError) {
             return "No data to display";
         }
-        if (!totalNotifications && !isSearching) {
-            return "No data to display";
-        }
-        if (totalNotifications === 0 && !isSearching && hasSearch) {
-            return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+        // if (!totalNotifications && !isSearching) {
+        //     return "No data to display";
+        // }
+        if (noResults && totalNotifications === 0 && !isSearching && !searchSuggestions.length) {
+        return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
         }
         if (totalNotifications === 0 && !isSearching && hasActiveFilters) {
             return "No notifications found for selected filters.";
@@ -203,22 +268,30 @@ const NotificationView = () => {
                                 dataTestId="controlled-list-test-id"
                                 filterDDLOptions={[]}
                                 isShowSearch={true}
-                                // searchTerm={searchTerm}
-                                // searchOnChange={(e) => handleSearchChange(e.target.value)}
-                                // searchOnClickClose={(e: React.SyntheticEvent, text?: string, closeObj?: { name?: string; id?: string | number; value?: string }) => {
-                                //     if (closeObj) {
-                                //         if (closeObj.id === 1) {
-                                //             handleRemoveFilter('status', closeObj.value);
-                                //         } else if (closeObj.id === 2) {
-                                //             handleRemoveFilter('priority', closeObj.value);
-                                //         } else if (closeObj.id === 3 || closeObj.name === 'Date') {
-                                //             handleRemoveFilter('startDate');
-                                //         }
-                                //     } else {
-                                //         handleClearSearch();
-                                //     }
-                                // }}
-                                // searchOnCloseHandle={handleClearSearch}
+                                searchTerm={searchTerm}
+                                setSearchTerm={searchTerm}
+                                searchOnChange={(e) => handleSearchChangeWithAutoSuggest(e.target.value)}
+                                searchSuggestions={searchSuggestions}
+                                onSearchSuggestionItemClick={(props: any | null) => {
+                                    if (props) {
+                                        // eslint-disable-next-line react/prop-types
+                                        setSearchTerm(props.name);
+                                        // eslint-disable-next-line react/prop-types
+                                        handleSearchKeyPressed(props.name);
+                                        setIsAutoSuggestVisible(false);
+                                    }
+                                }}
+                                isSearchHideClearIcon={searchTerm.length === 0}
+                                onSearchKeyDown={(e: React.KeyboardEvent) => {
+                                    setSearchTerm((e.target as HTMLInputElement).value);
+                                    if (e.key === "Enter") {
+                                        handleSearchKeyPressed((e.target as HTMLInputElement).value);
+                                        setIsAutoSuggestVisible(false);
+                                    }
+                                }}
+                                searchValue={searchTerm}
+                                isShowAutoSuggest={isAutoSuggestVisible}
+                                onKeyUpLenght={2}
                                 isShowFirstElement={true}
                                 isShowFourthElement={true}
                                 filterCustumeElem2={
@@ -273,7 +346,7 @@ const NotificationView = () => {
                                 sortByDefault={false}
                                 sortAscFirst={false}
                                 sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
-                                handleSort(columnName);
+                                    handleSort(columnName);
                                 }}
                                 templatePropsConfirmation={{
                                     cancelText: "Cancel",
@@ -289,21 +362,18 @@ const NotificationView = () => {
                                 isOpenConfirmationDialog={false}
                                 isIconRightAligned={true}
                                 isShowOverflowMenuCol={false}
+                                searchOnCloseHandle={() => {
+                                    setSearchTerm("");
+                                    setNotificationState({ searchCleared: true });
+                                }}
                                 searchHeadingText="Search by notification title"
-                                isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
                                 dynamicTableLoader={isTableBodyLoading}
                                 onClickSidePnlSecondaryBtn={() => { setSideIsOpen(false) }}
                                 handleCloseSidePanel={() => {
                                     setSideIsOpen(false)
                                 }}
-                                // sidePanelTitle="View"
-                                // sidePanelSubTitle=""
-                                // addEditTemplateChild={() =>
-                                //     <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                                //         <div style={{ fontSize: "20px", fontWeight: 400, lineHeight: "24px" }}>{selectedItem ? selectedItem[0].notification : null}</div>
-                                //         <div style={{ fontSize: "16px", fontWeight: 400, lineHeight: "24px" }}>The role Headteacher has been updated by the Trust and is now ready for use. Historical data will not be affected.Historical data will not be affected.</div>
-                                //     </div>
-                                // }
+                                emptyRowResponseMessage={getEmptyStateMessage()}
+                                searchIsLoader={suggestionLoader}
                                 onClickOverflowItem={() => { }}
                                 secondaryButtonTitle="Close"
                                 isShowCheckboxCol={true}
@@ -311,11 +381,10 @@ const NotificationView = () => {
                                 isShowdynamictableNoMsg={
                                     (totalNotifications === 0 || !noResults) || !isSearching || tableDataError
                                 }
-                                emptyRowResponseMessage={getEmptyStateMessage()}
                                 emptyRowResponseCode={ResponseCode.Info}
                                 isPagination={shouldShowPagination}
                                 paginationCount={totalPages}
-                                paginationOnChange={handlePageChange }
+                                paginationOnChange={handlePageChange}
                                 paginationPage={currentPage}
                                 onChangeListCheckBox={(index: number, id: string) => handleListCheckboxChange(index, id)}
                                 onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
