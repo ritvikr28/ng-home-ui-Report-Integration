@@ -1519,6 +1519,9 @@ const getDialogTitle = () => {
                                 searchTagList={searchTagListRaw}
                                 onOverflowTagClose ={()=>{}}
                                 isShowFourthElement={false}
+                                searchNoDataTemplate={`${t(
+                                        "DocumentManagementServer.FirstPart"
+                                    )} - {value} - ${t("DocumentManagementServer.SecondPart")}`}
                             />
                         </div>
                     </div>

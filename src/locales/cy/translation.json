@@ -509,7 +509,9 @@
     "oneOrMoreSelectedDocumentsCannotBeDownloaded": "Ni ellir lawrlwytho un neu fwy o'r dogfennau a ddewiswyd gan eu bod eisoes wedi'u dileu. Rhowch gynnig arall arni yn nes ymlaen. Os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
      "deletingDocumentsTemporarilyUnavailable":"Nid yw dileu dogfennau ar gael dros dro",
     "deletingDocumentsTemporarilyUnavailableMessage":"Ar hyn o bryd rydym yn profi problem dechnegol sy'n atal dogfennau rhag cael eu dileu, Gallwch chi lawrlwytho dogfennau o hyd. Rhowch gynnig arall arni yn nes ymlaen. Ac os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
-    "Protected":"Gwarchodedig"
+    "Protected":"Gwarchodedig",
+    "FirstPart": "Your search",
+    "SecondPart": "did not match any results with uploaded files in the DMS."
   },
   "Filter": {
     "heading": "Chwilio uwch",
