@@ -19,14 +19,16 @@ import { HandleSearchChangeParams, HandleTagCloseLogicParams } from "../response
 /* Page & Search                                                       */
 /* ------------------------------------------------------------------ */
 
-export const handlePageChange: (_: unknown, page: number, setCurrentPage: React.Dispatch<React.SetStateAction<number>>, setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>) => void = (
+export const handlePageChange: (_: unknown, page: number, setCurrentPage: React.Dispatch<React.SetStateAction<number>>, setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>, setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>) => void = (
   _: unknown,
   page: number,
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>,
-  setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsSearchDataLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>
 ): void => {
   setIsSearchDataLoading(true);
   setCurrentPage(page);
+  setIsSearchTriggered(true);
 };
 
 const shouldIgnoreSearch = (value: string): boolean =>
@@ -228,7 +230,7 @@ export const validateAndApplyFilter: (selectedDateRange: { fromDate: string; toD
 /* Bulk Delete                                                         */
 /* ------------------------------------------------------------------ */
 
-export const handleBulkDeleteLogic: (allSelectedDocs: any[], docData: any, allRegistrationIds: any[], dateRange: any, searchRefExternalId: any) => Promise<void> = async ({
+export const handleBulkDeleteLogic = async ({
   allSelectedDocs,
   docData,
   allRegistrationIds,
@@ -250,13 +252,17 @@ export const handleBulkDeleteLogic: (allSelectedDocs: any[], docData: any, allRe
   deleteFiles,
   excludedCheckBoxIds,
   isHeaderBoxChecked,
-  availableFileIds,
-  setIsSearchDataLoading
+  setIsSearchDataLoading,
+  availableFileIds
 }: any): Promise<void> => {
+  if(typeof setShowToastNotification === "function")
   setShowDeleteSuccessToast(false);
+  if(typeof setIsSearchDataLoading === "function")
   setIsSearchDataLoading(true);
+  if(typeof setShowDeleteAbortBanner === "function")
   setShowDeleteAbortBanner(false);
 
+  console.log("dateRange:", dateRange);
   const payload: any = mapToBulkDeletePayload({
     isSelectAll: isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -287,11 +293,14 @@ export const handleBulkDeleteLogic: (allSelectedDocs: any[], docData: any, allRe
       return;
     }
 
+    if(typeof setShowDeleteErrorBanner === "function")
     setShowDeleteAbortBanner(status === 409);
     setShowDeleteErrorBanner(status !== 409);
   } catch {
+    if(typeof setShowDeleteErrorBanner === "function")
     setShowDeleteErrorBanner(true);
   } finally {
+    if(typeof setIsSearchDataLoading === "function")
     setIsSearchDataLoading(false);
   }
 };
@@ -372,6 +381,8 @@ function handleValidationResult(
   setAvailableFileCount(available);
   setAvailableFileIds(availableFileIds);
 
+  console.log("totalSelectedCount", totalSelectedCount);
+
   setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
   setIsPreDialogLoading(false);
   setShowRestrictedDeleteDialog(false);
@@ -424,7 +435,8 @@ export const handleEditSelectedOverFlowMenu: any = async ({
   setSidePanelOpenReason,
   setIsSidePanelOpen,
   setAvailableFileIds,
-  setShowErrorBanner
+  setShowErrorBanner,
+  selectedCheckBoxIds
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -451,11 +463,13 @@ export const handleEditSelectedOverFlowMenu: any = async ({
   setIsSidePanelOpen: (v: boolean) => void,
   setAvailableFileIds: (v: string[]) => void,
   setShowErrorBanner: (v: boolean) => void,
+  selectedCheckBoxIds: string[]
 }) => {
   setShowConfirmDialog(false);
   setShowRestrictedDeleteDialog(false);
   setShowRestrictedPrepareDialog(false);
   setShowErrorBanner(false);
+  console.log("totalSelectedCount", totalSelectedCount, "allSelectedDocs", allSelectedDocs, "selectedCheckBoxIds", selectedCheckBoxIds);
 
   if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
     if (totalSelectedCount === 0) {
@@ -510,7 +524,59 @@ export const handleEditSelectedOverFlowMenu: any = async ({
 };
 
 
-export async function handleClearAllConfirm({ viewData: clearAllViewData, clearAllFiles, setShowToastNotification, fetchViewDownloadData: clearAllFetchViewDownloadData, setIsSidePanelLoader, setViewData, viewDownload: clearAllViewDownload, downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, setClearAllError, setShowConfirmDialog, getCompletedPartitionKeys: clearAllGetCompletedPartitionKeys, setIsViewDownloadError, setShowEmailNotification }: { viewData: any[], clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>, setShowToastNotification: (v: boolean) => void, fetchViewDownloadData: (args: any) => void, setIsSidePanelLoader: (v: boolean) => void, setViewData: (v: any) => void, setHasFetchedViewDownload: (v: boolean) => void, viewDownload: any, downloadPollingIntervalRef: any, setClearAllError: (v: boolean) => void, setShowConfirmDialog: (v: boolean) => void, getCompletedPartitionKeys: (viewData: any[]) => string[], setIsViewDownloadError: (v: boolean) => void, setShowEmailNotification: (v: boolean) => void }): Promise<void> { const completedPartitionKeys: string[] = clearAllGetCompletedPartitionKeys(clearAllViewData); setIsSidePanelLoader(true); try { const response: number = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } }); if (response === 204) { setViewData([]); setShowToastNotification(true); await clearAllFetchViewDownloadData({ showLoader: false, setIsSidePanelLoader, setViewData, viewDownload: clearAllViewDownload, downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification }); setIsSidePanelLoader(false); } else { setClearAllError(true); setIsSidePanelLoader(false); gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } } catch (error) { setClearAllError(true); setShowToastNotification(false); setIsSidePanelLoader(false); gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } setShowConfirmDialog(false); }
+export async function handleClearAllConfirm({ 
+  viewData: clearAllViewData, 
+  clearAllFiles, 
+  setShowToastNotification, 
+  fetchViewDownloadData: clearAllFetchViewDownloadData, 
+  setIsSidePanelLoader, 
+  setViewData, 
+  viewDownload: clearAllViewDownload, 
+  downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, 
+  setClearAllError, 
+  setShowConfirmDialog, 
+  getCompletedPartitionKeys, 
+  setIsViewDownloadError, 
+  setShowEmailNotification }: 
+  { 
+    viewData: any[], 
+    clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>, 
+    setShowToastNotification: (v: boolean) => void, 
+    fetchViewDownloadData: (args: any) => void, 
+    setIsSidePanelLoader: (v: boolean) => void, 
+    setViewData: (v: any) => void, 
+    setHasFetchedViewDownload: (v: boolean) => void, viewDownload: any, downloadPollingIntervalRef: any, 
+    setClearAllError: (v: boolean) => void, 
+    setShowConfirmDialog: (v: boolean) => void, 
+    getCompletedPartitionKeys: (viewData: any[]) => string[], 
+    setIsViewDownloadError: (v: boolean) => void, 
+    setShowEmailNotification: (v: boolean) => void }): Promise<void> 
+    { 
+      
+      const completedPartitionKeys: string[] = getCompletedPartitionKeys(clearAllViewData); 
+      if(typeof setIsSidePanelLoader === "function")
+      setIsSidePanelLoader(true); 
+      try { 
+        const response: number = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } }); 
+        if (response === 204) 
+          { 
+            setViewData([]); 
+            setShowToastNotification(true); 
+            await clearAllFetchViewDownloadData({ showLoader: false, setIsSidePanelLoader, setViewData, viewDownload: clearAllViewDownload, downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification }); 
+            
+            setIsSidePanelLoader(false); 
+          } 
+            else { 
+              setClearAllError(true); 
+              setIsSidePanelLoader(false); 
+              gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } 
+            } catch (error) {
+               setClearAllError(true); 
+               setShowToastNotification(false); 
+               if(typeof setIsSidePanelLoader === "function")
+               setIsSidePanelLoader(false); 
+               gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } 
+               setShowConfirmDialog(false); }
 
 export function handleApply({
   referenceExternalIds,

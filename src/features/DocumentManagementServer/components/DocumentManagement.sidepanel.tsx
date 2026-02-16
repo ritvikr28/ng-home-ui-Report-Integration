@@ -143,7 +143,6 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
           isSidePanelLoader={isSidePanelLoader}
           hasFetchedViewDownload={hasFetchedViewDownload}
           viewData={viewData}
-          fileDownload={fileDownload}
           setDownloadError={setDownloadError}
           gtmAnalytics={gtmAnalytics}
         />

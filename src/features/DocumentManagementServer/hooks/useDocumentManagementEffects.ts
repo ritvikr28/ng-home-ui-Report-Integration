@@ -1,6 +1,8 @@
 import React , { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
+import { Doc } from "prettier";
+import { DocumentData } from "../responseModel";
 
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
@@ -196,66 +198,54 @@ export function useSidePanelViewDownloadEffect({
   setIsViewDownloadError,
   setShowEmailNotification
 }: UseSidePanelViewDownloadEffectParams): void {
-  useEffect(() => {
-    // Only run when opening the side panel for "prepare"
-    if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-      setShowToastNotification(false);
-      setIsSidePanelLoader(true);
+   useEffect(() => {
+        // Only run when opening the side panel for "prepare"
+        if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+            setShowToastNotification(false);
+            setIsSidePanelLoader(true);
 
-      // Wait for 2 seconds before calling view download API
-      const timer: any = setTimeout(() => {
-        fetchViewDownloadData({
-          showLoader: false,
-          setIsSidePanelLoader,
-          setViewData: (data: any) => {
-            setViewData(data);
-            setHasFetchedViewDownload(true);
-          },
-          viewDownload,
-          downloadPollingIntervalRef,
-          setIsViewDownloadError,
-          setShowEmailNotification
-        });
-      }, 2000);
+            // Wait for 2 seconds before calling view download API
+            const timer = setTimeout(() => {
+                fetchViewDownloadData({
+                    showLoader: false,
+                    setIsSidePanelLoader,
+                    setViewData: (data: any) => {
+                        setViewData(data);
+                        setHasFetchedViewDownload(true);
+                    },
+                    viewDownload,
+                    downloadPollingIntervalRef,
+                    setIsViewDownloadError,
+                    setShowEmailNotification
+                });
+            }, 2000);
 
-      return () => clearTimeout(timer);
-    }
-    if (isSidePanelOpen && sidePanelOpenReason === "view") {
-      setShowToastNotification(false);
-      setIsSidePanelLoader(true);
-      fetchViewDownloadData({
-        showLoader: false,
-        setIsSidePanelLoader,
-        setViewData: (data: any) => {
-          setViewData(data);
-          setHasFetchedViewDownload(true);
-        },
-        viewDownload,
-        downloadPollingIntervalRef,
-        setIsViewDownloadError,
-        setShowEmailNotification
-      });
-    }
-    return undefined;
-  }, [
-    isSidePanelOpen,
-    sidePanelOpenReason,
-    setShowToastNotification,
-    setIsSidePanelLoader,
-    fetchViewDownloadData,
-    setViewData,
-    setHasFetchedViewDownload,
-    viewDownload,
-    downloadPollingIntervalRef,
-    setIsViewDownloadError,
-    setShowEmailNotification
-  ]);
+            return () => clearTimeout(timer);
+        }
+        if (isSidePanelOpen && sidePanelOpenReason === "view") {
+            setShowToastNotification(false);
+            setIsSidePanelLoader(true);
+            fetchViewDownloadData({
+                showLoader: false,
+                setIsSidePanelLoader,
+                setViewData: (data: any) => {
+                    setViewData(data);
+                    setHasFetchedViewDownload(true);
+                },
+                viewDownload,
+                downloadPollingIntervalRef,
+                setIsViewDownloadError,
+                setShowEmailNotification
+            });
+        }
+        return undefined;
+    }, [isSidePanelOpen, sidePanelOpenReason]);
 }
 
 interface UseTotalSelectedCountEffectParams {
   isHeaderBoxChecked: boolean;
   excludedCheckBoxIds: string[];
-  docData: any;
+  docData: DocumentData | null;
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[];
   setIsHeaderBoxChecked: (v: boolean) => void;
   setAllSelectedDocs: (v: any[]) => void;
@@ -287,6 +277,7 @@ export function useTotalSelectedCountEffect({
       return allSelectedDocs?.length || 0;
     })();
     setTotalSelectedCount(computedTotalSelectedCount);
+    console.log("Computed Total Selected Count:", computedTotalSelectedCount);
   }, [
     isHeaderBoxChecked,
     excludedCheckBoxIds,

@@ -167,7 +167,10 @@ export const getResultNotFoundMsg: (
   searchTerm: string,
   showErrorBanner: boolean,
   isSearchTriggered: boolean,
-  showSearchError: boolean
+  showSearchError: boolean,
+  selectedFormats: any[],
+  dateRange: { fromDate: string; toDate: string }
+  
 ) => string | undefined = (
    t:any,
    searchText: string,
@@ -175,19 +178,30 @@ export const getResultNotFoundMsg: (
    searchTerm: string,
    showErrorBanner: boolean,
    isSearchTriggered: boolean,
-   showSearchError: boolean
+   showSearchError: boolean,
+   selectedFormats: any[] = [],
+    dateRange: { fromDate: string; toDate: string } = { fromDate: "", toDate: "" }
  ): string | undefined => {
-   if (showSearchError || showErrorBanner) {
-     return "Information unavailable.";
-   }
-   // Show "No data to display" only if searching and no data
-   if ((searchText || isSearchTriggered ) && docData?.statusCode === 200 && Array.isArray(docData?.data) && docData?.data.length === 0) {
-     return t("DocumentManagementServer.noDataToDisplay");
-   }
-   if (!isSearchTriggered && !searchText) {
-     return t("DocumentManagementServer.searchBarText");
-   }
-   return undefined;
+    if (showSearchError || showErrorBanner) {
+    return "Information unavailable.";
+  }
+  // If any filter is applied or search is triggered, and no data, show "No data to display"
+  const isFilterActive =
+    (Array.isArray(selectedFormats) && selectedFormats.length > 0) ||
+    (dateRange?.fromDate || dateRange?.toDate);
+
+  if (
+    (searchText || isSearchTriggered || isFilterActive) &&
+    docData?.statusCode === 200 &&
+    Array.isArray(docData?.data) &&
+    docData?.data.length === 0
+  ) {
+    return t("DocumentManagementServer.noDataToDisplay");
+  }
+  if (!isSearchTriggered && !searchText && !isFilterActive) {
+    return t("DocumentManagementServer.searchBarText");
+  }
+  return undefined;
  };
 
 export const filterNonEmptySuggestions: (suggestions: Suggestion[]) => Suggestion[] = (suggestions) =>
@@ -334,43 +348,53 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
 
     }
 
-   export const handleOnChangeCheckBox: any = (index: number, id: string, docData: any, selectedCheckBoxIds: string[], setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>) => {
-            const isAlreadySelectedIds: boolean = selectedCheckBoxIds?.includes(id);
-            if (isAlreadySelectedIds) {
-                setSelectedCheckBoxIds(selectedCheckBoxIds?.filter(exId => exId !== id));
-            } else {
-                setSelectedCheckBoxIds([...selectedCheckBoxIds, id]);
-            }
+  export const handleOnChangeCheckBox: any = (
+  index: number,
+  id: string,
+  docData: any,
+  selectedCheckBoxIds: string[],
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
+  setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>
+) => {
+  console.log("Checkbox changed", index, id, selectedCheckBoxIds);
+  // Defensive: ensure selectedCheckBoxIds is an array
+  const checkBoxIds = Array.isArray(selectedCheckBoxIds) ? selectedCheckBoxIds : [];
 
-        const doc: any = docData?.data?.find((d: any) => d.fileId === id);
+  const isAlreadySelectedIds: boolean = checkBoxIds.includes(id);
+  if (isAlreadySelectedIds) {
+    setSelectedCheckBoxIds(checkBoxIds.filter(exId => exId !== id));
+  } else {
+    setSelectedCheckBoxIds([...checkBoxIds, id]);
+  }
 
-        setSelectedCheckBoxIds((prevSelectedIds) => {
-            const updatedCheckBoxIds: string[] = [...prevSelectedIds];
-            if (updatedCheckBoxIds?.includes(id)) {
-                return updatedCheckBoxIds?.filter((selectedId) => selectedId !== id);
-            }
-            return [...updatedCheckBoxIds, id];
-        });
-    
-        setAllSelectedDocs((prevDocs) => {
-            if (doc) {
-                const isAlreadySelected: boolean = prevDocs?.some((item) => item.fileId === id);
-                if (isAlreadySelected) {
-                    
-                    return prevDocs?.filter((item) => item.fileId !== id);
-                }
-                return [
-                    ...prevDocs,
-                    {
-                        fileId: id,
-                        registrationId: Number(doc.registrationId),
-                        externalId: doc.externalId
-                    }
-                ];
-            }
-            return prevDocs;
-        });
-    };
+  const doc: any = docData?.data?.find((d: any) => d.fileId === id);
+
+  setSelectedCheckBoxIds((prevSelectedIds) => {
+    const updatedCheckBoxIds: string[] = Array.isArray(prevSelectedIds) ? [...prevSelectedIds] : [];
+    if (updatedCheckBoxIds.includes(id)) {
+      return updatedCheckBoxIds.filter((selectedId) => selectedId !== id);
+    }
+    return [...updatedCheckBoxIds, id];
+  });
+
+  setAllSelectedDocs((prevDocs) => {
+    if (doc) {
+      const isAlreadySelected: boolean = prevDocs?.some((item) => item.fileId === id);
+      if (isAlreadySelected) {
+        return prevDocs?.filter((item) => item.fileId !== id);
+      }
+      return [
+        ...prevDocs,
+        {
+          fileId: id,
+          registrationId: doc.registrationId,
+          externalId: doc.externalId
+        }
+      ];
+    }
+    return prevDocs;
+  });
+};
 
     export const breadcrumbActionsList = (t: (key: string) => string) => [
         {
@@ -441,7 +465,9 @@ export function getDialogConfig({
   availableFileIds,
   fetchGetDocumentDetails,
   allRegistrationIds,
-  referenceExternalId
+  referenceExternalId,
+  alreadyDeletedFileCount,
+  restrictedFileCount
 }: GetDialogConfigParams): DialogConfig | null {
   if (!dialogType) return null;
 
@@ -468,6 +494,7 @@ export function getDialogConfig({
             downloadPollingIntervalRef,
             setClearAllError,
             setShowConfirmDialog,
+            getCompletedPartitionKeys,
             setIsViewDownloadError,
             setShowEmailNotification
           });
@@ -476,10 +503,19 @@ export function getDialogConfig({
       };
 
     case "delete":
+      const messages = getDeleteDialogMessages({
+          t,
+          restrictedFileCount,
+          availableFileCount,
+          docData,
+          alreadyDeletedFileCount,
+          excludedCheckBoxIds,
+          isHeaderBoxChecked
+        });
       return {
         cancelText: t("DocumentManagementServer.keepIt"),
         okText: t("DocumentManagementServer.Delete"),
-        contentText: "",
+        contentText: messages.join("\n"),
         isNotificationanner: true,
         notificationTitle: t(
           availableFileCount === 1
@@ -490,14 +526,14 @@ export function getDialogConfig({
         notificationStatus: NotificationStatus.WARNING,
         onCancel: () => {
           setShowConfirmDialog(false);
+          if (alreadyDeletedFileCount > 0) {
           fetchGetDocumentDetails(
             currentPage,
             getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
             sortBy,
             sortDirection,
             referenceExternalId,
-            searchRefExternalId?.[0],
-            documentRelatedTo !== undefined ? String(documentRelatedTo) : undefined
+            documentRelatedTo
           );
           setSelectedCheckBoxIds([]);
           setAllSelectedDocs([]);
@@ -506,7 +542,8 @@ export function getDialogConfig({
           setPrevSelectedDocs([]);
           setExcludedCheckBoxIds([]);
           setTableKey(v => v + 1);
-        },
+        }
+      },
         onConfirm: async () => {
           setIsDialogLoading(true);
           setIsGlobalLoaderModel(true);
@@ -520,25 +557,61 @@ export function getDialogConfig({
         template: DialogTemplate.Confirmation
       };
 
-    case "prepareDownload":
+    default:
       return {
         cancelText: t("DocumentManagementServer.Cancel"),
-        okText: t("DocumentManagementServer.PrepareDownload"),
-        contentText: "",
+        contentText: (() => {
+          if (alreadyDeletedFileCount > 0) {
+            return alreadyDeletedFileCount === 1
+              ? t("DocumentManagementServer.documentCannotBeDownloaded", { count: alreadyDeletedFileCount })
+              : t("DocumentManagementServer.documentsCannotBeDownloaded", { count: alreadyDeletedFileCount });
+          }
+          const totalRecords = docData?.totalRecords ?? 0;
+          const sum = alreadyDeletedFileCount + restrictedFileCount + availableFileCount + excludedCheckBoxIds?.length;
+          if (totalRecords !== sum && isHeaderBoxChecked) {
+            const deletedCount = (totalRecords > sum && isHeaderBoxChecked) ? (totalRecords - sum) : alreadyDeletedFileCount;
+            if (deletedCount === 1) {
+              return t("DocumentManagementServer.documentCannotBeDownloaded", { count: deletedCount });
+            }
+            if (deletedCount > 1) {
+              return t("DocumentManagementServer.documentsCannotBeDownloaded", { count: deletedCount });
+            }
+            return "";
+          }
+          return "";
+          })(),
         isNotificationanner: true,
-        notificationTitle: t("DocumentManagementServer.prepareMultipleDocuments", {
-          count: availableFileCount
-        }),
+        notificationTitle:
+          availableFileCount === 1
+            ? t("DocumentManagementServer.prepareSingleDocument", { count: availableFileCount })
+            : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: availableFileCount }),
         notificationStatus: NotificationStatus.WARNING,
-        onCancel: () => setShowConfirmDialog(false),
-        onConfirm: () => {
+        okText: t("DocumentManagementServer.PrepareDownload"),
+        onCancel: (): void => { setShowConfirmDialog(false); 
+           if (alreadyDeletedFileCount > 0) {
+              fetchGetDocumentDetails(
+                  currentPage,
+                  getAllRegistrationIds(selectedFormats),
+                  sortBy,
+                  sortDirection,
+                  referenceExternalId,
+                  documentRelatedTo
+              );
+              setSelectedCheckBoxIds([]);
+              setAllSelectedDocs([]);
+              setIsClearSelectedCheckbox(true);
+              setIsHeaderBoxChecked(false);
+              setPrevSelectedDocs([]);
+              setExcludedCheckBoxIds([]);
+          }
+        },
+        onConfirm: (): void => {
           setPrepareDownloadError(false);
           setPrepareDownloadAbortBanner(false);
           setIsSidePanelLoader(true);
           setSidePanelOpenReason("prepare");
           setIsSidePanelOpen(true);
-
-          const selectedDocs: any[] = buildSelectedDocs(
+          const selectedDocs = buildSelectedDocs(
             selectedCheckBoxIds,
             docData,
             allRegistrationIds,
@@ -553,21 +626,42 @@ export function getDialogConfig({
           );
 
           prepareDownload(selectedDocs)
-            .then(statuses => {
-              gtmAnalytics.pushEvent({ event: "key_action", actionType: "prepare_download" });
-              if (statuses.some(s => s !== 204 && s !== 409)) {
+            .then((statuses) => {
+               gtmAnalytics.pushEvent({
+                  event: "key_action",
+                  actionType: "prepare_download"
+              });
+              setPrepareDownloadAbortBanner(false);
+              if (statuses.some((status: number) => status !== 204 && status !== 409)) {
                 setPrepareDownloadError(true);
+                gtmAnalytics.pushEvent({
+                  event: "error_message",
+                  messageText: "Unable to prepare for download"
+              });
+              }else if (statuses.some((status: number) => status === 409)) {
+                setPrepareDownloadAbortBanner(true);
+                gtmAnalytics.pushEvent({
+                  event: "error_message",
+                  messageText: "Unable to prepare for download"
+              });
               } else if (totalSelectedCount > 1) {
                 setShowEmailNotification(true);
-              }
+              }            
+              
             })
-            .catch(() => setPrepareDownloadError(true));
+            .catch(() => {
+              setIsSidePanelLoader(false);
+              setPrepareDownloadError(true);
+              setPrepareDownloadAbortBanner(false);
+              gtmAnalytics.pushEvent({
+                  event: "error_message",
+                  messageText: "Unable to prepare for download"
+              });
+            });
         },
-        template: DialogTemplate.Confirmation
+        template: DialogTemplate.Confirmation,
       };
-  default:
-      return null;
-    }
+  }
 }
 
 

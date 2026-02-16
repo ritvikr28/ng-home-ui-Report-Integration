@@ -1,6 +1,7 @@
 import React from "react";
 import { Notification, NotificationStatus, Loader, LoaderType, Button } from "@essnextgen/ui-kit";
 import { ViewDownloadItem } from "../responseModel";
+import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 interface Props {
   t: (key: string, options?: any) => string;
@@ -8,7 +9,6 @@ interface Props {
   isSidePanelLoader: boolean;
   hasFetchedViewDownload: boolean;
   viewData: ViewDownloadItem[];
-  fileDownload: (...args: any[]) => Promise<any>;
   setDownloadError: (v: boolean) => void;
   gtmAnalytics: any;
 }
@@ -19,7 +19,6 @@ export const ViewDownloadContent: React.FC<Props> = ({
   isSidePanelLoader,
   hasFetchedViewDownload,
   viewData,
-  fileDownload,
   setDownloadError,
   gtmAnalytics
 }) => {

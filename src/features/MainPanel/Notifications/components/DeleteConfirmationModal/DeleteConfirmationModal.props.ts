@@ -1,4 +1,5 @@
 export interface DeleteConfirmationModalProps {
+    t: (key: string) => string;
     isOpen: boolean;
     onClose: () => void;
     onConfirm: () => void;

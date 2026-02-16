@@ -57,7 +57,6 @@ module.exports = {
     }
   }, coveragePathIgnorePatterns: [
     "src/features/DBManagement",
-    "src/features/MainPanel/Notifications-old",
-    "src/features/DocumentManagementServer"
+    "src/features/MainPanel/Notifications-old"
   ]
 };

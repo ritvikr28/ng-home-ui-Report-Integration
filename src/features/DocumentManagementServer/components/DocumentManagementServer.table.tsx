@@ -84,12 +84,13 @@ interface Props {
   setSearchTerm: (v: string) => void;
   setSearchText: (v: string) => void;
   setSearchRefExternalId: (ids: string[]) => void;
-  setIsSearchTriggered: (v: boolean) => void;
+  setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
   setPrevSelectedDocs: (ids: string[]) => void;
   setIsClearSelectedCheckbox: (v: boolean) => void;
   searchText: string;
   setDateRange: React.Dispatch<React.SetStateAction<any>>;
   isSidePanelLoader: boolean;
+  addEditTemplateChild: any;
 }
 
 function handleSuggestionItemClick(
@@ -248,7 +249,8 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     selectedRelatedTo,
     setSelectedRelatedTo,
     tagListArray,
-    setTagListArray
+    setTagListArray,
+    setIsSearchTriggered
   }: Props = props;
 
   return (
@@ -280,6 +282,7 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         setSelectedRelatedTo={setSelectedRelatedTo}
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
+        setIsSearchTriggered={setIsSearchTriggered}
       />
     </>
   );
@@ -360,7 +363,8 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     setIsSearchTriggered,
     setIsHeaderBoxChecked,
     searchText,
-    setIsClearSelectedCheckbox
+    setIsClearSelectedCheckbox,
+    addEditTemplateChild
     // ...other props
   }: Props = props;
 
@@ -496,6 +500,7 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isShowErrorPage: false,
     isSearchShowLoading: false,
     dynamicTableLoader: issearchDataLoading,
+    addEditTemplateChild: addEditTemplateChild,
     className: "grid_wrapper",
     searchTagList: searchTagListRaw,
     onOverflowTagClose: () => {},
@@ -506,7 +511,9 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     tableFirstColumnWidth: "10px",
     tableHeadersData: getTableHeadersData(t),
     sortingOnClickEvent: (e: any, columnName: string) => handleSorting(columnName),
-    isSidePanelLoader
+    isSidePanelLoader,
+    sidePanelTitle: t("DocumentManagementServer.sidePanelTitle"),
+    subHeadingText: t("DocumentManagementServer.subHeadingText"),
   };
 }
 const DmsControlledList: React.FC<Props> = (props) => {

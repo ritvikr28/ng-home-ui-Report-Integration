@@ -5,7 +5,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button,ButtonColor,Notification, IconColor,ButtonSize, Breadcrumbs, NotificationStatus, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData,  fileDownload,  getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
 import "../style.scss"
 import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
 import { pageSizeNumber } from "../../../../public/Constants"
@@ -13,10 +13,12 @@ import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions"
 import { viewDownload ,clearAllFiles, deleteFiles, validation} from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys,  handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys,  handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList, applySummaryTagClass } from "../logic/DocumentManagementServer.utils";
 import { useBodyNoScroll, useFetchDocsEffect, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
+import { DmsSidePanel } from "../components/DocumentManagement.sidepanel";
+import { ViewDownloadContent } from "../components/ViewDownloadContent";
 
 const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
   show,
@@ -142,19 +144,19 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [showConfirmDialog, setShowConfirmDialog]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [selectedCheckBoxIds, setSelectedCheckBoxIds]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
     const [excludedCheckBoxIds, setExcludedCheckBoxIds]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
-    // const [prevSelectedDocs, setPrevSelectedDocs]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
+    const [prevSelectedDocs, setPrevSelectedDocs]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
     const [isHeaderBoxChecked, setIsHeaderBoxChecked]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [viewData, setViewData]: [ViewDownloadItem[], React.Dispatch<React.SetStateAction<ViewDownloadItem[]>>] = useState<ViewDownloadItem[]>([]);
-    // const [prepareDownloadError, setPrepareDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [PrepareDownloadAbortBanner, setPrepareDownloadAbortBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [clearAllError, setClearAllError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [showEmailNotification, setShowEmailNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [showToastNotification, setShowToastNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [downloadError, setDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-    // const [failedFileName, setFailedFileName]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
+    const [prepareDownloadError, setPrepareDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [PrepareDownloadAbortBanner, setPrepareDownloadAbortBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [clearAllError, setClearAllError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [showEmailNotification, setShowEmailNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [showToastNotification, setShowToastNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [downloadError, setDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [failedFileName, setFailedFileName]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
     const [allSelectedDocs, setAllSelectedDocs]: [SelectedDocument[], React.Dispatch<React.SetStateAction<SelectedDocument[]>>] = useState<SelectedDocument[]>([]);
     const [selectedEntities, setSelectedEntities]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = useState<ISelectedItem[]>([]);
-    // const [hasFetchedViewDownload, setHasFetchedViewDownload]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [hasFetchedViewDownload, setHasFetchedViewDownload]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [showDeleteErrorBanner, setShowDeleteErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null> = React.useRef<ReturnType<typeof setInterval> | null>(null);
     const [documentRelatedTo, setDocumentRelatedTo]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
@@ -175,18 +177,18 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     const [isGlobalLoaderModel, setIsGlobalLoaderModel]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [selectedRelatedTo, setSelectedRelatedTo]: [ISelectedItem | undefined, React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>] = useState<ISelectedItem | undefined>(undefined);
     const [tagListArray, setTagListArray]: [SelectedItem[], React.Dispatch<React.SetStateAction<SelectedItem[]>>] = useState<SelectedItem[]>([]);
-    // const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     
     // Just for time being we are using this. Will remove later.Kiwan Fix WIP
-    const setPrepareDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setPrepareDownloadAbortBanner: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setClearAllError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setShowEmailNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setShowToastNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setFailedFileName: React.Dispatch<React.SetStateAction<string[]>> = () => {};  
-    const setHasFetchedViewDownload: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setIsViewDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-    const setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>> = () => {};
+    // const setPrepareDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setPrepareDownloadAbortBanner: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setClearAllError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setShowEmailNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setShowToastNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setFailedFileName: React.Dispatch<React.SetStateAction<string[]>> = () => {};  
+    // const setHasFetchedViewDownload: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setIsViewDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
+    // const setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>> = () => {};
     const hasDMSDeletePermissions: boolean = authService.isAuthorised(
     [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "Delete" }],
     MatchPermissions.all
@@ -233,9 +235,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         }
 
         const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
-        handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading);
+        handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading, setIsSearchTriggered);
 
-    const fetchGetDocumentDetails: (page: number, categories: number[], sortByCol?: string, sortOrder?: string, refExternalId?: string[]) => void = (
+    const fetchGetDocumentDetails: (page: number, categories: number[], sortByCol?: string, sortOrder?: string, refExternalId?: string[], relatedTo?: number) => void = (
     page: number,
     categories: number[],
     sortByCol: string = sortBy,
@@ -261,7 +263,7 @@ const onEditSelectedOverFlowMenu: (e: React.SyntheticEvent, selectedItem: ISelec
   handleEditSelectedOverFlowMenu({
     e, selectedItem, totalSelectedCount, setShowDialog, setShowConfirmDialog, setShowRestrictedDeleteDialog, setShowRestrictedPrepareDialog, setIsPreDialogLoading, isHeaderBoxChecked, allSelectedDocs, buildValidationPayload,
     allRegistrationIds, dateRange, searchRefExternalId, documentRelatedTo, validation, setRestrictedFileCount, setAlreadyDeletedFileCount, setAvailableFileCount, setDialogType, setIsDialogLoading, setSidePanelOpenReason,
-    setIsSidePanelOpen, setAvailableFileIds, setShowErrorBanner
+    setIsSidePanelOpen, setAvailableFileIds, setShowErrorBanner, selectedCheckBoxIds
   });
 };
 
@@ -300,6 +302,24 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         };
 
         useEffect(() => {
+        const allRegistrationId = getAllRegistrationIds(selectedFormats);
+ 
+        if (!isFilterDialogOpen && isSearchTriggered && searchText) {
+            setIsInitialLoad(true);
+            fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRelatedTo);
+ 
+            setIsInitialLoad(false);
+        }
+        if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
+            setIsInitialLoad(true);
+            fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRelatedTo)
+            setIsInitialLoad(false);
+        }
+        applySummaryTagClass();
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
+
+
+        useEffect(() => {
             if (isClearSelectedCheckbox) {
                 setIsClearSelectedCheckbox(false);
             }
@@ -322,9 +342,17 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
           });
             setCurrentPage(1);
     };
-        useTotalSelectedCountEffect({isHeaderBoxChecked, excludedCheckBoxIds, docData, allSelectedDocs,
-             setIsHeaderBoxChecked, setAllSelectedDocs, setExcludedCheckBoxIds, setTotalSelectedCount});
+        useTotalSelectedCountEffect({isHeaderBoxChecked,
+          excludedCheckBoxIds,
+          docData,
+          allSelectedDocs,
+          setIsHeaderBoxChecked,
+          setAllSelectedDocs,
+          setExcludedCheckBoxIds,
+          setTotalSelectedCount
+        });
 
+ 
     const NotificationMsgBannerObject: any = getNotificationMsgBannerObject({
         t,
         showErrorBanner,
@@ -339,37 +367,35 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         t, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner
     });
 
-    const resultNotFoundMSG: string | undefined = getResultNotFoundMsg(t,searchText, docData, searchTerm, showErrorBanner, isSearchTriggered, showSearchError);
+    const resultNotFoundMSG: string | undefined = getResultNotFoundMsg(t,searchText, docData, searchTerm, showErrorBanner, isSearchTriggered, showSearchError, selectedFormats, dateRange);
     const filteredSuggestions: any[] = filterNonEmptySuggestions(suggestions);
 
-    const handleBulkDelete: () => void = () =>
-        handleBulkDeleteLogic(
-            allSelectedDocs,
-            docData,
-            allRegistrationIds,
-            dateRange,
-            {
-                searchRefExternalId,
-                documentRelatedTo,
-                currentPage,
-                sortBy,
-                sortDirection,
-                setShowToastNotification,
-                setShowConfirmDialog,
-                setSelectedCheckBoxIds,
-                setAllSelectedDocs,
-                setIsClearSelectedCheckbox,
-                setShowDeleteErrorBanner,
-                setShowDeleteSuccessToast,
-                setShowDeleteAbortBanner,
-                fetchGetDocumentDetails,
-                deleteFiles,
-                excludedCheckBoxIds,
-                isHeaderBoxChecked,
-                setIsSearchDataLoading,
-                availableFileIds
-            }
-        );
+    const handleBulkDelete: () => Promise<void> = () =>
+  handleBulkDeleteLogic({
+    allSelectedDocs,
+    docData,
+    allRegistrationIds,
+    dateRange,
+    searchRefExternalId,
+    documentRelatedTo,
+    currentPage,
+    sortBy,
+    sortDirection,
+    setShowToastNotification,
+    setShowConfirmDialog,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    setShowDeleteErrorBanner,
+    setShowDeleteSuccessToast,
+    setShowDeleteAbortBanner,
+    fetchGetDocumentDetails,
+    deleteFiles,
+    excludedCheckBoxIds,
+    isHeaderBoxChecked,
+    setIsSearchDataLoading,
+    availableFileIds
+  });
 
     const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
     handleApply({ referenceExternalIds, categories, selectedCategories: categories ?? [], selectedDateRange, isDateError, selectedEntity, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
@@ -436,6 +462,7 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
 
     useSetTotalPageOnDocData(docData, setTotalPage, pageSizeNumber);
 
+  
     return (
   <>
     <DeleteSuccessToast
@@ -476,6 +503,8 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         t={t}
       />
 
+     
+
       <MainContent
         isMobileView={isMobileView}
         isOpen={isOpen}
@@ -501,8 +530,17 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             resultNotFoundMSG: resultNotFoundMSG ?? "",
             searchTagListRaw,
             onPageChange,
-            handleSorting: (c: string) =>
-              handleSorting(c, sortBy, setSortBy, sortDirection, setSortDirection, t),
+            handleSorting: (columnName: string) =>{
+               handleSorting(
+                  columnName,
+                  sortBy,
+                  setSortBy,
+                  sortDirection,
+                  setSortDirection,
+                  t
+                )
+                setIsSearchTriggered(true);
+              },
             isClearSelectedCheckbox,
             setSelectedCheckBoxIds,
             setExcludedCheckBoxIds,
@@ -515,7 +553,15 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
                 setPrevSelectedDocs,
                 setAllSelectedDocs
               ),
-            onChangeListCheckBox: handleOnChangeCheckBox,
+            onChangeListCheckBox: (index: number, id: string) =>
+              handleOnChangeCheckBox(
+                index,
+                id,
+                docData,
+                selectedCheckBoxIds, // <-- use the current state value here!
+                setSelectedCheckBoxIds,
+                setAllSelectedDocs
+              ),
             onEditSelectedOverFlowMenu,
             handleSearchClose,
             handleTagClose,
@@ -581,8 +627,33 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             setPrevSelectedDocs,
             setIsClearSelectedCheckbox,
             searchText,
-            setDateRange
-          }}
+            setDateRange,
+            addEditTemplateChild: (
+            <DmsSidePanel
+              t={t}
+              isSidePanelLoader={isSidePanelLoader}
+              hasFetchedViewDownload={hasFetchedViewDownload}
+              isViewDownloadError={isViewDownloadError}
+              viewData={viewData}
+              failedFileName={failedFileName}
+              clearAllError={clearAllError}
+              prepareDownloadError={prepareDownloadError}
+              prepareDownloadAbortBanner={PrepareDownloadAbortBanner}
+              downloadError={downloadError}
+              showEmailNotification={showEmailNotification}
+              showToastNotification={showToastNotification}
+              availableFileCount={availableFileCount}
+              setClearAllError={setClearAllError}
+              setPrepareDownloadError={setPrepareDownloadError}
+              setPrepareDownloadAbortBanner={setPrepareDownloadAbortBanner}
+              setDownloadError={setDownloadError}
+              setShowEmailNotification={setShowEmailNotification}
+              setShowToastNotification={setShowToastNotification}
+              setFailedFileName={setFailedFileName}
+              fileDownload={prepareDownload}
+              gtmAnalytics={gtmAnalytics}
+            />
+          ) }}
         />
       </MainContent>
     </Grid>

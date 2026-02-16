@@ -190,12 +190,16 @@ addedBy?: string;
 dateAdded?: string;
 format?: string;
 size?: string;
+registrationId: number;
+externalId: string;
+relatedTo?: string[];
+isSelectedForPrepareDownload?: boolean;
 }
 
 
 export interface DocumentData {
 data?: DocumentRow[];
-totalCount?: number;
+totalRecords?: number;
 }
 
 
@@ -327,8 +331,7 @@ export interface GetDialogConfigParams {
     sortBy: string,
     sortDirection: string,
     refExternalId: string[],
-    searchRefExternalId?: string,
-    documentRelatedTo?: string
+    documentRelatedTo?: number
   ) => void;
 
   gtmAnalytics: {
