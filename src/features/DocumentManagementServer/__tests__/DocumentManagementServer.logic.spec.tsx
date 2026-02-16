@@ -1156,6 +1156,23 @@ describe('fetchDocumentCategoryData', () => {
   expect(setCategoryError).toHaveBeenCalledWith(false);
 });
 
+it('returns empty array and resets state when API returns 404', async () => {
+  (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue({ status: 404 });
+  
+  const result = await fetchDocumentCategoryData({
+    payload,
+    setCategoryError,
+    setAvailableCategories,
+    setLocalSelectedCategories,
+    localSelectedCategories,
+  });
+
+  expect(setCategoryError).toHaveBeenCalledWith(false);
+  expect(setAvailableCategories).toHaveBeenCalledWith([]);
+  expect(setLocalSelectedCategories).toHaveBeenCalledWith([]);
+  expect(result).toEqual([]);
+});
+
 it('returns empty array when API resolves with null', async () => {
   (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue(null);
 
@@ -2338,7 +2355,7 @@ describe("fetchGetDocumentDetailsLogic", () => {
         blobName: "blob1"
       }],
       pageNumber: 1,
-      pageSize: 1
+      pageSize: 10
     };
     jest.spyOn(ApiService, "fetchDocumentDetails").mockResolvedValueOnce(mockResult);
 
