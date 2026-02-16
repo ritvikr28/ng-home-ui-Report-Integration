@@ -214,6 +214,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   const hasSIMS7RedirectsOrgView: boolean =
     isOrganisationInVariant("Sims7RedirectsFlag");
 
+  const hasAdminConsoleAccessPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
+    MatchPermissions.all
+  );
+
   console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
   return (
     /* eslint-disable react/prop-types */
@@ -286,7 +291,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               }
             />
           )}
-           {/* 
+          {/* 
           Commenting this code as we already remove the flagr check on this route
           <ProtectedRoute exact path="/uam" component={UAM} />
           */}
@@ -297,8 +302,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={NotificationsLogic}
             />
           )}
-   
-          {hasSIMS7RedirectsOrgView &&
+
+          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) &&
             <ProtectedRoute
               exact
               /* istanbul ignore next */
