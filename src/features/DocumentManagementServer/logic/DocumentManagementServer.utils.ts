@@ -699,7 +699,7 @@ function getAlreadyDeletedMessage(
   return null;
 }
 
-function getExtraDeletedMessage(
+export function getExtraDeletedMessage(
   t: (key: string, options?: any) => string,
   docData: any,
   alreadyDeletedFileCount: number,
