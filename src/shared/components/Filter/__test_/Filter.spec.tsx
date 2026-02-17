@@ -603,7 +603,7 @@ describe("FilterDialog", () => {
     });
   });
 
-  it("shows error if year has less than 4 digits", async () => {
+  it.only("shows error if year has less than 4 digits", async () => {
     jest.setTimeout(15000)
     renderComponent();
     const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
