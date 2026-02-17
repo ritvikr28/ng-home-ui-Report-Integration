@@ -182,7 +182,7 @@ const isInvalidDateRange = (
   return !!fromInvalid || !!toInvalid;
 };
 
-export const validateAndApplyFilter: (selectedDateRange: { fromDate: string; toDate: string }, isDateError: boolean, setIsDateError: React.Dispatch<React.SetStateAction<boolean>>, setIsFilterLoading: React.Dispatch<React.SetStateAction<boolean>>, setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>) => void = ({
+export const validateAndApplyFilter = ({
   selectedDateRange,
   isDateError,
   setIsDateError,
