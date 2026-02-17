@@ -101,7 +101,7 @@ export const SearchSection: React.FC<Props> = ({
       validationTextForLimit={t("Filter.entityListLimitReached", { entity: t(`Filter.${selectedDisplayKey}`) })}
       validationTextLevelForTagList={ValidationTextLevel.Warning}
       validationText={validationText}
-      validationTextLevel={validationTextLevel}
+      validationTextLevel={validationTextLevel ?? undefined}
       addLimit={5}
       allowSearchIfError={!showSearchError}
       isCustomInputForAdded
