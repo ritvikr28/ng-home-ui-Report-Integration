@@ -254,10 +254,9 @@ describe("FilterDialogView", () => {
 
 describe("handleApply with startDateError", () => {
     it("should NOT call onApply or close dialog if startDateError is present", () => {
-        // const mockOnApply = jest.fn(); // Define mockOnApply in this scope
         const propsWithError = {
             ...defaultProps,
-            onApply: mockOnApply, // Pass the mock function to props
+            onApply: mockOnApply,
             startDateError: "Some error",
             endDateError: "",
             isFormValid: true
@@ -274,4 +273,68 @@ describe("handleApply with startDateError", () => {
         const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
         expect(lastCall[0].isOpen).toBe(true);
     });
+
+    it("should NOT call onApply or close dialog if endDateError is present", () => {
+        const propsWithError = {
+            ...defaultProps,
+            onApply: mockOnApply,
+            startDateError: "",
+            endDateError: "End date error",
+            isFormValid: true
+        };
+        render(<FilterDialogView {...propsWithError} />);
+        const applyButton = screen.getByTestId("apply-btn");
+
+        fireEvent.click(applyButton);
+
+        expect(mockOnApply).not.toHaveBeenCalled();
+
+        const dialogMock = mockDialog as unknown as jest.Mock;
+        const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
+        expect(lastCall[0].isOpen).toBe(true);
+    });
+});
+
+it("should disable Apply button when isFormValid is false", () => {
+  render(<FilterDialogView {...defaultProps} isFormValid={false} />);
+  const applyButton = screen.getByTestId("apply-btn");
+  expect(applyButton).toBeDisabled();
+  fireEvent.click(applyButton);
+  expect(mockOnApply).not.toHaveBeenCalled();
+});
+
+it("should remove status if already present", () => {
+  const value = "read";
+  const prev = ["read", "unread"];
+  const result = prev.includes(value)
+    ? prev.filter((s) => s !== value)
+    : [...prev, value];
+  expect(result).toEqual(["unread"]);
+});
+
+it("should add status if not present", () => {
+  const value = "read";
+  const prev = ["unread"];
+  const result = prev.includes(value)
+    ? prev.filter((s) => s !== value)
+    : [...prev, value];
+  expect(result).toEqual(["unread", "read"]);
+});
+
+it("should remove priority if already present", () => {
+  const value = "high";
+  const prev = ["high", "low"];
+  const result = prev.includes(value)
+    ? prev.filter((p) => p !== value)
+    : [...prev, value];
+  expect(result).toEqual(["low"]);
+});
+
+it("should add priority if not present", () => {
+  const value = "high";
+  const prev = ["low"];
+  const result = prev.includes(value)
+    ? prev.filter((p) => p !== value)
+    : [...prev, value];
+  expect(result).toEqual(["low", "high"]);
 });

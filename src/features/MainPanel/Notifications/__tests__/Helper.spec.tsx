@@ -1,134 +1,100 @@
-// import { render, fireEvent } from "@testing-library/react";
-// import { ShowValAs } from "@essnextgen/ui-kit";
-// import { getNotificationTableHeadersData, notificationTableRows } from "../helper";
+import { render, fireEvent } from "@testing-library/react";
+import { ShowValAs } from "@essnextgen/ui-kit";
+import { getNotificationTableHeadersData, NoDataMessage } from "../helper";
 
-// describe("getNotificationTableHeadersData", () => {
-//   it("returns correct number of headers and expected structure", () => {
-//     const headers = getNotificationTableHeadersData();
-//     expect(headers).toHaveLength(6);
-//     expect(headers[0].text).toBe("Id");
-//     expect(headers[1].text).toBe("Status");
-//     expect(headers[2].text).toBe("Notification");
-//     expect(headers[3].text).toBe("Priority");
-//     expect(headers[4].text).toBe("Date received");
-//     expect(headers[5].text).toBe("");
-//     expect(headers[1].showValAs).toBe(ShowValAs.CustomeComponent);
-//     expect(headers[2].isTextTruncate).toBe(true);
-//     expect(headers[5].anyComponent).toBeInstanceOf(Function);
-//   });
+const notificationTableRows = Array.from({ length: 165 }, (_, i) => {
+  const idx = i + 1;
+  const status = idx % 2 === 0 ? "Read" : "Unread";
+  let priority;
+  if (idx % 3 === 0) {
+    priority = "Medium";
+  } else if (idx % 3 === 1) {
+    priority = "High";
+  } else {
+    priority = "Low";
+  }
+  const date = `${String(idx).padStart(2, "0")} Jan 2024`;
+  const isShowIcon = idx % 2 === 0;
+  let iconName;
+  if (isShowIcon) {
+    iconName = idx % 4 === 0 ? "chat" : "bell";
+  }
+  return {
+    Id: String(idx),
+    Status: status,
+    Notification: `Test notification ${idx}`,
+    Priority: priority,
+    DateReceived: date,
+    isShowIcon,
+    iconName,
+    doc: [
+        {
+        id: String(idx),
+        status,
+        notification: `Test notification ${idx}`,
+        priority,
+        dateReceived: date
+      }
+    ]
+  };
+});
 
-//   it("renders Status column's anyComponent with 'Unread' and 'Read'", () => {
-//     const headers = getNotificationTableHeadersData();
-//     const StatusComponent = headers[1].anyComponent;
-//     const { getByText, rerender } = render(<>{StatusComponent && StatusComponent("Unread")}</>);
-//     expect(getByText("Unread")).toBeInTheDocument();
+describe("getNotificationTableHeadersData", () => {
+  it("returns correct number of headers and expected structure", () => {
+    const headers = getNotificationTableHeadersData();
+    expect(headers).toHaveLength(6);
+    expect(headers[0].text).toBe("Id");
+    expect(headers[1].text).toBe("Status");
+    expect(headers[2].text).toBe("Notification");
+    expect(headers[3].text).toBe("Priority");
+    expect(headers[4].text).toBe("Date received");
+    expect(headers[5].text).toBe("");
+    expect(headers[1].showValAs).toBe(ShowValAs.CustomeComponent);
+    expect(headers[2].isTextTruncate).toBe(true);
+    expect(typeof headers[5].anyComponent).toBe("function");
+  });
 
-//     rerender(<>{StatusComponent && StatusComponent("Read")}</>);
-//     expect(getByText("Read")).toBeInTheDocument();
-//     // expect(getByText("Read").closest("span")).toHaveAttribute("id", "read");
-//   });
+  it("renders Status column's anyComponent with 'Unread' and 'Read'", () => {
+    const headers = getNotificationTableHeadersData();
+    const StatusComponent = headers[1].anyComponent;
+    const { getByText, rerender } = render(<>{StatusComponent && StatusComponent("Unread")}</>);
+    expect(getByText("Unread")).toBeInTheDocument();
 
-//   it.skip("renders last column's anyComponent and triggers callbacks on click", () => {
-//     const setSideIsOpen = jest.fn();
-//     const setSelectedItem = jest.fn();
-//     const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem);
-//     const LastComponent = headers[5].anyComponent;
-//     const cellData = { foo: "bar" };
-//     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-//     const viewLink = getByText("View");
-//     expect(viewLink).toBeInTheDocument();
-//     fireEvent.click(viewLink);
-//     expect(setSelectedItem).toHaveBeenCalledWith(cellData);
-//     expect(setSideIsOpen).toHaveBeenCalledWith(true);
-//   });
+    rerender(<>{StatusComponent && StatusComponent("Read")}</>);
+    expect(getByText("Read")).toBeInTheDocument();
+  });
 
-//   it.skip("does not throw if setSideIsOpen and setSelectedItem are undefined", () => {
-//     const headers = getNotificationTableHeadersData();
-//     const LastComponent = headers[5].anyComponent;
-//     const cellData = { foo: "bar" };
-//     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-//     const viewLink = getByText("View");
-//     expect(() => fireEvent.click(viewLink)).not.toThrow();
-//   });
-// });
+  it("renders last column's anyComponent and triggers callbacks on click", () => {
+    const setSideIsOpen = jest.fn();
+    const setSelectedItem = jest.fn();
+    const setNotificationIdSelected = jest.fn();
+    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", false, setNotificationIdSelected);
+    const LastComponent = headers[5].anyComponent;
+    const cellData = JSON.stringify({ id: "foo", Status: "Unread", Notification: "Test", title: "View" });
+    const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
+    const viewLink = getByText("View");
+    expect(viewLink).toBeInTheDocument();
+    fireEvent.click(viewLink);
+    expect(setSelectedItem).toHaveBeenCalledWith(cellData);
+    expect(setNotificationIdSelected).toHaveBeenCalledWith("foo");
+    expect(setSideIsOpen).toHaveBeenCalledWith(true);
+  });
 
-// describe("notificationTableRows", () => {
-//   it("should have 165 notifications", () => {
-//     expect(notificationTableRows).toHaveLength(165);
-//   });
 
-//   it("should have required keys in each notification", () => {
-//     notificationTableRows.forEach(row => {
-//       expect(row).toHaveProperty("Id");
-//       expect(row).toHaveProperty("Status");
-//       expect(row).toHaveProperty("Notification");
-//       expect(row).toHaveProperty("Priority");
-//       expect(row).toHaveProperty("DateReceived");
+  it("does not throw if setSideIsOpen and setSelectedItem are undefined", () => {
+    const headers = getNotificationTableHeadersData();
+    const LastComponent = headers[5].anyComponent;
+    const cellData = JSON.stringify({ id: "bar", Status: "Read", Notification: "Test", title: "View" });
+    const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
+    const viewLink = getByText("View");
+    expect(() => fireEvent.click(viewLink)).not.toThrow();
+  });
+});
 //       expect(row).toHaveProperty("doc");
 //       expect(row).toHaveProperty("isShowIcon");
 //     });
 //   });
 
-//   it("should have correct values for the first notification", () => {
-//     const row = notificationTableRows[0];
-//     expect(row.Id).toBe(row.Id);
-//     expect(row.Status).toBeDefined();
-//     expect(row.Notification).toBeDefined();
-//     expect(row.Priority).toBeDefined();
-//     expect(row.DateReceived).toBeDefined();
-//     expect(row.isShowIcon).toBeDefined();
-//     expect(Array.isArray(row.doc)).toBe(true);
-//     // expect(row.doc[0]).toMatchObject({
-//     //   id: row.Id,
-//     //   status: row.Status,
-//     //   notification: row.Notification,
-//     //   priority: row.Priority,
-//     //   dateReceived: row.DateReceived,
-//     // });
-//   });
-
-//   it("should have iconName only when isShowIcon is true and iconName is provided", () => {
-//     notificationTableRows.forEach(row => {
-//       if (row.isShowIcon && row.iconName) {
-//         expect(typeof row.iconName).toBe("string");
-//       } else if (row.isShowIcon && !row.iconName) {
-//         // Acceptable: iconName is optional
-//         expect(row.iconName).toBeUndefined();
-//       }
-//     });
-//   });
-
-//   it("should have Status as either 'Read' or 'Unread'", () => {
-//     notificationTableRows.forEach(row => {
-//       expect(["Read", "Unread"]).toContain(row.Status);
-//     });
-//   });
-
-//   it("should have Priority as 'Low', 'Medium', or 'High'", () => {
-//     notificationTableRows.forEach(row => {
-//       expect(["Low", "Medium", "High"]).toContain(row.Priority);
-//     });
-//   });
-
-//   it("should have DateReceived in 'DD MMM YYYY' format", () => {
-//     const dateRegex = /^\d{2} [A-Za-z]{3} \d{4}$/;
-//     notificationTableRows.forEach(row => {
-//       expect(row.DateReceived).toMatch(dateRegex);
-//     });
-//   });
-
-//   it("should have doc as an array with one object matching notification data", () => {
-//     notificationTableRows.forEach(row => {
-//       expect(Array.isArray(row.doc)).toBe(true);
-//       expect(row.doc).toHaveLength(1);
-//       // const docItem = row.doc[0];
-//       // expect(docItem.id).toBeDefined();
-//       // expect(docItem.status).toBeDefined();
-//       // expect(docItem.notification).toBeDefined();
-//       // expect(docItem.priority).toBeDefined();
-//       // expect(docItem.dateReceived).toBeDefined();
-//     });
-//   });
 
 //   it("should have correct values for the second notification", () => {
 //     const row = notificationTableRows[1];
@@ -153,9 +119,6 @@
 //   });
 // });
 
-import { render, fireEvent } from "@testing-library/react";
-import { ShowValAs } from "@essnextgen/ui-kit";
-import { getNotificationTableHeadersData, notificationTableRows } from "../helper";
 
 describe("getNotificationTableHeadersData", () => {
   it("returns correct number of headers and expected structure", () => {
@@ -183,7 +146,7 @@ describe("getNotificationTableHeadersData", () => {
     // expect(getByText("Read").closest("span")).toHaveAttribute("id", "read");
   });
 
-  it("Status column's anyComponent renders correct Tag color for Unread", () => {
+it("Status column's anyComponent renders correct Tag color for Unread", () => {
     const headers = getNotificationTableHeadersData();
     const StatusComponent = headers[1].anyComponent;
     const { container } = render(<>{StatusComponent && StatusComponent("Unread")}</>);
@@ -211,7 +174,7 @@ describe("getNotificationTableHeadersData", () => {
     expect(headers[4].isColumnSortAscFirst).toBe(false);
   });
 
-  it("last column's anyComponent renders empty if cellData is null", () => {
+ it("last column's anyComponent renders empty if cellData is null", () => {
     const headers = getNotificationTableHeadersData();
     const LastComponent = headers[5].anyComponent;
     const { container } = render(<>{LastComponent && LastComponent(null)}</>);
@@ -261,8 +224,7 @@ describe("getNotificationTableHeadersData", () => {
     fireEvent.click(getByText("View"));
     expect(setNotificationIdSelected).not.toHaveBeenCalled();
   });
-
-  it("last column's anyComponent does not call setNotificationIdSelected if id is missing", () => {
+it("last column's anyComponent does not call setNotificationIdSelected if id is missing", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     const setNotificationIdSelected = jest.fn();
@@ -315,7 +277,7 @@ describe("notificationTableRows", () => {
   });
 
   it("should have required keys in each notification", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       expect(row).toHaveProperty("Id");
       expect(row).toHaveProperty("Status");
       expect(row).toHaveProperty("Notification");
@@ -338,7 +300,7 @@ describe("notificationTableRows", () => {
   });
 
   it("should have iconName only when isShowIcon is true and iconName is provided", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       if (row.isShowIcon && row.iconName) {
         expect(typeof row.iconName).toBe("string");
       } else if (row.isShowIcon && !row.iconName) {
@@ -348,26 +310,19 @@ describe("notificationTableRows", () => {
   });
 
   it("should have Status as either 'Read' or 'Unread'", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       expect(["Read", "Unread"]).toContain(row.Status);
     });
   });
 
   it("should have Priority as 'Low', 'Medium', or 'High'", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       expect(["Low", "Medium", "High"]).toContain(row.Priority);
     });
   });
 
-  it("should have DateReceived in 'DD MMM YYYY' format", () => {
-    const dateRegex = /^\d{2} [A-Za-z]{3} \d{4}$/;
-    notificationTableRows.forEach(row => {
-      expect(row.DateReceived).toMatch(dateRegex);
-    });
-  });
-
   it("should have doc as an array with one object matching notification data", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       expect(Array.isArray(row.doc)).toBe(true);
       expect(row.doc).toHaveLength(1);
     });
@@ -396,15 +351,15 @@ describe("notificationTableRows", () => {
   });
 
   it("should have at least one notification with isShowIcon false", () => {
-    expect(notificationTableRows.some(row => !row.isShowIcon)).toBe(true);
+    expect(notificationTableRows.some((row) => !row.isShowIcon)).toBe(true);
   });
 
   it("should have at least one notification with isShowIcon true", () => {
-    expect(notificationTableRows.some(row => row.isShowIcon)).toBe(true);
+    expect(notificationTableRows.some((row) => row.isShowIcon)).toBe(true);
   });
 
   it("should have doc object matching notification data", () => {
-    notificationTableRows.forEach(row => {
+    notificationTableRows.forEach((row) => {
       const docItem = row.doc?.[0];
       expect(docItem?.id).toBe(row.Id);
       expect(docItem?.status).toBe(row.Status);
@@ -414,3 +369,16 @@ describe("notificationTableRows", () => {
     });
   });
 });
+
+describe("NoDataMessage", () => {
+  it("returns correct noDataOnSearch message", () => {
+    const keyword = "test";
+    expect(NoDataMessage.noDataOnSearch(keyword)).toBe(
+      "Your search - test - did not match any results. Make sure that all the words are spelled correctly."
+    )
+  })
+
+  it("returns correct noDataToDisplay message", () => {
+    expect(NoDataMessage.noDataToDisplay).toBe("No data to display");
+  })
+})

@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { Suggestion } from "./Notifications.props";
 
 export const PAGE_SIZE = 40;
 const getNotificationId = (notification: any) => notification?.id ?? notification?.Id;
@@ -10,7 +11,28 @@ export const formattedDate = (dateStr: string) => (new Date(dateStr).toLocaleDat
 })
 );
 
-export const useNotification = ({ tableData, totalTableData }: { tableData: any[], totalTableData: number }) => {
+export const getValues = (
+    data: any[]
+): Array<{
+    text: string;
+    props: {
+        externalId: string;
+        name: string;
+    };
+    value: JSX.Element;
+}> => {
+    if (!Array.isArray(data) || data.length === 0) return [];
+    return data.map((record: any) => ({
+        text: record.title ?? '',
+        props: {
+            externalId: String(record.id ?? ''),
+            name: record.title ?? ''
+        },
+        value: <></>
+    }));
+};
+
+export const useNotification = ({ tableData, totalTableData }: { tableData?: any[], totalTableData?: number }) => {
     const [filterBtnClicked, setFilterBtnClicked] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [notifications, setNotifications] = useState(tableData);
@@ -22,6 +44,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
     const [isClearSelectedCheckbox, setIsClearSelectedCheckbox] = useState(false);
     const [isNoSelectionMode, setIsNoSelectionMode] = useState(false);
     const FILTER_STORAGE_KEY = "notificationFilters";
+    const [searchSuggestions, setSearchSuggestions] = useState<Array<Suggestion>>([]);
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState<{
@@ -199,7 +222,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
 
     const totalNotifications = totalTableData;
     const totalOriginalNotifications = notifications;
-    const totalPages = totalNotifications > 0 ? Math.ceil(totalNotifications / PAGE_SIZE) : 1;
+    const totalPages = totalNotifications && totalNotifications > 0 ? Math.ceil(totalNotifications / PAGE_SIZE) : 1;
 
     useEffect(() => {
         if (totalNotifications === 0) {
@@ -314,7 +337,7 @@ export const useNotification = ({ tableData, totalTableData }: { tableData: any[
         }
         setIsDeleteLoading(true);
         await new Promise((resolve) => setTimeout(resolve, 0));
-        setNotifications((prev) => prev.filter((notification) => !pendingDeletionIds.includes(getNotificationId(notification))));
+        setNotifications((prev = []) => prev.filter((notification) => !pendingDeletionIds.includes(getNotificationId(notification))));
         setSelectedNotificationIds((prev) => prev.filter((id) => !pendingDeletionIds.includes(id)));
         setPendingDeletionIds([]);
         setIsDeleteDialogOpen(false);
@@ -475,6 +498,7 @@ const handleSort = (columnName: string) => {
         totalOriginalNotifications,
         handlePageChange,
         searchTerm,
+        setSearchTerm,
         handleSearchChange,
         // handleClearSearch,
         filters,
@@ -500,6 +524,8 @@ const handleSort = (columnName: string) => {
         sortBy,
         sortDirection,
         handleSort,
-        setNoResults
+        setNoResults,
+        searchSuggestions,
+        setSearchSuggestions
     };
 };

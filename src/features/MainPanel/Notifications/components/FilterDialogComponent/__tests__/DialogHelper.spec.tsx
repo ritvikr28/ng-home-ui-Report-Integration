@@ -33,7 +33,9 @@ const mockDateInput = jest.fn(({ id, dataTestId, day, month, year }: any) => (
             data-testid="test-id"
             type="text"
             value={`${day || ""}/${month || ""}/${year || ""}`}
-            onChange={() => { }}
+            onChange={() => {}}
+            title="Enter date in DD/MM/YYYY format"
+            placeholder="DD/MM/YYYY"
         />
     </div>
 ));
@@ -984,7 +986,6 @@ describe("DialogContent", () => {
         });
     });
 
-
     describe("DialogContent", () => {
         // const mockSetStartDate = jest.fn();
         // const mockSetEndDate = jest.fn();
@@ -1023,6 +1024,53 @@ describe("DialogContent", () => {
             expect(screen.getByTestId("priority-low")).toBeInTheDocument();
             expect(screen.getByTestId("priority-medium")).toBeInTheDocument();
             expect(screen.getByTestId("priority-high")).toBeInTheDocument();
+        });
+    });
+    describe("DialogContent handleStatusChange and handlePriorityChange branch coverage", () => {
+        it("handleStatusChange: adds and removes status correctly", () => {
+            const setStatus = jest.fn();
+            render(<DialogContent {...defaultProps} status={[]} setStatus={setStatus} />);
+            let checkboxCall = mockCheckBox.mock.calls.find((call) => call[0].dataTestId === "status-read");
+            let onChange = checkboxCall?.[0].onChange;
+            act(() => {
+                onChange?.({ target: { value: "read" } });
+            });
+            expect(setStatus).toHaveBeenCalled();
+            const updaterAdd = setStatus.mock.calls[0][0];
+            expect(updaterAdd([])).toEqual(["read"]);
+            setStatus.mockClear();
+            render(<DialogContent {...defaultProps} status={["read"]} setStatus={setStatus} />);
+            checkboxCall = mockCheckBox.mock.calls.find((call) => call[0].dataTestId === "status-read");
+            onChange = checkboxCall?.[0].onChange;
+            act(() => {
+                onChange?.({ target: { value: "read" } });
+            });
+            expect(setStatus).toHaveBeenCalled();
+            const updaterRemove = setStatus.mock.calls[0][0];
+            expect(updaterRemove(["read"])).toEqual([]);
+        });
+
+        it("handlePriorityChange: adds and removes priority correctly", () => {
+            const setPriority = jest.fn();
+            render(<DialogContent {...defaultProps} priority={[]} setPriority={setPriority} />);
+            let checkboxCall = mockCheckBox.mock.calls.find((call) => call[0].dataTestId === "priority-low");
+            let onChange = checkboxCall?.[0].onChange;
+            act(() => {
+                onChange?.({ target: { value: "low" } });
+            });
+            expect(setPriority).toHaveBeenCalled();
+            const updaterAdd = setPriority.mock.calls[0][0];
+            expect(updaterAdd([])).toEqual(["low"]);
+            setPriority.mockClear();
+            render(<DialogContent {...defaultProps} priority={["low"]} setPriority={setPriority} />);
+            checkboxCall = mockCheckBox.mock.calls.find((call) => call[0].dataTestId === "priority-low");
+            onChange = checkboxCall?.[0].onChange;
+            act(() => {
+                onChange?.({ target: { value: "low" } });
+            });
+            expect(setPriority).toHaveBeenCalled();
+            const updaterRemove = setPriority.mock.calls[0][0];
+            expect(updaterRemove(["low"])).toEqual([]);
         });
     });
 });
