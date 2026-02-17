@@ -1,6 +1,6 @@
 
 import React from "react";
-import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, within, cleanup } from "@testing-library/react";
 import dayjs from "dayjs";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
 import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
@@ -599,20 +599,6 @@ describe("FilterDialog", () => {
 
     await waitFor(() => {
       expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-
-  it.skip("shows error if year has less than 4 digits", async () => {
-    jest.setTimeout(15000)
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    // Set a year with less than 4 digits
-    setDateInput(dateInputs[0], "", "", "222"); // only 2 digits
-    await waitFor(() => {
-      // Check that the error message for From date is displayed
-      expect(screen.getByText("From date is required")).toBeInTheDocument(); // matches t("Filter.fromDateRequired")
-      // Check that the date error state is set
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -1666,4 +1652,24 @@ describe("Related To Dropdown", () => {
     fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
   });
 
+});
+
+describe("FilterDialog accessibility", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+  it("shows error if year has less than 4 digits", async () => {
+    jest.setTimeout(15000)
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    // Set a year with less than 4 digits
+    setDateInput(dateInputs[0], "", "", "222"); // only 2 digits
+    await waitFor(() => {
+      // Check that the error message for From date is displayed
+      expect(screen.getByText("From date is required")).toBeInTheDocument(); // matches t("Filter.fromDateRequired")
+      // Check that the date error state is set
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
 });
