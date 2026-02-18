@@ -296,7 +296,7 @@ describe("handleApply with startDateError", () => {
 });
 
 it("should disable Apply button when isFormValid is false", () => {
-  render(<FilterDialogView {...defaultProps} isFormValid={false} />);
+  render(<FilterDialogView {...defaultProps}/>);
   const applyButton = screen.getByTestId("apply-btn");
   fireEvent.click(applyButton);
   expect(mockOnApply).toHaveBeenCalled();

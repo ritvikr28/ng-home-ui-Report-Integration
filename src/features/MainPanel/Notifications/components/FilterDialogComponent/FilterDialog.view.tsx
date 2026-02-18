@@ -14,7 +14,6 @@ interface FilterDialogViewProps {
     setEndDate: React.Dispatch<React.SetStateAction<string>>;
     startDateError: string;
     endDateError: string;
-    isFormValid: boolean;
     onApply: () => void;
     onClear: () => void;
     onClose: () => void;
@@ -31,7 +30,6 @@ const FilterDialogView = ({
     setEndDate,
     startDateError="",
     endDateError="",
-    isFormValid=true,
     onApply,
     onClear,
     onClose

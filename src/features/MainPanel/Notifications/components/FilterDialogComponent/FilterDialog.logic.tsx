@@ -104,7 +104,6 @@ const FilterDialogLogic = ({
             onApply={handleApply}
             onClear={handleClear}
             onClose={handleClose}
-            isFormValid={!errors.from && !errors.to}
         />
     );
 };

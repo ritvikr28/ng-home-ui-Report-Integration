@@ -1,8 +1,8 @@
 // src/features/MainPanel/Notifications/Notifications.view.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import NotificationView from "../Notifications.view";
 import userEvent from "@testing-library/user-event";
+import NotificationView from "../Notifications.view";
 
 jest.mock("../useNotification", () => {
   const actual = jest.requireActual("../useNotification");
