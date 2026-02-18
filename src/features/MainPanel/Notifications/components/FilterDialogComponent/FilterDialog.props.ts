@@ -17,3 +17,8 @@ export interface DialogContentProps {
     startDateError?: string;
     endDateError?: string;
 }
+
+export type DateErrors = {
+    from: string;
+    to: string;
+};

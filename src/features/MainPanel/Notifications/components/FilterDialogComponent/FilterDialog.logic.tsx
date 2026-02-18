@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import FilterDialogView from "./FilterDialog.view";
+import { DateErrors } from "./FilterDialog.props";
 
 interface FilterDialogLogicProps {
     setFilterBtnClicked: (val: boolean) => void;
@@ -28,10 +29,6 @@ const FilterDialogLogic = ({
     const [priority, setPriority] = useState<string[]>(filters.priority || []);
     const [startDate, setStartDate] = useState(filters.startDate || "");
     const [endDate, setEndDate] = useState(filters.endDate || "");
-    type DateErrors = {
-      from: string;
-      to: string;
-    };
     const [errors, setErrors] = useState<DateErrors>({
       from: "",
       to: "",
@@ -48,34 +45,19 @@ const FilterDialogLogic = ({
     useEffect(() => {
       setErrors(validateDateRange(startDate, endDate));
     }, [startDate, endDate]);
-    const validateDateRange = (from: string, to: string): DateErrors => {
-      if (!from && to) {
-        return {
-          from: "startDateRequired",
-          to: "",
-        };
-      }
-      if (!from && !to) {
-        return { from: "", to: "" };
-      }
-      if (from && to) {
-        const [fy, fm, fd] = from.split("-").map(Number);
-        const [ty, tm, td] = to.split("-").map(Number);
 
-        const fromDate = new Date(fy, fm - 1, fd);
-        const toDate = new Date(ty, tm - 1, td);
-
-        if (fromDate > toDate) {
-          return {
-            from: "Date from cannot be after date to",
-            to: "Date to cannot be before date from",
-          };
-        }
-      }
-
+  const validateDateRange = (from: string, to: string): DateErrors => {
+    if (!from || !to) {
       return { from: "", to: "" };
-    };
+    }
 
+    return new Date(from) > new Date(to)
+      ? {
+          from: "Date from cannot be after date to",
+          to: "Date to cannot be before date from",
+        }
+      : { from: "", to: "" };
+  };
     const handleApply = () => {
         if (!errors.from && !errors.to) {
             onApply({

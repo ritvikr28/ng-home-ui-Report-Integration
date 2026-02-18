@@ -247,16 +247,16 @@ it("last column's anyComponent does not call setNotificationIdSelected if id is 
     expect(queryByText("View")).toBeNull();
   });
 
-  // it("last column's anyComponent does not render View link if cellData is an empty string", () => {
-  //   const setSideIsOpen = jest.fn();
-  //   const setSelectedItem = jest.fn();
-  //   const setNotificationIdSelected = jest.fn();
-  //   const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", "Desc", setNotificationIdSelected);
-  //   const LastComponent = headers[5].anyComponent;
-  //   const { container, queryByText } = render(<>{LastComponent && LastComponent("")}</>);
-  //   expect(container.textContent).toBe("");
-  //   expect(queryByText("View")).toBeNull();
-  // });
+  it("last column's anyComponent does not render View link if cellData is an empty string", () => {
+    const setSideIsOpen = jest.fn();
+    const setSelectedItem = jest.fn();
+    const setNotificationIdSelected = jest.fn();
+    const headers = getNotificationTableHeadersData(setSideIsOpen, setSelectedItem, "DateReceived", false, setNotificationIdSelected);
+    const LastComponent = headers[5].anyComponent;
+    const { container, queryByText } = render(<>{LastComponent && LastComponent("")}</>);
+    expect(container.textContent).toBe("");
+    expect(queryByText("View")).toBeNull();
+  });
 
   it("last column's anyComponent calls setNotificationIdSelected if provided and id exists", () => {
     const setSideIsOpen = jest.fn();
@@ -382,3 +382,17 @@ describe("NoDataMessage", () => {
     expect(NoDataMessage.noDataToDisplay).toBe("No data to display");
   })
 })
+
+it("last column's anyComponent returns empty div when JSON.parse throws", () => {
+  const headers = getNotificationTableHeadersData();
+  const LastComponent = headers[5].anyComponent;
+
+  const invalidJson = "{invalid-json";
+
+  const { container, queryByText } = render(
+    <>{LastComponent && LastComponent(invalidJson)}</>
+  );
+
+  expect(container.textContent).toBe("");
+  expect(queryByText("View")).toBeNull();
+});

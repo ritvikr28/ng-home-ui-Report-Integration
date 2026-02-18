@@ -87,7 +87,6 @@ const FilterDialogView = ({
                             dataTestId="apply-btn"
                             onClick={handleApply}
                             color={ButtonColor.Primary}
-                            disabled={isFormValid === false}
                         >
                             Apply
                         </Button>
