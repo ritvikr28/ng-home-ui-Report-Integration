@@ -502,7 +502,7 @@ export function getDialogConfig({
         template: DialogTemplate.Confirmation
       };
 
-    case "delete":
+    case "delete":{
       const messages = getDeleteDialogMessages({
         t,
         restrictedFileCount,
@@ -559,6 +559,7 @@ export function getDialogConfig({
         },
         template: DialogTemplate.Confirmation
       };
+    }
 
     default:
       return {
@@ -724,17 +725,18 @@ export function getExtraDeletedMessage(
 
     if (deletedCount === 1) {
       return t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: deletedCount });
-    } else if (deletedCount > 1) {
-      return t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
-        all:
-          alreadyDeletedFileCount === 0 &&
+      }
+      if (deletedCount > 1) {
+        return t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
+          all:
+            alreadyDeletedFileCount === 0 &&
             restrictedFileCount === 0 &&
             availableFileCount === 0
-            ? t("DocumentManagementServer.All")
-            : "",
-        count: deletedCount
-      });
-    }
+              ? t("DocumentManagementServer.All")
+              : "",
+          count: deletedCount
+        });
+      }
   }
   return null;
 }

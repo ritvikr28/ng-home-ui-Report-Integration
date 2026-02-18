@@ -2,43 +2,33 @@ import {
   Dialog,
   Button,
   ButtonColor,
-  FormLabel,
-  Dropdown,
-  DropdownItem,
   ISelectedItem,
-  DateInput,
   ButtonSize,
   ValidationTextLevel,
   Loader,
   LoaderType,
-  Search,
   ISearchItemProp,
   Suggestion,
-  TextInputSize,
   SelectedItem,
   Notification,
   NotificationStatus
 } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { useTranslation, TFunction } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
-import dayjs from "dayjs";
 import "./style.scss";
-import { TFunction } from "@essnextgen/ui-intl-kit";
 import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
 import { handleSearchChange } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
-import { getUserOrganisation } from "../../utils";
 import gtmAnalytics from "../../utils/analytics";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
-import { addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
-import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
-import { resetDateState, handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, validateDate } from "./FilterDialog.utils";
+import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions, addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 import { SearchSection } from "./components/FilterSearch";
 import { FilterDateSection } from "./components/FilterDateSection";
 import { FilterCategoryDropdown } from "./components/FilterCategoryDropdown";
 import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
-import { fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
+import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncDialogStateEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
+
 export interface FilterDialogProps {
   dataTestId?: string;
   title: string;
@@ -59,7 +49,6 @@ export interface FilterDialogProps {
   setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
   searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
@@ -85,7 +74,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   setSelectedRelatedTo,
   tagListArray,
   setTagListArray,
-  setIsSearchTriggered,
   searchText,
   setSearchText,
   setSearchInput
@@ -120,6 +108,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
+  // eslint-disable-next-line no-unused-expressions
+  showErrorBanner;
 
 
   console.log("selectedKey", selectedKey, "selectedDisplayKey", searchText, searchKey, searchTerm, refId);
@@ -289,7 +279,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
       className="dms-filter-dialog"
       isOpen={isOpen}
       dataTestId={dataTestId}
-      onClose={e => {
+      onClose={() => {
         handleDialogClose(
           setRelatedToSelected,
           setRelatedToError,
@@ -349,7 +339,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
           {["Pupil", "Staff"].includes(selectedDisplayKey) && (
             <SearchSection
-              visible={true}
               dataTestId={dataTestId}
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
@@ -357,7 +346,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               isSearchLoading={isSearchLoading}
               validationText={validationText}
               validationTextLevel={validationTextLevel}
-              tagList={localTagListArray}
               onItemClick={(item: ISearchItemProp | null) => {
                 setSearchTerm(item?.text || "");
                 addUniqueTagItem({
@@ -373,45 +361,19 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                 setSearchSelectionError("");
                 console.log(refId, "refId on item click");
               }}
-              onChange={e => {
-                setIsSearchTriggered(true);
-                handleSearchChange({
-                  t,
-                  e,
-                  categoryId: getAllRegistrationIds(selectedCategories),
-                  fromDate: selectedDateRange?.fromDate,
-                  toDate: selectedDateRange?.toDate,
-                  setSearchTerm,
-                  setSuggestions,
-                  setShowSearchError,
-                  setIsSearchLoading,
-                  setShowErrorBanner,
-                  documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
-                  setResetFilterSearch: undefined
-                })
-              }
-              }
+             
+              
               onRemoveTag={handleRemoveTagForSection}
-              title={title}
               selectedDisplayKey={selectedDisplayKey}
               t={t}
               isDropdownOpen={isDropdownOpen}
               localTagListArray={localTagListArray}
-              setTagListArray={setLocalTagListArray}
-              setReferenceExternalIds={setReferenceExternalIds}
-              setAlreadyExistingTags={setAlreadyExistingTags}
               searchKey={searchKey}
               getEntityLabel={getEntityLabel}
               filteredSuggestions={filteredSuggestions}
               showSearchError={showSearchError}
-              selectedCategories={selectedCategories}
-              selectedDateRange={selectedDateRange}
               setSuggestions={setSuggestions}
               handleSearchChange={handleSearchChangeForSection}
-              placeholder={t("Filter.searchPlaceholder", { entity: selectedDisplayKey })}
-              setIsSearchLoading={setIsSearchLoading}
-              setShowSearchError={setShowSearchError}
-              getAllRegistrationIds={getAllRegistrationIds}
             />
           )}
 
@@ -445,7 +407,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
           <div className="dms-filter-dialog-buttons">
             <Button
               dataTestId={`${dataTestId}-clear-btn`}
-              onClick={(e) => clearAll({
+              onClick={() => clearAll({
                 setFromDate,
                 setToDate,
                 setFromDateError,
@@ -472,7 +434,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
             <Button
               dataTestId={`${dataTestId}-apply-btn`}
-              onClick={e => {
+            onClick={() => {
                 handleApplyWrapper({
                   localSelectedRelatedTo,
                   setRelatedToError,

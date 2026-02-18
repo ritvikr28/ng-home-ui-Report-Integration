@@ -2,9 +2,7 @@ import React from "react";
 import dayjs from "dayjs";
 import {
   ISearchItemProp,
-  ISelectedItem,
-  SelectedItem,
-  Suggestion
+  ISelectedItem
 } from "@essnextgen/ui-kit";
 import {
   debouncedFetchSuggestions,
@@ -30,9 +28,6 @@ export const handlePageChange: (_: unknown, page: number, setCurrentPage: React.
   setCurrentPage(page);
   setIsSearchTriggered(true);
 };
-
-const shouldIgnoreSearch = (value: string): boolean =>
-  value.trim().length === 0 || value.length < 3;
 
 export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
   t,
@@ -158,8 +153,6 @@ const isDateRangeTag = (name?: string, id?: string | number): boolean =>
   );
 
 export const handleTagCloseLogic: (params: HandleTagCloseLogicParams) => void = ({
-  event,
-  tagName,
   closeObj,
   setSelectedDateRange,
   setDateRange,
@@ -244,7 +237,6 @@ export const validateAndApplyFilter = ({
 
 export const handleBulkDeleteLogic = async ({
   allSelectedDocs,
-  docData,
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
@@ -356,7 +348,7 @@ function handleValidationResult(
   totalSelectedCount: number,
   handlers: ValidationResultHandlers
 ): void {
-  const {
+    const {
     setIsPreDialogLoading,
     setShowRestrictedDeleteDialog,
     setShowDialog,
@@ -369,18 +361,18 @@ function handleValidationResult(
     setIsDialogLoading,
     setShowConfirmDialog,
     setShowRestrictedPrepareDialog
-  }: ValidationResultHandlers = handlers; {
-    if (result?.status !== 200 && result?.status !== 204) {
-      setIsPreDialogLoading(false);
-      setShowRestrictedDeleteDialog(false);
-      setShowDialog(false);
-      setShowErrorBanner(true);
-      gtmAnalytics.pushEvent({
-        event: "error_message",
-        messageText: "Information unavailable"
-      });
-      return;
-    }
+  }: ValidationResultHandlers = handlers;
+
+  if (result?.status !== 200 && result?.status !== 204) {
+    setIsPreDialogLoading(false);
+    setShowRestrictedDeleteDialog(false);
+    setShowDialog(false);
+    setShowErrorBanner(true);
+    gtmAnalytics.pushEvent({
+      event: "error_message",
+      messageText: "Information unavailable"
+    });
+    return;
   }
 
   const restricted: number = result?.data?.restrictedFileCount ?? 0;

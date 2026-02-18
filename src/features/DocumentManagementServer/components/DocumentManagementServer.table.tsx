@@ -309,8 +309,6 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isInitialLoad,
     isSearchLoading,
     issearchDataLoading,
-    searchInput,
-    searchTerm,
     filteredSuggestions,
     NotificationMsgBannerObject,
     resultNotFoundMSG,
@@ -325,21 +323,10 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     handleSuggestionClick,
     handleSorting,
     handleCloseSidePanel,
-    isFilterDialogOpen,
-    setIsFilterDialogOpen,
-    isFilterLoading,
-    selectedCategories,
     setSelectedCategories,
-    selectedDateRange,
-    setSelectedDateRange,
-    isDateError,
-    setIsDateError,
     setDocumentRelatedTo,
-    selectedRelatedTo,
     setSelectedRelatedTo,
-    tagListArray,
     setTagListArray,
-    handleApplyWrapper,
     isSidePanelOpen,
     availableFileCount,
     isDialogLoading,
@@ -515,7 +502,7 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isShowErrorPage: false,
     isSearchShowLoading: false,
     dynamicTableLoader: issearchDataLoading,
-    addEditTemplateChild: addEditTemplateChild,
+    addEditTemplateChild,
     className: "grid_wrapper",
     searchTagList: searchTagListRaw,
     onOverflowTagClose: () => { },
@@ -531,9 +518,8 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     subHeadingText: t("DocumentManagementServer.subHeadingText"),
   };
 }
-const DmsControlledList: React.FC<Props> = (props) => {
-  return <ControlledList {...getControlledListProps(props)} />;
-};
+const DmsControlledList: React.FC<Props> = (props) =>
+  <ControlledList {...getControlledListProps(props)} />;
 
 DmsControlledList.defaultProps = {
   onChangeAllCheckBox: undefined

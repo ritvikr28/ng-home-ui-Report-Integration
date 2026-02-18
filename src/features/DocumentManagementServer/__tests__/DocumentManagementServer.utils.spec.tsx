@@ -1,7 +1,5 @@
 import * as Helpers from "../logic/DocumentManagementServer.utils";
 import gtmAnalytics from "../../../shared/utils/analytics";
-import { fireEvent, getByText, screen } from "@testing-library/react";
-import { on } from "events";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -324,21 +322,20 @@ describe("DocumentManagementServer.helpers", () => {
     });
 
     it("returns error validation state when searchSelectionError is present", () => {
-  const t = (key: string) => key;
   const result = Helpers.getValidationState("Some error", false, t);
   expect(result.validationText).toBe("Some error");
   expect(result.validationTextLevel).toBe("error");
 });
 
 it("returns warning validation state when showSearchError is true and no searchSelectionError", () => {
-  const t = (key: string) => key;
+  
   const result = Helpers.getValidationState("", true, t);
   expect(result.validationText).toBe("Filter.informationUnavailable");
   expect(result.validationTextLevel).toBe("warning");
 });
 
 it("returns empty validation state when neither error nor warning", () => {
-  const t = (key: string) => key;
+  
   const result = Helpers.getValidationState("", false, t);
   expect(result.validationText).toBe("");
   expect(result.validationTextLevel).toBe(null);
@@ -388,10 +385,7 @@ it("returns empty array when selectedFormats is undefined", () => {
 it("toggles sort direction when sortBy matches apiColumnName", () => {
   const setSortBy = jest.fn();
   const setSortDirection = jest.fn();
-  const t = (key: string) => {
-    if (key === "DocumentManagementServer.dateAddedColumn") return "DateAdded";
-    return key;
-  };
+
 
   Helpers.handleSorting(
     t("DocumentManagementServer.dateAddedColumn"), // columnName
@@ -472,7 +466,7 @@ it("returns null if dialogType is not provided", () => {
 });
 
 it("returns config for clearAll dialogType", () => {
-  const t = (key: string) => key;
+  
   const setShowConfirmDialog = jest.fn();
   const setClearAllError = jest.fn();
   const handleClearAllConfirm = jest.fn();
@@ -543,7 +537,7 @@ it("returns config for clearAll dialogType", () => {
 });
 
 it("returns config for clearAll dialogType and click onConfirm", async () => {
-  const t = (key: string) => key;
+  
   const setShowConfirmDialog = jest.fn();
   const setClearAllError = jest.fn();
   const handleClearAllConfirm = jest.fn();
@@ -619,7 +613,7 @@ it("returns config for clearAll dialogType and click onConfirm", async () => {
 });
 
 it("returns config for delete dialogType", async () => {
-  const t = (key: string) => key;
+  
   const setShowConfirmDialog = jest.fn();
   const setSelectedCheckBoxIds = jest.fn();
   const setAllSelectedDocs = jest.fn();
@@ -707,7 +701,7 @@ it("returns config for delete dialogType", async () => {
 
 
 it("returns config for default dialogType", async () => {
-  const t = (key: string) => key;
+  
   const setShowConfirmDialog = jest.fn();
   const config = Helpers.getDialogConfig({
     dialogType: "prepareDownload", 
@@ -783,8 +777,6 @@ it("returns config for default dialogType", async () => {
 });
 
 it("returns correct contentText when alreadyDeletedFileCount is 1", () => {
-  const t = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
   const setShowConfirmDialog = jest.fn();
   const config = Helpers.getDialogConfig({
     dialogType: "prepareDownload",
@@ -849,8 +841,6 @@ it("returns correct contentText when alreadyDeletedFileCount is 1", () => {
 });
 
 it("returns correct contentText when deletedCount === 1", () => {
-  const t = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
   const setShowConfirmDialog = jest.fn();
   // totalRecords = 3, alreadyDeletedFileCount = 0, restrictedFileCount = 0, availableFileCount = 1, excludedCheckBoxIds.length = 1
   // sum = 0 + 0 + 1 + 1 = 2, totalRecords = 3, so deletedCount = 1
@@ -917,8 +907,6 @@ it("returns correct contentText when deletedCount === 1", () => {
 });
 
 it("returns correct contentText when deletedCount > 1", () => {
-  const t = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
   const setShowConfirmDialog = jest.fn();
   // totalRecords = 5, alreadyDeletedFileCount = 0, restrictedFileCount = 0, availableFileCount = 1, excludedCheckBoxIds.length = 1
   // sum = 0 + 0 + 1 + 1 = 2, totalRecords = 5, so deletedCount = 3
@@ -1070,7 +1058,6 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
   const setPrepareDownloadAbortBanner = jest.fn();
   const setShowEmailNotification = jest.fn();
   const setIsSidePanelLoader = jest.fn();
-  const gtmAnalytics = { pushEvent: jest.fn() };
 
   // error branch: status not 204 or 409
   let config = Helpers.getDialogConfig({
@@ -1447,15 +1434,7 @@ describe("getExtraDeletedMessage", () => {
     options ? `${key}-${JSON.stringify(options)}` : key;
 
   it("returns single document deleted message when deletedCount === 1", () => {
-    const result = Helpers.getExtraDeletedMessage(
-      t,
-      { totalRecords: 5 },
-      1, // alreadyDeletedFileCount
-      1, // restrictedFileCount
-      2, // availableFileCount
-      [1], // excludedCheckBoxIds (length 1)
-      true // isHeaderBoxChecked
-    );
+   
     // sum = 1+1+2+1=5, totalRecords=5, so totalRecords !== sum is false, so no message
     // Let's make sum < totalRecords to trigger the branch
     const result2 = Helpers.getExtraDeletedMessage(
@@ -1486,12 +1465,15 @@ describe("getExtraDeletedMessage", () => {
   });
 
   it("returns message with 'All' when all counts are zero and deletedCount > 1", () => {
-    const tWithAll = (key: string, options?: any) =>
-      key === "DocumentManagementServer.All"
-        ? "All"
-        : options
-        ? `${key}-${JSON.stringify(options)}`
-        : key;
+    const tWithAll = (key: string, options?: any) =>{
+    if (key === "DocumentManagementServer.All") {
+      return "All";
+    }
+    if (options) {
+      return `${key}-${JSON.stringify(options)}`;
+    }
+    return key;
+  }
     const result = Helpers.getExtraDeletedMessage(
       tWithAll,
       { totalRecords: 3 },
@@ -1740,7 +1722,7 @@ describe("handleSorting", () => {
       setSortBy,
       "Desc",
       setSortDirection,
-      (k: string) => "DateAdded" as any
+      () => "DateAdded" as any
     );
     expect(setSortDirection).toHaveBeenCalledWith("Asc");
   });

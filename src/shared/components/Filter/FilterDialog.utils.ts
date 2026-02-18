@@ -1,10 +1,11 @@
+import React from "react";
 import dayjs from "dayjs";
 import { ISelectedItem, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
-import { TFunction } from "i18next";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { DateParts } from "./useFilterDialogLogicProps";
+
 export const getDateString: (date: { day: string; month: string; year: string }) => string = (date) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
 
@@ -24,9 +25,6 @@ export const isValidDate: (dateStr: string, minDateStr?: string) => boolean = (d
 
 const isZeroDate = (date: { day: string; month: string }) =>
   ["00", "0"].includes(date.day) || ["00", "0"].includes(date.month);
-
-const isPartialDate = (date: { day: string; month: string; year: string }) =>
-  !date.day || !date.month || !date.year;
 
 const isYearIncomplete = (year: string) =>
   year && year.length < 4;
@@ -51,7 +49,7 @@ export const validateDate = (
   dateStr: string,
   otherDateStr: string,
   isFrom: boolean,
-  t: TFunction
+  t: any
 ): DateValidationResult => {
   if (!dateStr) {
     return { isValid: true };
@@ -106,7 +104,7 @@ interface HandleDateChangeParams {
   isFrom: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>;
-  t: TFunction;
+  t: any;
   setFromDateError: React.Dispatch<React.SetStateAction<string>>;
   setToDateError: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -115,9 +113,9 @@ function getValidationError(params: {
   newDate: DateParts;
   otherDate: DateParts;
   isFrom: boolean;
-  t: TFunction;
+  t: any;
 }): DateValidationResult | null {
-  const { newDate, otherDate, isFrom, t }: { newDate: DateParts; otherDate: DateParts; isFrom: boolean; t: TFunction } = params;
+  const { newDate, otherDate, isFrom, t }: { newDate: DateParts; otherDate: DateParts; isFrom: boolean; t: any } = params;
 
   if (!newDate.day || !newDate.month || !newDate.year) {
     return null;
@@ -281,7 +279,7 @@ function isInvalidInput(date: { day: string; month: string; year: string }): boo
 export interface HandleApplyWrapperParams {
   localSelectedRelatedTo: any;
   setRelatedToError: (msg: string) => void;
-  t: TFunction;
+  t: any;
   selectedKey: string;
   localTagListArray: any[];
   setSearchSelectionError: (msg: string) => void;
@@ -401,7 +399,7 @@ export function onSelectMultipleCategories(
 /* istanbul ignore next */
 
 export const getEntityLabel: (entity: string) => string = (entity: string) => {
-  const { t }: { t: TFunction } = useTranslation();
+  const { t }: { t: any } = useTranslation();
   if (!entity) return "";
   let key = "";
   const lowerEntity: string = entity.toLowerCase();
@@ -531,7 +529,7 @@ export const handleRemoveTag: any = (
 /* istanbul ignore next */
 export const getValidationTextMsg: (
   categoryError: boolean,
-  t: TFunction
+  t: any
 ) => string | undefined = (
   categoryError,
   t

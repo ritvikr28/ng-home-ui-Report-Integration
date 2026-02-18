@@ -1,3 +1,4 @@
+import React from "react";
 import { ISelectedItem, SelectedItem } from "@essnextgen/ui-kit";
 import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";

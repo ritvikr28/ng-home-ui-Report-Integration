@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
-import { Doc } from "prettier";
 import { DocumentData } from "../responseModel";
 
 
@@ -81,32 +80,6 @@ export function useSetTotalPageOnDocData(docData: any, setTotalPage: (n: number)
     }
   }, [docData, setTotalPage, pageSizeNumber]);
 }
-
-interface UseFetchDocsEffectParams {
-  currentPage: number;
-  searchText: string;
-  dateRange: { fromDate: string; toDate: string };
-  selectedFormats: any[];
-  sortBy: string;
-  sortDirection: string;
-  searchRefExternalId: string[];
-  documentRelatedTo: number;
-  isSearchTriggered: boolean;
-  isFilterDialogOpen: boolean;
-  allRegistrationIds: number[];
-  fetchGetDocumentDetails: (
-    page: number,
-    categories: number[],
-    sortByCol: string,
-    sortOrder: string,
-    refExternalId: string[],
-    relatedTo: number
-  ) => void;
-  setIsInitialLoad: (v: boolean) => void;
-  setIsSearchTriggered: (v: boolean) => void;
-}
-
-
 
 interface UseSidePanelViewDownloadEffectParams {
   isSidePanelOpen: boolean;

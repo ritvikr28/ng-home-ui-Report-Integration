@@ -7,7 +7,6 @@ import {
 } from "@essnextgen/ui-kit";
 
 interface Props {
-  visible: boolean;
   dataTestId: string;
   searchTerm: string;
   setSearchTerm: (v: string) => void;
@@ -15,30 +14,18 @@ interface Props {
   isSearchLoading: boolean;
   validationText?: string;
   validationTextLevel?: ValidationTextLevel | null;
-  tagList: any[];
   onItemClick: (item: any) => void;
-  onChange: (e: any) => void;
   onRemoveTag: any;
-  title: string;
-  placeholder: string;
   selectedDisplayKey: string;
   t: (key: string, options?: any) => string;
   isDropdownOpen: boolean;
   localTagListArray: any[];
-  setTagListArray: (v: any[]) => void;
-  setReferenceExternalIds?: (v: any[]) => void;
-  setAlreadyExistingTags?: (v: boolean) => void;
   searchKey: number;
   getEntityLabel: (key: string) => string;
   filteredSuggestions: any[];
   showSearchError: boolean;
-  selectedCategories: any[];
-  selectedDateRange: { fromDate: string; toDate: string };
   setSuggestions: (v: Suggestion[]) => void;
   handleSearchChange: (e: any) => void;
-  getAllRegistrationIds: (categories: any[]) => any[];
-  setShowSearchError: (v: boolean) => void;
-  setIsSearchLoading: (v: boolean) => void;
 }
 
 export const SearchSection: React.FC<Props> = ({
@@ -110,4 +97,9 @@ export const SearchSection: React.FC<Props> = ({
       onRemoveTag={onRemoveTag}
     />
   );
+};
+
+SearchSection.defaultProps = {
+  validationText: undefined,
+  validationTextLevel: undefined
 };

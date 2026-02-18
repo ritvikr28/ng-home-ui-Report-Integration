@@ -28,7 +28,6 @@ interface DmsSidePanelProps {
   setShowToastNotification: (v: boolean) => void;
   setFailedFileName: (v: string[]) => void;
 
-  fileDownload: (...args: any[]) => Promise<any>;
   gtmAnalytics: any;
 }
 
@@ -53,7 +52,6 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   setShowEmailNotification,
   setShowToastNotification,
   setFailedFileName,
-  fileDownload,
   gtmAnalytics
 }) => 
     <>

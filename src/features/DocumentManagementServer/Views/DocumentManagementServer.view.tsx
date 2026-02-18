@@ -5,7 +5,7 @@ import { LocalisedMenu } from "@essnextgen/ui-application-kit"
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Grid, GridItem, Button, ButtonColor, Notification, IconColor, ButtonSize, Breadcrumbs, NotificationStatus, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
 import dayjs from "dayjs"
-import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, fileDownload, getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
 import "../style.scss"
 import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
 import { pageSizeNumber } from "../../../../public/Constants"
@@ -177,7 +177,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const [selectedRelatedTo, setSelectedRelatedTo]: [ISelectedItem | undefined, React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>] = useState<ISelectedItem | undefined>(undefined);
   const [tagListArray, setTagListArray]: [SelectedItem[], React.Dispatch<React.SetStateAction<SelectedItem[]>>] = useState<SelectedItem[]>([]);
   const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-
+  // eslint-disable-next-line no-unused-expressions
+  prevSelectedDocs
   // Just for time being we are using this. Will remove later.Kiwan Fix WIP
   // const setPrepareDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
   // const setPrepareDownloadAbortBanner: React.Dispatch<React.SetStateAction<boolean>> = () => {};

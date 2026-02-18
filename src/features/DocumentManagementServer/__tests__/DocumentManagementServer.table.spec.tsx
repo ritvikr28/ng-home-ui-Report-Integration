@@ -3,17 +3,37 @@ import { render, fireEvent, screen } from "@testing-library/react";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 
 jest.mock("../../../shared/components/Filter/Filter", () => () => <div data-testid="filter-dialog">FilterDialog</div>);
-jest.mock("@essnextgen/ui-kit", () => ({
-	...jest.requireActual("@essnextgen/ui-kit"),
-	ControlledList: (props: any) => (
-		<div data-testid="controlled-list-mock">
-			{props.editSelectedBtnTitle}
-			<button data-testid="secondary-btn" onClick={props.onClickSidePnlSecondaryBtn}>Secondary</button>
-			<button data-testid="close-dialog-btn" onClick={props.handleCloseDialogConfirmation}>CloseDialog</button>
-			<div data-testid="filter-custom-elem">{props.filterCustumeElem2}</div>
-		</div>
-	)
-}));
+jest.mock("@essnextgen/ui-kit", () => {
+  const original = jest.requireActual("@essnextgen/ui-kit");
+  return {
+    ...original,
+    ControlledList: ({
+      editSelectedBtnTitle,
+      onClickSidePnlSecondaryBtn,
+      handleCloseDialogConfirmation,
+      filterCustumeElem2
+    }: any) => (
+      <div data-testid="controlled-list-mock">
+        {editSelectedBtnTitle}
+        <button
+          data-testid="secondary-btn"
+          type="button"
+          onClick={onClickSidePnlSecondaryBtn}
+        >
+          Secondary
+        </button>
+        <button
+          data-testid="close-dialog-btn"
+          type="button"
+          onClick={handleCloseDialogConfirmation}
+        >
+          CloseDialog
+        </button>
+        <div data-testid="filter-custom-elem">{filterCustumeElem2}</div>
+      </div>
+    )
+  };
+});
 
 const t = (key: string) => key;
 const baseProps = {
@@ -93,10 +113,20 @@ const baseProps = {
 	isSidePanelLoader: false,
 	addEditTemplateChild: null,
 };
+const notImplemented = function notImplemented() {
+  throw new Error("Function not implemented.");
+};
 
 describe("DmsControlledList", () => {
 	it("renders ControlledList with correct props", () => {
-		render(<DmsControlledList {...baseProps} />);
+		render(
+  <DmsControlledList
+    setSortBy={notImplemented}
+    setSortDirection={notImplemented}
+    setSearchInput={notImplemented}
+    {...baseProps}
+  />
+);
 		expect(screen.getByTestId("controlled-list-mock")).toBeInTheDocument();
 		expect(screen.getByText("DocumentManagementServer.editSelectedBtnTitle")).toBeInTheDocument();
 	});
@@ -105,14 +135,16 @@ describe("DmsControlledList", () => {
 		const setDialogType = jest.fn();
 		const setShowConfirmDialog = jest.fn();
 		const setIsSidePanelOpen = jest.fn();
-		render(
+		
+			render(
 			<DmsControlledList
+				setSortBy={notImplemented}
+				setSortDirection={notImplemented}
+				setSearchInput={notImplemented}
 				{...baseProps}
 				hasCompletedFiles={true}
 				setDialogType={setDialogType}
-				setShowConfirmDialog={setShowConfirmDialog}
-				setIsSidePanelOpen={setIsSidePanelOpen}
-			/>
+				setIsSidePanelOpen={setIsSidePanelOpen}			/>
 		);
 		fireEvent.click(screen.getByTestId("secondary-btn"));
 		expect(setDialogType).toHaveBeenCalledWith("clearAll");
@@ -123,10 +155,12 @@ describe("DmsControlledList", () => {
 		const setIsSidePanelOpen = jest.fn();
 		render(
 			<DmsControlledList
-				{...baseProps}
-				hasCompletedFiles={false}
-				setIsSidePanelOpen={setIsSidePanelOpen}
-			/>
+			setSortBy={notImplemented}
+			setSortDirection={notImplemented}
+			setSearchInput={notImplemented}
+			{...baseProps}
+			hasCompletedFiles={false}
+			setIsSidePanelOpen={setIsSidePanelOpen}			/>
 		);
 		fireEvent.click(screen.getByTestId("secondary-btn"));
 		expect(setIsSidePanelOpen).toHaveBeenCalledWith(false);
@@ -136,16 +170,21 @@ describe("DmsControlledList", () => {
 		const setShowConfirmDialog = jest.fn();
 		render(
 			<DmsControlledList
-				{...baseProps}
-				setShowConfirmDialog={setShowConfirmDialog}
-			/>
+			setSortBy={notImplemented}
+			setSortDirection={notImplemented}
+			setSearchInput={notImplemented}
+			{...baseProps}
+			setShowConfirmDialog={setShowConfirmDialog}			/>
 		);
 		fireEvent.click(screen.getByTestId("close-dialog-btn"));
 		expect(setShowConfirmDialog).toHaveBeenCalledWith(false);
 	});
 
 	it("renders filter custom element and filter dialog", () => {
-		render(<DmsControlledList {...baseProps} />);
+		render(<DmsControlledList setSortBy={notImplemented}
+			setSortDirection={notImplemented}
+			setSearchInput={notImplemented}
+			{...baseProps} />);
 		expect(screen.getByTestId("filter-custom-elem")).toBeInTheDocument();
 		expect(screen.getByTestId("filter-dialog")).toBeInTheDocument();
 	});

@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { SearchSection } from "../components/FilterSearch";
 import { ValidationTextLevel } from "@essnextgen/ui-kit";
+import { SearchSection } from "../components/FilterSearch";
 
 // Mock the Search component to expose props for assertions
 jest.mock("@essnextgen/ui-kit", () => {
@@ -9,15 +9,24 @@ jest.mock("@essnextgen/ui-kit", () => {
   return {
     ...original,
     Search: React.forwardRef((props: any, ref) => {
-      // Attach props directly to the DOM node for test access
+      const handleRef = (node: any) => {
+        if (node) {
+          Object.defineProperty(node, "propsRef", {
+            value: props,
+            writable: true,
+            configurable: true,
+          });
+          if (typeof ref === "function") {
+            ref(node);
+          } else if (ref && typeof ref === "object") {
+            Object.assign(ref, { current: node });
+          }
+        }
+      };
       return (
         <div
           data-testid={props.dataTestId}
-          ref={node => {
-            if (node) (node as any).propsRef = props;
-            if (typeof ref === "function") ref(node);
-            else if (ref) (ref as any).current = node;
-          }}
+          ref={handleRef}
         >
           {props.titleText}
           <input placeholder={props.placeholderText} />
@@ -27,7 +36,6 @@ jest.mock("@essnextgen/ui-kit", () => {
     })
   };
 });
-
 describe("SearchSection", () => {
   const baseProps: any = {
     visible: true,

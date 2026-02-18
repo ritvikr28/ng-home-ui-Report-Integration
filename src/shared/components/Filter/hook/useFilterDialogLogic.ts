@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import dayjs from "dayjs";
+import React, { useEffect } from "react";
 import { getUserOrganisation } from "../../../utils";
 import { fetchDocumentCategoryData } from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 // import { UseFilterDialogLogicProps } from "../useFilterDialogLogicProps";
@@ -9,13 +8,13 @@ import { ISchoolNameDataResponse } from "../../../model/SchoolDomain/responsemod
 
 export const useFetchSchoolEffect: any = (
   selectedDisplayKey: string,
-  setSchoolData: React.Dispatch<React.SetStateAction<ISchoolNameDataResponse | null>>,
+  setSchoolDataParam: React.Dispatch<React.SetStateAction<ISchoolNameDataResponse | null>>,
   fetchSchoolData: (setSchoolData: React.Dispatch<React.SetStateAction<ISchoolNameDataResponse | null>>) => void
 ) => {
   useEffect(() => {
       if (selectedDisplayKey === "School") {
         if (typeof fetchSchoolData === "function") {
-          fetchSchoolData(setSchoolData);
+          fetchSchoolData(setSchoolDataParam);
         }
       }
     }, [selectedDisplayKey, fetchSchoolData]);
@@ -166,7 +165,7 @@ export const useEscapeKeyEffect: any = (
   setCategoryError: (val: boolean) => void
 ) => {
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
 
     const handler: (e: KeyboardEvent) => void = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
