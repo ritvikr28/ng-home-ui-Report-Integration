@@ -60,6 +60,9 @@ export interface FilterDialogProps {
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
   setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
+  searchText: string;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FilterDialog: React.FC<FilterDialogProps> = ({
@@ -82,7 +85,10 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   setSelectedRelatedTo,
   tagListArray,
   setTagListArray,
-  setIsSearchTriggered
+  setIsSearchTriggered,
+  searchText,
+  setSearchText,
+  setSearchInput
 }: FilterDialogProps) => {
   const { t }: { t: TFunction } = useTranslation();
   const [fromDateError, setFromDateError]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
@@ -116,398 +122,408 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   alreadyExistingTags;
 
 
-console.log("selectedKey", selectedKey, "selectedDisplayKey", selectedDisplayKey);
+  console.log("selectedKey", selectedKey, "selectedDisplayKey", searchText, searchKey, searchTerm, refId);
 
-const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
+  const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
 
-useFetchSchoolEffect(selectedDisplayKey, () => fetchSchoolData(setSchoolData));
+  useFetchSchoolEffect(selectedDisplayKey, setSchoolData, fetchSchoolData);
 
-useSyncDialogStateEffect({ isFilterDialogOpen, selectedRelatedTo, setLocalSelectedRelatedTo, setLocalSelectedCategories, setLocalSelectedDateRange});
+  useSyncDialogStateEffect({ isFilterDialogOpen, selectedRelatedTo, setLocalSelectedRelatedTo, setLocalSelectedCategories, setLocalSelectedDateRange });
 
-useSyncSelectedKeyEffect(localSelectedRelatedTo, setSelectedKey);
+  useSyncSelectedKeyEffect(localSelectedRelatedTo, setSelectedKey);
 
-useFetchCategoriesEffect({  isOpen,
-                            refId,
-                            selectedKey,
-                            localSelectedRelatedTo,
-                            setCategoryError,
-                            setAvailableCategories,
-                            setLocalSelectedCategories,
-                            localSelectedCategories});
-
-useResetCategoryErrorEffect(refId, setCategoryError);
-// In your FilterDialog component
-useEffect(() => {
-  // Only update refId when localTagListArray changes
-  if (["Pupil", "Staff"].includes(selectedKey)) {
-    setRefId(getAllRegistrationIds(localTagListArray));
-  }
-}, [localTagListArray, selectedKey]);
-
-useDateSyncEffect(selectedDateRange, (from?: string, to?: string) => {
-  setLocalSelectedDateRange({
-    fromDate: from || "",
-    toDate: to || ""
+  useFetchCategoriesEffect({
+    isOpen,
+    refId,
+    selectedKey,
+    localSelectedRelatedTo,
+    setCategoryError,
+    setAvailableCategories,
+    setLocalSelectedCategories,
+    localSelectedCategories
   });
-});
 
-useDropdownSyncEffect({isFilterDialogOpen,
-  tagListArray,
-  setTagListArray,
-  setIsDropdownOpen});
+  useResetCategoryErrorEffect(refId, setCategoryError);
+  // In your FilterDialog component
+  useEffect(() => {
+    // Only update refId when localTagListArray changes
+    if (["Pupil", "Staff"].includes(selectedKey)) {
+      setRefId(getAllRegistrationIds(localTagListArray));
+    }
+  }, [localTagListArray, selectedKey]);
 
-useResetOnCloseEffect({ isOpen,
-  wasApplied,
-  setFromDate,
-  setToDate,
-  setSelectedDateRange,
-  setFromDateError,
-  setToDateError,
-  setIsDateError,
-  setWasApplied,
-  setSearchTerm,
-  setSuggestions,
-  setCategoryError});
+  useDateSyncEffect(selectedDateRange, (from?: string, to?: string) => {
+    setLocalSelectedDateRange({
+      fromDate: from || "",
+      toDate: to || ""
+    });
+  });
+
+  useDropdownSyncEffect({
+    isFilterDialogOpen,
+    tagListArray,
+    setTagListArray,
+    setIsDropdownOpen
+  });
+
+  useResetOnCloseEffect({
+    isOpen,
+    wasApplied,
+    setFromDate,
+    setToDate,
+    setSelectedDateRange,
+    setFromDateError,
+    setToDateError,
+    setIsDateError,
+    setWasApplied,
+    setSearchTerm,
+    setSuggestions,
+    setCategoryError
+  });
 
   useEscapeKeyEffect(isOpen, onClose, setCategoryError)
 
 
-useSearchEffect({searchTerm,
-  selectedCategories,
-  selectedDateRange,
-  handleSearchChange,
-  setSearchTerm,
-  setSuggestions,
-  setShowSearchError,
-  setIsSearchLoading,
-  localSelectedRelatedTo,
-  t})
+  useSearchEffect({
+    searchTerm,
+    selectedCategories,
+    selectedDateRange,
+    handleSearchChange,
+    setSearchTerm,
+    setSuggestions,
+    setShowSearchError,
+    setIsSearchLoading,
+    localSelectedRelatedTo,
+    t
+  })
 
   useBuildRefIdsEffect(selectedKey, localTagListArray, schoolData, isOpen, setRefId, setFilterEntities)
 
 
   const filteredSuggestions: typeof suggestions = filterNonEmptySuggestions(suggestions).map((group, groupIdx) => ({
-  ...group,
-  values: group.values.map((item, idx) => ({
-    ...item,
-    props: {
-      ...item.props,
-      id: item.props?.id ?? `${item.text}-${groupIdx}-${idx}`
-    }
-  }))
-}));
+    ...group,
+    values: group.values.map((item, idx) => ({
+      ...item,
+      props: {
+        ...item.props,
+        id: item.props?.id ?? `${item.text}-${groupIdx}-${idx}`
+      }
+    }))
+  }));
 
   // Use keys for logic, translation for display
-const relatedTo: any[] = Object.entries(relatedToEnum).map(([key, value]) => ({
-  value,
-  text: t(`Filter.${key === "Organisation" ? "School" : key}`),
-  data: { key } 
-}));
+  const relatedTo: any[] = Object.entries(relatedToEnum).map(([key, value]) => ({
+    value,
+    text: t(`Filter.${key === "Organisation" ? "School" : key}`),
+    data: { key }
+  }));
 
-const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) =>{
-   handleSearchChange({
-    t,
-    e,
-    categoryId: getAllRegistrationIds(selectedCategories),
-    fromDate: selectedDateRange?.fromDate,
-    toDate: selectedDateRange?.toDate,
-    setSearchTerm,
-    setSuggestions,
-    setShowSearchError,
-    setIsSearchLoading,
-    setShowErrorBanner,
-    documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
-    setResetFilterSearch: undefined
-  });
-}
+  const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSearchChange({
+      t,
+      e,
+      categoryId: getAllRegistrationIds(selectedCategories),
+      fromDate: selectedDateRange?.fromDate,
+      toDate: selectedDateRange?.toDate,
+      setSearchTerm,
+      setSuggestions,
+      setShowSearchError,
+      setIsSearchLoading,
+      setShowErrorBanner,
+      documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
+      setResetFilterSearch: undefined
+    });
+  }
 
-const handleRemoveTagForSection = (
-  e: React.SyntheticEvent<Element, Event>,
-  text: string,
-  closeObj: any
-) => {
-  handleRemoveTag(
-    e,
-    text,
-    closeObj,
-    setLocalTagListArray,
-    setReferenceExternalIds,
-    setIsDropdownOpen,
-    localTagListArray
-  );
-};
+  const handleRemoveTagForSection = (
+    e: React.SyntheticEvent<Element, Event>,
+    text: string,
+    closeObj: any
+  ) => {
+    handleRemoveTag(
+      e,
+      text,
+      closeObj,
+      setLocalTagListArray,
+      setReferenceExternalIds,
+      setIsDropdownOpen,
+      localTagListArray
+    );
+  };
 
-const handleDateChangeForSection: (
-  setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
-  setDateError: React.Dispatch<React.SetStateAction<string>>,
-  day: string,
-  month: string,
-  year: string,
-  otherDate: { day: string; month: string; year: string },
-  isFrom: boolean
-) =>void = (
-  setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
-  setDateError: React.Dispatch<React.SetStateAction<string>>,
-  day: string,
-  month: string,
-  year: string,
-  otherDate: { day: string; month: string; year: string },
-  isFrom: boolean
-) => {
-  handleDateChange({
-    setDate,
-    setError: setDateError,
-    day,
-    month,
-    year,
-    otherDate,
-    isFrom,
-    setIsDateError,
-    setSelectedDateRange,
-    t,
-    setFromDateError,
-    setToDateError
-});
-};
+  const handleDateChangeForSection: (
+    setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
+    setDateError: React.Dispatch<React.SetStateAction<string>>,
+    day: string,
+    month: string,
+    year: string,
+    otherDate: { day: string; month: string; year: string },
+    isFrom: boolean
+  ) => void = (
+    setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
+    setDateError: React.Dispatch<React.SetStateAction<string>>,
+    day: string,
+    month: string,
+    year: string,
+    otherDate: { day: string; month: string; year: string },
+    isFrom: boolean
+  ) => {
+      handleDateChange({
+        setDate,
+        setError: setDateError,
+        day,
+        month,
+        year,
+        otherDate,
+        isFrom,
+        setIsDateError,
+        setSelectedDateRange,
+        t,
+        setFromDateError,
+        setToDateError
+      });
+    };
 
-return (
-  <Dialog
-    className="dms-filter-dialog"
-    isOpen={isOpen}
-    dataTestId={dataTestId}
-    onClose={e => {
-      handleDialogClose(
-        setRelatedToSelected,
-        setRelatedToError,
-        setSearchSelectionError,
-        setSuggestions,
-        onClose,
-        setShowErrorBanner,
-        setShowSearchError
-      );
-    }}
-    title={isLoading ? "" : title}
-    escapeExits
-  >
-    {shouldShowWarningNotification(categoryError, relatedToSelected, localSelectedRelatedTo) && (
-      <Notification
-        className="dms-filter-notification"
-        dataTestId={`${dataTestId}-notification`}
-        status={NotificationStatus.WARNING}
-        title={t("Filter.filterInfoHeading")}
-        message={t("Filter.filterInfoMessage")}
-      />
-    )}
-
-    {isLoading ? (
-      <div className="filter-dialog-loader">
-        <Loader loaderType={LoaderType.Circular} loaderText="Please Wait" />
-      </div>
-    ) : (
-      <>
-        <FilterRelatedToDropdown
-          t={t}
-          dataTestId={dataTestId}
-          relatedTo={relatedTo}
-          localSelectedRelatedTo={localSelectedRelatedTo}
-          setLocalSelectedRelatedTo={setLocalSelectedRelatedTo}
-          setRelatedToError={setRelatedToError}
-          setRefId={setRefId}
-          setSchoolData={setSchoolData}
-          setRelatedToSelected={setRelatedToSelected}
-          setSuggestions={setSuggestions}
-          setLocalTagListArray={setLocalTagListArray}
-          setReferenceExternalIds={setReferenceExternalIds}
-          setSearchTerm={setSearchTerm}
-          setShowSearchError={setShowSearchError}
-          setIsDropdownOpen={setIsDropdownOpen}
-          setSearchSelectionError={setSearchSelectionError}
-          setLocalSelectedCategories={setLocalSelectedCategories}
-          setToDateError={setToDateError}
-          setFromDateError={setFromDateError}
-          setFromDate={setFromDate}
-          setToDate={setToDate}
-          setSelectedDateRange={setSelectedDateRange}
-          setSearchKey={setSearchKey}
-          relatedToError={relatedToError}
-          onRelatedToChange={setSelectedKey}
+  return (
+    <Dialog
+      className="dms-filter-dialog"
+      isOpen={isOpen}
+      dataTestId={dataTestId}
+      onClose={e => {
+        handleDialogClose(
+          setRelatedToSelected,
+          setRelatedToError,
+          setSearchSelectionError,
+          setSuggestions,
+          onClose,
+          setShowErrorBanner,
+          setShowSearchError
+        );
+      }}
+      title={isLoading ? "" : title}
+      escapeExits
+    >
+      {shouldShowWarningNotification(categoryError, relatedToSelected, localSelectedRelatedTo) && (
+        <Notification
+          className="dms-filter-notification"
+          dataTestId={`${dataTestId}-notification`}
+          status={NotificationStatus.WARNING}
+          title={t("Filter.filterInfoHeading")}
+          message={t("Filter.filterInfoMessage")}
         />
+      )}
 
-        {["Pupil", "Staff"].includes(selectedDisplayKey) && (
-          <SearchSection
-            visible={true}
+      {isLoading ? (
+        <div className="filter-dialog-loader">
+          <Loader loaderType={LoaderType.Circular} loaderText="Please Wait" />
+        </div>
+      ) : (
+        <>
+          <FilterRelatedToDropdown
+            t={t}
             dataTestId={dataTestId}
-            searchTerm={searchTerm}
+            relatedTo={relatedTo}
+            localSelectedRelatedTo={localSelectedRelatedTo}
+            setLocalSelectedRelatedTo={setLocalSelectedRelatedTo}
+            setRelatedToError={setRelatedToError}
+            setRefId={setRefId}
+            setSchoolData={setSchoolData}
+            setRelatedToSelected={setRelatedToSelected}
+            setSuggestions={setSuggestions}
+            setLocalTagListArray={setLocalTagListArray}
+            setReferenceExternalIds={setReferenceExternalIds}
             setSearchTerm={setSearchTerm}
-            suggestions={suggestions}
-            isSearchLoading={isSearchLoading}
-            validationText={validationText}
-            validationTextLevel={validationTextLevel}
-            tagList={localTagListArray}
-            onItemClick={(item: ISearchItemProp | null) => {
-              setSearchTerm(item?.text || "");
-              addUniqueTagItem({
-                item,
-                selectedRelatedTo: localSelectedRelatedTo,
-                tagListArray: localTagListArray,
-                setTagListArray: setLocalTagListArray,
-                setReferenceExternalIds,
-                maxLimit: 5,
-                setAlreadyExistingTags
-              });
-              setIsDropdownOpen(true);
-              setSearchSelectionError("");
-              console.log(refId, "refId on item click");
-            }}
-            onChange={e =>{
-              setIsSearchTriggered(true);
-              handleSearchChange({
-                t,
-                e,
-                categoryId: getAllRegistrationIds(selectedCategories),
-                fromDate: selectedDateRange?.fromDate,
-                toDate: selectedDateRange?.toDate,
+            setShowSearchError={setShowSearchError}
+            setIsDropdownOpen={setIsDropdownOpen}
+            setSearchSelectionError={setSearchSelectionError}
+            setLocalSelectedCategories={setLocalSelectedCategories}
+            setToDateError={setToDateError}
+            setFromDateError={setFromDateError}
+            setFromDate={setFromDate}
+            setToDate={setToDate}
+            setSelectedDateRange={setSelectedDateRange}
+            setSearchKey={setSearchKey}
+            relatedToError={relatedToError}
+            onRelatedToChange={setSelectedKey}
+          />
+
+          {["Pupil", "Staff"].includes(selectedDisplayKey) && (
+            <SearchSection
+              visible={true}
+              dataTestId={dataTestId}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+              suggestions={suggestions}
+              isSearchLoading={isSearchLoading}
+              validationText={validationText}
+              validationTextLevel={validationTextLevel}
+              tagList={localTagListArray}
+              onItemClick={(item: ISearchItemProp | null) => {
+                setSearchTerm(item?.text || "");
+                addUniqueTagItem({
+                  item,
+                  selectedRelatedTo: localSelectedRelatedTo,
+                  tagListArray: localTagListArray,
+                  setTagListArray: setLocalTagListArray,
+                  setReferenceExternalIds,
+                  maxLimit: 5,
+                  setAlreadyExistingTags
+                });
+                setIsDropdownOpen(true);
+                setSearchSelectionError("");
+                console.log(refId, "refId on item click");
+              }}
+              onChange={e => {
+                setIsSearchTriggered(true);
+                handleSearchChange({
+                  t,
+                  e,
+                  categoryId: getAllRegistrationIds(selectedCategories),
+                  fromDate: selectedDateRange?.fromDate,
+                  toDate: selectedDateRange?.toDate,
+                  setSearchTerm,
+                  setSuggestions,
+                  setShowSearchError,
+                  setIsSearchLoading,
+                  setShowErrorBanner,
+                  documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
+                  setResetFilterSearch: undefined
+                })
+              }
+              }
+              onRemoveTag={handleRemoveTagForSection}
+              title={title}
+              selectedDisplayKey={selectedDisplayKey}
+              t={t}
+              isDropdownOpen={isDropdownOpen}
+              localTagListArray={localTagListArray}
+              setTagListArray={setLocalTagListArray}
+              setReferenceExternalIds={setReferenceExternalIds}
+              setAlreadyExistingTags={setAlreadyExistingTags}
+              searchKey={searchKey}
+              getEntityLabel={getEntityLabel}
+              filteredSuggestions={filteredSuggestions}
+              showSearchError={showSearchError}
+              selectedCategories={selectedCategories}
+              selectedDateRange={selectedDateRange}
+              setSuggestions={setSuggestions}
+              handleSearchChange={handleSearchChangeForSection}
+              placeholder={t("Filter.searchPlaceholder", { entity: selectedDisplayKey })}
+              setIsSearchLoading={setIsSearchLoading}
+              setShowSearchError={setShowSearchError}
+              getAllRegistrationIds={getAllRegistrationIds}
+            />
+          )}
+
+          {refId?.length ? (
+            <FilterCategoryDropdown
+              t={t}
+              dataTestId={dataTestId}
+              refId={refId}
+              availableCategories={availableCategories}
+              localSelectedCategories={localSelectedCategories}
+              setLocalSelectedCategories={setLocalSelectedCategories}
+              getValidationTextMsg={() => getValidationTextMsg(categoryError, t)}
+              getValidationLevelMsg={() => getValidationLevelMsg(categoryError)}
+              onSelectMultipleCategories={onSelectMultipleCategories}
+            />
+          ) : null}
+
+          <FilterDateSection
+            t={t}
+            dataTestId={dataTestId}
+            fromDate={fromDate}
+            toDate={toDate}
+            fromDateError={fromDateError}
+            toDateError={toDateError}
+            setFromDate={setFromDate}
+            setToDate={setToDate}
+            setFromDateError={setFromDateError}
+            setToDateError={setToDateError}
+            handleDateChange={handleDateChangeForSection}
+          />
+          <div className="dms-filter-dialog-buttons">
+            <Button
+              dataTestId={`${dataTestId}-clear-btn`}
+              onClick={(e) => clearAll({
+                setFromDate,
+                setToDate,
+                setFromDateError,
+                setToDateError,
+                setIsDateError,
+                setRelatedToError,
                 setSearchTerm,
                 setSuggestions,
                 setShowSearchError,
-                setIsSearchLoading,
-                setShowErrorBanner,
-                documentRelatedTo: relatedToEnum[localSelectedRelatedTo?.data?.data?.key as keyof typeof relatedToEnum],
-                setResetFilterSearch: undefined
-              })
-            }
-            }
-            onRemoveTag={handleRemoveTagForSection}
-            title={title}
-            selectedDisplayKey={selectedDisplayKey}
-            t={t}
-            isDropdownOpen={isDropdownOpen}
-            localTagListArray={localTagListArray}
-            setTagListArray={setLocalTagListArray}
-            setReferenceExternalIds={setReferenceExternalIds}
-            setAlreadyExistingTags={setAlreadyExistingTags}
-            searchKey={searchKey}
-            getEntityLabel={getEntityLabel}
-            filteredSuggestions={filteredSuggestions}
-            showSearchError={showSearchError}
-            selectedCategories={selectedCategories}
-            selectedDateRange={selectedDateRange}
-            setSuggestions={setSuggestions}
-            handleSearchChange={handleSearchChangeForSection}
-            placeholder={t("Filter.searchPlaceholder", { entity: selectedDisplayKey })}
-            setIsSearchLoading={setIsSearchLoading}
-            setShowSearchError={setShowSearchError}
-            getAllRegistrationIds={getAllRegistrationIds}
-          />
-        )}
-
-        {refId?.length ? (
-          <FilterCategoryDropdown
-            t={t}
-            dataTestId={dataTestId}
-            refId={refId}
-            availableCategories={availableCategories}
-            localSelectedCategories={localSelectedCategories}
-            setLocalSelectedCategories={setLocalSelectedCategories}
-            getValidationTextMsg={() => getValidationTextMsg(categoryError, t)}
-            getValidationLevelMsg={() => getValidationLevelMsg(categoryError)}
-            onSelectMultipleCategories={onSelectMultipleCategories}
-          />
-        ): null}
-
-        <FilterDateSection
-          t={t}
-          dataTestId={dataTestId}
-          fromDate={fromDate}
-          toDate={toDate}
-          fromDateError={fromDateError}
-          toDateError={toDateError}
-          setFromDate={setFromDate}
-          setToDate={setToDate}
-          setFromDateError={setFromDateError}
-          setToDateError={setToDateError}
-          handleDateChange={handleDateChangeForSection}
-        /> 
-        <div className="dms-filter-dialog-buttons">
-          <Button
-            dataTestId={`${dataTestId}-clear-btn`}
-            onClick={(e) => clearAll({
-              setFromDate,
-              setToDate,
-              setFromDateError,
-              setToDateError,
-              setIsDateError,
-              setRelatedToError,
-              setSearchTerm,
-              setSuggestions,
-              setShowSearchError,
-              setLocalSelectedCategories,
-              setLocalSelectedDateRange,
-              setLocalTagListArray,
-              setLocalSelectedRelatedTo,
-              setCategoryError,
-              setRelatedToSelected,
-              setSearchSelectionError,
-              setRefId
-            })}
-            color={ButtonColor.Secondary}
-            size={ButtonSize.Small}
-          >
-            {t("Filter.clearFilters")}
-          </Button>
-
-          <Button
-            dataTestId={`${dataTestId}-apply-btn`}
-            onClick={e => {
-              handleApplyWrapper({
-                localSelectedRelatedTo,
-                setRelatedToError,
-                t,
-                selectedKey,
-                localTagListArray,
+                setLocalSelectedCategories,
+                setLocalSelectedDateRange,
+                setLocalTagListArray,
+                setLocalSelectedRelatedTo,
+                setCategoryError,
+                setRelatedToSelected,
                 setSearchSelectionError,
-                selectedDisplayKey,
-                handleDateChange,
-                setFromDate,
-                setFromDateError,
-                fromDate,
-                toDate,
-                setIsDateError,
-                setSelectedDateRange,
-                setToDateError,
-                fromDateError,
-                toDateError,
-                isDateError,
-                setSelectedCategories,
-                localSelectedCategories,
-                localSelectedDateRange,
-                setTagListArray,
-                setSelectedRelatedTo,
-                setDocumentRelatedTo,
-                handleApply,
-                refId,
-                filterEntities,
-                setWasApplied,
-                gtmAnalytics,
-                selectedDateRange
-              });
-            }}
-            color={ButtonColor.Primary}
-            size={ButtonSize.Small}
-          >
-            {t("Filter.applyFilters")}
-          </Button>
-        </div>
-      </>
-    )}
-  </Dialog>
-);
+                setRefId
+              })}
+              color={ButtonColor.Secondary}
+              size={ButtonSize.Small}
+            >
+              {t("Filter.clearFilters")}
+            </Button>
+
+            <Button
+              dataTestId={`${dataTestId}-apply-btn`}
+              onClick={e => {
+                handleApplyWrapper({
+                  localSelectedRelatedTo,
+                  setRelatedToError,
+                  t,
+                  selectedKey,
+                  localTagListArray,
+                  setSearchSelectionError,
+                  selectedDisplayKey,
+                  handleDateChange,
+                  setFromDate,
+                  setFromDateError,
+                  fromDate,
+                  toDate,
+                  setIsDateError,
+                  setSelectedDateRange,
+                  setToDateError,
+                  fromDateError,
+                  toDateError,
+                  isDateError,
+                  setSelectedCategories,
+                  localSelectedCategories,
+                  localSelectedDateRange,
+                  setTagListArray,
+                  setSelectedRelatedTo,
+                  setDocumentRelatedTo,
+                  handleApply,
+                  refId,
+                  filterEntities,
+                  setWasApplied,
+                  gtmAnalytics,
+                  selectedDateRange,
+                  setSearchText,
+                  setSearchInput
+                });
+              }}
+              color={ButtonColor.Primary}
+              size={ButtonSize.Small}
+            >
+              {t("Filter.applyFilters")}
+            </Button>
+          </div>
+        </>
+      )}
+    </Dialog>
+  );
 
 };
 FilterDialog.defaultProps = {
   dataTestId: "dms-filter-dialog",
   isLoading: false,
-  setReferenceExternalIds: () => {}
+  setReferenceExternalIds: () => { }
 };
 
 export default FilterDialog;

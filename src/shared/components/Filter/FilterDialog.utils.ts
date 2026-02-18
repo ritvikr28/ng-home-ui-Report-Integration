@@ -1,5 +1,3 @@
-
-
 import dayjs from "dayjs";
 import { ISelectedItem, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { useTranslation } from "@essnextgen/ui-intl-kit";
@@ -15,14 +13,14 @@ export const resetDateState: (setDate: React.Dispatch<React.SetStateAction<{ day
 };
 
 export const isValidDate: (dateStr: string, minDateStr?: string) => boolean = (dateStr: string, minDateStr = "1900-01-01") => {
-          if (!dateStr) return false;
-          const date: dayjs.Dayjs = dayjs(dateStr, "YYYY-MM-DD", true);
-          return (
-            date.isValid() &&
-            !date.isBefore(dayjs(minDateStr), "day") &&
-            !date.isAfter(dayjs(), "day")
-          );
-        };
+  if (!dateStr) return false;
+  const date: dayjs.Dayjs = dayjs(dateStr, "YYYY-MM-DD", true);
+  return (
+    date.isValid() &&
+    !date.isBefore(dayjs(minDateStr), "day") &&
+    !date.isAfter(dayjs(), "day")
+  );
+};
 
 const isZeroDate = (date: { day: string; month: string }) =>
   ["00", "0"].includes(date.day) || ["00", "0"].includes(date.month);
@@ -137,41 +135,41 @@ function getValidationError(params: {
 
   if (isInvalidFormat(thisDateStr)) {
     return {
-  error: t("Filter.invalidDate"),
-  isValid: false
-};
+      error: t("Filter.invalidDate"),
+      isValid: false
+    };
   }
 
   if (isFutureDate(thisDateStr)) {
     return {
-  error: isFrom
-    ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
-    : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
-  isValid: false
-};
+      error: isFrom
+        ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
+        : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
+      isValid: false
+    };
   }
 
   if (isBeforeMinDate(thisDateStr)) {
     return {
-  error: isFrom
-    ? t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" })
-    : t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }),
-  isValid: false
-};
+      error: isFrom
+        ? t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" })
+        : t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }),
+      isValid: false
+    };
   }
 
   if (isFrom && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
     return {
-  toError: t("Filter.toDateShouldNotBeBeforeFromDate"),
-  isValid: false
-};
+      toError: t("Filter.toDateShouldNotBeBeforeFromDate"),
+      isValid: false
+    };
   }
 
   if (!isFrom && otherDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
     return {
-  error: t("Filter.toDateShouldNotBeBeforeFromDate"),
-  isValid: false
-};
+      error: t("Filter.toDateShouldNotBeBeforeFromDate"),
+      isValid: false
+    };
   }
 
   const result: DateValidationResult = validateDate(thisDateStr, otherDateStr, isFrom, t);
@@ -311,6 +309,8 @@ export interface HandleApplyWrapperParams {
   setWasApplied: any;
   gtmAnalytics: any;
   selectedDateRange: any;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
+  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 const validateApply = (params: HandleApplyWrapperParams): boolean => {
   if (!params.localSelectedRelatedTo) {
@@ -347,6 +347,8 @@ export async function handleApplyWrapper(params: HandleApplyWrapperParams): Prom
 
   params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities);
   params.setWasApplied(true);
+  params.setSearchText("");
+  params.setSearchInput("");
 
   params.gtmAnalytics.pushEvent({
     event: "key_action",
@@ -396,26 +398,26 @@ export function onSelectMultipleCategories(
   });
 }
 
-    /* istanbul ignore next */
-  
-export const getEntityLabel: (entity: string) => string = (entity: string) => {
-    const { t }: { t: TFunction } = useTranslation();
-    if (!entity) return "";
-    let key = "";
-    const lowerEntity: string = entity.toLowerCase();
-    if (lowerEntity === "pupil") {
-      key = "Filter.pupils";
-    }
-    else if (lowerEntity === "disgybl") {
-      key = "Filter.pupils";
-    } else if (lowerEntity === "staff") {
-      key = "Filter.staffs";
-    }
-    return key ? t(key) : "";
-  };
-  
+/* istanbul ignore next */
 
- interface ClearAllParams {
+export const getEntityLabel: (entity: string) => string = (entity: string) => {
+  const { t }: { t: TFunction } = useTranslation();
+  if (!entity) return "";
+  let key = "";
+  const lowerEntity: string = entity.toLowerCase();
+  if (lowerEntity === "pupil") {
+    key = "Filter.pupils";
+  }
+  else if (lowerEntity === "disgybl") {
+    key = "Filter.pupils";
+  } else if (lowerEntity === "staff") {
+    key = "Filter.staffs";
+  }
+  return key ? t(key) : "";
+};
+
+
+interface ClearAllParams {
   setFromDate: any;
   setToDate: any;
   setFromDateError: any;
@@ -473,7 +475,7 @@ export const clearAll: (params: ClearAllParams) => void = ({
   setRelatedToError("");
   setSearchSelectionError("");
   setRefId([]);
-  };
+};
 
 export const fetchSchoolData: (
   setSchoolData: React.Dispatch<React.SetStateAction<any>>
@@ -482,23 +484,23 @@ export const fetchSchoolData: (
   setSchoolData(data);
 };
 
- export const handleDialogClose: (
-    setRelatedToSelected: any,
-    setRelatedToError: any,
-    setSearchSelectionError: any,
-    setSuggestions: any,
-    onClose: any,
-    setShowErrorBanner: any,
-    setShowSearchError: any
- ) => void = (
-    setRelatedToSelected,
-    setRelatedToError,
-    setSearchSelectionError,
-    setSuggestions,
-    onClose,
-    setShowErrorBanner,
-    setShowSearchError
- ) => {
+export const handleDialogClose: (
+  setRelatedToSelected: any,
+  setRelatedToError: any,
+  setSearchSelectionError: any,
+  setSuggestions: any,
+  onClose: any,
+  setShowErrorBanner: any,
+  setShowSearchError: any
+) => void = (
+  setRelatedToSelected,
+  setRelatedToError,
+  setSearchSelectionError,
+  setSuggestions,
+  onClose,
+  setShowErrorBanner,
+  setShowSearchError
+) => {
     setRelatedToSelected(false);
     setRelatedToError("");
     setSearchSelectionError("");
@@ -509,49 +511,49 @@ export const fetchSchoolData: (
     setSearchSelectionError("");    // <-- Reset search selection error    
   }
 
- export const handleRemoveTag: any = (
-    e: React.SyntheticEvent<Element, Event>,
-    text: string,
-    closeObj: any,
-    setLocalTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>,
-    setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>,
-    setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>,
-    localTagListArray: SelectedItem[]
-  ) => {
-     setLocalTagListArray(prev => prev.filter(tag => tag.id !== closeObj.id));
-        if (setReferenceExternalIds) {
-            setReferenceExternalIds(prev => prev.filter(id => id !== closeObj.id?.toString()));
-        }
-        setIsDropdownOpen(localTagListArray.length > 1); // Hide dropdown if no tags left after removal
-
+export const handleRemoveTag: any = (
+  e: React.SyntheticEvent<Element, Event>,
+  text: string,
+  closeObj: any,
+  setLocalTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>,
+  setReferenceExternalIds: React.Dispatch<React.SetStateAction<string[]>>,
+  setIsDropdownOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  localTagListArray: SelectedItem[]
+) => {
+  setLocalTagListArray(prev => prev.filter(tag => tag.id !== closeObj.id));
+  if (setReferenceExternalIds) {
+    setReferenceExternalIds(prev => prev.filter(id => id !== closeObj.id?.toString()));
   }
+  setIsDropdownOpen(localTagListArray.length > 1); // Hide dropdown if no tags left after removal
 
-  /* istanbul ignore next */
-  export const getValidationTextMsg: (
-    categoryError: boolean,
-    t: TFunction
-  ) => string | undefined = (
-    categoryError,
-    t
-  ) => {
+}
+
+/* istanbul ignore next */
+export const getValidationTextMsg: (
+  categoryError: boolean,
+  t: TFunction
+) => string | undefined = (
+  categoryError,
+  t
+) => {
     if (categoryError) {
       return t("Filter.informationUnavailable");
     }
     return undefined;
   }
-  /* istanbul ignore next */
+/* istanbul ignore next */
 export const getValidationLevelMsg: (
   categoryError: boolean
 ) => ValidationTextLevel | undefined = (
   categoryError
 ) => {
-  if (categoryError) {
-    return ValidationTextLevel.Warning;
+    if (categoryError) {
+      return ValidationTextLevel.Warning;
+    }
+    return undefined;
   }
-  return undefined;
-}
 
-  /* istanbul ignore next */
+/* istanbul ignore next */
 
 export const shouldShowWarningNotification = (
   categoryError: boolean,

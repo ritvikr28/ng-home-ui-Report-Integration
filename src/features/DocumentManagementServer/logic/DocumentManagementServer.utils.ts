@@ -35,17 +35,17 @@ type RelatedEntity = RelatedPupil | RelatedStaff | RelatedSchool;
 // Optionally, define a minimal doc type for this function
 
 interface DocumentRow {
-fileId: string;
-document?: string;
-category?: string;
-addedBy?: string;
-dateAdded?: string;
-format?: string;
-size?: string;
-relatedTo?: any[];
-documentRelatedTo?: number;
-registrationId?: number;
-externalId?: string;
+  fileId: string;
+  document?: string;
+  category?: string;
+  addedBy?: string;
+  dateAdded?: string;
+  format?: string;
+  size?: string;
+  relatedTo?: any[];
+  documentRelatedTo?: number;
+  registrationId?: number;
+  externalId?: string;
 }
 export function mapRelatedArr(doc: DocumentRow): RelatedEntity[] {
   let relatedArr: RelatedEntity[] = [];
@@ -137,28 +137,28 @@ export const getCategoryArr = (selectedFormats: any[]) =>
     }
   })) || [];
 
-  
-   export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
-   if (!dateRange.fromDate && !dateRange.toDate) return [];
-  
-   let text = "";
-   if (dateRange.fromDate && dateRange.toDate) {
-     text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
-   } else if (dateRange.fromDate) {
-     text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to -`;
-   } else if (dateRange.toDate) {
-     text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
-   }
-  
-   return [
-     {
-       text,
-       categoryName: "Date",
-       closeObj: { name: "Date", id: "dateRange" }
-     }
-   ];
- };
-  
+
+export const getDateTag = (dateRange: { fromDate: string; toDate: string }) => {
+  if (!dateRange.fromDate && !dateRange.toDate) return [];
+
+  let text = "";
+  if (dateRange.fromDate && dateRange.toDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  } else if (dateRange.fromDate) {
+    text = `${dayjs(dateRange.fromDate).format("DD MMM YYYY")} to -`;
+  } else if (dateRange.toDate) {
+    text = `- to ${dayjs(dateRange.toDate).format("DD MMM YYYY")}`;
+  }
+
+  return [
+    {
+      text,
+      categoryName: "Date",
+      closeObj: { name: "Date", id: "dateRange" }
+    }
+  ];
+};
+
 
 export const getResultNotFoundMsg: (
   t: any,
@@ -170,39 +170,39 @@ export const getResultNotFoundMsg: (
   showSearchError: boolean,
   selectedFormats: any[],
   dateRange: { fromDate: string; toDate: string }
-  
-) => string | undefined = (
-   t:any,
-   searchText: string,
-   docData: any,
-   searchTerm: string,
-   showErrorBanner: boolean,
-   isSearchTriggered: boolean,
-   showSearchError: boolean,
-   selectedFormats: any[] = [],
-    dateRange: { fromDate: string; toDate: string } = { fromDate: "", toDate: "" }
- ): string | undefined => {
-    if (showSearchError || showErrorBanner) {
-    return "Information unavailable.";
-  }
-  // If any filter is applied or search is triggered, and no data, show "No data to display"
-  const isFilterActive =
-    (Array.isArray(selectedFormats) && selectedFormats.length > 0) ||
-    (dateRange?.fromDate || dateRange?.toDate);
 
-  if (
-    (searchText || isSearchTriggered || isFilterActive) &&
-    docData?.statusCode === 200 &&
-    Array.isArray(docData?.data) &&
-    docData?.data.length === 0
-  ) {
-    return t("DocumentManagementServer.noDataToDisplay");
-  }
-  if (!isSearchTriggered && !searchText && !isFilterActive) {
-    return t("DocumentManagementServer.searchBarText");
-  }
-  return undefined;
- };
+) => string | undefined = (
+  t: any,
+  searchText: string,
+  docData: any,
+  searchTerm: string,
+  showErrorBanner: boolean,
+  isSearchTriggered: boolean,
+  showSearchError: boolean,
+  selectedFormats: any[] = [],
+  dateRange: { fromDate: string; toDate: string } = { fromDate: "", toDate: "" }
+): string | undefined => {
+    if (showSearchError || showErrorBanner) {
+      return "Information unavailable.";
+    }
+    // If any filter is applied or search is triggered, and no data, show "No data to display"
+    const isFilterActive =
+      (Array.isArray(selectedFormats) && selectedFormats.length > 0) ||
+      (dateRange?.fromDate || dateRange?.toDate);
+
+    if (
+      (searchText || isSearchTriggered || isFilterActive) &&
+      docData?.statusCode === 200 &&
+      Array.isArray(docData?.data) &&
+      docData?.data.length === 0
+    ) {
+      return t("DocumentManagementServer.noDataToDisplay");
+    }
+    if (!isSearchTriggered && !searchText && !isFilterActive) {
+      return t("DocumentManagementServer.searchBarText");
+    }
+    return undefined;
+  };
 
 export const filterNonEmptySuggestions: (suggestions: Suggestion[]) => Suggestion[] = (suggestions) =>
   suggestions.filter(s => s?.values.length > 0);
@@ -254,7 +254,7 @@ export function debounce<T extends (...args: any[]) => void>(func: T, wait: numb
     timeout = setTimeout(() => func.apply(this, args), wait);
   };
 }
- 
+
 
 export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCount: number, availableFileCount: number, totalSelectedCount: number, isHeaderBoxChecked: boolean, t: TFunction<"translation", undefined>) => {
   if (restrictedFileCount > 0) {
@@ -272,9 +272,9 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
     const deletedCount: number =
       totalSelectedCount >
         alreadyDeletedFileCount + restrictedFileCount + availableFileCount &&
-      isHeaderBoxChecked
+        isHeaderBoxChecked
         ? totalSelectedCount -
-          (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)
+        (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)
         : alreadyDeletedFileCount;
     return (alreadyDeletedFileCount === 1 && availableFileCount > 0) ||
       deletedCount === 1
@@ -286,69 +286,69 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
 };
 
 
-  export const getEmptyStateMsg: any = (showErrorBanner: boolean, searchText: string, isSearchTriggered: boolean, showSearchError: boolean, issearchDataLoading: boolean, isSearchLoading: boolean, t: TFunction<"translation", undefined>) => {
-        if (showErrorBanner ||  ((searchText || !isSearchTriggered) && showSearchError)) return t("DocumentManagementServer.informationUnavailable");
-        if (issearchDataLoading || isSearchLoading) return undefined;
+export const getEmptyStateMsg: any = (showErrorBanner: boolean, searchText: string, isSearchTriggered: boolean, showSearchError: boolean, issearchDataLoading: boolean, isSearchLoading: boolean, t: TFunction<"translation", undefined>) => {
+  if (showErrorBanner || ((searchText || !isSearchTriggered) && showSearchError)) return t("DocumentManagementServer.informationUnavailable");
+  if (issearchDataLoading || isSearchLoading) return undefined;
 
-        // Initial state: no search yet
-        if (!isSearchTriggered && !searchText) {
-            return "Use the search bar to search pupil, staff or organisation.";
-        }
+  // Initial state: no search yet
+  if (!isSearchTriggered && !searchText) {
+    return "Use the search bar to search pupil, staff or organisation.";
+  }
 
-        return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
-    };
+  return t("DocumentManagementServer.documentsAppearAfterUploadMsg");
+};
 
-  export const handleSorting: any = (columnName: string, sortBy: string, setSortBy: React.Dispatch<React.SetStateAction<string>>, sortDirection: string, setSortDirection: React.Dispatch<React.SetStateAction<string>>, t: TFunction<"translation", undefined>) => {
-            let apiColumnName: string = columnName;
-            switch (columnName) {
-                case t("DocumentManagementServer.dateAddedColumn"):
-                    apiColumnName = "DateAdded";
-                    break;
-                case t("DocumentManagementServer.documentColumn"):
-                    apiColumnName = "Document";
-                    break;
-                case t("DocumentManagementServer.formatColumn"):
-                    apiColumnName = "Format";
-                    break;
-                case t("DocumentManagementServer.sizeColumn"):
-                    apiColumnName = "Size";
-                    break;
-                case t("DocumentManagementServer.categoryColumn"):
-                    apiColumnName = "Category";
-                    break;
-                default:
-                    return;
-            }
-            let newDirection = "Asc";
-            if (sortBy === apiColumnName) {
-                newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-            }
-    
-            setSortBy(apiColumnName);
-            setSortDirection(newDirection);
-    
-            gtmAnalytics.pushEvent({
-                event: "interact_click",
-                elementType: "sort",
-                elementTextOrLabel: apiColumnName?.toLowerCase() === "dateadded" ? "Date added" : apiColumnName,
-                elementLocation: "body"
-            });
-        };
+export const handleSorting: any = (columnName: string, sortBy: string, setSortBy: React.Dispatch<React.SetStateAction<string>>, sortDirection: string, setSortDirection: React.Dispatch<React.SetStateAction<string>>, t: TFunction<"translation", undefined>) => {
+  let apiColumnName: string = columnName;
+  switch (columnName) {
+    case t("DocumentManagementServer.dateAddedColumn"):
+      apiColumnName = "DateAdded";
+      break;
+    case t("DocumentManagementServer.documentColumn"):
+      apiColumnName = "Document";
+      break;
+    case t("DocumentManagementServer.formatColumn"):
+      apiColumnName = "Format";
+      break;
+    case t("DocumentManagementServer.sizeColumn"):
+      apiColumnName = "Size";
+      break;
+    case t("DocumentManagementServer.categoryColumn"):
+      apiColumnName = "Category";
+      break;
+    default:
+      return;
+  }
+  let newDirection = "Asc";
+  if (sortBy === apiColumnName) {
+    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
+  }
 
-  export const handleOnChangeAllCheckBox: any = (e: any, setIsHeaderBoxChecked: React.Dispatch<React.SetStateAction<boolean>>, setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setExcludedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string;}[]>>) => {
-        const isChecked: boolean = e.target.checked;
-        setIsHeaderBoxChecked(isChecked);
-        if (!isChecked) {
-            setSelectedCheckBoxIds([]);
-            setExcludedCheckBoxIds([]);
+  setSortBy(apiColumnName);
+  setSortDirection(newDirection);
 
-        }
-        setPrevSelectedDocs([])
-        setAllSelectedDocs([]);
+  gtmAnalytics.pushEvent({
+    event: "interact_click",
+    elementType: "sort",
+    elementTextOrLabel: apiColumnName?.toLowerCase() === "dateadded" ? "Date added" : apiColumnName,
+    elementLocation: "body"
+  });
+};
 
-    }
+export const handleOnChangeAllCheckBox: any = (e: any, setIsHeaderBoxChecked: React.Dispatch<React.SetStateAction<boolean>>, setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setExcludedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>, setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>>, setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>) => {
+  const isChecked: boolean = e.target.checked;
+  setIsHeaderBoxChecked(isChecked);
+  if (!isChecked) {
+    setSelectedCheckBoxIds([]);
+    setExcludedCheckBoxIds([]);
 
-  export const handleOnChangeCheckBox: any = (
+  }
+  setPrevSelectedDocs([])
+  setAllSelectedDocs([]);
+
+}
+
+export const handleOnChangeCheckBox: any = (
   index: number,
   id: string,
   docData: any,
@@ -396,23 +396,23 @@ export const getDialogTitle = (restrictedFileCount: number, alreadyDeletedFileCo
   });
 };
 
-    export const breadcrumbActionsList = (t: (key: string) => string) => [
-        {
-            active: false,
-            linkName: t("DocumentManagementServer.Home"),
-            path: window.location.origin
-        },
-        {
-            active: false,
-            linkName: t("DocumentManagementServer.adminconsole"),
-            path: homeurl
-        },
-        {
-            active: false,
-            linkName: t("DocumentManagementServer.headingText"),
-            path: ''
-        }
-    ]
+export const breadcrumbActionsList = (t: (key: string) => string) => [
+  {
+    active: false,
+    linkName: t("DocumentManagementServer.Home"),
+    path: window.location.origin
+  },
+  {
+    active: false,
+    linkName: t("DocumentManagementServer.adminconsole"),
+    path: homeurl
+  },
+  {
+    active: false,
+    linkName: t("DocumentManagementServer.headingText"),
+    path: ''
+  }
+]
 
 export function getDialogConfig({
   dialogType,
@@ -504,14 +504,14 @@ export function getDialogConfig({
 
     case "delete":
       const messages = getDeleteDialogMessages({
-          t,
-          restrictedFileCount,
-          availableFileCount,
-          docData,
-          alreadyDeletedFileCount,
-          excludedCheckBoxIds,
-          isHeaderBoxChecked
-        });
+        t,
+        restrictedFileCount,
+        availableFileCount,
+        docData,
+        alreadyDeletedFileCount,
+        excludedCheckBoxIds,
+        isHeaderBoxChecked
+      });
       return {
         cancelText: t("DocumentManagementServer.keepIt"),
         okText: t("DocumentManagementServer.Delete"),
@@ -521,29 +521,32 @@ export function getDialogConfig({
           availableFileCount === 1
             ? "DocumentManagementServer.documentWillBeGoneForever"
             : "DocumentManagementServer.documentsWillBeGoneForever",
-          { count: availableFileCount }
+          {
+            all: availableFileCount === docData?.totalRecords || (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? t("DocumentManagementServer.All") : "",
+            count: (totalSelectedCount > 0 && availableFileCount === 0 && alreadyDeletedFileCount === 0 && restrictedFileCount === 0) ? totalSelectedCount : availableFileCount
+          }
         ),
         notificationStatus: NotificationStatus.WARNING,
         onCancel: () => {
           setShowConfirmDialog(false);
           if (alreadyDeletedFileCount > 0) {
-          fetchGetDocumentDetails(
-            currentPage,
-            getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
-            sortBy,
-            sortDirection,
-            referenceExternalId,
-            documentRelatedTo
-          );
-          setSelectedCheckBoxIds([]);
-          setAllSelectedDocs([]);
-          setIsClearSelectedCheckbox(true);
-          setIsHeaderBoxChecked(false);
-          setPrevSelectedDocs([]);
-          setExcludedCheckBoxIds([]);
-          setTableKey(v => v + 1);
-        }
-      },
+            fetchGetDocumentDetails(
+              currentPage,
+              getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+              sortBy,
+              sortDirection,
+              referenceExternalId,
+              documentRelatedTo
+            );
+            setSelectedCheckBoxIds([]);
+            setAllSelectedDocs([]);
+            setIsClearSelectedCheckbox(true);
+            setIsHeaderBoxChecked(false);
+            setPrevSelectedDocs([]);
+            setExcludedCheckBoxIds([]);
+            setTableKey(v => v + 1);
+          }
+        },
         onConfirm: async () => {
           setIsDialogLoading(true);
           setIsGlobalLoaderModel(true);
@@ -579,7 +582,7 @@ export function getDialogConfig({
             return "";
           }
           return "";
-          })(),
+        })(),
         isNotificationanner: true,
         notificationTitle:
           availableFileCount === 1
@@ -587,22 +590,23 @@ export function getDialogConfig({
             : t("DocumentManagementServer.prepareMultipleDocuments", { all: availableFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "", count: availableFileCount }),
         notificationStatus: NotificationStatus.WARNING,
         okText: t("DocumentManagementServer.PrepareDownload"),
-        onCancel: (): void => { setShowConfirmDialog(false); 
-           if (alreadyDeletedFileCount > 0) {
-              fetchGetDocumentDetails(
-                  currentPage,
-                  getAllRegistrationIds(selectedFormats),
-                  sortBy,
-                  sortDirection,
-                  referenceExternalId,
-                  documentRelatedTo
-              );
-              setSelectedCheckBoxIds([]);
-              setAllSelectedDocs([]);
-              setIsClearSelectedCheckbox(true);
-              setIsHeaderBoxChecked(false);
-              setPrevSelectedDocs([]);
-              setExcludedCheckBoxIds([]);
+        onCancel: (): void => {
+          setShowConfirmDialog(false);
+          if (alreadyDeletedFileCount > 0) {
+            fetchGetDocumentDetails(
+              currentPage,
+              getAllRegistrationIds(selectedFormats),
+              sortBy,
+              sortDirection,
+              referenceExternalId,
+              documentRelatedTo
+            );
+            setSelectedCheckBoxIds([]);
+            setAllSelectedDocs([]);
+            setIsClearSelectedCheckbox(true);
+            setIsHeaderBoxChecked(false);
+            setPrevSelectedDocs([]);
+            setExcludedCheckBoxIds([]);
           }
         },
         onConfirm: (): void => {
@@ -627,9 +631,9 @@ export function getDialogConfig({
 
           prepareDownload(selectedDocs)
             .then((statuses) => {
-               gtmAnalytics.pushEvent({
-                  event: "key_action",
-                  actionType: "prepare_download"
+              gtmAnalytics.pushEvent({
+                event: "key_action",
+                actionType: "prepare_download"
               });
               setPrepareDownloadAbortBanner(false);
               if (statuses.some((status: number) => status !== 204 && status !== 409)) {
@@ -637,25 +641,25 @@ export function getDialogConfig({
                 gtmAnalytics.pushEvent({
                   event: "error_message",
                   messageText: "Unable to prepare for download"
-              });
-              }else if (statuses.some((status: number) => status === 409)) {
+                });
+              } else if (statuses.some((status: number) => status === 409)) {
                 setPrepareDownloadAbortBanner(true);
                 gtmAnalytics.pushEvent({
                   event: "error_message",
                   messageText: "Unable to prepare for download"
-              });
+                });
               } else if (totalSelectedCount > 1) {
                 setShowEmailNotification(true);
-              }            
-              
+              }
+
             })
             .catch(() => {
               setIsSidePanelLoader(false);
               setPrepareDownloadError(true);
               setPrepareDownloadAbortBanner(false);
               gtmAnalytics.pushEvent({
-                  event: "error_message",
-                  messageText: "Unable to prepare for download"
+                event: "error_message",
+                messageText: "Unable to prepare for download"
               });
             });
         },
@@ -676,9 +680,9 @@ function getRestrictedMessage(
     return restrictedFileCount === 1 && availableFileCount > 0
       ? t("DocumentManagementServer.singleDocumentCannotBeDeletedNotification", { count: restrictedFileCount })
       : t("DocumentManagementServer.documentsCannotBeDeletedNotification", {
-          all: restrictedFileCount === docData?.totalRecords ? "All " : "",
-          count: restrictedFileCount
-        });
+        all: restrictedFileCount === docData?.totalRecords ? "All " : "",
+        count: restrictedFileCount
+      });
   }
   return null;
 }
@@ -692,9 +696,9 @@ function getAlreadyDeletedMessage(
     return alreadyDeletedFileCount === 1
       ? t("DocumentManagementServer.singleDocumentAlreadyDeletedMsg", { count: alreadyDeletedFileCount })
       : t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
-          all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
-          count: alreadyDeletedFileCount
-        });
+        all: alreadyDeletedFileCount === docData?.totalRecords ? t("DocumentManagementServer.All") : "",
+        count: alreadyDeletedFileCount
+      });
   }
   return null;
 }
@@ -724,8 +728,8 @@ export function getExtraDeletedMessage(
       return t("DocumentManagementServer.documentsAlreadyDeletedMsg", {
         all:
           alreadyDeletedFileCount === 0 &&
-          restrictedFileCount === 0 &&
-          availableFileCount === 0
+            restrictedFileCount === 0 &&
+            availableFileCount === 0
             ? t("DocumentManagementServer.All")
             : "",
         count: deletedCount
@@ -802,7 +806,7 @@ export function addUniqueTagItem({
 
   // Always normalize the ID for comparison
   const newId: string = (item as any)[idKey]?.toString().toLowerCase() ?? item.text?.toString().toLowerCase();
-  
+
   const alreadyExists: boolean = tagListArray.some(
     (tag) => {
       const tagId: string = (tag as any)[idKey]?.toString().toLowerCase() ?? tag.id?.toString().toLowerCase();

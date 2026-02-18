@@ -82,7 +82,7 @@ interface Props {
   setSelectedFormats: (arr: any[]) => void;
   setSelectedEntities: (arr: any[]) => void;
   setSearchTerm: (v: string) => void;
-  setSearchText: (v: string) => void;
+  setSearchText: React.Dispatch<React.SetStateAction<string>>;
   setSearchRefExternalId: (ids: string[]) => void;
   setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
   setPrevSelectedDocs: (ids: string[]) => void;
@@ -91,6 +91,9 @@ interface Props {
   setDateRange: React.Dispatch<React.SetStateAction<any>>;
   isSidePanelLoader: boolean;
   addEditTemplateChild: any;
+  setSortBy: React.Dispatch<React.SetStateAction<string>>;
+  setSortDirection: React.Dispatch<React.SetStateAction<string>>;
+  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function handleSuggestionItemClick(
@@ -115,7 +118,9 @@ function handleSuggestionItemClick(
     setSearchTerm,
     setSearchText,
     setDocumentRelatedTo,
-    setSearchRefExternalId
+    setSearchRefExternalId,
+    setSortBy,
+    setSortDirection
   }: any
 ): void {
   setTagListArray([]);
@@ -129,7 +134,7 @@ function handleSuggestionItemClick(
   setPrevSelectedDocs([]);
   setTableKey((prev: number) => prev + 1);
   setIsInitialLoad(true);
-  handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
+  handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId, setSortBy, setSortDirection);
   setIsSearchTriggered(true);
   setSelectedFormats([]);
   setSelectedCategories([]);
@@ -250,7 +255,10 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     setSelectedRelatedTo,
     tagListArray,
     setTagListArray,
-    setIsSearchTriggered
+    setIsSearchTriggered,
+    searchText,
+    setSearchText,
+    setSearchInput
   }: Props = props;
 
   return (
@@ -283,6 +291,9 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
         setIsSearchTriggered={setIsSearchTriggered}
+        searchText={searchText}
+        setSearchText={setSearchText}
+        setSearchInput={setSearchInput}
       />
     </>
   );
@@ -364,7 +375,9 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     setIsHeaderBoxChecked,
     searchText,
     setIsClearSelectedCheckbox,
-    addEditTemplateChild
+    addEditTemplateChild,
+    setSortBy,
+    setSortDirection
     // ...other props
   }: Props = props;
 
@@ -388,7 +401,7 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     editSelectedBtnTitle: t("DocumentManagementServer.editSelectedBtnTitle"),
     editSelectedOptions,
     onEditSelectedOverFlowMenu,
-    onEditSelectedBtnClick: () => {},
+    onEditSelectedBtnClick: () => { },
     handleCloseDialogConfirmation: () => setShowConfirmDialog(false),
     isClearSelectedCheckbox,
     isAllSelectedAcrossPagination: true,
@@ -426,12 +439,12 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isMessageCenterAligned: false,
     dynamictableIconName: getDynamicTableIconName(showSearchError, docData, searchText),
     searchHeadingText: t("DocumentManagementServer.searchHeadingText"),
-    searchTerm: searchInput,
+    searchTerm: searchText,
     isShowSearch: true,
     searchPlaceholderText: " ",
-    searchValue: searchTerm,
+    searchValue: searchText,
     searchIsLoader: isSearchLoading,
-    isSearchHideClearIcon: searchTerm.length === 0,
+    isSearchHideClearIcon: searchText.length === 0,
     onKeyUpLenght: 3,
     searchDebouncerTreshold: 1000,
     searchSuggestions: filteredSuggestions,
@@ -456,7 +469,9 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
         setSearchTerm,
         setSearchText,
         setDocumentRelatedTo,
-        setSearchRefExternalId
+        setSearchRefExternalId,
+        setSortBy,
+        setSortDirection
       }),
     searchOnChange: handleSearchChange,
     searchOnCloseHandle: handleSearchClose,
@@ -503,7 +518,7 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     addEditTemplateChild: addEditTemplateChild,
     className: "grid_wrapper",
     searchTagList: searchTagListRaw,
-    onOverflowTagClose: () => {},
+    onOverflowTagClose: () => { },
     isShowFourthElement: false,
     tableBodyData: tableData?.length > 0 ? tableData : [],
     filterCustumeElem2: getFilterCustomElem2(props),
