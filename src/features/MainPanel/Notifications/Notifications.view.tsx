@@ -207,7 +207,7 @@ const NotificationView = () => {
     // > 1 && tableData.length > 0 && !noResults;
 
     const getEmptyStateMessage = () => {
-        if (tableDataError) {
+        if (tableDataError || totalNotifications === 0) {
             return "No data to display";
         }
         // if (!totalNotifications && !isSearching) {

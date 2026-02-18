@@ -47,10 +47,10 @@ export const useNotification = ({ tableData, totalTableData }: { tableData?: any
 
     const [searchTerm, setSearchTerm] = useState("");
     const [filters, setFilters] = useState<{
-        status?: string[];
-        priority?: string[];
-        startDate?: string;
-        endDate?: string;
+      status?: string[];
+      priority?: string[];
+      startDate?: string;
+      endDate?: string;
     }>({});
     const [isSearching] = useState(false);
     const [noResults, setNoResults] = useState(false);

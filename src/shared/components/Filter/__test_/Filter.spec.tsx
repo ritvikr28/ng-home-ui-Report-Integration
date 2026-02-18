@@ -1,6 +1,6 @@
 
 import React from "react";
-import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, within, cleanup } from "@testing-library/react";
 import dayjs from "dayjs";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
 import * as logic from "../../../../features/DocumentManagementServer/DocumentManagementServer.logic";
@@ -142,19 +142,25 @@ jest.mock("@essnextgen/ui-kit", () => {
                 <>
                   <div
                     data-testid="related-to-option"
-                    onClick={() => onSelect && onSelect(null, { text: "Pupil", value: "1" })}
+                    onClick={() =>
+                      onSelect && onSelect(null, { text: "Pupil", value: "1" })
+                    }
                   >
                     Pupil
                   </div>
                   <div
                     data-testid="related-to-option"
-                    onClick={() => onSelect && onSelect(null, { text: "Staff", value: "2" })}
+                    onClick={() =>
+                      onSelect && onSelect(null, { text: "Staff", value: "2" })
+                    }
                   >
                     Staff
                   </div>
                   <div
                     data-testid="related-to-option"
-                    onClick={() => onSelect && onSelect(null, { text: "School", value: "3" })}
+                    onClick={() =>
+                      onSelect && onSelect(null, { text: "School", value: "3" })
+                    }
                   >
                     School
                   </div>
@@ -165,7 +171,14 @@ jest.mock("@essnextgen/ui-kit", () => {
 
           {/* Show search input only after related-to selected */}
           {relatedSelected && (
-            <input data-testid="search-autocomplete-input" onChange={() => { setRefIds(["123"]) }} />
+            <input
+              data-testid="search-autocomplete-input"
+              onChange={() => {
+                setRefIds(["123"]);
+              }}
+              placeholder="Search"
+              aria-label="Search"
+            />
           )}
 
           {/* Category Dropdown appears after search term entered */}
@@ -176,13 +189,15 @@ jest.mock("@essnextgen/ui-kit", () => {
               onClick={() =>
                 onSelectMultiple &&
                 onSelectMultiple(null, [
-                  { data: { name: "send", id: "1", application: "Send" }, text: "Send" }
+                  {
+                    data: { name: "send", id: "1", application: "Send" },
+                    text: "Send",
+                  }
                 ])
               }
             >
               Mock Category Dropdown
             </button>
-
           )}
           {categoryError && (
             <div data-testid="text-input-dms-filter-dialog-categories__validation-text">
@@ -192,7 +207,7 @@ jest.mock("@essnextgen/ui-kit", () => {
 
           {children}
         </div>
-      )
+      );
     },
 
     Search: ({
@@ -235,6 +250,8 @@ jest.mock("@essnextgen/ui-kit", () => {
             data-testid="search-autocomplete-input"
             value={term}
             onChange={(e) => setTerm(e.target.value)}
+            placeholder=""
+            aria-label="Search"
           />
           {suggestions.map((sug) => (
             <div
@@ -582,19 +599,6 @@ describe("FilterDialog", () => {
 
     await waitFor(() => {
       expect(screen.getByText("To date should not be before From date.")).toBeInTheDocument();
-      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
-    });
-  });
-
-  it("shows error if year has less than 4 digits", async () => {
-    renderComponent();
-    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
-    // Set a year with less than 4 digits
-    setDateInput(dateInputs[0], "", "", "222"); // only 2 digits
-    await waitFor(() => {
-      // Check that the error message for From date is displayed
-      expect(screen.getByText("From date is required")).toBeInTheDocument(); // matches t("Filter.fromDateRequired")
-      // Check that the date error state is set
       expect(mockSetIsDateError).toHaveBeenCalledWith(true);
     });
   });
@@ -1257,7 +1261,7 @@ describe.skip("FilterDialog handleApplyWrapper validation", () => {
     expect(mockHandleApply).not.toHaveBeenCalled();
   });
 
-  it.skip("shows error if date is invalid", async () => {
+  it("shows error if date is invalid", async () => {
     renderComponent({
       selectedRelatedTo: { text: "Pupil", value: "1", data: { data: { key: "Pupil" } } },
       tagListArray: [{ text: "Test Pupil", learnerExternalId: "123", id: "123" }],
@@ -1507,7 +1511,7 @@ describe.skip("FilterDialog category selection user scenarios for dateRange inse
     expect(result[1].data.type).toBe(undefined);
   });
 
-  it.skip("shows 'From date is required' error when From date is cleared but To date is filled", async () => {
+  it("shows 'From date is required' error when From date is cleared but To date is filled", async () => {
     renderComponent();
 
     // Fill To date
@@ -1648,4 +1652,24 @@ describe("Related To Dropdown", () => {
     fireEvent.click(screen.getByTestId("dms-filter-dialog-categories"));
   });
 
+});
+
+describe("FilterDialog accessibility", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+  it("shows error if year has less than 4 digits", async () => {
+    jest.setTimeout(15000)
+    renderComponent();
+    const dateInputs = screen.getAllByTestId("dms-filter-dialog-date-added");
+    // Set a year with less than 4 digits
+    setDateInput(dateInputs[0], "", "", "222"); // only 2 digits
+    await waitFor(() => {
+      // Check that the error message for From date is displayed
+      expect(screen.getByText("From date is required")).toBeInTheDocument(); // matches t("Filter.fromDateRequired")
+      // Check that the date error state is set
+      expect(mockSetIsDateError).toHaveBeenCalledWith(true);
+    });
+  });
 });

@@ -14,5 +14,11 @@ export interface DialogContentProps {
     setStatus: React.Dispatch<React.SetStateAction<string[]>>;
     priority: string[];
     setPriority: React.Dispatch<React.SetStateAction<string[]>>;
-    startDateError: string;
+    startDateError?: string;
+    endDateError?: string;
 }
+
+export type DateErrors = {
+    from: string;
+    to: string;
+};

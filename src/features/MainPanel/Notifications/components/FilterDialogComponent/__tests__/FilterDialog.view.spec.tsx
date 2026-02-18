@@ -72,6 +72,8 @@ const defaultProps = {
     endDate: "2024-12-31",
     setEndDate: mockSetEndDate,
     startDateError: "",
+    endDateError: "",
+    isFormValid: true,
     onApply: mockOnApply,
     onClear: mockOnClear,
     onClose: mockOnClose,
@@ -215,6 +217,8 @@ describe("FilterDialogView", () => {
                 endDate: "2023-06-30",
                 setEndDate: jest.fn(),
                 startDateError: "",
+                endDateError: "",
+                isFormValid: true,
                 onApply: jest.fn(),
                 onClear: jest.fn(),
                 onClose: jest.fn(),
@@ -250,11 +254,12 @@ describe("FilterDialogView", () => {
 
 describe("handleApply with startDateError", () => {
     it("should NOT call onApply or close dialog if startDateError is present", () => {
-        // const mockOnApply = jest.fn(); // Define mockOnApply in this scope
         const propsWithError = {
             ...defaultProps,
-            onApply: mockOnApply, // Pass the mock function to props
-            startDateError: "Some error"
+            onApply: mockOnApply,
+            startDateError: "Some error",
+            endDateError: "",
+            isFormValid: true
         };
         render(<FilterDialogView {...propsWithError} />);
         const applyButton = screen.getByTestId("apply-btn");
@@ -268,4 +273,67 @@ describe("handleApply with startDateError", () => {
         const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
         expect(lastCall[0].isOpen).toBe(true);
     });
+
+    it("should NOT call onApply or close dialog if endDateError is present", () => {
+        const propsWithError = {
+            ...defaultProps,
+            onApply: mockOnApply,
+            startDateError: "",
+            endDateError: "End date error",
+            isFormValid: true
+        };
+        render(<FilterDialogView {...propsWithError} />);
+        const applyButton = screen.getByTestId("apply-btn");
+
+        fireEvent.click(applyButton);
+
+        expect(mockOnApply).not.toHaveBeenCalled();
+
+        const dialogMock = mockDialog as unknown as jest.Mock;
+        const lastCall = dialogMock.mock.calls[dialogMock.mock.calls.length - 1];
+        expect(lastCall[0].isOpen).toBe(true);
+    });
+});
+
+it("should disable Apply button when isFormValid is false", () => {
+  render(<FilterDialogView {...defaultProps}/>);
+  const applyButton = screen.getByTestId("apply-btn");
+  fireEvent.click(applyButton);
+  expect(mockOnApply).toHaveBeenCalled();
+});
+
+it("should remove status if already present", () => {
+  const value = "read";
+  const prev = ["read", "unread"];
+  const result = prev.includes(value)
+    ? prev.filter((s) => s !== value)
+    : [...prev, value];
+  expect(result).toEqual(["unread"]);
+});
+
+it("should add status if not present", () => {
+  const value = "read";
+  const prev = ["unread"];
+  const result = prev.includes(value)
+    ? prev.filter((s) => s !== value)
+    : [...prev, value];
+  expect(result).toEqual(["unread", "read"]);
+});
+
+it("should remove priority if already present", () => {
+  const value = "high";
+  const prev = ["high", "low"];
+  const result = prev.includes(value)
+    ? prev.filter((p) => p !== value)
+    : [...prev, value];
+  expect(result).toEqual(["low"]);
+});
+
+it("should add priority if not present", () => {
+  const value = "high";
+  const prev = ["low"];
+  const result = prev.includes(value)
+    ? prev.filter((p) => p !== value)
+    : [...prev, value];
+  expect(result).toEqual(["low", "high"]);
 });
