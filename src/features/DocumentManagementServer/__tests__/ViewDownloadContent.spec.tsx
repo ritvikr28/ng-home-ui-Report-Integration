@@ -40,6 +40,87 @@ jest.mock("../logic/DocumentManagementServer.logic", () => ({
 import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 describe("ViewDownloadContent", () => {
+			it("renders item with undefined status (branch coverage)", () => {
+				const viewData = [
+					{
+						name: "file8.pdf",
+						fileExpiryDays: 1,
+						fileId: "uvw123",
+						application: "app",
+						section: "sec",
+						blobName: "blob8",
+					},
+				];
+				render(
+					<ViewDownloadContent
+						t={t}
+						isViewDownloadError={false}
+						isSidePanelLoader={false}
+						hasFetchedViewDownload={true}
+						viewData={viewData}
+						setDownloadError={setDownloadError}
+						gtmAnalytics={gtmAnalytics}
+					/>
+				);
+				expect(screen.getByText("file8.pdf")).toBeInTheDocument();
+				expect(screen.queryByText("Download")).not.toBeInTheDocument();
+				expect(screen.queryByTestId("loader-arc")).not.toBeInTheDocument();
+			});
+
+			it("renders item with null status (branch coverage)", () => {
+				const viewData = [
+					{
+						name: "file8.pdf",
+						fileExpiryDays: 1,
+						fileId: "uvw123",
+						application: "app",
+						section: "sec",
+						blobName: "blob8",
+					},
+				];
+				render(
+					<ViewDownloadContent
+						t={t}
+						isViewDownloadError={false}
+						isSidePanelLoader={false}
+						hasFetchedViewDownload={true}
+						viewData={viewData}
+						setDownloadError={setDownloadError}
+						gtmAnalytics={gtmAnalytics}
+					/>
+				);
+				expect(screen.getByText("file8.pdf")).toBeInTheDocument();
+				expect(screen.queryByText("Download")).not.toBeInTheDocument();
+				expect(screen.queryByTestId("loader-arc")).not.toBeInTheDocument();
+			});
+		it("renders item with unknown status (branch coverage)", () => {
+			const viewData = [
+				{
+					name: "file7.pdf",
+					status: "unknown",
+					fileExpiryDays: 1,
+					fileId: "xyz123",
+					application: "app",
+					section: "sec",
+					blobName: "blob7",
+				},
+			];
+			render(
+				<ViewDownloadContent
+					t={t}
+					isViewDownloadError={false}
+					isSidePanelLoader={false}
+					hasFetchedViewDownload={true}
+					viewData={viewData}
+					setDownloadError={setDownloadError}
+					gtmAnalytics={gtmAnalytics}
+				/>
+			);
+			// Should render file name, but no download button or loader
+			expect(screen.getByText("file7.pdf")).toBeInTheDocument();
+			expect(screen.queryByText("Download")).not.toBeInTheDocument();
+			expect(screen.queryByTestId("loader-arc")).not.toBeInTheDocument();
+		});
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});

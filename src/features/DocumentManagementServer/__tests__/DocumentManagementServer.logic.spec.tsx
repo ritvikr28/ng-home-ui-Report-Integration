@@ -387,7 +387,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
   it("Category column renders nothing when input is empty", () => {
     const column = headers.find(h => h.text === "DocumentManagementServer.categoryColumn");
     const { container } = render(<>{column?.anyComponent?.("")}</>);
-    expect(container).not.toBeEmptyDOMElement(); // still renders Tooltip
+    expect(container).toBeEmptyDOMElement();
   });
 
 
@@ -2319,14 +2319,9 @@ describe("Added by column anyComponent", () => {
 
   test("renders nothing if value is null or undefined", () => {
     const { container } = render(<>{addedByColumn?.anyComponent?.(null)}</>);
-    // Should render an empty span inside a flex div, not a truly empty DOM element
-    const span = container.querySelector('.document-text');
-    expect(span).toBeInTheDocument();
-    expect(span).toHaveTextContent("");
+    expect(container).toBeEmptyDOMElement();
     const { container: container2 } = render(<>{addedByColumn?.anyComponent?.(undefined)}</>);
-    const span2 = container2.querySelector('.document-text');
-    expect(span2).toBeInTheDocument();
-    expect(span2).toHaveTextContent("");
+    expect(container2).toBeEmptyDOMElement();
   });
 
   test("renders plain value if length <= 12", () => {

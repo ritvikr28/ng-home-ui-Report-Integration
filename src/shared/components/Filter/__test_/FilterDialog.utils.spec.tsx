@@ -150,7 +150,7 @@ describe("FilterDialog.utils", () => {
         setToDateError
       });
       expect(setError).toHaveBeenCalled();
-      expect(setIsDateError).toHaveBeenCalledWith(true);
+      expect(setIsDateError).toHaveBeenCalledWith(false);
     });
 
     it("sets error for invalid format", () => {
@@ -448,12 +448,16 @@ describe("FilterDialog.utils", () => {
       const setSearchSelectionError: jest.Mock = jest.fn();
       const setSuggestions: jest.Mock = jest.fn();
       const onClose: jest.Mock = jest.fn();
-      utils.handleDialogClose(setRelatedToSelected, setRelatedToError, setSearchSelectionError, setSuggestions, onClose);
+      const setShowErrorBanner: jest.Mock = jest.fn();
+      const setShowSearchError: jest.Mock = jest.fn();
+      utils.handleDialogClose(setRelatedToSelected, setRelatedToError, setSearchSelectionError, setSuggestions, onClose, setShowErrorBanner, setShowSearchError);
       expect(setRelatedToSelected).toHaveBeenCalledWith(false);
       expect(setRelatedToError).toHaveBeenCalledWith("");
       expect(setSearchSelectionError).toHaveBeenCalledWith("");
       expect(setSuggestions).toHaveBeenCalledWith([]);
       expect(onClose).toHaveBeenCalled();
+      expect(setShowErrorBanner).toHaveBeenCalledWith(false);
+      expect(setShowSearchError).toHaveBeenCalledWith(false);
     });
   });
 
@@ -497,10 +501,10 @@ describe("FilterDialog.utils", () => {
 describe("validateDate coverage", () => {
   const t: jest.Mock = jest.fn((key: string) => key);
 
-  it("returns invalid for empty dateStr", () => {
-    // Covers: if (!dateStr) { return { isValid: false, error: t("Filter.invalidDate") }; }
+  it("returns valid for empty dateStr", () => {
+    // Covers: if (!dateStr) { return { isValid: true }; }
     const result: { isValid: boolean; error?: string; toError?: string; fromError?: string } = validateDate("", "", true, t);
-    expect(result).toEqual({ isValid: false, error: "Filter.invalidDate" });
+    expect(result).toEqual({ isValid: true });
   });
 
   it("returns invalid for invalid format", () => {

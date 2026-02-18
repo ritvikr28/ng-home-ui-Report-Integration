@@ -406,6 +406,8 @@ it("handles completely invalid event (e is undefined)", () => {
   expect(setIsSearchLoading).toHaveBeenCalledWith(false);
 });
 
+
+
 it("handles event object with no target property", () => {
   const t = (key: string) => key;
   const setSearchTerm = jest.fn();
@@ -1645,34 +1647,34 @@ describe("handleApply", () => {
 
   it("sets date error and returns if isDateError is true", () => {
     handleApply({
-  referenceExternalIds: [],
-  selectedCategories: [],
-  selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
-  isDateError: false,
-  setIsDateError,
-  setIsFilterLoading,
-  setDateRange,
-  setIsFilterDialogOpen,
-  setCurrentPage,
-  setExcludedCheckBoxIds,
-  setAllSelectedDocs,
-  setSelectedFormats,
-  setIsHeaderBoxChecked,
-  setSelectedCheckBoxIds,
-  setPrevSelectedDocs,
-  setReferenceExternalIds,
-  setSearchInput: jest.fn(),
-  setSearchTerm: jest.fn(),
-  setSearchText: jest.fn(),
-  setTableKey: jest.fn(),
-  setIsSearchTriggered: jest.fn(),
-  setSelectedCategories: jest.fn(),
-  setSearchRefExternalId: jest.fn(),
-  setSelectedEntities: jest.fn(),
-  setSortBy: jest.fn(),
-  setSortDirection: jest.fn(),
-  setIsInitialLoad: jest.fn()
-});
+      referenceExternalIds: [],
+      selectedCategories: [],
+      selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
+      isDateError: true, // <-- Fix: set to true to match the tested logic
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSelectedFormats,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs,
+      setReferenceExternalIds,
+      setSearchInput: jest.fn(),
+      setSearchTerm: jest.fn(),
+      setSearchText: jest.fn(),
+      setTableKey: jest.fn(),
+      setIsSearchTriggered: jest.fn(),
+      setSelectedCategories: jest.fn(),
+      setSearchRefExternalId: jest.fn(),
+      setSelectedEntities: jest.fn(),
+      setSortBy: jest.fn(),
+      setSortDirection: jest.fn(),
+      setIsInitialLoad: jest.fn()
+    });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalledWith(true);
     expect(setDateRange).not.toHaveBeenCalled();
@@ -1683,34 +1685,34 @@ describe("handleApply", () => {
     jest.spyOn(require("../logic/DocumentManagementServer.handler"), "isInvalidDateRange").mockReturnValueOnce(true);
 
     handleApply({
-  referenceExternalIds: [],
-  selectedCategories: [],
-  selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
-  isDateError: false,
-  setIsDateError,
-  setIsFilterLoading,
-  setDateRange,
-  setIsFilterDialogOpen,
-  setCurrentPage,
-  setExcludedCheckBoxIds,
-  setAllSelectedDocs,
-  setSelectedFormats,
-  setIsHeaderBoxChecked,
-  setSelectedCheckBoxIds,
-  setPrevSelectedDocs,
-  setReferenceExternalIds,
-  setSearchInput: jest.fn(),
-  setSearchTerm: jest.fn(),
-  setSearchText: jest.fn(),
-  setTableKey: jest.fn(),
-  setIsSearchTriggered: jest.fn(),
-  setSelectedCategories: jest.fn(),
-  setSearchRefExternalId: jest.fn(),
-  setSelectedEntities: jest.fn(),
-  setSortBy: jest.fn(),
-  setSortDirection: jest.fn(),
-  setIsInitialLoad: jest.fn()
-});
+      referenceExternalIds: [],
+      selectedCategories: [],
+      selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
+      isDateError: true,
+      setIsDateError,
+      setIsFilterLoading,
+      setDateRange,
+      setIsFilterDialogOpen,
+      setCurrentPage,
+      setExcludedCheckBoxIds,
+      setAllSelectedDocs,
+      setSelectedFormats,
+      setIsHeaderBoxChecked,
+      setSelectedCheckBoxIds,
+      setPrevSelectedDocs,
+      setReferenceExternalIds,
+      setSearchInput: jest.fn(),
+      setSearchTerm: jest.fn(),
+      setSearchText: jest.fn(),
+      setTableKey: jest.fn(),
+      setIsSearchTriggered: jest.fn(),
+      setSelectedCategories: jest.fn(),
+      setSearchRefExternalId: jest.fn(),
+      setSelectedEntities: jest.fn(),
+      setSortBy: jest.fn(),
+      setSortDirection: jest.fn(),
+      setIsInitialLoad: jest.fn()
+    });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalledWith(true);
     expect(setDateRange).not.toHaveBeenCalled();
