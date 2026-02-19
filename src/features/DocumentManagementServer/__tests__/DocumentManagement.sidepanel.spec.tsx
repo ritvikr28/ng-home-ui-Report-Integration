@@ -23,9 +23,9 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
 	})
 }));
 
-const { t } = require("@essnextgen/ui-intl-kit").useTranslation();
+const { t }: any = require("@essnextgen/ui-intl-kit").useTranslation();
 
-const defaultProps = {
+const defaultProps: any = {
 	t,
 	isSidePanelLoader: false,
 	hasFetchedViewDownload: true,
@@ -108,7 +108,7 @@ describe("DmsSidePanel", () => {
 	});
 
     	it("calls setPrepareDownloadError(false) when prepareDownloadError notification is closed", () => {
-		const setPrepareDownloadError = jest.fn();
+		const setPrepareDownloadError: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -117,13 +117,13 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setPrepareDownloadError).toHaveBeenCalledWith(false);
 	});
 
     	it("calls setPrepareDownloadAbortBanner(false) when prepareDownloadAbortBanner notification is closed", () => {
-		const setPrepareDownloadAbortBanner = jest.fn();
+		const setPrepareDownloadAbortBanner: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -132,13 +132,13 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setPrepareDownloadAbortBanner).toHaveBeenCalledWith(false);
 	});
 
       	it("calls setDownloadError(false) when downloadError notification is closed", () => {
-		const setDownloadError = jest.fn();
+		const setDownloadError: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -147,13 +147,13 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setDownloadError).toHaveBeenCalledWith(false);
 	});
 
     it("calls setShowEmailNotification(false) when email notification is closed", () => {
-		const setShowEmailNotification = jest.fn();
+		const setShowEmailNotification: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -163,13 +163,13 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setShowEmailNotification).toHaveBeenCalledWith(false);
 	});
 
        it("calls setShowToastNotification(false) when toast notification is closed", () => {
-		const setShowToastNotification = jest.fn();
+		const setShowToastNotification: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -179,14 +179,14 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setShowToastNotification).toHaveBeenCalledWith(false);
 	});
 
     it("calls setPrepareDownloadError(false) and setFailedFileName([]) when failedFileName notification is closed", () => {
-		const setPrepareDownloadError = jest.fn();
-		const setFailedFileName = jest.fn();
+		const setPrepareDownloadError: jest.Mock = jest.fn();
+		const setFailedFileName: jest.Mock = jest.fn();
 		render(
 			<DmsSidePanel
 				{...defaultProps}
@@ -196,7 +196,7 @@ describe("DmsSidePanel", () => {
 			/>
 		);
 		// Find the close button for the notification
-		const closeButton = screen.getByRole("button");
+		const closeButton: HTMLButtonElement = screen.getByRole("button");
 		fireEvent.click(closeButton);
 		expect(setPrepareDownloadError).toHaveBeenCalledWith(false);
 		expect(setFailedFileName).toHaveBeenCalledWith([]);

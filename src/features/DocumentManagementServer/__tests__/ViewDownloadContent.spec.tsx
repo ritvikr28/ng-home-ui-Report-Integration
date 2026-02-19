@@ -3,7 +3,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ViewDownloadContent } from "../components/ViewDownloadContent";
 import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
-const t = (key: string, options?: { days?: number }) => {
+const t: (key: string, options?: { days?: number }) => string = (key, options) => {
 	if (key === "DocumentManagementServer.ExpiresInDays") {
 		return `Expires in ${options?.days} days`;
 	}
@@ -28,11 +28,11 @@ const t = (key: string, options?: { days?: number }) => {
 	return key;
 };
 
-const gtmAnalytics = {
+const gtmAnalytics: { pushEvent: jest.Mock } = {
 	pushEvent: jest.fn(),
 };
 
-const setDownloadError = jest.fn();
+const setDownloadError: jest.Mock = jest.fn();
 
 jest.mock("../logic/DocumentManagementServer.logic", () => ({
 	fileDownload: jest.fn(() => Promise.resolve()),
@@ -40,7 +40,15 @@ jest.mock("../logic/DocumentManagementServer.logic", () => ({
 
 describe("ViewDownloadContent", () => {
 			it("renders item with undefined status (branch coverage)", () => {
-				const viewData = [
+				const viewData: Array<{
+					name: string;
+					status?: string;
+					fileExpiryDays: number;
+					fileId: string;
+					application: string;
+					section: string;
+					blobName: string;
+				}> = [
 					{
 						name: "file8.pdf",
 						fileExpiryDays: 1,
@@ -67,7 +75,14 @@ describe("ViewDownloadContent", () => {
 			});
 
 			it("renders item with null status (branch coverage)", () => {
-				const viewData = [
+				const viewData: Array<{
+					name: string;
+					fileExpiryDays: number;
+					fileId: string;
+					application: string;
+					section: string;
+					blobName: string;
+				}> = [
 					{
 						name: "file8.pdf",
 						fileExpiryDays: 1,
@@ -93,7 +108,15 @@ describe("ViewDownloadContent", () => {
 				expect(screen.queryByTestId("loader-arc")).not.toBeInTheDocument();
 			});
 		it("renders item with unknown status (branch coverage)", () => {
-			const viewData = [
+			const viewData: Array<{
+				name: string;
+				status?: string;
+				fileExpiryDays: number;
+				fileId: string;
+				application: string;
+				section: string;
+				blobName: string;
+			}> = [
 				{
 					name: "file7.pdf",
 					status: "unknown",
@@ -174,7 +197,15 @@ describe("ViewDownloadContent", () => {
 	});
 
 	it("renders download items with expiry days > 0", () => {
-		const viewData = [
+		const viewData: Array<{
+			name: string;
+			status?: string;
+			fileExpiryDays: number;
+			fileId: string;
+			application: string;
+			section: string;
+			blobName: string;
+		}> = [
 			{
 				name: "file1.pdf",
 				status: "complete",
@@ -203,7 +234,15 @@ describe("ViewDownloadContent", () => {
 	});
 
 	it("renders download items with expiry days = 0", () => {
-		const viewData = [
+		const viewData: Array<{
+			name: string;
+			status?: string;
+			fileExpiryDays: number;
+			fileId: string;
+			application: string;
+			section: string;
+			blobName: string;
+		}> = [
 			{
 				name: "file2.pdf",
 				status: "complete",
@@ -229,7 +268,15 @@ describe("ViewDownloadContent", () => {
 	});
 
 	it("renders loader for inprogress and initiated statuses", () => {
-		const viewData = [
+		const viewData: Array<{
+			name: string;
+			status?: string;
+			fileExpiryDays?: number;
+			fileId: string;
+			application: string;
+			section: string;
+			blobName: string;
+		}> = [
 			{
 				name: "file3.pdf",
 				status: "inprogress",
@@ -264,7 +311,15 @@ describe("ViewDownloadContent", () => {
 	});
 
 	it("calls fileDownload and gtmAnalytics.pushEvent on download button click (success)", async () => {
-		const viewData = [
+		const viewData: Array<{
+			name: string;
+			status?: string;
+			fileExpiryDays: number;
+			fileId: string;
+			application: string;
+			section: string;
+			blobName: string;
+		}> = [
 			{
 				name: "file5.pdf",
 				status: "complete",
@@ -287,7 +342,7 @@ describe("ViewDownloadContent", () => {
 				gtmAnalytics={gtmAnalytics}
 			/>
 		);
-		const btn = screen.getByText("Download");
+		const btn: HTMLButtonElement = screen.getByText("Download");
 		fireEvent.click(btn);
 		await waitFor(() => {
 			expect(fileDownload).toHaveBeenCalledWith(
@@ -304,7 +359,15 @@ describe("ViewDownloadContent", () => {
 	});
 
 	it("handles fileDownload error and calls setDownloadError and gtmAnalytics.pushEvent", async () => {
-		const viewData = [
+		const viewData: Array<{
+			name: string;
+			status?: string;
+			fileExpiryDays: number;
+			fileId: string;
+			application: string;
+			section: string;
+			blobName: string;
+		}> = [
 			{
 				name: "file6.pdf",
 				status: "complete",
@@ -327,7 +390,7 @@ describe("ViewDownloadContent", () => {
 				gtmAnalytics={gtmAnalytics}
 			/>
 		);
-		const btn = screen.getByText("Download");
+		const btn: HTMLButtonElement = screen.getByText("Download");
 		fireEvent.click(btn);
 		await waitFor(() => {
 			expect(setDownloadError).toHaveBeenCalledWith(true);

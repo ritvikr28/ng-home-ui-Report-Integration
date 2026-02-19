@@ -67,30 +67,34 @@ describe('fetchDocumentDetails', () => {
       .spyOn(service, 'post')
       .mockResolvedValueOnce(mockFailureResponse as AxiosResponse<DocumentBasicDetails>);
 
-    const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
+    const result: DocumentBasicDetails | null = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
     expect(result).toBeNull();
   });
 
   test('should return null when exception is thrown', async () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce(new Error('API failed'));
 
-    });
+    const result: DocumentBasicDetails | null = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
+    expect(result).toBeNull();
+  });
 });
 
 describe('fetchDMSSuggestions', () => {
   it('should include DocumentRelatedTo param when documentRelatedTo is provided', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
     await fetchDMSSuggestions('doc', '', '', [], 42);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).toContain('AutoCompleteRequest.DocumentRelatedTo=42');
   });
+});
+
 describe('clearAllFiles', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  const partitionKeys = ['key1', 'key2'];
+  const partitionKeys: string[] = ['key1', 'key2'];
   const mockResponse: AxiosResponse = {
     data: { success: true },
     status: 200,
@@ -101,26 +105,26 @@ describe('clearAllFiles', () => {
 
   test('should return status code when response status is 200', async () => {
     jest.spyOn(service, 'post').mockResolvedValueOnce(mockResponse);
-    const { clearAllFiles } = await import('../api/ApiService');
-    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    const { clearAllFiles }: any = await import('../api/ApiService');
+    const result: number = await clearAllFiles({ request: { partitionKey: partitionKeys } });
     expect(result).toBe(200);
     expect(service.post).toHaveBeenCalledTimes(1);
   });
 
   test('should return status code when response status is not 200', async () => {
-    const mockFailureResponse = { ...mockResponse, status: 404 };
+    const mockFailureResponse: AxiosResponse<DocumentBasicDetails> = { ...mockResponse, status: 404 };
     jest.spyOn(service, 'post').mockResolvedValueOnce(mockFailureResponse);
-    const { clearAllFiles } = await import('../api/ApiService');
-    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    const { clearAllFiles }: any = await import('../api/ApiService');
+    const result: number = await clearAllFiles({ request: { partitionKey: partitionKeys } });
     expect(result).toBe(404);
   });
 
   test('should return error status code when exception is thrown', async () => {
-    const errorData = { error: 'Failed' };
-    const error = { response: { data: errorData, status: 500 } };
+    const errorData: any = { error: 'Failed' };
+    const error: any = { response: { data: errorData, status: 500 } };
     jest.spyOn(service, 'post').mockRejectedValueOnce(error);
-    const { clearAllFiles } = await import('../api/ApiService');
-    const result = await clearAllFiles({ request: { partitionKey: partitionKeys } });
+    const { clearAllFiles }: any = await import('../api/ApiService');
+    const result: number = await clearAllFiles({ request: { partitionKey: partitionKeys } });
     expect(result).toBe(500);
   });
 });
@@ -128,12 +132,12 @@ describe('clearAllFiles', () => {
     jest.clearAllMocks();
   });
 
-  const mockValues = [
+  const mockValues: { fileName: string; fileId: string }[] = [
     { fileName: 'doc1', fileId: 'id1' },
     { fileName: 'doc2', fileId: 'id2' }
   ];
 
-  const makeAxiosResponse = (data: any): AxiosResponse => ({
+  const makeAxiosResponse: (data: any) => AxiosResponse<any> = (data: any): AxiosResponse<any> => ({
     data,
     status: 200,
     statusText: 'OK',
@@ -142,13 +146,13 @@ describe('clearAllFiles', () => {
   });
 
   test('should return suggestions when API has valid values', async () => {
-    const mockResponse = makeAxiosResponse({
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({
       payload: [{ values: mockValues }],
     });
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc', '', '', []);
+    const result: any = await fetchDMSSuggestions('doc', '', '', []);
     let values: any[] = [];
     if (Array.isArray(result?.payload?.[0]?.values)) {
       values = result.payload[0].values;
@@ -158,14 +162,14 @@ describe('clearAllFiles', () => {
   });
 
   test('should return empty array when no values present', async () => {
-    const mockResponse = makeAxiosResponse({
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({
       payload: [{ values: undefined }],
     });
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc', '', '', []);
-    const values = Array.isArray(result?.payload?.[0]?.values)
+    const result: any = await fetchDMSSuggestions('doc', '', '', []);
+    const values: any[] = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
 
@@ -173,12 +177,12 @@ describe('clearAllFiles', () => {
   });
 
   test('should return empty array when payload is missing', async () => {
-    const mockResponse = makeAxiosResponse({ payload: undefined });
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: undefined });
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchDMSSuggestions('doc', '', '', []);
-    const values = Array.isArray(result?.payload?.[0]?.values)
+    const result: any = await fetchDMSSuggestions('doc', '', '', []);
+    const values: any[] = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
 
@@ -188,68 +192,67 @@ describe('clearAllFiles', () => {
   test('should return empty array on API error', async () => {
     jest.spyOn(service, 'get').mockRejectedValueOnce(new Error('Network error'));
 
-    const result = await fetchDMSSuggestions('doc', '', '', []);
-    const values = Array.isArray(result?.payload?.[0]?.values)
+    const result: any = await fetchDMSSuggestions('doc', '', '', []);
+    const values: any[] = Array.isArray(result?.payload?.[0]?.values)
       ? result.payload[0].values
       : [];
 
     expect(values).toEqual([]);
   });
    it('should include categoryId params when categoryId is provided', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     await fetchDMSSuggestions('doc', '', '', [1, 2, 3]);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=1');
     expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=2');
     expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=3');
   });
 
   it('should not include categoryId params when categoryId is empty', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     await fetchDMSSuggestions('doc', '', '', []);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).not.toContain('AutoCompleteRequest.CategoryId=');
   });
 
   it('should include FromDate param when fromDate is provided', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     await fetchDMSSuggestions('doc', '2024-07-01', '', []);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).toContain('AutoCompleteRequest.FromDate=2024-07-01');
   });
 
   it('should include ToDate param when toDate is provided', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     await fetchDMSSuggestions('doc', '', '2024-07-31', []);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).toContain('AutoCompleteRequest.ToDate=2024-07-31');
   });
 
   it('should encode special characters in params', async () => {
-    const mockResponse = makeAxiosResponse({ payload: [{ values: [] }] });
-    const spy = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
+    const mockResponse: AxiosResponse<any> = makeAxiosResponse({ payload: [{ values: [] }] });
+    const spy: jest.SpyInstance = jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
 
     await fetchDMSSuggestions('doc test', '2024-07-01', '2024-07-31', [10]);
-    const calledUrl = spy.mock.calls[0][0];
+    const calledUrl: string = spy.mock.calls[0][0];
     expect(calledUrl).toContain('AutoCompleteRequest.SearchText=doc%20test');
     expect(calledUrl).toContain('AutoCompleteRequest.FromDate=2024-07-01');
     expect(calledUrl).toContain('AutoCompleteRequest.ToDate=2024-07-31');
     expect(calledUrl).toContain('AutoCompleteRequest.CategoryId=10');
   });
-});
 
 describe('fetchDocumentCategory', () => {
-  const payload = { CategoryRequest: { ReferenceExternalId: "1" } };
-  const mockData = [{ categoryId: 1, category: "Test" }];
-  const mockUrl = '/validation/api/v1/data-export/get-linked-files-category-by-id';
+  const payload : { CategoryRequest: { ReferenceExternalId: string } } = { CategoryRequest: { ReferenceExternalId: "1" } };
+  const mockData: { categoryId: number, category: string }[] = [{ categoryId: 1, category: "Test" }];
+  const mockUrl: string = '/validation/api/v1/data-export/get-linked-files-category-by-id';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -257,7 +260,7 @@ describe('fetchDocumentCategory', () => {
 
   it('should return data when API call is successful', async () => {
     (service.post as jest.Mock).mockResolvedValueOnce({ data: mockData });
-    const result = await fetchDocumentCategory(payload);
+    const result: any = await fetchDocumentCategory(payload);
     expect(result).toEqual(mockData);
     expect(service.post).toHaveBeenCalledWith(
       mockUrl,
@@ -267,11 +270,11 @@ describe('fetchDocumentCategory', () => {
   });
 
   it('should return empty object and log error on failure', async () => {
-    const error = new Error('API error');
+    const error: Error = new Error('API error');
     (service.post as jest.Mock).mockRejectedValueOnce(error);
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
 
-    const result = await fetchDocumentCategory(payload);
+    const result: any = await fetchDocumentCategory(payload);
     expect(result).toEqual({ status: 500, detail: "Unknown server error" });
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching document categories:',
@@ -282,15 +285,15 @@ describe('fetchDocumentCategory', () => {
 
   it('should return empty object if service.post throws non-Error', async () => {
     (service.post as jest.Mock).mockRejectedValueOnce('some error');
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    const result = await fetchDocumentCategory(payload);
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
+    const result: any = await fetchDocumentCategory(payload);
     expect(result).toEqual({ status: 500, detail: "Unknown server error" });
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
 
   it("returns default error object when API throws unknown error without response", async () => {
-    const mockError = {
+    const mockError: { response: { data: { status: number, detail: string } } } = {
       response: {
         data: {
           status: 500,
@@ -301,16 +304,16 @@ describe('fetchDocumentCategory', () => {
 
     (service.post as jest.Mock).mockRejectedValue(mockError);
 
-    const result = await fetchDocumentCategory(payload);
+    const result: any = await fetchDocumentCategory(payload);
 
     expect(result).toEqual({ status: 500, detail: "Unknown server error" });
   });
 
   test('should return partitionKey if all branches fail', async () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce({}); // No error.response.status
-    const { clearAllFiles } = await import('../api/ApiService');
-    const testPayload = { request: { partitionKey: ['key1', 'key2'] } };
-    const result = await clearAllFiles(testPayload);
+    const { clearAllFiles }: { clearAllFiles: (payload: any) => Promise<any> } = await import('../api/ApiService');
+    const testPayload: { request: { partitionKey: string[] } } = { request: { partitionKey: ['key1', 'key2'] } };
+    const result: any = await clearAllFiles(testPayload);
     expect(result).toEqual(['key1', 'key2']);
   })
 });
@@ -318,14 +321,14 @@ describe('fetchDocumentCategory', () => {
 describe('viewDownload', () => {
   it('returns response data on success', async () => {
     (service.get as jest.Mock).mockResolvedValue({ data: [{ foo: 'bar' }] });
-    const result = await viewDownload();
+    const result: any = await viewDownload();
     expect(result).toEqual( { data: [{ foo: 'bar' }] });
   });
 
   it('returns empty object and logs error on failure', async () => {
-    const error = new Error('Network error');
+    const error: Error = new Error('Network error');
     (service.get as jest.Mock).mockRejectedValue(error);
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
      // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching view downloads data:',
@@ -345,26 +348,26 @@ describe('viewDownload', () => {
 });
 
 describe('fetchStaffProfilePhoto', () => {
-  const mockExternalId = 'abc123';
-  const mockUrl = `/api/v1/personThumbnailImage/${mockExternalId}`;
+  const mockExternalId: string = 'abc123';
+  const mockUrl: string = `/api/v1/personThumbnailImage/${mockExternalId}`;
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   it('returns response on success', async () => {
-    const mockResponse = { data: { foo: 'bar' } };
+    const mockResponse: { data: { foo: string } } = { data: { foo: 'bar' } };
     (service.get as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-    const result = await fetchStaffProfilePhoto(mockExternalId);
+    const result: any = await fetchStaffProfilePhoto(mockExternalId);
     expect(result).toEqual(mockResponse);
     expect(service.get).toHaveBeenCalledWith(mockUrl, expect.any(String));
   });
 
   it('returns empty object and logs error on failure', async () => {
-    const error = new Error('Network error');
+    const error: Error = new Error('Network error');
     (service.get as jest.Mock).mockRejectedValueOnce(error);
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
 
        // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
@@ -388,7 +391,7 @@ describe('fetchStaffProfilePhoto', () => {
 
   it('returns empty object if service.get throws non-Error', async () => {
     (service.get as jest.Mock).mockRejectedValueOnce('some error');
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
         // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
@@ -396,9 +399,9 @@ describe('fetchStaffProfilePhoto', () => {
 });
 
 describe("prepareAndDownloadFile", () => {
-  const payload = { request: { foo: "bar" } };
-  const baseUrl = "https://dev.platform.sims.co.uk";
-  const url = "/validation/api/v1/file/preparedownload";
+  const payload: { request: { foo: string } } = { request: { foo: "bar" } };
+  const baseUrl: string = "https://dev.platform.sims.co.uk";
+  const url: string = "/validation/api/v1/file/preparedownload";
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -414,27 +417,27 @@ describe("prepareAndDownloadFile", () => {
     };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-    const result = await prepareAndDownloadFile(payload);
+    const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(204);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
 
   test("returns error status from error.response.status", async () => {
-    const error = {
+    const error: { response: { status: number } } = {
       response: { status: 401 },
     };
     (service.post as jest.Mock).mockRejectedValueOnce(error);
 
-    const result = await prepareAndDownloadFile(payload);
+    const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(401);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
 
   test("returns 400 if error does not have response.status", async () => {
-    const error = new Error("Network error");
+    const error: Error = new Error("Network error");
     (service.post as jest.Mock).mockRejectedValueOnce(error);
 
-    const result = await prepareAndDownloadFile(payload);
+    const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(undefined);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
@@ -449,7 +452,7 @@ describe("prepareAndDownloadFile", () => {
     };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-    const result = await prepareAndDownloadFile(payload);
+    const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(400);
     expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
   });
@@ -458,7 +461,7 @@ describe("prepareAndDownloadFile", () => {
 
 describe('downloadFile', () => {
   let getSpy: jest.SpyInstance;
-  const mockBlob = new Blob(['test content'], { type: 'application/pdf' });
+  const mockBlob: Blob = new Blob(['test content'], { type: 'application/pdf' });
 
   beforeEach(() => {
     getSpy = jest.spyOn((ApiService as any).fileDownloadInstance, 'get');
@@ -471,22 +474,22 @@ describe('downloadFile', () => {
 
   it('should call fileDownloadInstance.get with correct url and return blob', async () => {
     getSpy.mockResolvedValueOnce({ data: mockBlob });
-    const { downloadFile } = await import('../api/ApiService');
-    const result = await downloadFile('app', 'section', 'file123');
+    const { downloadFile }: { downloadFile: (app?: string, section?: string, fileId?: string) => Promise<Blob> } = await import('../api/ApiService');
+  const result: Blob = await downloadFile('app', 'section', 'file123');
     expect(result).toBe(mockBlob);
     expect(getSpy).toHaveBeenCalledWith('validation/api/v1/file?FileId=file123&Application=app&Section=section');
   });
 
   it('should call fileDownloadInstance.get with undefined params if not provided', async () => {
     getSpy.mockResolvedValueOnce({ data: mockBlob });
-    const { downloadFile } = await import('../api/ApiService');
+    const { downloadFile }: { downloadFile: (app?: string, section?: string, fileId?: string) => Promise<Blob> } = await import('../api/ApiService');
     await downloadFile();
     expect(getSpy).toHaveBeenCalledWith('validation/api/v1/file?FileId=undefined&Application=undefined&Section=undefined');
   });
 
   it('should throw error if fileDownloadInstance.get fails', async () => {
     getSpy.mockRejectedValueOnce(new Error('Download failed'));
-    const { downloadFile } = await import('../api/ApiService');
+    const { downloadFile }: { downloadFile: (app?: string, section?: string, fileId?: string) => Promise<Blob> } = await import('../api/ApiService');
     await expect(downloadFile('app', 'section', 'file123')).rejects.toThrow('Download failed');
   });
 });
@@ -496,14 +499,14 @@ describe("validation API", () => {
     jest.clearAllMocks();
   });
 
-  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
-  const mockPayload = { request: { foo: "bar" } };
+  const PLATFORM_BASEURLS: string = "https://dev.platform.sims.co.uk";
+  const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
 
   it("returns response on success", async () => {
-    const mockResponse = { data: { valid: true }, status: 200 };
+    const mockResponse: { data: { valid: boolean }; status: number } = { data: { valid: true }, status: 200 };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-    const result = await validation(mockPayload);
+    const result: any = await validation(mockPayload);
     expect(result).toBe(mockResponse);
     expect(service.post).toHaveBeenCalledWith(
       "/validation/api/v1/file/getfilevalidation",
@@ -513,9 +516,9 @@ describe("validation API", () => {
   });
 
   it("returns empty object and logs error on failure", async () => {
-    const error = new Error("Network error");
+    const error: Error = new Error("Network error");
     (service.post as jest.Mock).mockRejectedValueOnce(error);
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, "error").mockImplementation();
 
     // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
@@ -530,15 +533,15 @@ describe("deleteFiles API", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
-  const mockPayload = { request: { foo: "bar" } };
+  const PLATFORM_BASEURLS: string = "https://dev.platform.sims.co.uk";
+  const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
   axios.delete = jest.fn();
 
   it("returns status on success", async () => {
-    const mockResponse = { status: 204 };
+    const mockResponse: { status: number } = { status: 204 };
     (axios.delete as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-    const result = await deleteFiles(mockPayload);
+    const result: number = await deleteFiles(mockPayload);
     expect(result).toBe(204);
     expect(axios.delete).toHaveBeenCalledWith(
       `${PLATFORM_BASEURLS}/validation/api/v1/file/bulkdelete`,
@@ -553,48 +556,48 @@ describe("deleteFiles API", () => {
   });
 
   it("returns error status from error.response.status", async () => {
-    const error = { response: { status: 401 } };
+    const error: { response: { status: number } } = { response: { status: 401 } };
     (axios.delete as jest.Mock).mockRejectedValueOnce(error);
 
-    const result = await deleteFiles(mockPayload);
+    const result: number = await deleteFiles(mockPayload);
     expect(result).toBe(401);
   });
 
   it("returns payload.request.status if error has no response.status", async () => {
     (axios.delete as jest.Mock).mockRejectedValueOnce(new Error("fail"));
 
-    const payloadWithStatus = { request: { foo: "bar", status: 400 } };
-    const result = await deleteFiles(payloadWithStatus);
+    const payloadWithStatus: { request: { foo: string; status: number } } = { request: { foo: "bar", status: 400 } };
+    const result: number = await deleteFiles(payloadWithStatus);
     expect(result).toBe(400);
   });
 });
 
 describe('bulkDownload', () => {
-  const mockBlobName = 'test_blob';
-  const mockFileName = 'test_file.txt';
-  const encodedBlobName = encodeURIComponent(mockBlobName);
-  const encodedFileName = encodeURIComponent(mockFileName);
-  const expectedUrl = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodedBlobName}&BulkDownloadRequest.FileName=${encodedFileName}`;
+  const mockBlobName: string = 'test_blob';
+  const mockFileName: string = 'test_file.txt';
+  const encodedBlobName: string = encodeURIComponent(mockBlobName);
+  const encodedFileName: string = encodeURIComponent(mockFileName);
+  const expectedUrl: string = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodedBlobName}&BulkDownloadRequest.FileName=${encodedFileName}`;
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it('should return response data when API call is successful', async () => {
-    const mockData = { success: true };
+    const mockData: { success: boolean } = { success: true };
     (service.get as jest.Mock).mockResolvedValueOnce({ data: mockData });
 
-    const result = await bulkDownload(mockBlobName, mockFileName);
+    const result: { success: boolean } = await bulkDownload(mockBlobName, mockFileName);
     expect(result).toEqual(mockData);
     expect(service.get).toHaveBeenCalledWith(expectedUrl, expect.any(String));
   });
 
   it('should log error and return null when API call fails', async () => {
-    const error = new Error('Network error');
+    const error: Error = new Error('Network error');
     (service.get as jest.Mock).mockRejectedValueOnce(error);
-    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+    const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
 
-    const result = await bulkDownload(mockBlobName, mockFileName);
+    const result: null = await bulkDownload(mockBlobName, mockFileName);
     expect(result).toBeNull();
     expect(consoleSpy).toHaveBeenCalledWith('Error in bulk download:', error);
     consoleSpy.mockRestore();

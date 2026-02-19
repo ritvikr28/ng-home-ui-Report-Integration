@@ -4,7 +4,7 @@ import DmsControlledList from "../components/DocumentManagementServer.table";
 
 jest.mock("../../../shared/components/Filter/Filter", () => () => <div data-testid="filter-dialog">FilterDialog</div>);
 jest.mock("@essnextgen/ui-kit", () => {
-  const original = jest.requireActual("@essnextgen/ui-kit");
+  const original: any = jest.requireActual("@essnextgen/ui-kit");
   return {
     ...original,
     ControlledList: ({
@@ -35,8 +35,8 @@ jest.mock("@essnextgen/ui-kit", () => {
   };
 });
 
-const t = (key: string) => key;
-const baseProps = {
+const t: (key: string) => string = (key: string) => key;
+const baseProps: any = {
 	t,
 	tableKey: 1,
 	tableData: [],
@@ -113,7 +113,7 @@ const baseProps = {
 	isSidePanelLoader: false,
 	addEditTemplateChild: null,
 };
-const notImplemented = function notImplemented() {
+const notImplemented:  () => void = function notImplemented(): void {
   throw new Error("Function not implemented.");
 };
 
@@ -132,9 +132,9 @@ describe("DmsControlledList", () => {
 	});
 
 	it("calls onClickSidePnlSecondaryBtn when secondary button is clicked", () => {
-		const setDialogType = jest.fn();
-		const setShowConfirmDialog = jest.fn();
-		const setIsSidePanelOpen = jest.fn();
+		const setDialogType: jest.Mock = jest.fn();
+		const setShowConfirmDialog: jest.Mock = jest.fn();
+		const setIsSidePanelOpen: jest.Mock = jest.fn();
 		
 			render(
 			<DmsControlledList
@@ -144,7 +144,8 @@ describe("DmsControlledList", () => {
 				{...baseProps}
 				hasCompletedFiles={true}
 				setDialogType={setDialogType}
-				setIsSidePanelOpen={setIsSidePanelOpen}			/>
+				setIsSidePanelOpen={setIsSidePanelOpen}
+				setShowConfirmDialog={setShowConfirmDialog}			/>
 		);
 		fireEvent.click(screen.getByTestId("secondary-btn"));
 		expect(setDialogType).toHaveBeenCalledWith("clearAll");
@@ -152,7 +153,7 @@ describe("DmsControlledList", () => {
 	});
 
 	it("calls setIsSidePanelOpen(false) when secondary button is clicked and no completed files", () => {
-		const setIsSidePanelOpen = jest.fn();
+		const setIsSidePanelOpen: jest.Mock = jest.fn();
 		render(
 			<DmsControlledList
 			setSortBy={notImplemented}
@@ -167,7 +168,7 @@ describe("DmsControlledList", () => {
 	});
 
 	it("calls handleCloseDialogConfirmation when close dialog button is clicked", () => {
-		const setShowConfirmDialog = jest.fn();
+		const setShowConfirmDialog: jest.Mock = jest.fn();
 		render(
 			<DmsControlledList
 			setSortBy={notImplemented}
