@@ -51,39 +51,40 @@ function getRelatedContent(
   hrefUrl: string,
   relatedName: string
 ): React.ReactNode {
-  if (colName === "relatedTo" && (text?.type === "staff" || text?.type === "pupil")) {
-    return (
-      <a
-        ref={ref as React.RefObject<HTMLAnchorElement>}
-        href={hrefUrl}
-        className="relatedto-link document-text"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {relatedName}
-      </a>
-    );
-  } else if (colName === "relatedTo") {
+      if (colName === "relatedTo" && (text?.type === "staff" || text?.type === "pupil")) {
+      return (
+        <a
+          ref={ref as React.RefObject<HTMLAnchorElement>}
+          href={hrefUrl}
+          className="relatedto-link document-text"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {relatedName}
+        </a>
+      );
+    }
+    if (colName === "relatedTo") {
+      return (
+        <span
+          ref={ref as React.RefObject<HTMLSpanElement>}
+          className="document-text"
+        >
+          {relatedName}
+        </span>
+      );
+    }
     return (
       <span
         ref={ref as React.RefObject<HTMLSpanElement>}
         className="document-text"
       >
-        {relatedName}
+        {text}
       </span>
     );
-  }
-  return (
-    <span
-      ref={ref as React.RefObject<HTMLSpanElement>}
-      className="document-text"
-    >
-      {text}
-    </span>
-  );
 }
 
-function getExtraItemsTooltip(totalItems: any[], getYearRegText: Function): React.ReactNode {
+function getExtraItemsTooltip(totalItems: any[], getYearRegTextFn: Function): React.ReactNode {
   if (totalItems.length <= 1) {
     return <div style={{ width: 0, height: 0, overflow: "hidden" }} />;
   }
@@ -100,7 +101,7 @@ function getExtraItemsTooltip(totalItems: any[], getYearRegText: Function): Reac
                 {item.name}
                 {item.type === "staff" && item.staffCode ? ` | ${item.staffCode}` : ""}
                 {item.type === "pupil"
-                  ? ` ${getYearRegText(item.isLeaver, item.year, item.reg, "|")}`
+                  ? ` ${getYearRegTextFn(item.isLeaver, item.year, item.reg, "|")}`
                   : ""}
               </span>
             </div>

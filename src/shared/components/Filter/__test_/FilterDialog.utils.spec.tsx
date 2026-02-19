@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
-import * as utils from "../FilterDialog.utils";
 import { ValidationTextLevel } from "@essnextgen/ui-kit";
+import * as utils from "../FilterDialog.utils";
 import { validateDate } from "../FilterDialog.utils";
 
 describe("FilterDialog.utils", () => {
@@ -48,7 +48,12 @@ describe("FilterDialog.utils", () => {
 
   describe("handleDateChange", () => {
     const t: (key: string) => string = (key: string) => key;
-    let setDate: jest.Mock, setError: jest.Mock, setIsDateError: jest.Mock, setSelectedDateRange: jest.Mock, setFromDateError: jest.Mock, setToDateError: jest.Mock;
+  let setDate: jest.Mock;
+  let setError: jest.Mock;
+  let setIsDateError: jest.Mock;
+  let setSelectedDateRange: jest.Mock;
+  let setFromDateError: jest.Mock;
+  let setToDateError: jest.Mock;
     beforeEach(() => {
       setDate = jest.fn();
       setError = jest.fn();
@@ -392,7 +397,7 @@ describe("FilterDialog.utils", () => {
         "setLocalTagListArray", "setLocalSelectedRelatedTo", "setCategoryError", "setRelatedToSelected", "setSearchSelectionError", "setRefId"
       ];
       const params: any = {};
-      setters.forEach(fn => params[fn] = jest.fn());
+      setters.forEach(fn => { params[fn] = jest.fn(); });
       utils.clearAll(params);
       expect(params.setFromDate).toHaveBeenCalled();
       expect(params.setToDate).toHaveBeenCalled();
@@ -416,7 +421,7 @@ describe("FilterDialog.utils", () => {
 
   describe("getValidationTextMsg", () => {
     it("returns info unavailable if categoryError", () => {
-      const t = (key: string) => "msg";
+      const t = () => "msg";
       expect(utils.getValidationTextMsg(true, t)).toBe("msg");
       expect(utils.getValidationTextMsg(false, t)).toBeUndefined();
     });
@@ -526,15 +531,15 @@ describe("validateDate and handleDateChange - branch coverage", () => {
   it("returns error for future date (isFutureDate)", () => {
     const future: string = dayjs().add(1, "day").format("YYYY-MM-DD");
     const resultFrom: { isValid: boolean; error?: string; toError?: string; fromError?: string } = validateDate(future, "", true, t);
-    expect(resultFrom).toEqual({
-      isValid: false,
-      error: "Filter.fromDateMustBeOnOrBefore:" + dayjs().format("DD-MM-YYYY")
-    });
-    const resultTo: { isValid: boolean; error?: string; toError?: string; fromError?: string } = validateDate(future, "", false, t);
-    expect(resultTo).toEqual({
-      isValid: false,
-      error: "Filter.toDateMustBeOnOrBefore:" + dayjs().format("DD-MM-YYYY")
-    });
+   expect(resultFrom).toEqual({
+  isValid: false,
+    error: `Filter.fromDateMustBeOnOrBefore:${dayjs().format("DD-MM-YYYY")}`
+  });
+  const resultTo: { isValid: boolean; error?: string; toError?: string; fromError?: string } = validateDate(future, "", false, t);
+  expect(resultTo).toEqual({
+    isValid: false,
+    error: `Filter.toDateMustBeOnOrBefore:${dayjs().format("DD-MM-YYYY")}`
+  });
   });
 
   it("returns error for before min date (isBeforeMinDate)", () => {

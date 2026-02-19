@@ -1,9 +1,9 @@
+import React from "react";
+import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as Logic from "../logic/DocumentManagementServer.handler";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleBulkDeleteLogic, handleClearAllConfirm, handleEditSelectedOverFlowMenu, handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
 import { applySummaryTagClass, hasItems } from "../logic/DocumentManagementServer.utils";
-import { ISelectedItem } from "@essnextgen/ui-kit";
-import dayjs from "dayjs";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -16,6 +16,8 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
     isInvalidDateRange: jest.fn(() => false),
   };
 });
+
+const handlerModule = require("../logic/DocumentManagementServer.handler");
 
 describe("DocumentManagementServer.handler", () => {
     describe("handleSearchChange", () => {
@@ -92,17 +94,11 @@ describe("DocumentManagementServer.handler", () => {
 
 it("handles invalid event object (no value)", () => {
   const t = (key: string) => key;
-    const e = { target: { value: "" } } as any;
     const setSearchTerm = jest.fn();
     const setSuggestions = jest.fn();
     const setShowSearchError = jest.fn();
     const setIsSearchLoading = jest.fn();
     const setShowErrorBanner = jest.fn();
-    const categoryId: number[] = [1];
-    const fromDate = "fromDate";
-    const toDate = "toDate";
-    const documentRelatedTo = 123; // changed to number
-    const setResetFilterSearch = jest.fn();
 
   // e is an object with no target.value
   Logic.handleSearchChange({
@@ -224,11 +220,13 @@ it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch 
 });
 
 describe("handleSuggestionClick", () => {
-   const setDocumentRelatedTo = jest.fn();
-  const setSearchRefExternalId = jest.fn();
   it("should call setSearchTerm and setSearchText", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
+    const setDocumentRelatedTo = jest.fn();
+    const setSearchRefExternalId = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
     await Logic.handleSuggestionClick(
       {
         name: "John Doe",
@@ -238,7 +236,9 @@ describe("handleSuggestionClick", () => {
       setSearchTerm,
       setSearchText,
       setDocumentRelatedTo,
-      setSearchRefExternalId
+      setSearchRefExternalId,
+      setSuggestions,
+      setShowSearchError
     );
     expect(setSearchTerm).toHaveBeenCalledWith("John Doe");
     expect(setSearchText).toHaveBeenCalledWith("John Doe");
@@ -252,7 +252,9 @@ describe("handleSuggestionClick", () => {
       setSearchTerm,
       setSearchText,
       setDocumentRelatedTo,
-      setSearchRefExternalId
+      setSearchRefExternalId,
+      setSuggestions,
+      setShowSearchError
     );
     expect(setSearchRefExternalId).toHaveBeenCalledWith(["staff-123"]);
     await Logic.handleSuggestionClick(
@@ -264,16 +266,21 @@ describe("handleSuggestionClick", () => {
       setSearchTerm,
       setSearchText,
       setDocumentRelatedTo,
-      setSearchRefExternalId
+      setSearchRefExternalId,
+      setSuggestions,
+      setShowSearchError
     );
     expect(setSearchRefExternalId).toHaveBeenCalledWith(["organisation-123"]);
-
   });
 
 it("should not call setters if item is null", async () => {
   const setSearchTerm = jest.fn();
   const setSearchText = jest.fn();
-  await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId );
+  const setDocumentRelatedTo = jest.fn();
+  const setSearchRefExternalId = jest.fn();
+  const setSuggestions = jest.fn();
+  const setShowSearchError = jest.fn();
+  await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId, setSuggestions, setShowSearchError);
   expect(setSearchTerm).not.toHaveBeenCalled();
   expect(setSearchText).not.toHaveBeenCalled();
 });
@@ -281,8 +288,11 @@ it("should not call setters if item is null", async () => {
 it("should not trigger if name is missing", async () => {
     const setSearchTerm = jest.fn();
     const loadData = jest.fn();
-
-    await handleSuggestionClick({}, setSearchTerm, loadData, setDocumentRelatedTo, setSearchRefExternalId);
+    const setDocumentRelatedTo = jest.fn();
+    const setSearchRefExternalId = jest.fn();
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    await handleSuggestionClick({}, setSearchTerm, loadData, setDocumentRelatedTo, setSearchRefExternalId, setSuggestions, setShowSearchError);
     expect(setSearchTerm).not.toHaveBeenCalled();
   });
 });
@@ -314,7 +324,17 @@ describe("handleSuggestionClick edge cases", () => {
   it("should do nothing if item is null", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
-    await handleSuggestionClick(null, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
+    const setSuggestions = jest.fn();
+    const setShowSearchError = jest.fn();
+    await handleSuggestionClick(
+      null,
+      setSearchTerm,
+      setSearchText,
+      setDocumentRelatedTo,
+      setSearchRefExternalId,
+      setSuggestions,
+      setShowSearchError
+    );
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -322,7 +342,17 @@ describe("handleSuggestionClick edge cases", () => {
   it("should do nothing if item.name is falsy", async () => {
     const setSearchTerm = jest.fn();
     const setSearchText = jest.fn();
-    await handleSuggestionClick({ name: "" }, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId);
+      const setSuggestions = jest.fn();
+      const setShowSearchError = jest.fn();
+      await handleSuggestionClick(
+        { name: "" },
+        setSearchTerm,
+        setSearchText,
+        setDocumentRelatedTo,
+        setSearchRefExternalId,
+        setSuggestions,
+        setShowSearchError
+      );
     expect(setSearchTerm).not.toHaveBeenCalled();
     expect(setSearchText).not.toHaveBeenCalled();
   });
@@ -1307,6 +1337,7 @@ describe("handlePageChange", () => {
 });
 
 describe("validateAndApplyFilter", () => {
+
   let setIsDateError: jest.Mock;
   let setIsFilterLoading: jest.Mock;
   let setDateRange: jest.Mock;
@@ -1334,8 +1365,8 @@ describe("validateAndApplyFilter", () => {
     setSelectedCheckBoxIds = jest.fn();
     setPrevSelectedDocs = jest.fn();
     // Reset mock for isInvalidDateRange
-    require("../logic/DocumentManagementServer.handler").isInvalidDateRange.mockReturnValue(false);
-  });
+    handlerModule.isInvalidDateRange.mockReturnValue(false);
+   });
 
   it("should set date error and return if isDateError is true", () => {
     validateAndApplyFilter({
@@ -1362,8 +1393,7 @@ describe("validateAndApplyFilter", () => {
   });
 
   it("should set date error and return if isInvalidDateRange returns true", () => {
-    require("../logic/DocumentManagementServer.handler").isInvalidDateRange.mockReturnValueOnce(true);
-
+    handlerModule.isInvalidDateRange.mockReturnValue(true);
     validateAndApplyFilter({
       selectedDateRange: { fromDate: "bad", toDate: "bad" },
       isDateError: false,
@@ -1682,8 +1712,7 @@ describe("handleApply", () => {
 
   it("sets date error and returns if isInvalidDateRange returns true", () => {
     // Mock isInvalidDateRange to return true
-    jest.spyOn(require("../logic/DocumentManagementServer.handler"), "isInvalidDateRange").mockReturnValueOnce(true);
-
+      handlerModule.isInvalidDateRange.mockReturnValue(true);
     handleApply({
       referenceExternalIds: [],
       selectedCategories: [],
@@ -1871,7 +1900,9 @@ describe("getNotificationMsgBannerObject", () => {
     });
     expect(banners[1].isShow).toBe(true);
     expect(banners[1].message).toBe("DocumentManagementServer.unableToDeleteDocumentMsg_document");
-    banners[1].onClickClose && banners[1].onClickClose();
+    if (banners[1].onClickClose) {
+      banners[1].onClickClose();
+    }
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
   });
 
@@ -1888,7 +1919,9 @@ describe("getNotificationMsgBannerObject", () => {
       setShowDeleteAbortBanner: jest.fn()
     });
     expect(banners[1].message).toBe("DocumentManagementServer.unableToDeleteDocumentMsg_documents");
-    banners[1].onClickClose && banners[1].onClickClose();
+    if (banners[1].onClickClose) {
+      banners[1].onClickClose();
+    }
     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
   });
 
@@ -1906,7 +1939,9 @@ describe("getNotificationMsgBannerObject", () => {
     });
     expect(banners[2].isShow).toBe(true);
     expect(banners[2].message).toBe("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted");
-    banners[2].onClickClose && banners[2].onClickClose();
+    if (banners[2].onClickClose) {
+      banners[2].onClickClose();
+    }
     expect(setShowDeleteAbortBanner).toHaveBeenCalledWith(false);
   });
 

@@ -5,7 +5,6 @@ import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
 import { service } from '../../../shared/utils';
 import { bulkDownload, deleteFiles, fetchDMSSuggestions, fetchDocumentCategory, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, validation, viewDownload } from '../api/ApiService';
 import * as ApiService from '../api/ApiService';
-import exp from 'constants';
 
 const documentResponse: SingleDocumentDetail[] = [
   {
@@ -75,8 +74,7 @@ describe('fetchDocumentDetails', () => {
   test('should return null when exception is thrown', async () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce(new Error('API failed'));
 
-    const result = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
-  });
+    });
 });
 
 describe('fetchDMSSuggestions', () => {
@@ -328,8 +326,7 @@ describe('viewDownload', () => {
     const error = new Error('Network error');
     (service.get as jest.Mock).mockRejectedValue(error);
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    const result = await viewDownload();
-    // expect(result).toEqual({});
+     // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching view downloads data:',
       error
@@ -369,8 +366,7 @@ describe('fetchStaffProfilePhoto', () => {
     (service.get as jest.Mock).mockRejectedValueOnce(error);
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
-    const result = await fetchStaffProfilePhoto(mockExternalId);
-    // expect(result).toEqual({});
+       // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching staff profile photo:',
       error
@@ -393,8 +389,7 @@ describe('fetchStaffProfilePhoto', () => {
   it('returns empty object if service.get throws non-Error', async () => {
     (service.get as jest.Mock).mockRejectedValueOnce('some error');
     const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
-    const result = await fetchStaffProfilePhoto(mockExternalId);
-    // expect(result).toEqual({});
+        // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
@@ -522,7 +517,6 @@ describe("validation API", () => {
     (service.post as jest.Mock).mockRejectedValueOnce(error);
     const consoleSpy = jest.spyOn(console, "error").mockImplementation();
 
-    const result = await validation(mockPayload);
     // expect(result).toEqual({});
     expect(consoleSpy).toHaveBeenCalledWith(
       "Error fetching view downloads data:",

@@ -105,3 +105,8 @@ export const FilterRelatedToDropdown: React.FC<FilterRelatedToDropdownProps> = (
     </Dropdown>
   </>
 );
+
+FilterRelatedToDropdown.defaultProps = {
+  setReferenceExternalIds: undefined,
+  onRelatedToChange: undefined
+};

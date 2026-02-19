@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ViewDownloadContent } from "../components/ViewDownloadContent";
-import { LoaderType, NotificationStatus } from "@essnextgen/ui-kit";
+import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 const t = (key: string, options?: { days?: number }) => {
 	if (key === "DocumentManagementServer.ExpiresInDays") {
@@ -37,7 +37,6 @@ const setDownloadError = jest.fn();
 jest.mock("../logic/DocumentManagementServer.logic", () => ({
 	fileDownload: jest.fn(() => Promise.resolve()),
 }));
-import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 describe("ViewDownloadContent", () => {
 			it("renders item with undefined status (branch coverage)", () => {
@@ -49,7 +48,7 @@ describe("ViewDownloadContent", () => {
 						application: "app",
 						section: "sec",
 						blobName: "blob8",
-					},
+					}
 				];
 				render(
 					<ViewDownloadContent
@@ -76,7 +75,7 @@ describe("ViewDownloadContent", () => {
 						application: "app",
 						section: "sec",
 						blobName: "blob8",
-					},
+					}
 				];
 				render(
 					<ViewDownloadContent
@@ -103,7 +102,7 @@ describe("ViewDownloadContent", () => {
 					application: "app",
 					section: "sec",
 					blobName: "blob7",
-				},
+				}
 			];
 			render(
 				<ViewDownloadContent
@@ -184,7 +183,7 @@ describe("ViewDownloadContent", () => {
 				application: "app",
 				section: "sec",
 				blobName: "blob1",
-			},
+			}
 		];
 		render(
 			<ViewDownloadContent
@@ -213,7 +212,7 @@ describe("ViewDownloadContent", () => {
 				application: "app",
 				section: "sec",
 				blobName: "blob2",
-			},
+			}
 		];
 		render(
 			<ViewDownloadContent
@@ -246,7 +245,7 @@ describe("ViewDownloadContent", () => {
 				application: "app",
 				section: "sec",
 				blobName: "blob4",
-			},
+			}
 		];
 		render(
 			<ViewDownloadContent
@@ -274,7 +273,7 @@ describe("ViewDownloadContent", () => {
 				application: "app",
 				section: "sec",
 				blobName: "blob5",
-			},
+			}
 		];
 		(fileDownload as jest.Mock).mockResolvedValueOnce(undefined);
 		render(
@@ -314,7 +313,7 @@ describe("ViewDownloadContent", () => {
 				application: "app",
 				section: "sec",
 				blobName: "blob6",
-			},
+			}
 		];
 		(fileDownload as jest.Mock).mockRejectedValueOnce(new Error("fail"));
 		render(

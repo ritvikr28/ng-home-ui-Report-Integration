@@ -2,9 +2,7 @@ import React from "react";
 import dayjs from "dayjs";
 import {
   ISearchItemProp,
-  ISelectedItem,
-  SelectedItem,
-  Suggestion
+  ISelectedItem
 } from "@essnextgen/ui-kit";
 import {
   debouncedFetchSuggestions,
@@ -31,9 +29,6 @@ export const handlePageChange: (_: unknown, page: number, setCurrentPage: React.
   setIsSearchTriggered(true);
 };
 
-const shouldIgnoreSearch = (value: string): boolean =>
-  value.trim().length === 0 || value.length < 3;
-
 export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
   t,
   e,
@@ -55,10 +50,10 @@ export const handleSearchChange: (params: HandleSearchChangeParams) => void = ({
   } else if (e && typeof e.target?.value === "string") {
     value = e.target.value;
   } else {
-    if(typeof setSuggestions === "function")
-    setSuggestions([]);
-    if(typeof setIsSearchLoading === "function")
-    setIsSearchLoading(false);
+    if (typeof setSuggestions === "function")
+      setSuggestions([]);
+    if (typeof setIsSearchLoading === "function")
+      setIsSearchLoading(false);
     return;
   }
 
@@ -110,30 +105,42 @@ const getReferenceExternalId: (item: ISearchItemProp) => string[] = (item: ISear
   }
 };
 
-export const handleSuggestionClick: (item: ISearchItemProp | null, setSearchTerm: React.Dispatch<React.SetStateAction<string>>, setSearchText: React.Dispatch<React.SetStateAction<string>>, setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>, setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>) => Promise<void> = async (
+export const handleSuggestionClick: (
   item: ISearchItemProp | null,
   setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
   setSearchText: React.Dispatch<React.SetStateAction<string>>,
   setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
-  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>,
+  setSortBy: React.Dispatch<React.SetStateAction<string>>,
+  setSortDirection: React.Dispatch<React.SetStateAction<string>>
+) => Promise<void> = async (
+  item: ISearchItemProp | null,
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
+  setSearchText: React.Dispatch<React.SetStateAction<string>>,
+  setDocumentRelatedTo: React.Dispatch<React.SetStateAction<number>>,
+  setSearchRefExternalId: React.Dispatch<React.SetStateAction<string[]>>,
+  setSortBy: React.Dispatch<React.SetStateAction<string>>,
+  setSortDirection: React.Dispatch<React.SetStateAction<string>>
 ): Promise<void> => {
-  if (!item?.name) return;
+    if (!item?.name) return;
 
-  setSearchTerm(item.name);
-  setSearchText(item.name);
-  setDocumentRelatedTo(
-    relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0
-  );
-  setSearchRefExternalId(getReferenceExternalId(item));
+    setSearchTerm(item.name);
+    setSearchText(item.name);
+    setDocumentRelatedTo(
+      relatedToEnum[item.categoryName as keyof typeof relatedToEnum] || 0
+    );
+    setSearchRefExternalId(getReferenceExternalId(item));
+    setSortBy("DateAdded");
+    setSortDirection("Desc");
 
-  gtmAnalytics.pushEvent({
-    event: "interact_click",
-    elementType: "search_option",
-    elementTextOrLabel:
-      item.categoryName === "Organisation" ? "School" : item.categoryName,
-    elementLocation: "search_suggestions"
-  });
-};
+    gtmAnalytics.pushEvent({
+      event: "interact_click",
+      elementType: "search_option",
+      elementTextOrLabel:
+        item.categoryName === "Organisation" ? "School" : item.categoryName,
+      elementLocation: "search_suggestions"
+    });
+  };
 
 /* ------------------------------------------------------------------ */
 /* Tags                                                                */
@@ -146,8 +153,6 @@ const isDateRangeTag = (name?: string, id?: string | number): boolean =>
   );
 
 export const handleTagCloseLogic: (params: HandleTagCloseLogicParams) => void = ({
-  event,
-  tagName,
   closeObj,
   setSelectedDateRange,
   setDateRange,
@@ -232,7 +237,6 @@ export const validateAndApplyFilter = ({
 
 export const handleBulkDeleteLogic = async ({
   allSelectedDocs,
-  docData,
   allRegistrationIds,
   dateRange,
   searchRefExternalId,
@@ -255,12 +259,12 @@ export const handleBulkDeleteLogic = async ({
   setIsSearchDataLoading,
   availableFileIds
 }: any): Promise<void> => {
-  if(typeof setShowToastNotification === "function")
-  setShowDeleteSuccessToast(false);
-  if(typeof setIsSearchDataLoading === "function")
-  setIsSearchDataLoading(true);
-  if(typeof setShowDeleteAbortBanner === "function")
-  setShowDeleteAbortBanner(false);
+  if (typeof setShowToastNotification === "function")
+    setShowDeleteSuccessToast(false);
+  if (typeof setIsSearchDataLoading === "function")
+    setIsSearchDataLoading(true);
+  if (typeof setShowDeleteAbortBanner === "function")
+    setShowDeleteAbortBanner(false);
 
   console.log("dateRange:", dateRange);
   const payload: any = mapToBulkDeletePayload({
@@ -293,15 +297,15 @@ export const handleBulkDeleteLogic = async ({
       return;
     }
 
-    if(typeof setShowDeleteErrorBanner === "function")
-    setShowDeleteAbortBanner(status === 409);
+    if (typeof setShowDeleteErrorBanner === "function")
+      setShowDeleteAbortBanner(status === 409);
     setShowDeleteErrorBanner(status !== 409);
   } catch {
-    if(typeof setShowDeleteErrorBanner === "function")
-    setShowDeleteErrorBanner(true);
+    if (typeof setShowDeleteErrorBanner === "function")
+      setShowDeleteErrorBanner(true);
   } finally {
-    if(typeof setIsSearchDataLoading === "function")
-    setIsSearchDataLoading(false);
+    if (typeof setIsSearchDataLoading === "function")
+      setIsSearchDataLoading(false);
   }
 };
 
@@ -344,7 +348,7 @@ function handleValidationResult(
   totalSelectedCount: number,
   handlers: ValidationResultHandlers
 ): void {
-  const {
+    const {
     setIsPreDialogLoading,
     setShowRestrictedDeleteDialog,
     setShowDialog,
@@ -357,7 +361,8 @@ function handleValidationResult(
     setIsDialogLoading,
     setShowConfirmDialog,
     setShowRestrictedPrepareDialog
-  } : ValidationResultHandlers = handlers; {
+  }: ValidationResultHandlers = handlers;
+
   if (result?.status !== 200 && result?.status !== 204) {
     setIsPreDialogLoading(false);
     setShowRestrictedDeleteDialog(false);
@@ -368,7 +373,6 @@ function handleValidationResult(
       messageText: "Information unavailable"
     });
     return;
-  }
   }
 
   const restricted: number = result?.data?.restrictedFileCount ?? 0;
@@ -524,59 +528,61 @@ export const handleEditSelectedOverFlowMenu: any = async ({
 };
 
 
-export async function handleClearAllConfirm({ 
-  viewData: clearAllViewData, 
-  clearAllFiles, 
-  setShowToastNotification, 
-  fetchViewDownloadData: clearAllFetchViewDownloadData, 
-  setIsSidePanelLoader, 
-  setViewData, 
-  viewDownload: clearAllViewDownload, 
-  downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, 
-  setClearAllError, 
-  setShowConfirmDialog, 
-  getCompletedPartitionKeys, 
-  setIsViewDownloadError, 
-  setShowEmailNotification }: 
-  { 
-    viewData: any[], 
-    clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>, 
-    setShowToastNotification: (v: boolean) => void, 
-    fetchViewDownloadData: (args: any) => void, 
-    setIsSidePanelLoader: (v: boolean) => void, 
-    setViewData: (v: any) => void, 
-    setHasFetchedViewDownload: (v: boolean) => void, viewDownload: any, downloadPollingIntervalRef: any, 
-    setClearAllError: (v: boolean) => void, 
-    setShowConfirmDialog: (v: boolean) => void, 
-    getCompletedPartitionKeys: (viewData: any[]) => string[], 
-    setIsViewDownloadError: (v: boolean) => void, 
-    setShowEmailNotification: (v: boolean) => void }): Promise<void> 
-    { 
-      
-      const completedPartitionKeys: string[] = getCompletedPartitionKeys(clearAllViewData); 
-      if(typeof setIsSidePanelLoader === "function")
-      setIsSidePanelLoader(true); 
-      try { 
-        const response: number = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } }); 
-        if (response === 204) 
-          { 
-            setViewData([]); 
-            setShowToastNotification(true); 
-            await clearAllFetchViewDownloadData({ showLoader: false, setIsSidePanelLoader, setViewData, viewDownload: clearAllViewDownload, downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification }); 
-            
-            setIsSidePanelLoader(false); 
-          } 
-            else { 
-              setClearAllError(true); 
-              setIsSidePanelLoader(false); 
-              gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } 
-            } catch (error) {
-               setClearAllError(true); 
-               setShowToastNotification(false); 
-               if(typeof setIsSidePanelLoader === "function")
-               setIsSidePanelLoader(false); 
-               gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" }); } 
-               setShowConfirmDialog(false); }
+export async function handleClearAllConfirm({
+  viewData: clearAllViewData,
+  clearAllFiles,
+  setShowToastNotification,
+  fetchViewDownloadData: clearAllFetchViewDownloadData,
+  setIsSidePanelLoader,
+  setViewData,
+  viewDownload: clearAllViewDownload,
+  downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef,
+  setClearAllError,
+  setShowConfirmDialog,
+  getCompletedPartitionKeys,
+  setIsViewDownloadError,
+  setShowEmailNotification }:
+  {
+    viewData: any[],
+    clearAllFiles: (payload: { request: { partitionKey: string[] } }) => Promise<number>,
+    setShowToastNotification: (v: boolean) => void,
+    fetchViewDownloadData: (args: any) => void,
+    setIsSidePanelLoader: (v: boolean) => void,
+    setViewData: (v: any) => void,
+    setHasFetchedViewDownload: (v: boolean) => void, viewDownload: any, downloadPollingIntervalRef: any,
+    setClearAllError: (v: boolean) => void,
+    setShowConfirmDialog: (v: boolean) => void,
+    getCompletedPartitionKeys: (viewData: any[]) => string[],
+    setIsViewDownloadError: (v: boolean) => void,
+    setShowEmailNotification: (v: boolean) => void
+  }): Promise<void> {
+
+  const completedPartitionKeys: string[] = getCompletedPartitionKeys(clearAllViewData);
+  if (typeof setIsSidePanelLoader === "function")
+    setIsSidePanelLoader(true);
+  try {
+    const response: number = await clearAllFiles({ request: { partitionKey: completedPartitionKeys } });
+    if (response === 204) {
+      setViewData([]);
+      setShowToastNotification(true);
+      await clearAllFetchViewDownloadData({ showLoader: false, setIsSidePanelLoader, setViewData, viewDownload: clearAllViewDownload, downloadPollingIntervalRef: clearAllDownloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification });
+
+      setIsSidePanelLoader(false);
+    }
+    else {
+      setClearAllError(true);
+      setIsSidePanelLoader(false);
+      gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" });
+    }
+  } catch (error) {
+    setClearAllError(true);
+    setShowToastNotification(false);
+    if (typeof setIsSidePanelLoader === "function")
+      setIsSidePanelLoader(false);
+    gtmAnalytics.pushEvent({ event: "error_message", messageText: "Unable to clear downloads" });
+  }
+  setShowConfirmDialog(false);
+}
 
 export function handleApply({
   referenceExternalIds,
@@ -658,9 +664,13 @@ export function handleApply({
   setPrevSelectedDocs([]);
 };
 
-export function closeSidePanel( setIsSidePanelOpen: (v: boolean) => void, downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null> ): void { setIsSidePanelOpen(false); if (downloadPollingIntervalRef.current) { clearInterval(downloadPollingIntervalRef.current); 
-  // eslint-disable-next-line 
-downloadPollingIntervalRef.current = null; } }
+export function closeSidePanel(setIsSidePanelOpen: (v: boolean) => void, downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>): void {
+  setIsSidePanelOpen(false); if (downloadPollingIntervalRef.current) {
+    clearInterval(downloadPollingIntervalRef.current);
+    // eslint-disable-next-line 
+    downloadPollingIntervalRef.current = null;
+  }
+}
 
 interface NotificationMsgBannerParams {
   t: (key: string, options?: any) => string;
@@ -694,23 +704,29 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
     setShowDeleteErrorBanner,
     setShowDeleteAbortBanner
   }: NotificationMsgBannerParams = params;
-  return [ 
-    { 
-      isShow: showErrorBanner || showSearchError, 
-      variant: "warning", 
-      title: t("DocumentManagementServer.informationUnavailable"), 
-      message: t("DocumentManagementServer.technicalIssueMessage"), 
-      autoclose: true }, 
-      { isShow: showDeleteErrorBanner, 
-        variant: "warning", 
-        title: t("DocumentManagementServer.unableToDelete"), 
-        message: t("DocumentManagementServer.unableToDeleteDocumentMsg", 
-          { type: availableFileCount === 1 ? "document" : "documents" }), 
-          autoclose: false, 
-          onClickClose: () => setShowDeleteErrorBanner(false) }, 
-          { isShow: showDeleteAbortBanner, 
-            variant: "warning", 
-            title: t("DocumentManagementServer.unableToDelete"), 
-            message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"), 
-            autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false) } ]; }
+  return [
+    {
+      isShow: showErrorBanner || showSearchError,
+      variant: "warning",
+      title: t("DocumentManagementServer.informationUnavailable"),
+      message: t("DocumentManagementServer.technicalIssueMessage"),
+      autoclose: true
+    },
+    {
+      isShow: showDeleteErrorBanner,
+      variant: "warning",
+      title: t("DocumentManagementServer.unableToDelete"),
+      message: t("DocumentManagementServer.unableToDeleteDocumentMsg",
+        { type: availableFileCount === 1 ? "document" : "documents" }),
+      autoclose: false,
+      onClickClose: () => setShowDeleteErrorBanner(false)
+    },
+    {
+      isShow: showDeleteAbortBanner,
+      variant: "warning",
+      title: t("DocumentManagementServer.unableToDelete"),
+      message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
+      autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false)
+    }];
+}
 

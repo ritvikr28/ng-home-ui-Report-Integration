@@ -1,7 +1,6 @@
-import React , { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
-import { Doc } from "prettier";
 import { DocumentData } from "../responseModel";
 
 
@@ -43,7 +42,7 @@ export function useBodyNoScroll(isMobileView: boolean): void {
       document.body.classList.add("no-scroll");
       return () => document.body.classList.remove("no-scroll");
     }
-    return () => {};
+    return () => { };
   }, [isMobileView]);
 }
 
@@ -53,7 +52,7 @@ export function useSummaryTagMutationObserver(
   useEffect(() => {
     const tagListNode: HTMLElement | null = document.getElementById("taglist-id");
     if (!tagListNode) {
-      return () => {};
+      return () => { };
     }
 
     // Initial run
@@ -69,7 +68,7 @@ export function useSummaryTagMutationObserver(
     observer.observe(tagListNode, { childList: true, subtree: true });
 
     return () => observer.disconnect();
-   
+
   }, deps);
 }
 
@@ -81,95 +80,6 @@ export function useSetTotalPageOnDocData(docData: any, setTotalPage: (n: number)
     }
   }, [docData, setTotalPage, pageSizeNumber]);
 }
-
-interface UseFetchDocsEffectParams {
-  currentPage: number;
-  searchText: string;
-  dateRange: { fromDate: string; toDate: string };
-  selectedFormats: any[];
-  sortBy: string;
-  sortDirection: string;
-  searchRefExternalId: string[];
-  documentRelatedTo: number;
-  isSearchTriggered: boolean;
-  isFilterDialogOpen: boolean;
-  allRegistrationIds: number[];
-  fetchGetDocumentDetails: (
-    page: number,
-    categories: number[],
-    sortByCol: string,
-    sortOrder: string,
-    refExternalId: string[],
-    relatedTo: number
-  ) => void;
-  setIsInitialLoad: (v: boolean) => void;
-setIsSearchTriggered: (v: boolean) => void;
-}
-
-export function useFetchDocsEffect({
-  currentPage,
-  searchText,
-  dateRange,
-  selectedFormats,
-  sortBy,
-  sortDirection,
-  searchRefExternalId,
-  documentRelatedTo,
-  isSearchTriggered,
-  isFilterDialogOpen,
-  allRegistrationIds,
-  fetchGetDocumentDetails,
-  setIsInitialLoad,
-  setIsSearchTriggered
-}: UseFetchDocsEffectParams): void {
-  useEffect(() => {
-    const allRegistrationId: number[] = getAllRegistrationIds(selectedFormats);
-
-    if (!isFilterDialogOpen && isSearchTriggered && searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(
-        currentPage,
-        allRegistrationId,
-        sortBy,
-        sortDirection,
-        searchRefExternalId,
-        documentRelatedTo
-      );
-      setIsInitialLoad(false);
-      setIsSearchTriggered(false);
-    }
-    if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(
-        currentPage,
-        allRegistrationIds,
-        sortBy,
-        sortDirection,
-        searchRefExternalId,
-        documentRelatedTo
-      );
-      setIsInitialLoad(false);
-      setIsSearchTriggered(false);
-    }
-    applySummaryTagClass();
-  }, [
-    currentPage,
-    searchText,
-    dateRange?.fromDate,
-    dateRange?.toDate,
-    selectedFormats,
-    sortBy,
-    sortDirection,
-    searchRefExternalId,
-    documentRelatedTo,
-    isSearchTriggered,
-    isFilterDialogOpen,
-    allRegistrationIds,
-    fetchGetDocumentDetails,
-    setIsInitialLoad
-  ]);
-}
-
 
 interface UseSidePanelViewDownloadEffectParams {
   isSidePanelOpen: boolean;
@@ -198,48 +108,48 @@ export function useSidePanelViewDownloadEffect({
   setIsViewDownloadError,
   setShowEmailNotification
 }: UseSidePanelViewDownloadEffectParams): void {
-   useEffect(() => {
-        // Only run when opening the side panel for "prepare"
-        if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
-            setShowToastNotification(false);
-            setIsSidePanelLoader(true);
+  useEffect(() => {
+    // Only run when opening the side panel for "prepare"
+    if (isSidePanelOpen && sidePanelOpenReason === "prepare") {
+      setShowToastNotification(false);
+      setIsSidePanelLoader(true);
 
-            // Wait for 2 seconds before calling view download API
-            const timer = setTimeout(() => {
-                fetchViewDownloadData({
-                    showLoader: false,
-                    setIsSidePanelLoader,
-                    setViewData: (data: any) => {
-                        setViewData(data);
-                        setHasFetchedViewDownload(true);
-                    },
-                    viewDownload,
-                    downloadPollingIntervalRef,
-                    setIsViewDownloadError,
-                    setShowEmailNotification
-                });
-            }, 2000);
+      // Wait for 2 seconds before calling view download API
+      const timer = setTimeout(() => {
+        fetchViewDownloadData({
+          showLoader: false,
+          setIsSidePanelLoader,
+          setViewData: (data: any) => {
+            setViewData(data);
+            setHasFetchedViewDownload(true);
+          },
+          viewDownload,
+          downloadPollingIntervalRef,
+          setIsViewDownloadError,
+          setShowEmailNotification
+        });
+      }, 2000);
 
-            return () => clearTimeout(timer);
-        }
-        if (isSidePanelOpen && sidePanelOpenReason === "view") {
-            setShowToastNotification(false);
-            setIsSidePanelLoader(true);
-            fetchViewDownloadData({
-                showLoader: false,
-                setIsSidePanelLoader,
-                setViewData: (data: any) => {
-                    setViewData(data);
-                    setHasFetchedViewDownload(true);
-                },
-                viewDownload,
-                downloadPollingIntervalRef,
-                setIsViewDownloadError,
-                setShowEmailNotification
-            });
-        }
-        return undefined;
-    }, [isSidePanelOpen, sidePanelOpenReason]);
+      return () => clearTimeout(timer);
+    }
+    if (isSidePanelOpen && sidePanelOpenReason === "view") {
+      setShowToastNotification(false);
+      setIsSidePanelLoader(true);
+      fetchViewDownloadData({
+        showLoader: false,
+        setIsSidePanelLoader,
+        setViewData: (data: any) => {
+          setViewData(data);
+          setHasFetchedViewDownload(true);
+        },
+        viewDownload,
+        downloadPollingIntervalRef,
+        setIsViewDownloadError,
+        setShowEmailNotification
+      });
+    }
+    return undefined;
+  }, [isSidePanelOpen, sidePanelOpenReason]);
 }
 
 interface UseTotalSelectedCountEffectParams {
@@ -333,11 +243,11 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams): void {
   }: UseSearchTermEffectParams = params;
 
   // Define a minimal type for your use case
-    type MinimalInputChangeEvent = { target: { value: string } };
+  type MinimalInputChangeEvent = { target: { value: string } };
 
-    function createInputChangeEvent(value: string): MinimalInputChangeEvent {
-      return { target: { value } };
-    }
+  function createInputChangeEvent(value: string): MinimalInputChangeEvent {
+    return { target: { value } };
+  }
   useEffect(() => {
     if (searchTerm?.length > 1 && !showSearchError && !isSearchTriggered) {
       handleSearchChange(

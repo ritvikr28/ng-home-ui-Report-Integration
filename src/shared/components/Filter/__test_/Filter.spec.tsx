@@ -1,17 +1,12 @@
 
 import React from "react";
-import { render, fireEvent, screen, waitFor, within, getAllByTestId } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import dayjs from "dayjs";
+import { act } from "react-dom/test-utils";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
 import * as logic from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
-import FilterDialog, { FilterDialogProps } from "../Filter";
-import gtmAnalytics from "../../../utils/analytics";
+import FilterDialog from "../Filter";
 import * as ApiService from "../../../../features/DocumentManagementServer/api/ApiService";
-import * as utils from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
-import { ISelectedItem, SelectedItem } from "@essnextgen/ui-kit";
-// import { handleSearchChange } from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
-import { act } from "react-dom/test-utils";
-import { handleSearchChange } from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
 
 
 jest.mock("@essnextgen/ui-intl-kit", () => ({
@@ -59,57 +54,7 @@ const mockSetSelectedDateRange: jest.Mock = jest.fn();
 const mockSetSelectedRelatedTo: jest.Mock = jest.fn();
 const mockSetTagListArray: jest.Mock = jest.fn();
 
-const mockOnItemClick: jest.Mock = jest.fn();
-const mockOnRemoveTag: jest.Mock = jest.fn();
-const mockOnApply: jest.Mock = jest.fn();
-const mockOnClear: jest.Mock = jest.fn();
 
-const createMockProps = (
-  overrides?: Partial<FilterDialogProps>
-): FilterDialogProps => ({
-  dataTestId: "dms-filter-dialog",
-  title: "Filter Documents",
-  isOpen: true,
-  isFilterDialogOpen: true,
-
-  // Close
-  onClose: jest.fn(),
-
-  // Categories
-  selectedCategories: [] as ISelectedItem[],
-  setSelectedCategories: jest.fn(),
-
-  // Apply
-  handleApply: jest.fn(),
-
-  // Date error
-  isDateError: false,
-  setIsDateError: jest.fn(),
-
-  // Date range
-  selectedDateRange: { fromDate: "", toDate: "" },
-  setSelectedDateRange: jest.fn(),
-
-  // Loading
-  isLoading: false,
-
-  // External IDs
-  setReferenceExternalIds: jest.fn(),
-
-  // RelatedTo
-  setDocumentRelatedTo: jest.fn(),
-  selectedRelatedTo: undefined,
-  setSelectedRelatedTo: jest.fn(),
-
-  // Search tags
-  tagListArray: [] as SelectedItem[],
-  setTagListArray: jest.fn(),
-
-  // Search trigger
-  setIsSearchTriggered: jest.fn(),
-
-  ...overrides
-});
 
 
 const defaultProps: any = {
@@ -285,8 +230,8 @@ fireEvent.click(screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
   });
 
   it("handleDateChange sets error for To date without From date", () => {
-    const { getAllByTestId }: { getAllByTestId: (id: string) => HTMLElement[] } = render(<FilterDialog {...defaultProps} />);
-    const dateInputs: HTMLElement[] = getAllByTestId("dms-filter-dialog-date-added");
+    render(<FilterDialog {...defaultProps} />);
+    const dateInputs: HTMLElement[] = screen.getAllByTestId("dms-filter-dialog-date-added");
     fireEvent.change(within(dateInputs[1]).getByPlaceholderText("DD"), { target: { value: "10" } });
     fireEvent.change(within(dateInputs[1]).getByPlaceholderText("MM"), { target: { value: "05" } });
     fireEvent.change(within(dateInputs[1]).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
