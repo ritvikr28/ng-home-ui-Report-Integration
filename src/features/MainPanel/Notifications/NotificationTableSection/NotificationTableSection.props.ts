@@ -1,30 +1,32 @@
-import  React from "react";
+import React from "react";
 
 export interface NotificationTableSectionProps {
-    tableDataError: boolean;
-    tableRows: any[];
-    tableHeadersData: any[];
-    isTableBodyLoading: boolean;
-    sideIsOpen: boolean;
-    setSideIsOpen: (open: boolean) => void;
-    selectedItem: any;
-    setSelectedItem: (item: any) => void;
-    notificationIdSelected: string | undefined;
-    tableData: any[]; 
-    totalTableData: number; 
-    hasSearch: boolean; 
-    hasActiveFilters: boolean; 
-    currentPage: number; 
-    setCurrentPage: (page: number) => void; 
-    setNoResults: React.Dispatch<React.SetStateAction<boolean>>;
-    setTableData: React.Dispatch<React.SetStateAction<any[]>>;
-    setTotalTableData: React.Dispatch<React.SetStateAction<number>>;
-    setTableDataError: React.Dispatch<React.SetStateAction<any>>;
-    setIsTableBodyLoading: React.Dispatch<React.SetStateAction<boolean>>;
-    notificationState: { searchCleared: boolean };
-    setNotificationState: React.Dispatch<React.SetStateAction<{
-        searchCleared: boolean;
-    }>>
+  tableDataError: boolean;
+  tableRows: any[];
+  tableHeadersData: any[];
+  isTableBodyLoading: boolean;
+  sideIsOpen: boolean;
+  setSideIsOpen: (open: boolean) => void;
+  selectedItem: any;
+  setSelectedItem: (item: any) => void;
+  notificationIdSelected: string | undefined;
+  tableData: any[];
+  totalTableData: number;
+  hasSearch: boolean;
+  hasActiveFilters: boolean;
+  currentPage: number;
+  setCurrentPage: (page: number) => void;
+  setNoResults: React.Dispatch<React.SetStateAction<boolean>>;
+  setTableData: React.Dispatch<React.SetStateAction<any[]>>;
+  setTotalTableData: React.Dispatch<React.SetStateAction<number>>;
+  setTableDataError: React.Dispatch<React.SetStateAction<any>>;
+  setIsTableBodyLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  notificationState: { searchCleared: boolean };
+  setNotificationState: React.Dispatch<React.SetStateAction<{
+    searchCleared: boolean;
+  }>>;
+  filterBtnClicked: boolean;
+  setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface AutoSuggestItem {
@@ -67,13 +69,13 @@ export interface serachKeyPressedObjectType {
 
 
 export interface NotificationTableHandlerOptions {
-    inputValue: string;
-    currentPage: number;
-    sortBy: string;
-    sortDirection: boolean | undefined;
-    setIsTableBodyLoading: (v: boolean) => void;
-    setTableData: (v: any[]) => void;
-    setTotalTableData: (v: number) => void;
-    setTableDataError: (v: boolean) => void;
-    setNoResults: (v: boolean) => void;
+  inputValue: string;
+  currentPage: number;
+  sortBy: string;
+  sortDirection: boolean | undefined;
+  setIsTableBodyLoading: (v: boolean) => void;
+  setTableData: (v: any[]) => void;
+  setTotalTableData: (v: number) => void;
+  setTableDataError: (v: boolean) => void;
+  setNoResults: (v: boolean) => void;
 }

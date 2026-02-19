@@ -1,4 +1,3 @@
-// src/features/MainPanel/Notifications/Notifications.view.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import NotificationView from "../Notifications.view";

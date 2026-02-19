@@ -63,10 +63,6 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
     setTotalTableData?: Dispatch<SetStateAction<number>>;
     setTableDataError?: Dispatch<SetStateAction<boolean>>;
 }): UseNotificationReturn => {
-        const [filterBtnClicked, setFilterBtnClicked]: [
-            boolean,
-            Dispatch<SetStateAction<boolean>>
-        ] = useState<boolean>(false);
 
         const [notifications]: [
             any[],
@@ -358,8 +354,6 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
 
 
         return {
-            filterBtnClicked,
-            setFilterBtnClicked,
             currentPage,
             setCurrentPage,
             totalPages,

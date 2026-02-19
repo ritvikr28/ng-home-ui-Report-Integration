@@ -56,8 +56,6 @@ export type NotificationTableData = {
 }[]
 
 export interface UseNotificationReturnType {
-  filterBtnClicked: boolean;
-  setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
   currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   totalPages: number;

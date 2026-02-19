@@ -145,6 +145,8 @@ const getDefaultProps = (overrides = {}) => ({
     setIsTableBodyLoading: jest.fn(),
     notificationState: { searchCleared: false },
     setNotificationState: jest.fn(),
+    filterBtnClicked: false,
+    setFilterBtnClicked: jest.fn(),
     ...overrides
 });
 
@@ -173,7 +175,7 @@ describe("NotificationTableSection", () => {
     it("calls setFilterBtnClicked when Filter button is clicked", () => {
         const setFilterBtnClicked = jest.fn();
         UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setFilterBtnClicked });
-        render(<NotificationTableSection {...getDefaultProps()} />);
+        render(<NotificationTableSection {...getDefaultProps({ setFilterBtnClicked })} />);
         const filterBtn = screen.getByTestId("filter");
         fireEvent.click(filterBtn);
         expect(setFilterBtnClicked).toHaveBeenCalledWith(true);

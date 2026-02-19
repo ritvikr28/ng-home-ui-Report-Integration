@@ -587,6 +587,7 @@ export const fetchDocumentCategoryData = async ({
     const response = await fetchDocumentCategory(payload);
     setCategoryError(false);
     const isSuccess = response?.status === 200;
+    const isNotFound = response?.status === 404;
     /* eslint-disable */
     if (isSuccess) {
       const data = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
@@ -598,6 +599,11 @@ export const fetchDocumentCategoryData = async ({
       );
       setLocalSelectedCategories(filteredFormats || []);
       return data;
+    } else if (isNotFound) {
+      setCategoryError(false);
+      setAvailableCategories([]);
+      setLocalSelectedCategories([]);
+      return [];
     } else {
       setCategoryError(true);
       setAvailableCategories([]);

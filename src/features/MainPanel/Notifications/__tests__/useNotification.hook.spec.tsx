@@ -126,13 +126,6 @@ describe("useNotification hook", () => {
     const { result } = renderHook(() => useNotification({ tableData: [], totalTableData: 9, currentPage: 1, setCurrentPage: () => { } }));
     expect(result.current.currentPage).toBe(1);
     expect(result.current.totalPages).toBe(1);
-    // expect(result.current.totalNotifications).toBe(deterministicNotifications.length);
-    // expect(result.current.paginatedNotifications).toHaveLength(deterministicNotifications.length);
-    expect(result.current.filterBtnClicked).toBe(false);
-    act(() => {
-      result.current.setFilterBtnClicked(true);
-    });
-    expect(result.current.filterBtnClicked).toBe(true);
     act(() => {
       result.current.handlePageChange(null, 5);
     });

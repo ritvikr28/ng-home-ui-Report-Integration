@@ -19,10 +19,14 @@ const NotificationView: React.FC = () => {
     const [isTableBodyLoading, setIsTableBodyLoading]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(false);
     const [tableDataError, setTableDataError]: [any, Dispatch<SetStateAction<any>>] = useState<any>(false);
     const [notificationIdSelected, setNotificationIdSelected]: [string | undefined, Dispatch<SetStateAction<string | undefined>>] = useState<string | undefined>(undefined);
+    const [filterBtnClicked, setFilterBtnClicked]: [
+        boolean,
+        Dispatch<SetStateAction<boolean>>
+    ] = useState<boolean>(false);
 
     const {
-        filterBtnClicked,
-        setFilterBtnClicked,
+        // filterBtnClicked,
+        // setFilterBtnClicked,
         // currentPage,
         // totalPages,
         // totalNotifications,
@@ -52,11 +56,13 @@ const NotificationView: React.FC = () => {
         // handleSort
     }: UseNotificationReturnType = useNotification({ tableData, totalTableData, currentPage, setCurrentPage, setIsTableBodyLoading, setTotalTableData, setTableDataError });
 
+    console.log("filterBtnClicked---------------", filterBtnClicked)
+
     const [sideIsOpen, setSideIsOpen]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(false);
     const [selectedItem, setSelectedItem]: [any, Dispatch<SetStateAction<any>>] = useState<any>("");
 
     const tableHeadersData: NotificationTableData = useMemo(
-        () => getNotificationTableHeadersData({sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem}),
+        () => getNotificationTableHeadersData({ sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem }),
         [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
     );
 
@@ -119,14 +125,11 @@ const NotificationView: React.FC = () => {
                         hasActiveFilters={hasActiveFilters}
                         sideIsOpen={sideIsOpen}
                         selectedItem={selectedItem}
-                        // tableWrapperRef={tableWrapperRef}
                         tableDataError={tableDataError}
                         tableRows={tableRows}
                         tableHeadersData={tableHeadersData}
                         isTableBodyLoading={isTableBodyLoading}
                         notificationIdSelected={notificationIdSelected}
-                        // controlledListProps={{}} // Provide appropriate controlledListProps here
-                        // totalPages={totalPages}
                         setSideIsOpen={setSideIsOpen}
                         setSelectedItem={setSelectedItem}
                         currentPage={currentPage}
@@ -138,6 +141,8 @@ const NotificationView: React.FC = () => {
                         setIsTableBodyLoading={setIsTableBodyLoading}
                         notificationState={notificationState}
                         setNotificationState={setNotificationState}
+                        filterBtnClicked={filterBtnClicked}
+                        setFilterBtnClicked={setFilterBtnClicked}
                     />
                     {filterBtnClicked && (
                         <FilterDialogLogic

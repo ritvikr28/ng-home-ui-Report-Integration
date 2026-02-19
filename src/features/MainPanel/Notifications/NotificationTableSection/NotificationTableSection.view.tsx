@@ -41,11 +41,10 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
     setTableDataError,
     setIsTableBodyLoading,
     notificationState,
-    setNotificationState
+    setNotificationState,
+    setFilterBtnClicked
 }) => {
     const {
-        // filterBtnClicked,
-        setFilterBtnClicked,
         totalNotifications,
         totalPages,
         // handlePageChange,
@@ -182,7 +181,10 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                                 className="filter-btn-clc"
                                 color={ButtonColor.Utility}
                                 data-testid="filter"
-                                onClick={() => setFilterBtnClicked(true)}
+                                onClick={() => {
+                                    console.log("Filter button clicked");
+                                    setFilterBtnClicked(true)
+                                }}
                                 size={ButtonSize.Small}
                                 iconName="filter"
                                 iconColor={IconColor.Neutral800}

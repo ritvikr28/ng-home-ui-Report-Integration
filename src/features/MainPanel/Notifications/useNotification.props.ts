@@ -2,8 +2,6 @@ import React from "react";
 import { Suggestion } from "./Notifications.props";
 
 export type UseNotificationReturn = {
-    filterBtnClicked: boolean;
-    setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     totalPages: number;

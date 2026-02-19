@@ -54,24 +54,6 @@ describe("useNotification", () => {
         });
     });
 
-    describe("filterBtnClicked state", () => {
-        it("should update filterBtnClicked", () => {
-            const { result } = getHook();
-
-            act(() => {
-                result.current.setFilterBtnClicked(true);
-            });
-
-            expect(result.current.filterBtnClicked).toBe(true);
-
-            act(() => {
-                result.current.setFilterBtnClicked(false);
-            });
-
-            expect(result.current.filterBtnClicked).toBe(false);
-        });
-    });
-
     describe("filteredRows - status filter", () => {
 
         it("should filter by multiple statuses", () => {

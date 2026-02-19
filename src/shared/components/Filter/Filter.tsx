@@ -840,6 +840,9 @@ const handleDateChange = (
                   tagListValueArray={localTagListArray}
                   onRemoveTag={handleRemoveTag}
                   tagListBoxLabelText={t("Filter.Added")}
+                  noDataTemplate={`${t(
+                         "DocumentManagementServer.FirstPart"
+                          )} - {value} - ${t("DocumentManagementServer.SecondPart")}`}
                 />
           </>
         )}
