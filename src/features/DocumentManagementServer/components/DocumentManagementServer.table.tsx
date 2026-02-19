@@ -16,6 +16,7 @@ import { getTableHeadersData } from "../logic/DocumentManagementServer.logic";
 
 interface Props {
   t: any;
+  searchNoDataTemplate: string;
   tableKey: number;
   tableData: any[];
   totalPage: number;
@@ -516,6 +517,7 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isSidePanelLoader,
     sidePanelTitle: t("DocumentManagementServer.sidePanelTitle"),
     subHeadingText: t("DocumentManagementServer.subHeadingText"),
+    searchNoDataTemplate: `${t("DocumentManagementServer.FirstPart")} - {value} - ${t("DocumentManagementServer.SecondPart")}`
   };
 }
 const DmsControlledList: React.FC<Props> = (props) =>

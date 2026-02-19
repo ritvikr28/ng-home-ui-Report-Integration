@@ -43,6 +43,7 @@ const baseProps: any = {
 	totalPage: 1,
 	currentPage: 1,
 	isInitialLoad: false,
+	searchNoDataTemplate: "",
 	searchInput: "",
 	searchTerm: "",
 	filteredSuggestions: [],

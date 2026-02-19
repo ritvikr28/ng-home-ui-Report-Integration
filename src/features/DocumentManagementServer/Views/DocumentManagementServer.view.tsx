@@ -516,7 +516,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           visibleBreadcrumbs={visibleBreadcrumbs}
         >
           <DmsControlledList
-            {...{
+             {...{
               t,
               tableKey,
               tableData,
@@ -529,6 +529,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               filteredSuggestions,
               isSearchLoading,
               issearchDataLoading,
+              searchNoDataTemplate: "",
               showErrorBanner,
               showSearchError,
               isSearchTriggered,
@@ -537,7 +538,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               searchTagListRaw,
               onPageChange,
               handleSorting: (columnName: string) => {
-                handleSorting(
+                 handleSorting(
                   columnName,
                   sortBy,
                   setSortBy,
