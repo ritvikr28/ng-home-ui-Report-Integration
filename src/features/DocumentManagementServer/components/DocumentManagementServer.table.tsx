@@ -256,7 +256,6 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     setSelectedRelatedTo,
     tagListArray,
     setTagListArray,
-    setIsSearchTriggered,
     searchText,
     setSearchText,
     setSearchInput
@@ -358,7 +357,6 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     setDateRange,
     setSearchText,
     setSearchRefExternalId,
-    setIsSearchTriggered,
     setIsHeaderBoxChecked,
     searchText,
     setIsClearSelectedCheckbox,
@@ -449,7 +447,6 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
         setTableKey,
         setIsInitialLoad,
         handleSuggestionClick,
-        setIsSearchTriggered,
         setSelectedFormats,
         setSelectedRelatedTo,
         setSelectedEntities,

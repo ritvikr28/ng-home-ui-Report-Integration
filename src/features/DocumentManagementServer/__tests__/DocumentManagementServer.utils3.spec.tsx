@@ -1,4 +1,3 @@
-import * as Helpers from "../logic/DocumentManagementServer.utils";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { getDialogConfig } from "../logic/DocumentManagementServer.dialog.config";
 
