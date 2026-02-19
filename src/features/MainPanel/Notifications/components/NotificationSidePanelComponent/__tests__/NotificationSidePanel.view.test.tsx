@@ -33,7 +33,7 @@ describe("NotificationSidePanelView", () => {
     it("renders SidePanel when sideIsOpen is true", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -61,7 +61,7 @@ describe("NotificationSidePanelView", () => {
     it("calls setSideIsOpen(false) when Close button is clicked", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -75,7 +75,7 @@ describe("NotificationSidePanelView", () => {
     it("renders notification text as null when selectedItem is undefined", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 notificationIdSelected={notificationIdSelected}
             />
@@ -88,7 +88,7 @@ describe("NotificationSidePanelView", () => {
     it("always renders static message when panel is open", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -101,7 +101,7 @@ describe("NotificationSidePanelView", () => {
     it("calls setSideIsOpen(false) when SidePanel onClose is triggered", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -115,7 +115,7 @@ describe("NotificationSidePanelView", () => {
     it("Button has correct props", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -130,7 +130,7 @@ describe("NotificationSidePanelView", () => {
     it("SidePanel receives correct props", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -144,7 +144,7 @@ describe("NotificationSidePanelView", () => {
     it("updates notification text when selectedItem changes", async () => {
         const { rerender } = render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 selectedItem={{ ...selectedItemObj, body: "First" }}
                 setSelectedItem={mockSetSelectedItem}
@@ -154,7 +154,7 @@ describe("NotificationSidePanelView", () => {
         expect((await screen.findByTestId("notification-text")).textContent).toBe("Test Title");
         rerender(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={jest.fn()}
                 selectedItem={{ ...selectedItemObj, body: "Second" }}
                 setSelectedItem={mockSetSelectedItem}
@@ -169,7 +169,7 @@ describe("NotificationSidePanelView", () => {
         (getViewData as jest.Mock).mockResolvedValue({ error: "API Error" });
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -184,7 +184,7 @@ describe("NotificationSidePanelView", () => {
         (getViewData as jest.Mock).mockImplementation(() => new Promise(res => { resolveGetViewData = res; }));
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -210,7 +210,7 @@ describe("NotificationSidePanelView", () => {
         (getViewData as jest.Mock).mockImplementation(() => new Promise(res => { resolveGetViewData = res; }));
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -238,7 +238,7 @@ describe("NotificationSidePanelView", () => {
         (getViewData as jest.Mock).mockResolvedValue({ error: "API Error" });
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -254,7 +254,7 @@ describe("NotificationSidePanelView", () => {
         const unreadItem = { ...selectedItemObj, Status: "Unread" };
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={unreadItem}
                 setSelectedItem={mockSetSelectedItem}
@@ -267,7 +267,7 @@ describe("NotificationSidePanelView", () => {
     it("does not call markAsRead if selectedItem is undefined", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 setSelectedItem={mockSetSelectedItem}
                 notificationIdSelected={notificationIdSelected}
@@ -281,7 +281,7 @@ describe("NotificationSidePanelView", () => {
         const unreadItem = { ...selectedItemObj, Status: "Unread" };
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={unreadItem}
                 setSelectedItem={mockSetSelectedItem}
@@ -296,7 +296,7 @@ describe("NotificationSidePanelView", () => {
         const item = { ...selectedItemObj, Status: "Read" };
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={item}
                 setSelectedItem={mockSetSelectedItem}
@@ -310,7 +310,7 @@ describe("NotificationSidePanelView", () => {
     it("calls setSelectedItem with data.payload when getViewData succeeds", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -325,7 +325,7 @@ describe("NotificationSidePanelView", () => {
         (markAsRead as jest.Mock).mockResolvedValue({ error: "markAsRead error" });
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}
@@ -339,7 +339,7 @@ describe("NotificationSidePanelView", () => {
     it("does not call setSelectedItem if not provided", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 notificationIdSelected={notificationIdSelected}
@@ -352,7 +352,7 @@ describe("NotificationSidePanelView", () => {
     it("renders null for notification text and static message if selectedItem is undefined", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 notificationIdSelected={notificationIdSelected}
             />
@@ -365,7 +365,7 @@ describe("NotificationSidePanelView", () => {
     it("calls formattedDate with receivedDate", async () => {
         render(
             <NotificationSidePanelView
-                sideIsOpen={true}
+                sideIsOpen
                 setSideIsOpen={mockSetSideIsOpen}
                 selectedItem={selectedItemObj}
                 setSelectedItem={mockSetSelectedItem}

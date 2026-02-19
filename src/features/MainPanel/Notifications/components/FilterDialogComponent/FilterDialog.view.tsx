@@ -18,85 +18,86 @@ interface FilterDialogViewProps {
     onClose: () => void;
 }
 
-const FilterDialogView = ({ 
-    status, 
-    setStatus, 
-    priority, 
-    setPriority, 
-    startDate, 
-    setStartDate, 
-    endDate, 
-    setEndDate,
-    startDateError,
-    onApply,
-    onClear,
-    onClose
-}: FilterDialogViewProps) => {
-    const [isDialogOpen, setIsDialogOpen] = React.useState(true);
+const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, setStartDate, endDate, setEndDate, startDateError,
+    onApply, onClear, onClose }: FilterDialogViewProps) => JSX.Element = ({
+        status,
+        setStatus,
+        priority,
+        setPriority,
+        startDate,
+        setStartDate,
+        endDate,
+        setEndDate,
+        startDateError,
+        onApply,
+        onClear,
+        onClose
+    }: FilterDialogViewProps) => {
+        const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState(true);
 
-    const handleClose = () => {
-        setIsDialogOpen(false);
-        onClose();
-    };
+        const handleClose: () => void = () => {
+            setIsDialogOpen(false);
+            onClose();
+        };
 
-    const handleApply = () => {
-        if (startDateError) {
-            return;
-        }
-        onApply();
-        setIsDialogOpen(false);
-    };
+        const handleApply: () => void = () => {
+            if (startDateError) {
+                return;
+            }
+            onApply();
+            setIsDialogOpen(false);
+        };
 
-    const handleClear = () => {
-        onClear();
-    };
+        const handleClear: () => void = () => {
+            onClear();
+        };
 
-    return (
-        <>
-            <Dialog
-                className="dialog-class"
-                dataTestId="test-id"
-                isOpen={isDialogOpen}
-                escapeExits
-                returnFocusOnDeactivate
-                id="element-id"
-                onClose={handleClose}
-                title="Filter by"
-            >
-                <DialogContent>
-                    <Content 
-                        startDate={startDate} 
-                        setStartDate={setStartDate} 
-                        endDate={endDate} 
-                        setEndDate={setEndDate} 
-                        status={status} 
-                        setStatus={setStatus} 
-                        priority={priority} 
-                        setPriority={setPriority}
-                        startDateError={startDateError}
-                    />
-                </DialogContent>
-                <DialogFooter>
-                    <div className="dialog-footer" style={{ display: "flex", gap: "24px", width: "100%", flexDirection: "row-reverse" }}>
-                        <Button
-                            dataTestId="apply-btn"
-                            onClick={handleApply}
-                            color={ButtonColor.Primary}
-                        >
-                            Apply
-                        </Button>
-                        <Button
-                            dataTestId="clear-all-btn"
-                            onClick={handleClear}
-                            color={ButtonColor.Secondary}
-                        >
-                            Clear all
-                        </Button>
-                    </div>
-                </DialogFooter>
-            </Dialog>
-        </>
-    )
-}
+        return (
+            <>
+                <Dialog
+                    className="dialog-class"
+                    dataTestId="test-id"
+                    isOpen={isDialogOpen}
+                    escapeExits
+                    returnFocusOnDeactivate
+                    id="element-id"
+                    onClose={handleClose}
+                    title="Filter by"
+                >
+                    <DialogContent>
+                        <Content
+                            startDate={startDate}
+                            setStartDate={setStartDate}
+                            endDate={endDate}
+                            setEndDate={setEndDate}
+                            status={status}
+                            setStatus={setStatus}
+                            priority={priority}
+                            setPriority={setPriority}
+                            startDateError={startDateError}
+                        />
+                    </DialogContent>
+                    <DialogFooter>
+                        <div className="dialog-footer" style={{ display: "flex", gap: "24px", width: "100%", flexDirection: "row-reverse" }}>
+                            <Button
+                                dataTestId="apply-btn"
+                                onClick={handleApply}
+                                color={ButtonColor.Primary}
+                            >
+                                Apply
+                            </Button>
+                            <Button
+                                dataTestId="clear-all-btn"
+                                onClick={handleClear}
+                                color={ButtonColor.Secondary}
+                            >
+                                Clear all
+                            </Button>
+                        </div>
+                    </DialogFooter>
+                </Dialog>
+            </>
+        )
+    }
 
 export default FilterDialogView;

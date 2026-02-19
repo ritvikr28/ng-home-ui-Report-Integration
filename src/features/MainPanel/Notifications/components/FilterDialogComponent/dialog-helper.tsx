@@ -17,7 +17,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     // endDate,
     startDateError
 }) => {
-    const { t } = useTranslation();
+    const { t }: { t: (key: string) => string } = useTranslation();
     // const handleStatusChange = (value: string) => {
     //     setStatus((prev: string[]) => {
     //         if (prev.includes(value)) {
@@ -258,8 +258,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         // month={startDateParsed.month}
                         // year={startDateParsed.year}
                         onChange={(day: string | number, month: string | number, year: string | number) => {
-                            const formattedDay = String(day).padStart(2, '0');
-                            const formattedMonth = String(month).padStart(2, '0');
+                            const formattedDay: string = String(day).padStart(2, '0');
+                            const formattedMonth: string = String(month).padStart(2, '0');
                             if (setStartDate) setStartDate(`${year}-${formattedMonth}-${formattedDay}`);
                         }}
                         onError={() => { }}
@@ -280,8 +280,8 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         // month={endDateParsed.month}
                         // year={endDateParsed.year}
                         onChange={(day: string | number, month: string | number, year: string | number) => {
-                            const formattedDay = String(day).padStart(2, '0');
-                            const formattedMonth = String(month).padStart(2, '0');
+                            const formattedDay: string = String(day).padStart(2, '0');
+                            const formattedMonth: string = String(month).padStart(2, '0');
                             if (setEndDate) setEndDate(`${year}-${formattedMonth}-${formattedDay}`);
                         }}
                         onError={() => { }}

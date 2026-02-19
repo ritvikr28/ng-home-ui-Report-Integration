@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { useMediaQuery } from "@essnextgen/ui-kit";
 import RagStatus from "../SystemStatus.view";
 
@@ -96,9 +96,11 @@ describe("RagStatus Component", () => {
     expect(screen.queryByTestId("btn-collapse")).not.toBeInTheDocument();
   });
 
-  it("should render LocalisedMenu with correct defaultSelectedMenu", () => {
+  it("should render LocalisedMenu with correct defaultSelectedMenu", async () => {
     mockUseMediaQuery.mockReturnValue(false);
-    render(<RagStatus />);
+    await act(async () => {
+      render(<RagStatus />);
+    });
     // The LocalisedMenu is not mocked, but we can check for the menu heading text
     expect(screen.getByText("Admin console")).toBeInTheDocument();
   });
