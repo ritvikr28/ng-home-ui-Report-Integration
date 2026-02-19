@@ -291,7 +291,6 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         setSelectedRelatedTo={setSelectedRelatedTo}
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
-        setIsSearchTriggered={setIsSearchTriggered}
         searchText={searchText}
         setSearchText={setSearchText}
         setSearchInput={setSearchInput}

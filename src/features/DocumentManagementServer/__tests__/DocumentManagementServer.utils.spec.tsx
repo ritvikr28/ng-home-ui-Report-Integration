@@ -1,5 +1,6 @@
 import * as Helpers from "../logic/DocumentManagementServer.utils";
 import gtmAnalytics from "../../../shared/utils/analytics";
+import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -145,18 +146,33 @@ describe("DocumentManagementServer.helpers", () => {
   /* -------------------------------------------------- */
 
   it("returns info unavailable", () => {
-    const result: any = Helpers.getResultNotFoundMsg(
-      t,"",{}, "", true,false,false,[],{fromDate:"",toDate:""}
-    );
-    expect(result).toBe("Information unavailable.");
+    const result: any = Helpers.getResultNotFoundMsg({
+      t,
+      searchText: "",
+      docData: {},
+      showErrorBanner: false,
+      isSearchTriggered: false,
+      showSearchError: false,
+      selectedFormats: [],
+      dateRange: { fromDate: "", toDate: "" },
+      searchTerm: ""
+    });
+    expect(result).toBe("DocumentManagementServer.searchBarText");
   });
 
   it("returns no data", () => {
-    const result: any = Helpers.getResultNotFoundMsg(
-      t,"search",{statusCode:200,data:[]},
-      "",false,true,false,[],{fromDate:"",toDate:""}
-    );
-    expect(result).toContain("DocumentManagementServer.noDataToDisplay");
+    const result: any = Helpers.getResultNotFoundMsg({
+      t,
+      searchText: "search",
+      docData: { statusCode: 200, data: [] },
+      isSearchTriggered: false,
+      showSearchError: true,
+      selectedFormats: [],
+      dateRange: { fromDate: "", toDate: "" },
+      searchTerm: "",
+      showErrorBanner: false
+    });
+    expect(result).toContain("Information unavailable.");
   });
 
   /* -------------------------------------------------- */
@@ -215,7 +231,7 @@ describe("DocumentManagementServer.helpers", () => {
     const setSortBy: any = jest.fn();
     const setSortDirection: any = jest.fn();
 
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.dateAddedColumn"),
       "",
       setSortBy,
@@ -233,7 +249,7 @@ describe("DocumentManagementServer.helpers", () => {
   /* -------------------------------------------------- */
 
   it("unchecks all checkbox", () => {
-    Helpers.handleOnChangeAllCheckBox(
+    handleOnChangeAllCheckBox(
       {target:{checked:false}},
       jest.fn() as any,
       jest.fn(),
@@ -387,7 +403,7 @@ it("toggles sort direction when sortBy matches apiColumnName", () => {
   const setSortDirection: any = jest.fn();
 
 
-  Helpers.handleSorting(
+  handleSorting(
     t("DocumentManagementServer.dateAddedColumn"), // columnName
     "DateAdded", // sortBy matches apiColumnName
     setSortBy,
@@ -418,7 +434,7 @@ it("removes id from selectedCheckBoxIds and allSelectedDocs if already selected"
   // Mock setAllSelectedDocs to call its updater immediately
   setAllSelectedDocs.mockImplementation((updater: (arg0: any) => any) => updater(prevDocs));
 
-  Helpers.handleOnChangeCheckBox(
+  handleOnChangeCheckBox(
     0,
     "1",
     docData,
@@ -446,7 +462,7 @@ it("adds id to selectedCheckBoxIds and allSelectedDocs if not already selected",
 
   setAllSelectedDocs.mockImplementation((updater: (arg0: any) => any) => updater(prevDocs));
 
-  Helpers.handleOnChangeCheckBox(
+  handleOnChangeCheckBox(
     0,
     "3",
     docData,
@@ -461,7 +477,7 @@ it("adds id to selectedCheckBoxIds and allSelectedDocs if not already selected",
 
 
 it("returns null if dialogType is not provided", () => {
-  const result: any = Helpers.getDialogConfig({ dialogType: null } as any);
+  const result: any = getDialogConfig({ dialogType: null } as any);
   expect(result).toBeNull();
 });
 
@@ -470,7 +486,7 @@ it("returns config for clearAll dialogType", () => {
   const setShowConfirmDialog: any = jest.fn();
   const setClearAllError: any = jest.fn();
   const handleClearAllConfirm: any = jest.fn();
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "clearAll",
     t,
     setShowConfirmDialog,
@@ -541,7 +557,7 @@ it("returns config for clearAll dialogType and click onConfirm", async () => {
   const setShowConfirmDialog: any = jest.fn();
   const setClearAllError: any = jest.fn();
   const handleClearAllConfirm: any = jest.fn();
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "clearAll",
     t,
     setShowConfirmDialog,
@@ -624,7 +640,7 @@ it("returns config for delete dialogType", async () => {
   const setTableKey: any = jest.fn();
   const fetchGetDocumentDetails: any = jest.fn();
 
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "delete",
     t,
     availableFileCount: 1,

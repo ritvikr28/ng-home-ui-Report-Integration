@@ -684,11 +684,11 @@ describe('fileDownload', () => {
     originalCreateElement = document.createElement;
     document.createElement = jest.fn(() => mockLink);
     originalGetElementById = document.getElementById;
-    document.getElementById = jest.fn(() => {
-  const el = Object.create(HTMLElement.prototype);
-  el.parentElement = parent;
-  return el;
-});
+    document.getElementById = jest.fn(() =>
+      ({
+        parentElement: parent
+      } as unknown as HTMLElement)
+    );
     window.URL.createObjectURL = jest.fn(() => 'blob:url');
     window.URL.revokeObjectURL = jest.fn();
   mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');

@@ -1,5 +1,6 @@
 import * as Helpers from "../logic/DocumentManagementServer.utils";
 import gtmAnalytics from "../../../shared/utils/analytics";
+import { getDialogConfig } from "../logic/DocumentManagementServer.dialog.config";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -35,7 +36,7 @@ it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyD
   const setPrevSelectedDocs: any = jest.fn();
   const setExcludedCheckBoxIds: any = jest.fn();
 
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "prepareDownload",
     t: (k: string) => k,
     availableFileCount: 1,
@@ -113,7 +114,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
   const setIsSidePanelLoader: any = jest.fn();
 
   // error branch: status not 204 or 409
-  let config: any = Helpers.getDialogConfig({
+  let config: any = getDialogConfig({
     dialogType: "prepareDownload",
     t: (k: string) => k,
     availableFileCount: 1,
@@ -177,7 +178,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
   // expect(gtmAnalytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: "error_message" }));
 
   // abort branch: status 409
-  config = Helpers.getDialogConfig({
+  config = getDialogConfig({
     ...config,
     dialogType: "prepareDownload",
     t: (k: string) => k,
@@ -242,7 +243,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
   // expect(gtmAnalytics.pushEvent).toHaveBeenCalledWith(expect.objectContaining({ event: "error_message" }));
 
   // email notification branch: all statuses 204 or 409, totalSelectedCount > 1
-  config = Helpers.getDialogConfig({
+  config = getDialogConfig({
     ...config,
     dialogType: "prepareDownload",
     t: (k: string) => k,
@@ -306,7 +307,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
   // expect(setShowEmailNotification).toHaveBeenCalled();
 
   // catch branch: rejected promise
-  config = Helpers.getDialogConfig({
+  config = getDialogConfig({
     ...config,
     dialogType: "prepareDownload",
     t: (k: string) => k,
@@ -384,7 +385,7 @@ it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyD
   const setExcludedCheckBoxIds: jest.Mock<void, [any]> = jest.fn();
   const setTableKey: jest.Mock<void, [any]> = jest.fn();
 
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "delete",
     t: (k: string) => k,
     availableFileCount: 1,

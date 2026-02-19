@@ -9,12 +9,12 @@ jest.mock("@essnextgen/ui-kit", () => {
   return {
     ...original,
     Search: React.forwardRef((props: any, ref) => {
-      const handleRef = (node: any) => {
+      const handleRef: any = (node: any) => {
         if (node) {
           Object.defineProperty(node, "propsRef", {
             value: props,
             writable: true,
-            configurable: true,
+            configurable: true
           });
           if (typeof ref === "function") {
             ref(node);

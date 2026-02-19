@@ -538,7 +538,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setShowEmailNotification={setShowEmailNotification}
                   setShowToastNotification={setShowToastNotification}
                   setFailedFileName={setFailedFileName}
-                  fileDownload={prepareDownload}
                   gtmAnalytics={gtmAnalytics}
                 />
               )
