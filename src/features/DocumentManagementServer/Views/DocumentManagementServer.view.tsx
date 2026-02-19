@@ -13,102 +13,14 @@ import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, handleSorting, handleOnChangeAllCheckBox, handleOnChangeCheckBox, getDeleteDialogMessages, getDialogConfig, breadcrumbActionsList, applySummaryTagClass } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission } from "../logic/DocumentManagementServer.utils";
 import { useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DocumentManagement.sidepanel";
+import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
+import { DeleteSuccessToast, MainContent, SideNavigation } from "./DMSLayout";
 
-const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
-  show,
-  availableFileCount,
-  t
-}: {
-  show: boolean;
-  availableFileCount: number;
-  t: any;
-}) => (
-  <div className="clc-dms-delete-toast">
-    {show && (
-      <Notification
-        status={NotificationStatus.SUCCESSTOAST}
-        title={
-          availableFileCount === 1
-            ? t("DocumentManagementServer.documentDeleted")
-            : t("DocumentManagementServer.documentsDeleted")
-        }
-        autoclose
-        hideCloseButton
-      />
-    )}
-  </div>
-);
-const SideNavigation: React.FC<{ isOpen: boolean; isMobileView: boolean; visibleBreadcrumbs: any[]; handleButtonClick: () => void; setIsOpen: (isOpen: boolean) => void; t: any }> = ({
-
-  isOpen,
-  isMobileView,
-  visibleBreadcrumbs,
-  handleButtonClick,
-  setIsOpen,
-  t
-}: any) => (
-  <GridItem className={!isMobileView ? "side-width" : "no-side-width"}>
-    {!isOpen && (
-      <Button
-        className="base-class"
-        color={ButtonColor.Utility}
-        dataTestId="btn-collapse"
-        iconColor={IconColor.Neutral800}
-        iconName="open-panel--left--filled"
-        onClick={handleButtonClick}
-        size={ButtonSize.Small}
-      />
-    )}
-
-    <LocalisedMenu
-      customHeight={100}
-      menuHeading={t("DocumentManagementServer.adminconsole")}
-      onCloseSideNavigationPanel={() => setIsOpen(false)}
-      isOpenSideNavigation={isOpen}
-      defaultSelectedMenu={{
-        text: "Documents",
-        value: window.location.href
-      }}
-    />
-
-    {isMobileView && (
-      <Breadcrumbs
-        breadcrumbActions={visibleBreadcrumbs}
-        className="essui-Breadcrumbs"
-        dataTestId="breadcrumb-test-id"
-        id="element-id"
-        onItemClick={onBreadcrumbClick}
-      />
-    )}
-  </GridItem>
-);
-
-const MainContent: React.FC<{ isMobileView: boolean; isOpen: boolean; visibleBreadcrumbs: any[]; children: React.ReactNode }> = ({
-  isMobileView,
-  isOpen,
-  visibleBreadcrumbs,
-  children
-}: any) => (
-  <GridItem className={isOpen ? "clc-dms-isopen" : "clc-dms-isclose"}>
-    <div style={{ marginBottom: 16, width: "100%" }}>
-      {!isMobileView && (
-        <Breadcrumbs
-          breadcrumbActions={visibleBreadcrumbs}
-          className="essui-Breadcrumbs"
-          dataTestId="breadcrumb-test-id"
-          id="element-id"
-          onItemClick={onBreadcrumbClick}
-        />
-      )}
-      <div className="grid-wrapper">{children}</div>
-    </div>
-  </GridItem>
-);
 
 const DocumentManagementServerView: () => JSX.Element = () => {
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
@@ -179,20 +91,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   // eslint-disable-next-line no-unused-expressions
   prevSelectedDocs
-  // Just for time being we are using this. Will remove later.Kiwan Fix WIP
-  // const setPrepareDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setPrepareDownloadAbortBanner: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setClearAllError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setShowEmailNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setShowToastNotification: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setFailedFileName: React.Dispatch<React.SetStateAction<string[]>> = () => {};  
-  // const setHasFetchedViewDownload: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setIsViewDownloadError: React.Dispatch<React.SetStateAction<boolean>> = () => {};
-  // const setPrevSelectedDocs: React.Dispatch<React.SetStateAction<string[]>> = () => {};
-  const hasDMSDeletePermissions: boolean = authService.isAuthorised(
-    [{ Securable: "NG.DocumentManagementServer.Documents", Operation: "Delete" }],
-    MatchPermissions.all
-  );
+
+  const hasDMSDeletePermissions: boolean = hasDMSDeletePermission();
 
   const location: Location = useLocation();
 
@@ -216,23 +116,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
   const allRegistrationIds: number[] = getAllRegistrationIds(selectedFormats);
 
-  let tableData: any[] = [];
-
-  if (showSearchError || !docData?.data?.length) {
-    tableData = [];
-  } else if (docData?.data) {
-    tableData = docData?.data.map((doc: DocumentRow) => ({
-      id: doc?.fileId,
-      Document: doc?.document,
-      Relatedto: mapRelatedArr(doc) || "",
-      Category: (doc?.category && CapitalizeFirstLetter(doc?.category)) || "",
-      Addedby: doc?.addedBy || "",
-      "Date added": doc?.dateAdded && dayjs(doc?.dateAdded).format("DD MMM YYYY") || "",
-      Format: doc?.format,
-      Size: doc?.size,
-      isShowCheckBox: true
-    }));
-  }
+ const tableData: any[] = mapTableData(docData, showSearchError);
+  
 
   const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
     handlePageChange(event, page, setCurrentPage, setIsSearchDataLoading, setIsSearchTriggered);
@@ -303,7 +188,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   console.log("Search closed, all states reset to initial values.", sortBy, sortDirection);
 
   useEffect(() => {
-    const allRegistrationId = getAllRegistrationIds(selectedFormats);
+    const allRegistrationId: any[] = getAllRegistrationIds(selectedFormats);
 
     if (!isFilterDialogOpen && isSearchTriggered && searchText) {
       setIsInitialLoad(true);
@@ -370,7 +255,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     t, setSearchTerm, setSuggestions, setShowSearchError, setIsSearchLoading, setShowErrorBanner
   });
 
-  const resultNotFoundMSG: string | undefined = getResultNotFoundMsg(t, searchText, docData, searchTerm, showErrorBanner, isSearchTriggered, showSearchError, selectedFormats, dateRange);
+  const resultNotFoundMSG: string | undefined = getResultNotFoundMsg({t, searchText, docData, searchTerm, showErrorBanner, isSearchTriggered, showSearchError, selectedFormats, dateRange});
   const filteredSuggestions: any[] = filterNonEmptySuggestions(suggestions);
 
   const handleBulkDelete: () => Promise<void> = () =>
@@ -507,8 +392,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           setIsOpen={setIsOpen}
           t={t}
         />
-
-
 
         <MainContent
           isMobileView={isMobileView}

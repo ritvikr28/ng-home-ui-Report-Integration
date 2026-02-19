@@ -747,9 +747,9 @@ describe('fileDownload', () => {
   });
 
   it('sets download error if bulkDownload throws', async () => {
-  const fileId: string = 'file-zip';
-  const fileName: string = 'test.zip';
-  const blobName: string = 'blob-zip';
+  const fileId= 'file-zip';
+  const fileName = 'test.zip';
+  const blobName = 'blob-zip';
 
   jest.spyOn(ApiService, 'bulkDownload').mockRejectedValueOnce(new Error('fail'));
   const setDownloadError: jest.Mock<void, [boolean]> = jest.fn();

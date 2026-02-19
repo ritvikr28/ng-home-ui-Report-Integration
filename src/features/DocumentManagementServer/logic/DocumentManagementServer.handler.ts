@@ -187,7 +187,7 @@ const isInvalidDateRange = (
   return !!fromInvalid || !!toInvalid;
 };
 
-export const validateAndApplyFilter = ({
+export const validateAndApplyFilter: (params: any) => void = ({
   selectedDateRange,
   isDateError,
   setIsDateError,
@@ -235,7 +235,7 @@ export const validateAndApplyFilter = ({
 /* Bulk Delete                                                         */
 /* ------------------------------------------------------------------ */
 
-export const handleBulkDeleteLogic = async ({
+export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
   allSelectedDocs,
   allRegistrationIds,
   dateRange,

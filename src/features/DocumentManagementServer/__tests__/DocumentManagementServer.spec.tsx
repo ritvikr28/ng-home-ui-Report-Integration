@@ -223,14 +223,14 @@ const mockSuggestions: any = {
     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
     /* eslint-disable */
     global.ResizeObserver = global.ResizeObserver || class {
-      observe(): void { 
+      observe(): void {
         // no-op
       }
-      unobserve(): void { 
-          // no-op
+      unobserve(): void {
+        // no-op
       }
-      disconnect(): void { 
-          // no-op
+      disconnect(): void {
+        // no-op
       }
     };
     /* eslint-enable */

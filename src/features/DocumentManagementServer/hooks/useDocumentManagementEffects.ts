@@ -115,7 +115,7 @@ export function useSidePanelViewDownloadEffect({
       setIsSidePanelLoader(true);
 
       // Wait for 2 seconds before calling view download API
-      const timer = setTimeout(() => {
+      const timer: NodeJS.Timeout = setTimeout(() => {
         fetchViewDownloadData({
           showLoader: false,
           setIsSidePanelLoader,
