@@ -2,9 +2,9 @@ import React from "react";
 import dayjs from "dayjs";
 import { Suggestion, ValidationTextLevel, SelectedItem, ISelectedItem, ISearchItemProp } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
+import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { Category } from "../responseModel";
 import { homeurl } from "../../../../public/Constants";
-import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions";
 
 // Define types for related entities
@@ -176,7 +176,6 @@ export const getResultNotFoundMsg: (params: GetResultNotFoundMsgParams) => strin
   t,
   searchText,
   docData,
-  searchTerm,
   showErrorBanner,
   isSearchTriggered,
   showSearchError,
@@ -519,11 +518,4 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     isShowCheckBox: true
   }));
 };
-export function handleSorting(arg0: string, arg1: string, setSortBy: jest.Mock<any, any>, arg3: string, setSortDirection: jest.Mock<any, any>, arg5: any) {
-  throw new Error("Function not implemented.");
-}
-
-export function getDialogConfig(arg0: unknown): any {
-  throw new Error("Function not implemented.");
-}
 

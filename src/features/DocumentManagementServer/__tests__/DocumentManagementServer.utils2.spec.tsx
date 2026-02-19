@@ -1,5 +1,5 @@
+import { getDialogConfig, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
 import * as Helpers from "../logic/DocumentManagementServer.utils";
-import gtmAnalytics from "../../../shared/utils/analytics";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -25,9 +25,7 @@ describe("DocumentManagementServer.helpers", () => {
 
 
 describe("getExtraDeletedMessage", () => {
-  const t: (key: string, options?: any) => string = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
-
+  
   it("returns single document deleted message when deletedCount === 1", () => {
    
     // sum = 1+1+2+1=5, totalRecords=5, so totalRecords !== sum is false, so no message
@@ -224,29 +222,14 @@ describe("addUniqueTagItem", () => {
 describe("handleSorting", () => {
   const setSortBy: jest.Mock = jest.fn();
   const setSortDirection: jest.Mock = jest.fn();
-  const t: (key: string) => string = (key: string) => {
-    switch (key) {
-      case "DocumentManagementServer.dateAddedColumn":
-        return "dateAdded";
-      case "DocumentManagementServer.documentColumn":
-        return "document";
-      case "DocumentManagementServer.formatColumn":
-        return "format";
-      case "DocumentManagementServer.sizeColumn":
-        return "size";
-      case "DocumentManagementServer.categoryColumn":
-        return "category";
-      default:
-        return key;
-    }
-  };
+  
 
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
   it("handles dateAddedColumn", () => {
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.dateAddedColumn"),
       "",
       setSortBy,
@@ -259,7 +242,7 @@ describe("handleSorting", () => {
   });
 
   it("handles documentColumn", () => {
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.documentColumn"),
       "",
       setSortBy,
@@ -272,7 +255,7 @@ describe("handleSorting", () => {
   });
 
   it("handles formatColumn", () => {
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.formatColumn"),
       "",
       setSortBy,
@@ -285,7 +268,7 @@ describe("handleSorting", () => {
   });
 
   it("handles sizeColumn", () => {
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.sizeColumn"),
       "",
       setSortBy,
@@ -298,7 +281,7 @@ describe("handleSorting", () => {
   });
 
   it("handles categoryColumn", () => {
-    Helpers.handleSorting(
+    handleSorting(
       t("DocumentManagementServer.categoryColumn"),
       "",
       setSortBy,
@@ -311,7 +294,7 @@ describe("handleSorting", () => {
   });
 
   it("toggles direction if sortBy matches apiColumnName", () => {
-    Helpers.handleSorting(
+    handleSorting(
       "DateAdded",
       "DateAdded",
       setSortBy,
@@ -323,7 +306,7 @@ describe("handleSorting", () => {
   });
 
   it("returns early for unknown column", () => {
-    Helpers.handleSorting(
+    handleSorting(
       "unknown",
       "",
       setSortBy,
@@ -337,7 +320,6 @@ describe("handleSorting", () => {
 });
 
 describe("getDialogTitle", () => {
-  const t: any = (key: string) => key;
 
   it("returns single restricted title", () => {
     const result: string = Helpers.getDialogTitle(1, 0, 0, 1, false, t as any);
@@ -377,7 +359,7 @@ describe("getDialogTitle", () => {
 it("returns config for default dialogType", async () => {
   
   const setShowConfirmDialog: any = jest.fn();
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "prepareDownload", 
     t,
     availableFileCount: 1,
@@ -452,7 +434,7 @@ it("returns config for default dialogType", async () => {
 
 it("returns correct contentText when alreadyDeletedFileCount is 1", () => {
   const setShowConfirmDialog: any = jest.fn();
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "prepareDownload",
     t,
     availableFileCount: 1,
@@ -518,7 +500,7 @@ it("returns correct contentText when deletedCount === 1", () => {
   const setShowConfirmDialog: any = jest.fn();
   // totalRecords = 3, alreadyDeletedFileCount = 0, restrictedFileCount = 0, availableFileCount = 1, excludedCheckBoxIds.length = 1
   // sum = 0 + 0 + 1 + 1 = 2, totalRecords = 3, so deletedCount = 1
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "prepareDownload",
     t,
     availableFileCount: 1,
@@ -584,7 +566,7 @@ it("returns correct contentText when deletedCount > 1", () => {
   const setShowConfirmDialog: any = jest.fn();
   // totalRecords = 5, alreadyDeletedFileCount = 0, restrictedFileCount = 0, availableFileCount = 1, excludedCheckBoxIds.length = 1
   // sum = 0 + 0 + 1 + 1 = 2, totalRecords = 5, so deletedCount = 3
-  const config: any = Helpers.getDialogConfig({
+  const config: any = getDialogConfig({
     dialogType: "prepareDownload",
     t,
     availableFileCount: 1,

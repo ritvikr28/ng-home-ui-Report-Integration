@@ -1,9 +1,6 @@
 import React from "react";
-import { ISelectedItem } from "@essnextgen/ui-kit";
 import * as Logic from "../logic/DocumentManagementServer.handler";
-import gtmAnalytics from "../../../shared/utils/analytics";
-import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleBulkDeleteLogic, handleClearAllConfirm, handleEditSelectedOverFlowMenu, handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
-import { applySummaryTagClass, hasItems } from "../logic/DocumentManagementServer.utils";
+import { handleBulkDeleteLogic, handleEditSelectedOverFlowMenu } from "../logic/DocumentManagementServer.handler";
 import { mapToBulkDeletePayload } from "../logic/DocumentManagementServer.logic";
 
 jest.mock("../../../shared/utils/analytics", () => ({
@@ -17,8 +14,6 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
     isInvalidDateRange: jest.fn(() => false),
   };
 });
-
-const handlerModule: any = require("../logic/DocumentManagementServer.handler");
 
 
 
@@ -813,7 +808,6 @@ describe("handleEditSelectedOverFlowMenu", () => {
     const categoryId: any[] = [];
     const fromDate: any = "";
     const toDate: any = "";
-    const documentRelatedTo: any = 1;
     const setResetFilterSearch: any = jest.fn();
 
 

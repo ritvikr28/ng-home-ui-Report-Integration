@@ -1,3 +1,4 @@
+import React from "react";
 import { TFunction } from "@essnextgen/ui-intl-kit";
 import { DialogTemplate, NotificationStatus } from "@essnextgen/ui-kit";
 import { GetDialogConfigParams, DialogConfig, SelectedDocument } from "../responseModel";

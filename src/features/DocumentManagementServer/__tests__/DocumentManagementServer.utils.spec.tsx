@@ -303,7 +303,7 @@ describe("DocumentManagementServer.helpers", () => {
         </div>
       `;
       Helpers.applySummaryTagClass();
-      const tagLists: NodeListOf<HTMLElement> = document.querySelectorAll('.search-tagList');
+      const tagLists: any = document.querySelectorAll('.search-tagList');
       expect(tagLists[0].classList.contains('summary-tag')).toBe(true);
       expect(tagLists[1].classList.contains('summary-tag')).toBe(false);
     });

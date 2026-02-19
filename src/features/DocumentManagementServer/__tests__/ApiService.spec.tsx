@@ -311,9 +311,8 @@ describe('fetchDocumentCategory', () => {
 
   test('should return partitionKey if all branches fail', async () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce({}); // No error.response.status
-    const { clearAllFiles }: { clearAllFiles: (payload: any) => Promise<any> } = await import('../api/ApiService');
-    const testPayload: { request: { partitionKey: string[] } } = { request: { partitionKey: ['key1', 'key2'] } };
-    const result: any = await clearAllFiles(testPayload);
+    const { clearAllFiles: importedClearAllFiles }: { clearAllFiles: (arg: any) => Promise<any> } = await import('../api/ApiService');    const testPayload: { request: { partitionKey: string[] } } = { request: { partitionKey: ['key1', 'key2'] } };
+    const result: any = await importedClearAllFiles(testPayload);
     expect(result).toEqual(['key1', 'key2']);
   })
 });

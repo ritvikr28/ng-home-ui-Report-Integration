@@ -1,10 +1,7 @@
 import React from "react";
-import { act } from "@testing-library/react-hooks";
 import { render } from "@testing-library/react";
 import * as ApiService from "../api/ApiService";
 import * as logicModule from "../logic/DocumentManagementServer.logic";
-import analytics from "../../../shared/utils/analytics";
-import { mapToBulkDeletePayload } from "../logic/DocumentManagementServer.logic";
 
 
 // const analytics = require('../../../shared/utils/analytics').default;

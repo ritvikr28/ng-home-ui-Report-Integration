@@ -1,10 +1,7 @@
-import React from "react";
-import { ISelectedItem } from "@essnextgen/ui-kit";
-import * as Logic from "../logic/DocumentManagementServer.handler";
+
 import gtmAnalytics from "../../../shared/utils/analytics";
-import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleBulkDeleteLogic, handleClearAllConfirm, handleEditSelectedOverFlowMenu, handlePageChange, handleSuggestionClick, handleTagCloseLogic, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
-import { applySummaryTagClass, hasItems } from "../logic/DocumentManagementServer.utils";
-import { mapToBulkDeletePayload } from "../logic/DocumentManagementServer.logic";
+import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleClearAllConfirm, handlePageChange, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
+import { applySummaryTagClass } from "../logic/DocumentManagementServer.utils";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()

@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from "react"
 import { useLocation } from "react-router-dom";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
-import { LocalisedMenu } from "@essnextgen/ui-application-kit"
-import { authService, MatchPermissions } from "@essnextgen/auth-ui";
-import { Grid, GridItem, Button, ButtonColor, Notification, IconColor, ButtonSize, Breadcrumbs, NotificationStatus, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
-import dayjs from "dayjs"
-import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, getTitleConfirmation, onBreadcrumbClick, prepareDownload } from "../logic/DocumentManagementServer.logic"
+import { Grid, useMediaQuery, ISelectedItem, SelectedItem, Suggestion } from "@essnextgen/ui-kit"
+import { buildSelectedDocs, buildValidationPayload, fetchGetDocumentDetailsLogic, fetchViewDownloadData, getTitleConfirmation, prepareDownload } from "../logic/DocumentManagementServer.logic"
 import "../style.scss"
-import { BreadcrumbAction, DateRange, DialogType, DocumentData, DocumentRow, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
+import { BreadcrumbAction, DateRange, DialogType, DocumentData, SelectedDocument, SidePanelReason, ViewDownloadItem } from "../responseModel"
 import { pageSizeNumber } from "../../../../public/Constants"
-import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, mapRelatedArr, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission } from "../logic/DocumentManagementServer.utils";
 import { useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
