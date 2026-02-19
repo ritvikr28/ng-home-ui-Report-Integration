@@ -24,123 +24,71 @@ jest.mock("@essnextgen/auth-ui", () => ({
   }
 }));
 
- jest.mock("@essnextgen/ui-intl-kit", () => ({
-  ...jest.requireActual("@essnextgen/ui-intl-kit"),
-  useTranslation: () => ({
-    t: (key: string, options?: any) => {
-      if (key === "DocumentManagementServer.ExpiresInDays") {
-        // Handle pluralization if needed
-        return `Expires in ${options?.count ?? options?.days ?? "?"} day(s).`;
+jest.mock("@essnextgen/ui-intl-kit", () => {
+  const translationMap: Record<string, string> = {
+    "DocumentManagementServer.ExpiresToday": "Expires today.",
+    "DocumentManagementServer.headingText": "Documents",
+    "DocumentManagementServer.Home": "Home",
+    "DocumentManagementServer.ViewDownload": "View downloads",
+    "DocumentManagementServer.sidePanelTitle": "Downloads",
+    "DocumentManagementServer.subHeadingText": "Bulk download or delete documents for pupils, staff members, or the school.",
+    "DocumentManagementServer.dateAddedColumn": "Date added",
+    "DocumentManagementServer.documentColumn": "Document",
+    "DocumentManagementServer.formatColumn": "Format",
+    "DocumentManagementServer.sizeColumn": "Size",
+    "DocumentManagementServer.categoryColumn": "Category",
+    "DocumentManagementServer.editSelectedBtnTitle": "Actions",
+    "DocumentManagementServer.PrepareDownload": "Prepare download",
+    "DocumentManagementServer.Delete": "Delete",
+    "DocumentManagementServer.keepIt": "Keep it",
+    "DocumentManagementServer.noItemsSelectedMessage": "Please select at least one item from the search results to perform the action.",
+    "Filter.applyFilters": "Search",
+    "DocumentManagementServer.clearAllDownloadsTitle": "Clear all downloads?",
+    "DocumentManagementServer.keepAll": "Keep all",
+    "DocumentManagementServer.documentsCannotBeDownloaded": "documents cannot be downloaded as they have already been deleted.",
+    "DocumentManagementServer.documentCannotBeDeletedNotification": "This document cannot be deleted as it is currently being prepared for download. Please try again later",
+    "Filter.invalidDate": "Invalid Date",
+    "Filter.Pupil": "Pupil",
+    "Filter.pupilName": "Pupil name",
+    "DocumentManagementServer.Cancel": "Cancel",
+    "DocumentManagementServer.Okay": "Okay",
+    "DocumentManagementServer.informationUnavailable": "Information unavailable"
+  };
+
+  return {
+    ...jest.requireActual("@essnextgen/ui-intl-kit"),
+    useTranslation: () => ({
+      t: (key: string, options?: any) => {
+        if (key === "DocumentManagementServer.ExpiresInDays") {
+          return `Expires in ${options?.count ?? options?.days ?? "?"} day(s).`;
+        }
+        if (key === "DocumentManagementServer.documentWillBeGoneForever") {
+          return `${options?.count ?? "?"} document will be gone forever once deleted.`;
+        }
+        if (key === "DocumentManagementServer.documentsWillBeGoneForever") {
+          return `${options?.all ?? ""}${options?.count ?? "?"} documents will be gone forever once deleted.`;
+        }
+        if (key === "DocumentManagementServer.documentsAlreadyDeletedMsg") {
+          return `${options?.all ?? ""}${options?.count ?? "?"} documents have already been deleted.`;
+        }
+        if (key === "DocumentManagementServer.allSelectedDocumentsAlreadyDeleted") {
+          return "All selected documents have already been deleted.";
+        }
+        if (key === "DocumentManagementServer.documentsCannotBeDownloadedMsg") {
+          return `${options?.all ?? ""}${options?.count ?? "?"} documents cannot be downloaded as they have been deleted.`;
+        }
+        if (key === "DocumentManagementServer.documentCannotBeDownloadedMsg") {
+          return "This document cannot be downloaded as it has been deleted.";
+        }
+        if (key === "DocumentManagementServer.prepareSingleDocument") {
+          return `${options?.count ?? "?"} document is about to be prepared for downloading.`;
+        }
+        // fallback to static map or key itself
+        return translationMap[key] ?? key;
       }
-      if (key === "DocumentManagementServer.ExpiresToday") {
-        return "Expires today.";
-      }
-      if (key === "DocumentManagementServer.headingText") {
-        return "Documents";
-      }
-      if (key === "DocumentManagementServer.Home") {
-        return "Home";
-      }
-      if (key === "DocumentManagementServer.ViewDownload") {
-        return "View downloads";
-      }
-      if (key === "DocumentManagementServer.sidePanelTitle") {
-        return "Downloads";
-      }
-      if (key === "DocumentManagementServer.subHeadingText") {
-        return "Bulk download or delete documents for pupils, staff members, or the school.";
-      }
-      if (key === "DocumentManagementServer.dateAddedColumn") {
-        return "Date added";
-      }
-      if (key === "DocumentManagementServer.documentColumn") {
-        return "Document";
-      }
-      if (key === "DocumentManagementServer.formatColumn") {
-        return "Format";
-      }
-      if (key === "DocumentManagementServer.sizeColumn") {
-        return "Size";
-      }
-      if (key === "DocumentManagementServer.categoryColumn") {
-        return "Category";
-      }
-      if (key === "DocumentManagementServer.editSelectedBtnTitle") {
-        return "Actions";
-      }
-      if (key === "DocumentManagementServer.PrepareDownload") {
-        return "Prepare download";
-      }
-      if (key === "DocumentManagementServer.ViewDownload") {
-        return "View download";
-      }
-      if (key === "DocumentManagementServer.Delete") {
-        return "Delete";
-      }
-      if (key === "DocumentManagementServer.keepIt") {
-        return "Keep it";
-      }
-      if (key === "DocumentManagementServer.noItemsSelectedMessage") {
-        return "Please select at least one item from the search results to perform the action.";
-      }
-      if (key === "Filter.applyFilters") {
-        return "Search";
-      }
-      if (key === "DocumentManagementServer.documentWillBeGoneForever") {
-        return `${options?.count ?? "?"} document will be gone forever once deleted.`;
-      }
-      if (key === "DocumentManagementServer.documentsWillBeGoneForever") {
-        return `${options?.all ?? ""}${options?.count ?? "?"} documents will be gone forever once deleted.`;
-      }
-      if (key === "DocumentManagementServer.documentsAlreadyDeletedMsg") {
-        return `${options?.all ?? ""}${options?.count ?? "?"} documents have already been deleted.`;
-      }
-      if (key === "DocumentManagementServer.allSelectedDocumentsAlreadyDeleted") {
-        return "All selected documents have already been deleted.";
-      }
-      if (key === "DocumentManagementServer.documentsCannotBeDownloadedMsg") {
-        return `${options?.all ?? ""}${options?.count ?? "?"} documents cannot be downloaded as they have been deleted.`;
-      }
-       if (key === "DocumentManagementServer.documentCannotBeDownloadedMsg") {
-        return "This document cannot be downloaded as it has been deleted.";
-      }
-      if (key === "DocumentManagementServer.prepareSingleDocument") {
-        return `${options?.count ?? "?"} document is about to be prepared for downloading.`;
-      }
-      if (key === "DocumentManagementServer.clearAllDownloadsTitle") {
-        return "Clear all downloads?";
-      }
-      if (key === "DocumentManagementServer.keepAll") {
-        return "Keep all";
-      }
-      if (key === "DocumentManagementServer.documentsCannotBeDownloaded") {
-        return "documents cannot be downloaded as they have already been deleted.";
-      }
-      if (key === "DocumentManagementServer.documentCannotBeDeletedNotification") {
-        return "This document cannot be deleted as it is currently being prepared for download. Please try again later";
-      }
-      if (key === "Filter.invalidDate") {
-        return "Invalid Date";
-      }
-      if (key === "Filter.Pupil") {
-        return "Pupil";
-      }
-      if (key === "Filter.pupilName") {
-        return "Pupil name";
-      }
-      if (key === "DocumentManagementServer.Cancel") {
-        return "Cancel";
-      }
-      if (key === "DocumentManagementServer.Okay") {
-        return "Okay";
-      }
-      if (key === "DocumentManagementServer.informationUnavailable") {
-        return "Information unavailable";
-      }
-      return key;
-    }
-  })
-}));
+    })
+  };
+});
 
 
  
@@ -206,7 +154,7 @@ const mockDocData: { statusCode: number; totalRecords: number; data: Array<{ fil
       registrationId: 10,
       relatedTo: [],
     }
-  ],
+  ]
 };
 
 const zipFileDownloadMockData: { statusCode: number; payload: string; errorMessage: null } = {
@@ -275,9 +223,15 @@ const mockSuggestions: any = {
     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
     /* eslint-disable */
     global.ResizeObserver = global.ResizeObserver || class {
-      observe(): void { }
-      unobserve(): void { }
-      disconnect(): void { }
+      observe(): void { 
+        // no-op
+      }
+      unobserve(): void { 
+          // no-op
+      }
+      disconnect(): void { 
+          // no-op
+      }
     };
     /* eslint-enable */
   })

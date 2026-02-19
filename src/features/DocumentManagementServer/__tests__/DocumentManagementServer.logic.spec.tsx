@@ -385,7 +385,7 @@ describe("getTableHeadersData advanced rendering edge cases", () => {
 
   it("renders truncated value with tooltip if length > 25", () => {
     const column: ReturnType<typeof logicModule.getTableHeadersData>[number] | undefined = headers.find(h => h.text === "DocumentManagementServer.formatColumn");
-    const longValue: string = "averylongformatnamethatisdefinitelymorethan25chars";
+    const longValue = "averylongformatnamethatisdefinitelymorethan25chars";
     const { container }: { container: HTMLElement } = render(<>{column?.anyComponent?.(longValue)}</>);
     expect(container).toHaveTextContent("averylongformatnamethatisdefinitelymorethan25chars".substring(0, 25));
   });

@@ -689,7 +689,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
   });
 
   const baseArgs: any = {
-    e: {} as React.SyntheticEvent,
+    e: {} as unknown as React.SyntheticEvent,
     selectedItem: { value: "Prepare download" },
     totalSelectedCount: 1,
     isHeaderBoxChecked: false,
@@ -804,7 +804,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
 
   it("clears suggestions and loading for whitespace-only input", () => {
     const t: any = (key: string) => key;
-    const event: any = { target: { value: "   " } } as React.ChangeEvent<HTMLInputElement>;
+    const event: any = { target: { value: "   " } } as unknown as React.ChangeEvent<HTMLInputElement>;
     const setSearchTerm: any = jest.fn();
     const setSuggestions: any = jest.fn();
     const setShowSearchError: any = jest.fn();

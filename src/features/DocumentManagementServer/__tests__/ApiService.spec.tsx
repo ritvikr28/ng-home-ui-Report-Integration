@@ -94,7 +94,7 @@ describe('clearAllFiles', () => {
     jest.clearAllMocks();
   });
 
-  const partitionKeys: string[] = ['key1', 'key2'];
+  const partitionKeys= ['key1', 'key2'];
   const mockResponse: AxiosResponse = {
     data: { success: true },
     status: 200,
@@ -252,7 +252,7 @@ describe('clearAllFiles', () => {
 describe('fetchDocumentCategory', () => {
   const payload : { CategoryRequest: { ReferenceExternalId: string } } = { CategoryRequest: { ReferenceExternalId: "1" } };
   const mockData: { categoryId: number, category: string }[] = [{ categoryId: 1, category: "Test" }];
-  const mockUrl: string = '/validation/api/v1/data-export/get-linked-files-category-by-id';
+  const mockUrl = '/validation/api/v1/data-export/get-linked-files-category-by-id';
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -348,8 +348,8 @@ describe('viewDownload', () => {
 });
 
 describe('fetchStaffProfilePhoto', () => {
-  const mockExternalId: string = 'abc123';
-  const mockUrl: string = `/api/v1/personThumbnailImage/${mockExternalId}`;
+  const mockExternalId = 'abc123';
+  const mockUrl = `/api/v1/personThumbnailImage/${mockExternalId}`;
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -400,8 +400,8 @@ describe('fetchStaffProfilePhoto', () => {
 
 describe("prepareAndDownloadFile", () => {
   const payload: { request: { foo: string } } = { request: { foo: "bar" } };
-  const baseUrl: string = "https://dev.platform.sims.co.uk";
-  const url: string = "/validation/api/v1/file/preparedownload";
+  const baseUrl = "https://dev.platform.sims.co.uk";
+  const url = "/validation/api/v1/file/preparedownload";
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -499,7 +499,7 @@ describe("validation API", () => {
     jest.clearAllMocks();
   });
 
-  const PLATFORM_BASEURLS: string = "https://dev.platform.sims.co.uk";
+  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
   const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
 
   it("returns response on success", async () => {
@@ -533,7 +533,7 @@ describe("deleteFiles API", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  const PLATFORM_BASEURLS: string = "https://dev.platform.sims.co.uk";
+  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
   const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
   axios.delete = jest.fn();
 
@@ -573,11 +573,11 @@ describe("deleteFiles API", () => {
 });
 
 describe('bulkDownload', () => {
-  const mockBlobName: string = 'test_blob';
-  const mockFileName: string = 'test_file.txt';
-  const encodedBlobName: string = encodeURIComponent(mockBlobName);
-  const encodedFileName: string = encodeURIComponent(mockFileName);
-  const expectedUrl: string = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodedBlobName}&BulkDownloadRequest.FileName=${encodedFileName}`;
+  const mockBlobName = 'test_blob';
+  const mockFileName= 'test_file.txt';
+  const encodedBlobName = encodeURIComponent(mockBlobName);
+  const encodedFileName = encodeURIComponent(mockFileName);
+  const expectedUrl = `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=${encodedBlobName}&BulkDownloadRequest.FileName=${encodedFileName}`;
 
   beforeEach(() => {
     jest.clearAllMocks();

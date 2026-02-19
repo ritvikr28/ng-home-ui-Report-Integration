@@ -378,7 +378,7 @@ describe("referenceMappingDetails deduplication", () => {
 });
 
 describe("buildSelectedDocs", () => {
-  const categoryRegistrationMap: number[] = [1, 2];
+  const categoryRegistrationMap = [1, 2];
 
   it("returns empty array if selectedCheckBoxIds is not an array", () => {
     expect(logicModule.buildSelectedDocs(undefined as any, { data: [] }, categoryRegistrationMap, [""], 0, undefined as any, false,[], {fromDate:"", toDate:""}, undefined as any, [])).toEqual([]);
@@ -545,8 +545,8 @@ describe("buildSelectedDocs", () => {
       ],
       totalRecords: 1
     };
-    const selectedCheckBoxIds: string[] = [];
-    const excludedCheckBoxIds: string[] = [];
+    const selectedCheckBoxIds = [""];
+    const excludedCheckBoxIds = [""];
     const isHeaderBoxChecked = true;
 
     const result: any = logicModule.buildSelectedDocs(
@@ -573,9 +573,9 @@ describe("buildSelectedDocs", () => {
       ],
       totalRecords: 2
     };
-    const selectedCheckBoxIds: string[] = ["1", "2"];
-    const excludedCheckBoxIds: string[] = ["1", "2"];
-    const isHeaderBoxChecked: boolean = true;
+    const selectedCheckBoxIds = ["1", "2"];
+    const excludedCheckBoxIds = ["1", "2"];
+    const isHeaderBoxChecked = true;
 
     const result: any = logicModule.buildSelectedDocs(
       selectedCheckBoxIds,
@@ -600,9 +600,9 @@ describe("buildSelectedDocs", () => {
       ]
       // totalRecords is missing
     };
-    const selectedCheckBoxIds: string[] = ["1"];
-    const excludedCheckBoxIds: string[] = ["1"];
-    const isHeaderBoxChecked: boolean = true;
+    const selectedCheckBoxIds = ["1"];
+    const excludedCheckBoxIds = ["1"];
+    const isHeaderBoxChecked = true;
 
     const result: any = logicModule.buildSelectedDocs(
       selectedCheckBoxIds,
@@ -626,7 +626,7 @@ describe("Added by column anyComponent", () => {
   const addedByColumn: any = logicModule.getTableHeadersData(t).find(h => h.text === "DocumentManagementServer.addedByColumn");
 
   test("renders plain value if length <= 12", () => {
-    const value: string = "ShortName";
+    const value = "ShortName";
     const { container, getByText }: { container: HTMLElement; getByText: (text: string) => HTMLElement } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
     expect(getByText("ShortName")).toBeInTheDocument();
     // Sho{ container, getByText }uld not render tooltip
@@ -641,27 +641,27 @@ describe("Added by column anyComponent", () => {
   });
 
   test("renders plain value if length <= 12", () => {
-  const value: string = "ShortName";
+  const value = "ShortName";
   const { container, getByText }: { container: HTMLElement; getByText: (text: string) => HTMLElement } = render(<>{addedByColumn?.anyComponent?.(value)}</>);
   expect(getByText("ShortName")).toBeInTheDocument();
   expect(container.querySelector('[data-testid="tooltip-addedby"]')).toBeNull();
 });
 
   it("renders truncated value with tooltip if string length > 10", () => {
-    expect(addedByColumn).toBeDefined();
-    expect(addedByColumn?.anyComponent).toBeDefined();
-    const longValue: string = "averylongsizename";
-    const { container }: { container: HTMLElement } = render(<>{addedByColumn!.anyComponent!(longValue)}</>);
-    expect(container).toHaveTextContent(longValue.substring(0, 12));
-  });
+  expect(addedByColumn).toBeDefined();
+  expect(addedByColumn?.anyComponent).toBeDefined();
+  const longValue = "averylongsizename";
+  const { container }: { container: HTMLElement } = render(<>{addedByColumn?.anyComponent?.(longValue)}</>);
+  expect(container).toHaveTextContent(longValue.substring(0, 12));
+});
 
-  it("renders truncated value with tooltip if array first value length > 10", () => {
-    expect(addedByColumn).toBeDefined();
-    expect(addedByColumn?.anyComponent).toBeDefined();
-    const longValue: string = "averylongsizename";
-    const { container }: { container: HTMLElement } = render(<>{addedByColumn!.anyComponent!([longValue, "other"])}</>);
-    expect(container).toHaveTextContent(longValue.substring(0, 12));
-  });
+it("renders truncated value with tooltip if array first value length > 10", () => {
+  expect(addedByColumn).toBeDefined();
+  expect(addedByColumn?.anyComponent).toBeDefined();
+  const longValue = "averylongsizename";
+  const { container }: { container: HTMLElement } = render(<>{addedByColumn?.anyComponent?.([longValue, "other"])}</>);
+  expect(container).toHaveTextContent(longValue.substring(0, 12));
+});
 });
 
 describe('fileDownload', () => {
@@ -678,6 +678,7 @@ describe('fileDownload', () => {
       get href(): string { return this.hrefValue; },
       set download(val: string) { this.downloadValue = val; },
       get download(): string { return this.downloadValue; },
+      // ...other properties if needed...
     };
     parent = {
       appendChild: jest.fn(),
@@ -686,7 +687,11 @@ describe('fileDownload', () => {
     originalCreateElement = document.createElement;
     document.createElement = jest.fn(() => mockLink);
     originalGetElementById = document.getElementById;
-    document.getElementById = jest.fn(() => ({ parentElement: parent }) as unknown as HTMLElement);
+    document.getElementById = jest.fn(() => {
+  const el = Object.create(HTMLElement.prototype);
+  el.parentElement = parent;
+  return el;
+});
     window.URL.createObjectURL = jest.fn(() => 'blob:url');
     window.URL.revokeObjectURL = jest.fn();
   mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
@@ -699,10 +704,10 @@ describe('fileDownload', () => {
   });
 
   it('downloads zip file using SAS URL from bulkDownload', async () => {
-    const fileId: string = 'file-zip';
-    const fileName: string = 'test.zip';
-    const blobName: string = 'blob-zip';
-    const payloadUrl: string = 'https://example.com/file.zip';
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
+    const payloadUrl = 'https://example.com/file.zip';
   const mockBulkDownload: jest.SpyInstance = jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({ payload: payloadUrl });
     // Simulate isZipFile logic by passing .zip fileName and blobName
     await logicModule.fileDownload(
@@ -721,9 +726,9 @@ describe('fileDownload', () => {
   });
 
   it('throws error if bulkDownload returns no payload', async () => {
-    const fileId: string = 'file-zip';
-    const fileName: string = 'test.zip';
-    const blobName: string = 'blob-zip';
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
     jest.spyOn(ApiService, 'bulkDownload').mockResolvedValueOnce({});
     await expect(
       logicModule.fileDownload(fileId, fileName, '', '', blobName)
@@ -731,9 +736,9 @@ describe('fileDownload', () => {
   });
 
   it('throws error if bulkDownload throws', async () => {
-    const fileId: string = 'file-zip';
-    const fileName: string = 'test.zip';
-    const blobName: string = 'blob-zip';
+    const fileId = 'file-zip';
+    const fileName = 'test.zip';
+    const blobName = 'blob-zip';
     jest.spyOn(ApiService, 'bulkDownload').mockRejectedValueOnce(new Error('fail'));
     await expect(
       logicModule.fileDownload(fileId, fileName, '', '', blobName)

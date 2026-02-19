@@ -11,8 +11,6 @@ jest.mock("../../../../public/Constants", () => ({
 
 describe("DocumentManagementServer.helpers", () => {
 
-  const t: (key: string, options?: any) => string = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -25,8 +23,6 @@ describe("DocumentManagementServer.helpers", () => {
 
 
 describe("getExtraDeletedMessage", () => {
-  const t: (key: string, options?: any) => string = (key: string, options?: any) =>
-    options ? `${key}-${JSON.stringify(options)}` : key;
 
  
 it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyDeletedFileCount > 0 (default case)", () => {
@@ -462,7 +458,7 @@ it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyD
 
 it("setSelectedCheckBoxIds updater removes id if already present", () => {
   // Simulate the updater function
-  const id: string = "1";
+  const id = "1";
   const updater: (prevSelectedIds: string[]) => string[] = (prevSelectedIds: string[]) => {
     const updatedCheckBoxIds: string[] = Array.isArray(prevSelectedIds) ? [...prevSelectedIds] : [];
     if (updatedCheckBoxIds.includes(id)) {
@@ -474,7 +470,7 @@ it("setSelectedCheckBoxIds updater removes id if already present", () => {
 });
 
 it("setSelectedCheckBoxIds updater adds id if not present", () => {
-  const id: string = "3";
+  const id = "3";
   const updater: (prevSelectedIds: string[]) => string[] = (prevSelectedIds: string[]) => {
     const updatedCheckBoxIds: string[] = Array.isArray(prevSelectedIds) ? [...prevSelectedIds] : [];
     if (updatedCheckBoxIds.includes(id)) {
