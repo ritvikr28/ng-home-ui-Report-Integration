@@ -1,11 +1,13 @@
 import React from "react";
 // import { renderHook } from "@testing-library/react-hooks";
 import { render, screen, cleanup, fireEvent, waitFor, act, within } from "@testing-library/react";
+import { renderHook } from '@testing-library/react-hooks';
 import { MemoryRouter } from "react-router-dom";
 import { authService } from "@essnextgen/auth-ui";
 import DocumentManagementServerView from "../Views/DocumentManagementServer.view";
 import * as ApiService from "../api/ApiService";
 import * as Logic from "../logic/DocumentManagementServer.logic";
+import { useTotalSelectedCountEffect } from '../hooks/useDocumentManagementEffects';
  
 jest.spyOn(authService, "getAuthTokens").mockReturnValue(null);
 
@@ -547,6 +549,41 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
  
 
+});
+
+describe('useTotalSelectedCountEffect', () => {
+  it('should reset selections when all checkboxes are excluded', () => {
+    const setIsHeaderBoxChecked = jest.fn();
+    const setAllSelectedDocs = jest.fn();
+    const setExcludedCheckBoxIds = jest.fn();
+    const setTotalSelectedCount = jest.fn();
+
+    const docData = { totalRecords: 3 };
+    const excludedCheckBoxIds = ['1', '2', '3']; // length matches totalRecords
+    const allSelectedDocs = [
+      { fileId: "f1", registrationId: 1, externalId: "e1" },
+      { fileId: "f2", registrationId: 2, externalId: "e2" },
+      { fileId: "f3", registrationId: 3, externalId: "e3" }
+    ];
+
+    renderHook(() =>
+      useTotalSelectedCountEffect({
+        isHeaderBoxChecked: true,
+        excludedCheckBoxIds,
+        docData,
+        allSelectedDocs,
+        setIsHeaderBoxChecked,
+        setAllSelectedDocs,
+        setExcludedCheckBoxIds,
+        setTotalSelectedCount,
+      })
+    );
+
+    expect(setIsHeaderBoxChecked).toHaveBeenCalledWith(false);
+    expect(setAllSelectedDocs).toHaveBeenCalledWith([]);
+    expect(setExcludedCheckBoxIds).toHaveBeenCalledWith([]);
+    expect(setTotalSelectedCount).toHaveBeenCalledWith(0);
+  });
 });
  
 describe("Additional tests to increase coverage", () => {

@@ -108,6 +108,9 @@ export const SearchSection: React.FC<Props> = ({
       tagListValueArray={localTagListArray}
       tagListBoxLabelText={t("Filter.Added")}
       onRemoveTag={onRemoveTag}
+      noDataTemplate={`${t(
+                         "DocumentManagementServer.FirstPart"
+                          )} - {value} - ${t("DocumentManagementServer.SecondPart")}`}
     />
   );
 };

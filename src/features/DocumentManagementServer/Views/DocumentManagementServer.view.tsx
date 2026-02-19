@@ -511,7 +511,8 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
         visibleBreadcrumbs={visibleBreadcrumbs}
       >
         <DmsControlledList
-          {...{
+            // searchNoDataTemplate={""}
+             {...{
             t,
             tableKey,
             tableData,
@@ -523,6 +524,7 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             filteredSuggestions,
             isSearchLoading,
             issearchDataLoading,
+            searchNoDataTemplate: "",
             showErrorBanner,
             showSearchError,
             isSearchTriggered,
@@ -531,7 +533,7 @@ const hasCompletedFiles: boolean = viewData.some((item: ViewDownloadItem) => ite
             searchTagListRaw,
             onPageChange,
             handleSorting: (columnName: string) =>{
-               handleSorting(
+                handleSorting(
                   columnName,
                   sortBy,
                   setSortBy,

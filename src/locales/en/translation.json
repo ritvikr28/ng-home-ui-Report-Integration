@@ -574,7 +574,9 @@
       "oneOrMoreSelectedDocumentsCannotBeDownloaded": "One or more selected documents cannot be downloaded as they have already been deleted. Please try again later. If the issue persists, please get in touch with our support team.",
       "deletingDocumentsTemporarilyUnavailable": "Deleting documents temporarily unavailable",
       "deletingDocumentsTemporarilyUnavailableMessage": "We're currently experiencing a technical issue that's preventing documents from being deleted, You can still download documents. Please try again later, and if the issue persists please get in touch with our support team.",
-      "Protected": "Protected"
+      "Protected": "Protected",
+      "FirstPart": "Your search",
+      "SecondPart": "did not match any results with uploaded files in the DMS."
     },
     "Filter": {
       "heading": "Advanced search",
