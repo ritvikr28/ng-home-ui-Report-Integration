@@ -1,10 +1,10 @@
+import { AxiosResponse } from "axios";
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
 import { AutoSuggestResponse, NotificationTableData, NotificationTableDataParams } from "./api.props";
-import { AxiosResponse } from "axios";
 
 export const getNotificationTableData
   : (

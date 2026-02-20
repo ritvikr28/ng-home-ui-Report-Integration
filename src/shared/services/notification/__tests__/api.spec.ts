@@ -1,5 +1,4 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
-import { authService } from "@essnextgen/auth-ui";
 import { getNotificationTableData, getSearchAutoSuggestData, getViewData, markAsRead } from "../api";
 import { service } from "../../../utils/api-service";
 import { getUserOrganisation } from "../../../utils";
