@@ -23,3 +23,11 @@ export interface AutoSuggestResponse {
   payload: AutoSuggestItem[];
   status: number;
 }
+
+export interface NotificationTableDataParams {
+  PageSize: number;
+  PageNumber: number;
+  SearchTerm: string;
+  SortBy?: string;
+  SortDirection?: boolean;
+}

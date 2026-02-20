@@ -50,9 +50,9 @@ export interface NotificationItem {
 
 export interface NotificationResponseTableData {
   error: any;
-  payload: NotificationItem[];
+  payload?: NotificationItem[];
   status: number;
-  total: number;
+  total?: number;
 }
 
 export interface serachKeyPressedObjectType {
