@@ -16,6 +16,7 @@ import MainPanel from "../../features/MainPanel/MainPanel.logic";
 import { envConfig, getUserOrganisation } from "../../shared/utils";
 import gtmAnalytics from "../../shared/utils/analytics";
 import SidePanelView from "../../features/SidePanel/SidePanel.view";
+import { BannerProps } from "./NewHomePage.props";
 
 const requiredPermissions: Permission[] = [
   {
@@ -24,10 +25,10 @@ const requiredPermissions: Permission[] = [
   }
 ];
 
-const NewHomePageBanner = lazy(() => import("./NewHomePageBanner.view"));
+const NewHomePageBanner: React.LazyExoticComponent<React.FC<BannerProps>> = lazy(() => import("./NewHomePageBanner.view"));
 
 
-const NewHomepageView = () => {
+const NewHomepageView: () => JSX.Element = () => {
   const isPermission: boolean = authService.isAuthorised(
     requiredPermissions,
     MatchPermissions.all
@@ -60,7 +61,7 @@ const NewHomepageView = () => {
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(true);
 
-  const [showClassViewNotification, setShowClassViewNotification] = useState(
+  const [showClassViewNotification, setShowClassViewNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(
     hasFeaturePermission(`${envConfig.APPLICATION}`, "ClassViewNotificationBanner")
   );
 

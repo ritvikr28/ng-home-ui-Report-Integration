@@ -10,16 +10,16 @@ export interface SIMSNextGenLink {
 
 export const fetchLinks: () => Promise<boolean> = async () => {
   try {
-    const response = await service.get('v1/SIMSConnected/simsnextgenlinks');
+    const response: any = await service.get('v1/SIMSConnected/simsnextgenlinks');
     const apiMenus = response.data || [];
-    const launcherInApi = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
+    const launcherInApi: SIMSNextGenLink | undefined = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
 
     if (!launcherInApi) {
       return false;
     }
 
     const hasValidLink = Boolean(launcherInApi.link && launcherInApi.link.trim());
-    const isExcluded = hasFeaturePermission("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
+    const isExcluded: boolean = hasFeaturePermission("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
 
     return (hasValidLink && !isExcluded);
   } catch (err) {

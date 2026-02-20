@@ -8,7 +8,7 @@ export interface IVideoPlayStatusSaveResponse {
   status: number;
 }
 
-export const saveVideoPlayStatus = async (): Promise<IVideoPlayStatusSaveResponse | null> => {
+export const saveVideoPlayStatus: () => Promise<IVideoPlayStatusSaveResponse | null> = async (): Promise<IVideoPlayStatusSaveResponse | null> => {
   try {
     const response: AxiosResponse<IVideoPlayStatusSaveResponse> = await service.post(
       `${envConfig.BASE_URL}/VideoPlayStatus/Save`,

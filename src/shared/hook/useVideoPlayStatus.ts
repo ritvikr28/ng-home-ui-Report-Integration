@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { fetchVideoPlayStatus } from "../services/videoPlayStatus";
-// import { homepageVideoOrgViewIncluded } from "../../Layout";
+import React, { useState, useEffect } from "react";
+
+import { fetchVideoPlayStatus, IVideoPlayStatusResult } from "../services/videoPlayStatus";
 import { hasNewHomePagePermission } from "../../App";
 
 export interface UseVideoPlayStatusResult {
@@ -9,17 +9,16 @@ export interface UseVideoPlayStatusResult {
 }
 
 export function useVideoPlayStatus(): UseVideoPlayStatusResult {
-  const [isPlayed, setIsPlayed] = useState<boolean>(true);
-  const [apiError, setApiError] = useState<boolean>(false);
+  const [isPlayed, setIsPlayed]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(true);
+  const [apiError, setApiError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
   useEffect(() => {
     (async () => {
       try {
-        // console.log("=================>>>>>>>>>>>>>>>>", { homepageVideoOrgViewIncluded, isPlayed, apiError });
         if (hasNewHomePagePermission) {
-          const result = await fetchVideoPlayStatus();
+          const result: IVideoPlayStatusResult = await fetchVideoPlayStatus();
           if (result && result.success) {
-            const playedValue = result.isPlayed;
+            const playedValue: boolean = result.isPlayed;
             setIsPlayed(playedValue);
             setApiError(false);
           } else {

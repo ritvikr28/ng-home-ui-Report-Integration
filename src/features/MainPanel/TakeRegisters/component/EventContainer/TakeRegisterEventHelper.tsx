@@ -40,7 +40,7 @@ const isEventInProgress = (eventStart: string, eventEnd: string, currentLocalDat
   new Date(eventStart) <= currentLocalDateTime && currentLocalDateTime <= new Date(eventEnd);
 
 
-const isEventUpcoming = (eventStart: string, currentLocalDateTime: Date): boolean =>
+const isEventUpcoming: (eventStart: string, currentLocalDateTime: Date) => boolean = (eventStart: string, currentLocalDateTime: Date): boolean =>
   new Date(eventStart) > currentLocalDateTime;
 
 export const findCurrentIndex: (apiRegsiterEventData: IRegistersDetails[]) => number = (apiRegsiterEventData) => {
@@ -98,7 +98,7 @@ export const renderCarousel: (
               : t("takeregister.ready")
           }
           isShowTag
-          isTagLeftAligned={true}
+          isTagLeftAligned
           tagColor={
             item.isCompleted ? TagColor.Success : TagColor.Outstanding
           }
@@ -322,22 +322,23 @@ export const getPrimaryText: (
 export const getSecondaryText: (
   item: IRegistersDetails
 ) => string = (item) => {  
-  const formatTime = (dateTimeString: string): string => {
+
+  function formatTime(dateTimeString: string): string {
     try {
       const date = new Date(dateTimeString);
-      return date.toLocaleTimeString('en-GB', { 
-        hour: '2-digit', 
+      return date.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
         minute: '2-digit',
-        hour12: false 
+        hour12: false
       });
     } catch {
       return '';
     }
-  };
+  }
 
-  const startTime = item.eventStart ? formatTime(item.eventStart) : '';
-  const endTime = item.eventEnd ? formatTime(item.eventEnd) : '';
-  const timePeriod = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
+  const startTime: string = item.eventStart ? formatTime(item.eventStart) : '';
+  const endTime: string = item.eventEnd ? formatTime(item.eventEnd) : '';
+  const timePeriod: string = startTime && endTime ? ` | ${startTime} - ${endTime}` : '';
   
  return `${item.eventDescription || ''}${timePeriod}`;
 };

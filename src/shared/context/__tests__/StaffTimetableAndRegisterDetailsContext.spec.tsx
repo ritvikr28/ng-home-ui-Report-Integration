@@ -28,7 +28,7 @@ describe("StaffTimetableAndRegisterDetailsContext", () => {
   it("fetches data when hasAccess is true and provides context", async () => {
     FetchStaffTimetableAndRegisterDetails.mockResolvedValue({ foo: "bar" });
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <ConsumerComponent />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -40,7 +40,7 @@ describe("StaffTimetableAndRegisterDetailsContext", () => {
   it("sets error if fetch returns falsy", async () => {
     FetchStaffTimetableAndRegisterDetails.mockResolvedValue(null);
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <ConsumerComponent />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -50,7 +50,7 @@ describe("StaffTimetableAndRegisterDetailsContext", () => {
   it("sets error if fetch throws", async () => {
     FetchStaffTimetableAndRegisterDetails.mockRejectedValue(new Error("fail"));
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <ConsumerComponent />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -72,7 +72,7 @@ describe("StaffTimetableAndRegisterDetailsContext", () => {
   it("refetch triggers fetchData", async () => {
     FetchStaffTimetableAndRegisterDetails.mockResolvedValueOnce({ foo: "bar" });
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <ConsumerComponent />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -93,7 +93,7 @@ describe("StaffTimetableAndRegisterDetailsContext", () => {
     expect(screen.getByTestId("data").textContent).toBe("no");
     FetchStaffTimetableAndRegisterDetails.mockResolvedValueOnce({ foo: "bar" });
     rerender(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <ConsumerComponent />
       </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -143,7 +143,7 @@ describe("fetchData early return when hasAccess is false", () => {
   it("should call FetchStaffTimetableAndRegisterDetails if hasAccess is true", async () => {
     FetchStaffTimetableAndRegisterDetails.mockResolvedValue({});
     render(
-      <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+      <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <Consumer />
       </StaffTimetableAndRegisterDetailsProvider>
     );

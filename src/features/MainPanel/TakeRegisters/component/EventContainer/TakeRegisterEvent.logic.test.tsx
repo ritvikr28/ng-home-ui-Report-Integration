@@ -17,7 +17,7 @@ describe("TakeRegisterEvent", () => {
 
   it("renders loader initially", () => {
     render(
-  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <TakeRegisterEvent isOpen />
   </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -29,7 +29,7 @@ describe("TakeRegisterEvent", () => {
       payload: { registerDetailResponse: mockRegisterDetails }
     });
     render(
-  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <TakeRegisterEvent isOpen />
   </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -41,7 +41,7 @@ describe("TakeRegisterEvent", () => {
   it("renders error state when API fails", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockRejectedValue(new Error("API Error"));
     render(
-  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <TakeRegisterEvent isOpen />
   </StaffTimetableAndRegisterDetailsProvider>
     );
@@ -53,7 +53,7 @@ describe("TakeRegisterEvent", () => {
   it("renders error state when API returns invalid data", async () => {
     (registerService.FetchStaffTimetableAndRegisterDetails as jest.Mock).mockResolvedValue({ payload: {} });
     render(
-  <StaffTimetableAndRegisterDetailsProvider hasAccess={true}>
+  <StaffTimetableAndRegisterDetailsProvider hasAccess>
         <TakeRegisterEvent isOpen />
   </StaffTimetableAndRegisterDetailsProvider>
     );

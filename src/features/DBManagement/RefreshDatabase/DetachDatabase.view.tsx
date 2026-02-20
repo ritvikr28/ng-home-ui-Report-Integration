@@ -16,14 +16,14 @@ import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/resp
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
 import { ISchoolDetailsDRApiResponse, ISyncCompletedSeenStatusResponse } from "../../../shared/model/RefreshDatabase/responsemodel";
 
-export const FetchIsDetached = async (
+export const FetchIsDetached : (handleException: () => void, history: any) => Promise<ISchoolDetailsDRApiResponse | null>  = async (
   handleException: () => void,
   history: ReturnType<typeof useHistory> // Accept history to handle redirects
 ): Promise<ISchoolDetailsDRApiResponse | null> => {
   try {
     const schoolData: ISchoolNameDataResponse | null =
       await useFetchSchoolNameData();
-    const orgName: string = schoolData == null ? "" : schoolData.schoolName;
+    const orgName: string = schoolData == null ? "" : schoolData?.schoolName;
 
     const requestData: {
       operationIndicator: string;
@@ -46,7 +46,7 @@ export const FetchIsDetached = async (
     return response.data;
   } catch (err: any) {
     if (err.response) {
-      const statusCode = err.response.status;
+      const statusCode : number = err.response.status;
       console.log(`API call failed with status code: ${statusCode}`);
       if (statusCode === 401) {
         errorHandler.handle401Error(statusCode, history);
@@ -83,9 +83,9 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
 
-  const history = useHistory(); // Initialize useHistory
+  const history : any = useHistory(); // Initialize useHistory
 
-  const handleSetIsDetached = async () => {
+  const handleSetIsDetached : () => Promise<void> = async () => {
     // Get detached status
     const response: ISchoolDetailsDRApiResponse | null =
       await FetchIsDetached(handleException, history);
@@ -101,8 +101,8 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
     }
   };
 
-  const handleSelectionChange = async (value: string) => {
-    setSelectedValue(value as string);
+  const handleSelectionChange : (value: string) => Promise<ISyncCompletedSeenStatusResponse | undefined> = async (value: string) => {
+    setSelectedValue(value);
     const isDetached = value === "Yes";
     if (isDetached) {
       await handleSetIsDetached();
@@ -125,7 +125,7 @@ const DetachDatabaseView: React.FC<DetachDatabaseViewProps> = ({
       return response.data;
     } catch (err: any) {
       if (err.response) {
-        const statusCode = err.response.status;
+        const statusCode : number = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
 
       }

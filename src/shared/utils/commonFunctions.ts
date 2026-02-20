@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 
-export const CapitalizeFirstLetter = (str: string): string => {
+export const CapitalizeFirstLetter: (str: string) => string = (str: string): string => {
   if (!str) return str;
   return str?.charAt(0)?.toUpperCase() + str?.slice(1);
 }
@@ -21,9 +21,9 @@ export const truncatedString: (str: string, maxLimit: number) => {
   };
 };
 
-export const isValidDate = (dateStr: string) => {
+export const isValidDate:(dateStr: string) => boolean = (dateStr: string) => {
         if (!dayjs(dateStr, "YYYY-MM-DD", true).isValid()) return false;
-        const [year, month, day] = dateStr.split("-").map(Number);
+        const [year, month, day]: number[] = dateStr.split("-").map(Number);
         return (
             year >= 1900 && year <= 2100 &&
             month >= 1 && month <= 12 &&

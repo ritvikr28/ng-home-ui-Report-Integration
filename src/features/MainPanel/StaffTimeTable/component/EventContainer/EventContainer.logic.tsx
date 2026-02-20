@@ -22,12 +22,66 @@ import { getBackgroundColor } from "../../../../../shared/utils/colors";
 import gtmAnalytics from "../../../../../shared/utils/analytics";
 import { fetchStaffDetails } from "../../../../../shared/services/staffDomain/staffServices";
 
-const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any) => {
-  const { data, isLoading, isError } = useStaffTimetableAndRegisterDetails();
-  const [selectedItem, setSelectedItem] = useState<string>("");
-  const [isOpenPanel, setIsOpenPanel] = useState<Record<string, boolean>>({});
-  const [staffNames, setStaffNames] = useState<Record<string, string>>({});
-  const [coverStaffNames, setCoverStaffNames] = useState<Record<string, string>>({});
+// Helper: filter and sort today's events
+const getTodayEvents: (events: IStaffTimeTableEventsResponse[]) => IStaffTimeTableEventsResponse[] = (events: IStaffTimeTableEventsResponse[]): IStaffTimeTableEventsResponse[] => {
+  const now = new Date();
+  return events
+    .filter(event => {
+      const eventStart = new Date(event.eventStart);
+      const eventEnd = new Date(event.eventEnd);
+      return (
+        eventStart.getFullYear() === now.getFullYear() &&
+        eventStart.getMonth() === now.getMonth() &&
+        eventStart.getDate() === now.getDate() &&
+        eventEnd >= now
+      );
+    })
+    .sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime())
+    .slice(0, 6);
+};
+
+// Helper: handle conditional rendering
+// ==================== Conditional Content ====================
+const getConditionalContent:(isError: boolean, isLoading: boolean, data: any, t: TFunction<"translation", undefined>) => React.ReactNode = (
+  isError: boolean,
+  isLoading: boolean,
+  data: any,
+  t: TFunction<"translation", undefined>
+): React.ReactNode => {
+  if (isError || (data && data.status !== 200 && data.status !== 204 && data.status !== 0)) {
+    return null; // explicitly return null for error
+  }
+
+  if (
+    data &&
+    data.status === 204 &&
+    (!data.payload?.staffTimetableEventsResponse ||
+      data.payload.staffTimetableEventsResponse.length === 0)
+  ) {
+    return renderNoEventsCard(t);
+  }
+
+  if (isLoading) {
+    return (
+      <Loader
+        dataTestId="staff-data-loader"
+        className="reg-loader loader-margin loader-size reg-loader-margin"
+        loaderText="Loading..."
+        loaderType={LoaderType.Circular}
+      />
+    );
+  }
+
+  return null; // instead of undefined, return null explicitly
+};
+
+
+const EventContainer: React.FC<{ isOpen: any }> = ({ isOpen }): JSX.Element | null => {
+  const { data, isLoading, isError }: { data: any; isLoading: boolean; isError: boolean } = useStaffTimetableAndRegisterDetails();
+  const [selectedItem, setSelectedItem]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+  const [isOpenPanel, setIsOpenPanel]: [Record<string, boolean>, React.Dispatch<React.SetStateAction<Record<string, boolean>>>] = useState<Record<string, boolean>>({});
+  const [staffNames, setStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
+  const [coverStaffNames, setCoverStaffNames]: [Record<string, string>, React.Dispatch<React.SetStateAction<Record<string, string>>>] = useState<Record<string, string>>({});
   const isMobileView: boolean = useMediaQuery(
     "(min-width:320px) and (max-width: 1117px)"
   );
@@ -35,7 +89,7 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any
 
   React.useEffect(() => {
     if (data && data.status && data.payload?.staffTimetableEventsResponse) {
-      const responseData = data.payload.staffTimetableEventsResponse;
+      const responseData: IStaffTimeTableEventsResponse[] = data.payload.staffTimetableEventsResponse;
       if (responseData.length > 0) {
         setSelectedItem(responseData[0].externalId);
       }
@@ -62,54 +116,32 @@ const EventContainer: ({ isOpen }: any) => JSX.Element | null = ({ isOpen }: any
     }
   }, [data]);
 
-  if (isError || (data && data.status !== 200 && data.status !== 204 && data.status !== 0)) {
-    return null;
+  // Use helper for conditional rendering
+  const conditionalContent: React.ReactNode = getConditionalContent(isError, isLoading, data, t);
+  if (conditionalContent) {
+    return <>{conditionalContent}</>;
   }
 
-  if (data && data.status === 204 && (!data.payload?.staffTimetableEventsResponse || data.payload.staffTimetableEventsResponse.length === 0)) {
-    return renderNoEventsCard(t);
-  }
+  // Use helper for event filtering/sorting
+  const schoolEventsData: IStaffTimeTableEventsResponse[] = getTodayEvents(data?.payload?.staffTimetableEventsResponse || []);
 
-  if (isLoading) {
-    return (
-      <Loader
-        dataTestId="staff-data-loader"
-        className="reg-loader loader-margin loader-size reg-loader-margin"
-        loaderText="Loading..."
-        loaderType={LoaderType.Circular}
-      />
-    );
-  }
-
-  // Filter events for today (browser local date) and not ended yet (local time)
-  const now = new Date();
-  const schoolEventsData = (data?.payload?.staffTimetableEventsResponse || [])
-    .filter(event => {
-      const eventStart = new Date(event.eventStart);
-      const eventEnd = new Date(event.eventEnd);
-      return (
-        eventStart.getFullYear() === now.getFullYear() &&
-        eventStart.getMonth() === now.getMonth() &&
-        eventStart.getDate() === now.getDate() &&
-        eventEnd >= now
-      );
-    })
-    .sort((a, b) => new Date(a.eventStart).getTime() - new Date(b.eventStart).getTime())
-    .slice(0, 6);
-
-  return returnEventContainer({
-    schoolEventsData,
-    isOpen,
-    isOpenPanel,
-    selectedItem,
-    isLoader: isLoading,
-    setIsOpenPanel,
-    setSelectedItem,
-    staffNames,
-    coverStaffNames,
-    isMobileView,
-    t
-  });
+  return (
+    <>
+      {returnEventContainer({
+        schoolEventsData,
+        isOpen,
+        isOpenPanel,
+        selectedItem,
+        isLoader: isLoading,
+        setIsOpenPanel,
+        setSelectedItem,
+        staffNames,
+        coverStaffNames,
+        isMobileView,
+        t
+      })}
+    </>
+  );
 };
 
 const formatEventTitleData = (eventTitleData: any) => {
@@ -156,7 +188,7 @@ const formatEventTimeData: (eventTimeData: IStaffTimeTableEventsResponse) => {
 const formatRoomCode: (
   staffTimeTableEventData: IStaffTimeTableEventsResponse
 ) => string = (staffTimeTableEventData: IStaffTimeTableEventsResponse) => {
-  const roomCode: string = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
+  const roomCode = staffTimeTableEventData?.roomCover?.roomCode || staffTimeTableEventData?.room?.roomCode;
   return roomCode;
 };
 

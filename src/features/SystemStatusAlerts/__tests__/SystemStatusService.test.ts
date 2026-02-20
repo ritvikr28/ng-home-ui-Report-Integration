@@ -1,7 +1,29 @@
-import { History } from "history";
+import { History, Action } from "history";
 import { activateEmailAlert, fetchEmailAlertStatus, handleCloseMenuOnOutsideClick, systemStatusOverflowMenuOutSideClickHandler } from "../SystemStatusAlerts/SystemStatusService";
 import { getUserEmail, getUserOrganisation ,envConfig, service} from "../../../shared/utils";
 import { useFetchSchoolNameData } from "../../../shared/services/schoolDomain/schoolServices";
+import { ISystemStatusAlertResponse } from "../../../shared/model/SystemStatus/responsemodel";
+
+// Provide global type declarations for test environment if missing
+// @ts-ignore
+type EventListener = (...args: any[]) => void;
+// @ts-ignore
+interface EventListenerObject {
+  handleEvent(evt: Event): void;
+}
+type EventListenerOrEventListenerObject = EventListener | EventListenerObject;
+// @ts-ignore
+type AddEventListenerOptions = {
+  capture?: boolean;
+  once?: boolean;
+  passive?: boolean;
+  signal?: AbortSignal;
+};
+// @ts-ignore
+type EventListenerOptions = {
+  capture?: boolean;
+  passive?: boolean;
+};
 
 beforeEach(() => {
   (getUserEmail as jest.Mock).mockReturnValue("suraj.bawankar@test.com");
@@ -11,28 +33,40 @@ beforeEach(() => {
 jest.mock("../../../shared/utils", () => ({
   ...jest.requireActual("../../../shared/utils"),
   envConfig: {
-    BASE_URL: "http://mock-base-url.com", 
+    BASE_URL: "http://mock-base-url.com"
   },
   service: {
-    post: jest.fn(),
+    post: jest.fn()
   },
   getUserEmail: jest.fn(() => "suraj.bawankar@test.com"),
-  getUserOrganisation: jest.fn(() => "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f"),
+  getUserOrganisation: jest.fn(() => "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f")
 }));
 
 jest.mock("../../../shared/services/schoolDomain/schoolServices", () => ({
   useFetchSchoolNameData: jest.fn(() => ({
-    schoolName: "string test school",
-  })),
+    schoolName: "string test school"
+  }))
 }));
 
 
 describe("SystemStatusService", () => {
-  const mockHandleException = jest.fn();
-  const mockHistory = {
-    push: jest.fn(),
-    replace: jest.fn(),
-  } as unknown as History;
+  const mockHandleException: jest.Mock<any, any> = jest.fn();
+  let mockHistory: jest.Mocked<History>;
+
+  beforeEach(() => {
+    mockHistory = {
+      push: jest.fn(),
+      replace: jest.fn(),
+      location: { pathname: '', search: '', state: undefined, hash: '', key: '' },
+      action: Action.Pop,
+      listen: jest.fn(),
+      block: jest.fn(),
+      go: jest.fn(),
+      back: jest.fn(),
+      forward: jest.fn(),
+      createHref: jest.fn()
+    };
+  });
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -41,23 +75,35 @@ describe("SystemStatusService", () => {
   describe("fetchEmailAlertStatus", () => {
 
 it("should return data when API call is successful", async () => {
-  const mockResponse = {
+  const mockResponse: {
+    data: {
+        responseCode: number;
+        listenerData: {
+            listenerStatus: string;
+            eMailAlert: boolean;
+        };
+        ssmHostData: {
+            ssmHostStatus: string;
+            eMailAlert: boolean;
+        };
+    };
+} = {
     data: {
       responseCode: 200,
       listenerData: { listenerStatus: "Live", eMailAlert: true },
-      ssmHostData: { ssmHostStatus: "Not Live", eMailAlert: false },
-    },
+      ssmHostData: { ssmHostStatus: "Not Live", eMailAlert: false }
+    }
   };
   (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toEqual(mockResponse.data);
 expect(service.post).toHaveBeenCalledWith(
   `${envConfig.BASE_URL}/TrainingDB/SystemStatusAlert`,
   {
     orgId: "cd0e52dd-8331-44dd-bea4-cf1e99d6e1f",
-    toEmailId: "suraj.bawankar@test.com",
+    toEmailId: "suraj.bawankar@test.com"
   }
 );
   expect(mockHandleException).not.toHaveBeenCalled();
@@ -65,7 +111,7 @@ expect(service.post).toHaveBeenCalledWith(
     it("should handle API errors and call handleException", async () => {
       (service.post as jest.Mock).mockRejectedValueOnce(new Error("API Error"));
 
-      const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+      const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
       expect(result).toBeNull();
       expect(mockHandleException).toHaveBeenCalled();
@@ -73,10 +119,10 @@ expect(service.post).toHaveBeenCalledWith(
 
    it("should replace history on invalid token error", async () => {
   (service.post as jest.Mock).mockRejectedValueOnce({
-    message: "Invalid token",
+    message: "Invalid token"
   });
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHistory.replace).toHaveBeenCalledWith("/unauthorized");
@@ -85,7 +131,7 @@ expect(service.post).toHaveBeenCalledWith(
     it("should handle unknown errors and call handleException", async () => {
       (service.post as jest.Mock).mockRejectedValueOnce(new Error("Unknown Error"));
 
-      const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+      const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
       expect(result).toBeNull();
       expect(mockHandleException).toHaveBeenCalled();
@@ -95,20 +141,20 @@ it("should return null and call handleException when orgId or toEmailId is missi
   (getUserOrganisation as jest.Mock).mockReturnValueOnce(null);
   (getUserEmail as jest.Mock).mockReturnValueOnce(null);
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHandleException).toHaveBeenCalled();
 });
 it("should call handleException when response code is not 200", async () => {
-  const mockResponse = {
+  const mockResponse: { data: { responseCode: number; };} = {
     data: {
-      responseCode: 500,
-    },
+      responseCode: 500
+    }
   };
   (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHandleException).toHaveBeenCalled();
@@ -116,31 +162,31 @@ it("should call handleException when response code is not 200", async () => {
 it("should redirect to /unauthorized if status code is 401", async () => {
   (service.post as jest.Mock).mockRejectedValueOnce({
     response: {
-      status: 401,
-    },
+      status: 401
+    }
   });
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHistory.push).toHaveBeenCalledWith("/unauthorized");
 });
 it("should handle errors without response or invalid token and call handleException", async () => {
   (service.post as jest.Mock).mockRejectedValueOnce({
-    message: "Some unknown error",
+    message: "Some unknown error"
   });
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHandleException).toHaveBeenCalled();
 });
 it("should replace history if error message includes 'Invalid token'", async () => {
   (service.post as jest.Mock).mockRejectedValueOnce({
-    message: "Invalid token provided",
+    message: "Invalid token provided"
   });
 
-  const result = await fetchEmailAlertStatus(mockHandleException, mockHistory);
+  const result: ISystemStatusAlertResponse | null = await fetchEmailAlertStatus(mockHandleException, mockHistory);
 
   expect(result).toBeNull();
   expect(mockHistory.replace).toHaveBeenCalledWith("/unauthorized");
@@ -217,9 +263,9 @@ describe("handleCloseMenuOnOutsideClick", () => {
   });
 
   it("should add and remove event listener", () => {
-    const addSpy = jest.spyOn(document, "addEventListener");
-    const removeSpy = jest.spyOn(document, "removeEventListener");
-    const cleanup = handleCloseMenuOnOutsideClick("1", setActiveRow);
+    const addSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined]> = jest.spyOn(document, "addEventListener");
+    const removeSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined]> = jest.spyOn(document, "removeEventListener");
+    const cleanup: () => void = handleCloseMenuOnOutsideClick("1", setActiveRow);
     expect(addSpy).toHaveBeenCalledWith("mousedown", expect.any(Function));
     if (cleanup) cleanup();
     expect(removeSpy).toHaveBeenCalledWith("mousedown", expect.any(Function));
@@ -228,32 +274,41 @@ describe("handleCloseMenuOnOutsideClick", () => {
   it("should call setActiveRow(null) when clicking outside menu and button", () => {
     handleCloseMenuOnOutsideClick("1", setActiveRow);
 
-    const outside = document.getElementById("outside")!;
-    outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-
-    expect(setActiveRow).toHaveBeenCalledWith(null);
+    const outside: HTMLElement | null = document.getElementById("outside");
+    if (outside) {
+      outside.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+      expect(setActiveRow).toHaveBeenCalledWith(null);
+    } else {
+      throw new Error('Test setup failed: #outside element not found');
+    }
   });
 
   it("should NOT call setActiveRow(null) when clicking inside menu", () => {
     handleCloseMenuOnOutsideClick("1", setActiveRow);
 
-    const menu = document.getElementById("menu")!;
-    menu.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-
-    expect(setActiveRow).not.toHaveBeenCalled();
+    const menu: HTMLElement | null = document.getElementById("menu");
+    if (menu) {
+      menu.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+      expect(setActiveRow).not.toHaveBeenCalled();
+    } else {
+      throw new Error('Test setup failed: #menu element not found');
+    }
   });
 
   it("should NOT call setActiveRow(null) when clicking the button", () => {
     handleCloseMenuOnOutsideClick("1", setActiveRow);
 
-    const button = document.getElementById("button")!;
-    button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-
-    expect(setActiveRow).not.toHaveBeenCalled();
+    const button: HTMLElement | null = document.getElementById("button");
+    if (button) {
+      button.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+      expect(setActiveRow).not.toHaveBeenCalled();
+    } else {
+      throw new Error('Test setup failed: #button element not found');
+    }
   });
 
   it("should do nothing if activeRow is null", () => {
-    const addSpy = jest.spyOn(document, "addEventListener");
+    const addSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined]> = jest.spyOn(document, "addEventListener");
     handleCloseMenuOnOutsideClick(null, setActiveRow);
     expect(addSpy).not.toHaveBeenCalled();
   });
@@ -261,13 +316,13 @@ describe("handleCloseMenuOnOutsideClick", () => {
 
 
 
-const mockCleanup = jest.fn();
+const mockCleanup: jest.Mock<any, any> = jest.fn();
 
 
 describe("systemStatusOverflowMenuOutSideClickHandler", () => {
   let setOverflowMenuIndex: jest.Mock;
   jest.mock("../SystemStatusAlerts/SystemStatusService", () => {
-    const original = jest.requireActual(
+    const original:any = jest.requireActual(
       "../SystemStatusAlerts/SystemStatusService"
     );
     return {
@@ -287,10 +342,10 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
 
   it('should call setOverflowMenuIndex("") when scroll event is triggered', () => {
     // Spy before calling the handler
-    const addSpy = jest.spyOn(window, "addEventListener");
-    const removeSpy = jest.spyOn(window, "removeEventListener");
+    const addSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined]> = jest.spyOn(window, "addEventListener");
+    const removeSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions | undefined]> = jest.spyOn(window, "removeEventListener");
 
-    const cleanup = systemStatusOverflowMenuOutSideClickHandler(
+    const cleanup: () => void = systemStatusOverflowMenuOutSideClickHandler(
       "1",
       setOverflowMenuIndex
     );
@@ -319,8 +374,8 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
   });
 
   it("should return undefined and not add listeners if overflowMenuIndex is falsy", () => {
-    const addSpy = jest.spyOn(window, "addEventListener");
-    const cleanup = systemStatusOverflowMenuOutSideClickHandler(
+    const addSpy: jest.SpyInstance<void, [type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions | undefined]> = jest.spyOn(window, "addEventListener");
+    const cleanup: () => void = systemStatusOverflowMenuOutSideClickHandler(
       "",
       setOverflowMenuIndex
     );
@@ -328,14 +383,14 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
     expect(cleanup).toBeUndefined();
   });
   it("should call onSuccess when API call is successful with responseCode 200", async () => {
-  const mockOnSuccess = jest.fn();
-  const mockOnError = jest.fn();
+  const mockOnSuccess: jest.Mock<any, any> = jest.fn();
+  const mockOnError: jest.Mock<any, any> = jest.fn();
 
   (service.post as jest.Mock).mockResolvedValueOnce({
     status: 200,
     data: {
-      responseCode: 200,
-    },
+      responseCode: 200
+    }
   });
 
   await activateEmailAlert("alert123", false, mockOnSuccess, mockOnError, "SSM");
@@ -344,7 +399,7 @@ describe("systemStatusOverflowMenuOutSideClickHandler", () => {
   expect(mockOnError).not.toHaveBeenCalled();
 });
 it("should return a no-op function if activeRow is null", () => {
-  const result = handleCloseMenuOnOutsideClick(null, jest.fn());
+  const result: () => void = handleCloseMenuOnOutsideClick(null, jest.fn());
   expect(typeof result).toBe("function");
   result(); // Ensure no error is thrown
 });

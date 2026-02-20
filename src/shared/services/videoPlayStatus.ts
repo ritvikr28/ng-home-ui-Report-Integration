@@ -1,4 +1,5 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
+import { AxiosResponse } from "axios";
 import { service } from "../utils/api-service";
 import apiUrls from "../hook/ApiConfig.json";
 
@@ -7,9 +8,9 @@ export interface IVideoPlayStatusResult {
   isPlayed: boolean;
 }
 
-export const fetchVideoPlayStatus = async (): Promise<IVideoPlayStatusResult> => {
+export const fetchVideoPlayStatus: () => Promise<IVideoPlayStatusResult> = async (): Promise<IVideoPlayStatusResult> => {
   try {
-    const response = await service.get(
+    const response: AxiosResponse<any, any> = await service.get(
       "VideoPlayStatus",
       buildApplicationUrl(apiUrls)
     );

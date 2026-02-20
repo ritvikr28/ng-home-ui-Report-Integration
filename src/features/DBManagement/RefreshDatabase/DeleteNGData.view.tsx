@@ -3,6 +3,7 @@ import { ButtonSize, Button, ButtonColor } from "@essnextgen/ui-kit";
 import "../style.scss";
 import { AxiosResponse } from "axios";
 import { useHistory } from "react-router-dom";
+import { History } from "history";
 import { authService } from "@essnextgen/auth-ui";
 import ConfirmDialog from "./ConfirmationDialog.logic";
 import { ISchoolNameDataResponse } from "../../../shared/model/SchoolDomain/responsemodels";
@@ -25,7 +26,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
   inProgressStatus,
   handleException
 }) => {
-  const history = useHistory(); // Initialize history
+  const history: History = useHistory(); // Initialize history
   const [showDeleteDialog, setShowDeleteDialog]: [
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
@@ -56,7 +57,7 @@ const DeleteNGDataView: React.FC<DeleteNGDataViewProps> = ({
       return response.data;
     } catch (err: any) {
       if (err.response) {
-        const statusCode = err.response.status;
+        const statusCode: number = err.response.status;
         console.log(`API call failed with status code: ${statusCode}`);
         if (statusCode === 401) {
           errorHandler.handle401Error(statusCode, history); // Pass history here

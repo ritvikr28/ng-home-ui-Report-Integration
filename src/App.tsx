@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { withAITracking } from "@microsoft/applicationinsights-react-js";
@@ -24,10 +24,10 @@ export const hasNewHomePagePermission: boolean = authService.isAuthorised(
 
 const App: (props: ILayoutProps) => JSX.Element | null = ({
   isStandaloneApp,
-  baseRouteName,
+  baseRouteName
 }: ILayoutProps) => {
 
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 
   // Priority: dropdown (localStorage) → browser → fallback
   const getInitialLang = () =>
@@ -35,10 +35,10 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     navigator.language.split("-")[0] ||
     "en";
 
-  const [langCode] = useState<string>(getInitialLang);
+  const [langCode]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(getInitialLang);
 
   useEffect(() => {
-    const initI18n = async () => {
+    const initI18n: () => Promise<void> = async () => {
       try {
         console.log("[Lang Change] Setting i18nextLng in localStorage:", langCode);
         // Always persist chosen lang in localStorage
@@ -49,14 +49,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             en: {
               ...uiKitTranslation.en,
               ...uiAppKitTranslation.en,
-              ...translationEn,
+              ...translationEn
             },
             cy: {
               ...uiKitTranslation.cy,
               ...uiAppKitTranslation.cy,
-              ...translationCy,
-            },
-          },
+              ...translationCy
+            }
+          }
         }).init({ lng: langCode });
         console.log("[i18n Init] Successfully initialized with lang:", langCode);
         setInitialized(true);
@@ -79,7 +79,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
 
   gtmAnalytics.pushLogInEvent();
 
-  const { isPlayed, apiError } = useVideoPlayStatus();
+  const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
 
   useEffect(() => {
     if (hasNewHomePagePermission) {

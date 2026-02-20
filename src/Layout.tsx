@@ -54,7 +54,7 @@ import {
   isOrganisationInVariantForAnyOrAll
 } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
-import DocumentManagementServer from "./features/DocumentManagementServer/DocumentManagementServer.view";
+import DocumentManagementServer from "./features/DocumentManagementServer/Views/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
@@ -75,12 +75,12 @@ export interface ILayoutProps {
   baseRouteName: string;
 }
 
-declare global {
-  interface Window {
-    userpilot: any;
-    sharedStorage: any;
-  }
-}
+// declare global {
+//   interface Window {
+//     userpilot: any;
+//     sharedStorage: any;
+//   }
+// }
 
 export const getMenus: (
   data: IModulePermission[],
@@ -98,11 +98,104 @@ export const getMenus: (
     );
     return menusWithPermission;
   };
+
+const AdminConsoleandSystemStatusRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, hasDMSPermissions }: {
+  hasAdminConsoleFlagrPermission: boolean;
+  hasAdminConsolePermissions: boolean;
+  hasDMSPermissions: boolean;
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}) => JSX.Element = ({
+  hasAdminConsoleFlagrPermission,
+  hasAdminConsolePermissions,
+  hasDMSPermissions,
+  hasSystemStatusPermission,
+  hasSystemStatusOrgPermission,
+  canViewSystemStatus,
+  canUpdateSystemStatus
+}: {
+  hasAdminConsoleFlagrPermission: boolean;
+  hasAdminConsolePermissions: boolean;
+  hasDMSPermissions: boolean;
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}): JSX.Element => (
+    <>
+      {hasAdminConsoleFlagrPermission && (
+        <ProtectedRoute
+          exact
+          path="/AdminConsole"
+          render={() =>
+            hasAdminConsolePermissions || isAuthzUserAdmin() ? (
+              <AdminConsole />
+            ) : (
+              <Redirect to="/unauthorized" />
+            )
+          }
+        />
+      )}
+      {hasAdminConsoleFlagrPermission && (
+        <ProtectedRoute
+          exact
+          path="/documents"
+          render={() =>
+            hasAdminConsolePermissions && hasDMSPermissions ? (
+              <DocumentManagementServer />
+            ) : (
+              <Redirect to="/unauthorized" />
+            )
+          }
+        />
+      )}
+      <SystemStatusRoute
+        hasSystemStatusPermission={hasSystemStatusPermission}
+        hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
+        canViewSystemStatus={canViewSystemStatus}
+        canUpdateSystemStatus={canUpdateSystemStatus}
+      />
+    </>
+  );
+
+const SystemStatusRoute: ({ hasSystemStatusPermission, hasSystemStatusOrgPermission, canViewSystemStatus, canUpdateSystemStatus }: {
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}) => JSX.Element | null = ({
+  hasSystemStatusPermission,
+  hasSystemStatusOrgPermission,
+  canViewSystemStatus,
+  canUpdateSystemStatus
+}: {
+  hasSystemStatusPermission: boolean;
+  hasSystemStatusOrgPermission: boolean;
+  canViewSystemStatus: boolean;
+  canUpdateSystemStatus: boolean;
+}): JSX.Element | null =>
+    hasSystemStatusPermission && hasSystemStatusOrgPermission ? (
+      <ProtectedRoute
+        exact
+        path="/systemstatus"
+        render={() =>
+          canViewSystemStatus || canUpdateSystemStatus ? (
+            <SystemStatus />
+          ) : (
+            <UnAuthorisedAccess />
+          )
+        }
+      />
+    ) : null;
+
+
 export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
 }: ILayoutProps) => {
-  const [isRenderSimsConnectedBanner] = useSimsConnectedBanner();
+  const [isRenderSimsConnectedBanner]: [boolean, boolean] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
   const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -202,11 +295,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     { Securable: "NG.AlertEmails.List", Operation: "Update" },
     { Securable: "NG.AlertEmails.List", Operation: "Write" }
   ];
-  const canViewSystemStatus = authService.isAuthorised(
+  const canViewSystemStatus: boolean = authService.isAuthorised(
     requiredSystemStatusViewPermission,
     MatchPermissions.any
   );
-  const canUpdateSystemStatus = authService.isAuthorised(
+  const canUpdateSystemStatus: boolean = authService.isAuthorised(
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
@@ -263,11 +356,11 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             path="/unauthorized"
             component={UnAuthorisedAccess}
           />
-          {hasAdminConsoleFlagrPermission && (
+          {/* {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/AdminConsole"
+             /* path="/AdminConsole"
               render={() =>
                 hasAdminConsolePermissions || isAuthzUserAdmin() ? (
                   <AdminConsole />
@@ -276,12 +369,12 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 )
               }
             />
-          )}
-          {hasAdminConsoleFlagrPermission && (
+          )} */}
+          {/* {hasAdminConsoleFlagrPermission && (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
-              path="/documents"
+              /* path="/documents"
               render={() =>
                 (hasAdminConsolePermissions && hasDMSPermissions) ? (
                   <DocumentManagementServer />
@@ -330,7 +423,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               component={DBManagement}
             />
           )}
-          {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
+          {/* {hasSystemStatusPermission && hasSystemStatusOrgPermission && (
             <ProtectedRoute
               exact
               path="/systemstatus"
@@ -342,7 +435,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
                 )
               }
             />
-          )}
+          )} */}
+
           <ProtectedRoute
             exact
             /* istanbul ignore next */
@@ -355,6 +449,16 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
               )
             }
           />
+          <AdminConsoleandSystemStatusRoutes
+            hasAdminConsoleFlagrPermission={hasAdminConsoleFlagrPermission}
+            hasAdminConsolePermissions={hasAdminConsolePermissions}
+            hasDMSPermissions={hasDMSPermissions}
+            hasSystemStatusPermission={hasSystemStatusPermission}
+            hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
+            canViewSystemStatus={canViewSystemStatus}
+            canUpdateSystemStatus={canUpdateSystemStatus}
+          />
+
           <ProtectedRoute exact path="*" component={PageNotFound} />
         </Switch>
       </Suspense>

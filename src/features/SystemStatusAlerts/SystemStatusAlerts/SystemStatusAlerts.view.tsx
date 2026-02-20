@@ -1,45 +1,37 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableWrapper,
   Button,
   ButtonSize,
   ButtonColor,
-  OverflowMenu,
-  OverflowMenuItem,
   SidePanel,
-  SidePanelContent,
   SidePanelFooter,
   HeadingSubHeading,
   Notification,
   NotificationStatus,
   Loader,
-  LoaderType,
-  TableStatus,
-  Icon,
-  IconColor
+  LoaderType
 } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "../style.scss";
 import { useHistory } from "react-router-dom";
 import { authService, MatchPermissions, Permission } from "@essnextgen/auth-ui";
 import { activateEmailAlert, fetchEmailAlertStatus, systemStatusOverflowMenuOutSideClickHandler } from "./SystemStatusService";
+import { fetchAlertsUtil } from "./SystemStatusAlertsUtil";
 import NotifyExceptionView from "./NotifyException.view";
+import SystemStatusAlertPanelContent from "./SystemStatusAlertPanelContent";
+import { Alert } from "../interface";
+import SystemStatusAlertsTableComponent from "./SystemStatusAlertsTableComponent";
 
-interface Alert {
-  id: string;
-  // status: "Green" | "Red" | "Yellow";
-  status: "Green" | "Red" | "Yellow" | "Connection error";
-  alertName: string;
-  information: string;
-  emailSubscribed: boolean;
-  latestSSMHostVersion: string;
-  currentSSMHostVersion: string;
-  isErrorResponse?: boolean;
+ type AlertsState = [Alert[], React.Dispatch<React.SetStateAction<Alert[]>>];
+interface SystemStatusAlertsContentProps {
+  loading: boolean;
+  alerts: Alert[];
+  overflowMenuIndex: string;
+  setOverflowMenuIndex: React.Dispatch<React.SetStateAction<string>>;
+  overflowMenuRef: React.RefObject<HTMLSpanElement>;
+  handleActionClick: (action: string, alert: Alert) => void;
+  t: (key: string) => string;
+  canUpdateSystemStatus: boolean;
 }
 export const getClassNameToHandleOverFlowPostion = (
   index: number,
@@ -51,153 +43,137 @@ export const getClassNameToHandleOverFlowPostion = (
   return "template-menu-popover";
 };
 
+
+// Helper function to render notifications and error/success banners
+function renderNotification({ enableNotification, setEnableNotification, errorText, successMessage, setSuccessMessage, errorNote, setErrorNote, selectedAlert, t }: any): JSX.Element {
+  return <>
+    {enableNotification && (
+      <NotifyExceptionView setDisableNotification={setEnableNotification} />
+    )}
+    {errorText && (
+      <div className="error-banner">
+        <strong>No data:</strong> {errorText}
+      </div>
+    )}
+    {successMessage && (
+      <Notification
+        status={NotificationStatus.SUCCESSTOAST}
+        title={successMessage}
+        autoclose
+        escapeExits
+        onClickClose={() => setSuccessMessage(null)}
+        onAutoClose={() => setSuccessMessage(null)}
+      />
+    )}
+    {errorNote && (
+      <Notification
+        status={NotificationStatus.WARNING}
+        title={
+          selectedAlert?.emailSubscribed
+            ? t("SystemStatus_T.FailedAlertTitleDeactivate")
+            : t("SystemStatus_T.FailedAlertTitleActivate")
+        }
+        message={
+          <span>
+            {t("SystemStatus_T.FailedAlertMessage", {
+              action: selectedAlert?.emailSubscribed
+                ? "unsubscribing to the email alert"
+                : "subscribing to the email alert"
+            })}
+          </span>
+        }
+        onClickClose={() => setErrorNote(null)}
+      />
+    )}
+  </>;
+}
+
+// Helper function to handle email alert actions
+function handleEmailAction({ alert, action, t, setSelectedAlert, setLoading1, setSuccessMessage, fetchAlerts, setErrorNote }: any): void {
+  const emailSubscribed = action === "Deactivate Email";
+  const emailType: "SYNC" | "SSM" = alert.id === "1" ? "SYNC" : "SSM";
+  setSelectedAlert(alert);
+  setLoading1(true);
+  activateEmailAlert(
+    alert.id,
+    emailSubscribed,
+    () => {
+      setSuccessMessage(t("SystemStatus_T.Changessaved"));
+      fetchAlerts();
+      setLoading1(false);
+    },
+    (msg: string) => {
+      setLoading1(false);
+      setErrorNote(msg || t("SystemStatus_T.FailedAlert"));
+    },
+    emailType
+  );
+}
+
 const requiredSystemStatusUpdatePermission: Permission[] = [
   { Securable: "NG.AlertEmails.List", Operation: "Update" },
   { Securable: "NG.AlertEmails.List", Operation: "Write" }
 ];
-const canUpdateSystemStatus = authService.isAuthorised(
-  requiredSystemStatusUpdatePermission,
-  MatchPermissions.any
-);
+
+
+const SystemStatusAlertsContent: React.FC<SystemStatusAlertsContentProps> = ({
+  loading,
+  alerts,
+  overflowMenuIndex,
+  setOverflowMenuIndex,
+  overflowMenuRef,
+  handleActionClick,
+  t,
+  canUpdateSystemStatus
+}) => {
+  if (loading) {
+    return <div className="loading">Loading...</div>;
+  }
+  if (alerts.length > 0) {
+    return (
+      <SystemStatusAlertsTableComponent
+        alerts={alerts}
+        overflowMenuIndex={overflowMenuIndex}
+        setOverflowMenuIndex={setOverflowMenuIndex}
+        overflowMenuRef={overflowMenuRef}
+        handleActionClick={handleActionClick}
+        t={t}
+        canUpdateSystemStatus={canUpdateSystemStatus}
+      />
+    );
+  }
+  return <div>No results found.</div>;
+};
 const SystemStatusAlertsView: React.FC = () => {
-  const [sidePanelIsOpen, setSidePanelOpen] = useState<boolean>(false);
-  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [loading1, setLoading1] = useState<boolean>(false);
-  const [errorText, setErrorText] = useState<string | null>(null);
-  const [errorNote, setErrorNote] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [overflowMenuIndex, setOverflowMenuIndex] = useState<string>("");
-  const overflowMenuRef = useRef<HTMLSpanElement>(null);
+  const canUpdateSystemStatus: boolean = authService.isAuthorised(
+    requiredSystemStatusUpdatePermission,
+    MatchPermissions.any
+  );
+  const [sidePanelIsOpen, setSidePanelOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [selectedAlert, setSelectedAlert]: [Alert | null, React.Dispatch<React.SetStateAction<Alert | null>>] = useState<Alert | null>(null);
+  const [alerts, setAlerts]: AlertsState = useState<Alert[]>([]);
+  const [loading, setLoading]: any = useState<boolean>(true);
+  const [loading1, setLoading1]: any = useState<boolean>(false);
+  const [errorText, setErrorText]: any = useState<string | null>(null);
+  const [errorNote, setErrorNote]: any = useState<string | null>(null);
+  const [successMessage, setSuccessMessage]: any = useState<string | null>(null);
+  const [overflowMenuIndex, setOverflowMenuIndex]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+  const overflowMenuRef: React.RefObject<HTMLSpanElement> = useRef<HTMLSpanElement>(null);
   const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
-  const [enableNotification, setEnableNotification] = useState<boolean>(false);
+  const [enableNotification, setEnableNotification]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const history: ReturnType<typeof useHistory> = useHistory();
+  const handleException: () => void = () => setEnableNotification(true);
 
-  const history = useHistory();
-  const handleException = () => {
-    setEnableNotification(true);
-  };
-  const fetchAlerts = async () => {
-    setLoading(true);
-    setErrorText(null);
-
-    try {
-      const response = await fetchEmailAlertStatus(handleException, history);
-
-      if (response) {
-        const { listenerData, ssmHostData } = response;
-
-        // Determine listener status
-        let listenerStatus: "Green" | "Connection error" | "Red" = "Red";
-        if (listenerData?.listenerStatus === "Live") {
-          listenerStatus = "Green";
-        } else if (listenerData?.listenerStatus === "Connection error") {
-          listenerStatus = "Connection error";
-        }
-
-        // Determine listener information
-        let listenerInfo = "";
-        if (listenerData?.listenerStatus === "Live") {
-          listenerInfo = t("SystemStatus_T.DataSyncLiveInfo");
-        } else if (listenerData?.listenerStatus === "Connection error") {
-          listenerInfo = t("SystemStatus_T.ConnectionError");
-        } else {
-          listenerInfo = t("SystemStatus_T.DataSyncNotLiveInfo");
-        }
-
-        // Determine SSM Host status
-        let ssmHostStatus: "Green" | "Connection error" | "Red" = "Red";
-        if (ssmHostData?.ssmHostStatus === "Live") {
-          ssmHostStatus = "Green";
-        } else if (ssmHostData?.ssmHostStatus === "Connection error") {
-          ssmHostStatus = "Connection error";
-        }
-
-        // Determine SSM Host information
-        let ssmHostInfo = "";
-        if (ssmHostData?.ssmHostStatus === "Live") {
-          ssmHostInfo = t("SystemStatus_T.SSMLiveInfo");
-        } else if (ssmHostData?.ssmHostStatus === "Connection error") {
-          ssmHostInfo = "-";
-        } else {
-          ssmHostInfo = t("SystemStatus_T.SSMNotLiveInfo");
-        }
-
-        const apiAlerts: Alert[] = [
-          {
-            id: "1",
-            status: listenerStatus,
-            alertName: t("SystemStatus_T.DataSyncAlertName"),
-            information: listenerInfo,
-            emailSubscribed: listenerData?.eMailAlert,
-            latestSSMHostVersion: "",
-            currentSSMHostVersion: "",
-            isErrorResponse: false,
-          },
-          {
-            id: "2",
-            status: ssmHostStatus,
-            alertName: t("SystemStatus_T.SSMPackage"),
-            information: ssmHostInfo,
-            emailSubscribed: ssmHostData?.eMailAlert,
-            latestSSMHostVersion: ssmHostData?.latestSSMHostVersion,
-            currentSSMHostVersion: ssmHostData?.currentSSMHostVersion,
-            isErrorResponse: false,
-          }
-        ];
-
-        setAlerts(apiAlerts);
-      } else {
-        // Fallback: no response from API → set Yellow alerts
-        setAlerts([
-          {
-            id: "1",
-            status: "Yellow",
-            alertName: t("SystemStatus_T.DataSyncAlertName"),
-            information: t("SystemStatus_T.WarningMessage"),
-            emailSubscribed: false,
-            latestSSMHostVersion: "",
-            currentSSMHostVersion: "",
-            isErrorResponse: true,
-          },
-          {
-            id: "2",
-            status: "Yellow",
-            alertName: t("SystemStatus_T.SSMPackage"),
-            information: t("SystemStatus_T.WarningMessage"),
-            emailSubscribed: false,
-            latestSSMHostVersion: "",
-            currentSSMHostVersion: "",
-            isErrorResponse: true,
-          }
-        ]);
-      }
-    } catch (fetchError) {
-      setAlerts([
-        {
-          id: "1",
-          status: "Yellow",
-          alertName: t("SystemStatus_T.DataSyncAlertName"),
-          information: t("SystemStatus_T.WarningMessage"),
-          emailSubscribed: false,
-          latestSSMHostVersion: "",
-          currentSSMHostVersion: "",
-          isErrorResponse: true,
-        },
-        {
-          id: "2",
-          status: "Yellow",
-          alertName: t("SystemStatus_T.SSMPackage"),
-          information: t("SystemStatus_T.WarningMessage"),
-          emailSubscribed: false,
-          latestSSMHostVersion: "",
-          currentSSMHostVersion: "",
-          isErrorResponse: true,
-        }
-      ]);
-    } finally {
-      setLoading(false);
-    }
+  const fetchAlerts: () => Promise<void> = async () => {
+    await fetchAlertsUtil(
+      setLoading,
+      setErrorText,
+      setAlerts,
+      fetchEmailAlertStatus,
+      handleException,
+      history,
+      t
+    );
   };
 
   useEffect(() => {
@@ -205,43 +181,28 @@ const SystemStatusAlertsView: React.FC = () => {
   }, []);
 
   useEffect(() => {
-
     systemStatusOverflowMenuOutSideClickHandler(
       overflowMenuIndex,
       setOverflowMenuIndex
     );
-
   }, [overflowMenuIndex]);
 
-
-
-  const handleActionClick = (action: string, alert: Alert) => {
+  const handleActionClick: (action: string, alert: Alert) => void= (action: string, alert: Alert) => {
     if (action === "Activate Email" || action === "Deactivate Email") {
-      const emailSubscribed = action === "Deactivate Email";
-      // Determine emailType based on alert.id
-      const emailType = alert.id === "1" ? "SYNC" : "SSM";
-      setSelectedAlert(alert);
-      setLoading1(true);
-      activateEmailAlert(
-        alert.id,
-        emailSubscribed,
-        () => {
-          setSuccessMessage(t("SystemStatus_T.Changessaved"));
-          fetchAlerts();
-          setLoading1(false);
-        },
-        (msg) => {
-          setLoading1(false);
-          setErrorNote(msg || t("SystemStatus_T.FailedAlert"));
-
-        },
-        emailType
-      );
+      handleEmailAction({
+        alert,
+        action,
+        t,
+        setSelectedAlert,
+        setLoading1,
+        setSuccessMessage,
+        fetchAlerts,
+        setErrorNote
+      });
     } else if (action === "View") {
       setSelectedAlert(alert);
       setSidePanelOpen(true);
     }
-
     setOverflowMenuIndex("");
   };
 
@@ -256,47 +217,17 @@ const SystemStatusAlertsView: React.FC = () => {
         />
       </div>
 
-      {enableNotification && (
-        <NotifyExceptionView setDisableNotification={setEnableNotification} />
-      )}
-
-      {errorText && (
-        <div className="error-banner">
-          <strong>No data:</strong> {errorText}
-        </div>
-      )}
-
-      {successMessage && (
-        <Notification
-          status={NotificationStatus.SUCCESSTOAST}
-          title={successMessage}
-          autoclose
-          escapeExits
-          onClickClose={() => setSuccessMessage(null)}
-          onAutoClose={() => setSuccessMessage(null)}
-        />
-      )}
-
-      {errorNote && (
-        <Notification
-          status={NotificationStatus.WARNING}
-          title={
-            selectedAlert?.emailSubscribed
-              ? t("SystemStatus_T.FailedAlertTitleDeactivate")
-              : t("SystemStatus_T.FailedAlertTitleActivate")
-          }
-          message={
-            <span>
-              {t("SystemStatus_T.FailedAlertMessage", {
-                action: selectedAlert?.emailSubscribed
-                  ? "unsubscribing to the email alert"
-                  : "subscribing to the email alert",
-              })}
-            </span>
-            }
-          onClickClose={() => setErrorNote(null)}
-        />
-      )}
+      {renderNotification({
+        enableNotification,
+        setEnableNotification,
+        errorText,
+        successMessage,
+        setSuccessMessage,
+        errorNote,
+        setErrorNote,
+        selectedAlert,
+        t
+      })}
 
       {loading1 && (
         <Loader
@@ -306,29 +237,16 @@ const SystemStatusAlertsView: React.FC = () => {
           isLoaderModal
         />
       )}
-      {(() => {
-        let content;
-
-        if (loading) {
-          content = <div className="loading">Loading...</div>;
-        } else if (alerts.length > 0) {
-          content = (
-            <TableComponent
-              alerts={alerts}
-              overflowMenuIndex={overflowMenuIndex}
-              setOverflowMenuIndex={setOverflowMenuIndex}
-              overflowMenuRef={overflowMenuRef}
-              handleActionClick={handleActionClick}
-              t={t}
-            
-            />
-          );
-        } else {
-          content = <div>No results found.</div>;
-        }
-
-        return content;
-      })()}
+      <SystemStatusAlertsContent
+        loading={loading}
+        alerts={alerts}
+        overflowMenuIndex={overflowMenuIndex}
+        setOverflowMenuIndex={setOverflowMenuIndex}
+        overflowMenuRef={overflowMenuRef}
+        handleActionClick={handleActionClick}
+        t={t}
+        canUpdateSystemStatus={canUpdateSystemStatus}
+      />
 
       <SidePanel
         dataTestId="side-panel"
@@ -339,95 +257,11 @@ const SystemStatusAlertsView: React.FC = () => {
       >
         {sidePanelIsOpen && selectedAlert && (
           <>
-            <SidePanelContent>
-              <div className="alert-panel-content">
-                {(selectedAlert?.isErrorResponse || selectedAlert?.status === "Connection error") ? (
-                  <Notification
-                    className="alert-notification-warning"
-                    dataTestId={`notification-${selectedAlert?.status?.toLowerCase()}`}
-                    escapeExits
-                    id={`notification-${selectedAlert?.status?.toLowerCase()}-id`}
-                    onClickClose={() => setSidePanelOpen(false)}
-                    status={NotificationStatus.WARNING}
-                    title={t("SystemStatus_T.moduleBlock.notifyException.content")}
-                    message={
-                      <div className="secondary-text-simsid">
-                        <br />
-                        <div className="secondary-text-simsid-admin-sec-heading">
-                          {t("SystemStatus_T.moduleBlock.notifyException.title")}
-                        </div>
-                      </div>
-                    }
-                    hideCloseButton
-                  />
-                ) : (
-                  <Notification
-                    className="alert-notification-success"
-                    dataTestId={`notification-${selectedAlert?.status?.toLowerCase()}`}
-                    escapeExits
-                    id={`notification-${selectedAlert?.status?.toLowerCase()}-id`}
-                    onClickClose={() => setSidePanelOpen(false)}
-                    status={
-                      selectedAlert?.status === "Green"
-                        ? NotificationStatus.SUCCESS
-                        : NotificationStatus.ERROR
-                    }
-                    title={selectedAlert?.information}
-                    hideCloseButton
-                  />
-                )}
-
-                {/* Your detailed Red alert content goes here */}
-                {selectedAlert?.status === "Red" && (
-                  <div className="alert-description">
-                    {selectedAlert?.id === "1" && (
-                      <>
-                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content1")}</p>
-                        <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content2")}</strong></p>
-                        <ul>
-                          <li>
-                            <strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content3")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content8")} <strong><a
-                              href="https://help.parentpaygroup.com/csm?id=copy_of_kb_article_view_1&sysparm_article=KB0012954"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content4")}</a></strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content7")}
-                          </li>
-                          <li><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content5")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content9")}</li>
-                          <li><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content6")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesDataSync.content10")}</li>
-                        </ul>
-                      </>
-                    )}
-
-                    {selectedAlert?.id === "2" ? (
-                      <>
-                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content1")}</p>
-                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content2")}</p>
-                        <ul>
-                          <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content3")} {selectedAlert?.latestSSMHostVersion}</li>
-                          <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content4")} {selectedAlert?.currentSSMHostVersion}</li>
-                        </ul>
-                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content5")}</p>
-                        <ul>
-                          <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content6")}</li>
-                          <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content7")}</li>
-                          <li>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content8")}</li>
-                        </ul>
-                        <p><strong>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content9")}</strong> {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content10")} <strong>
-                          <a
-                            href="https://help.parentpaygroup.com/csm?id=copy_of_kb_article_view_1&sysparm_article=KB0013199"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content11")}
-                          </a>
-                        </strong></p>
-                        <p>{t("SystemStatus_T.moduleBlock.ErrorMessagesSSMPackage.content12")}</p>
-                      </>
-                    ) : <p />}
-                  </div>
-                )}
-              </div>
-            </SidePanelContent>
+            <SystemStatusAlertPanelContent
+              selectedAlert={selectedAlert}
+              setSidePanelOpen={setSidePanelOpen}
+              t={t}
+            />
 
             <SidePanelFooter className="editable-side-panel-footer">
               <Button
@@ -446,193 +280,6 @@ const SystemStatusAlertsView: React.FC = () => {
     </div>
   );
 };
-
-const TableComponent: React.FC<{
-  alerts: Alert[];
-  overflowMenuIndex: string;
-  setOverflowMenuIndex: React.Dispatch<React.SetStateAction<string>>;
-  overflowMenuRef: React.RefObject<HTMLSpanElement>;
-  handleActionClick: (action: string, alert: Alert) => void;
-
-  t: (key: string) => string;
-  
-}> = ({
-  alerts,
-  overflowMenuIndex,
-  setOverflowMenuIndex,
-  overflowMenuRef,
-  handleActionClick,
-  t
-  
-}) => {
-    const systemStatusOverFlowBtnRef = useRef<(HTMLButtonElement | null)[]>([]);
-    const [systemStatusOverflowPosition, setSystemStatusOverflowPosition] = useState<{
-      left: number;
-      top: number;
-    } | null>(null);
-
-    const getTableStatus = (status: string): TableStatus => {
-      if (status === "Yellow" || status === "Connection error") return TableStatus.WARNING;
-      if (status === "Red") return TableStatus.CRITICAL;
-      return TableStatus.SUCCESS;
-    };
-
-    const getStatusLabel = (status: string): string => {
-      if (status === "Connection error") return t("SystemStatus_T.WarningMessage");
-      if (status === "Yellow") return t("SystemStatus_T.NoData");
-      if (status === "Green") return t("SystemStatus_T.Live");
-      return t("SystemStatus_T.Fail");
-    };
-
-    const getEmailSubscriptionText = (alert: Alert): string => {
-      if (alert?.isErrorResponse || alert?.status === "Connection error") {
-        return "-";
-      }
-      return alert?.emailSubscribed ? t("SystemStatus_T.Yes") : t("SystemStatus_T.No");
-    };
-
-
-    const handleOverflowMenuClick = (index: number) => {
-      if (overflowMenuIndex === `overflow-${index}`) {
-        setOverflowMenuIndex("");
-        setSystemStatusOverflowPosition(null);
-      } else {
-        const rect =
-          systemStatusOverFlowBtnRef.current[index]?.getBoundingClientRect();
-        if (rect) {
-          setSystemStatusOverflowPosition({
-            left: rect.left,
-            top: rect.bottom
-          });
-        }
-        setOverflowMenuIndex(`overflow-${index}`);
-      }
-    };
-
-    return (
-      <TableWrapper className="system-status-table-wrapper">
-        <Table className="status-table" isStatus>
-          <TableHead>
-            <TableRow>
-              <TableCell header className="status-table-cell">
-                {t("SystemStatus_T.Status")}
-              </TableCell>
-              <TableCell header>{t("SystemStatus_T.Alert")}</TableCell>
-              <TableCell header>{t("SystemStatus_T.Information")}</TableCell>
-              <TableCell header>{t("SystemStatus_T.EmailAlerts")}</TableCell>
-              <TableCell header className="last-cell-header" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {alerts.map((alert, index) => {
-              const status = getTableStatus(alert.status);
-              const statusLabel = getStatusLabel(alert.status);
-              return (
-                <TableRow key={alert?.id}>
-                  <TableCell status={status}>{statusLabel}</TableCell>
-                  <TableCell>{alert?.alertName}</TableCell>
-                  <TableCell
-                    className={
-                      alert.isErrorResponse ? "information-column-error" : ""
-                    }
-                  >
-                    {alert.isErrorResponse ? (
-                      <div className="warning--alt">
-                        <Icon
-                          color={IconColor.Warning300}
-                          dataTestId="btn-90"
-                          id="variable-2"
-                          name="warning--alt"
-                          size={16}
-                        />
-                        <span> {t("SystemStatus_T.WarningMessage")}</span>
-                      </div>
-                    ) : (
-                      alert?.information
-                    )}
-                  </TableCell>
-                  <TableCell>{getEmailSubscriptionText(alert)}</TableCell>
-                  
-                  <TableCell>
-                    <div className="system-status-overflow-btn-wrapper">
-                      {(!canUpdateSystemStatus || alert?.isErrorResponse || alert?.status === "Connection error") ? (
-                        <button
-                          type="button"
-                          onClick={() => handleActionClick("View", alert)}
-                          className="view-link-as-button"
-                        >
-                          {t("SystemStatus_T.View")}
-                        </button>
-                      ) : (
-                        <>
-                          <Button
-                            ref={(el) => {
-                              systemStatusOverFlowBtnRef.current[index] = el;
-                            }}
-                            size={ButtonSize.Small}
-                            color={
-                              overflowMenuIndex === `overflow-${index}`
-                                ? ButtonColor.Primary
-                                : ButtonColor.Utility
-                            }
-                            onClick={() => handleOverflowMenuClick(index)}
-                            iconName="overflow-menu--horizontal"
-                            ariaLabel="Overflow menu"
-                            className={`btn-option${overflowMenuIndex === `overflow-${index}` ? " system-status-overflow-btn-active" : ""}`}
-                          />
-                          {overflowMenuIndex === `overflow-${index}` && (
-                            <span
-                              ref={overflowMenuRef}
-                              style={{
-                                left: (systemStatusOverflowPosition?.left ?? 0) - 150,
-                                top: systemStatusOverflowPosition?.top
-                              }}
-                              className="overflow-menu-position"
-                            >
-                              <OverflowMenu
-                                dataTestId="childcare-overflow-menu"
-                                id={`childcare-overflow-menu-${index}`}
-                                onClick={(e, selectedValue) =>
-                                  handleActionClick(
-                                    (selectedValue as { value: string }).value,
-                                    alert
-                                  )
-                                }
-                                className={`${getClassNameToHandleOverFlowPostion(
-                                  index,
-                                  alerts.length
-                                )} system-status-overflow-menu`}
-                              >
-                                <OverflowMenuItem value="View">
-                                  {t("SystemStatus_T.View")}
-                                </OverflowMenuItem>
-                                <OverflowMenuItem
-                                  value={
-                                    alert.emailSubscribed
-                                      ? "Deactivate Email"
-                                      : "Activate Email"
-                                  }
-                                >
-                                  {alert.emailSubscribed
-                                    ? t("SystemStatus_T.Deactivateemail")
-                                    : t("SystemStatus_T.Activateemail")}
-                                </OverflowMenuItem>
-                              </OverflowMenu>
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </TableCell>
-
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableWrapper>
-    );
-  };
 
 export default SystemStatusAlertsView;
 
