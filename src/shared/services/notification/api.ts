@@ -3,39 +3,46 @@ import { authService } from "@essnextgen/auth-ui";
 import { service } from "../../utils/api-service";
 import apiUrls from "./ApiConfig.json";
 import { getUserOrganisation } from "../../utils";
+import { AutoSuggestResponse, NotificationTableData } from "./api.props";
 
-export const getNotificationTableData: (PageSize: number, PageNumber: number) => Promise<any> = async (PageSize: number, PageNumber: number): Promise<any> =>  {
+export const getNotificationTableData: ({ PageSize, PageNumber, SearchTerm, SortBy, SortDirection }: {
+  PageSize: number;
+  PageNumber: number;
+  SearchTerm: string;
+  SortBy?: string | undefined;
+  SortDirection?: boolean | undefined;
+}) => Promise<NotificationTableData> = async ({ PageSize, PageNumber, SearchTerm, SortBy,
+  SortDirection }: {
+    PageSize: number, PageNumber: number, SearchTerm: string, SortBy?: string;
+    SortDirection?: boolean;
+  }): Promise<any> => {
+    const orgId = getUserOrganisation();
+    const receiverId = authService.getUserId();
 
-  const orgId: string = getUserOrganisation();
-  const receiverId: string | null = authService.getUserId();
-  // 'B6BAAAB5-B025-45B8-A2D1-47F4C1754A80';
-  // authService.getUserId();
-  const userName: string | null = authService.getUsername();
+    try {
+      const direction = SortDirection;
+      const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}&SearchTerm=${SearchTerm}&SortBy=${SortBy}&Asc=${direction}`;
+      const baseUrl = buildApplicationUrl(apiUrls);
+      const response = await service.get(path, baseUrl);
+      return response.data;
+    } catch (err: any) {
+      console.log("Error fetching notification table data:", err);
 
-  console.log({ orgId, receiverId, userName });
-  try {
-    const path = `/v1/notification?OrganisationId=${orgId}&ReceiverId=${receiverId}&PageNumber=${PageNumber}&PageSize=${PageSize}`;
-    const baseUrl: string = buildApplicationUrl(apiUrls);
-    const response: any = await service.get(path, baseUrl);
-    return response.data;
-  } catch (err: any) {
-    console.log("Error fetching notification table data:", err);
+      if (err.response.status === 401) {
+        console.info("Unauthorized access - perhaps redirect to login?", err.response.status);
 
-    if (err.response.status === 401) {
-      console.info("Unauthorized access - perhaps redirect to login?", err.response.status);
-
+      }
+      return { error: true, status: err.response.status };
     }
-    return { error: true, status: err.response.status };
-  }
-};
+  };
 
 export const getViewData: (notificationId?: string | undefined) => Promise<any> = async (notificationId?: string): Promise<any> => {
-  const orgId: string = getUserOrganisation();
+  const orgId = getUserOrganisation();
 
   try {
     const path = `/v1/notification/notification-by-id?NotificationId=${notificationId}&OrganisationId=${orgId}`;
-    const baseUrl: string = buildApplicationUrl(apiUrls);
-    const response: any = await service.get(path, baseUrl);
+    const baseUrl = buildApplicationUrl(apiUrls);
+    const response = await service.get(path, baseUrl);
     return response.data;
   } catch (err: any) {
     return { error: true, status: err.response.status }
@@ -46,17 +53,38 @@ export const markAsRead: (notificationId: string) => Promise<any> = async (notif
   const requestData: {
     NotificationId: string;
   } = {
-    NotificationId: notificationId
+    NotificationId: notificationId,
   };
-  const orgId: string = getUserOrganisation();
+  const orgId = getUserOrganisation();
 
   try {
-    const baseUrl: string = buildApplicationUrl(apiUrls);
+    const baseUrl = buildApplicationUrl(apiUrls);
     const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
-    const response: any = await service.put(path, requestData);
-    console.log("Mark As Read Response:", response.data.payload);
+    const response = await service.put(path, requestData);
     return response.data;
   } catch {
     return [];
   }
+}
+
+export const getSearchAutoSuggestData: ({ SearchTerm }: {
+  SearchTerm: string;
+}) => Promise<AutoSuggestResponse> = async ({ SearchTerm }: { SearchTerm: string }) => {
+  const OrganisationId = authService.getOrgId();
+  const receiverId = authService.getUserId();
+  try {
+    const path = `/v1/notification/auto-suggestions?SearchTerm=${SearchTerm}&OrganisationId=${OrganisationId}&ReceiverId=${receiverId}`;
+    const baseUrl = buildApplicationUrl(apiUrls);
+    const response = await service.get(path, baseUrl);
+    return response.data;
+  } catch (err: any) {
+    console.log("Error fetching notification table data:", err);
+
+    if (err.response.status === 401) {
+      console.info("Unauthorized access - perhaps redirect to login?", err.response.status);
+
+    }
+    return { error: true, status: err.response.status };
+  }
+
 }

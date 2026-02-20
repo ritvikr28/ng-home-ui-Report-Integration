@@ -2,53 +2,65 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React from "react";
 import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
-import { useTranslation } from "@essnextgen/ui-intl-kit";
+// import { useTranslation } from "@essnextgen/ui-intl-kit";
 import "./style.scss";
 import { DialogContentProps } from "./FilterDialog.props";
 
 export const DialogContent: React.FC<DialogContentProps> = ({
     setStartDate,
     setEndDate,
-    // setStatus, 
-    // status,
-    // setPriority,
-    // priority,
-    // startDate,
-    // endDate,
-    startDateError
+    setStatus,
+    status,
+    setPriority,
+    priority,
+    startDate,
+    endDate,
+    startDateError,
+    endDateError
 }) => {
-    const { t }: { t: (key: string) => string } = useTranslation();
-    // const handleStatusChange = (value: string) => {
-    //     setStatus((prev: string[]) => {
-    //         if (prev.includes(value)) {
-    //             return prev.filter((s: string) => s !== value);
-    //         }
-    //         return [...prev, value];
-    //     });
-    // };
+    const handleStatusChange: (value: string) => void = (value: string) => {
+        setStatus((prev: string[]) => {
+            if (prev.includes(value)) {
+                return prev.filter((s: string) => s !== value);
+            }
+            return [...prev, value];
+        });
+    };
 
-    // const handlePriorityChange = (value: string) => {
-    //     setPriority((prev: string[]) => {
-    //         if (prev.includes(value)) {
-    //             return prev.filter((p: string) => p !== value);
-    //         }
-    //         return [...prev, value];
-    //     });
-    // };
+    const handlePriorityChange: (value: string) => void = (value: string) => {
+        setPriority((prev: string[]) => {
+            if (prev.includes(value)) {
+                return prev.filter((p: string) => p !== value);
+            }
+            return [...prev, value];
+        });
+    };
 
-    // const parseDateString = (dateStr: string): { day?: number; month?: number; year?: number } => {
-    //     if (!dateStr) return {};
-    //     const parts = dateStr.split("-");
-    //     if (parts.length !== 3) return {};
-    //     const year = parseInt(parts[0], 10);
-    //     const month = parseInt(parts[1], 10);
-    //     const day = parseInt(parts[2], 10);
-    //     if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year)) return {};
-    //     return { day, month, year };
-    // };
+    const parseDateString = (
+        dateStr: string
+    ): { day?: number; month?: number; year?: number } => {
+        if (!dateStr) return {};
+        const parts: string[] = dateStr.split("-");
+        if (parts.length !== 3) return {};
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const day = parseInt(parts[2], 10);
+        if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year))
+            return {};
+        return { day, month, year };
+    };
 
-    // const startDateParsed = parseDateString(startDate);
-    // const endDateParsed = parseDateString(endDate);
+    const startDateParsed: {
+    day?: number | undefined;
+    month?: number | undefined;
+    year?: number | undefined;
+} = parseDateString(startDate);
+
+    const endDateParsed: {
+    day?: number | undefined;
+    month?: number | undefined;
+    year?: number | undefined;
+} = parseDateString(endDate);
 
     // const updateCheckboxState = (elementId: string, shouldBeChecked: boolean) => {
     //     const element = document.getElementById(elementId);
@@ -196,8 +208,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         dataTestId="status-read"
                         id="status-read"
                         label="Read"
+                        isSelected={status.includes("read")}
                         onChange={() => {
-                            // handleStatusChange("read");
+                            handleStatusChange("read");
                         }}
                         value="read"
                     />
@@ -205,8 +218,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         dataTestId="status-unread"
                         id="status-unread"
                         label="Unread"
+                        isSelected={status.includes("unread")}
                         onChange={() => {
-                            // handleStatusChange("unread");
+                            handleStatusChange("unread");
                         }}
                         value="unread"
                     />
@@ -220,8 +234,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                             dataTestId="priority-low"
                             id="priority-low"
                             label="Low"
+                            isSelected={priority.includes("low")}
                             onChange={() => {
-                                // handlePriorityChange("low");
+                                handlePriorityChange("low");
                             }}
                             value="low"
                         />
@@ -229,8 +244,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                             dataTestId="priority-medium"
                             id="priority-medium"
                             label="Medium"
+                            isSelected={priority.includes("medium")}
                             onChange={() => {
-                                // handlePriorityChange("medium");
+                                handlePriorityChange("medium");
                             }}
                             value="medium"
                         />
@@ -254,9 +270,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                     <DateInput
                         dataTestId="start-date"
                         id="start-date"
-                        // day={startDateParsed.day}
-                        // month={startDateParsed.month}
-                        // year={startDateParsed.year}
+                        day={startDateParsed.day}
+                        month={startDateParsed.month}
+                        year={startDateParsed.year}
                         onChange={(day: string | number, month: string | number, year: string | number) => {
                             const formattedDay: string = String(day).padStart(2, '0');
                             const formattedMonth: string = String(month).padStart(2, '0');
@@ -265,7 +281,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         onError={() => { }}
                         onValidateDate={() => { }}
                         showDatePicker
-                        validationText={startDateError ? t("Filter.startDateRequired") : undefined}
+                        validationText={startDateError || undefined}
                         validationTextLevel={startDateError ? ValidationTextLevel.Error : undefined}
                     />
                 </div>
@@ -276,9 +292,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                     <DateInput
                         dataTestId="end-date"
                         id="end-date"
-                        // day={endDateParsed.day}
-                        // month={endDateParsed.month}
-                        // year={endDateParsed.year}
+                        day={endDateParsed.day}
+                        month={endDateParsed.month}
+                        year={endDateParsed.year}
                         onChange={(day: string | number, month: string | number, year: string | number) => {
                             const formattedDay: string = String(day).padStart(2, '0');
                             const formattedMonth: string = String(month).padStart(2, '0');
@@ -287,6 +303,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         onError={() => { }}
                         onValidateDate={() => { }}
                         showDatePicker
+                        validationText={endDateError || undefined}
+                        validationTextLevel={
+                            endDateError ? ValidationTextLevel.Error : undefined
+                        }
                     />
                 </div>
             </div>

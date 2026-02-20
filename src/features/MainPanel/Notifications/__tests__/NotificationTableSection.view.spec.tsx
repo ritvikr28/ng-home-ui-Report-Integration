@@ -1,6 +1,75 @@
+
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import NotificationTableSection from "../NotificationTableSection/NotificationTableSection.view";
+
+const UseNotificationModule = jest.requireMock("../useNotification");
+
+it("calls setIsAutoSuggestVisible when search input is focused", () => {
+    const setIsAutoSuggestVisible = jest.fn();
+    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setIsAutoSuggestVisible });
+    render(<NotificationTableSection {...getDefaultProps()} />);
+    expect(setIsAutoSuggestVisible).not.toHaveBeenCalled();
+});
+
+it("calls setSearchTerm and setIsAutoSuggestVisible on clear search", () => {
+    const setSearchTerm = jest.fn();
+    const setIsAutoSuggestVisible = jest.fn();
+    const setNotificationState = jest.fn();
+    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setSearchTerm, setIsAutoSuggestVisible });
+    render(<NotificationTableSection {...getDefaultProps({ setNotificationState })} />);
+    // Access the mock for ControlledList
+    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
+    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
+    lastCall.searchOnCloseHandle();
+    expect(setSearchTerm).toHaveBeenCalledWith("");
+    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+    expect(setNotificationState).toHaveBeenCalledWith({ searchCleared: true });
+});
+
+it("calls setSearchTerm and setIsAutoSuggestVisible on search suggestion item click", () => {
+    const setSearchTerm = jest.fn();
+    const setIsAutoSuggestVisible = jest.fn();
+    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setSearchTerm, setIsAutoSuggestVisible });
+    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
+    render(<NotificationTableSection {...getDefaultProps()} />);
+    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
+    lastCall.onSearchSuggestionItemClick({ name: "foo" });
+    expect(setSearchTerm).toHaveBeenCalledWith("foo");
+    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+});
+
+it("calls setSideIsOpen when onClickSidePnlSecondaryBtn is triggered", () => {
+    const setSideIsOpen = jest.fn();
+    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
+    render(<NotificationTableSection {...getDefaultProps({ setSideIsOpen })} />);
+    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
+    lastCall.onClickSidePnlSecondaryBtn();
+    expect(setSideIsOpen).toHaveBeenCalledWith(false);
+});
+
+it("calls setSideIsOpen when handleCloseSidePanel is triggered", () => {
+    const setSideIsOpen = jest.fn();
+    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
+    render(<NotificationTableSection {...getDefaultProps({ setSideIsOpen })} />);
+    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
+    lastCall.handleCloseSidePanel();
+    expect(setSideIsOpen).toHaveBeenCalledWith(false);
+});
+
+it("calls setSearchTerm and setIsAutoSuggestVisible on Enter keydown in search", () => {
+    const setSearchTerm = jest.fn();
+    const setIsAutoSuggestVisible = jest.fn();
+    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setSearchTerm, setIsAutoSuggestVisible });
+    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
+    render(<NotificationTableSection {...getDefaultProps()} />);
+    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
+    // Simulate onSearchKeyDown
+    const event = { key: "Enter", target: { value: "abc" } };
+    lastCall.onSearchKeyDown(event);
+    expect(setSearchTerm).toHaveBeenCalledWith("abc");
+    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+});
 
 jest.mock("@essnextgen/ui-kit", () => ({
     ControlledList: jest.fn((props) => (
@@ -34,11 +103,12 @@ jest.mock('@essnextgen/ui-application-kit', () => ({
     // Mock only what you need, or return an empty object
     __esModule: true,
     default: {},
+    buildApplicationUrl: jest.fn(() => 'http://mocked-url'),
 }));
 
 
 
-const { useNotification } = require("../useNotification");
+
 
 const defaultUseNotificationReturn = {
     setFilterBtnClicked: jest.fn(),
@@ -68,12 +138,21 @@ const getDefaultProps = (overrides = {}) => ({
     notificationIdSelected: undefined,
     currentPage: 1,
     setCurrentPage: jest.fn(),
+    setNoResults: jest.fn(),
+    setTableData: jest.fn(),
+    setTotalTableData: jest.fn(),
+    setTableDataError: jest.fn(),
+    setIsTableBodyLoading: jest.fn(),
+    notificationState: { searchCleared: false },
+    setNotificationState: jest.fn(),
+    filterBtnClicked: false,
+    setFilterBtnClicked: jest.fn(),
     ...overrides
 });
 
 beforeEach(() => {
     jest.clearAllMocks();
-    useNotification.mockReturnValue({ ...defaultUseNotificationReturn });
+    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn });
 });
 
 describe("NotificationTableSection", () => {
@@ -84,7 +163,8 @@ describe("NotificationTableSection", () => {
 
     it("renders NotificationSidePanelView when sideIsOpen is true", () => {
         render(<NotificationTableSection {...getDefaultProps({ sideIsOpen: true })} />);
-        expect(screen.getByTestId("notification-side-panel")).toBeInTheDocument();
+        const panels = screen.getAllByTestId("notification-side-panel");
+        expect(panels).toHaveLength(2);
     });
 
     it("does not render NotificationSidePanelView when sideIsOpen is false", () => {
@@ -94,8 +174,8 @@ describe("NotificationTableSection", () => {
 
     it("calls setFilterBtnClicked when Filter button is clicked", () => {
         const setFilterBtnClicked = jest.fn();
-        useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setFilterBtnClicked });
-        render(<NotificationTableSection {...getDefaultProps()} />);
+        UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setFilterBtnClicked });
+        render(<NotificationTableSection {...getDefaultProps({ setFilterBtnClicked })} />);
         const filterBtn = screen.getByTestId("filter");
         fireEvent.click(filterBtn);
         expect(setFilterBtnClicked).toHaveBeenCalledWith(true);
@@ -116,7 +196,7 @@ describe("NotificationTableSection", () => {
     });
 
     it("shows empty state message when no data and not loading", () => {
-        useNotification.mockReturnValue({ ...defaultUseNotificationReturn, totalNotifications: 0 });
+        UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, totalNotifications: 0 });
         render(<NotificationTableSection {...getDefaultProps({ tableData: [], tableRows: [], totalTableData: 0 })} />);
         expect(screen.getByTestId("controlled-list-mock")).toBeInTheDocument();
     });

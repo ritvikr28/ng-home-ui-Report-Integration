@@ -1,8 +1,8 @@
-import { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react";
 import { UseNotificationReturn } from "./useNotification.props";
+import { Suggestion } from "./Notifications.props";
 
 export const PAGE_SIZE = 40;
-// const getNotificationId: (notification: any) => any = (notification: any) => notification?.id ?? notification?.Id;
 
 export const formattedDate: (dateStr: string) => string = (dateStr: string) =>
     new Date(dateStr).toLocaleDateString("en-GB", {
@@ -11,49 +11,43 @@ export const formattedDate: (dateStr: string) => string = (dateStr: string) =>
         year: "numeric"
     });
 
-// const removeStatusFilter: (prev: any, value: string) => any = (
-//     prev: {
-//         status?: string[];
-//         priority?: string[];
-//         startDate?: string;
-//         endDate?: string;
-//     },
-//     value: string
-// ) => {
-//     const updatedStatus = prev.status?.filter(
-//         (s) => s.toLowerCase() !== value.toLowerCase()
-//     ) || [];
-//     if (updatedStatus.length > 0) {
-//         return { ...prev, status: updatedStatus };
-//     }
-//     const { status, ...rest }: { status?: string[]; priority?: string[]; startDate?: string; endDate?: string; } = prev;
-//     return rest;
-// };
+export const getValues: (data: any[]) => {
+    text: string;
+    props: {
+        externalId: string;
+        name: string;
+    };
+    value: JSX.Element;
+}[] = (
+    data: any[]
+): Array<{
+    text: string;
+    props: {
+        externalId: string;
+        name: string;
+    };
+    value: JSX.Element;
+}> => {
+        if (!Array.isArray(data) || data.length === 0) return [];
+        return data.map((record: any) => ({
+            text: record.title ?? '',
+            props: {
+                externalId: String(record.id ?? ''),
+                name: record.title ?? ''
+            },
+            value: <></>
+        }));
+    };
 
-// const removePriorityFilter: (prev: any, value: string) => any = (
-//     prev: {
-//         status?: string[];
-//         priority?: string[];
-//         startDate?: string;
-//         endDate?: string;
-//     },
-//     value: string
-// ) => {
-//     const updatedPriority: string[] = prev.priority?.filter(
-//         (p) => p.toLowerCase() !== value.toLowerCase()
-//     ) || [];
-//     if (updatedPriority.length > 0) {
-//         return { ...prev, priority: updatedPriority };
-//     }
-//     const { priority, ...rest }: { status?: string[]; priority?: string[]; startDate?: string; endDate?: string; } = prev;
-//     return rest;
-// };
-
-export const useNotification: ({ tableData, totalTableData }: {
+export const useNotification: ({ tableData, totalTableData, currentPage, setCurrentPage, setIsTableBodyLoading, setTableData, setTotalTableData, setTableDataError }: {
     tableData: any[];
     totalTableData: number;
     currentPage: number;
     setCurrentPage: Dispatch<SetStateAction<number>>;
+    setIsTableBodyLoading?: Dispatch<SetStateAction<boolean>>;
+    setTableData?: Dispatch<SetStateAction<any[]>>;
+    setTotalTableData?: Dispatch<SetStateAction<number>>;
+    setTableDataError?: Dispatch<SetStateAction<any>>;
 }) => UseNotificationReturn = ({
     tableData,
     totalTableData,
@@ -64,11 +58,11 @@ export const useNotification: ({ tableData, totalTableData }: {
     totalTableData: number;
     currentPage: number;
     setCurrentPage: Dispatch<SetStateAction<number>>;
+    setIsTableBodyLoading?: Dispatch<SetStateAction<boolean>>;
+    setTableData?: Dispatch<SetStateAction<any[]>>;
+    setTotalTableData?: Dispatch<SetStateAction<number>>;
+    setTableDataError?: Dispatch<SetStateAction<boolean>>;
 }): UseNotificationReturn => {
-        const [filterBtnClicked, setFilterBtnClicked]: [
-            boolean,
-            Dispatch<SetStateAction<boolean>>
-        ] = useState<boolean>(false);
 
         const [notifications]: [
             any[],
@@ -136,28 +130,19 @@ export const useNotification: ({ tableData, totalTableData }: {
             boolean,
             Dispatch<SetStateAction<boolean>>
         ] = useState(false);
-        const [sortBy]: [
+        const [sortBy, setSortBy]: [
             string,
             Dispatch<SetStateAction<string>>
-        ] = useState<string>("DateReceived");
-        const [sortDirection]: [
-            string,
-            Dispatch<SetStateAction<string>>
-        ] = useState<string>("Desc");
+        ] = useState<string>("ReceivedDate");
+        const [sortDirection, setSortDirection]: [
+            boolean,
+            Dispatch<SetStateAction<boolean>>
+        ] = useState<boolean>(false);
 
-        // const parseFilterDate: (dateStr: string) => Date | null = (
-        //     dateStr: string
-        // ): Date | null => {
-        //     if (!dateStr) return null;
-        //     const parts: string[] = dateStr.split("-");
-        //     if (parts.length !== 3) return null;
-        //     const year = parseInt(parts[0], 10);
-        //     const month = parseInt(parts[1], 10) - 1;
-        //     const day = parseInt(parts[2], 10);
-        //     if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year))
-        //         return null;
-        //     return new Date(year, month, day);
-        // };
+        const [isAutoSuggestVisible, setIsAutoSuggestVisible]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
+        const [suggestionLoader, setSuggestionLoader]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
+        const [searchSuggestions, setSearchSuggestions]: [Suggestion[], Dispatch<SetStateAction<Suggestion[]>>] = useState<Array<Suggestion>>([]);
+
 
         const totalNotifications: number = totalTableData;
         const totalOriginalNotifications: any[] = notifications;
@@ -198,26 +183,9 @@ export const useNotification: ({ tableData, totalTableData }: {
             page: number
         ) => {
             setCurrentPage(page);
+            setSelectedNotificationIds([]);
+            setIsClearSelectedCheckbox(true);
         };
-
-        // const handleListCheckboxChange: (
-        //     _index: number,
-        //     id: string
-        // ) => void = (_index: number, id: string) => {
-        //     if (!id) {
-        //         return;
-        //     }
-        //     setSelectedNotificationIds((prev) => {
-        //         if (prev.includes(id)) {
-        //             const next: string[] = prev.filter((selectedId) => selectedId !== id);
-        //             setIsClearSelectedCheckbox(next.length === 0);
-        //             return next;
-        //         }
-        //         const next: string[] = [...prev, id];
-        //         setIsClearSelectedCheckbox(false);
-        //         return next;
-        //     });
-        // };
 
         const handleSearchChange: (value: string) => void = (value: string) => {
             setSearchTerm(value);
@@ -347,136 +315,45 @@ export const useNotification: ({ tableData, totalTableData }: {
         //         });
         //     };
 
-        // const handleClearAllFilters: () => void = () => {
-        //     setFilters({});
-        //     if (!searchTerm.trim()) {
-        //         setSortBy("DateReceived");
-        //         setSortDirection("Desc");
-        //     }
-        // };
+        const handleClearAllFilters: () => void = () => {
+            setFilters({});
+            if (!searchTerm.trim()) {
+                setSortBy("ReceivedDate");
+                setSortDirection(false);
+            }
+        };
 
-        // const handleSort: (columnName: string) => void = (columnName: string) => {
-        //     let apiColumnName: string = columnName;
-        //     switch (columnName) {
-        //         case "Date received": {
-        //             apiColumnName = "DateReceived";
-        //             let newDirection = "Desc";
-        //             if (sortBy === "DateReceived") {
-        //                 newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-        //             }
-        //             setSortBy("DateReceived");
-        //             setSortDirection(newDirection);
-        //             return;
-        //         }
-        //         case "Priority":
-        //             apiColumnName = "Priority";
-        //             break;
-        //         case "Status":
-        //             apiColumnName = "Status";
-        //             break;
-        //         default:
-        //             return;
-        //     }
-        //     let newDirectionSelected = "Asc";
-        //     if (sortBy === apiColumnName) {
-        //         newDirectionSelected = sortDirection === "Desc" ? "Asc" : "Desc";
-        //     }
 
-        //     setSortBy(apiColumnName);
-        //     setSortDirection(newDirectionSelected);
-        // };
+        const handleSort: (columnName: string) => void = (columnName: string) => {
+            let apiColumnName: string = columnName;
+            switch (columnName) {
+                case "Status":
+                    apiColumnName =
+                        "Status";
+                    break;
+                case "Notification":
+                    apiColumnName = "Notification";
+                    break;
+                case "Priority":
+                    apiColumnName = "Priority";
+                    break;
+                case "Date received":
+                    apiColumnName = "ReceivedDate";
+                    break;
+                default:
+                    return;
+            }
+            if (sortBy === apiColumnName) {
+                setSortDirection(prev => !prev);
+            } else {
+                setSortDirection(false);
+            }
 
-        // const searchTagList: {
-        //     text: string;
-        //     categoryName: string;
-        //     closeObj: {
-        //         name: string;
-        //         id: number;
-        //         value?: string | undefined;
-        //     };
-        // }[] = useMemo(() => {
-        //     const tags: Array<{
-        //         text: string;
-        //         categoryName: string;
-        //         closeObj: { name: string; id: number; value?: string };
-        //     }> = [];
-        //     if (filters.status && filters.status.length > 0) {
-        //         filters.status.forEach((status) => {
-        //             const statusLabel = status.charAt(0).toUpperCase() + status.slice(1);
-        //             tags.push({
-        //                 text: statusLabel,
-        //                 categoryName: "Status",
-        //                 closeObj: { name: statusLabel, id: 1, value: status }
-        //             });
-        //         });
-        //     }
+            setSortBy(apiColumnName);
+        };
 
-        //     if (filters.priority && filters.priority.length > 0) {
-        //         filters.priority.forEach((priority) => {
-        //             const priorityLabel =
-        //                 priority.charAt(0).toUpperCase() + priority.slice(1);
-        //             tags.push({
-        //                 text: priorityLabel,
-        //                 categoryName: "Priority",
-        //                 closeObj: { name: priorityLabel, id: 2, value: priority }
-        //             });
-        //         });
-        //     }
-
-        //     if (filters.startDate || filters.endDate) {
-        //         const startDate: Date | null = filters.startDate
-        //             ? parseFilterDate(filters.startDate)
-        //             : null;
-        //         const endDate: Date | null = filters.endDate
-        //             ? parseFilterDate(filters.endDate)
-        //             : null;
-
-        //         const monthNames = [
-        //             "Jan",
-        //             "Feb",
-        //             "Mar",
-        //             "Apr",
-        //             "May",
-        //             "Jun",
-        //             "Jul",
-        //             "Aug",
-        //             "Sep",
-        //             "Oct",
-        //             "Nov",
-        //             "Dec"
-        //         ];
-
-        //         const formatDate: (date: Date) => string = (date: Date) => {
-        //             const day: string = date.getDate().toString().padStart(2, "0");
-        //             const month: string = monthNames[date.getMonth()];
-        //             const year: string = date.getFullYear().toString();
-        //             return `${day} ${month} ${year}`;
-        //         };
-
-        //         let dateLabel = "";
-        //         if (startDate && endDate) {
-        //             dateLabel = `${formatDate(startDate)} to ${formatDate(endDate)}`;
-        //         } else if (startDate) {
-        //             dateLabel = formatDate(startDate);
-        //         } else if (endDate) {
-        //             dateLabel = formatDate(endDate);
-        //         }
-
-        //         if (dateLabel) {
-        //             tags.push({
-        //                 text: dateLabel,
-        //                 categoryName: "Date",
-        //                 closeObj: { name: "Date", id: 3 }
-        //             });
-        //         }
-        //     }
-
-        //     return tags;
-        // }, [filters]);
 
         return {
-            filterBtnClicked,
-            setFilterBtnClicked,
             currentPage,
             setCurrentPage,
             totalPages,
@@ -485,12 +362,13 @@ export const useNotification: ({ tableData, totalTableData }: {
             totalOriginalNotifications,
             handlePageChange,
             searchTerm,
+            setSearchTerm,
             handleSearchChange,
             // handleClearSearch,
             filters,
             handleFilterChange,
             // handleRemoveFilter,
-            // handleClearAllFilters,
+            handleClearAllFilters,
             // searchTagList,
             isSearching,
             noResults,
@@ -509,7 +387,15 @@ export const useNotification: ({ tableData, totalTableData }: {
             isNoSelectionMode,
             sortBy,
             sortDirection,
-            // handleSort,
-            setNoResults
+            handleSort,
+            setNoResults,
+            // handleSearchChangeWithAutoSuggest,
+            // handleSearchKeyPressed,
+            isAutoSuggestVisible,
+            setIsAutoSuggestVisible,
+            suggestionLoader,
+            setSuggestionLoader,
+            searchSuggestions,
+            setSearchSuggestions
         };
     };

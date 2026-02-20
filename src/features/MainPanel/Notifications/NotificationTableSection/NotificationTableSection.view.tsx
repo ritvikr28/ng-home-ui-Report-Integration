@@ -1,27 +1,21 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, NotificationStatus, ResponseCode, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { handleSearchKeyPressed as handleSearchKeyPressedUtil, handleSearchChangeWithAutoSuggest as handleSearchChangeWithAutoSuggestUtil } from "./notificationTableHandlers";
+import { fetchNotificationTableData, fetchSearchAutoSuggestData, isShowdynamictableNoMsg, shouldFetchTableData } from "./notificationTableApiHelpers";
 import { getEmptyStateMessage } from "../hooks/useNotificationHook";
 import { UseNotificationReturnType } from "../Notifications.props";
 import { useNotification } from "../useNotification";
 import NotificationSidePanelView from "../components/NotificationSidePanelComponent/NotificationSidePanel.view";
+import { NotificationTableSectionProps } from "./NotificationTableSection.props";
 
-interface NotificationTableSectionProps {
-    // tableWrapperRef: React.RefObject<HTMLDivElement>;
-    tableDataError: boolean;
-    tableRows: any[];
-    tableHeadersData: any[];
-    isTableBodyLoading: boolean;
+function renderSidePanel(props: {
     sideIsOpen: boolean;
-    setSideIsOpen: (open: boolean) => void;
+    setSideIsOpen: (isOpen: boolean) => void;
     selectedItem: any;
     setSelectedItem: (item: any) => void;
-    notificationIdSelected: string | undefined;
-    tableData: any[]; // Add tableData to the props
-    totalTableData: number; // Add totalTableData to the props
-    hasSearch: boolean; // Add hasSearch to the props
-    hasActiveFilters: boolean; // Add hasActiveFilters to the props
-    currentPage: number; // Add currentPage to the props
-    setCurrentPage: (page: number) => void; // Add setCurrentPage to the props
+    notificationIdSelected: string | null;
+}): JSX.Element | null {
+    return props.sideIsOpen ? <NotificationSidePanelView {...props} notificationIdSelected={props.notificationIdSelected ?? undefined} /> : null;
 }
 
 const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
@@ -40,11 +34,17 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
     notificationIdSelected,
     // totalPages,
     currentPage,
-    setCurrentPage
+    setCurrentPage,
+    setNoResults,
+    setTableData,
+    setTotalTableData,
+    setTableDataError,
+    setIsTableBodyLoading,
+    notificationState,
+    setNotificationState,
+    setFilterBtnClicked
 }) => {
     const {
-        // filterBtnClicked,
-        setFilterBtnClicked,
         totalNotifications,
         totalPages,
         // handlePageChange,
@@ -61,25 +61,92 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
         // confirmDelete,
         // isDeleteLoading,
         showDeleteToast,
-        isClearSelectedCheckbox
+        isClearSelectedCheckbox,
         // selectedCount,
         // isNoSelectionMode,
         // filters,
         // handleFilterChange
         // handleClearAllFilters,
         // searchTagList,
-        // sortBy,
-        // sortDirection,
-        // handleSort
+        sortBy,
+        sortDirection,
+        handleSort,
+        isAutoSuggestVisible,
+        setIsAutoSuggestVisible,
+        suggestionLoader,
+        setSuggestionLoader,
+        setSearchSuggestions,
+        searchSuggestions,
+        setSearchTerm
+        // handleSearchChangeWithAutoSuggest,
+        // handleSearchKeyPressed,
     }: UseNotificationReturnType = useNotification({
         tableData,
         totalTableData,
         currentPage,
         setCurrentPage: (value) => setCurrentPage(typeof value === "function" ? value(currentPage) : value)
     });
+
+
+
+    const handleSearchKeyPressed: (inputValue: string) => void = (inputValue: string) => {
+        handleSearchKeyPressedUtil({
+            inputValue,
+            currentPage,
+            sortBy: String(sortBy),
+            sortDirection,
+            setIsTableBodyLoading,
+            setTableData,
+            setTotalTableData,
+            setTableDataError,
+            setNoResults
+        });
+    };
+
+    const handleSearchChangeWithAutoSuggest: (value: string) => void = (value: string) => {
+        handleSearchChangeWithAutoSuggestUtil(
+            value,
+            setSearchTerm,
+            setIsAutoSuggestVisible
+        );
+    };
+
     const tableWrapperRef: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
-    
-    const shouldShowPagination = !tableDataError && totalTableData !== 0;
+
+    const shouldShowPagination = !tableDataError && totalTableData !== 0 && !isTableBodyLoading;
+
+    useEffect(() => {
+        if (shouldFetchTableData({ sideIsOpen, hasSearch, searchCleared: notificationState.searchCleared })) {
+            fetchNotificationTableData({
+                currentPage,
+                searchTerm,
+                sortBy: String(sortBy),
+                sortDirection,
+                setIsTableBodyLoading,
+                setTableData,
+                setTotalTableData,
+                setTableDataError,
+                setNoResults
+            });
+        }
+    }, [notificationState, currentPage, sideIsOpen, sortBy, sortDirection]);
+
+    useEffect(() => {
+        console.log({ searchTerm, hasSearch, isAutoSuggestVisible, cond: !(searchTerm && hasSearch && isAutoSuggestVisible) })
+        // if (!(searchTerm && hasSearch && isAutoSuggestVisible)) {
+        //     // setIsAutoSuggestVisible(false);
+        //     return undefined;
+        // }
+        if (searchTerm.length >= 2) {
+            fetchSearchAutoSuggestData({
+                searchTerm,
+                setSuggestionLoader,
+                setSearchSuggestions
+            });
+        }
+    }, [searchTerm, isAutoSuggestVisible, sideIsOpen, hasSearch])
+
+    console.log("NotificationTableSection render", { currentPage, sideIsOpen, sortBy, sortDirection, tableData, totalTableData, tableDataError, isTableBodyLoading });
 
     return (
         <div
@@ -114,7 +181,10 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                                 className="filter-btn-clc"
                                 color={ButtonColor.Utility}
                                 data-testid="filter"
-                                onClick={() => setFilterBtnClicked(true)}
+                                onClick={() => {
+                                    console.log("Filter button clicked");
+                                    setFilterBtnClicked(true)
+                                }}
                                 size={ButtonSize.Small}
                                 iconName="filter"
                                 iconColor={IconColor.Neutral800}
@@ -135,7 +205,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     ]}
                     // onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
                     onEditSelectedBtnClick={() => { }}
-                    emptyStateMsg={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm)}
+                    emptyStateMsg={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions)}
                     onAddEventBtnClick={() => { }}
                     groupTagsEnabled
                     headingText="Notification Centre"
@@ -146,7 +216,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     lastColHeaderAlign="center"
                     paginationMinCountToHideNextPreviousBtn={0}
                     isShowPrimaryBtn={false}
-                    resultNotFoundMessage={noResults && searchTerm.trim() ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.` : ""}
+                    resultNotFoundMessage={!suggestionLoader && noResults && searchTerm.trim() ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.` : ""}
+                    searchOnFocus={() => setIsAutoSuggestVisible(true)}
                     showConfirmDialog
                     subHeadingText=""
                     tableBodyData={tableRows as any}
@@ -156,9 +227,9 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     isSorting={false}
                     sortByDefault={false}
                     sortAscFirst={false}
-                    // sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
-                    //     handleSort(columnName);
-                    // }}
+                    sortingOnClickEvent={(e: React.SyntheticEvent, columnName: string) => {
+                        handleSort(columnName);
+                    }}
                     templatePropsConfirmation={{
                         cancelText: "Cancel",
                         contentText: "You have unsaved changes that will be lost.",
@@ -174,7 +245,6 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     isIconRightAligned
                     isShowOverflowMenuCol={false}
                     searchHeadingText="Search by notification title"
-                    isSearchHideClearIcon={searchTerm ? searchTerm.length !== 2 : false}
                     dynamicTableLoader={isTableBodyLoading}
                     onClickSidePnlSecondaryBtn={() => setSideIsOpen(false)}
                     handleCloseSidePanel={() => setSideIsOpen(false)}
@@ -183,9 +253,15 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     isShowCheckboxCol
                     isShowThirdElement
                     isShowdynamictableNoMsg={
-                        (totalNotifications === 0 || !noResults) || !isSearching || tableDataError
+                        isShowdynamictableNoMsg({
+                            totalNotifications,
+                            noResults,
+                            isSearching,
+                            tableDataError
+                        })
                     }
-                    emptyRowResponseMessage={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm)}
+                    emptyRowResponseMessage={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions)}
+                    searchIsLoader={suggestionLoader}
                     emptyRowResponseCode={ResponseCode.Info}
                     isPagination={shouldShowPagination}
                     paginationCount={totalPages}
@@ -200,6 +276,43 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     toastNotificationTitle="Notification deleted"
                     // searchTagList={searchTagList}
                     dynamictableNoMsgColor={ValidationTextLevel.Warning}
+                    searchTerm={searchTerm}
+                    searchOnChange={(e) => {
+                        if (e.target.value.length === 0) {
+                            setNotificationState({ searchCleared: true });
+                        }
+                        handleSearchChangeWithAutoSuggest(e.target.value)
+                    }}
+                    searchSuggestions={searchSuggestions}
+                    searchOnCloseHandle={() => {
+                        console.log("Search cleared");
+                        setSearchTerm("");
+                        setIsAutoSuggestVisible(false);
+                        setNotificationState({ searchCleared: true });
+
+                        handleSearchKeyPressed("");
+                    }}
+                    onSearchSuggestionItemClick={(props: any | null) => {
+                        if (props) {
+                            // eslint-disable-next-line react/prop-types
+                            setSearchTerm(props.name);
+                            // eslint-disable-next-line react/prop-types
+                            handleSearchKeyPressed(props.name);
+                            setIsAutoSuggestVisible(false);
+                        }
+                    }}
+                    isSearchHideClearIcon={searchTerm.length === 0}
+                    onSearchKeyDown={(e: React.KeyboardEvent) => {
+
+                        setSearchTerm((e.target as HTMLInputElement).value);
+                        if (e.key === "Enter") {
+                            handleSearchKeyPressed((e.target as HTMLInputElement).value);
+                            setIsAutoSuggestVisible(false);
+                        }
+                    }}
+                    searchValue={searchTerm}
+                    isShowAutoSuggest={isAutoSuggestVisible}
+                    onKeyUpLenght={2}
                 />
             </div>
             {sideIsOpen && (
@@ -211,6 +324,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     notificationIdSelected={notificationIdSelected}
                 />
             )}
+            {renderSidePanel({ sideIsOpen, setSideIsOpen, selectedItem, setSelectedItem, notificationIdSelected: notificationIdSelected ?? null })}
         </div>
     )
 };

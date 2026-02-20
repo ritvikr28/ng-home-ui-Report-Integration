@@ -1,4 +1,3 @@
-// src/features/MainPanel/Notifications/Notifications.view.test.tsx
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import NotificationView from "../Notifications.view";
@@ -21,22 +20,6 @@ describe("NotificationView tableRows mapping", () => {
     });
 
     it.skip("maps tableData to tableRows with correct fields", () => {
-        // const tableData = [
-        //     {
-        //         id: "1",
-        //         status: false,
-        //         title: "Test Notification 1",
-        //         priority: "Tier1",
-        //         receivedDate: "2024-06-01"
-        //     },
-        //     {
-        //         id: "2",
-        //         status: true,
-        //         title: "Test Notification 2",
-        //         priority: "Tier2",
-        //         receivedDate: "2024-06-02"
-        //     }
-        // ];
         mockUseNotification.mockReturnValue({
             filterBtnClicked: false,
             setFilterBtnClicked: jest.fn(),
@@ -70,7 +53,6 @@ describe("NotificationView tableRows mapping", () => {
         });
 
         render(<NotificationView />);
-        // Notification titles
         expect(screen.getByText("Test Notification 1")).toBeInTheDocument();
         expect(screen.getByText("Test Notification 2")).toBeInTheDocument();
         // Status mapping
@@ -90,8 +72,7 @@ describe("NotificationView tableRows mapping", () => {
                 id: "3",
                 status: false,
                 title: "Unknown Priority",
-                priority: "TierX",
-                // receivedDate missing
+                priority: "TierX"
             }
         ];
         mockUseNotification.mockReturnValue({

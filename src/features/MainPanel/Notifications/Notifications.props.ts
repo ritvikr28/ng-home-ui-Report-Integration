@@ -1,5 +1,5 @@
 import React from "react";
-import { ShowValAs } from "@essnextgen/ui-kit";
+import { ShowValAs, SuggestionItem } from "@essnextgen/ui-kit";
 
 export interface NotificationRowData {
   id: string;
@@ -9,6 +9,10 @@ export interface NotificationRowData {
   dateReceived: string;
 }
 
+export declare type Suggestion = {
+  name: string;
+  values: Array<SuggestionItem>;
+};
 
 export type SetSideIsOpen = (isOpen: any) => void;
 
@@ -52,14 +56,13 @@ export type NotificationTableData = {
 }[]
 
 export interface UseNotificationReturnType {
-  filterBtnClicked: boolean;
-  setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
   currentPage: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   totalPages: number;
   totalNotifications: number;
   handlePageChange: (event: any, page: number) => void;
   searchTerm: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
   isSearching: boolean;
   noResults: boolean;
   setNoResults: React.Dispatch<React.SetStateAction<boolean>>;
@@ -75,12 +78,36 @@ export interface UseNotificationReturnType {
   isClearSelectedCheckbox: boolean;
   selectedCount: number;
   isNoSelectionMode: boolean;
-  filters: any; // Replace 'any' with your actual filters type
+  filters: any;
   handleFilterChange: (filters: any) => void;
-  // handleClearAllFilters: () => void;
+  handleClearAllFilters: () => void;
   // searchTagList: any[]
-  // ; // Replace 'any' with your actual tag type
   sortBy: string;
-  sortDirection: string;
-  // handleSort: (column: string) => void;
+  sortDirection: boolean;
+  handleSort: (column: string) => void;
+  // handleSearchChangeWithAutoSuggest: (value: string) => void;
+  // handleSearchKeyPressed: (inputValue: string) => void;
+  isAutoSuggestVisible: boolean;
+  setIsAutoSuggestVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  suggestionLoader: boolean;
+  setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
+  searchSuggestions: Suggestion[];
+  setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+
+}
+
+export interface NotificationTableHeader {
+  text: string;
+  isShow: boolean;
+  showValAs: ShowValAs;
+  isTextTruncate?: boolean;
+  columnWidth: string;
+  isHeaderTextTruncate?: boolean;
+  headerTxtTrunctLength?: number;
+  isSimpleText?: boolean;
+  txtTrunctLength?: number;
+  isColumnSorting?: boolean;
+  isColumnSortByDefault?: boolean;
+  isColumnSortAscFirst?: boolean | undefined;
+  anyComponent?: (cellData: any, rowData?: any) => JSX.Element;
 }
