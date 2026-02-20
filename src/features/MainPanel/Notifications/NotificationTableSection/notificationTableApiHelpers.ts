@@ -75,10 +75,10 @@ export async function fetchNotificationTableData({
             SortDirection: sortDirection
         });
         if (!data.error) {
-            setTableData(data.payload);
-            setTotalTableData(data.total);
+            setTableData(data.payload ?? []);
+            setTotalTableData(data.total ?? 0);
             setTableDataError(false);
-            setNoResults(data.payload.length === 0);
+            setNoResults((data.payload ?? []).length === 0);
         } else {
             setNoResults(true);
             setTableDataError(true);

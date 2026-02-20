@@ -431,8 +431,6 @@
     "invitePerson": {
       "title": "Invite Users",
       "subTitle": "Invite SIMS 7 users to access SIMS Next Gen",
-      "userDetailsSims7": "User details are managed in SIMS7",
-      "userEmailManagement": "To manage user email name and role, please access SIMS7.",
       "personDetailsSims7": "User details are managed in SIMS7",
       "personEmailManagement": "To manage user email name and role, please access SIMS7.",
       "searchPerson": "Search user",

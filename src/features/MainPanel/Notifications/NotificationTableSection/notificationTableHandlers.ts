@@ -26,7 +26,7 @@ export const handleSearchKeyPressed: (options: NotificationTableHandlerOptions) 
             SortBy: sortBy,
             SortDirection: sortDirection
         });
-        if (!data.error) {
+        if (!data.error && Array.isArray(data.payload) && data.total) {
             setTableData(data.payload);
             setTotalTableData(data.total);
             setTableDataError(false);
