@@ -222,19 +222,17 @@ const mockSuggestions: any = {
     });
     (Logic.fileDownload as jest.Mock).mockResolvedValue(zipFileDownloadMockData);
     /* eslint-disable */
-    global.ResizeObserver = global.ResizeObserver || class {
-      observe(): void {
-        // no-op
-      }
-      unobserve(): void {
-        // no-op
-      }
-      disconnect(): void {
-        // no-op
-      }
-    };
+
+    global.ResizeObserver =
+  global.ResizeObserver ||
+  (class implements ResizeObserver{
+    observe(target: Element): void {  jest.fn()(target); }
+    unobserve(target: Element) : void { jest.fn()(target); }
+    disconnect(): void { jest.fn()(); }
+  });
     /* eslint-enable */
-  })
+  
+});  
 jest.setTimeout(10000);
   beforeEach(() => {
   jest.clearAllMocks();
@@ -505,16 +503,17 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
 
 });
 
+
 describe('useTotalSelectedCountEffect', () => {
   it('should reset selections when all checkboxes are excluded', () => {
-    const setIsHeaderBoxChecked = jest.fn();
-    const setAllSelectedDocs = jest.fn();
-    const setExcludedCheckBoxIds = jest.fn();
-    const setTotalSelectedCount = jest.fn();
+    const setIsHeaderBoxChecked: jest.Mock = jest.fn();
+    const setAllSelectedDocs: jest.Mock = jest.fn();
+    const setExcludedCheckBoxIds: jest.Mock = jest.fn();
+    const setTotalSelectedCount: jest.Mock = jest.fn();
 
-    const docData = { totalRecords: 3 };
-    const excludedCheckBoxIds = ['1', '2', '3']; // length matches totalRecords
-    const allSelectedDocs = [
+    const docData: { totalRecords: number } = { totalRecords: 3 };
+    const excludedCheckBoxIds = ['1', '2', '3'];
+    const allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[] = [
       { fileId: "f1", registrationId: 1, externalId: "e1" },
       { fileId: "f2", registrationId: 2, externalId: "e2" },
       { fileId: "f3", registrationId: 3, externalId: "e3" }
@@ -695,3 +694,4 @@ describe("Additional tests to increase coverage", () => {
   jest.useRealTimers();
   }); 
 });
+

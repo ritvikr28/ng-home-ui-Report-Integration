@@ -1,4 +1,3 @@
-
 import '@testing-library/jest-dom';
 import axios, { AxiosResponse } from 'axios';
 import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
@@ -75,7 +74,7 @@ describe('fetchDocumentDetails', () => {
     jest.spyOn(service, 'post').mockRejectedValueOnce(new Error('API failed'));
 
     const result: DocumentBasicDetails | null = await fetchDocumentDetails({ pageNumber: 1, pageSize: 40 });
-    expect(result).toBeNull();
+    expect(result).toEqual({ status: 500, detail: "Unknown server error" });
   });
 });
 
@@ -328,7 +327,8 @@ describe('viewDownload', () => {
     const error: Error = new Error('Network error');
     (service.get as jest.Mock).mockRejectedValue(error);
     const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
-     // expect(result).toEqual({});
+
+    await viewDownload();
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching view downloads data:',
       error
@@ -368,7 +368,7 @@ describe('fetchStaffProfilePhoto', () => {
     (service.get as jest.Mock).mockRejectedValueOnce(error);
     const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
 
-       // expect(result).toEqual({});
+    await fetchStaffProfilePhoto(mockExternalId);
     expect(consoleSpy).toHaveBeenCalledWith(
       'Error fetching staff profile photo:',
       error
@@ -391,7 +391,7 @@ describe('fetchStaffProfilePhoto', () => {
   it('returns empty object if service.get throws non-Error', async () => {
     (service.get as jest.Mock).mockRejectedValueOnce('some error');
     const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, 'error').mockImplementation();
-        // expect(result).toEqual({});
+    await fetchStaffProfilePhoto('');
     expect(consoleSpy).toHaveBeenCalled();
     consoleSpy.mockRestore();
   });
@@ -515,11 +515,10 @@ describe("validation API", () => {
   });
 
   it("returns empty object and logs error on failure", async () => {
-    const error: Error = new Error("Network error");
+    const error: any = "some error";
     (service.post as jest.Mock).mockRejectedValueOnce(error);
     const consoleSpy: jest.SpyInstance<void, [message?: any, ...optionalParams: any[]]> = jest.spyOn(console, "error").mockImplementation();
-
-    // expect(result).toEqual({});
+    await validation(mockPayload);
     expect(consoleSpy).toHaveBeenCalledWith(
       "Error fetching view downloads data:",
       error

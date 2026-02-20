@@ -11,7 +11,7 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
   const original: typeof import("../logic/DocumentManagementServer.handler") = jest.requireActual("../logic/DocumentManagementServer.handler");
   return {
     ...original,
-    isInvalidDateRange: jest.fn(() => false),
+    isInvalidDateRange: jest.fn(() => false)
   };
 });
 

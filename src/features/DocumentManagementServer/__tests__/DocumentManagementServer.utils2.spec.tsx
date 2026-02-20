@@ -130,7 +130,7 @@ describe("addUniqueTagItem", () => {
       item: null,
       selectedRelatedTo: undefined,
       tagListArray: [],
-      setTagListArray,
+      setTagListArray
     });
     expect(setTagListArray).not.toHaveBeenCalled();
   });
@@ -141,7 +141,7 @@ describe("addUniqueTagItem", () => {
       item: { learnerExternalId: "abc" } as any,
       selectedRelatedTo: { data: { data: { key: "Pupil" } } } as any,
       tagListArray: [],
-      setTagListArray,
+      setTagListArray
     });
     expect(setTagListArray).toHaveBeenCalled();
   });
@@ -152,7 +152,7 @@ describe("addUniqueTagItem", () => {
       item: { externalId: "abc" } as any,
       selectedRelatedTo: { data: { data: { key: "Staff" } } } as any,
       tagListArray: [],
-      setTagListArray,
+      setTagListArray
     });
     expect(setTagListArray).toHaveBeenCalled();
   });
@@ -163,7 +163,7 @@ describe("addUniqueTagItem", () => {
       item: { organisationId: "abc" } as any,
       selectedRelatedTo: undefined,
       tagListArray: [],
-      setTagListArray,
+      setTagListArray
     });
     expect(setTagListArray).toHaveBeenCalled();
   });
@@ -175,7 +175,7 @@ describe("addUniqueTagItem", () => {
       selectedRelatedTo: undefined,
       tagListArray: [{ organisationId: "abc" } as any],
       setTagListArray: jest.fn(),
-      setAlreadyExistingTags,
+      setAlreadyExistingTags
     });
     expect(setAlreadyExistingTags).toHaveBeenCalledWith(true);
   });
@@ -187,7 +187,7 @@ describe("addUniqueTagItem", () => {
       selectedRelatedTo: undefined,
       tagListArray: Array(5).fill({ organisationId: "x" }),
       setTagListArray,
-      maxLimit: 5,
+      maxLimit: 5
     });
     expect(setTagListArray).not.toHaveBeenCalled();
   });
@@ -200,7 +200,7 @@ describe("addUniqueTagItem", () => {
       selectedRelatedTo: undefined,
       tagListArray: [],
       setTagListArray,
-      setReferenceExternalIds,
+      setReferenceExternalIds
     });
     expect(setReferenceExternalIds).toHaveBeenCalled();
   });
@@ -213,7 +213,7 @@ describe("addUniqueTagItem", () => {
       selectedRelatedTo: undefined,
       tagListArray: [],
       setTagListArray,
-      setReferenceExternalIds,
+      setReferenceExternalIds
     });
     expect(setReferenceExternalIds).toHaveBeenCalled();
   });
@@ -414,11 +414,11 @@ it("returns config for default dialogType", async () => {
     restrictedFileCount: 0,
     currentPage: 1,
     gtmAnalytics: {
-      pushEvent: jest.fn(),
+      pushEvent: jest.fn()
     },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.cancelText).toBe("DocumentManagementServer.Cancel");
   expect(typeof config?.onCancel).toBe("function");
@@ -491,7 +491,7 @@ it("returns correct contentText when alreadyDeletedFileCount is 1", () => {
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.contentText).toContain("documentCannotBeDownloaded");
 });
@@ -557,7 +557,7 @@ it("returns correct contentText when deletedCount === 1", () => {
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.contentText).toContain("documentCannotBeDownloaded");
 });
@@ -623,7 +623,7 @@ it("returns correct contentText when deletedCount > 1", () => {
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.contentText).toContain("documentsCannotBeDownloaded");
 });

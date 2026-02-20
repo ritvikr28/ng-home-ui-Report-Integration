@@ -311,7 +311,9 @@ describe("FilterDialog.utils", () => {
         filterEntities: [],
         setWasApplied: jest.fn(),
         gtmAnalytics: { pushEvent: jest.fn() },
-        selectedDateRange: {}
+        selectedDateRange: {},
+        setSearchText: jest.fn(),
+        setSearchInput: jest.fn()
       };
     });
 

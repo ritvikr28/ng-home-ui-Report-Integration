@@ -12,8 +12,8 @@ jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
   useMediaQuery: jest.fn(),
   ApiService: {
-    fetchDMSSuggestions: jest.fn(),
-  },
+    fetchDMSSuggestions: jest.fn()
+  }
 }));
 
 // eslint-disable-next-line
@@ -668,31 +668,47 @@ describe('fileDownload', () => {
   let parent: any;
   let mockDownloadFile: jest.SpyInstance;
 
-  beforeEach(() => {
-    mockLink = {
-      click: jest.fn(),
-      set href(val: string) { this.hrefValue = val; },
-      get href(): string { return this.hrefValue; },
-      set download(val: string) { this.downloadValue = val; },
-      get download(): string { return this.downloadValue; },
-      // ...other properties if needed...
-    };
-    parent = {
-      appendChild: jest.fn(),
-      removeChild: jest.fn(),
-    };
-    originalCreateElement = document.createElement;
-    document.createElement = jest.fn(() => mockLink);
-    originalGetElementById = document.getElementById;
-    document.getElementById = jest.fn(() =>
-      ({
-        parentElement: parent
-      } as unknown as HTMLElement)
-    );
-    window.URL.createObjectURL = jest.fn(() => 'blob:url');
-    window.URL.revokeObjectURL = jest.fn();
-  mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
+
+    beforeEach(() => {
+  const link: any = {
+    click: jest.fn()
+  };
+  let hrefValue = '';
+  let downloadValue = '';
+
+  Object.defineProperty(link, 'href', {
+    get: () => hrefValue,
+    set: (val: string) => {
+      hrefValue = val;
+    }
   });
+
+  Object.defineProperty(link, 'download', {
+    get: () => downloadValue,
+    set: (val: string) => {
+      downloadValue = val;
+    }
+  });
+
+  mockLink = link;
+  parent = {
+    appendChild: jest.fn(),
+    removeChild: jest.fn()
+  };
+
+  originalCreateElement = document.createElement;
+  document.createElement = jest.fn(() => mockLink as HTMLAnchorElement);
+
+  originalGetElementById = document.getElementById;
+  document.getElementById = jest.fn(() =>
+    ({
+      parentElement: parent
+    } as HTMLElement)
+  );
+  window.URL.createObjectURL = jest.fn(() => 'blob:url');
+  window.URL.revokeObjectURL = jest.fn();
+  mockDownloadFile = jest.spyOn(ApiService, 'downloadFile');
+});
 
   afterEach(() => {
     document.createElement = originalCreateElement;
@@ -740,7 +756,6 @@ describe('fileDownload', () => {
     await expect(
       logicModule.fileDownload(fileId, fileName, '', '', blobName)
     ).rejects.toThrow('fail');
-
   });
 
   it('sets download error if bulkDownload throws', async () => {

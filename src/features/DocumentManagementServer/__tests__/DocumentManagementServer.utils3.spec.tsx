@@ -92,7 +92,7 @@ it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyD
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
 
   config?.onCancel();
@@ -170,7 +170,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
     gtmAnalytics,
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   await config?.onConfirm();
   expect(setPrepareDownloadError).toHaveBeenCalled();
@@ -235,7 +235,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   await config?.onConfirm();
   expect(setPrepareDownloadAbortBanner).toHaveBeenCalled();
@@ -300,7 +300,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   await config?.onConfirm();
   // expect(setShowEmailNotification).toHaveBeenCalled();
@@ -364,7 +364,7 @@ it("handles prepareDownload statuses: error, abort, and email notification", asy
     gtmAnalytics,
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   await config?.onConfirm();
   expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
@@ -441,7 +441,7 @@ it("calls all reset functions and fetchGetDocumentDetails onCancel when alreadyD
     gtmAnalytics: { pushEvent: jest.fn() },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
 
   config?.onCancel();

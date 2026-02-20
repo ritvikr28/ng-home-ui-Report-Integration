@@ -85,7 +85,7 @@ interface Props {
   setSearchTerm: (v: string) => void;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   setSearchRefExternalId: (ids: string[]) => void;
-  setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
+  // setIsSearchTriggered: React.Dispatch<React.SetStateAction<boolean>>;
   setPrevSelectedDocs: (ids: string[]) => void;
   setIsClearSelectedCheckbox: (v: boolean) => void;
   searchText: string;
@@ -112,7 +112,7 @@ function handleSuggestionItemClick(
     setTableKey,
     setIsInitialLoad,
     handleSuggestionClick,
-    setIsSearchTriggered,
+    // setIsSearchTriggered,
     setSelectedFormats,
     setSelectedRelatedTo,
     setSelectedEntities,
@@ -136,7 +136,7 @@ function handleSuggestionItemClick(
   setTableKey((prev: number) => prev + 1);
   setIsInitialLoad(true);
   handleSuggestionClick(item, setSearchTerm, setSearchText, setDocumentRelatedTo, setSearchRefExternalId, setSortBy, setSortDirection);
-  setIsSearchTriggered(true);
+  // setIsSearchTriggered(true);
   setSelectedFormats([]);
   setSelectedCategories([]);
   setSelectedRelatedTo(undefined);

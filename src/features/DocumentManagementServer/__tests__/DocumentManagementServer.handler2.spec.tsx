@@ -11,7 +11,7 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
   const original: typeof import("../logic/DocumentManagementServer.handler") = jest.requireActual("../logic/DocumentManagementServer.handler");
   return {
     ...original,
-    isInvalidDateRange: jest.fn(() => false),
+    isInvalidDateRange: jest.fn(() => false)
   };
 });
 
@@ -677,10 +677,10 @@ describe("handleEditSelectedOverFlowMenu", () => {
       data: {
         restrictedFileCount: 1,
         alreadyDeletedFileCount: 2,
-        availableFileCount: 3,
+        availableFileCount: 3
       },
       status : 200
-    })),
+    }))
   });
 
   const baseArgs: any = {
@@ -692,7 +692,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     allRegistrationIds: [1, 2],
     dateRange: { fromDate: "2025-01-01", toDate: "2025-01-02" },
     searchRefExternalId: ["ref1"],
-    documentRelatedTo: 1,
+    documentRelatedTo: 1
   };
 
   it("shows dialog if nothing selected", async () => {
@@ -700,7 +700,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
     await handleEditSelectedOverFlowMenu({
       ...baseArgs,
       ...mocks,
-      totalSelectedCount: 0,
+      totalSelectedCount: 0
     });
     expect(mocks.setShowDialog).toHaveBeenCalledWith(true);
     expect(mocks.setShowConfirmDialog).toHaveBeenCalled();
@@ -715,7 +715,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "Prepare download" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setIsPreDialogLoading).toHaveBeenCalledWith(false);
     expect(mocks.setShowErrorBanner).toHaveBeenCalledWith(false);
@@ -732,7 +732,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "Prepare download" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setShowRestrictedPrepareDialog).toHaveBeenCalledWith(false);
     expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
@@ -748,7 +748,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "Delete" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(true);
     expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
@@ -764,7 +764,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "Delete" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
     expect(mocks.setShowRestrictedDeleteDialog).toHaveBeenCalledWith(false);
@@ -780,7 +780,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "Prepare download" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setShowConfirmDialog).toHaveBeenCalledWith(false);
   });
@@ -791,7 +791,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
       ...baseArgs,
       ...mocks,
       selectedItem: { value: "View download" },
-      totalSelectedCount: 1,
+      totalSelectedCount: 1
     });
     expect(mocks.setSidePanelOpenReason).toHaveBeenCalledWith("view");
     expect(mocks.setIsSidePanelOpen).toHaveBeenCalledWith(true);
