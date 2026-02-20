@@ -9,9 +9,9 @@ export interface NotificationItem {
 
 export interface NotificationTableData {
   error: any;
-  payload: NotificationItem[];
+  payload?: NotificationItem[];
   status: number;
-  total: number;
+  total?: number;
 }
 
 export interface AutoSuggestItem {
