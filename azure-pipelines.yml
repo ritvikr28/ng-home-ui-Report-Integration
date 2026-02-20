@@ -268,264 +268,264 @@ stages:
               ArtifactName: 'drop'
               publishLocation: 'Container'
 
-  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-  #   - stage: dev
-  #     displayName: Deployment to Dev
-  #     dependsOn: Build
-  #     pool:
-  #       name: 'paz-vmss-pool'
-  #     variables:
-  #       - group: 'ng-home-ui-Dev'
-  #     jobs:
-  #       - deployment: Deploy_nghomeui_Dev
-  #         displayName: "Deployment to Dev"
-  #         environment: dev_eng             
-  #         strategy:
-  #           runOnce:
-  #             deploy:
-  #               steps:
-  #                 - task: DownloadPipelineArtifact@2
-  #                   inputs:
-  #                     buildType: 'current'
-  #                     artifactName: 'drop'
-  #                     targetPath: '$(Pipeline.Workspace)/drop'
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    - stage: dev
+      displayName: Deployment to Dev
+      dependsOn: Build
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-Dev'
+      jobs:
+        - deployment: Deploy_nghomeui_Dev
+          displayName: "Deployment to Dev"
+          environment: dev_eng             
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'
                   
-  #                 - task: Bash@3
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       # Write your commands here                  
-  #                       echo 'Hello world'                  
-  #                       curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
-  #                       unzip kubelogin-linux-amd64.zip
-  #                       sudo install bin/linux_amd64/kubelogin /usr/local/bin
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin
 
-  #                 - task: replacetokens@5
-  #                   displayName: 'Replace Token in Deployment.YAML'
-  #                   inputs:
-  #                       rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                       targetFiles: 'deployment.yaml'
-  #                       encoding: 'auto'
-  #                       tokenPattern: 'default'
-  #                       writeBOM: true
-  #                       actionOnMissing: 'warn'
-  #                       keepToken: false
-  #                       actionOnNoFiles: 'continue'
-  #                       enableTransforms: false
-  #                       enableRecursion: false
-  #                       useLegacyPattern: false
-  #                       enableTelemetry: true   
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true   
 
-  #                 - task: Bash@3
-  #                   displayName: 'Kubectl apply'
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       cd $(Pipeline.Workspace)/drop
-  #                       az login --identity
-  #                       az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-  #                       az aks get-credentials --resource-group paz-dev-pfm-rg --name paz-dev-pfm-aks --overwrite-existing 2> /dev/null
-  #                       kubelogin convert-kubeconfig -l azurecli
-  #                       kubectl apply -f deployment.yaml                        
-  #                     failOnStderr: true
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-dev-pfm-rg --name paz-dev-pfm-aks --overwrite-existing 2> /dev/null
+                        kubelogin convert-kubeconfig -l azurecli
+                        kubectl apply -f deployment.yaml                        
+                      failOnStderr: true
                   
-  #                 - template: azure-deployment-pipeline.yaml
-  #                   parameters:
-  #                     rgName: "paz-dev-pfm-rg"
-  #                     clusterName: "paz-dev-pfm-aks"
-  #                     subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-dev-pfm-rg"
+                      clusterName: "paz-dev-pfm-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
 
-  #       - job: WaitForValidation_Dev
-  #         displayName: "Validate Deployment"
-  #         dependsOn: Deploy_nghomeui_Dev
-  #         pool: server 
-  #         steps:
-  #         - task: ManualValidation@0
-  #           timeoutInMinutes: 60
-  #           inputs:
-  #             instructions: 'Please review the code for Dev Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
-  #             onTimeout: 'reject'
-  #             displayName: "Manual Validation"
+        - job: WaitForValidation_Dev
+          displayName: "Validate Deployment"
+          dependsOn: Deploy_nghomeui_Dev
+          pool: server 
+          steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              instructions: 'Please review the code for Dev Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
+              onTimeout: 'reject'
+              displayName: "Manual Validation"
   
-  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
-  #   - stage: qa
-  #     displayName: Deployment to Qa
-  #     dependsOn: dev
-  #     pool:
-  #       name: 'paz-vmss-pool'
-  #     variables:
-  #       - group: 'ng-home-ui-QA'
-  #     jobs:
-  #       - deployment: deploy_nghomeui_qa_eng
-  #         displayName: "Deployment to QA"
-  #         environment: qa_eng          
-  #         strategy:
-  #           runOnce:
-  #             deploy:
-  #               steps:
-  #                 - task: DownloadPipelineArtifact@2
-  #                   inputs:
-  #                     buildType: 'current'
-  #                     artifactName: 'drop'
-  #                     targetPath: '$(Pipeline.Workspace)/drop'     
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
+    - stage: qa
+      displayName: Deployment to Qa
+      dependsOn: dev
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-QA'
+      jobs:
+        - deployment: deploy_nghomeui_qa_eng
+          displayName: "Deployment to QA"
+          environment: qa_eng          
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'     
 
-  #                 - task: Bash@3
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       # Write your commands here                  
-  #                       echo 'Hello world'                  
-  #                       curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
-  #                       unzip kubelogin-linux-amd64.zip
-  #                       sudo install bin/linux_amd64/kubelogin /usr/local/bin     
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin     
 
-  #                 - task: replacetokens@5
-  #                   displayName: 'Replace Token in Deployment.YAML'
-  #                   inputs:
-  #                       rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                       targetFiles: 'deployment.yaml'
-  #                       encoding: 'auto'
-  #                       tokenPattern: 'default'
-  #                       writeBOM: true
-  #                       actionOnMissing: 'warn'
-  #                       keepToken: false
-  #                       actionOnNoFiles: 'continue'
-  #                       enableTransforms: false
-  #                       enableRecursion: false
-  #                       useLegacyPattern: false
-  #                       enableTelemetry: true
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true
                                     
-  #                 - task: Bash@3
-  #                   displayName: 'Kubectl apply'
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       cd $(Pipeline.Workspace)/drop
-  #                       az login --identity
-  #                       az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-  #                       az aks get-credentials --resource-group paz-qa-pfm-rg --name paz-qa-pfm-aks  --admin 2> /dev/null                          
-  #                       kubelogin convert-kubeconfig -l azurecli
-  #                       kubectl apply -f deployment.yaml                        
-  #                     failOnStderr: true
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-qa-pfm-rg --name paz-qa-pfm-aks  --admin 2> /dev/null                          
+                        kubelogin convert-kubeconfig -l azurecli
+                        kubectl apply -f deployment.yaml                        
+                      failOnStderr: true
                   
-  #                 - template: azure-deployment-pipeline.yaml
-  #                   parameters:
-  #                     rgName: "paz-qa-pfm-rg"
-  #                     clusterName: "paz-qa-pfm-aks"
-  #                     subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-qa-pfm-rg"
+                      clusterName: "paz-qa-pfm-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"
 
-  #       # - job: QA_Test
-  #       #   displayName: Running Automation UI Test cases on qa env
-  #       #   dependsOn: deploy_nghomeui_qa_eng
-  #       #   steps:
-  #       #   - template: azure-pipeline-run-automation-test.yaml
-  #       #     parameters:
-  #       #       env: "qa"
-  #       #       type: "ui"
-  #       #       test_tags: "@regression"
-  #       #       pat_token: $(PAT)
+        # - job: QA_Test
+        #   displayName: Running Automation UI Test cases on qa env
+        #   dependsOn: deploy_nghomeui_qa_eng
+        #   steps:
+        #   - template: azure-pipeline-run-automation-test.yaml
+        #     parameters:
+        #       env: "qa"
+        #       type: "ui"
+        #       test_tags: "@regression"
+        #       pat_token: $(PAT)
 
-  #       - job: WaitForValidation_QA
-  #         displayName: "Validate Deployment"
-  #         pool: server 
-  #         steps:
-  #         - task: ManualValidation@0
-  #           timeoutInMinutes: 60
-  #           inputs:
-  #             instructions: 'Please review the code for QA Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
-  #             onTimeout: 'reject'
-  #             displayName: "Manual Validation"
+        - job: WaitForValidation_QA
+          displayName: "Validate Deployment"
+          pool: server 
+          steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 60
+            inputs:
+              instructions: 'Please review the code for QA Env. Evaluate if results are expected and resume if yes. Otherwise reject the deployment to fix the code.'
+              onTimeout: 'reject'
+              displayName: "Manual Validation"
                               
-  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
-  #   - stage: pre_prod
-  #     displayName: Deployment to Pre_prod
-  #     dependsOn: qa
-  #     pool:
-  #       name: 'paz-vmss-pool'
-  #     variables:
-  #       - group: 'ng-home-ui-pre'
-  #     jobs:
-  #       - deployment: Deploy_nghomeui_pre_prod
-  #         displayName: "Deployment to Pre_Prod"
-  #         environment: pre_prod_eng
-  #         strategy:
-  #           runOnce:
-  #             deploy:
-  #               steps:
-  #                 - task: DownloadPipelineArtifact@2
-  #                   inputs:
-  #                     buildType: 'current'
-  #                     artifactName: 'drop'
-  #                     targetPath: '$(Pipeline.Workspace)/drop'
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}:
+    - stage: pre_prod
+      displayName: Deployment to Pre_prod
+      dependsOn: qa
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-pre'
+      jobs:
+        - deployment: Deploy_nghomeui_pre_prod
+          displayName: "Deployment to Pre_Prod"
+          environment: pre_prod_eng
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: DownloadPipelineArtifact@2
+                    inputs:
+                      buildType: 'current'
+                      artifactName: 'drop'
+                      targetPath: '$(Pipeline.Workspace)/drop'
 
-  #                 - task: Bash@3
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       # Write your commands here                  
-  #                       echo 'Hello world'                  
-  #                       curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
-  #                       unzip kubelogin-linux-amd64.zip
-  #                       sudo install bin/linux_amd64/kubelogin /usr/local/bin
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin
 
-  #                 - task: replacetokens@5
-  #                   displayName: 'Replace Token in Deployment.YAML'
-  #                   inputs:
-  #                       rootDirectory: '$(Pipeline.Workspace)/drop'
-  #                       targetFiles: 'deployment.yaml'
-  #                       encoding: 'auto'
-  #                       tokenPattern: 'default'
-  #                       writeBOM: true
-  #                       actionOnMissing: 'warn'
-  #                       keepToken: false
-  #                       actionOnNoFiles: 'continue'
-  #                       enableTransforms: false
-  #                       enableRecursion: false
-  #                       useLegacyPattern: false
-  #                       enableTelemetry: true   
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true   
 
-  #                 - task: Bash@3
-  #                   displayName: 'Kubectl apply'
-  #                   inputs:
-  #                     targetType: 'inline'
-  #                     script: |
-  #                       cd $(Pipeline.Workspace)/drop
-  #                       az login --identity
-  #                       az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-  #                       az aks get-credentials --resource-group paz-pre-pfm-rg --name paz-pre-pfm-aks --admin 2> /dev/null
-  #                       kubectl apply -f deployment.yaml                        
-  #                     failOnStderr: true
+                  - task: Bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+                        az aks get-credentials --resource-group paz-pre-pfm-rg --name paz-pre-pfm-aks --admin 2> /dev/null
+                        kubectl apply -f deployment.yaml                        
+                      failOnStderr: true
                   
-  #                 - template: azure-deployment-pipeline.yaml
-  #                   parameters:
-  #                     rgName: "paz-pre-pfm-rg"
-  #                     clusterName: "paz-pre-pfm-aks"
-  #                     subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"      
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-pre-pfm-rg"
+                      clusterName: "paz-pre-pfm-aks"
+                      subscription_id: "74a57460-013e-4db0-850b-86c4d083c797"      
  
-  #   - stage: approval_gate
-  #     displayName: "Approval_Gate Stage"
-  #     dependsOn: pre_prod
-  #     jobs:
-  #       - deployment: approval_gateDeploy
-  #         displayName: "Deployment Job"
-  #         environment: approval_gate_eng
-  #         strategy:
-  #           runOnce:
-  #             deploy:
-  #               steps:
-  #                 - script: |
-  #                     echo "Approval has been given for Prod"
-  #                   displayName: 'Deployment to Approval_Gate'
+    - stage: approval_gate
+      displayName: "Approval_Gate Stage"
+      dependsOn: pre_prod
+      jobs:
+        - deployment: approval_gateDeploy
+          displayName: "Deployment Job"
+          environment: approval_gate_eng
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - script: |
+                      echo "Approval has been given for Prod"
+                    displayName: 'Deployment to Approval_Gate'
 
-  # - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
-    # - stage: prod
-    #   displayName: Deployment to Prod
-    #   dependsOn: approval_gate
-    #   pool:
-    #     name: 'paz-vmss-pool'
-    #   variables:
-    #     - group: 'ng-home-ui-Live'
-    #   jobs:
+  - ${{ if ne(variables['Build.Reason'], 'PullRequest') }}: 
+    - stage: prod
+      displayName: Deployment to Prod
+      dependsOn: approval_gate
+      pool:
+        name: 'paz-vmss-pool'
+      variables:
+        - group: 'ng-home-ui-Live'
+      jobs:
         # - template: /templates/servicenow/add-start-time.yml@platformPipelineRepo
         #   parameters:
         #     snowConfig:    
@@ -548,58 +548,58 @@ stages:
         #     env_name: prod_eng  
         #     config:
 
-        # - deployment: deploy_nghomeui_live
-        #   displayName: "Deployment to Prod"
-        #   # dependsOn: MoveCR
-        #   environment: prod_eng         
-        #   strategy:
-        #     runOnce:
-        #       deploy:
-        #         steps:
-        #           - task: Bash@3
-        #             inputs:
-        #               targetType: 'inline'
-        #               script: |
-        #                 # Write your commands here                  
-        #                 echo 'Hello world'                  
-        #                 curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
-        #                 unzip kubelogin-linux-amd64.zip
-        #                 sudo install bin/linux_amd64/kubelogin /usr/local/bin
+        - deployment: deploy_nghomeui_live
+          displayName: "Deployment to Prod"
+          # dependsOn: MoveCR
+          environment: prod_eng         
+          strategy:
+            runOnce:
+              deploy:
+                steps:
+                  - task: Bash@3
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        # Write your commands here                  
+                        echo 'Hello world'                  
+                        curl -LO https://github.com/Azure/kubelogin/releases/download/v0.1.4/kubelogin-linux-amd64.zip
+                        unzip kubelogin-linux-amd64.zip
+                        sudo install bin/linux_amd64/kubelogin /usr/local/bin
                         
-        #           - task: replacetokens@5
-        #             displayName: 'Replace Token in Deployment.YAML'
-        #             inputs:
-        #                 rootDirectory: '$(Pipeline.Workspace)/drop'
-        #                 targetFiles: 'deployment.yaml'
-        #                 encoding: 'auto'
-        #                 tokenPattern: 'default'
-        #                 writeBOM: true
-        #                 actionOnMissing: 'warn'
-        #                 keepToken: false
-        #                 actionOnNoFiles: 'continue'
-        #                 enableTransforms: false
-        #                 enableRecursion: false
-        #                 useLegacyPattern: false
-        #                 enableTelemetry: true
+                  - task: replacetokens@5
+                    displayName: 'Replace Token in Deployment.YAML'
+                    inputs:
+                        rootDirectory: '$(Pipeline.Workspace)/drop'
+                        targetFiles: 'deployment.yaml'
+                        encoding: 'auto'
+                        tokenPattern: 'default'
+                        writeBOM: true
+                        actionOnMissing: 'warn'
+                        keepToken: false
+                        actionOnNoFiles: 'continue'
+                        enableTransforms: false
+                        enableRecursion: false
+                        useLegacyPattern: false
+                        enableTelemetry: true
 
 
 
-        #           - task: bash@3
-        #             displayName: 'Kubectl apply'
-        #             inputs:
-        #               targetType: 'inline'
-        #               script: |
-        #                 cd $(Pipeline.Workspace)/drop
-        #                 az login --identity
-        #                 az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
-        #                 az aks get-credentials --resource-group paz-prd-pfm-rg --name paz-prd-pfm-aks  --admin 2> /dev/null 
-        #                 kubectl apply -f deployment.yaml                         
+                  - task: bash@3
+                    displayName: 'Kubectl apply'
+                    inputs:
+                      targetType: 'inline'
+                      script: |
+                        cd $(Pipeline.Workspace)/drop
+                        az login --identity
+                        az account set --subscription 3f82189b-c250-4516-9021-b2bebfb4c196
+                        az aks get-credentials --resource-group paz-prd-pfm-rg --name paz-prd-pfm-aks  --admin 2> /dev/null 
+                        kubectl apply -f deployment.yaml                         
                   
-        #           - template: azure-deployment-pipeline.yaml
-        #             parameters:
-        #               rgName: "paz-prd-pfm-rg"
-        #               clusterName: "paz-prd-pfm-aks"
-        #               subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
+                  - template: azure-deployment-pipeline.yaml
+                    parameters:
+                      rgName: "paz-prd-pfm-rg"
+                      clusterName: "paz-prd-pfm-aks"
+                      subscription_id: "3f82189b-c250-4516-9021-b2bebfb4c196"
 
         # - template: /templates/servicenow/template-close-cr.yml@platformPipelineRepo
         #   parameters:
