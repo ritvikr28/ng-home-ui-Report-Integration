@@ -488,7 +488,10 @@
     "emptyRowResponseMessage": "No data to display",
     "emptyFilterMessage": "No SIMS7 Redirect entries found for selected filters.",
     "discardChanges": "Discard changes?",
-    "discardChangesDescription": "You have unsaved changes that will be lost."
+    "discardChangesDescription": "You have unsaved changes that will be lost.",
+    "apiFailureEmptyRowResponseMessage": "No data to retrieve",
+    "apiFailureMessage": "Information unavailable",
+    "apiFailureDescription": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team."
   },
   "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Welcome to SIMS",
