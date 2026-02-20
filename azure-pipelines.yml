@@ -91,7 +91,7 @@ stages:
               uploadfiles: false
               skipclones: false
               overridedotkiuwan: false
-              excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
+              excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**,**/src/pages/InviteUsers/**,**/*.spec.ts,**/*.spec.tsx,**/*.test.ts,**/*.test.tsx'
               dbanalysis: false
             condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['loclimit.skipKiuwan'], 'yes'))
             
