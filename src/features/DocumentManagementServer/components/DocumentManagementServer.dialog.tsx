@@ -2,7 +2,7 @@ import React from "react";
 import NoSelectionDialog from "../../../shared/components/NoSelectionDialog/NoSelectionDialog";
 import { getDialogTitle } from "../logic/DocumentManagementServer.utils";
 
-interface DmsDialogsProps {
+export interface DmsDialogsProps {
   t: any;
 
   showDialog: boolean;
@@ -24,7 +24,7 @@ interface DmsDialogsProps {
   onRefreshAfterClose: () => void;
 }
 
-function getRestrictedDeleteNotificationTitle(
+export function getRestrictedDeleteNotificationTitle(
   restrictedFileCount: number,
   alreadyDeletedFileCount: number,
   availableFileCount: number,
@@ -53,7 +53,7 @@ function getRestrictedDeleteNotificationTitle(
   return "";
 }
 
-function getRestrictedDeleteNotificationForRestricted(
+export function getRestrictedDeleteNotificationForRestricted(
   restrictedFileCount: number,
   totalRecords: number,
   t: any
@@ -66,7 +66,7 @@ function getRestrictedDeleteNotificationForRestricted(
       });
 }
 
-function getRestrictedDeleteNotificationForDeleted(
+export function getRestrictedDeleteNotificationForDeleted(
   alreadyDeletedFileCount: number,
   restrictedFileCount: number,
   availableFileCount: number,
@@ -94,7 +94,7 @@ function getRestrictedDeleteNotificationForDeleted(
       });
 }
 
-function getRestrictedDeleteMessage(
+export function getRestrictedDeleteMessage(
   restrictedFileCount: number,
   alreadyDeletedFileCount: number,
   totalRecords: number
@@ -105,7 +105,7 @@ function getRestrictedDeleteMessage(
   return "";
 }
 
-function getRestrictedPrepareNotificationTitle(
+export function getRestrictedPrepareNotificationTitle(
   alreadyDeletedFileCount: number,
   restrictedFileCount: number,
   availableFileCount: number,
