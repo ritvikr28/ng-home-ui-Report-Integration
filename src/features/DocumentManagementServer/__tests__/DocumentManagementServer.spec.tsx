@@ -544,7 +544,22 @@ describe("Additional tests to increase coverage", () => {
     render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
-    fireEvent.change(screen.getByTestId("search-autocomplete-input"), { target: { value: "Test" } });
+    const input: HTMLInputElement = await screen.findByTestId("search-autocomplete-input");
+    fireEvent.change(input, { target: { value: "Ben" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    // wait for suggestion to show up
+    const searchLoader: HTMLElement[] = screen.getAllByTestId("loader-arc");
+    await waitFor(() => {
+      expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(3000);
+
+    const suggestionNode: HTMLElement[] = await screen.findAllByText("Ben");
+
+    // click suggestion
+    fireEvent.click(suggestionNode[0]);
     fireEvent.click(screen.getByTestId("search-close--icon-btn")); // triggers handleSearchClose
   });
  
