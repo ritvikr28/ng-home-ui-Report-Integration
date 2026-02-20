@@ -105,7 +105,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [refId, setRefId]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
   const [filterEntities, setFilterEntities]: [any[], React.Dispatch<React.SetStateAction<any[]>>] = useState<any[]>([]);
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [showErrorBanner, setShowErrorBanner] = useState<boolean>(false);
+  const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
   // eslint-disable-next-line no-unused-expressions
@@ -208,7 +208,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     data: { key }
   }));
 
-  const handleSearchChangeForSection = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChangeForSection: (e: React.ChangeEvent<HTMLInputElement>) => void = (e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearchChange({
       t,
       e,
@@ -225,7 +225,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     });
   }
 
-  const handleRemoveTagForSection = (
+  const handleRemoveTagForSection: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: any) => void = (
     e: React.SyntheticEvent<Element, Event>,
     text: string,
     closeObj: any

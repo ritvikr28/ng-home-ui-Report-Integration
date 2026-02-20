@@ -124,56 +124,82 @@ function getValidationError(params: {
   const thisDateStr: string = getDateString(newDate);
   const otherDateStr: string = getDateString(otherDate);
 
+  // Split logic into smaller helpers for clarity and maintainability
   if (isInvalidInput(newDate)) {
-    return {
-      error: t("Filter.invalidDate"),
-      isValid: false
-    };
+    return getInvalidInputError(newDate, t);
   }
 
   if (isInvalidFormat(thisDateStr)) {
-    return {
-      error: t("Filter.invalidDate"),
-      isValid: false
-    };
+    return getInvalidFormatError(t);
   }
 
   if (isFutureDate(thisDateStr)) {
-    return {
-      error: isFrom
-        ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
-        : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
-      isValid: false
-    };
+    return getFutureDateError(isFrom, t);
   }
 
   if (isBeforeMinDate(thisDateStr)) {
-    return {
-      error: isFrom
-        ? t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" })
-        : t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }),
-      isValid: false
-    };
+    return getBeforeMinDateError(isFrom, t);
   }
 
   if (isFrom && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
-    return {
-      toError: t("Filter.toDateShouldNotBeBeforeFromDate"),
-      isValid: false
-    };
+    return getToDateBeforeFromDateError(t);
   }
 
   if (!isFrom && otherDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
-    return {
-      error: t("Filter.toDateShouldNotBeBeforeFromDate"),
-      isValid: false
-    };
+    return getToDateShouldNotBeBeforeFromDateError(t);
   }
 
   const result: DateValidationResult = validateDate(thisDateStr, otherDateStr, isFrom, t);
   if (!result.isValid) return result;
 
   return null;
+}
+
+// --- Helper functions for getValidationError ---
+function getInvalidInputError(newDate: DateParts, t: any): DateValidationResult {
+  return {
+    error: t("Filter.invalidDate"),
+    isValid: false
+  };
+}
+
+function getInvalidFormatError(t: any): DateValidationResult {
+  return {
+    error: t("Filter.invalidDate"),
+    isValid: false
+  };
+}
+
+function getFutureDateError(isFrom: boolean, t: any): DateValidationResult {
+  return {
+    error: isFrom
+      ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
+      : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
+    isValid: false
+  };
+}
+
+function getBeforeMinDateError(isFrom: boolean, t: any): DateValidationResult {
+  return {
+    error: isFrom
+      ? t("Filter.fromDateMustBeOnOrAfter", { date: "01/01/1900" })
+      : t("Filter.toDateMustBeOnOrAfter", { date: "01/01/1900" }),
+    isValid: false
+  };
+}
+
+function getToDateBeforeFromDateError(t: any): DateValidationResult {
+  return {
+    toError: t("Filter.toDateShouldNotBeBeforeFromDate"),
+    isValid: false
+  };
+}
+
+function getToDateShouldNotBeBeforeFromDateError(t: any): DateValidationResult {
+  return {
+    error: t("Filter.toDateShouldNotBeBeforeFromDate"),
+    isValid: false
+  };
 }
 
 
