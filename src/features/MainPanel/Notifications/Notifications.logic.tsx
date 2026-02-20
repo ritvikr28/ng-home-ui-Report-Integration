@@ -2,7 +2,7 @@ import React from "react";
 import NotificationView from "./Notifications.view"
 
 const NotificationsLogic = () => (
-        <NotificationView />
-    )
+    <NotificationView />
+)
 
 export default NotificationsLogic

@@ -1,14 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // eslint-enable jsx-a11y/anchor-is-valid
 import { Link, ShowValAs, Tag, TagColor, TagSize } from "@essnextgen/ui-kit";
+import { NotificationTableHeader } from "./Notifications.props";
 
-export const getNotificationTableHeadersData = (
-  setSideIsOpen?: (isOpen: boolean) => void,
-  setSelectedItem?: (item: any) => void,
-  sortBy: string = "ReceivedDate",
-  sortDirection: boolean = false,
-  setNotificationIdSelected?: (id: string) => void
-): {
+export interface NotificationTableHeadersOptions {
+  sortBy?: string;
+  sortDirection?: boolean;
+  setNotificationIdSelected?: (id: string) => void;
+  setSideIsOpen?: (item: any) => void;
+  setSelectedItem?: (item: any) => void;
+}
+
+export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOptions) => NotificationTableHeader[] = ({
+  sortBy = "",
+  sortDirection = false,
+  setNotificationIdSelected,
+  setSideIsOpen,
+  setSelectedItem
+}: NotificationTableHeadersOptions = {}): {
   text: string;
   isShow: boolean;
   showValAs: ShowValAs;
@@ -62,7 +71,7 @@ export const getNotificationTableHeadersData = (
       columnWidth: "274px",
       txtTrunctLength: 35,
       isColumnSorting: false,
-      isColumnSortByDefault: false,
+      isColumnSortByDefault: false
     },
     {
       text: "Priority",
@@ -124,7 +133,10 @@ export const getNotificationTableHeadersData = (
     }
   ];
 
-  export const NoDataMessage = {
+export const NoDataMessage: {
+  noDataOnSearch: (keyword: string) => string;
+  noDataToDisplay: string;
+} = {
   noDataOnSearch: (keyword: string) =>
     `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
   noDataToDisplay: "No data to display"

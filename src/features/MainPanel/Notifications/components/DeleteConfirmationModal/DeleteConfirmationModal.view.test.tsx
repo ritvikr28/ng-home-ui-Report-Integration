@@ -8,7 +8,7 @@ describe("DeleteConfirmationModalView", () => {
     onConfirm: jest.fn(),
     selectedCount: 2,
     isLoading: false,
-    isNoSelection: false,
+    isNoSelection: false
   };
 
   afterEach(() => {
@@ -22,12 +22,12 @@ describe("DeleteConfirmationModalView", () => {
   });
 
   it("shows loader when isLoading is true", () => {
-    render(<DeleteConfirmationModalView {...defaultProps} isLoading={true} />);
+    render(<DeleteConfirmationModalView {...defaultProps} isLoading />);
     expect(screen.getByText("Loading")).toBeInTheDocument();
   });
 
   it("shows no selection dialog when isNoSelection is true", () => {
-    render(<DeleteConfirmationModalView {...defaultProps} isNoSelection={true} />);
+    render(<DeleteConfirmationModalView {...defaultProps} isNoSelection />);
     expect(screen.getByText("No items selected")).toBeInTheDocument();
     expect(screen.getByText("Please select at least one item to perform the action.")).toBeInTheDocument();
     expect(screen.getByTestId("no-selection-ok-btn")).toBeInTheDocument();
@@ -46,13 +46,13 @@ describe("DeleteConfirmationModalView", () => {
   });
 
   it("calls onClose when Okay button is clicked in no selection dialog", () => {
-    render(<DeleteConfirmationModalView {...defaultProps} isNoSelection={true} />);
+    render(<DeleteConfirmationModalView {...defaultProps} isNoSelection />);
     fireEvent.click(screen.getByTestId("no-selection-ok-btn"));
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
   it("disables escapeExits and onClose when loading", () => {
-    render(<DeleteConfirmationModalView {...defaultProps} isLoading={true} />);
+    render(<DeleteConfirmationModalView {...defaultProps} isLoading />);
     // escapeExits and onClose are props to Dialog, so we can't directly test them,
     // but we can check that the loader is shown and buttons are not rendered
     expect(screen.getByText("Loading")).toBeInTheDocument();
