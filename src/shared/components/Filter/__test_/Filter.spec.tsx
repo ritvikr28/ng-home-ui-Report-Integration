@@ -1,6 +1,6 @@
 
 import React from "react";
-import { render, fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor, within, cleanup } from "@testing-library/react";
 import dayjs from "dayjs";
 import { act } from "react-dom/test-utils";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
