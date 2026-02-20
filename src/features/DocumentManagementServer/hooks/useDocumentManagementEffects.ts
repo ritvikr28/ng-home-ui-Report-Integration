@@ -1,6 +1,7 @@
-import React , { useEffect } from "react";
+import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
-import { applySummaryTagClass, getAllRegistrationIds } from "./DocumentManagementServer.utils";
+import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
+import { DocumentData } from "../responseModel";
 
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
@@ -41,7 +42,7 @@ export function useBodyNoScroll(isMobileView: boolean): void {
       document.body.classList.add("no-scroll");
       return () => document.body.classList.remove("no-scroll");
     }
-    return () => {};
+    return () => { };
   }, [isMobileView]);
 }
 
@@ -51,7 +52,7 @@ export function useSummaryTagMutationObserver(
   useEffect(() => {
     const tagListNode: HTMLElement | null = document.getElementById("taglist-id");
     if (!tagListNode) {
-      return () => {};
+      return () => { };
     }
 
     // Initial run
@@ -67,7 +68,7 @@ export function useSummaryTagMutationObserver(
     observer.observe(tagListNode, { childList: true, subtree: true });
 
     return () => observer.disconnect();
-   
+
   }, deps);
 }
 
@@ -79,91 +80,6 @@ export function useSetTotalPageOnDocData(docData: any, setTotalPage: (n: number)
     }
   }, [docData, setTotalPage, pageSizeNumber]);
 }
-
-interface UseFetchDocsEffectParams {
-  currentPage: number;
-  searchText: string;
-  dateRange: { fromDate: string; toDate: string };
-  selectedFormats: any[];
-  sortBy: string;
-  sortDirection: string;
-  searchRefExternalId: string[];
-  documentRelatedTo: number;
-  isSearchTriggered: boolean;
-  isFilterDialogOpen: boolean;
-  allRegistrationIds: number[];
-  fetchGetDocumentDetails: (
-    page: number,
-    categories: number[],
-    sortByCol: string,
-    sortOrder: string,
-    refExternalId: string[],
-    relatedTo: number
-  ) => void;
-  setIsInitialLoad: (v: boolean) => void;
-}
-
-export function useFetchDocsEffect({
-  currentPage,
-  searchText,
-  dateRange,
-  selectedFormats,
-  sortBy,
-  sortDirection,
-  searchRefExternalId,
-  documentRelatedTo,
-  isSearchTriggered,
-  isFilterDialogOpen,
-  allRegistrationIds,
-  fetchGetDocumentDetails,
-  setIsInitialLoad,
-}: UseFetchDocsEffectParams): void {
-  useEffect(() => {
-    const allRegistrationId: number[] = getAllRegistrationIds(selectedFormats);
-
-    if (!isFilterDialogOpen && isSearchTriggered && searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(
-        currentPage,
-        allRegistrationId,
-        sortBy,
-        sortDirection,
-        searchRefExternalId,
-        documentRelatedTo
-      );
-      setIsInitialLoad(false);
-    }
-    if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(
-        currentPage,
-        allRegistrationIds,
-        sortBy,
-        sortDirection,
-        searchRefExternalId,
-        documentRelatedTo
-      );
-      setIsInitialLoad(false);
-    }
-    applySummaryTagClass();
-  }, [
-    currentPage,
-    searchText,
-    dateRange?.fromDate,
-    dateRange?.toDate,
-    selectedFormats,
-    sortBy,
-    sortDirection,
-    searchRefExternalId,
-    documentRelatedTo,
-    isSearchTriggered,
-    isFilterDialogOpen,
-    allRegistrationIds,
-    fetchGetDocumentDetails,
-    setIsInitialLoad
-  ]);
-}
-
 
 interface UseSidePanelViewDownloadEffectParams {
   isSidePanelOpen: boolean;
@@ -210,7 +126,7 @@ export function useSidePanelViewDownloadEffect({
           viewDownload,
           downloadPollingIntervalRef,
           setIsViewDownloadError,
-          setShowEmailNotification,
+          setShowEmailNotification
         });
       }, 2000);
 
@@ -233,25 +149,13 @@ export function useSidePanelViewDownloadEffect({
       });
     }
     return undefined;
-  }, [
-    isSidePanelOpen,
-    sidePanelOpenReason,
-    setShowToastNotification,
-    setIsSidePanelLoader,
-    fetchViewDownloadData,
-    setViewData,
-    setHasFetchedViewDownload,
-    viewDownload,
-    downloadPollingIntervalRef,
-    setIsViewDownloadError,
-    setShowEmailNotification
-  ]);
+  }, [isSidePanelOpen, sidePanelOpenReason]);
 }
 
 interface UseTotalSelectedCountEffectParams {
   isHeaderBoxChecked: boolean;
   excludedCheckBoxIds: string[];
-  docData: any;
+  docData: DocumentData | null;
   allSelectedDocs: { fileId: string; registrationId: number; externalId: string }[];
   setIsHeaderBoxChecked: (v: boolean) => void;
   setAllSelectedDocs: (v: any[]) => void;
@@ -283,6 +187,7 @@ export function useTotalSelectedCountEffect({
       return allSelectedDocs?.length || 0;
     })();
     setTotalSelectedCount(computedTotalSelectedCount);
+    console.log("Computed Total Selected Count:", computedTotalSelectedCount);
   }, [
     isHeaderBoxChecked,
     excludedCheckBoxIds,
@@ -303,7 +208,7 @@ export interface UseSearchTermEffectParams {
   isSearchTriggered: boolean;
   handleSearchChange: (
     t: any,
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: { target: { value: string } },
     registrationIds: any,
     fromDate: any,
     toDate: any,
@@ -337,11 +242,17 @@ export function useSearchTermEffect(params: UseSearchTermEffectParams): void {
     setShowErrorBanner
   }: UseSearchTermEffectParams = params;
 
+  // Define a minimal type for your use case
+  type MinimalInputChangeEvent = { target: { value: string } };
+
+  function createInputChangeEvent(value: string): MinimalInputChangeEvent {
+    return { target: { value } };
+  }
   useEffect(() => {
     if (searchTerm?.length > 1 && !showSearchError && !isSearchTriggered) {
       handleSearchChange(
         t,
-        { target: { value: searchTerm } } as React.ChangeEvent<HTMLInputElement>,
+        createInputChangeEvent(searchTerm),
         getAllRegistrationIds(selectedFormats),
         selectedDateRange?.fromDate,
         selectedDateRange?.toDate,

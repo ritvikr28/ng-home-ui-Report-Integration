@@ -1,6 +1,7 @@
 import React from "react";
 import { Notification, NotificationStatus, Loader, LoaderType, Button } from "@essnextgen/ui-kit";
-import { ViewDownloadItem } from "./responseModel";
+import { ViewDownloadItem } from "../responseModel";
+import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 interface Props {
   t: (key: string, options?: any) => string;
@@ -8,7 +9,6 @@ interface Props {
   isSidePanelLoader: boolean;
   hasFetchedViewDownload: boolean;
   viewData: ViewDownloadItem[];
-  fileDownload: (...args: any[]) => Promise<any>;
   setDownloadError: (v: boolean) => void;
   gtmAnalytics: any;
 }
@@ -19,9 +19,8 @@ export const ViewDownloadContent: React.FC<Props> = ({
   isSidePanelLoader,
   hasFetchedViewDownload,
   viewData,
-  fileDownload,
   setDownloadError,
-  gtmAnalytics,
+  gtmAnalytics
 }) => {
   if (isViewDownloadError) {
     return (
@@ -56,7 +55,7 @@ export const ViewDownloadContent: React.FC<Props> = ({
                     return (
                       <span>
                         {t("DocumentManagementServer.ExpiresInDays", {
-                          days: item.fileExpiryDays,
+                          days: item.fileExpiryDays
                         })}
                       </span>
                     );
@@ -85,13 +84,13 @@ export const ViewDownloadContent: React.FC<Props> = ({
                         fileExtension: item?.name?.split(".").pop() || "",
                         fileName: "[RemovedFileName]",
                         linkText: "Download",
-                        linkUrl: "[RemovedLinkUrl]",
+                        linkUrl: "[RemovedLinkUrl]"
                       });
                     } catch (error) {
                       setDownloadError(true);
                       gtmAnalytics.pushEvent({
                         event: "error_message",
-                        messageText: "Unable to download",
+                        messageText: "Unable to download"
                       });
                     }
                   }}

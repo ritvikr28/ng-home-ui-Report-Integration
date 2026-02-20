@@ -1,5 +1,5 @@
 // Represents each row in the document table
-import { DialogTemplate, NotificationStatus, Suggestion } from "@essnextgen/ui-kit";
+import { DialogTemplate, ISelectedItem, NotificationStatus, Suggestion } from "@essnextgen/ui-kit";
 import React from "react";
 
 export interface SingleDocumentDetail {
@@ -190,12 +190,16 @@ addedBy?: string;
 dateAdded?: string;
 format?: string;
 size?: string;
+registrationId: number;
+externalId: string;
+relatedTo?: string[];
+isSelectedForPrepareDownload?: boolean;
 }
 
 
 export interface DocumentData {
 data?: DocumentRow[];
-totalCount?: number;
+totalRecords?: number;
 }
 
 
@@ -263,17 +267,17 @@ export interface GetDialogConfigParams {
   restrictedFileCount: number;
   totalSelectedCount: number;
 
-  docData?: { totalRecords: number };
+  docData?: DocumentData;
   viewData: any;
 
   isHeaderBoxChecked: boolean;
-  selectedFormats: string[];
+  selectedFormats: ISelectedItem[];
 
   currentPage: number;
   sortBy: string;
   sortDirection: string;
-  searchRefExternalId?: string;
-  documentRelatedTo?: string;
+  searchRefExternalId?: string[];
+  documentRelatedTo?: number;
 
   selectedCheckBoxIds: string[];
   excludedCheckBoxIds: string[];
@@ -327,8 +331,7 @@ export interface GetDialogConfigParams {
     sortBy: string,
     sortDirection: string,
     refExternalId: string[],
-    searchRefExternalId?: string,
-    documentRelatedTo?: string
+    documentRelatedTo?: number
   ) => void;
 
   gtmAnalytics: {
@@ -343,4 +346,31 @@ export interface GetDialogConfigParams {
   contentText: JSX.Element;
   getAllRegistrationIds: (selectedFormats: any[]) => any[];
   referenceExternalId: string[];
+}
+
+
+export interface HandleSearchChangeParams {
+  t: (key: string) => string;
+  e: React.ChangeEvent<HTMLInputElement>;
+  categoryId: number[] | null;
+  fromDate: string;
+  toDate: string;
+  setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
+  documentRelatedTo?: number;
+  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export interface HandleTagCloseLogicParams {
+  event: React.SyntheticEvent;
+  tagName: string;
+  closeObj: { name?: string; id?: string | number };
+  setSelectedDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>;
+  setDateRange: React.Dispatch<React.SetStateAction<{ fromDate: string; toDate: string }>>;
+  setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+  setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
 }

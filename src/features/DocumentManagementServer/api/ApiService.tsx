@@ -1,15 +1,15 @@
 import { buildApplicationUrl } from "@essnextgen/ui-application-kit";
 import axios, { AxiosInstance, AxiosResponse } from "axios";
 import { authService } from "@essnextgen/auth-ui";
-import { service } from "../../shared/utils";
+import { service } from "../../../shared/utils";
 import {
   deleteDocumentRequest,
   DocumentBasicDetails,
   DocumentCategoryResponse,
   DocumentManagementServerProps,
   DocumentPrepareDownload
-} from "./responseModel";
-import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../ApiConfig.json";
+} from "../responseModel";
+import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../../ApiConfig.json";
 
 // Helper type for error responses
 type ErrorResponse = { status?: number; detail?: string; error?: string };
@@ -40,7 +40,7 @@ export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Pro
         sortDirection,
         referenceExternalId,
         documentRelatedTo
-      },
+      }
     };
 
     const responseData: AxiosResponse<DocumentBasicDetails> =
@@ -231,6 +231,6 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   fileId?: string
 ): Promise<Blob> => {
   const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
-  const response = await fileDownloadInstance.get(url);
+  const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
 };

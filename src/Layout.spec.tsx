@@ -33,7 +33,7 @@ jest.mock("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view", () => () => <div data-
 jest.mock("./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view", () => () => <div data-testid="unauthorised-access">UnAuthorisedAccess</div>);
 jest.mock("./features/AdminConsole/UAM.view", () => () => <div data-testid="uam">UAM</div>);
 jest.mock("./pages/EarlyAdopter/EarlyAdopterPage.view", () => () => <div data-testid="early-adopter">EarlyAdpterPage</div>);
-jest.mock("./features/DocumentManagementServer/DocumentManagementServer.view", () => () => <div data-testid="dms">DocumentManagementServer</div>);
+jest.mock("./features/DocumentManagementServer/Views/DocumentManagementServer.view", () => () => <div data-testid="dms">DocumentManagementServer</div>);
 jest.mock("./pages/InviteUsers", () => () => <div data-testid="invite-users">InviteUsersLogic</div>);
 jest.mock("./features/SystemStatusAlerts/SystemStatus.view", () => () => <div data-testid="system-status">SystemStatus</div>);
 jest.mock("./features/MainPanel/Notifications/Notifications.logic", () => () => <div data-testid="notifications">NotificationsLogic</div>);

@@ -1,11 +1,11 @@
 
 import React from "react";
 import { ShowValAs, Tag, Suggestion, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader, SuggestionItem } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "./ApiService";
-import gtmAnalytics from "../../shared/utils/analytics";
- import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "./responseModel";
-import { pageSizeNumber } from "../../../public/Constants";
-import { EllipsisWithTooltip } from "./EllipsisWithTooltip";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "../api/ApiService";
+import gtmAnalytics from "../../../shared/utils/analytics";
+ import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "../responseModel";
+import { pageSizeNumber } from "../../../../public/Constants";
+import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
 
 const renderSingleValue = (
@@ -149,60 +149,7 @@ export const onBreadcrumbClick: (path: string) => void = (path: string) => {
  
  
 // Search input change logic
-export const handleSearchChange : any = (
-  t: (key: string) => string,
-  e: React.ChangeEvent<HTMLInputElement>,
-  categoryId: number[] | null,
-  fromDate: string,
-  toDate: string,
-  setSearchTerm: React.Dispatch<React.SetStateAction<string>>,
-  setSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>,
-  setShowSearchError: React.Dispatch<React.SetStateAction<boolean>>,
-  setIsSearchLoading: React.Dispatch<React.SetStateAction<boolean>>,
-  setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>,
-  documentRelatedTo?: number,
-  setResetFilterSearch?: React.Dispatch<React.SetStateAction<boolean>>
-) => {
-  const { value } : { value: string } = e.target;
-  setSearchTerm(value);
 
-  if (value?.trim().length > 0 && typeof setResetFilterSearch === "function") {
-    setResetFilterSearch(true);
-  }
-
-   if (value.trim().length === 0 && value.length > 0) {
-    setSuggestions([]);
-    setIsSearchLoading(false);
-    return;
-  }
-
-  if (value?.length < 3) {
-    setSuggestions([]);
-    setShowSearchError(false);
-    setIsSearchLoading(false);
-    return;
-  }
- 
-  setIsSearchLoading(true);
-  setSuggestions([]);
-  setShowSearchError(false);
-  if (typeof setResetFilterSearch === "function") {
-    setShowErrorBanner(false);
-  }
- 
-  debouncedFetchSuggestions(
-    t,
-    value,
-    categoryId,
-    fromDate,
-    toDate,
-    setIsSearchLoading,
-    setSuggestions,
-    setShowSearchError,
-    setShowErrorBanner,
-    documentRelatedTo
-  );
-};
 
 export const loadSuggestions: (
   text: string,
@@ -370,6 +317,7 @@ export const fetchDocumentCategoryData: any = async ({
     const response: any = await fetchDocumentCategory(payload);
     setCategoryError(false);
     const isSuccess = response?.status === 200;
+    const isNotFound = response?.status === 404;
     /* eslint-disable */
     if (isSuccess) {
       const data: any[] = (response && 'payload' in response) ? (response as { payload: any[] }).payload : [];
@@ -381,7 +329,12 @@ export const fetchDocumentCategoryData: any = async ({
       );
       setLocalSelectedCategories(filteredFormats || []);
       return data;
-    } else {
+      } else if (isNotFound) {
+      setCategoryError(false);
+      setAvailableCategories([]);
+      setLocalSelectedCategories([]);
+      return [];
+      } else {
       setCategoryError(true);
       setAvailableCategories([]);
       return [];
