@@ -96,21 +96,21 @@ describe("getNotificationTableData", () => {
 
     it("returns data on success", async () => {
         (service.get as jest.Mock).mockResolvedValue(mockResponseData);
-        const result = await getNotificationTableData(10, 1);
+        const result = await getNotificationTableData({ PageSize: 10, PageNumber: 1, SearchTerm: "" });
         expect(result).toEqual(mockResponseData.data);
     });
 
     it("returns error object on failure (non-401)", async () => {
         const error = { response: { status: 500 } };
         (service.get as jest.Mock).mockRejectedValue(error);
-        const result = await getNotificationTableData(10, 1);
+        const result = await getNotificationTableData({ PageSize: 10, PageNumber: 1, SearchTerm: "" });
         expect(result).toEqual({ error: true, status: 500 });
     });
 
     it("handles 401 error branch", async () => {
         const error = { response: { status: 401 } };
         (service.get as jest.Mock).mockRejectedValue(error);
-        const result = await getNotificationTableData(10, 1);
+        const result = await getNotificationTableData({ PageSize: 10, PageNumber: 1, SearchTerm: "" });
         expect(result).toEqual({ error: true, status: 401 });
     });
 });

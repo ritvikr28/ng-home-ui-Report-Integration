@@ -1,8 +1,7 @@
 import React from "react";
+import { Suggestion } from "./Notifications.props";
 
 export type UseNotificationReturn = {
-    filterBtnClicked: boolean;
-    setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
     totalPages: number;
@@ -11,8 +10,9 @@ export type UseNotificationReturn = {
     totalOriginalNotifications: any[];
     handlePageChange: (event: any, page: number) => void;
     searchTerm: string;
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
     handleSearchChange: (value: string) => void;
-    // handleClearSearch?: () => void; // Uncomment if used
+    handleClearSearch?: () => void;
     filters: {
         status?: string[];
         priority?: string[];
@@ -29,7 +29,7 @@ export type UseNotificationReturn = {
     //     filterType: "status" | "priority" | "startDate" | "endDate",
     //     value?: string
     // ) => void;
-    // handleClearAllFilters: () => void;
+    handleClearAllFilters: () => void;
     // searchTagList: {
     //     text: string;
     //     categoryName: string;
@@ -58,7 +58,16 @@ export type UseNotificationReturn = {
     selectedNotificationIds: string[];
     isNoSelectionMode: boolean;
     sortBy: string;
-    sortDirection: string;
-    // handleSort: (columnName: string) => void;
+    sortDirection: boolean;
+    handleSort: (columnName: string) => void;
     setNoResults: React.Dispatch<React.SetStateAction<boolean>>;
+    // handleSearchChangeWithAutoSuggest: (value: string) => void;
+    // handleSearchKeyPressed: (inputValue: string) => void;
+    isAutoSuggestVisible: boolean;
+    setIsAutoSuggestVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    suggestionLoader: boolean;
+    setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
+    searchSuggestions: Suggestion[];
+    setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+
 };

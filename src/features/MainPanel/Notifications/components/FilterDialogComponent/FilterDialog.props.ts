@@ -18,6 +18,8 @@ export interface FilterStates {
     setEndDate: React.Dispatch<React.SetStateAction<string>>;
     startDateError: string;
     setStartDateError: React.Dispatch<React.SetStateAction<string>>;
+    errors: DateErrors;
+    setErrors: React.Dispatch<React.SetStateAction<DateErrors>>;
 }
 
 export interface DialogContentProps {
@@ -29,5 +31,11 @@ export interface DialogContentProps {
     setStatus: React.Dispatch<React.SetStateAction<string[]>>;
     priority: string[];
     setPriority: React.Dispatch<React.SetStateAction<string[]>>;
-    startDateError: string;
+    startDateError?: string;
+    endDateError?: string;
 }
+
+export type DateErrors = {
+    from: string;
+    to: string;
+};

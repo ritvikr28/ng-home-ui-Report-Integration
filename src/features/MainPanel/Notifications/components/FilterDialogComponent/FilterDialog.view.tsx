@@ -13,6 +13,7 @@ interface FilterDialogViewProps {
     endDate: string;
     setEndDate: React.Dispatch<React.SetStateAction<string>>;
     startDateError: string;
+    endDateError: string;
     onApply: () => void;
     onClear: () => void;
     onClose: () => void;
@@ -29,6 +30,7 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
         endDate,
         setEndDate,
         startDateError,
+        endDateError = "",
         onApply,
         onClear,
         onClose
@@ -41,7 +43,7 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
         };
 
         const handleApply: () => void = () => {
-            if (startDateError) {
+            if (startDateError || endDateError) {
                 return;
             }
             onApply();
@@ -75,6 +77,7 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
                             priority={priority}
                             setPriority={setPriority}
                             startDateError={startDateError}
+                            endDateError={endDateError}
                         />
                     </DialogContent>
                     <DialogFooter>
