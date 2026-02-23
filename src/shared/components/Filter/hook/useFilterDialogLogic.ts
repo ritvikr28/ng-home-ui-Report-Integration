@@ -20,26 +20,7 @@ export const useFetchSchoolEffect: any = (
     }, [selectedDisplayKey, fetchSchoolData]);
 };
 
-export const useSyncDialogStateEffect: any = ({
-  isOpen,
-  selectedCategories,
-  selectedDateRange,
-  tagListArray,
-  selectedRelatedTo,
-  setLocalSelectedCategories,
-  setLocalSelectedDateRange,
-  setLocalTagListArray,
-  setLocalSelectedRelatedTo
-}: any) => {
-  useEffect(() => {
-    if (!isOpen) return;
 
-    setLocalSelectedCategories(selectedCategories);
-    setLocalSelectedDateRange(selectedDateRange);
-    setLocalTagListArray(tagListArray);
-    setLocalSelectedRelatedTo(selectedRelatedTo);
-  }, [isOpen]);
-};
 
 export const useSyncSelectedKeyEffect: any = (
   localSelectedRelatedTo: any,
