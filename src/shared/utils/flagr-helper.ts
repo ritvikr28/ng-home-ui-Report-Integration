@@ -14,8 +14,8 @@ interface IFeatureFlagVariantAttachment {
 }
 
 interface IAttachmentValue {
-  key: string;
-  value: boolean;
+  Name: string;
+  Organisations: Array<string>;
 }
 
 const userOrganisation: string = getUserOrganisation();
@@ -125,4 +125,40 @@ const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boole
   return false;
 };
 
-export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded};
+const flagrWithModueCheckAndOrgCheck: (flagName: string, variantType: string,menu:string,appName:string) => boolean = (
+  flagName: string,
+  variantType: string,
+  menu :string,
+  appName: string
+): any => {
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(appName,flagName);
+  if (pilotReadyOrg?.enabled) {
+    const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
+      getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
+    if( variantAttachmentPayload && variantAttachmentPayload.Payload.length>0)
+    {
+      const modules:IAttachmentValue[]=
+          variantAttachmentPayload.Payload.filter(y=>y.Name===menu);
+       
+      if (modules.length === 0) {
+        return true;
+      }
+       // eslint-disable-next-line
+      else if (modules.length > 0 && modules[0].Organisations.length > 0)
+      {
+
+        const isIncludedOrganisation: string | undefined =
+                    modules[0].Organisations.find(
+                      x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
+                    );
+        if (isIncludedOrganisation === undefined) {
+          return false;
+        }
+      }
+    }    
+    else return true;
+  }
+  return true;
+};
+
+export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded,flagrWithModueCheckAndOrgCheck};
