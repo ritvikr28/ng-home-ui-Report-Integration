@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Sims7RedirectionsPage } from '../Sims7RedirectionsPage.view';
+import { fetchSims7Redirections } from '../Sims7RedirectionsPage.api';
 
 // Mock API
 jest.mock('../Sims7RedirectionsPage.api', () => ({
@@ -64,8 +65,7 @@ describe('Sims7RedirectionsPage', () => {
   });
 
   it('shows API failure message on API error', async () => {
-    const api = require('../Sims7RedirectionsPage.api');
-    api.fetchSims7Redirections.mockRejectedValueOnce(new Error('API failed'));
+    (fetchSims7Redirections as jest.Mock).mockRejectedValueOnce(new Error('API failed'));
     render(<Sims7RedirectionsPage />);
     await waitFor(() => {
       expect(screen.getByText(/apiFailureMessage/i)).toBeInTheDocument();
@@ -73,8 +73,7 @@ describe('Sims7RedirectionsPage', () => {
   });
 
   it('shows empty state when API returns empty array', async () => {
-    const api = require('../Sims7RedirectionsPage.api');
-    api.fetchSims7Redirections.mockResolvedValueOnce([]);
+    (fetchSims7Redirections as jest.Mock).mockResolvedValueOnce([]);
     render(<Sims7RedirectionsPage />);
     await waitFor(() => {
       // expect(screen.getByText(/emptyStateMsg/i)).toBeInTheDocument();
