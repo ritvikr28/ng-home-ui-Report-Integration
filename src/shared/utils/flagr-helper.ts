@@ -125,9 +125,9 @@ const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boole
   return false;
 };
 
-const isOrganisationIncluded: (orgs: string[], userOrg: string) => boolean = (orgs, userOrg) => {
-  return orgs.some(x => x.toLocaleUpperCase() === userOrg.toLocaleUpperCase());
-}
+const isOrganisationIncluded: (orgs: string[], userOrg: string) => boolean = (orgs, userOrg) => 
+   orgs.some(x => x.toLocaleUpperCase() === userOrg.toLocaleUpperCase());
+
 
 const flagrWithModueCheckAndOrgCheck:(flagName: string, variantType: string, menu: string, appName: string) => boolean = (
   flagName: string,
