@@ -127,10 +127,6 @@ function getValidationError(params: {
   const thisDateStr: string = getDateString(newDate);
   const otherDateStr: string = getDateString(otherDate);
 
-  // Split logic into smaller helpers for clarity and maintainability
-  if (isInvalidInput(newDate)) {
-    return getInvalidInputError(newDate, t);
-  }
 
   if (isInvalidFormat(thisDateStr)) {
     return getInvalidFormatError(t);
