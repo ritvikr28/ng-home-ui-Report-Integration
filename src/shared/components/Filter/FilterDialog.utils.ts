@@ -157,13 +157,7 @@ function getValidationError(params: {
   return null;
 }
 
-// --- Helper functions for getValidationError ---
-function getInvalidInputError(newDate: DateParts, t: any): DateValidationResult {
-  return {
-    error: t("Filter.invalidDate"),
-    isValid: false
-  };
-}
+
 
 function getInvalidFormatError(t: any): DateValidationResult {
   return {
@@ -299,11 +293,6 @@ function isEmptyDate(date: { day: string; month: string; year: string }): boolea
   return !date.day && !date.month && !date.year;
 }
 
-function isInvalidInput(date: { day: string; month: string; year: string }): boolean {
-  // Only validate if all fields are filled
-  if (!date.day || !date.month || !date.year) return false;
-  return Boolean(isZeroDate(date)) || Boolean(isYearIncomplete(date.year));
-}
 export interface HandleApplyWrapperParams {
   localSelectedRelatedTo: any;
   setRelatedToError: (msg: string) => void;
