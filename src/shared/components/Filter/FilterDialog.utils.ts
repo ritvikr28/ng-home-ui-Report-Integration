@@ -23,11 +23,6 @@ export const isValidDate: (dateStr: string, minDateStr?: string) => boolean = (d
   );
 };
 
-const isZeroDate = (date: { day: string; month: string }) =>
-  ["00", "0"].includes(date.day) || ["00", "0"].includes(date.month);
-
-const isYearIncomplete = (year: string) =>
-  year && year.length < 4;
 
 const isFutureDate = (dateStr: string) =>
   dateStr && dayjs(dateStr).isAfter(dayjs(), "day");
