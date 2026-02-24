@@ -14,8 +14,8 @@ interface IFeatureFlagVariantAttachment {
 }
 
 interface IAttachmentValue {
-  key: string;
-  value: boolean;
+  Name: string;
+  Organisations: Array<string>;
 }
 
 const userOrganisation: string = getUserOrganisation();
@@ -125,4 +125,39 @@ const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boole
   return false;
 };
 
-export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded};
+const isOrganisationIncluded: (orgs: string[], userOrg: string) => boolean = (orgs, userOrg) => 
+   orgs.some(x => x.toLocaleUpperCase() === userOrg.toLocaleUpperCase());
+
+
+const flagrWithModueCheckAndOrgCheck:(flagName: string, variantType: string, menu: string, appName: string) => boolean = (
+  flagName: string,
+  variantType: string,
+  menu: string,
+  appName: string
+): boolean => {
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(appName, flagName);
+  if (!pilotReadyOrg?.enabled) {
+    return true;
+  }
+
+  const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
+    getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
+
+  if (!variantAttachmentPayload || variantAttachmentPayload.Payload.length === 0) {
+    return true;
+  }
+
+  const modules: IAttachmentValue[] = variantAttachmentPayload.Payload.filter(y => y.Name === menu);
+  if (modules.length === 0) {
+    return true;
+  }
+
+  const orgs:string[] = modules[0].Organisations;
+  if (!orgs || orgs.length === 0) {
+    return true;
+  }
+
+  return isOrganisationIncluded(orgs, userOrganisation);
+};
+
+export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded,flagrWithModueCheckAndOrgCheck};

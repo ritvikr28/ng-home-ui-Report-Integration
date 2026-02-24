@@ -7,6 +7,7 @@ import apiUrls from "../../hook/ApiConfig.json";
 
 import { IQuickLinkApiResponse } from "../../model/quickLink/responsemodels";
 import { envConfig } from "../../utils";
+import { flagrWithModueCheckAndOrgCheck } from "../../utils/flagr-helper";
 
 
 export const FetchQuickLinkData:(role: string) => Promise<{ 
@@ -27,6 +28,19 @@ export const FetchQuickLinkData:(role: string) => Promise<{
         );
         const {status}: { status: number } = responseData;
         const response:IQuickLinkApiResponse[]= responseData.data;
+        
+        if (status === 200 && response.length > 0) {
+          const result:IQuickLinkApiResponse[] = response.filter(x=>{
+          const flagresult:boolean = flagrWithModueCheckAndOrgCheck("ExcludedQuickLinks", "ExcludedModules", x.id.toString(), envConfig.APPLICATION);
+                if (!flagresult) {
+                  return false;
+                }
+                return true;
+          })          
+           
+           return { status, response:result };
+         
+        }        
         return { status, response };
        
     }
