@@ -504,7 +504,7 @@ describe("useSidePanelViewDownloadEffect", () => {
     const setHasFetchedViewDownload: jest.Mock = jest.fn();
     const setIsViewDownloadError: jest.Mock = jest.fn();
     const setShowEmailNotification: jest.Mock = jest.fn();
-    const downloadPollingIntervalRef: { current: NodeJS.Timeout | null } = { current: null };
+    const downloadPollingIntervalRef: { current: any | null } = { current: null };
     const viewDownload: any = {};
 
     const initialProps: any = {
