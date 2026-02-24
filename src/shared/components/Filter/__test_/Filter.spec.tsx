@@ -4,7 +4,7 @@ import { render, fireEvent, screen, waitFor, within } from "@testing-library/rea
 import dayjs from "dayjs";
 import { act } from "react-dom/test-utils";
 import { Category } from "../../../../features/DocumentManagementServer/responseModel";
-// import * as logic from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
+import * as logic from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.logic";
 import FilterDialog from "../Filter";
 import * as ApiService from "../../../../features/DocumentManagementServer/api/ApiService";
 
@@ -593,89 +593,84 @@ fireEvent.click(screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
 
 });
 
-// describe("Related To Dropdown", () => {
-//   beforeEach(() => jest.clearAllMocks());
-// // it("sets selected item state when Related To is changed", async () => {
-// //   jest.useFakeTimers();
+describe("Related To Dropdown", () => {
+  beforeEach(() => jest.clearAllMocks());
+it("sets selected item state when Related To is changed", async () => {
+  jest.useFakeTimers();
 
-// //   const mockData: any[] = [
-// //     {
-// //       application: "Apple",
-// //       category: "Apple",
-// //       categoryId: 8,
-// //       code: "APPL6",
-// //       section: "Section5"
-// //     },
-// //     {
-// //       application: "HR",
-// //       category: "HR",
-// //       categoryId: 1,
-// //       code: "APPL6",
-// //       section: "Section5"
-// //     }
-// //   ];
+  const mockData: any[] = [
+    {
+      application: "Apple",
+      category: "Apple",
+      categoryId: 8,
+      code: "APPL6",
+      section: "Section5"
+    },
+    {
+      application: "HR",
+      category: "HR",
+      categoryId: 1,
+      code: "APPL6",
+      section: "Section5"
+    }
+  ];
 
-// //   (logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValueOnce(mockData);
+  (logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValueOnce(mockData);
 
-// //   jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
 
-// //    renderComponent({
-// //     selectedRelatedTo: {
-// //       text: "Pupil",
-// //       value: "1",
-// //       data: { data: { key: "Pupil" } }
-// //     },
-// //     selectedCategories: mockData,
-// //     tagListArray: [
-// //       { text: "Test Pupil", learnerExternalId: "123", id: "123" }
-// //     ],
-// //     availableCategories: defaultProps.availableCategories, // <-- add this
-// //     availableFormats: defaultProps.availableFormats,       // <-- add this
-
-// //   });
-
-// //   // Open dropdown
-// //   fireEvent.click(
-// //     screen.getByTestId("text-input-dms-filter-dialog-related-to-icon-btn")
-// //   );
-
-// //   await waitFor(() => {
-// //     expect(
-// //       screen.getAllByTestId("menu-dms-filter-dialog-related-to")[0]
-// //     ).toBeInTheDocument();
-// //   });
-
-// //   fireEvent.click(
-// //     screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
-// //   );
-
-// //   // ✅ TYPE INTO REAL INPUT
-// //   const input: HTMLElement = await screen.findByTestId("search-autocomplete-input");
-
-// //   fireEvent.change(input, {
-// //     target: { value: "Alfie" }
-// //   });
-
-// //   // flush debounce
-// //   act(() => {
-// //     jest.runAllTimers();
-// //   });
-
-// //   // wait for suggestion
-// //   const suggestion: HTMLElement[] = await screen.findAllByText("Alfie");
-
-// //   fireEvent.click(suggestion[0]);
-
-// //   await waitFor(() => {
+   renderComponent(
+    {
    
-// //     expect(mockSetTagListArray).toHaveBeenCalledWith([
-// //       { text: "Test Pupil", learnerExternalId: "123", id: "123" }
-// //     ]);
-// //   });
+    selectedCategories: mockData,
+    tagListArray: [
+      { text: "Test Pupil", learnerExternalId: "123", id: "123" }
+    ]
+  }
+);
 
-// //   jest.useRealTimers();
-// // });
-// })
+  // Open dropdown
+  fireEvent.click(
+    screen.getByTestId("text-input-dms-filter-dialog-related-to-icon-btn")
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getAllByTestId("menu-dms-filter-dialog-related-to")[0]
+    ).toBeInTheDocument();
+  });
+
+  fireEvent.click(
+    screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
+  );
+
+  // ✅ TYPE INTO REAL INPUT
+  const input: HTMLElement = await screen.findByTestId("search-autocomplete-input");
+
+  fireEvent.change(input, {
+    target: { value: "Alfie" }
+  });
+
+  // flush debounce
+  act(() => {
+    jest.runAllTimers();
+  });
+
+  // wait for suggestion
+  const suggestion: HTMLElement[] = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestion[0]);
+
+  await waitFor(() => {
+   
+    expect(mockSetTagListArray).toHaveBeenCalledWith([
+      { text: "Test Pupil", learnerExternalId: "123", id: "123" }
+    ]);
+  });
+
+  jest.useRealTimers();
+});
+})
 
 });
 })
