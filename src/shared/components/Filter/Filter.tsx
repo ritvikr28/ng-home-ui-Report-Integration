@@ -406,6 +406,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             setFromDateError={setFromDateError}
             setToDateError={setToDateError}
             handleDateChange={handleDateChangeForSection}
+            isOpen={isOpen}
+            localSelectedDateRange={localSelectedDateRange}
           />
           <div className="dms-filter-dialog-buttons">
             <Button
