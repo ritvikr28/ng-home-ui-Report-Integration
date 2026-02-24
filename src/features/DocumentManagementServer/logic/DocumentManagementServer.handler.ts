@@ -600,7 +600,9 @@ export function handleApply({
   setIsHeaderBoxChecked,
   setSelectedCheckBoxIds,
   setPrevSelectedDocs,
-  setReferenceExternalIds
+  setReferenceExternalIds,
+  setSelectedEntities,
+  selectedEntity
 }: {
   referenceExternalIds: string[],
   categories?: any[],
@@ -662,6 +664,7 @@ export function handleApply({
   setIsHeaderBoxChecked(false);
   setSelectedCheckBoxIds([]);
   setPrevSelectedDocs([]);
+  setSelectedEntities(selectedEntity ?? []);
 };
 
 export function closeSidePanel(setIsSidePanelOpen: (v: boolean) => void, downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>): void {

@@ -27,7 +27,7 @@ import { FilterDateSection } from "./components/FilterDateSection";
 import { FilterCategoryDropdown } from "./components/FilterCategoryDropdown";
 import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
-import { useFetchSchoolEffect, useSyncDialogStateEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
+import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
 
 export interface FilterDialogProps {
   dataTestId?: string;
@@ -118,8 +118,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 
   useFetchSchoolEffect(selectedDisplayKey, setSchoolData, fetchSchoolData);
 
-  useSyncDialogStateEffect({ isFilterDialogOpen, selectedRelatedTo, setLocalSelectedRelatedTo, setLocalSelectedCategories, setLocalSelectedDateRange });
-
   useSyncSelectedKeyEffect(localSelectedRelatedTo, setSelectedKey);
 
   useFetchCategoriesEffect({
@@ -186,6 +184,15 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
     localSelectedRelatedTo,
     t
   })
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setLocalSelectedCategories(selectedCategories);
+    setLocalSelectedDateRange(selectedDateRange);
+    setLocalTagListArray(tagListArray);
+    setLocalSelectedRelatedTo(selectedRelatedTo);
+  }, [isOpen]);
 
   useBuildRefIdsEffect(selectedKey, localTagListArray, schoolData, isOpen, setRefId, setFilterEntities)
 
