@@ -1,8 +1,6 @@
 import React from 'react';
 import {
-  sims7RedirectionsTableHeaders,
-  sims7RedirectionsTableData,
-  Sims7RedirectionsTableRow
+  sims7RedirectionsTableHeaders
 } from '../Sims7RedirectionsPage.data';
 
 describe('sims7RedirectionsTableHeaders', () => {
@@ -48,29 +46,3 @@ describe('sims7RedirectionsTableHeaders', () => {
   });
 });
 
-describe('sims7RedirectionsTableData', () => {
-  it('should contain at least one row', () => {
-    expect(sims7RedirectionsTableData.length).toBeGreaterThan(0);
-  });
-
-  it('should have required fields in each row', () => {
-    sims7RedirectionsTableData.forEach((row: Sims7RedirectionsTableRow) => {
-      expect(row).toHaveProperty('id');
-      expect(row).toHaveProperty('category');
-      expect(row).toHaveProperty('nextGenModule');
-      expect(row).toHaveProperty('sims7Module');
-      expect(row).toHaveProperty('modifiedBy');
-      expect(row).toHaveProperty('effectiveDate');
-      expect(row).toHaveProperty('status');
-      expect(row).toHaveProperty('tooltipMessage');
-      expect(row).toHaveProperty('cellStatus');
-      expect(row).toHaveProperty('actions');
-    });
-  });
-
-  it('should have actions with options array', () => {
-    sims7RedirectionsTableData.forEach((row: Sims7RedirectionsTableRow) => {
-      expect(Array.isArray(row.actions.options)).toBe(true);
-    });
-  });
-});
