@@ -125,40 +125,39 @@ const pilotReadyForForAnyOrAll: (flagName: string, variantType: string) => boole
   return false;
 };
 
-const flagrWithModueCheckAndOrgCheck: (flagName: string, variantType: string,menu:string,appName:string) => boolean = (
+const isOrganisationIncluded: (orgs: string[], userOrg: string) => boolean = (orgs, userOrg) => {
+  return orgs.some(x => x.toLocaleUpperCase() === userOrg.toLocaleUpperCase());
+}
+
+const flagrWithModueCheckAndOrgCheck = (
   flagName: string,
   variantType: string,
-  menu :string,
+  menu: string,
   appName: string
-): any => {
-  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(appName,flagName);
-  if (pilotReadyOrg?.enabled) {
-    const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
-      getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
-    if( variantAttachmentPayload && variantAttachmentPayload.Payload.length>0)
-    {
-      const modules:IAttachmentValue[]=
-          variantAttachmentPayload.Payload.filter(y=>y.Name===menu);
-       
-      if (modules.length === 0) {
-        return true;
-      }
-       // eslint-disable-next-line
-      else if (modules.length > 0 && modules[0].Organisations.length > 0)
-      {
-
-        const isIncludedOrganisation: string | undefined =
-                    modules[0].Organisations.find(
-                      x => x.toLocaleUpperCase() === userOrganisation.toLocaleUpperCase()
-                    );
-        if (isIncludedOrganisation === undefined) {
-          return false;
-        }
-      }
-    }    
-    else return true;
+): boolean => {
+  const pilotReadyOrg: IFeatureFlag | null = getFeaturePermission(appName, flagName);
+  if (!pilotReadyOrg?.enabled) {
+    return true;
   }
-  return true;
+
+  const variantAttachmentPayload: IFeatureFlagVariantAttachment | undefined =
+    getFeatureFlagVariantAttachment(pilotReadyOrg, variantType);
+
+  if (!variantAttachmentPayload || variantAttachmentPayload.Payload.length === 0) {
+    return true;
+  }
+
+  const modules: IAttachmentValue[] = variantAttachmentPayload.Payload.filter(y => y.Name === menu);
+  if (modules.length === 0) {
+    return true;
+  }
+
+  const orgs = modules[0].Organisations;
+  if (!orgs || orgs.length === 0) {
+    return true;
+  }
+
+  return isOrganisationIncluded(orgs, userOrganisation);
 };
 
 export { getFeatureFlagVariantAttachment, pilotReady, pilotReadyForForAnyOrAll ,pilotReadyForExcluded,flagrWithModueCheckAndOrgCheck};
