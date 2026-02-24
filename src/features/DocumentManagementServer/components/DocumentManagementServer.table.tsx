@@ -257,9 +257,7 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     selectedRelatedTo,
     setSelectedRelatedTo,
     tagListArray,
-    setTagListArray,
-    setSearchText,
-    setSearchInput
+    setTagListArray
   }: Props = props;
 
   return (
@@ -291,8 +289,6 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         setSelectedRelatedTo={setSelectedRelatedTo}
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
-        setSearchText={setSearchText}
-        setSearchInput={setSearchInput}
       />
     </>
   );

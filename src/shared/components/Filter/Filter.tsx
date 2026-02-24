@@ -19,7 +19,6 @@ import "./style.scss";
 import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
 import { handleSearchChange } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
-import gtmAnalytics from "../../utils/analytics";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions, addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 import { SearchSection } from "./components/FilterSearch";
@@ -49,8 +48,6 @@ export interface FilterDialogProps {
   setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FilterDialog: React.FC<FilterDialogProps> = ({
@@ -72,9 +69,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   selectedRelatedTo,
   setSelectedRelatedTo,
   tagListArray,
-  setTagListArray,
-  setSearchText,
-  setSearchInput
+  setTagListArray
 }: FilterDialogProps) => {
   const { t }: { t: TFunction } = useTranslation();
   const [fromDateError, setFromDateError]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
@@ -406,6 +401,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             setFromDateError={setFromDateError}
             setToDateError={setToDateError}
             handleDateChange={handleDateChangeForSection}
+            isOpen={isOpen}
+            localSelectedDateRange={localSelectedDateRange}
           />
           <div className="dms-filter-dialog-buttons">
             <Button
@@ -445,15 +442,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                   selectedKey,
                   localTagListArray,
                   setSearchSelectionError,
-                  selectedDisplayKey,
-                  handleDateChange,
-                  setFromDate,
-                  setFromDateError,
-                  fromDate,
-                  toDate,
-                  setIsDateError,
+                  selectedDisplayKey,                  
                   setSelectedDateRange,
-                  setToDateError,
                   fromDateError,
                   toDateError,
                   isDateError,
@@ -466,11 +456,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                   handleApply,
                   refId,
                   filterEntities,
-                  setWasApplied,
-                  gtmAnalytics,
-                  selectedDateRange,
-                  setSearchText,
-                  setSearchInput
+                  setWasApplied
                 });
               }}
               color={ButtonColor.Primary}

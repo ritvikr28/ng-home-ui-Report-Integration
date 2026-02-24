@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { DateInput, FormLabel, ValidationTextLevel } from "@essnextgen/ui-kit";
 
 interface DateSectionProps {
@@ -21,8 +21,34 @@ interface DateSectionProps {
   setFromDateError: React.Dispatch<React.SetStateAction<string>>;
   setToDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>;
   setToDateError: React.Dispatch<React.SetStateAction<string>>;
+  isOpen: boolean;
+  localSelectedDateRange: { fromDate: string; toDate: string } | null;
 }
 
+export const useFilterDateSectionEffects: any = (
+  isOpen: boolean,
+  localSelectedDateRange: { fromDate: string; toDate: string } | null,
+  setFromDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>,
+  setToDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>
+) => {
+    useEffect(() => {
+  // Sync from localSelectedDateRange to fromDate and toDate
+  if (isOpen && localSelectedDateRange) {
+    const [fromYear, fromMonth, fromDay]: string[] = localSelectedDateRange.fromDate.split("-");
+    const [toYear, toMonth, toDay]: string[] = localSelectedDateRange.toDate.split("-");
+    setFromDate({
+      day: fromDay || "",
+      month: fromMonth || "",
+      year: fromYear || ""
+    });
+    setToDate({
+      day: toDay || "",
+      month: toMonth || "",
+      year: toYear || ""
+    });
+  }
+}, [isOpen, localSelectedDateRange]);
+}
 export const FilterDateSection: React.FC<DateSectionProps> = ({
   t,
   dataTestId,
@@ -34,8 +60,12 @@ export const FilterDateSection: React.FC<DateSectionProps> = ({
   setFromDate,
   setFromDateError,
   setToDate,
-  setToDateError
-}) => (
+  setToDateError,
+  isOpen,
+  localSelectedDateRange
+}) =>{ 
+  useFilterDateSectionEffects(isOpen, localSelectedDateRange, setFromDate, setToDate);
+  return (
   <div className="dms-filter-dialog-date">
     <FormLabel className="date-added">
       {t("Filter.dateHeading")}
@@ -49,22 +79,19 @@ export const FilterDateSection: React.FC<DateSectionProps> = ({
           day={fromDate.day ? parseInt(fromDate.day, 10) : undefined}
           month={fromDate.month ? parseInt(fromDate.month, 10) : undefined}
           year={fromDate.year ? parseInt(fromDate.year, 10) : undefined}
-          onChange={(day, month, year) =>
-            handleDateChange(
-              setFromDate,
-              setFromDateError,
-              day?.toString() ?? "",
-              month?.toString() ?? "",
-              year?.toString() ?? "",
-              toDate,
-              true
-            )
-          }
+          onChange={(day, month, year) => handleDateChange(
+            setFromDate,
+            setFromDateError,
+            day?.toString() ?? "",
+            month?.toString() ?? "",
+            year?.toString() ?? "",
+            toDate,
+            true
+          )}
           invalidDateErrorMessage=""
           validationText={fromDateError}
           isInvalidDate={!!fromDateError}
-          validationTextLevel={fromDateError ? ValidationTextLevel.Error : undefined}
-        />
+          validationTextLevel={fromDateError ? ValidationTextLevel.Error : undefined} />
       </div>
       <div className="dms-filter-dialog-todate-input">
         <DateInput
@@ -74,23 +101,20 @@ export const FilterDateSection: React.FC<DateSectionProps> = ({
           day={toDate.day ? parseInt(toDate.day, 10) : undefined}
           month={toDate.month ? parseInt(toDate.month, 10) : undefined}
           year={toDate.year ? parseInt(toDate.year, 10) : undefined}
-          onChange={(day, month, year) =>
-            handleDateChange(
-              setToDate,
-              setToDateError,
-              day?.toString() ?? "",
-              month?.toString() ?? "",
-              year?.toString() ?? "",
-              fromDate,
-              false
-            )
-          }
+          onChange={(day, month, year) => handleDateChange(
+            setToDate,
+            setToDateError,
+            day?.toString() ?? "",
+            month?.toString() ?? "",
+            year?.toString() ?? "",
+            fromDate,
+            false
+          )}
           invalidDateErrorMessage=""
           validationText={toDateError}
           isInvalidDate={!!toDateError}
-          validationTextLevel={toDateError ? ValidationTextLevel.Error : undefined}
-        />
+          validationTextLevel={toDateError ? ValidationTextLevel.Error : undefined} />
       </div>
     </div>
   </div>
-);
+);}

@@ -5,6 +5,7 @@ import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { DateParts } from "./useFilterDialogLogicProps";
+import gtmAnalytics from "../../utils/analytics";
 
 export const getDateString: (date: { day: string; month: string; year: string }) => string = (date) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -89,6 +90,15 @@ export const validateDate = (
   return { isValid: true };
 };
 
+function futureDateError(isFrom: boolean, t: any): DateValidationResult {
+  return {
+    error: isFrom
+      ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
+      : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
+    isValid: false
+  };
+}
+
 interface HandleDateChangeParams {
   setDate: React.Dispatch<React.SetStateAction<{ day: string; month: string; year: string }>>;
   setError: React.Dispatch<React.SetStateAction<string>>;
@@ -127,8 +137,8 @@ function getValidationError(params: {
     return getInvalidFormatError(t);
   }
 
-  if (isFutureDate(thisDateStr)) {
-    return getFutureDateError("fromError", t);
+   if (isFutureDate(thisDateStr)) {
+    return futureDateError(isFrom, t);
   }
 
   if (isBeforeMinDate(thisDateStr)) {
@@ -138,7 +148,6 @@ function getValidationError(params: {
   if (isFrom && otherDateStr && dayjs(otherDateStr).isBefore(dayjs(thisDateStr), "day")) {
     return getToDateBeforeFromDateError(t);
   }
-
   if (isFutureDate(otherDateStr)) {
     return getFutureDateError("toError", t);
   }
@@ -203,17 +212,19 @@ interface ErrorSetters {
 
 function applyValidationError(
   validation: DateValidationResult,
-  setters: ErrorSetters
+  setters: ErrorSetters,
+  isFrom: boolean
 ): void {
   const { setError, setFromDateError, setToDateError, setIsDateError }: ErrorSetters = setters;
 
   setError(validation.error || "");
+  if (isFrom && validation.error) setFromDateError(validation.error);
+  if (!isFrom && validation.error) setToDateError(validation.error);
   if (validation.fromError) setFromDateError(validation.fromError);
   if (validation.toError) setToDateError(validation.toError);
 
   setIsDateError(true);
 }
-
 
 export function handleDateChange({
   setDate,
@@ -262,7 +273,7 @@ export function handleDateChange({
       setFromDateError,
       setToDateError,
       setIsDateError
-    });
+      }, isFrom);
     return;
   }
 
@@ -296,14 +307,7 @@ export interface HandleApplyWrapperParams {
   localTagListArray: any[];
   setSearchSelectionError: (msg: string) => void;
   selectedDisplayKey: string;
-  handleDateChange: (...args: any[]) => void;
-  setFromDate: any;
-  setFromDateError: any;
-  fromDate: { day: string; month: string; year: string };
-  toDate: { day: string; month: string; year: string };
-  setIsDateError: any;
   setSelectedDateRange: any;
-  setToDateError: any;
   fromDateError: string;
   toDateError: string;
   isDateError: boolean;
@@ -317,10 +321,6 @@ export interface HandleApplyWrapperParams {
   refId: any;
   filterEntities: any;
   setWasApplied: any;
-  gtmAnalytics: any;
-  selectedDateRange: any;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 const validateApply = (params: HandleApplyWrapperParams): boolean => {
   if (!params.localSelectedRelatedTo) {
@@ -346,6 +346,9 @@ const validateApply = (params: HandleApplyWrapperParams): boolean => {
 export async function handleApplyWrapper(params: HandleApplyWrapperParams): Promise<void> {
   if (!validateApply(params)) return;
 
+  if (params.fromDateError || params.toDateError || params.isDateError) {
+    return;
+  }
   params.setRelatedToError("");
   params.setSearchSelectionError("");
 
@@ -357,10 +360,8 @@ export async function handleApplyWrapper(params: HandleApplyWrapperParams): Prom
 
   params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities);
   params.setWasApplied(true);
-  params.setSearchText("");
-  params.setSearchInput("");
 
-  params.gtmAnalytics.pushEvent({
+  gtmAnalytics.pushEvent({
     event: "key_action",
     actionType: "advanced_search"
   });
