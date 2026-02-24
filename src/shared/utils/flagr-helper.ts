@@ -129,7 +129,7 @@ const isOrganisationIncluded: (orgs: string[], userOrg: string) => boolean = (or
   return orgs.some(x => x.toLocaleUpperCase() === userOrg.toLocaleUpperCase());
 }
 
-const flagrWithModueCheckAndOrgCheck = (
+const flagrWithModueCheckAndOrgCheck:(flagName: string, variantType: string, menu: string, appName: string) => boolean = (
   flagName: string,
   variantType: string,
   menu: string,
@@ -152,7 +152,7 @@ const flagrWithModueCheckAndOrgCheck = (
     return true;
   }
 
-  const orgs = modules[0].Organisations;
+  const orgs:string[] = modules[0].Organisations;
   if (!orgs || orgs.length === 0) {
     return true;
   }
