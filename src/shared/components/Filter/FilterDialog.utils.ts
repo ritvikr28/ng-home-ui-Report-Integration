@@ -5,6 +5,7 @@ import { useTranslation } from "@essnextgen/ui-intl-kit";
 import { useFetchSchoolNameData } from "../../services/schoolDomain/schoolServices";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { DateParts } from "./useFilterDialogLogicProps";
+import gtmAnalytics from "../../utils/analytics";
 
 export const getDateString: (date: { day: string; month: string; year: string }) => string = (date) =>
   date.day && date.month && date.year ? `${date.year}-${date.month.padStart(2, "0")}-${date.day.padStart(2, "0")}` : "";
@@ -306,14 +307,7 @@ export interface HandleApplyWrapperParams {
   localTagListArray: any[];
   setSearchSelectionError: (msg: string) => void;
   selectedDisplayKey: string;
-  handleDateChange: (...args: any[]) => void;
-  setFromDate: any;
-  setFromDateError: any;
-  fromDate: { day: string; month: string; year: string };
-  toDate: { day: string; month: string; year: string };
-  setIsDateError: any;
   setSelectedDateRange: any;
-  setToDateError: any;
   fromDateError: string;
   toDateError: string;
   isDateError: boolean;
@@ -327,10 +321,6 @@ export interface HandleApplyWrapperParams {
   refId: any;
   filterEntities: any;
   setWasApplied: any;
-  gtmAnalytics: any;
-  selectedDateRange: any;
-  setSearchText: React.Dispatch<React.SetStateAction<string>>;
-  setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
 const validateApply = (params: HandleApplyWrapperParams): boolean => {
   if (!params.localSelectedRelatedTo) {
@@ -356,6 +346,9 @@ const validateApply = (params: HandleApplyWrapperParams): boolean => {
 export async function handleApplyWrapper(params: HandleApplyWrapperParams): Promise<void> {
   if (!validateApply(params)) return;
 
+  if (params.fromDateError || params.toDateError || params.isDateError) {
+    return;
+  }
   params.setRelatedToError("");
   params.setSearchSelectionError("");
 
@@ -367,10 +360,8 @@ export async function handleApplyWrapper(params: HandleApplyWrapperParams): Prom
 
   params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities);
   params.setWasApplied(true);
-  params.setSearchText("");
-  params.setSearchInput("");
 
-  params.gtmAnalytics.pushEvent({
+  gtmAnalytics.pushEvent({
     event: "key_action",
     actionType: "advanced_search"
   });
