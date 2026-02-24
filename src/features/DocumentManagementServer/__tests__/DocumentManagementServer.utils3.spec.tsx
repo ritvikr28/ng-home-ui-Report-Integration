@@ -1,5 +1,8 @@
+import { act } from "@testing-library/react";
+import { renderHook } from "@testing-library/react-hooks";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { getDialogConfig } from "../logic/DocumentManagementServer.dialog.config";
+import { useSidePanelViewDownloadEffect } from "../hooks/useDocumentManagementEffects";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -484,3 +487,74 @@ it("setSelectedCheckBoxIds updater adds id if not present", () => {
 })
 
 
+describe("useSidePanelViewDownloadEffect", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+  afterEach(() => {
+    jest.useRealTimers();
+    jest.clearAllMocks();
+  });
+
+  it("calls fetchViewDownloadData after 2 seconds when side panel is opened for prepare", () => {
+    const setShowToastNotification: jest.Mock = jest.fn();
+    const setIsSidePanelLoader: jest.Mock = jest.fn();
+    const fetchViewDownloadData: jest.Mock = jest.fn();
+    const setViewData: jest.Mock = jest.fn();
+    const setHasFetchedViewDownload: jest.Mock = jest.fn();
+    const setIsViewDownloadError: jest.Mock = jest.fn();
+    const setShowEmailNotification: jest.Mock = jest.fn();
+    const downloadPollingIntervalRef: { current: NodeJS.Timeout | null } = { current: null };
+    const viewDownload: any = {};
+
+    const initialProps: any = {
+      isSidePanelOpen: false,
+      sidePanelOpenReason: "prepare" as "prepare" | "view" | null,
+      setShowToastNotification,
+      setIsSidePanelLoader,
+      fetchViewDownloadData,
+      setViewData,
+      setHasFetchedViewDownload,
+      viewDownload,
+      downloadPollingIntervalRef,
+      setIsViewDownloadError,
+      setShowEmailNotification
+    };
+
+    const { rerender }: { rerender: (props: any) => void } = renderHook(
+      (props) => useSidePanelViewDownloadEffect(props),
+      { initialProps }
+    );
+
+    // Open the side panel with "prepare"
+    rerender({
+      ...initialProps,
+      isSidePanelOpen: true,
+      sidePanelOpenReason: "prepare"
+    });
+
+    // Should set toast and loader immediately
+    expect(setShowToastNotification).toHaveBeenCalledWith(false);
+    expect(setIsSidePanelLoader).toHaveBeenCalledWith(true);
+
+    // fetchViewDownloadData should not be called yet
+    expect(fetchViewDownloadData).not.toHaveBeenCalled();
+
+    // Fast-forward 2 seconds
+    act(() => {
+      jest.advanceTimersByTime(2000);
+    });
+
+    expect(fetchViewDownloadData).toHaveBeenCalledWith(
+      expect.objectContaining({
+        showLoader: false,
+        setIsSidePanelLoader,
+        setViewData: expect.any(Function),
+        viewDownload,
+        downloadPollingIntervalRef,
+        setIsViewDownloadError,
+        setShowEmailNotification
+      })
+    );
+  });
+});
