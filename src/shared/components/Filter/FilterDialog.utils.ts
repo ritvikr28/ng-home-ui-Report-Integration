@@ -23,11 +23,6 @@ export const isValidDate: (dateStr: string, minDateStr?: string) => boolean = (d
   );
 };
 
-const isZeroDate = (date: { day: string; month: string }) =>
-  ["00", "0"].includes(date.day) || ["00", "0"].includes(date.month);
-
-const isYearIncomplete = (year: string) =>
-  year && year.length < 4;
 
 const isFutureDate = (dateStr: string) =>
   dateStr && dayjs(dateStr).isAfter(dayjs(), "day");
@@ -118,23 +113,22 @@ function getValidationError(params: {
   const { newDate, otherDate, isFrom, t }: { newDate: DateParts; otherDate: DateParts; isFrom: boolean; t: any } = params;
 
   if (!newDate.day || !newDate.month || !newDate.year) {
-    return null;
+    return {
+      error: t("Filter.invalidDate"),
+      isValid: false
+    };
   }
 
   const thisDateStr: string = getDateString(newDate);
   const otherDateStr: string = getDateString(otherDate);
 
-  // Split logic into smaller helpers for clarity and maintainability
-  if (isInvalidInput(newDate)) {
-    return getInvalidInputError(newDate, t);
-  }
 
   if (isInvalidFormat(thisDateStr)) {
     return getInvalidFormatError(t);
   }
 
   if (isFutureDate(thisDateStr)) {
-    return getFutureDateError(isFrom, t);
+    return getFutureDateError("fromError", t);
   }
 
   if (isBeforeMinDate(thisDateStr)) {
@@ -145,6 +139,9 @@ function getValidationError(params: {
     return getToDateBeforeFromDateError(t);
   }
 
+  if (isFutureDate(otherDateStr)) {
+    return getFutureDateError("toError", t);
+  }
   if (!isFrom && otherDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
     return getToDateShouldNotBeBeforeFromDateError(t);
   }
@@ -155,13 +152,7 @@ function getValidationError(params: {
   return null;
 }
 
-// --- Helper functions for getValidationError ---
-function getInvalidInputError(newDate: DateParts, t: any): DateValidationResult {
-  return {
-    error: t("Filter.invalidDate"),
-    isValid: false
-  };
-}
+
 
 function getInvalidFormatError(t: any): DateValidationResult {
   return {
@@ -170,9 +161,9 @@ function getInvalidFormatError(t: any): DateValidationResult {
   };
 }
 
-function getFutureDateError(isFrom: boolean, t: any): DateValidationResult {
+function getFutureDateError(errorType: string, t: any): DateValidationResult {
   return {
-    error: isFrom
+    [errorType]: errorType === "fromError"
       ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
       : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
     isValid: false
@@ -297,11 +288,6 @@ function isEmptyDate(date: { day: string; month: string; year: string }): boolea
   return !date.day && !date.month && !date.year;
 }
 
-function isInvalidInput(date: { day: string; month: string; year: string }): boolean {
-  // Only validate if all fields are filled
-  if (!date.day || !date.month || !date.year) return false;
-  return Boolean(isZeroDate(date)) || Boolean(isYearIncomplete(date.year));
-}
 export interface HandleApplyWrapperParams {
   localSelectedRelatedTo: any;
   setRelatedToError: (msg: string) => void;

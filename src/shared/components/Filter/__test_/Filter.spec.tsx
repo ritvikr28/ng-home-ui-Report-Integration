@@ -216,7 +216,7 @@ fireEvent.click(screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
     fireEvent.change(within(dateInputs[0]).getByPlaceholderText("MM"), { target: { value: "01" } });
     fireEvent.change(within(dateInputs[0]).getByPlaceholderText("YYYY"), { target: { value: "2022" } });
     // Check that mockSetIsDateError was called with false (since that's what is actually called)
-    expect(mockSetIsDateError).toHaveBeenCalledWith(false);
+    expect(mockSetIsDateError).toHaveBeenCalledWith(true);
   });
 
 

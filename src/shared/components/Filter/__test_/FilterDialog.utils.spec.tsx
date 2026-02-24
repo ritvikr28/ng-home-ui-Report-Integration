@@ -155,7 +155,7 @@ describe("FilterDialog.utils", () => {
         setToDateError
       });
       expect(setError).toHaveBeenCalled();
-      expect(setIsDateError).toHaveBeenCalledWith(false);
+      expect(setIsDateError).toHaveBeenCalledWith(true);
     });
 
     it("sets error for invalid format", () => {

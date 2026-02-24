@@ -49,7 +49,6 @@ export interface FilterDialogProps {
   setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
-  searchText: string;
   setSearchText: React.Dispatch<React.SetStateAction<string>>;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
 }
@@ -74,7 +73,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   setSelectedRelatedTo,
   tagListArray,
   setTagListArray,
-  searchText,
   setSearchText,
   setSearchInput
 }: FilterDialogProps) => {
@@ -112,7 +110,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   showErrorBanner;
 
 
-  console.log("selectedKey", selectedKey, "selectedDisplayKey", searchText, searchKey, searchTerm, refId);
 
   const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
 
@@ -366,7 +363,6 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                 });
                 setIsDropdownOpen(true);
                 setSearchSelectionError("");
-                console.log(refId, "refId on item click");
               }}
              
               
