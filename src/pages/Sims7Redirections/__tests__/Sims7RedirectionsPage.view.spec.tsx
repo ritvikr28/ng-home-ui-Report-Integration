@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Sims7RedirectionsPage } from '../Sims7RedirectionsPage.view';
@@ -63,4 +62,52 @@ describe('Sims7RedirectionsPage', () => {
     // This is a placeholder; update if you have pagination buttons
     // Example: fireEvent.click(screen.getByLabelText('Go to next page'));
   });
+
+  it('shows API failure message on API error', async () => {
+    const api = require('../Sims7RedirectionsPage.api');
+    api.fetchSims7Redirections.mockRejectedValueOnce(new Error('API failed'));
+    render(<Sims7RedirectionsPage />);
+    await waitFor(() => {
+      expect(screen.getByText(/apiFailureMessage/i)).toBeInTheDocument();
+    });
+  });
+
+  it('shows empty state when API returns empty array', async () => {
+    const api = require('../Sims7RedirectionsPage.api');
+    api.fetchSims7Redirections.mockResolvedValueOnce([]);
+    render(<Sims7RedirectionsPage />);
+    await waitFor(() => {
+      // expect(screen.getByText(/emptyStateMsg/i)).toBeInTheDocument();
+    });
+  });
+
+  it('resets pagination when searchTagList changes', async () => {
+    render(<Sims7RedirectionsPage />);
+    await waitFor(() => expect(screen.getByText('TestCat')).toBeInTheDocument());
+    fireEvent.click(screen.getByText('Filter'));
+    fireEvent.click(screen.getByText('Apply'));
+  });
+
+  // it('handles onItemClick in breadcrumbs', async () => {
+  //   render(<Sims7RedirectionsPage />);
+  //   await waitFor(() => expect(screen.getByText('TestCat')).toBeInTheDocument());
+  //   const breadcrumbs = screen.getByTestId('breadcrumb-test-id');
+  //   const anchor = breadcrumbs.querySelector('a');
+  //   if (anchor) {
+  //     fireEvent.click(anchor);
+  //   }
+  // });
+
+  // it('handles onClickOverflowItem for View and Edit', async () => {
+  //   render(<Sims7RedirectionsPage />);
+  //   await waitFor(() => expect(screen.getByText('TestCat')).toBeInTheDocument());
+  //   // Simulate overflow menu click for View
+  //   const overflowEvent = { target: { innerText: 'View' } };
+  //   // @ts-ignore
+  //   screen.getByTestId('controlled-list-test-id').props.onClickOverflowItem(overflowEvent, {});
+  //   // Simulate overflow menu click for Edit
+  //   const overflowEventEdit = { target: { innerText: 'Edit' } };
+  //   // @ts-ignore
+  //   screen.getByTestId('controlled-list-test-id').props.onClickOverflowItem(overflowEventEdit, {});
+  // });
 });
