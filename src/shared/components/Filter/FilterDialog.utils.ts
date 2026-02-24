@@ -118,7 +118,10 @@ function getValidationError(params: {
   const { newDate, otherDate, isFrom, t }: { newDate: DateParts; otherDate: DateParts; isFrom: boolean; t: any } = params;
 
   if (!newDate.day || !newDate.month || !newDate.year) {
-    return null;
+    return {
+      error: t("Filter.invalidDate"),
+      isValid: false
+    };
   }
 
   const thisDateStr: string = getDateString(newDate);
@@ -134,7 +137,7 @@ function getValidationError(params: {
   }
 
   if (isFutureDate(thisDateStr)) {
-    return getFutureDateError(isFrom, t);
+    return getFutureDateError("fromError", t);
   }
 
   if (isBeforeMinDate(thisDateStr)) {
@@ -145,6 +148,9 @@ function getValidationError(params: {
     return getToDateBeforeFromDateError(t);
   }
 
+  if (isFutureDate(otherDateStr)) {
+    return getFutureDateError("toError", t);
+  }
   if (!isFrom && otherDateStr && dayjs(thisDateStr).isBefore(dayjs(otherDateStr), "day")) {
     return getToDateShouldNotBeBeforeFromDateError(t);
   }
@@ -170,9 +176,9 @@ function getInvalidFormatError(t: any): DateValidationResult {
   };
 }
 
-function getFutureDateError(isFrom: boolean, t: any): DateValidationResult {
+function getFutureDateError(errorType: string, t: any): DateValidationResult {
   return {
-    error: isFrom
+    [errorType]: errorType === "fromError"
       ? t("Filter.fromDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") })
       : t("Filter.toDateMustBeOnOrBefore", { date: dayjs().format("DD-MM-YYYY") }),
     isValid: false

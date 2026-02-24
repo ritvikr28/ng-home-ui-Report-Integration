@@ -181,7 +181,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setShowErrorBanner(false);
   };
 
-  console.log("Search closed, all states reset to initial values.", sortBy, sortDirection);
 
   useEffect(() => {
     const allRegistrationId: any[] = getAllRegistrationIds(selectedFormats);

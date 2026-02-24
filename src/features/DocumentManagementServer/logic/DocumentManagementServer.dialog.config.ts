@@ -275,7 +275,8 @@ export function getDialogConfig(params: GetDialogConfigParams): DialogConfig | n
             setShowConfirmDialog: params.setShowConfirmDialog,
             getCompletedPartitionKeys,
             setIsViewDownloadError: params.setIsViewDownloadError,
-            setShowEmailNotification: params.setShowEmailNotification
+            setShowEmailNotification: params.setShowEmailNotification,
+            setIsSidePanelLoader: params.setIsSidePanelLoader
           });
         },
         template: DialogTemplate.Confirmation
@@ -332,7 +333,6 @@ export const handleOnChangeCheckBox: any = (
   setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
   setAllSelectedDocs: React.Dispatch<React.SetStateAction<{ fileId: string; registrationId: number; externalId: string; }[]>>
 ) => {
-  console.log("Checkbox changed", index, id, selectedCheckBoxIds);
   // Defensive: ensure selectedCheckBoxIds is an array
   const checkBoxIds: string[] = Array.isArray(selectedCheckBoxIds) ? selectedCheckBoxIds : [];
 
