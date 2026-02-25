@@ -312,6 +312,8 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.all
   );
 
+  console.log('hasAdminConsoleFlagrPermission', hasAdminConsoleFlagrPermission);
+
   console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
   return (
     /* eslint-disable react/prop-types */
@@ -396,13 +398,14 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
 
-          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) &&
+          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) ? (
             <ProtectedRoute
               exact
               /* istanbul ignore next */
               path="/sims7redirections"
               component={Sims7RedirectionsLayout}
-            />
+            />)
+            : <Redirect to="/unauthorized" />
           }
 
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
