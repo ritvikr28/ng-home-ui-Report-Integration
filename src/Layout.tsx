@@ -398,16 +398,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
 
-          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) ? (
-            <ProtectedRoute
-              exact
-              /* istanbul ignore next */
-              path="/sims7redirections"
-              component={Sims7RedirectionsLayout}
-            />)
-            : <Redirect to="/unauthorized" />
-          }
-
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact
@@ -463,6 +453,15 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           />
 
           <ProtectedRoute exact path="*" component={PageNotFound} />
+          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) ? (
+            <ProtectedRoute
+              exact
+              /* istanbul ignore next */
+              path="/sims7redirections"
+              component={Sims7RedirectionsLayout}
+            />)
+            : <Redirect to="/unauthorized" />
+          }
         </Switch>
       </Suspense>
     </Router>
