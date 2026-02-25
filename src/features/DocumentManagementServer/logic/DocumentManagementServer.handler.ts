@@ -599,7 +599,10 @@ export function handleApply({
   setReferenceExternalIds,
   setSelectedEntities,
   selectedEntity,
-  setTableKey
+  setTableKey,
+  setSearchTerm,
+  setSearchText,
+  setIsInitialLoad
 }: {
   referenceExternalIds: string[],
   categories?: any[],
@@ -662,6 +665,9 @@ export function handleApply({
   setSelectedCheckBoxIds([]);
   setPrevSelectedDocs([]);
   setSelectedEntities(selectedEntity ?? []);
+  setSearchTerm("");
+  setSearchText("");
+  setIsInitialLoad(true);
   setTableKey(prev => prev + 1);
 };
 
