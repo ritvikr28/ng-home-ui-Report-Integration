@@ -376,6 +376,16 @@ const DocumentManagementServerView: () => JSX.Element = () => {
             setSelectedCheckBoxIds([]);
             setAllSelectedDocs([]);
             setIsClearSelectedCheckbox(true);
+            if (alreadyDeletedFileCount > 0 ||(totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0) {
+              fetchGetDocumentDetails(
+                currentPage,
+                getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+                sortBy,
+                sortDirection,
+                searchRefExternalId,
+                documentRelatedTo
+              );
+            }
             setTableKey((prev: number) => prev + 1);
           }}
         />
