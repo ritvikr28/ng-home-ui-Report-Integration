@@ -99,6 +99,19 @@ export const getMenus: (
     return menusWithPermission;
   };
 
+
+  const hasSIMS7RedirectsOrgView: boolean =
+    isOrganisationInVariant("Sims7RedirectsFlag");
+
+  const hasAdminConsoleAccessPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
+    MatchPermissions.all
+  );
+
+  console.log('hasAdminConsoleAccessPermission', hasAdminConsoleAccessPermission);
+
+  console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
+
 const AdminConsoleandSystemStatusRoutes: ({ hasAdminConsoleFlagrPermission, hasAdminConsolePermissions, hasDMSPermissions }: {
   hasAdminConsoleFlagrPermission: boolean;
   hasAdminConsolePermissions: boolean;
@@ -151,6 +164,21 @@ const AdminConsoleandSystemStatusRoutes: ({ hasAdminConsoleFlagrPermission, hasA
           }
         />
       )}
+
+       {hasAdminConsoleAccessPermission && (
+        <ProtectedRoute
+          exact
+          path="/sims7redirections"
+          render={() =>
+            hasSIMS7RedirectsOrgView ? (
+              <Sims7RedirectionsLayout />
+            ) : (
+              <Redirect to="/unauthorized" />
+            )
+          }
+        />
+      )}
+       
       <SystemStatusRoute
         hasSystemStatusPermission={hasSystemStatusPermission}
         hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
@@ -304,17 +332,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     MatchPermissions.any
   );
 
-  const hasSIMS7RedirectsOrgView: boolean =
-    isOrganisationInVariant("Sims7RedirectsFlag");
-
-  const hasAdminConsoleAccessPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
-    MatchPermissions.all
-  );
-
-  console.log('hasAdminConsoleFlagrPermission', hasAdminConsoleFlagrPermission);
-
-  console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
   return (
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
@@ -398,16 +415,6 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             />
           )}
 
-          {(hasSIMS7RedirectsOrgView && hasAdminConsoleAccessPermission) ? (
-            <ProtectedRoute
-              exact
-              /* istanbul ignore next */
-              path="/sims7redirections"
-              component={Sims7RedirectionsLayout}
-            />)
-            : <Redirect to="/unauthorized" />
-          }
-
           {isStandaloneApp && <Route exact path="/auth" component={Auth} />}
           <ProtectedRoute
             exact
@@ -463,6 +470,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
           />
 
           <ProtectedRoute exact path="*" component={PageNotFound} />
+
         </Switch>
       </Suspense>
     </Router>
