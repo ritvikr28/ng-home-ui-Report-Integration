@@ -256,8 +256,16 @@ export function handleDateChange({
     return;
   }
 
-  if (isFrom && isEmptyDate(newDate)) {
-    setFromDateError("");
+  if (isEmptyDate(newDate)) {
+    setError("");
+    if (isFrom) setFromDateError("");
+    else setToDateError("");
+    setIsDateError(false);
+    setSelectedDateRange(prev => ({
+      ...prev,
+      ...(isFrom ? { fromDate: "" } : { toDate: "" })
+    }));
+    return;
   }
 
   const validation: DateValidationResult | null = getValidationError({
