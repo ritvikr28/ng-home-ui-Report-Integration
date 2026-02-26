@@ -2,6 +2,7 @@ import React from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor, Link } from "@essnextgen/ui-kit";
 import { onBreadcrumbClick } from "../logic/DocumentManagementServer.logic";
+import { WelcomeBannerUrl } from "../../../../public/Constants";
 
 export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
   show,
@@ -33,19 +34,16 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
 export const getBannerMessageWithLink = (
   message: string,
   linkText: string,
-  url?: string
 ): React.ReactNode => {
   const [before, after = ""] = message.split("<link>");
   const [firstLine, secondLine = ""] = before.split("\n");
-
   return (
     <span>
       {firstLine}
       <br />
       {secondLine}
-      {url ? (
         <Link
-          href={url}
+          href={WelcomeBannerUrl}
           className="get-in-touch-link"
           target="_blank"
           aria-label={linkText}
@@ -54,11 +52,7 @@ export const getBannerMessageWithLink = (
         >
           {linkText}
         </Link>
-      ) : (
-        <span className="get-in-touch-link" aria-label={linkText}>
-          {linkText}
-        </span>
-      )}
+      
       {after}
     </span>
   );

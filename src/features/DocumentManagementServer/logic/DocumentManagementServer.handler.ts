@@ -748,8 +748,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       title: t("DocumentManagementServer.WarningBannerTitle"),
       message: getBannerMessageWithLink(
         t("DocumentManagementServer.migrationInfoText"),
-        t("DocumentManagementServer.learnMoreKnowledgeBase"),
-        ''
+        t("DocumentManagementServer.learnMoreKnowledgeBase")
       ),
       hideCloseButton: true,
       onClickAction: function noRefCheck(){},
