@@ -27,7 +27,7 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
 
 export const getBannerMessageWithLink = (
   message: string,
-  linkText: string,
+  linkText: string
 ): React.ReactNode => {
   const [before, after = ""] = message.split("<link>");
   const [firstLine, secondLine = ""] = before.split("\n");
