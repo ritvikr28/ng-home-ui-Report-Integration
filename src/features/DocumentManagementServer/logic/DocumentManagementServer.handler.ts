@@ -12,6 +12,7 @@ import { relatedToEnum } from "../../../../public/Constants";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { isValidDate } from "../../../shared/utils/commonFunctions";
 import { HandleSearchChangeParams, HandleTagCloseLogicParams } from "../responseModel";
+import { getBannerMessageWithLink } from "../Views/DMSLayout";
 
 /* ------------------------------------------------------------------ */
 /* Page & Search                                                       */
@@ -685,11 +686,13 @@ interface NotificationMsgBannerParams {
 
 interface NotificationMsgBanner {
   isShow: boolean;
+  hideCloseButton: boolean;
   variant: string;
   title: string;
-  message: string;
+  message: React.ReactNode | string;
   autoclose: boolean;
   onClickClose?: () => void;
+  onClickAction?: () => void;
 }
 
 
@@ -706,10 +709,24 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
   }: NotificationMsgBannerParams = params;
   return [
     {
+      isShow: true,
+      variant: "highlight",
+      title: "Welcome to the Document Management Server",
+      message: getBannerMessageWithLink(
+        t("DocumentManagementServer.migrationInfoText"),
+        t("DocumentManagementServer.learnMoreKnowledgeBase"),
+        ''
+      ),
+      hideCloseButton: true,
+      onClickAction: function noRefCheck(){},
+      autoclose: false,
+    },
+    {
       isShow: showErrorBanner || showSearchError,
       variant: "warning",
       title: t("DocumentManagementServer.informationUnavailable"),
       message: t("DocumentManagementServer.technicalIssueMessage"),
+      hideCloseButton: false,
       autoclose: true
     },
     {
@@ -718,6 +735,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       title: t("DocumentManagementServer.unableToDelete"),
       message: t("DocumentManagementServer.unableToDeleteDocumentMsg",
         { type: availableFileCount === 1 ? "document" : "documents" }),
+      hideCloseButton: false,
       autoclose: false,
       onClickClose: () => setShowDeleteErrorBanner(false)
     },
@@ -726,6 +744,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       variant: "warning",
       title: t("DocumentManagementServer.unableToDelete"),
       message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
+      hideCloseButton: false,
       autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false)
     }];
 }

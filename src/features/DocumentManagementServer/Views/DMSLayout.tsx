@@ -1,6 +1,6 @@
 import React from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor } from "@essnextgen/ui-kit";
+import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor, Link } from "@essnextgen/ui-kit";
 import { onBreadcrumbClick } from "../logic/DocumentManagementServer.logic";
 
 export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
@@ -23,6 +23,47 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
     )}
   </div>
 );
+
+// interface BannerMessageWithLinkProps {
+//   message: string;
+//   linkText: string;
+//   url: string;
+// }
+
+export const getBannerMessageWithLink = (
+  message: string,
+  linkText: string,
+  url?: string
+): React.ReactNode => {
+  const [before, after = ""] = message.split("<link>");
+  const [firstLine, secondLine = ""] = before.split("\n");
+
+  return (
+    <span>
+      {firstLine}
+      <br />
+      {secondLine}
+      {url ? (
+        <Link
+          href={url}
+          className="get-in-touch-link"
+          target="_blank"
+          aria-label={linkText}
+          dataTestId="banner-link"
+          id="banner-link-id"
+        >
+          {linkText}
+        </Link>
+      ) : (
+        <span className="get-in-touch-link" aria-label={linkText}>
+          {linkText}
+        </span>
+      )}
+      {after}
+    </span>
+  );
+};
+ 
 
 export const SideNavigation: React.FC<{
   isOpen: boolean;
