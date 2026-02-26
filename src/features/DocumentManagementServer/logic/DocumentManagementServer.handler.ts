@@ -751,8 +751,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
         t("DocumentManagementServer.learnMoreKnowledgeBase")
       ),
       hideCloseButton: true,
-      onClickAction: function noRefCheck(){},
-      autoclose: false,
+      autoclose: false
     }];
 }
 

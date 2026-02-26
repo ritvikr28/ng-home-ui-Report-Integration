@@ -25,27 +25,27 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
   </div>
 );
 
-export const getBannerMessageWithLink = (
-  message: string,
-  linkText: string
+export const getBannerMessageWithLink: (message: string, linkText: string) => React.ReactNode = (
+  message,
+  linkText
 ): React.ReactNode => {
-  const [before, after = ""] = message.split("<link>");
-  const [firstLine, secondLine = ""] = before.split("\n");
+  const [before, after = ""]: string[] = message.split("<link>");
+  const [firstLine, secondLine = ""]: string[] = before.split("\n");
   return (
-    <span>
+    <span className="document-management-banner">
       {firstLine}
       <br />
       {secondLine}
-        <Link
+        <a
           href={WelcomeBannerUrl}
-          className="get-in-touch-link"
+          className="banner-link"
           target="_blank"
           aria-label={linkText}
-          dataTestId="banner-link"
+          rel="noopener noreferrer"
           id="banner-link-id"
         >
           {linkText}
-        </Link>
+        </a>
       
       {after}
     </span>
