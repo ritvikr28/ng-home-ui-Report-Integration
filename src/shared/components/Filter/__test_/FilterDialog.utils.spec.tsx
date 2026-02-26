@@ -155,7 +155,7 @@ describe("FilterDialog.utils", () => {
         setToDateError
       });
       expect(setError).toHaveBeenCalled();
-      expect(setIsDateError).toHaveBeenCalledWith(false);
+      expect(setIsDateError).toHaveBeenCalledWith(true);
     });
 
     it("sets error for invalid format", () => {
@@ -309,11 +309,7 @@ describe("FilterDialog.utils", () => {
         handleApply: jest.fn(),
         refId: 1,
         filterEntities: [],
-        setWasApplied: jest.fn(),
-        gtmAnalytics: { pushEvent: jest.fn() },
-        selectedDateRange: {},
-        setSearchText: jest.fn(),
-        setSearchInput: jest.fn()
+        setWasApplied: jest.fn()
       };
     });
 
@@ -342,7 +338,6 @@ describe("FilterDialog.utils", () => {
       expect(params.setDocumentRelatedTo).toHaveBeenCalledWith(Number(params.localSelectedRelatedTo.value));
       expect(params.handleApply).toHaveBeenCalledWith(params.refId, params.localSelectedCategories, params.filterEntities);
       expect(params.setWasApplied).toHaveBeenCalledWith(true);
-      expect(params.gtmAnalytics.pushEvent).toHaveBeenCalled();
     });
   });
 

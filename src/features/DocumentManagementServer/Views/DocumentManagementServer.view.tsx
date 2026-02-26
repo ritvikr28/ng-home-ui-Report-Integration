@@ -181,7 +181,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setShowErrorBanner(false);
   };
 
-  console.log("Search closed, all states reset to initial values.", sortBy, sortDirection);
 
   useEffect(() => {
     const allRegistrationId: any[] = getAllRegistrationIds(selectedFormats);
@@ -386,6 +385,16 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                 documentRelatedTo
               );
             }
+            if (alreadyDeletedFileCount > 0 ||(totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0) {
+              fetchGetDocumentDetails(
+                  currentPage,
+                  getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+                  sortBy,
+                  sortDirection,
+                  searchRefExternalId,
+                  documentRelatedTo
+                );
+            }
             setTableKey((prev: number) => prev + 1);
           }}
         />
@@ -413,7 +422,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               currentPage,
               isInitialLoad,
               searchInput,
-              setSearchInput, // <-- Added missing prop
+              setSearchInput, 
               searchTerm,
               filteredSuggestions,
               isSearchLoading,

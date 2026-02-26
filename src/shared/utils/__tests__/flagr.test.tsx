@@ -60,7 +60,7 @@ describe('pilotReady', () => {
     };
     (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
     jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
-      Payload: [{ key: 'key1', value: true }],
+      Payload: [{ Name: 'key1', Organisations: [] }],
       IncludeOrganisations: ['someOtherOrg'],
       ExcludeOrganisations: []
     });
@@ -622,5 +622,138 @@ describe('getFeatureFlagVariantAttachment', () => {
       IncludeOrganisations: [],
       ExcludeOrganisations: []
     });
+  });
+});
+describe('flagrWithModueCheckAndOrgCheck', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('returns true when flag is enabled and payload is empty', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: true,
+      description: 'flag',
+      variants: [
+        {
+          Key: 'variant',
+          Attachment: { Payload: [], IncludeOrganisations: [], ExcludeOrganisations: [] }
+        }
+      ]
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+    
+    jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
+      Payload: [],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    });
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(true);
+  });
+
+  it('returns true when menu is present and org is included', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: true,
+      description: 'flag',
+      variants: [
+        {
+          Key: 'variant',
+          Attachment: { Payload: [{ Name: 'menu', Organisations: ['userOrg123'] }], IncludeOrganisations: [], ExcludeOrganisations: [] }
+        }
+      ]
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+    
+    jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
+      Payload: [{ Name: 'menu', Organisations: ['userOrg123'] }],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    });
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(true);
+  });
+
+  it('returns false when menu is present and org is not included', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: true,
+      description: 'flag',
+      variants: [
+        {
+          Key: 'variant',
+          Attachment: { Payload: [{ Name: 'menu', Organisations: ['otherOrg'] }], IncludeOrganisations: [], ExcludeOrganisations: [] }
+        }
+      ]
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+   
+    jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
+      Payload: [{ Name: 'menu', Organisations: ['otherOrg'] }],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    });
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(false);
+  });
+
+  it('returns true when flag is disabled', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: false,
+      description: 'flag',
+      variants: []
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+    
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(true);
+  });
+
+  it('returns true when menu is present but Organisations array is empty', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: true,
+      description: 'flag',
+      variants: [
+        {
+          Key: 'variant',
+          Attachment: { Payload: [{ Name: 'menu', Organisations: [] }], IncludeOrganisations: [], ExcludeOrganisations: [] }
+        }
+      ]
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+    
+    jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
+      Payload: [{ Name: 'menu', Organisations: [] }],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    });
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(true);
+  });
+
+   it('returns true when variant array is empty', () => {
+    const featureFlag = {
+      key: 'flag',
+      enabled: true,
+      description: 'flag',
+      variants: [
+        {
+          Key: 'variant',
+          Attachment: { Payload: [{ Name: 'menu1', Organisations: [] }], IncludeOrganisations: [], ExcludeOrganisations: [] }
+        }
+      ]
+    };
+    (uiFlagr.getFeaturePermission as jest.Mock).mockReturnValueOnce(featureFlag);
+    
+    jest.spyOn(flagrHelper, 'getFeatureFlagVariantAttachment').mockReturnValueOnce({
+      Payload: [{ Name: 'menu1', Organisations: [] }],
+      IncludeOrganisations: [],
+      ExcludeOrganisations: []
+    });
+    const result = flagrHelper.flagrWithModueCheckAndOrgCheck('flag', 'variant', 'menu', 'appName');
+    expect(result).toBe(true);
   });
 });

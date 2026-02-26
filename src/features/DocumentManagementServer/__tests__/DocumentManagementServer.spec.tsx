@@ -708,5 +708,77 @@ describe("Additional tests to increase coverage", () => {
   expect(errorBanner[0]).toBeInTheDocument();
   jest.useRealTimers();
   }); 
+
+  it("calls onRefreshAfterClose when dialog is closed", async () => {
+    jest.useFakeTimers();
+    (ApiService.fetchDocumentCategory as jest.Mock).mockResolvedValue([]);
+    jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+    (ApiService.fetchDocumentDetails as jest.Mock).mockResolvedValue(mockDocData);
+    (ApiService.validation as jest.Mock).mockResolvedValue({
+      data: {
+        restrictedFileCount: 0,
+        alreadyDeletedFileCount: 2,
+        availableFileCount: 0,
+      },
+      status: 200
+    });
+    (Logic.prepareDownload as jest.Mock).mockResolvedValue([204]);
+
+    (ApiService.viewDownload as jest.Mock).mockResolvedValue({
+      status: 200,
+      data: [
+        { name: "FileZero", status: "complete", fileExpiryDays: 0 },
+        { name: "FileUndefined", status: "complete" }
+      ],
+    });
+ 
+ 
+    const { container } = render(<MemoryRouter>
+      <DocumentManagementServerView />
+    </MemoryRouter>);
+
+    // type search query
+    const input: HTMLInputElement = await screen.findByTestId("search-autocomplete-input");
+    fireEvent.change(input, { target: { value: "Ben" } });
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
+
+    // wait for suggestion to show up
+    const searchLoader: HTMLElement[] = screen.getAllByTestId("loader-arc");
+    await waitFor(() => {
+      expect(within(searchLoader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+    });
+
+    jest.advanceTimersByTime(3000);
+
+    const suggestionNode: HTMLElement[] = await screen.findAllByText("Ben");
+
+    // click suggestion
+    fireEvent.click(suggestionNode[0]);
+
+    // verify document is displayed
+    await waitFor(() => {
+      expect(screen.getByText("Doc1")).toBeInTheDocument();
+    });
+    // Select multiple checkboxes
+    const checkbox0: HTMLInputElement = screen.getByTestId("check-box-row-testid-0");
+    const checkbox1: HTMLInputElement = screen.getByTestId("check-box-row-testid-1");
+    fireEvent.click(checkbox0);
+    fireEvent.click(checkbox1);
+
+    fireEvent.click(await screen.getByText("Actions"));
+    fireEvent.click(await screen.getByText("Delete"));
+    
+    // const saveBtn = await screen.findByTestId("tid-save-btn--large-screen");
+    // fireEvent.click(saveBtn);
+
+    
+    await waitFor(() => {
+      console.log(container.innerHTML);
+      const okayBtn = screen.getByText("Okay");
+      expect(okayBtn).toBeInTheDocument();
+      fireEvent.click(okayBtn);
+    });
+    jest.useRealTimers();
+  });
 });
 

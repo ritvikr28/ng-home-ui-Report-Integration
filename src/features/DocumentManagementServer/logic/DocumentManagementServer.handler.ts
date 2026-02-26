@@ -267,7 +267,6 @@ export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
   if (typeof setShowDeleteAbortBanner === "function")
     setShowDeleteAbortBanner(false);
 
-  console.log("dateRange:", dateRange);
   const payload: any = mapToBulkDeletePayload({
     isSelectAll: isHeaderBoxChecked,
     categoryIds: allRegistrationIds,
@@ -386,7 +385,6 @@ function handleValidationResult(
   setAvailableFileCount(available);
   setAvailableFileIds(availableFileIds);
 
-  console.log("totalSelectedCount", totalSelectedCount);
 
   setDialogType(selectedItem.value === "Prepare download" ? "prepareDownload" : "delete");
   setIsPreDialogLoading(false);
@@ -440,8 +438,7 @@ export const handleEditSelectedOverFlowMenu: any = async ({
   setSidePanelOpenReason,
   setIsSidePanelOpen,
   setAvailableFileIds,
-  setShowErrorBanner,
-  selectedCheckBoxIds
+  setShowErrorBanner
 }: {
   e: React.SyntheticEvent,
   selectedItem: ISelectedItem,
@@ -474,7 +471,6 @@ export const handleEditSelectedOverFlowMenu: any = async ({
   setShowRestrictedDeleteDialog(false);
   setShowRestrictedPrepareDialog(false);
   setShowErrorBanner(false);
-  console.log("totalSelectedCount", totalSelectedCount, "allSelectedDocs", allSelectedDocs, "selectedCheckBoxIds", selectedCheckBoxIds);
 
   if (selectedItem.value === "Prepare download" || selectedItem.value === "Delete") {
     if (totalSelectedCount === 0) {
@@ -601,7 +597,13 @@ export function handleApply({
   setIsHeaderBoxChecked,
   setSelectedCheckBoxIds,
   setPrevSelectedDocs,
-  setReferenceExternalIds
+  setReferenceExternalIds,
+  setSelectedEntities,
+  selectedEntity,
+  setTableKey,
+  setSearchTerm,
+  setSearchText,
+  setIsInitialLoad
 }: {
   referenceExternalIds: string[],
   categories?: any[],
@@ -663,6 +665,11 @@ export function handleApply({
   setIsHeaderBoxChecked(false);
   setSelectedCheckBoxIds([]);
   setPrevSelectedDocs([]);
+  setSelectedEntities(selectedEntity ?? []);
+  setSearchTerm("");
+  setSearchText("");
+  setIsInitialLoad(true);
+  setTableKey(prev => prev + 1);
 };
 
 export function closeSidePanel(setIsSidePanelOpen: (v: boolean) => void, downloadPollingIntervalRef: React.MutableRefObject<ReturnType<typeof setInterval> | null>): void {
@@ -708,19 +715,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
     setShowDeleteAbortBanner
   }: NotificationMsgBannerParams = params;
   return [
-    {
-      isShow: true,
-      variant: "highlight",
-      title: "Welcome to the Document Management Server",
-      message: getBannerMessageWithLink(
-        t("DocumentManagementServer.migrationInfoText"),
-        t("DocumentManagementServer.learnMoreKnowledgeBase"),
-        ''
-      ),
-      hideCloseButton: true,
-      onClickAction: function noRefCheck(){},
-      autoclose: false,
-    },
+    
     {
       isShow: showErrorBanner || showSearchError,
       variant: "warning",
@@ -746,6 +741,19 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
       hideCloseButton: false,
       autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false)
+    },
+  {
+      isShow: true,
+      variant: "highlight",
+      title: t("DocumentManagementServer.WarningBannerTitle"),
+      message: getBannerMessageWithLink(
+        t("DocumentManagementServer.migrationInfoText"),
+        t("DocumentManagementServer.learnMoreKnowledgeBase"),
+        ''
+      ),
+      hideCloseButton: true,
+      onClickAction: function noRefCheck(){},
+      autoclose: false,
     }];
 }
 

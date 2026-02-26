@@ -1,10 +1,21 @@
 
+import React from "react";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleClearAllConfirm, handlePageChange, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
 import { applySummaryTagClass } from "../logic/DocumentManagementServer.utils";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
+}));
+
+jest.mock("../Views/DMSLayout", () => ({
+  getBannerMessageWithLink: jest.fn((line1, line2) => (
+    <>
+      {line1}
+      <br />
+      {line2}
+    </>
+  )),
 }));
 
 jest.mock("../logic/DocumentManagementServer.handler", () => {
@@ -635,6 +646,7 @@ describe("getNotificationMsgBannerObject", () => {
       setShowDeleteAbortBanner: jest.fn()
     });
     expect(banners[0].isShow).toBe(true);
+    expect(banners[0].variant).toBe("warning");
   });
 
   it("shows delete error banner for single document", () => {
@@ -711,4 +723,159 @@ describe("getNotificationMsgBannerObject", () => {
     expect(banners[1].isShow).toBe(false);
     expect(banners[2].isShow).toBe(false);
   });
+
+  it("shows highlight banner always", () => {
+    const banners: any = getNotificationMsgBannerObject({
+      t,
+      showErrorBanner: false,
+      showSearchError: false,
+      showDeleteErrorBanner: false,
+      showDeleteAbortBanner: false,
+      availableFileCount: 1,
+      setShowDeleteErrorBanner: jest.fn(),
+      setShowDeleteAbortBanner: jest.fn()
+    });
+    expect(banners[3].isShow).toBe(true);
+    expect(banners[3].variant).toBe("highlight");
+    expect(banners[3].title).toBe("DocumentManagementServer.WarningBannerTitle");
+    expect(React.isValidElement(banners[3].message)).toBe(true); // Or check for React element if you changed the implementation
+    expect(banners[3].autoclose).toBe(false);
+  });
 });
+
+// describe("getNotificationMsgBannerObject", () => {
+//   const t: any = (key: string, opts?: any) =>
+//     opts && opts.type ? `${key}_${opts.type}` : key;
+
+// // it("shows welcome banner on page load", () => {
+// //   const banners: any = getNotificationMsgBannerObject({
+// //     t,
+// //     showErrorBanner: true,
+// //     showSearchError: false,
+// //     showDeleteErrorBanner: false,
+// //     showDeleteAbortBanner: false,
+// //     availableFileCount: 1,
+// //     setShowDeleteErrorBanner: jest.fn(),
+// //     setShowDeleteAbortBanner: jest.fn()
+// //   });
+
+// //   expect(banners[0].isShow).toBe(true);
+// //   expect(banners[0].variant).toBe("highlight");
+// //   expect(banners[0].title).toBe("DocumentManagementServer.WarningBannerTitle");
+
+// //   // Check that message is a React fragment with two children
+// //   const message = banners[0].message;
+// //   expect(message.type).toBe(React.Fragment);
+// //   expect(message.props.children[0]).toBe("DocumentManagementServer.migrationInfoText");
+// //   expect(message.props.children[1].type).toBeDefined(); // getBannerMessageWithLink result
+
+// //   // expect(banners[0].autoclose).toBe(true);
+// // });
+
+//   it("shows error banner when showErrorBanner is true", () => {
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: true,
+//       showSearchError: false,
+//       showDeleteErrorBanner: false,
+//       showDeleteAbortBanner: false,
+//       availableFileCount: 1,
+//       setShowDeleteErrorBanner: jest.fn(),
+//       setShowDeleteAbortBanner: jest.fn()
+//     });
+//     expect(banners[0].isShow).toBe(true);
+//     expect(banners[0].variant).toBe("warning");
+//     expect(banners[0].title).toBe("DocumentManagementServer.informationUnavailable");
+//     expect(banners[0].message).toBe("DocumentManagementServer.technicalIssueMessage");
+//     expect(banners[0].autoclose).toBe(true);
+//   });
+
+//   it("shows search error when showSearchError is true", () => {
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: false,
+//       showSearchError: true,
+//       showDeleteErrorBanner: false,
+//       showDeleteAbortBanner: false,
+//       availableFileCount: 1,
+//       setShowDeleteErrorBanner: jest.fn(),
+//       setShowDeleteAbortBanner: jest.fn()
+//     });
+//     expect(banners[0].isShow).toBe(true);
+//   });
+
+//   it("shows delete error banner for single document", () => {
+//     const setShowDeleteErrorBanner: any = jest.fn();
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: false,
+//       showSearchError: false,
+//       showDeleteErrorBanner: true,
+//       showDeleteAbortBanner: false,
+//       availableFileCount: 1,
+//       setShowDeleteErrorBanner,
+//       setShowDeleteAbortBanner: jest.fn()
+//     });
+//     expect(banners[1].isShow).toBe(true);
+//     expect(banners[1].message).toBe("DocumentManagementServer.unableToDeleteDocumentMsg_document");
+//     if (banners[1].onClickClose) {
+//       banners[1].onClickClose();
+//     }
+//     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
+//   });
+
+//   it("shows delete error banner for multiple documents", () => {
+//     const setShowDeleteErrorBanner: any = jest.fn();
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: false,
+//       showSearchError: false,
+//       showDeleteErrorBanner: true,
+//       showDeleteAbortBanner: false,
+//       availableFileCount: 2,
+//       setShowDeleteErrorBanner,
+//       setShowDeleteAbortBanner: jest.fn()
+//     });
+//     expect(banners[1].message).toBe("DocumentManagementServer.unableToDeleteDocumentMsg_documents");
+//     if (banners[1].onClickClose) {
+//       banners[1].onClickClose();
+//     }
+//     expect(setShowDeleteErrorBanner).toHaveBeenCalledWith(false);
+//   });
+
+//   it("shows delete abort banner", () => {
+//     const setShowDeleteAbortBanner: any = jest.fn();
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: false,
+//       showSearchError: false,
+//       showDeleteErrorBanner: false,
+//       showDeleteAbortBanner: true,
+//       availableFileCount: 1,
+//       setShowDeleteErrorBanner: jest.fn(),
+//       setShowDeleteAbortBanner
+//     });
+//     expect(banners[2].isShow).toBe(true);
+//     expect(banners[2].message).toBe("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted");
+//     if (banners[2].onClickClose) {
+//       banners[2].onClickClose();
+//     }
+//     expect(setShowDeleteAbortBanner).toHaveBeenCalledWith(false);
+//   });
+
+//   it("does not show any banners if all flags are false", () => {
+//     const banners: any = getNotificationMsgBannerObject({
+//       t,
+//       showErrorBanner: false,
+//       showSearchError: false,
+//       showDeleteErrorBanner: false,
+//       showDeleteAbortBanner: false,
+//       availableFileCount: 1,
+//       setShowDeleteErrorBanner: jest.fn(),
+//       setShowDeleteAbortBanner: jest.fn()
+//     });
+//     expect(banners[0].isShow).toBe(false);
+//     expect(banners[1].isShow).toBe(false);
+//     expect(banners[2].isShow).toBe(false);
+//   });
+// });

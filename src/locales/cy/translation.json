@@ -412,7 +412,10 @@
     "emptyRowResponseMessage": "No data to display",
     "emptyFilterMessage": "No SIMS7 Redirect entries found for selected filters.",
     "DiscardChanges": "Discard changes?",
-    "DiscardChangesDescription": "You have unsaved changes that will be lost."
+    "DiscardChangesDescription": "You have unsaved changes that will be lost.",
+     "apiFailureEmptyRowResponseMessage": "No data to retrieve",
+    "apiFailureMessage": "Information unavailable",
+    "apiFailureDescription": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team."
   },
   "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Croeso i SIMS",
@@ -511,7 +514,10 @@
     "deletingDocumentsTemporarilyUnavailableMessage":"Ar hyn o bryd rydym yn profi problem dechnegol sy'n atal dogfennau rhag cael eu dileu, Gallwch chi lawrlwytho dogfennau o hyd. Rhowch gynnig arall arni yn nes ymlaen. Ac os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "Protected":"Gwarchodedig",
     "FirstPart": "Your search",
-    "SecondPart": "did not match any results with uploaded files in the DMS."
+    "SecondPart": "did not match any results with uploaded files in the DMS.",
+    "WarningBannerTitle": "Welcome to the Document Management Server",
+    "migrationInfoText":"Currently, you can only view, download, and delete documents added in SIMS Next Gen.\nSIMS 7 file migration and synchronisation will be available soon.",
+    "learnMoreKnowledgeBase": " Learn more in our Knowledge Base"
   },
   "Filter": {
     "heading": "Chwilio uwch",

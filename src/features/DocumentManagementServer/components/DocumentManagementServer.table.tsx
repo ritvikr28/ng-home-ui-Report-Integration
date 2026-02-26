@@ -257,10 +257,7 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     selectedRelatedTo,
     setSelectedRelatedTo,
     tagListArray,
-    setTagListArray,
-    searchText,
-    setSearchText,
-    setSearchInput
+    setTagListArray
   }: Props = props;
 
   return (
@@ -292,9 +289,6 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         setSelectedRelatedTo={setSelectedRelatedTo}
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
-        searchText={searchText}
-        setSearchText={setSearchText}
-        setSearchInput={setSearchInput}
       />
     </>
   );
@@ -371,7 +365,6 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
 
   const editSelectedOptions: any = getEditSelectedOptions(t, hasDMSDeletePermissions);
   const filterDDLOptions: any = getFilterDDLOptions();
-
   return {
     key: tableKey,
     isMobileViewBreadcrumb: true,

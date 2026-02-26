@@ -187,7 +187,6 @@ export function useTotalSelectedCountEffect({
       return allSelectedDocs?.length || 0;
     })();
     setTotalSelectedCount(computedTotalSelectedCount);
-    console.log("Computed Total Selected Count:", computedTotalSelectedCount);
   }, [
     isHeaderBoxChecked,
     excludedCheckBoxIds,

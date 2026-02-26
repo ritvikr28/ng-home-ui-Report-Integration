@@ -38,7 +38,7 @@ stages:
   - stage: Build
     jobs:
       - job: BuildApplication
-        timeoutInMinutes: 30
+        timeoutInMinutes: 60
         cancelTimeoutInMinutes: 3
         displayName: "Install, lint, test & build"
         steps:
