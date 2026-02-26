@@ -25,12 +25,6 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
   </div>
 );
 
-// interface BannerMessageWithLinkProps {
-//   message: string;
-//   linkText: string;
-//   url: string;
-// }
-
 export const getBannerMessageWithLink = (
   message: string,
   linkText: string,
