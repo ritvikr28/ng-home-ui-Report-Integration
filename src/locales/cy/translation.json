@@ -514,7 +514,10 @@
     "deletingDocumentsTemporarilyUnavailableMessage":"Ar hyn o bryd rydym yn profi problem dechnegol sy'n atal dogfennau rhag cael eu dileu, Gallwch chi lawrlwytho dogfennau o hyd. Rhowch gynnig arall arni yn nes ymlaen. Ac os yw'r broblem yn parhau, cysylltwch â'n tîm cymorth.",
     "Protected":"Gwarchodedig",
     "FirstPart": "Your search",
-    "SecondPart": "did not match any results with uploaded files in the DMS."
+    "SecondPart": "did not match any results with uploaded files in the DMS.",
+    "WarningBannerTitle": "Welcome to the Document Management Server",
+    "migrationInfoText":"Currently, you can only view, download, and delete documents added in SIMS Next Gen.\nSIMS 7 file migration and synchronisation will be available soon. ",
+    "learnMoreKnowledgeBase": "Learn more in our knowledge base."
   },
   "Filter": {
     "heading": "Chwilio uwch",
