@@ -117,7 +117,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         },
         isTextTruncate: false,
         isColumnSorting: true,
-        isColumnSortByDefault: true
+        isColumnSortByDefault: false
     },
     {
         text: "Reason for changes",

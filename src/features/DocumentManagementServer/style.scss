@@ -199,6 +199,17 @@
     flex-direction: column;
   }
 
+  .document-management-banner .banner-link {
+    color: #1d70b8;       
+    text-decoration: underline;
+    font-weight: 400;
+  }
+
+  .document-management-banner .banner-link:hover {
+    color: #003078;
+    text-decoration: underline;
+  }
+
   .essui-dialog__body {
     overflow-y: auto;
     // padding: 1rem;

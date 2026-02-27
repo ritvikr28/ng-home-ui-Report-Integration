@@ -1,10 +1,21 @@
 
+import React from "react";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { closeSidePanel, getNotificationMsgBannerObject, handleApply, handleClearAllConfirm, handlePageChange, validateAndApplyFilter } from "../logic/DocumentManagementServer.handler";
 import { applySummaryTagClass } from "../logic/DocumentManagementServer.utils";
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
+}));
+
+jest.mock("../Views/DMSLayout", () => ({
+  getBannerMessageWithLink: jest.fn((line1, line2) => (
+    <>
+      {line1}
+      <br />
+      {line2}
+    </>
+  )),
 }));
 
 jest.mock("../logic/DocumentManagementServer.handler", () => {
@@ -635,6 +646,7 @@ describe("getNotificationMsgBannerObject", () => {
       setShowDeleteAbortBanner: jest.fn()
     });
     expect(banners[0].isShow).toBe(true);
+    expect(banners[0].variant).toBe("warning");
   });
 
   it("shows delete error banner for single document", () => {
@@ -711,4 +723,24 @@ describe("getNotificationMsgBannerObject", () => {
     expect(banners[1].isShow).toBe(false);
     expect(banners[2].isShow).toBe(false);
   });
+
+  it("shows highlight banner always", () => {
+    const banners: any = getNotificationMsgBannerObject({
+      t,
+      showErrorBanner: false,
+      showSearchError: false,
+      showDeleteErrorBanner: false,
+      showDeleteAbortBanner: false,
+      availableFileCount: 1,
+      setShowDeleteErrorBanner: jest.fn(),
+      setShowDeleteAbortBanner: jest.fn()
+    });
+    expect(banners[3].isShow).toBe(true);
+    expect(banners[3].variant).toBe("highlight");
+    expect(banners[3].title).toBe("DocumentManagementServer.WarningBannerTitle");
+    expect(React.isValidElement(banners[3].message)).toBe(true); // Or check for React element if you changed the implementation
+    expect(banners[3].autoclose).toBe(false);
+  });
 });
+
+

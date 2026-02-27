@@ -2,6 +2,7 @@ import React from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
 import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor, NotificationActionElement } from "@essnextgen/ui-kit";
 import { onBreadcrumbClick } from "../logic/DocumentManagementServer.logic";
+import { WelcomeBannerUrl } from "../../../../public/Constants";
 
 export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
   show,
@@ -23,6 +24,34 @@ export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: n
     )}
   </div>
 );
+
+export const getBannerMessageWithLink: (message: string, linkText: string) => React.ReactNode = (
+  message,
+  linkText
+): React.ReactNode => {
+  const [before, after = ""]: string[] = message.split("<link>");
+  const [firstLine, secondLine = ""]: string[] = before.split("\n");
+  return (
+    <span className="document-management-banner">
+      {firstLine}
+      <br />
+      {secondLine}
+        <a
+          href={WelcomeBannerUrl}
+          className="banner-link"
+          target="_blank"
+          aria-label={linkText}
+          rel="noopener noreferrer"
+          id="banner-link-id"
+        >
+          {linkText}
+        </a>
+      
+      {after}
+    </span>
+  );
+};
+ 
 
 export const SideNavigation: React.FC<{
   isOpen: boolean;
