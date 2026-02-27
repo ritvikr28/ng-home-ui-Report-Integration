@@ -15,7 +15,7 @@ import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DocumentManagement.sidepanel";
 import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
-import { DeleteSuccessToast, MainContent, SideNavigation } from "./DMSLayout";
+import { DeleteSuccessToast, MainContent, PrivateDocumentsBanner, SideNavigation } from "./DMSLayout";
 
 
 const DocumentManagementServerView: () => JSX.Element = () => {
@@ -403,6 +403,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isOpen={isOpen}
           visibleBreadcrumbs={visibleBreadcrumbs}
         >
+        <PrivateDocumentsBanner t={t} />
           <DmsControlledList
              {...{
               t,

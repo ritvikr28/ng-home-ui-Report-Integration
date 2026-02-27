@@ -1,6 +1,6 @@
 import React from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor } from "@essnextgen/ui-kit";
+import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor, NotificationActionElement } from "@essnextgen/ui-kit";
 import { onBreadcrumbClick } from "../logic/DocumentManagementServer.logic";
 
 export const DeleteSuccessToast: React.FC<{ show: boolean; availableFileCount: number; t: any }> = ({
@@ -101,3 +101,18 @@ export const MainContent: React.FC<{
     </div>
   </GridItem>
 );
+
+export const PrivateDocumentsBanner: React.FC<{ t: any }> = ({
+  t
+}) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.privateFilesBannerTitle")}
+    message={t("DocumentManagementServer.privateFilesBannerDescription")}
+    autoclose={false}
+    actionLabel={t("DocumentManagementServer.learnMore")}
+    actionElement={NotificationActionElement.Button}
+
+  />
+);
+

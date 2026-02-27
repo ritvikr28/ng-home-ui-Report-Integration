@@ -574,7 +574,9 @@
     "deletingDocumentsTemporarilyUnavailableMessage": "We're currently experiencing a technical issue that's preventing documents from being deleted, You can still download documents. Please try again later, and if the issue persists please get in touch with our support team.",
     "Protected": "Protected",
     "FirstPart": "Your search",
-    "SecondPart": "did not match any results with uploaded files in the DMS."
+    "SecondPart": "did not match any results with uploaded files in the DMS.",
+    "privateFilesBannerTitle": "Private documents from SIMS 7 need your review",
+    "privateFilesBannerDescription": "SIMS Next Gen doesn’t support the private privacy status. To access these documents in SIMS Next Gen, please review them and update their status to public or confidential. Learn more in our knowledge base."
   },
   "Filter": {
     "heading": "Advanced search",
