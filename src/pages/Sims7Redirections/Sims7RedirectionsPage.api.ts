@@ -5,17 +5,48 @@ import { service } from "../../shared/utils/api-service";
 import { envConfig } from "../../shared/utils/constants";
 import { Sims7RedirectionsTableRow } from "./Sims7RedirectionsPage.data";
 
-export const fetchSims7Redirections = async (): Promise<Sims7RedirectionsTableRow[]> => {
 
-    type Sims7RedirectionsApiResponse = {
-        payload?: {
-            items?: Sims7RedirectionsTableRow[];
-        };
+type Sims7RedirectionsApiResponse = {
+    payload?: {
+        items?: Sims7RedirectionsTableRow[];
+        totalItems?: number;
     };
-    const response: AxiosResponse<Sims7RedirectionsApiResponse> = await service.get("/v1/sims7-redirection/GetSims7Records", envConfig.BASE_URL);
-    // Axios puts the actual response body in response.data
-    if (response && response.data && response.data.payload && Array.isArray(response.data.payload.items)) {
-        return response.data.payload.items;
+};
+
+export interface Sims7RedirectionsQuery {
+    SearchText?: string;
+    SearchFilter?: string[];
+    SortColumnName?: string;
+    SortOrder?: 'ASC' | 'DESC';
+    PageNumber?: number;
+    PageSize?: number;
+}
+
+export const fetchSims7Redirections = async (query?: Sims7RedirectionsQuery): Promise<any> => {
+    // Build query string
+    const params = new URLSearchParams();
+    if (query) {
+        if (query.SearchText) params.append('SearchText', query.SearchText);
+        if (query.SearchFilter && query.SearchFilter.length) {
+            query.SearchFilter.forEach((f: string) => params.append('SearchFilter', f));
+        }
+        if (query.SortColumnName) params.append('SortColumnName', query.SortColumnName);
+        if (query.SortOrder) params.append('SortOrder', query.SortOrder);
+        if (query.PageNumber !== undefined) params.append('PageNumber', String(query.PageNumber));
+        if (query.PageSize !== undefined) params.append('PageSize', String(query.PageSize));
     }
-    return [];
+    const url = `/v1/sims7-redirection/GetSims7Records?${params.toString()}`;
+    const response: AxiosResponse<Sims7RedirectionsApiResponse> = await service.get(url, envConfig.BASE_URL);
+    if (response && response.data && response.data.payload) {
+        const { items, totalItems }: { items?: Sims7RedirectionsTableRow[]; totalItems?: number } = response.data.payload;
+        if (!Array.isArray(items)) {
+            return { items: [], totalItems: 0 };
+        }
+        // Always return both items and totalItems, defaulting totalItems to 0 if missing
+        return {
+            items,
+            totalItems: typeof totalItems === 'number' ? totalItems : 0
+        };
+    }
+    return { items: [], totalItems: 0 };
 };
