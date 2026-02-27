@@ -19,6 +19,12 @@ export type UseNotificationReturn = {
         startDate?: string;
         endDate?: string;
     };
+    setFilters: React.Dispatch<React.SetStateAction<{
+        status?: string[] | undefined;
+        priority?: string[] | undefined;
+        startDate?: string | undefined;
+        endDate?: string | undefined;
+    }>>;
     handleFilterChange: (newFilters: {
         status?: string[];
         priority?: string[];

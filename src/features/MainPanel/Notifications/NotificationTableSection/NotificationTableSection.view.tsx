@@ -1,12 +1,14 @@
-import React, { useEffect, useRef } from "react";
-import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, NotificationStatus, ResponseCode, ValidationTextLevel } from "@essnextgen/ui-kit";
+import React, { SyntheticEvent, useEffect, useMemo, useRef } from "react";
+import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, NotificationStatus, ResponseCode, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { handleSearchKeyPressed as handleSearchKeyPressedUtil, handleSearchChangeWithAutoSuggest as handleSearchChangeWithAutoSuggestUtil } from "./notificationTableHandlers";
 import { fetchNotificationTableData, fetchSearchAutoSuggestData, isShowdynamictableNoMsg, shouldFetchTableData } from "./notificationTableApiHelpers";
 import { getEmptyStateMessage } from "../hooks/useNotificationHook";
 import { UseNotificationReturnType } from "../Notifications.props";
 import { useNotification } from "../useNotification";
 import NotificationSidePanelView from "../components/NotificationSidePanelComponent/NotificationSidePanel.view";
-import { NotificationTableSectionProps } from "./NotificationTableSection.props";
+import { NotificationTableSectionProps, SearchTag } from "./NotificationTableSection.props";
+import { buildTags } from "./NotificationTableSectionHelper";
+import { getSearchOnClickClose } from "./notificationTableHandlers.view";
 
 function renderSidePanel(props: {
     sideIsOpen: boolean;
@@ -42,7 +44,9 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
     setIsTableBodyLoading,
     notificationState,
     setNotificationState,
-    setFilterBtnClicked
+    setFilterBtnClicked,
+    filters,
+    setFilters
 }) => {
     const {
         totalNotifications,
@@ -78,6 +82,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
         setSearchSuggestions,
         searchSuggestions,
         setSearchTerm
+        // getSearchTagList,
+        // filters
         // handleSearchChangeWithAutoSuggest,
         // handleSearchKeyPressed,
     }: UseNotificationReturnType = useNotification({
@@ -88,6 +94,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
     });
 
 
+    const searchTagList: SearchTag = useMemo(() => buildTags(filters), [filters]);
 
     const handleSearchKeyPressed: (inputValue: string) => void = (inputValue: string) => {
         handleSearchKeyPressedUtil({
@@ -132,11 +139,6 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
     }, [notificationState, currentPage, sideIsOpen, sortBy, sortDirection]);
 
     useEffect(() => {
-        console.log({ searchTerm, hasSearch, isAutoSuggestVisible, cond: !(searchTerm && hasSearch && isAutoSuggestVisible) })
-        // if (!(searchTerm && hasSearch && isAutoSuggestVisible)) {
-        //     // setIsAutoSuggestVisible(false);
-        //     return undefined;
-        // }
         if (searchTerm.length >= 2) {
             fetchSearchAutoSuggestData({
                 searchTerm,
@@ -144,10 +146,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                 setSearchSuggestions
             });
         }
-    }, [searchTerm, isAutoSuggestVisible, sideIsOpen, hasSearch])
-
-    console.log("NotificationTableSection render", { currentPage, sideIsOpen, sortBy, sortDirection, tableData, totalTableData, tableDataError, isTableBodyLoading });
-
+    }, [searchTerm, isAutoSuggestVisible, sideIsOpen, hasSearch]);
+    const searchOnClickClose: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: SelectedItem, id?: string | number) => void = getSearchOnClickClose(filters, setFilters, searchTagList);
     return (
         <div
             className="notification-controlledlist-width"
@@ -159,7 +159,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                 <ControlledList
                     tooltipBottomAligned
                     data-testid="controlled-list"
-                    globalNotificationMsgBannerObject={[
+                    globalNotificationMsgBannerObject={[[
                         {
                             "isShow": tableDataError,
                             "variant": "warning",
@@ -168,13 +168,14 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                             "autoclose": false,
                             "hideCloseButton": false
                         }
-                    ]}
+                    ]]}
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
                     isShowSearch
                     isShowFirstElement
                     isShowFourthElement
+                    searchOnClickClose={searchOnClickClose}
                     filterCustumeElem2={
                         <div className="notification-controls">
                             <Button
@@ -182,7 +183,6 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                                 color={ButtonColor.Utility}
                                 data-testid="filter"
                                 onClick={() => {
-                                    console.log("Filter button clicked");
                                     setFilterBtnClicked(true)
                                 }}
                                 size={ButtonSize.Small}
@@ -274,7 +274,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     showToastNotification={showDeleteToast}
                     toastNotificationStatus={NotificationStatus.SUCCESSTOAST}
                     toastNotificationTitle="Notification deleted"
-                    // searchTagList={searchTagList}
+                    searchTagList={searchTagList}
                     dynamictableNoMsgColor={ValidationTextLevel.Warning}
                     searchTerm={searchTerm}
                     searchOnChange={(e) => {
@@ -285,7 +285,6 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     }}
                     searchSuggestions={searchSuggestions}
                     searchOnCloseHandle={() => {
-                        console.log("Search cleared");
                         setSearchTerm("");
                         setIsAutoSuggestVisible(false);
                         setNotificationState({ searchCleared: true });

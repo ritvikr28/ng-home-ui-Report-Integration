@@ -1,6 +1,6 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
 import FilterDialogView from "./FilterDialog.view";
-import { FilterStates,DateErrors } from "./FilterDialog.props";
+import { FilterStates, DateErrors } from "./FilterDialog.props";
 
 
 interface FilterDialogLogicProps {
@@ -19,6 +19,20 @@ interface FilterDialogLogicProps {
     }) => void;
     onClear: () => void;
 }
+
+const validateDateRange: (from: string, to: string) => DateErrors = function (from: string, to: string): DateErrors {
+    if (!from && to) return { from: "Start date is required", to: "" };
+    if (!from && !to) return { from: "", to: "" };
+    if (from && to) {
+        if (new Date(from) > new Date(to)) {
+            return {
+                from: "Start date cannot be after end date",
+                to: "End date cannot be before start date"
+            };
+        }
+    }
+    return { from: "", to: "" };
+};
 
 const isNonEmptyString = (value?: string): boolean => !!value && value.trim() !== "";
 
@@ -42,22 +56,10 @@ const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
     const [endDate, setEndDate]: [string, Dispatch<SetStateAction<string>>] = useState<string>(initial.endDate);
     const [startDateError, setStartDateError]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [errors, setErrors]: [DateErrors, Dispatch<SetStateAction<DateErrors>>] = useState<DateErrors>({
-      from: "",
-      to: ""
+        from: "",
+        to: ""
     });
 
-    const validateDateRange: (from: string, to: string) => DateErrors = (from: string, to: string): DateErrors => {
-    if (!from || !to) {
-      return { from: "", to: "" };
-    }
-
-    return new Date(from) > new Date(to)
-      ? {
-          from: "Date from cannot be after date to",
-          to: "Date to cannot be before date from"
-        }
-      : { from: "", to: "" };
-  };
 
 //   const handleApply = () => {
 //         if (!errors.from && !errors.to) {
@@ -71,16 +73,16 @@ const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
 //         }
 //     };
 
-    useEffect(() => {
-        setStatus(filters.status || []);
-        setPriority(filters.priority || []);
-        setStartDate(filters.startDate || "");
-        setEndDate(filters.endDate || "");
-        setErrors({ from: "", to: "" });
-    }, [filters]);
+    // useEffect(() => {
+    //     setStatus(filters.status || []);
+    //     setPriority(filters.priority || []);
+    //     setStartDate(filters.startDate || "");
+    //     setEndDate(filters.endDate || "");
+    //     setErrors({ from: "", to: "" });
+    // }, [filters]);
 
     useEffect(() => {
-      setErrors(validateDateRange(startDate, endDate));
+        setErrors(validateDateRange(startDate, endDate));
     }, [startDate, endDate]);
 
     return {
@@ -117,7 +119,7 @@ const FilterDialogLogic: ({ setFilterBtnClicked, filters, onApply, onClear }: Fi
 
     useEffect(() => {
         setStartDateError(validateStartDate(startDate, endDate));
-    }, [startDate, endDate, setStartDateError, endDate]);
+    }, [startDate, endDate, setStartDateError]);
 
     const handleApply: () => void
         = () => {

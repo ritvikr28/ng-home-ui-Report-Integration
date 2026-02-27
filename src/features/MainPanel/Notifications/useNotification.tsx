@@ -366,6 +366,7 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             handleSearchChange,
             // handleClearSearch,
             filters,
+            setFilters,
             handleFilterChange,
             // handleRemoveFilter,
             handleClearAllFilters,
