@@ -80,7 +80,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 
     const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
-    const pageSize = 10;
+    const pageSize = 40;
     const [selectedItems, setSelectedItems]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
     const [searchTagList, setSearchTagList]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
     useEffect(() => {
