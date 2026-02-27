@@ -29,30 +29,30 @@ describe('fetchSims7Redirections', () => {
     ];
     (service.get as jest.Mock).mockResolvedValue({ data: { payload: { items: mockItems } } });
     const result = await fetchSims7Redirections();
-    expect(result).toEqual(mockItems);
+  expect(result).toEqual({ items: mockItems, totalItems: 0 });
   });
 
   it('returns empty array if payload is missing', async () => {
     (service.get as jest.Mock).mockResolvedValue({ data: {} });
     const result = await fetchSims7Redirections();
-    expect(result).toEqual([]);
+    expect(result).toEqual({ items: [], totalItems: 0 });
   });
 
   it('returns empty array if items is not an array', async () => {
     (service.get as jest.Mock).mockResolvedValue({ data: { payload: { items: null } } });
     const result = await fetchSims7Redirections();
-    expect(result).toEqual([]);
+    expect(result).toEqual({ items: [], totalItems: 0 });
   });
 
   it('returns empty array if response is null', async () => {
     (service.get as jest.Mock).mockResolvedValue(null);
     const result = await fetchSims7Redirections();
-    expect(result).toEqual([]);
+    expect(result).toEqual({ items: [], totalItems: 0 });
   });
 
   it('returns empty array if response.data is null', async () => {
     (service.get as jest.Mock).mockResolvedValue({ data: null });
     const result = await fetchSims7Redirections();
-    expect(result).toEqual([]);
+    expect(result).toEqual({ items: [], totalItems: 0 });
   });
 });
