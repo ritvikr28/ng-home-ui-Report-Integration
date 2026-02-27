@@ -46,7 +46,6 @@ export function getEmptyStateMessage(
     if (tableDataError === true) {
         return "No data to display";
     }
-    console.log({totalNotifications, isSearching,hasSearch,searchSuggestions})
     if (totalNotifications === 0 && !isSearching && searchTerm.trim().length > 0 && !searchSuggestions.length) {
         return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
     }

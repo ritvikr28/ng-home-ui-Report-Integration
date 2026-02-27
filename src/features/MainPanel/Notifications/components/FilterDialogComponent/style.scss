@@ -8,7 +8,7 @@
 
 .date-selection {
   display: flex;
-  gap: 40px;
+  gap: 49px;
 }
 
 .dialog-content-container {
@@ -18,7 +18,7 @@
   margin-left: 4px;
 
   &.has-error {
-    height: 240px;
+    height: 260px;
   }
 }
 
@@ -69,8 +69,22 @@
 }
 
 @media only screen and (min-width: 768px) {
-  .dialog-class .essui-dialog {
+  .dialog-container .essui-dialog {
     display: inline-table;
+    width: 595px !important;
+  }
+
+  .dialog-content-container .essui-validation-text {
+    width: 262px;
+  }
+
+  .dialog-content-container.has-error {
+    overflow-x: hidden;
+  }
+  
+  .notification-layout #dialog-content {
+    overflow-y: hidden !important;
+    overflow-x: hidden !important;
   }
 }
 
@@ -101,5 +115,6 @@
     position: absolute !important;
     transform: unset !important;
     z-index: 1000 !important;
+    width: 251px;
   }
 }

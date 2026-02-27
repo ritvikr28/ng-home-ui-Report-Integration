@@ -1,8 +1,8 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { useMemo } from "react";
 import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
-// import { useTranslation } from "@essnextgen/ui-intl-kit";
+import { getHandleStatusChange, getHandlePriorityChange, parseDateString } from "./dialog-helper.utils";
 import "./style.scss";
 import { DialogContentProps } from "./FilterDialog.props";
 
@@ -18,49 +18,18 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     startDateError,
     endDateError
 }) => {
-    const handleStatusChange: (value: string) => void = (value: string) => {
-        setStatus((prev: string[]) => {
-            if (prev.includes(value)) {
-                return prev.filter((s: string) => s !== value);
-            }
-            return [...prev, value];
-        });
-    };
-
-    const handlePriorityChange: (value: string) => void = (value: string) => {
-        setPriority((prev: string[]) => {
-            if (prev.includes(value)) {
-                return prev.filter((p: string) => p !== value);
-            }
-            return [...prev, value];
-        });
-    };
-
-    const parseDateString = (
-        dateStr: string
-    ): { day?: number; month?: number; year?: number } => {
-        if (!dateStr) return {};
-        const parts: string[] = dateStr.split("-");
-        if (parts.length !== 3) return {};
-        const year = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10);
-        const day = parseInt(parts[2], 10);
-        if (Number.isNaN(day) || Number.isNaN(month) || Number.isNaN(year))
-            return {};
-        return { day, month, year };
-    };
-
+    const handleStatusChange: (value: string) => void = getHandleStatusChange(setStatus);
+    const handlePriorityChange: (value: string) => void = getHandlePriorityChange(setPriority);
     const startDateParsed: {
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-} = parseDateString(startDate);
-
+        day?: number | undefined;
+        month?: number | undefined;
+        year?: number | undefined;
+    } = useMemo(() => parseDateString(startDate), [startDate]);
     const endDateParsed: {
-    day?: number | undefined;
-    month?: number | undefined;
-    year?: number | undefined;
-} = parseDateString(endDate);
+        day?: number | undefined;
+        month?: number | undefined;
+        year?: number | undefined;
+    } = useMemo(() => parseDateString(endDate), [endDate]);
 
     // const updateCheckboxState = (elementId: string, shouldBeChecked: boolean) => {
     //     const element = document.getElementById(elementId);
@@ -254,8 +223,9 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                             dataTestId="priority-high"
                             id="priority-high"
                             label="High"
+                            isSelected={priority.includes("high")}
                             onChange={() => {
-                                // handlePriorityChange("high");
+                                handlePriorityChange("high");
                             }}
                             value="high"
                         />
@@ -274,9 +244,13 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         month={startDateParsed.month}
                         year={startDateParsed.year}
                         onChange={(day: string | number, month: string | number, year: string | number) => {
+                            if ((!year || !month || !day )) {
+                                setStartDate("");
+                                return;
+                            }
                             const formattedDay: string = String(day).padStart(2, '0');
                             const formattedMonth: string = String(month).padStart(2, '0');
-                            if (setStartDate) setStartDate(`${year}-${formattedMonth}-${formattedDay}`);
+                            setStartDate(`${year}-${formattedMonth}-${formattedDay}`);
                         }}
                         onError={() => { }}
                         onValidateDate={() => { }}
@@ -298,6 +272,10 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         onChange={(day: string | number, month: string | number, year: string | number) => {
                             const formattedDay: string = String(day).padStart(2, '0');
                             const formattedMonth: string = String(month).padStart(2, '0');
+                            if (year === "" || month === "" || day === "") {
+                                setEndDate("");
+                                return;
+                            }
                             if (setEndDate) setEndDate(`${year}-${formattedMonth}-${formattedDay}`);
                         }}
                         onError={() => { }}

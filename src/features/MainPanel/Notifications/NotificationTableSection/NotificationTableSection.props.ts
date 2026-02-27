@@ -27,11 +27,33 @@ export interface NotificationTableSectionProps {
   }>>;
   filterBtnClicked: boolean;
   setFilterBtnClicked: React.Dispatch<React.SetStateAction<boolean>>;
+  filters?: {
+    status?: string[] | undefined;
+    priority?: string[] | undefined;
+    startDate?: string | undefined;
+    endDate?: string | undefined;
+  };
+  setFilters: React.Dispatch<React.SetStateAction<{
+    status?: string[] | undefined;
+    priority?: string[] | undefined;
+    startDate?: string | undefined;
+    endDate?: string | undefined;
+  }>>;
 }
 
 export interface AutoSuggestItem {
   title: string;
 }
+
+export type SearchTag = Array<{
+    text: string;
+    categoryName: string;
+    closeObj: {
+        name: string;
+        id: number;
+        value?: string;
+    };
+}>;
 
 export interface AutoSuggestReturnResponse {
   errors: any;
