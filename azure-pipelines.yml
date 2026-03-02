@@ -75,6 +75,34 @@ stages:
             displayName: "Installing Package"
           # - script: npm audit
           #   displayName: "Audit vulnerabilities in packages"
+          ##=============================================================================================== 
+          - script: |
+              az login --identity
+              az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+              KIUWAN_PWD=`az keyvault secret show --name 'Platform-BuildAgent-kiuwan-password' --vault-name 'kv-dev-platform-001' --query 'value' --output tsv`
+              LOC=$(curl -i --user Platform-BuildAgent:$KIUWAN_PWD https://api.kiuwan.com/stats/)
+              JSON=$(echo "$LOC" | grep -o '\[.*\]')
+              HLOC=$(echo $JSON | jq -r '.[] | select(.name == "24hlocs") | .value')
+              echo "HLOC value: $HLOC"
+              if (( $HLOC < 1990000 )); then
+                SKIPKIUWAN="no"
+              else
+                SKIPKIUWAN="yes"
+              fi
+              echo "do we skip Kiuwan: $SKIPKIUWAN"
+              echo "##vso[task.setvariable variable=skipKiuwan;isOutput=true;]$SKIPKIUWAN"
+            name: loclimit
+            displayName: "Kiuwan Get LOC Limit"
+
+          - script: |
+              if [ -f "/datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock" ]; then
+                echo "lock file exists removing..."
+                rm /datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock
+              else
+                echo "file does not exist"
+              fi
+            displayName: "🧹 Remove Kiuwan lock file"                      
+##===============================================================================================
           - task: kiuwan-delivery-analysis-task@2
             displayName: "Kiuwan Delivery Analysis"
             inputs:
@@ -140,34 +168,34 @@ stages:
           #       docker run staff-ui-scanner || exit 1
           #     workingDirectory: '$(System.DefaultWorkingDirectory)'
 
-##=============================================================================================== 
-          - script: |
-              az login --identity
-              az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
-              KIUWAN_PWD=`az keyvault secret show --name 'Platform-BuildAgent-kiuwan-password' --vault-name 'kv-dev-platform-001' --query 'value' --output tsv`
-              LOC=$(curl -i --user Platform-BuildAgent:$KIUWAN_PWD https://api.kiuwan.com/stats/)
-              JSON=$(echo "$LOC" | grep -o '\[.*\]')
-              HLOC=$(echo $JSON | jq -r '.[] | select(.name == "24hlocs") | .value')
-              echo "HLOC value: $HLOC"
-              if (( $HLOC < 1990000 )); then
-                SKIPKIUWAN="no"
-              else
-                SKIPKIUWAN="yes"
-              fi
-              echo "do we skip Kiuwan: $SKIPKIUWAN"
-              echo "##vso[task.setvariable variable=skipKiuwan;isOutput=true;]$SKIPKIUWAN"
-            name: loclimit
-            displayName: "Kiuwan Get LOC Limit"
+# ##=============================================================================================== 
+#           - script: |
+#               az login --identity
+#               az account set --subscription 74a57460-013e-4db0-850b-86c4d083c797
+#               KIUWAN_PWD=`az keyvault secret show --name 'Platform-BuildAgent-kiuwan-password' --vault-name 'kv-dev-platform-001' --query 'value' --output tsv`
+#               LOC=$(curl -i --user Platform-BuildAgent:$KIUWAN_PWD https://api.kiuwan.com/stats/)
+#               JSON=$(echo "$LOC" | grep -o '\[.*\]')
+#               HLOC=$(echo $JSON | jq -r '.[] | select(.name == "24hlocs") | .value')
+#               echo "HLOC value: $HLOC"
+#               if (( $HLOC < 1990000 )); then
+#                 SKIPKIUWAN="no"
+#               else
+#                 SKIPKIUWAN="yes"
+#               fi
+#               echo "do we skip Kiuwan: $SKIPKIUWAN"
+#               echo "##vso[task.setvariable variable=skipKiuwan;isOutput=true;]$SKIPKIUWAN"
+#             name: loclimit
+#             displayName: "Kiuwan Get LOC Limit"
 
-          - script: |
-              if [ -f "/datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock" ]; then
-                echo "lock file exists removing..."
-                rm /datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock
-              else
-                echo "file does not exist"
-              fi
-            displayName: "🧹 Remove Kiuwan lock file"                      
-##===============================================================================================
+#           - script: |
+#               if [ -f "/datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock" ]; then
+#                 echo "lock file exists removing..."
+#                 rm /datadrive/_work/_tool/KiuwanLocalAnalyzer/1.0.0/x64/KiuwanLocalAnalyzer/temp/agent.lock
+#               else
+#                 echo "file does not exist"
+#               fi
+#             displayName: "🧹 Remove Kiuwan lock file"                      
+# ##===============================================================================================
 
           # - task: kiuwan-delivery-analysis-task@2
           #   displayName: "Kiuwan Delivery Analysis"
