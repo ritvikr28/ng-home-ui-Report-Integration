@@ -577,7 +577,11 @@
     "SecondPart": "did not match any results with uploaded files in the DMS.",
     "WarningBannerTitle": "Welcome to the Document Management Server",
     "migrationInfoText":"Currently, you can only view, download, and delete documents added in SIMS Next Gen.\nSIMS 7 file migration and synchronisation will be available soon. ",
-    "learnMoreKnowledgeBase": "Learn more in our knowledge base."
+    "learnMoreKnowledgeBase": "Learn more in our knowledge base.",
+    "privateFilesBannerTitle": "Private documents from SIMS 7 need your review",
+    "privateFilesBannerDescription": "SIMS Next Gen doesn’t support the private privacy status. To access these documents in SIMS Next Gen, please review them and update their status to public or confidential. ",
+    "manageDocuments": "Manage documents",
+    "managePrivateSidePanelTitle": "Manage private documents"
   },
   "Filter": {
     "heading": "Advanced search",

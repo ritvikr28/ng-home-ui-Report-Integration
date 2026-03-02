@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { DmsSidePanel } from "../components/DocumentManagement.sidepanel";
+import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
 
 jest.mock("@essnextgen/ui-intl-kit", () => ({
 	...jest.requireActual("@essnextgen/ui-intl-kit"),
@@ -48,6 +48,7 @@ const defaultProps: any = {
 	setFailedFileName: jest.fn(),
 	fileDownload: jest.fn(),
 	gtmAnalytics: {},
+	sidePanelOpenReason: "view"
 };
 
 describe("DmsSidePanel", () => {
@@ -202,8 +203,8 @@ describe("DmsSidePanel", () => {
 		expect(setFailedFileName).toHaveBeenCalledWith([]);
 	});
 
-	// it("renders ViewDownloadContent", () => {
-	// 	render(<DmsSidePanel {...defaultProps} />);
-	// 	expect(screen.getByText("viewDownloadWrap") || screen.getByRole("region", { hidden: true })).toBeTruthy();
-	// });
+it("renders ManageDocumentsSidePanel", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    expect(screen.getByText("Manage private documents")).toBeInTheDocument();
+});
 });

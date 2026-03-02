@@ -9,11 +9,11 @@ import { pageSizeNumber } from "../../../../public/Constants"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
 import { useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
-import { DmsSidePanel } from "../components/DocumentManagement.sidepanel";
+import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
 import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
 import { DeleteSuccessToast, MainContent, SideNavigation } from "./DMSLayout";
 
@@ -134,8 +134,17 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
 
   useSidePanelViewDownloadEffect({
-    isSidePanelOpen, sidePanelOpenReason, setShowToastNotification, setIsSidePanelLoader,
-    fetchViewDownloadData, setViewData, setHasFetchedViewDownload, viewDownload, downloadPollingIntervalRef, setIsViewDownloadError, setShowEmailNotification
+    isSidePanelOpen,
+    sidePanelOpenReason: sidePanelOpenReason as "prepare" | "view" | null,
+    setShowToastNotification,
+    setIsSidePanelLoader,
+    fetchViewDownloadData,
+    setViewData,
+    setHasFetchedViewDownload,
+    viewDownload,
+    downloadPollingIntervalRef,
+    setIsViewDownloadError,
+    setShowEmailNotification
   });
 
 
@@ -371,22 +380,25 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isHeaderBoxChecked={isHeaderBoxChecked}
           isPreDialogLoading={isPreDialogLoading}
           totalRecords={docData?.totalRecords || 0}
-          onRefreshAfterClose={() => {
-            setSelectedCheckBoxIds([]);
-            setAllSelectedDocs([]);
-            setIsClearSelectedCheckbox(true);
-            if (alreadyDeletedFileCount > 0 ||(totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0) {
-              fetchGetDocumentDetails(
-                currentPage,
-                getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
-                sortBy,
-                sortDirection,
-                searchRefExternalId,
-                documentRelatedTo
-              );
-            }
-            setTableKey((prev: number) => prev + 1);
-          }}
+          onRefreshAfterClose={() =>
+            refreshAfterClose(
+              alreadyDeletedFileCount,
+              restrictedFileCount,
+              availableFileCount,
+              totalSelectedCount,
+              currentPage,
+              selectedFormats,
+              sortBy,
+              sortDirection,
+              searchRefExternalId,
+              documentRelatedTo,
+              setSelectedCheckBoxIds,
+              setAllSelectedDocs,
+              setIsClearSelectedCheckbox,
+              fetchGetDocumentDetails,
+              setTableKey
+            )
+          }
         />
 
         <SideNavigation
@@ -403,6 +415,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isOpen={isOpen}
           visibleBreadcrumbs={visibleBreadcrumbs}
         >
+
           <DmsControlledList
              {...{
               t,
@@ -523,8 +536,13 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               setIsClearSelectedCheckbox,
               searchText,
               setDateRange,
-              setSortBy, // <-- Added missing prop
-              setSortDirection, // <-- Added missing prop
+              setSortBy, 
+              setSortDirection,
+              globalNotificationBannerOnClickAction(): void {
+                setSidePanelOpenReason("manage")
+                setIsSidePanelOpen(true);
+              },
+              sidePanelOpenReason,
               addEditTemplateChild: (
                 <DmsSidePanel
                   t={t}
@@ -548,6 +566,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setShowToastNotification={setShowToastNotification}
                   setFailedFileName={setFailedFileName}
                   gtmAnalytics={gtmAnalytics}
+                  sidePanelOpenReason={sidePanelOpenReason}
                 />
               )
             }}

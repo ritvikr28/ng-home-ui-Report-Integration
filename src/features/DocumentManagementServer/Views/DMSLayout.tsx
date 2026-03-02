@@ -1,6 +1,6 @@
 import React from "react";
 import { LocalisedMenu } from "@essnextgen/ui-application-kit";
-import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor } from "@essnextgen/ui-kit";
+import { GridItem, Breadcrumbs, Notification, NotificationStatus, Button, ButtonColor, ButtonSize, IconColor, NotificationActionElement } from "@essnextgen/ui-kit";
 import { onBreadcrumbClick } from "../logic/DocumentManagementServer.logic";
 import { WelcomeBannerUrl } from "../../../../public/Constants";
 
@@ -31,27 +31,27 @@ export const getBannerMessageWithLink: (message: string, linkText: string) => Re
 ): React.ReactNode => {
   const [before, after = ""]: string[] = message.split("<link>");
   const [firstLine, secondLine = ""]: string[] = before.split("\n");
+  const showBreak = !!secondLine.trim(); 
+
   return (
     <span className="document-management-banner">
       {firstLine}
-      <br />
+      {showBreak && <br />}
       {secondLine}
-        <a
-          href={WelcomeBannerUrl}
-          className="banner-link"
-          target="_blank"
-          aria-label={linkText}
-          rel="noopener noreferrer"
-          id="banner-link-id"
-        >
-          {linkText}
-        </a>
-      
+      <a
+        href={WelcomeBannerUrl}
+        className="banner-link"
+        target="_blank"
+        aria-label={linkText}
+        rel="noopener noreferrer"
+        id="banner-link-id"
+      >
+        {linkText}
+      </a>
       {after}
     </span>
   );
 };
- 
 
 export const SideNavigation: React.FC<{
   isOpen: boolean;
@@ -130,3 +130,18 @@ export const MainContent: React.FC<{
     </div>
   </GridItem>
 );
+
+export const PrivateDocumentsBanner: React.FC<{ t: any }> = ({
+  t
+}) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.privateFilesBannerTitle")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase"))}
+    autoclose={false}
+    actionLabel={t("DocumentManagementServer.learnMore")}
+    actionElement={NotificationActionElement.Button}
+
+  />
+);
+

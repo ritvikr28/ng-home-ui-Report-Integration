@@ -2,7 +2,8 @@ import React from "react";
 import dayjs from "dayjs";
 import {
   ISearchItemProp,
-  ISelectedItem
+  ISelectedItem,
+  NotificationActionElement
 } from "@essnextgen/ui-kit";
 import {
   debouncedFetchSuggestions,
@@ -693,12 +694,14 @@ interface NotificationMsgBannerParams {
 
 interface NotificationMsgBanner {
   isShow: boolean;
-  hideCloseButton: boolean;
   variant: string;
   title: string;
-  message: React.ReactNode | string;
+  message: React.ReactNode;
   autoclose: boolean;
+  hideCloseButton?: boolean;
+  actionLabel?: string;
   onClickClose?: () => void;
+  actionElement?: React.ReactNode;
   onClickAction?: () => void;
 }
 
@@ -715,13 +718,11 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
     setShowDeleteAbortBanner
   }: NotificationMsgBannerParams = params;
   return [
-    
     {
       isShow: showErrorBanner || showSearchError,
       variant: "warning",
       title: t("DocumentManagementServer.informationUnavailable"),
       message: t("DocumentManagementServer.technicalIssueMessage"),
-      hideCloseButton: false,
       autoclose: true
     },
     {
@@ -730,7 +731,6 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       title: t("DocumentManagementServer.unableToDelete"),
       message: t("DocumentManagementServer.unableToDeleteDocumentMsg",
         { type: availableFileCount === 1 ? "document" : "documents" }),
-      hideCloseButton: false,
       autoclose: false,
       onClickClose: () => setShowDeleteErrorBanner(false)
     },
@@ -739,10 +739,9 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       variant: "warning",
       title: t("DocumentManagementServer.unableToDelete"),
       message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
-      hideCloseButton: false,
       autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false)
     },
-  {
+     {
       isShow: true,
       variant: "highlight",
       title: t("DocumentManagementServer.WarningBannerTitle"),
@@ -752,6 +751,18 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       ),
       hideCloseButton: true,
       autoclose: false
-    }];
+    },
+    {
+      isShow: true,
+      variant: "warning",
+      title: t("DocumentManagementServer.privateFilesBannerTitle"),
+      message: getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase")) ,
+      autoclose: false,
+      onClickAction: () => { },
+      hideCloseButton: true,
+      actionLabel: t("DocumentManagementServer.manageDocuments"),
+      actionElement: NotificationActionElement.Button
+    } 
+  ];
 }
 
