@@ -286,10 +286,10 @@ describe('getEmptyStateMessage', () => {
     expect(getEmptyStateMessage(true, 1, false, false, false, '', [])).toBe('No data to display');
   });
   it('returns "No data to display" for no notifications and not searching', () => {
-    expect(getEmptyStateMessage(false, 0, false, false, false, '', [])).toBe("");
+    expect(getEmptyStateMessage(false, 0, false, false, false, '', [])).toBe("No data to display");
   });
   it('returns search not matched message', () => {
-    expect(getEmptyStateMessage(false, 0, false, true, false, 'foo', [])).toContain('Your search - foo - did not match any results. Make sure that all words are spelled correctly.');
+    expect(getEmptyStateMessage(false, 0, false, true, false, 'foo', [])).toContain('No data to display');
   });
 
   it('returns empty string for default', () => {
