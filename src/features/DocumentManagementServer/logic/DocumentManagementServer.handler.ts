@@ -741,6 +741,17 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       message: t("DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDeleted"),
       autoclose: true, onClickClose: () => setShowDeleteAbortBanner(false)
     },
+     {
+      isShow: true,
+      variant: "highlight",
+      title: t("DocumentManagementServer.WarningBannerTitle"),
+      message: getBannerMessageWithLink(
+        t("DocumentManagementServer.migrationInfoText"),
+        t("DocumentManagementServer.learnMoreKnowledgeBase")
+      ),
+      hideCloseButton: true,
+      autoclose: false
+    },
     {
       isShow: true,
       variant: "warning",
