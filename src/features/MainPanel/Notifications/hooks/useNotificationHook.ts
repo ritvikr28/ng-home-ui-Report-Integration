@@ -40,7 +40,7 @@ export function getEmptyStateMessage(
     searchTerm: string,
     searchSuggestions: Suggestion[]
 ): string {
-    if (tableDataError) {
+    if (totalNotifications === 0 || tableDataError) {
         return "No data to display";
     }
     if (tableDataError === true) {

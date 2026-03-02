@@ -57,7 +57,7 @@ import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
 import DocumentManagementServer from "./features/DocumentManagementServer/Views/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
-import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
+// import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
 import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
 import Sims7RedirectionsLayout from "./pages/Sims7Redirections/Sims7RedirectionsLayout.logic";
 
@@ -223,7 +223,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
   isStandaloneApp,
   baseRouteName
 }: ILayoutProps) => {
-  const [isRenderSimsConnectedBanner]: [boolean, boolean] = useSimsConnectedBanner();
+  // const [isRenderSimsConnectedBanner]: [boolean, boolean] = useSimsConnectedBanner();
   const dispatch: any = useDispatch();
   const history: ReturnType<typeof useHistory> = useHistory();
   const { t }: UseTranslationResponse<"translation", undefined> =
@@ -362,8 +362,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
             component={
               isServiceInitiated
                 ? renderHomePage(
-                  hasNewHomePagePermission,
-                  isRenderSimsConnectedBanner
+                  hasNewHomePagePermission
                 )
                 : EmptyComponent
             }
@@ -480,7 +479,7 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
 /* istanbul ignore next */
 const renderHomePage: (
   hasNewHomePagePermission: boolean,
-  isRenderSimsConnectedBanner: boolean
+  isRenderSimsConnectedBanner?: boolean
 ) => React.ComponentType<any> | undefined = (
   hasNewHomePagePermission: boolean
 ) => {
