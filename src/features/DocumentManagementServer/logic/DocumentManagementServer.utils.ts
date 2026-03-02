@@ -538,38 +538,40 @@ export const refreshAfterClose = (
   restrictedFileCount: number,
   availableFileCount: number,
   totalSelectedCount: number,
-  currentPage: number,
+  paramPage: number,
   selectedFormats: any,
-  sortBy: string,
-  sortDirection: string,
-  searchRefExternalId: string[],
-  documentRelatedTo: number,
+  paramSortField: string,
+  paramSortOrder: string,
+  paramRefExternalIds: string[],
+  paramRelatedTo: number,
   setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
   setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>,
   setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>,
-  fetchGetDocumentDetails:(
-    currentPage: number,
+  fetchGetDocumentDetails: (
+    page: number,
     registrationIds: any,
-    sortBy: string,
-    sortDirection: string,
-    searchRefExternalId: string[],
-    documentRelatedTo: number
+    sortField: string,
+    sortOrder: string,
+    refExternalIds: string[],
+    relatedTo: number
   ) => void,
   setTableKey: React.Dispatch<React.SetStateAction<number>>
-  
 ): void => {
-    setSelectedCheckBoxIds([]);
-    setAllSelectedDocs([]);
-    setIsClearSelectedCheckbox(true);
-    if (alreadyDeletedFileCount > 0 ||(totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0) {
-      fetchGetDocumentDetails(
-        currentPage,
-        getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
-        sortBy,
-        sortDirection,
-        searchRefExternalId,
-        documentRelatedTo
-      );
-    }
-    setTableKey((prev: number) => prev + 1);
+  setSelectedCheckBoxIds([]);
+  setAllSelectedDocs([]);
+  setIsClearSelectedCheckbox(true);
+  if (
+    alreadyDeletedFileCount > 0 ||
+    totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) > 0
+  ) {
+    fetchGetDocumentDetails(
+      paramPage,
+      getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+      paramSortField,
+      paramSortOrder,
+      paramRefExternalIds,
+      paramRelatedTo
+    );
   }
+  setTableKey((prev: number) => prev + 1);
+};
