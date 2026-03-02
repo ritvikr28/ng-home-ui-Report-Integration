@@ -733,7 +733,7 @@ describe("Additional tests to increase coverage", () => {
     });
  
  
-    const { container } = render(<MemoryRouter>
+    render(<MemoryRouter>
       <DocumentManagementServerView />
     </MemoryRouter>);
 
@@ -773,7 +773,6 @@ describe("Additional tests to increase coverage", () => {
 
     
     await waitFor(() => {
-      console.log(container.innerHTML);
       const okayBtn = screen.getByText("Okay");
       expect(okayBtn).toBeInTheDocument();
       fireEvent.click(okayBtn);

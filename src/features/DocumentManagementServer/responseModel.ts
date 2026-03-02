@@ -210,7 +210,7 @@ externalId: string;
 }
 
 
-export type SidePanelReason = "prepare" | "view";
+export type SidePanelReason = "prepare" | "view" | "manage";
 
 export interface BreadcrumbAction {
   active: boolean;

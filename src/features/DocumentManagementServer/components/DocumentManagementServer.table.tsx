@@ -13,6 +13,8 @@ import {
 } from "@essnextgen/ui-kit";
 import FilterDialog from "../../../shared/components/Filter/Filter";
 import { getTableHeadersData } from "../logic/DocumentManagementServer.logic";
+import { SidePanelReason } from "../responseModel";
+import { getSecondaryButtonTitle } from "../logic/DocumentManagementServer.utils";
 
 interface Props {
   t: any;
@@ -95,6 +97,8 @@ interface Props {
   setSortBy: React.Dispatch<React.SetStateAction<string>>;
   setSortDirection: React.Dispatch<React.SetStateAction<string>>;
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
+  globalNotificationBannerOnClickAction: () => void;
+  sidePanelOpenReason: SidePanelReason | null;
 }
 
 function handleSuggestionItemClick(
@@ -182,9 +186,10 @@ function handleSidePanelSecondaryBtn(
   hasCompletedFiles: boolean,
   setDialogType: (v: string) => void,
   setShowConfirmDialog: (v: boolean) => void,
-  setIsSidePanelOpen: (v: boolean) => void
+  setIsSidePanelOpen: (v: boolean) => void,
+  sidePanelOpenReason: SidePanelReason | null
 ): void {
-  if (hasCompletedFiles) {
+  if (hasCompletedFiles && sidePanelOpenReason !== "manage") {
     setDialogType("clearAll");
     setShowConfirmDialog(true);
   } else {
@@ -359,7 +364,9 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     setIsClearSelectedCheckbox,
     addEditTemplateChild,
     setSortBy,
-    setSortDirection
+    setSortDirection,
+    globalNotificationBannerOnClickAction,
+    sidePanelOpenReason
     // ...other props
   }: Props = props;
 
@@ -459,16 +466,17 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     isGlobalLoader: isDialogLoading,
     globalLoaderText: "Please wait...",
     isGlobalLoaderModel,
-    secondaryButtonTitle: hasCompletedFiles
-      ? t("DocumentManagementServer.ClearAll")
-      : t("DocumentManagementServer.Close"),
+    secondaryButtonTitle: getSecondaryButtonTitle(sidePanelOpenReason, hasCompletedFiles, t),
     onClickSidePnlSecondaryBtn: () =>
-      handleSidePanelSecondaryBtn(
-        hasCompletedFiles,
-        setDialogType,
-        setShowConfirmDialog,
-        setIsSidePanelOpen
-      ),
+      sidePanelOpenReason === "manage"
+        ? setIsSidePanelOpen(false)
+        : handleSidePanelSecondaryBtn(
+            hasCompletedFiles,
+            setDialogType,
+            setShowConfirmDialog,
+            setIsSidePanelOpen,
+            sidePanelOpenReason
+          ),
     isShowSecondaryBtn: true,
     isShowPrimaryBtn: false,
     showConfirmDialog,
@@ -508,9 +516,10 @@ function getControlledListProps(props: Props): React.ComponentProps<typeof Contr
     tableHeadersData: getTableHeadersData(t),
     sortingOnClickEvent: (e: any, columnName: string) => handleSorting(columnName),
     isSidePanelLoader,
-    sidePanelTitle: t("DocumentManagementServer.sidePanelTitle"),
+    sidePanelTitle: (sidePanelOpenReason === "manage" ? t("DocumentManagementServer.managePrivateSidePanelTitle") : t("DocumentManagementServer.sidePanelTitle")),
     subHeadingText: t("DocumentManagementServer.subHeadingText"),
-    searchNoDataTemplate: `${t("DocumentManagementServer.FirstPart")} - {value} - ${t("DocumentManagementServer.SecondPart")}`
+    searchNoDataTemplate: `${t("DocumentManagementServer.FirstPart")} - {value} - ${t("DocumentManagementServer.SecondPart")}`,
+    globalNotificationBannerOnClickAction
   };
 }
 const DmsControlledList: React.FC<Props> = (props) =>

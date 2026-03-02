@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { Suggestion, ValidationTextLevel, SelectedItem, ISelectedItem, ISearchItemProp } from "@essnextgen/ui-kit";
 import { TFunction } from "@essnextgen/ui-intl-kit";
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
-import { Category } from "../responseModel";
+import { Category, SidePanelReason } from "../responseModel";
 import { homeurl } from "../../../../public/Constants";
 import { CapitalizeFirstLetter } from "../../../shared/utils/commonFunctions";
 
@@ -519,3 +519,57 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
   }));
 };
 
+export function getSecondaryButtonTitle(
+  sidePanelOpenReason: SidePanelReason | null,
+  hasCompletedFiles: boolean,
+  t: any
+): string {
+  if (sidePanelOpenReason === "manage") {
+    return t("DocumentManagementServer.Close");
+  }
+  if (hasCompletedFiles) {
+    return t("DocumentManagementServer.ClearAll");
+  }
+  return t("DocumentManagementServer.Close");
+}
+
+export const refreshAfterClose = (
+  alreadyDeletedFileCount: number,
+  restrictedFileCount: number,
+  availableFileCount: number,
+  totalSelectedCount: number,
+  currentPage: number,
+  selectedFormats: any,
+  sortBy: string,
+  sortDirection: string,
+  searchRefExternalId: string[],
+  documentRelatedTo: number,
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
+  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>,
+  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>,
+  fetchGetDocumentDetails:(
+    currentPage: number,
+    registrationIds: any,
+    sortBy: string,
+    sortDirection: string,
+    searchRefExternalId: string[],
+    documentRelatedTo: number
+  ) => void,
+  setTableKey: React.Dispatch<React.SetStateAction<number>>
+  
+): void => {
+    setSelectedCheckBoxIds([]);
+    setAllSelectedDocs([]);
+    setIsClearSelectedCheckbox(true);
+    if (alreadyDeletedFileCount > 0 ||(totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount)) > 0) {
+      fetchGetDocumentDetails(
+        currentPage,
+        getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+        sortBy,
+        sortDirection,
+        searchRefExternalId,
+        documentRelatedTo
+      );
+    }
+    setTableKey((prev: number) => prev + 1);
+  }

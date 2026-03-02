@@ -736,8 +736,8 @@ describe("getNotificationMsgBannerObject", () => {
       setShowDeleteAbortBanner: jest.fn()
     });
     expect(banners[3].isShow).toBe(true);
-    expect(banners[3].variant).toBe("highlight");
-    expect(banners[3].title).toBe("DocumentManagementServer.WarningBannerTitle");
+    expect(banners[3].variant).toBe("warning");
+    expect(banners[3].title).toBe("DocumentManagementServer.privateFilesBannerTitle");
     expect(React.isValidElement(banners[3].message)).toBe(true); // Or check for React element if you changed the implementation
     expect(banners[3].autoclose).toBe(false);
   });

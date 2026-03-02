@@ -31,27 +31,27 @@ export const getBannerMessageWithLink: (message: string, linkText: string) => Re
 ): React.ReactNode => {
   const [before, after = ""]: string[] = message.split("<link>");
   const [firstLine, secondLine = ""]: string[] = before.split("\n");
+  const showBreak = !!secondLine.trim(); 
+
   return (
     <span className="document-management-banner">
       {firstLine}
-      <br />
+      {showBreak && <br />}
       {secondLine}
-        <a
-          href={WelcomeBannerUrl}
-          className="banner-link"
-          target="_blank"
-          aria-label={linkText}
-          rel="noopener noreferrer"
-          id="banner-link-id"
-        >
-          {linkText}
-        </a>
-      
+      <a
+        href={WelcomeBannerUrl}
+        className="banner-link"
+        target="_blank"
+        aria-label={linkText}
+        rel="noopener noreferrer"
+        id="banner-link-id"
+      >
+        {linkText}
+      </a>
       {after}
     </span>
   );
 };
- 
 
 export const SideNavigation: React.FC<{
   isOpen: boolean;
@@ -137,7 +137,7 @@ export const PrivateDocumentsBanner: React.FC<{ t: any }> = ({
   <Notification
     status={NotificationStatus.WARNING}
     title={t("DocumentManagementServer.privateFilesBannerTitle")}
-    message={t("DocumentManagementServer.privateFilesBannerDescription")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase"))}
     autoclose={false}
     actionLabel={t("DocumentManagementServer.learnMore")}
     actionElement={NotificationActionElement.Button}
