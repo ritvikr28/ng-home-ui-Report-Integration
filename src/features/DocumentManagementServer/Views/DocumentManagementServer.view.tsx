@@ -381,23 +381,23 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isPreDialogLoading={isPreDialogLoading}
           totalRecords={docData?.totalRecords || 0}
           onRefreshAfterClose={() =>
-            refreshAfterClose(
+            refreshAfterClose({
               alreadyDeletedFileCount,
               restrictedFileCount,
               availableFileCount,
               totalSelectedCount,
-              currentPage,
+              paramPage: currentPage,
               selectedFormats,
-              sortBy,
-              sortDirection,
-              searchRefExternalId,
-              documentRelatedTo,
+              paramSortField: sortBy,
+              paramSortOrder: sortDirection,
+              paramRefExternalIds: searchRefExternalId,
+              paramRelatedTo: documentRelatedTo,
               setSelectedCheckBoxIds,
               setAllSelectedDocs,
               setIsClearSelectedCheckbox,
               fetchGetDocumentDetails,
-              setTableKey
-            )
+              setTableKey,
+            })
           }
         />
 
@@ -415,9 +415,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isOpen={isOpen}
           visibleBreadcrumbs={visibleBreadcrumbs}
         >
-
           <DmsControlledList
-             {...{
+            {...{
               t,
               tableKey,
               tableData,
@@ -425,7 +424,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               currentPage,
               isInitialLoad,
               searchInput,
-              setSearchInput, 
+              setSearchInput,
               searchTerm,
               filteredSuggestions,
               isSearchLoading,
@@ -439,14 +438,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               searchTagListRaw,
               onPageChange,
               handleSorting: (columnName: string) => {
-                 handleSorting(
+                handleSorting(
                   columnName,
                   sortBy,
                   setSortBy,
                   sortDirection,
                   setSortDirection,
                   t
-                )
+                );
                 // setIsSearchTriggered(true);
               },
               isClearSelectedCheckbox,
@@ -486,8 +485,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setIsSearchLoading,
                   setShowErrorBanner,
                   documentRelatedTo: undefined,
-                  setResetFilterSearch: undefined
-                })
+                  setResetFilterSearch: undefined,
+                });
               },
               handleSuggestionClick,
               isFilterDialogOpen,
@@ -536,10 +535,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               setIsClearSelectedCheckbox,
               searchText,
               setDateRange,
-              setSortBy, 
+              setSortBy,
               setSortDirection,
               globalNotificationBannerOnClickAction(): void {
-                setSidePanelOpenReason("manage")
+                setSidePanelOpenReason("manage");
                 setIsSidePanelOpen(true);
               },
               sidePanelOpenReason,
@@ -568,7 +567,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   gtmAnalytics={gtmAnalytics}
                   sidePanelOpenReason={sidePanelOpenReason}
                 />
-              )
+              ),
             }}
           />
         </MainContent>

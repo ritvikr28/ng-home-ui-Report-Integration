@@ -531,42 +531,65 @@ export function getSecondaryButtonTitle(
     return t("DocumentManagementServer.ClearAll");
   }
   return t("DocumentManagementServer.Close");
-}
 
-export const refreshAfterClose = (
-  alreadyDeletedFileCount: number,
-  restrictedFileCount: number,
-  availableFileCount: number,
-  totalSelectedCount: number,
-  paramPage: number,
-  selectedFormats: any,
-  paramSortField: string,
-  paramSortOrder: string,
-  paramRefExternalIds: string[],
-  paramRelatedTo: number,
-  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
-  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>,
-  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>,
+}export interface RefreshAfterCloseParams {
+  alreadyDeletedFileCount: number;
+  restrictedFileCount: number;
+  availableFileCount: number;
+  totalSelectedCount: number;
+  paramPage: number;
+  selectedFormats: any;
+  paramSortField: string;
+  paramSortOrder: string;
+  paramRefExternalIds: string[];
+  paramRelatedTo: number;
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>;
+  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
   fetchGetDocumentDetails: (
     page: number,
     registrationIds: any,
     sortField: string,
     sortOrder: string,
     refExternalIds: string[],
-    relatedTo: number
-  ) => void,
-  setTableKey: React.Dispatch<React.SetStateAction<number>>
-): void => {
+    relatedTo: number,
+  ) => void;
+  setTableKey: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export const refreshAfterClose = (params: RefreshAfterCloseParams): void => {
+  const {
+    alreadyDeletedFileCount,
+    restrictedFileCount,
+    availableFileCount,
+    totalSelectedCount,
+    paramPage,
+    selectedFormats,
+    paramSortField,
+    paramSortOrder,
+    paramRefExternalIds,
+    paramRelatedTo,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    fetchGetDocumentDetails,
+    setTableKey,
+  } = params;
+
   setSelectedCheckBoxIds([]);
   setAllSelectedDocs([]);
   setIsClearSelectedCheckbox(true);
   if (
     alreadyDeletedFileCount > 0 ||
-    totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) > 0
+    totalSelectedCount -
+      (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) >
+      0
   ) {
     fetchGetDocumentDetails(
       paramPage,
-      getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+      getAllRegistrationIds(
+        Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]
+      ),
       paramSortField,
       paramSortOrder,
       paramRefExternalIds,
