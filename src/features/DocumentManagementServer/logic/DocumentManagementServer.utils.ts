@@ -35,6 +35,31 @@ type RelatedEntity = RelatedPupil | RelatedStaff | RelatedSchool;
 
 // Optionally, define a minimal doc type for this function
 
+ interface RefreshAfterCloseParams {
+  alreadyDeletedFileCount: number;
+  restrictedFileCount: number;
+  availableFileCount: number;
+  totalSelectedCount: number;
+  paramPage: number;
+  selectedFormats: any;
+  paramSortField: string;
+  paramSortOrder: string;
+  paramRefExternalIds: string[];
+  paramRelatedTo: number;
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>;
+  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchGetDocumentDetails: (
+    page: number,
+    registrationIds: number[],
+    sortField: string,
+    sortOrder: string,
+    refExternalIds: string[],
+    relatedTo: number
+  ) => void;
+  setTableKey: React.Dispatch<React.SetStateAction<number>>
+}
+
 interface DocumentRow {
   fileId: string;
   document?: string;
@@ -533,30 +558,25 @@ export function getSecondaryButtonTitle(
   return t("DocumentManagementServer.Close");
 }
 
-export const refreshAfterClose = (
-  alreadyDeletedFileCount: number,
-  restrictedFileCount: number,
-  availableFileCount: number,
-  totalSelectedCount: number,
-  paramPage: number,
-  selectedFormats: any,
-  paramSortField: string,
-  paramSortOrder: string,
-  paramRefExternalIds: string[],
-  paramRelatedTo: number,
-  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
-  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>,
-  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>,
-  fetchGetDocumentDetails: (
-    page: number,
-    registrationIds: any,
-    sortField: string,
-    sortOrder: string,
-    refExternalIds: string[],
-    relatedTo: number
-  ) => void,
-  setTableKey: React.Dispatch<React.SetStateAction<number>>
-): void => {
+
+export const refreshAfterClose: any = (params: RefreshAfterCloseParams): void => {
+  const {
+    alreadyDeletedFileCount,
+    restrictedFileCount,
+    availableFileCount,
+    totalSelectedCount,
+    paramPage,
+    selectedFormats,
+    paramSortField,
+    paramSortOrder,
+    paramRefExternalIds,
+    paramRelatedTo,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    fetchGetDocumentDetails,
+    setTableKey
+  }: RefreshAfterCloseParams = params;
   setSelectedCheckBoxIds([]);
   setAllSelectedDocs([]);
   setIsClearSelectedCheckbox(true);
