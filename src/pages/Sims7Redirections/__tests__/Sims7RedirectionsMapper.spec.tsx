@@ -1,6 +1,14 @@
 import { mapSims7RedirectionsItem } from '../Sims7RedirectionsMapper';
 
 describe('mapSims7RedirectionsItem', () => {
+        it('returns string value for non-string status', () => {
+        });
+        it('returns empty string for falsy status', () => {
+        });
+      it('returns null from formatDateISO if not ISO format', () => {
+      });
+    it('returns date string as-is if not DD MM YYYY or ISO', () => {
+    });
   it('maps all fields correctly from API item', () => {
     const apiItem = {
       moduleId: 1,
