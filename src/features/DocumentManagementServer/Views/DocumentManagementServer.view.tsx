@@ -381,24 +381,24 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isPreDialogLoading={isPreDialogLoading}
           totalRecords={docData?.totalRecords || 0}
           onRefreshAfterClose={() =>
-            refreshAfterClose({
-              alreadyDeletedFileCount,
-              restrictedFileCount,
-              availableFileCount,
-              totalSelectedCount,
-              paramPage: currentPage,
-              selectedFormats,
-              paramSortField: sortBy,
-              paramSortOrder: sortDirection,
-              paramRefExternalIds: searchRefExternalId,
-              paramRelatedTo: documentRelatedTo,
-              setSelectedCheckBoxIds,
-              setAllSelectedDocs,
-              setIsClearSelectedCheckbox,
-              fetchGetDocumentDetails,
-              setTableKey,
-            })
-          }
+          refreshAfterClose({
+            alreadyDeletedFileCount,
+            restrictedFileCount,
+            availableFileCount,
+            totalSelectedCount,
+            paramPage: currentPage,
+            selectedFormats,
+            paramSortField: sortBy,
+            paramSortOrder: sortDirection,
+            paramRefExternalIds: searchRefExternalId,
+            paramRelatedTo: documentRelatedTo,
+            setSelectedCheckBoxIds,
+            setAllSelectedDocs,
+            setIsClearSelectedCheckbox,
+            fetchGetDocumentDetails,
+            setTableKey
+          })
+        }
         />
 
         <SideNavigation
