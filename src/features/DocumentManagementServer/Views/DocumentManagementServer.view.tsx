@@ -485,7 +485,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setIsSearchLoading,
                   setShowErrorBanner,
                   documentRelatedTo: undefined,
-                  setResetFilterSearch: undefined,
+                  setResetFilterSearch: undefined
                 });
               },
               handleSuggestionClick,
@@ -567,7 +567,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   gtmAnalytics={gtmAnalytics}
                   sidePanelOpenReason={sidePanelOpenReason}
                 />
-              ),
+              )
             }}
           />
         </MainContent>
