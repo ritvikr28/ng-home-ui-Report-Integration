@@ -72,6 +72,7 @@ interface DocumentRow {
   documentRelatedTo?: number;
   registrationId?: number;
   externalId?: string;
+  status: string;
 }
 export function mapRelatedArr(doc: DocumentRow): RelatedEntity[] {
   let relatedArr: RelatedEntity[] = [];
@@ -533,6 +534,7 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     Category: doc?.category
       ? CapitalizeFirstLetter(doc.category)
       : "",
+    documentStatus: doc?.status || "Public",
     Addedby: doc?.addedBy || "",
     "Date added":
       doc?.dateAdded
