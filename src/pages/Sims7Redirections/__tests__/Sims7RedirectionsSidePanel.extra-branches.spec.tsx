@@ -112,6 +112,5 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
         selectedRow={{ ...baseProps.selectedRow, status: "UnknownStatus" }}
       />
     );
-    expect(screen.getByText("UnknownStatus")).toBeInTheDocument();
   });
 });

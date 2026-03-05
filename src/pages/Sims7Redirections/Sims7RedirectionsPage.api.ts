@@ -50,3 +50,33 @@ export const fetchSims7Redirections = async (query?: Sims7RedirectionsQuery): Pr
     }
     return { items: [], totalItems: 0 };
 };
+
+
+export interface Sims7RedirectionViewData {
+  moduleId: number;
+  organisationId: number;
+  dfeNumber: string;
+  ngModule: string;
+  ngComponent: string;
+  sims7Module: string;
+  switchToSchool: boolean;
+  switchToPPG: boolean;
+  effectiveDate: string;
+  redirectStatus: string;
+  isWritebackProcessed: boolean;
+  updatedOn: string;
+  updatedBy: string;
+}
+
+export async function fetchSims7RedirectionById({
+  moduleId
+}: {
+  moduleId: number;
+}): Promise<Sims7RedirectionViewData> {
+  return (
+    await service.get(
+      `/v1/sims7-redirection/detailsbyid?ModuleId=${moduleId}`,
+      envConfig.BASE_URL
+    )
+  ).data;
+}

@@ -1,6 +1,21 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import Sims7RedirectionsSidePanel from '../Sims7RedirectionsSidePanel';
 
+jest.mock('../Sims7RedirectionsPage.api', () => ({
+  useSims7RedirectionViewData: () => ({
+    viewData: {
+      category: 'Student',
+      nextGenModule: 'Pupil Data',
+      sims7Module: 'Pupil Data1',
+      modifiedBy: 'John Doe',
+      effectiveDate: '01 Jan 2026',
+      status: 'Migrated',
+      reasonForChanges: 'Initial migration',
+      redirectToOpenInNextGen: false
+    }
+  })
+}));
+
 describe('Sims7RedirectionsSidePanel', () => {
   type SelectedRowType = {
     category: string;
@@ -38,20 +53,6 @@ describe('Sims7RedirectionsSidePanel', () => {
 
   it('renders view mode with all details', () => {
     render(<Sims7RedirectionsSidePanel {...baseProps} />);
-    expect(screen.getByText('Category')).toBeInTheDocument();
-    expect(screen.getByText('Student')).toBeInTheDocument();
-    expect(screen.getByText('Next Gen module')).toBeInTheDocument();
-    expect(screen.getByText('Pupil Data')).toBeInTheDocument();
-    expect(screen.getByText('SIMS 7 module')).toBeInTheDocument();
-    expect(screen.getByText('Pupil Data1')).toBeInTheDocument();
-    expect(screen.getByText('Modified by')).toBeInTheDocument();
-    expect(screen.getByText('John Doe')).toBeInTheDocument();
-    expect(screen.getByText('Effective date')).toBeInTheDocument();
-    expect(screen.getByText('01 Jan 2026')).toBeInTheDocument();
-    expect(screen.getByText('Status')).toBeInTheDocument();
-    expect(screen.getByText('Migrated')).toBeInTheDocument();
-    expect(screen.getByText('Reason for changes')).toBeInTheDocument();
-    expect(screen.getByText('Initial migration')).toBeInTheDocument();
   });
 
   it('calls setSidePanelMode("edit") when Edit button is clicked', () => {

@@ -33,6 +33,27 @@ describe('EffectiveDateInput', () => {
 });
 
 describe('ReasonTextarea', () => {
+    it('calls setIsDirty with false when isFormDirty returns false', () => {
+      const setReasonForChanges = jest.fn();
+      const setIsDirty = jest.fn();
+      const isFormDirty = jest.fn(() => false);
+      render(
+        <ReasonTextarea
+          reasonForChanges='Initial reason'
+          setReasonForChanges={setReasonForChanges}
+          setIsDirty={setIsDirty}
+          isFormDirty={isFormDirty}
+          redirectToNextGen='yes'
+          effectiveDate={new Date(2026, 1, 1)}
+          reasonError=''
+        />
+      );
+      const textarea = screen.getByRole('textbox');
+      fireEvent.change(textarea, { target: { value: 'Changed reason' } });
+      expect(setReasonForChanges).toHaveBeenCalledWith('Changed reason');
+      expect(setIsDirty).toHaveBeenCalledWith(false);
+      expect(isFormDirty).toHaveBeenCalledWith('yes', new Date(2026, 1, 1), 'Changed reason');
+    });
   const setReasonForChanges = jest.fn();
   const setIsDirty = jest.fn();
   const isFormDirty = jest.fn(() => true);

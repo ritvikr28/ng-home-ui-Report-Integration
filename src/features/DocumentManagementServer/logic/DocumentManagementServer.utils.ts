@@ -582,11 +582,15 @@ export const refreshAfterClose: any = (params: RefreshAfterCloseParams): void =>
   setIsClearSelectedCheckbox(true);
   if (
     alreadyDeletedFileCount > 0 ||
-    totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) > 0
+    totalSelectedCount -
+      (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) >
+      0
   ) {
     fetchGetDocumentDetails(
       paramPage,
-      getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+      getAllRegistrationIds(
+        Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]
+      ),
       paramSortField,
       paramSortOrder,
       paramRefExternalIds,

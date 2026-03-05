@@ -51,6 +51,64 @@ const dropdownItems: DropdownItemType[] = [
     { id: "7", text: "Cancelled", value: "Cancelled" }
 ];
 
+interface LoadSims7RedirectionsDataArgs {
+    sortColumn: string;
+    sortOrder: "asc" | "desc";
+    currentPage: number;
+    pageSize: number;
+    searchTagList: ISelectedItem[];
+    setApiFailed: React.Dispatch<React.SetStateAction<boolean>>;
+    setOriginalTableData: React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>;
+    setTotalItems: React.Dispatch<React.SetStateAction<number>>;
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const loadSims7RedirectionsData: (
+    args: LoadSims7RedirectionsDataArgs
+) => Promise<void> = async ({
+    sortColumn,
+    sortOrder,
+    currentPage,
+    pageSize,
+    searchTagList,
+    setApiFailed,
+    setOriginalTableData,
+    setTotalItems,
+    setLoading
+}) => {
+
+    try {
+        setLoading(true);
+
+        const payload : any= await fetchSims7Redirections({
+            SortColumnName: sortColumn || undefined,
+            SortOrder: sortOrder === "asc" ? "ASC" : "DESC",
+            PageNumber: currentPage,
+            PageSize: pageSize,
+            SearchFilter: searchTagList
+                .map((item) => item.value)
+                .filter((value): value is string => typeof value === "string")
+        });
+
+        setApiFailed(false);
+
+        setOriginalTableData(
+            payload.items.map(mapSims7RedirectionsItem)
+        );
+
+        setTotalItems(payload.totalItems);
+
+    } catch (error: unknown) {
+        setApiFailed(true);
+        setOriginalTableData([]);
+        setTotalItems(0);
+        console.error("Sims7Redirections API failed:", error);
+    } finally {
+        setLoading(false);
+    }
+};
+
+
 export const Sims7RedirectionsPage: React.FC = () => {
     // Column mapping: frontend to backend
     const columnMapping: Record<string, string> = {
@@ -83,30 +141,20 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const pageSize = 40;
     const [selectedItems, setSelectedItems]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
     const [searchTagList, setSearchTagList]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+
     useEffect(() => {
-        setLoading(true);
-        fetchSims7Redirections({
-            SortColumnName: sortColumn,
-            SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
-            PageNumber: currentPage,
-            PageSize: pageSize,
-            SearchFilter: searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
-        })
-            .then((payload: any) => {
-                setApiFailed(false);
-                setOriginalTableData((payload.items || []).map(mapSims7RedirectionsItem));
-                setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
-            })
-            .catch((err: any) => {
-                setApiFailed(true);
-                setOriginalTableData([]);
-                setTotalItems(0);
-                console.error('Sims7Redirections API failed:', err);
-            })
-            .finally(() => {
-                setLoading(false);
-            });
-    }, [sortColumn, sortOrder, currentPage, searchTagList]);
+        loadSims7RedirectionsData({
+            sortColumn,
+            sortOrder,
+            currentPage,
+            pageSize,
+            searchTagList,
+            setApiFailed,
+            setOriginalTableData,
+            setTotalItems,
+            setLoading
+        });
+    }, [sortColumn, sortOrder, currentPage, searchTagList, pageSize]);
 
     const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
     // Removed unused isDropDownOpen state to resolve Kiuwan warning
@@ -261,11 +309,22 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     </div>
                 </div>
 
+                {/* Empty state for test */}
+                {!loading && !paginatedTableData.length && (
+                  <div data-testid="empty-state">
+                    {t("SIMS7Redirects.emptyStateMsg")}
+                  </div>
+                )}
+
                 <ControlledList
                     sortingOnClickEvent={handleSorting}
                     tooltipBottomAligned
                     data-testid="controlled-list"
-                    globalNotificationMsgBannerObject={apiFailed && !paginatedTableData.length ? NotificationMsgBannerObject : null}
+                    globalNotificationMsgBannerObject={
+                                  apiFailed && !paginatedTableData.length
+                                    ? NotificationMsgBannerObject
+                                    : null
+                                }                    
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}

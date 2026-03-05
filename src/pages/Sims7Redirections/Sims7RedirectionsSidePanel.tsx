@@ -1,5 +1,5 @@
 /* eslint-disable */
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Sims7RedirectionsSidePanelProps } from "./Sims7RedirectionsInterfaces";
 import Sims7RedirectionsView from "./Sims7RedirectionsView";
 import Sims7RedirectionsEdit from "./Sims7RedirectionsEdit";
@@ -25,6 +25,8 @@ import { isFutureDate } from "./Sims7RedirectionsDateHelpers";
 import { isFormDirty } from "./Sims7RedirectionsFormDirty.logic";
 import { useSims7RedirectionsForm, Sims7RedirectionsFormState } from "./useSims7RedirectionsForm";
 import { validateReason } from "./Sims7RedirectionsSaveValidate.logic";
+import { fetchSims7RedirectionById, Sims7RedirectionViewData } from "./Sims7RedirectionsPage.api";
+
 
 const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     isOpen,
@@ -34,6 +36,14 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
     t,
     setSidePanelMode
 }) => {
+
+    const [viewData, setViewData]: [Sims7RedirectionViewData | null, React.Dispatch<React.SetStateAction<Sims7RedirectionViewData | null>>] = useState<Sims7RedirectionViewData | null>(null);
+    
+    useEffect(() => {
+      if (mode !== "view" || !selectedRow?.id) return;
+      fetchSims7RedirectionById({ moduleId: selectedRow.id }).then(setViewData);
+    }, [selectedRow?.id, mode]);
+
     const {
         reasonForChanges,
         setReasonForChanges: setReasonForChangesRaw,
@@ -154,7 +164,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelProps> = ({
                 <>
                     {mode === 'view' && selectedRow && (
                         <Sims7RedirectionsView
-                            selectedRow={selectedRow}
+                            viewData={viewData}
                             t={t}
                             setSidePanelMode={setSidePanelMode}
                         />

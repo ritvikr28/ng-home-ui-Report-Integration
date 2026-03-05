@@ -415,9 +415,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
           isOpen={isOpen}
           visibleBreadcrumbs={visibleBreadcrumbs}
         >
-
           <DmsControlledList
-             {...{
+            {...{
               t,
               tableKey,
               tableData,
@@ -425,7 +424,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               currentPage,
               isInitialLoad,
               searchInput,
-              setSearchInput, 
+              setSearchInput,
               searchTerm,
               filteredSuggestions,
               isSearchLoading,
@@ -439,14 +438,14 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               searchTagListRaw,
               onPageChange,
               handleSorting: (columnName: string) => {
-                 handleSorting(
+                handleSorting(
                   columnName,
                   sortBy,
                   setSortBy,
                   sortDirection,
                   setSortDirection,
                   t
-                )
+                );
                 // setIsSearchTriggered(true);
               },
               isClearSelectedCheckbox,
@@ -487,7 +486,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setShowErrorBanner,
                   documentRelatedTo: undefined,
                   setResetFilterSearch: undefined
-                })
+                });
               },
               handleSuggestionClick,
               isFilterDialogOpen,
@@ -536,10 +535,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               setIsClearSelectedCheckbox,
               searchText,
               setDateRange,
-              setSortBy, 
+              setSortBy,
               setSortDirection,
               globalNotificationBannerOnClickAction(): void {
-                setSidePanelOpenReason("manage")
+                setSidePanelOpenReason("manage");
                 setIsSidePanelOpen(true);
               },
               sidePanelOpenReason,
