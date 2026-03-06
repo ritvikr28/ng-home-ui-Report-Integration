@@ -97,6 +97,15 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
       renderSingleValue(e, "category"),
   },
   {
+    text: t("DocumentManagementServer.privacyColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    columnWidth: "180px",
+    isColumnSorting: true,
+    anyComponent: (e: string) =>
+      renderSingleValue(e, "privacyStatus"),
+  },
+  {
     text: t("DocumentManagementServer.addedByColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,

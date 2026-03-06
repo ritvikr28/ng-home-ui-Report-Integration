@@ -563,6 +563,7 @@
     "documentColumn": "Document",
     "relatedColumn": "Related to",
     "categoryColumn": "Category",
+    "privacyColumn": "Privacy status",
     "addedByColumn": "Added by",
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
