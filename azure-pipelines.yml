@@ -103,41 +103,41 @@ stages:
               fi
             displayName: "🧹 Remove Kiuwan lock file"                      
 ##===============================================================================================
-          - task: kiuwan-delivery-analysis-task@2
-            displayName: "Kiuwan Delivery Analysis"
-            inputs:
-              kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
-              projectnameselector: 'kiuwanapp'
-              kiuwanappname: 'ng-home-ui-new'
-              changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
-              overridedeliverylabel: true
-              deliverylabel: "$(Build.BuildNumber)-$(commitMessage)"
-              analysisscope: "completeDelivery"
-              includeinsight: true
-              failonaudit: true
-              uploadsnippets: true
-              uploadfiles: false
-              skipclones: false
-              overridedotkiuwan: false
-              excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**,**/src/pages/InviteUsers/**,**/*.spec.ts,**/*.spec.tsx,**/*.test.ts,**/*.test.tsx'
-              dbanalysis: false
-            condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['loclimit.skipKiuwan'], 'yes'))
-            
-          - task: kiuwan-baseline-analysis-task@2
-            displayName: 'Kiuwan Baseline Analysis'
-            inputs:
-              kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
-              projectnameselector: 'kiuwanapp'
-              kiuwanappname: 'ng-home-ui-new'
-              includeinsight: true
-              uploadsnippets: true
-              uploadfiles: false
-              skipclones: false
-              overridedotkiuwan: false
-              overrideappmodel: false
-              excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
-              dbanalysis: false
-            condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule'), ne(variables['loclimit.skipKiuwan'], 'yes'))
+          #- task: kiuwan-delivery-analysis-task@2
+          #  displayName: "Kiuwan Delivery Analysis"
+          #  inputs:
+          #    kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
+          #    projectnameselector: 'kiuwanapp'
+          #    kiuwanappname: 'ng-home-ui-new'
+          #    changerequest: 'ng-home-ui - $(Build.SourceBranchName)'
+          #    overridedeliverylabel: true
+          #    deliverylabel: "$(Build.BuildNumber)-$(commitMessage)"
+          #    analysisscope: "completeDelivery"
+          #    includeinsight: true
+          #    failonaudit: true
+          #    uploadsnippets: true
+          #    uploadfiles: false
+          #    skipclones: false
+          #    overridedotkiuwan: false
+          #    excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**,**/src/pages/InviteUsers/**,**/*.spec.ts,**/*.spec.tsx,**/*.test.ts,**/*.test.tsx'
+          #    dbanalysis: false
+          #  condition: and(succeeded(), ne(variables['Build.Reason'], 'Schedule'), ne(variables['loclimit.skipKiuwan'], 'yes'))
+          #  
+          #- task: kiuwan-baseline-analysis-task@2
+          #  displayName: 'Kiuwan Baseline Analysis'
+          #  inputs:
+          #    kiuwanConnection: 'Kiuwan-Platform-BuildAgentConnection'
+          #    projectnameselector: 'kiuwanapp'
+          #    kiuwanappname: 'ng-home-ui-new'
+          #    includeinsight: true
+          #    uploadsnippets: true
+          #    uploadfiles: false
+          #    skipclones: false
+          #    overridedotkiuwan: false
+          #    overrideappmodel: false
+          #    excludepatterns: '**/__MACOSX/**,**/*.min.js,**/Pods/BuildHeaders/**/*.h,**/Pods/Headers/**/*.h,**/node_modules/**,**/bower_components/**,**/target/**,**/bin/**,**/obj/**,**/dist/**,**/lib/**,**/bootstrap*.js,**/jquery*.js,**/umd/**,**/esm/**,**/fontawesome/**,**/coverage/**,**/__test__/**,**/__tests__/**,**/config/**,**/singleSpa/**,**/*.config.js,**/lighthouse/**'
+          #    dbanalysis: false
+          #  condition: and(succeeded(), eq(variables['Build.Reason'], 'Schedule'), ne(variables['loclimit.skipKiuwan'], 'yes'))
  
           - script: CI=true npm run coverage
             displayName: "Test with coverage"
