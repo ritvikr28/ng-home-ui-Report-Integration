@@ -542,11 +542,11 @@ it("returns config for clearAll dialogType", () => {
     currentPage: 1,
     // Add required missing properties for GetDialogConfigParams
     gtmAnalytics: {
-      pushEvent: jest.fn(),
+      pushEvent: jest.fn()
     },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.cancelText).toBe("DocumentManagementServer.keepAll");
   expect(config?.okText).toBe("DocumentManagementServer.ClearAll");
@@ -612,11 +612,11 @@ it("returns config for clearAll dialogType and click onConfirm", async () => {
     restrictedFileCount: 0,
     currentPage: 1,
     gtmAnalytics: {
-      pushEvent: jest.fn(),
+      pushEvent: jest.fn()
     },
     getCompletedPartitionKeys: jest.fn(() => []),
     contentText: <></>,
-    getAllRegistrationIds: jest.fn(() => []),
+    getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.cancelText).toBe("DocumentManagementServer.keepAll");
   expect(config?.okText).toBe("DocumentManagementServer.ClearAll");
@@ -696,11 +696,11 @@ it("returns config for delete dialogType", async () => {
     currentPage: 1,
       // Add required missing properties for GetDialogConfigParams
       gtmAnalytics: {
-        pushEvent: jest.fn(),
+        pushEvent: jest.fn()
       },
       getCompletedPartitionKeys: jest.fn(() => []),
       contentText: <></>,
-      getAllRegistrationIds: jest.fn(() => []),
+      getAllRegistrationIds: jest.fn(() => [])
   });
   expect(config?.cancelText).toBe("DocumentManagementServer.keepIt");
   expect(config?.okText).toBe("DocumentManagementServer.Delete");

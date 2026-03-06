@@ -14,7 +14,7 @@ const documentResponse: SingleDocumentDetail[] = [
     personExternalId: '00000000',
     documentInfo: {
       fileName: 'image',
-      isSelectedForPrepareDownload: true,
+      isSelectedForPrepareDownload: true
     },
     document: 'image',
     relatedTo: null,
@@ -60,7 +60,7 @@ describe('fetchDocumentDetails', () => {
   test('should return null when status is not 200', async () => {
     const mockFailureResponse: Partial<AxiosResponse<DocumentBasicDetails>> = {
       ...mockAxiosResponse,
-      status: 404,
+      status: 404
     };
     jest
       .spyOn(service, 'post')
@@ -99,7 +99,7 @@ describe('clearAllFiles', () => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {},
+    config: {}
   };
 
   test('should return status code when response status is 200', async () => {
@@ -141,12 +141,12 @@ describe('clearAllFiles', () => {
     status: 200,
     statusText: 'OK',
     headers: {},
-    config: {},
+    config: {}
   });
 
   test('should return suggestions when API has valid values', async () => {
     const mockResponse: AxiosResponse<any> = makeAxiosResponse({
-      payload: [{ values: mockValues }],
+      payload: [{ values: mockValues }]
     });
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
@@ -162,7 +162,7 @@ describe('clearAllFiles', () => {
 
   test('should return empty array when no values present', async () => {
     const mockResponse: AxiosResponse<any> = makeAxiosResponse({
-      payload: [{ values: undefined }],
+      payload: [{ values: undefined }]
     });
 
     jest.spyOn(service, 'get').mockResolvedValueOnce(mockResponse);
@@ -412,7 +412,7 @@ describe("prepareAndDownloadFile", () => {
       status: 204,
       statusText: "No Content",
       headers: {},
-      config: {},
+      config: {}
     };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
@@ -423,7 +423,7 @@ describe("prepareAndDownloadFile", () => {
 
   test("returns error status from error.response.status", async () => {
     const error: { response: { status: number } } = {
-      response: { status: 401 },
+      response: { status: 401 }
     };
     (service.post as jest.Mock).mockRejectedValueOnce(error);
 
@@ -447,7 +447,7 @@ describe("prepareAndDownloadFile", () => {
       status: 400,
       statusText: "Bad Request",
       headers: {},
-      config: {},
+      config: {}
     };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
@@ -547,8 +547,8 @@ describe("deleteFiles API", () => {
         data: mockPayload,
         headers: {
           "Content-Type": "application/json-patch+json",
-          Authorization: expect.any(String),
-        },
+          Authorization: expect.any(String)
+        }
       }
     );
   });

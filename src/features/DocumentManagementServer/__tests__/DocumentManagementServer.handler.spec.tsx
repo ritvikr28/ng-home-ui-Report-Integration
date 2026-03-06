@@ -12,15 +12,25 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
   const original: typeof import("../logic/DocumentManagementServer.handler") = jest.requireActual("../logic/DocumentManagementServer.handler");
   return {
     ...original,
-    isInvalidDateRange: jest.fn(() => false),
+    isInvalidDateRange: jest.fn(() => false)
   };
 });
+
+const createChangeEvent = (value: string): React.ChangeEvent<HTMLInputElement> =>
+  ({
+    target: { value }
+  } as unknown as React.ChangeEvent<HTMLInputElement>);
+
+  const createSyntheticEvent: any = (): React.SyntheticEvent => {
+  const obj: any = {};
+  return obj as unknown as React.SyntheticEvent;
+};
 
 describe("DocumentManagementServer.handler", () => {
     describe("handleSearchChange", () => {
   const setup: any = (value: string) => {
     const t: (key: string) => string = (key: string) => key;
-      const e: React.ChangeEvent<HTMLInputElement> = { target: { value } } as unknown as React.ChangeEvent<HTMLInputElement>;
+      const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent(value) ;
     const setSearchTerm: any = jest.fn();
     const setSuggestions: any = jest.fn();
     const setShowSearchError: jest.Mock<void, [any]> = jest.fn();
@@ -51,8 +61,8 @@ describe("DocumentManagementServer.handler", () => {
   };
   it("should handle empty string as input", () => {
     const t: (key: string) => string = (key: string) => key;
-    const e: React.ChangeEvent<HTMLInputElement> = { target: { value: "" } } as unknown as React.ChangeEvent<HTMLInputElement>;
-    const setSearchTerm: any = jest.fn();
+    const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent("");
+      const setSearchTerm: any = jest.fn();
     const setSuggestions: any = jest.fn();
     const setShowSearchError: any = jest.fn();
     const setIsSearchLoading: any = jest.fn();
@@ -116,7 +126,7 @@ it("handles invalid event object (no value)", () => {
 });
   it("should handle empty string as input", () => {
     const t: (key: string) => string = (key: string) => key;
-    const e: React.ChangeEvent<HTMLInputElement> = { target: { value: "" } } as unknown as React.ChangeEvent<HTMLInputElement>;
+    const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent("");
     const setSearchTerm: any = jest.fn();
     const setSuggestions: any = jest.fn();
     const setShowSearchError: any = jest.fn();
@@ -154,7 +164,7 @@ it("handles invalid event object (no value)", () => {
 
   it("triggers loading for length === 3", () => {
   const t: (key: string) => string = (key: string) => key;
-  const e: React.ChangeEvent<HTMLInputElement> = { target: { value: "abc" } } as unknown as React.ChangeEvent<HTMLInputElement>;
+  const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent("abc");
   const setSearchTerm: any = jest.fn();
   const setSuggestions: any = jest.fn();
   const setShowSearchError: any = jest.fn();
@@ -185,7 +195,7 @@ it("handles invalid event object (no value)", () => {
 });
 it("calls setResetFilterSearch when value is non-empty and setResetFilterSearch is a function", () => {
   const t: (key: string) => string = (key: string) => key;
-    const e: React.ChangeEvent<HTMLInputElement> = { target: { value: "abc" } } as React.ChangeEvent<HTMLInputElement>;
+    const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent("abc");
   const setSearchTerm: any = jest.fn();
   const setSuggestions: any = jest.fn();
   const setShowSearchError: any = jest.fn();
@@ -358,7 +368,7 @@ describe("handleSuggestionClick edge cases", () => {
 
 describe("handleSearchChange boundary tests", () => {
   it("triggers loading for length === 2", () => {
-    const event = { target: { value: "abc" } } as unknown as React.ChangeEvent<HTMLInputElement>;
+    const e: React.ChangeEvent<HTMLInputElement> = createChangeEvent("abc"); ;
     const setSearchTerm: jest.Mock = jest.fn();
     const setSuggestions: jest.Mock = jest.fn();
     const setShowSearchError: jest.Mock = jest.fn();
@@ -368,7 +378,7 @@ describe("handleSearchChange boundary tests", () => {
 
     Logic.handleSearchChange({
       t,
-      e: event,
+      e,
       categoryId: [],
       fromDate: "",
       toDate: "",
@@ -477,7 +487,7 @@ describe("handleTagCloseLogic", () => {
   setup();
 
   handleTagCloseLogic({
-    event: {} as unknown as React.SyntheticEvent,
+    event: createSyntheticEvent(),
     tagName: "dummyText",
     closeObj: { name: "01 Jul 2024 to 31 Jul 2024" },
     setSelectedDateRange: mockSetSelectedDateRange,
@@ -496,7 +506,7 @@ describe("handleTagCloseLogic", () => {
     setup();
 
     handleTagCloseLogic({
-      event: {} as unknown as React.SyntheticEvent,
+      event: createSyntheticEvent(),
       tagName: "dummyText",
       closeObj: { name: "01 Jul 2024 to 31 Jul 2024" },
       setSelectedDateRange: mockSetSelectedDateRange,
@@ -525,7 +535,7 @@ describe("handleTagCloseLogic", () => {
     mockSetSelectedFormats.mockImplementation((fn: (arg0: ISelectedItem[]) => any) => fn(originalItems));
 
     handleTagCloseLogic({
-      event: {} as unknown as React.SyntheticEvent,
+      event: createSyntheticEvent(),
       tagName: "dummyText",
       closeObj: { name: nameToRemove },
       setSelectedDateRange: mockSetSelectedDateRange,
@@ -554,7 +564,7 @@ describe("handleTagCloseLogic", () => {
     setup();
 
     handleTagCloseLogic({
-      event: {} as unknown as React.SyntheticEvent,
+      event: createSyntheticEvent(),
       tagName: "dummyText",
       closeObj: { id: "123" },
       setSelectedDateRange: mockSetSelectedDateRange,

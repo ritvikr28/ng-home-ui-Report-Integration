@@ -17,13 +17,13 @@ jest.mock("@essnextgen/ui-kit", () => ({
   ),
   TooltipAlign: { Center: "center" },
   TooltipPosition: { Bottom: "bottom" },
-  Tag: ({ text }: any) => <span data-testid="tag">{text}</span>,
+  Tag: ({ text }: any) => <span data-testid="tag">{text}</span>
 }));
 
 const mockEllipsed: (value: boolean) => void = (value: boolean) => {
   mockUseIsEllipsed.mockReturnValue({
     ref: { current: document.createElement("span") },
-    isEllipsed: value,
+    isEllipsed: value
   });
 };
 

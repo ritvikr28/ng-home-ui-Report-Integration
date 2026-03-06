@@ -9,8 +9,8 @@ import { pageSizeNumber } from "../../../../public/Constants"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, applySummaryTagClass, mapTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
-import { useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, mapTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
+import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
@@ -190,24 +190,21 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     setShowErrorBanner(false);
   };
 
-
-  useEffect(() => {
-    const allRegistrationId: any[] = getAllRegistrationIds(selectedFormats);
-
-    if (!isFilterDialogOpen && isSearchTriggered && searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRelatedTo);
-
-      setIsInitialLoad(false);
-    }
-    if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
-      setIsInitialLoad(true);
-      fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRelatedTo)
-      setIsInitialLoad(false);
-    }
-    applySummaryTagClass();
-  }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
-
+  useApplySummaryTagClassOnDocDataChange({
+      selectedFormats,
+      isFilterDialogOpen,
+      isSearchTriggered,
+      searchText,
+      currentPage,
+      sortBy,
+      sortDirection,
+      searchRefExternalId,
+      documentRelatedTo,
+      setIsInitialLoad,
+      dateRange,
+      allRegistrationIds,
+      fetchGetDocumentDetails
+    });
 
   useEffect(() => {
     if (isClearSelectedCheckbox) {

@@ -15,7 +15,7 @@ jest.mock("../Views/DMSLayout", () => ({
       <br />
       {line2}
     </>
-  )),
+  ))
 }));
 
 jest.mock("../logic/DocumentManagementServer.handler", () => {
