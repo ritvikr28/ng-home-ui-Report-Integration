@@ -29,13 +29,13 @@ const t: (key: string, options?: { days?: number }) => string = (key, options) =
 };
 
 const gtmAnalytics: { pushEvent: jest.Mock } = {
-	pushEvent: jest.fn(),
+	pushEvent: jest.fn()
 };
 
 const setDownloadError: jest.Mock = jest.fn();
 
 jest.mock("../logic/DocumentManagementServer.logic", () => ({
-	fileDownload: jest.fn(() => Promise.resolve()),
+	fileDownload: jest.fn(() => Promise.resolve())
 }));
 
 describe("ViewDownloadContent", () => {
@@ -55,7 +55,7 @@ describe("ViewDownloadContent", () => {
 						fileId: "uvw123",
 						application: "app",
 						section: "sec",
-						blobName: "blob8",
+						blobName: "blob8"
 					}
 				];
 				render(
@@ -89,7 +89,7 @@ describe("ViewDownloadContent", () => {
 						fileId: "uvw123",
 						application: "app",
 						section: "sec",
-						blobName: "blob8",
+						blobName: "blob8"
 					}
 				];
 				render(
@@ -124,7 +124,7 @@ describe("ViewDownloadContent", () => {
 					fileId: "xyz123",
 					application: "app",
 					section: "sec",
-					blobName: "blob7",
+					blobName: "blob7"
 				}
 			];
 			render(
@@ -213,7 +213,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "abc123",
 				application: "app",
 				section: "sec",
-				blobName: "blob1",
+				blobName: "blob1"
 			}
 		];
 		render(
@@ -250,7 +250,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "def456",
 				application: "app",
 				section: "sec",
-				blobName: "blob2",
+				blobName: "blob2"
 			}
 		];
 		render(
@@ -283,7 +283,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "id3",
 				application: "app",
 				section: "sec",
-				blobName: "blob3",
+				blobName: "blob3"
 			},
 			{
 				name: "file4.pdf",
@@ -291,7 +291,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "id4",
 				application: "app",
 				section: "sec",
-				blobName: "blob4",
+				blobName: "blob4"
 			}
 		];
 		render(
@@ -327,7 +327,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "ghi789",
 				application: "app",
 				section: "sec",
-				blobName: "blob5",
+				blobName: "blob5"
 			}
 		];
 		(fileDownload as jest.Mock).mockResolvedValueOnce(undefined);
@@ -375,7 +375,7 @@ describe("ViewDownloadContent", () => {
 				fileId: "jkl012",
 				application: "app",
 				section: "sec",
-				blobName: "blob6",
+				blobName: "blob6"
 			}
 		];
 		(fileDownload as jest.Mock).mockRejectedValueOnce(new Error("fail"));

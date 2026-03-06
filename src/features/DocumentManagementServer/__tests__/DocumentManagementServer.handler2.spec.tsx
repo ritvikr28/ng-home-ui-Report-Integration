@@ -15,7 +15,15 @@ jest.mock("../logic/DocumentManagementServer.handler", () => {
   };
 });
 
+const createChangeEvent = (value: string): React.ChangeEvent<HTMLInputElement> =>
+  ({
+    target: { value }
+  } as unknown as React.ChangeEvent<HTMLInputElement>);
 
+  const createSyntheticEvent: any = (): React.SyntheticEvent => {
+  const obj: any = {};
+  return obj as unknown as React.SyntheticEvent;
+};
 
 describe("handleBulkDeleteLogic", () => {
   let setShowToastNotification: jest.Mock;
@@ -684,7 +692,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
   });
 
   const baseArgs: any = {
-    e: {} as unknown as React.SyntheticEvent,
+    e: createSyntheticEvent(),
     selectedItem: { value: "Prepare download" },
     totalSelectedCount: 1,
     isHeaderBoxChecked: false,
@@ -799,7 +807,7 @@ describe("handleEditSelectedOverFlowMenu", () => {
 
   it("clears suggestions and loading for whitespace-only input", () => {
     const t: any = (key: string) => key;
-    const event: any = { target: { value: "   " } } as unknown as React.ChangeEvent<HTMLInputElement>;
+    const event: React.ChangeEvent<HTMLInputElement> = createChangeEvent("   ");
     const setSearchTerm: any = jest.fn();
     const setSuggestions: any = jest.fn();
     const setShowSearchError: any = jest.fn();
