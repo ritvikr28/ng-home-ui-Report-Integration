@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import * as UIKit from "@essnextgen/ui-kit";
-import { Sims7RedirectionsPage } from '../Sims7RedirectionsPage.view';
+import { Sims7RedirectionsPage, loadSims7RedirectionsData } from '../Sims7RedirectionsPage.view';
 import * as api from '../Sims7RedirectionsPage.api';
 
 jest.mock('../Sims7RedirectionsPage.api', () => ({
@@ -12,7 +12,7 @@ jest.mock('../Sims7RedirectionsPage.api', () => ({
         ngComponent: 'TestCat',
         ngModule: 'TestNextGen',
         sims7Module: 'TestSIMS7',
-        updatedBy: 'TestUser',
+        updatedByUserName: 'TestUser',
         effectiveDate: '2026-02-18T00:00:00',
         redirectStatus: 'PLANNED',
         tooltipMessage: 'Test tooltip',
@@ -35,7 +35,7 @@ describe('Sims7RedirectionsPage', () => {
                         ngComponent: 'TestCat',
                         ngModule: 'TestNextGen',
                         sims7Module: 'TestSIMS7',
-                        updatedBy: 'TestUser',
+                        updatedByUserName: 'TestUser',
                         effectiveDate: '2026-02-18T00:00:00',
                         redirectStatus: 'PLANNED',
                         tooltipMessage: 'Test tooltip',
@@ -71,7 +71,7 @@ describe('Sims7RedirectionsPage', () => {
               render(<Sims7RedirectionsPage />);
               const filterBtn = await screen.findByText('Filter');
               fireEvent.click(filterBtn);
-              const applyBtn = screen.getByText('Apply');
+              const applyBtn = screen.getByText((text) => text.trim() === 'Apply');
               fireEvent.click(applyBtn);
               await waitFor(() => {
                 expect(api.fetchSims7Redirections).toHaveBeenCalled();
@@ -164,18 +164,95 @@ describe('Sims7RedirectionsPage', () => {
     render(<Sims7RedirectionsPage />);
   });
 
-  it('shows API failure message on API error', async () => {
-    (api.fetchSims7Redirections as jest.Mock).mockRejectedValueOnce(new Error('API failed'));
-    render(<Sims7RedirectionsPage />);
-    await waitFor(() => {
-      expect(screen.getByText(/apiFailureMessage/i)).toBeInTheDocument();
-    });
-  });
+  // it('shows API failure message on API error', async () => {
+  //   (api.fetchSims7Redirections as jest.Mock).mockRejectedValueOnce(new Error('API failed'));
+  //   render(<Sims7RedirectionsPage />);
+  //   await waitFor(() => {
+  //     expect(screen.getByText(/apiFailureMessage/i)).toBeInTheDocument();
+  //   });
+  // });
 
   it('shows empty state when API returns empty array', async () => {
     (api.fetchSims7Redirections as jest.Mock).mockResolvedValueOnce([]);
     render(<Sims7RedirectionsPage />);
     await waitFor(() => {
     });
+  });
+  it('renders empty state when no data and not loading', async () => {
+    (api.fetchSims7Redirections as jest.Mock).mockResolvedValue({ items: [], totalItems: 0 });
+    render(<Sims7RedirectionsPage />);
+    await waitFor(() => {
+      expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    });
+  });
+
+  it('renders notification banner when API fails and no data', async () => {
+    (api.fetchSims7Redirections as jest.Mock).mockRejectedValue(new Error('API failed'));
+    render(<Sims7RedirectionsPage />);
+    await waitFor(() => {
+      expect(screen.getByText(/apiFailureMessage/i)).toBeInTheDocument();
+    });
+  });
+
+  it('handles sorting logic and updates sort state', async () => {
+    render(<Sims7RedirectionsPage />);
+    const categoryHeader = screen.getByText('Category');
+    fireEvent.click(categoryHeader);
+    expect(categoryHeader).toBeInTheDocument();
+  });
+});
+
+describe('loadSims7RedirectionsData', () => {
+  it('sets loading, calls API, and updates state on success', async () => {
+    const mockPayload = { items: [{ id: 1 }], totalItems: 1 };
+    jest.spyOn(api, 'fetchSims7Redirections').mockResolvedValueOnce(mockPayload);
+    const setApiFailed = jest.fn();
+    const setOriginalTableData = jest.fn();
+    const setTotalItems = jest.fn();
+    const setLoading = jest.fn();
+
+    await loadSims7RedirectionsData({
+      sortColumn: 'Category',
+      sortOrder: 'asc',
+      currentPage: 1,
+      pageSize: 10,
+      searchTagList: [],
+      setApiFailed,
+      setOriginalTableData,
+      setTotalItems,
+      setLoading,
+    });
+
+    expect(setLoading).toHaveBeenCalledWith(true);
+    expect(api.fetchSims7Redirections).toHaveBeenCalled();
+    expect(setApiFailed).toHaveBeenCalledWith(false);
+    expect(setOriginalTableData).toHaveBeenCalledWith(expect.any(Array));
+    expect(setTotalItems).toHaveBeenCalledWith(1);
+    expect(setLoading).toHaveBeenCalledWith(false);
+  });
+
+  it('sets error state and resets data on API failure', async () => {
+    jest.spyOn(api, 'fetchSims7Redirections').mockRejectedValueOnce(new Error('fail'));
+    const setApiFailed = jest.fn();
+    const setOriginalTableData = jest.fn();
+    const setTotalItems = jest.fn();
+    const setLoading = jest.fn();
+
+    await loadSims7RedirectionsData({
+      sortColumn: 'Category',
+      sortOrder: 'asc',
+      currentPage: 1,
+      pageSize: 10,
+      searchTagList: [],
+      setApiFailed,
+      setOriginalTableData,
+      setTotalItems,
+      setLoading,
+    });
+
+    expect(setApiFailed).toHaveBeenCalledWith(true);
+    expect(setOriginalTableData).toHaveBeenCalledWith([]);
+    expect(setTotalItems).toHaveBeenCalledWith(0);
+    expect(setLoading).toHaveBeenCalledWith(false);
   });
 });

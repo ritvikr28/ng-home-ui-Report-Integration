@@ -35,6 +35,7 @@ import {
 import { mapSims7RedirectionsItem } from "./Sims7RedirectionsMapper";
 import { fetchSims7Redirections } from "./Sims7RedirectionsPage.api";
 import { handleOverflowAction, getNextSortOrder } from "./Sims7RedirectionsPage.handlers";
+import { setLoadingTrue, setLoadingFalse, fetchRedirections, handleApiSuccess, handleApiFailure } from './Sims7RedirectionsPage.view.helpers';
 
 interface DropdownItemType {
     id: string;
@@ -43,7 +44,7 @@ interface DropdownItemType {
 }
 const dropdownItems: DropdownItemType[] = [
     { id: "1", text: "Migrated", value: "Migrated" },
-    { id: "2", text: "Not Migrated", value: "NotMigrated" },
+    { id: "2", text: "Not migrated", value: "NotMigrated" },
     { id: "3", text: "Planned", value: "Planned" },
     { id: "4", text: "Permanent", value: "Permanent" },
     { id: "5", text: "Reversing", value: "Reversing" },
@@ -51,60 +52,27 @@ const dropdownItems: DropdownItemType[] = [
     { id: "7", text: "Cancelled", value: "Cancelled" }
 ];
 
-interface LoadSims7RedirectionsDataArgs {
+export interface LoadSims7RedirectionsDataArgs {
     sortColumn: string;
     sortOrder: "asc" | "desc";
     currentPage: number;
     pageSize: number;
     searchTagList: ISelectedItem[];
     setApiFailed: React.Dispatch<React.SetStateAction<boolean>>;
-    setOriginalTableData: React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>;
+    setOriginalTableData: React.Dispatch<React.SetStateAction<any[]>>;
     setTotalItems: React.Dispatch<React.SetStateAction<number>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const loadSims7RedirectionsData: (
-    args: LoadSims7RedirectionsDataArgs
-) => Promise<void> = async ({
-    sortColumn,
-    sortOrder,
-    currentPage,
-    pageSize,
-    searchTagList,
-    setApiFailed,
-    setOriginalTableData,
-    setTotalItems,
-    setLoading
-}) => {
-
+export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
+    setLoadingTrue(args.setLoading);
     try {
-        setLoading(true);
-
-        const payload : any= await fetchSims7Redirections({
-            SortColumnName: sortColumn || undefined,
-            SortOrder: sortOrder === "asc" ? "ASC" : "DESC",
-            PageNumber: currentPage,
-            PageSize: pageSize,
-            SearchFilter: searchTagList
-                .map((item) => item.value)
-                .filter((value): value is string => typeof value === "string")
-        });
-
-        setApiFailed(false);
-
-        setOriginalTableData(
-            payload.items.map(mapSims7RedirectionsItem)
-        );
-
-        setTotalItems(payload.totalItems);
-
-    } catch (error: unknown) {
-        setApiFailed(true);
-        setOriginalTableData([]);
-        setTotalItems(0);
-        console.error("Sims7Redirections API failed:", error);
+        const payload = await fetchRedirections(args);
+        handleApiSuccess(payload, args);
+    } catch (error) {
+        handleApiFailure(args, error);
     } finally {
-        setLoading(false);
+        setLoadingFalse(args.setLoading);
     }
 };
 
@@ -407,8 +375,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                         const text: string = (e.target as HTMLElement).innerText.trim();
                         handleOverflowAction(text, rowData, handleViewClick, handleEditClick);
                     }}
-                    // ...existing code...
-// Helper to handle overflow actions (reduces complexity)
+                    // Helper to handle overflow actions (reduces complexity)
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
                     isSearchHideClearIcon
                     dynamicTableLoader={loading}
@@ -479,6 +446,19 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     selectedRow={selectedRow}
                     t={t}
                     setSidePanelMode={setSidePanelMode}
+                    onSaveSuccess={async () => {
+                        setLoading(true);
+                        const payload = await fetchSims7Redirections({
+                            SortColumnName: sortColumn,
+                            SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
+                            PageNumber: currentPage,
+                            PageSize: pageSize,
+                            SearchFilter: searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
+                        });
+                        setOriginalTableData((payload.items || []).map(mapSims7RedirectionsItem));
+                        setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
+                        setLoading(false);
+                    }}
                 />
             </div>
         </div>

@@ -34,8 +34,9 @@ const mockPayload = {
     ngModule: "NextGenModule",
     sims7Module: "SIMS7Module",
     redirectStatus: "PLANNED",
-    updatedBy: "TestUser",
-    effectiveDate: "2026-02-18T00:00:00"
+    updatedByUserName: "TestUser",
+    effectiveDate: "2026-02-18T00:00:00",
+    nextGenComponentUrl: "https://example.com/module/NextGenModule"
   }
 };
 
@@ -92,7 +93,7 @@ describe("Sims7RedirectionsView", () => {
     const data = {
       payload: {
         ...mockPayload.payload,
-        updatedBy: "-"
+        updatedByUserName: "-"
       }
     };
 

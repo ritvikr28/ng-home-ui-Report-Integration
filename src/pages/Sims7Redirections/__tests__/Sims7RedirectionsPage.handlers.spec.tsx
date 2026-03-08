@@ -13,7 +13,9 @@ describe('handleOverflowAction', () => {
     tooltipMessage: '',
     cellStatus: '',
     actions: { options: [] },
-    reasonForChanges: ''
+    reasonForChanges: '',
+    dfeNumber: '',
+    ngModuleComponentUrl: ''
   };
 
   it('calls handleViewClick when action is "View"', () => {

@@ -51,7 +51,6 @@ export const fetchSims7Redirections = async (query?: Sims7RedirectionsQuery): Pr
     return { items: [], totalItems: 0 };
 };
 
-
 export interface Sims7RedirectionViewData {
   moduleId: number;
   organisationId: number;
@@ -69,14 +68,38 @@ export interface Sims7RedirectionViewData {
 }
 
 export async function fetchSims7RedirectionById({
-  moduleId
+    moduleId
 }: {
-  moduleId: number;
+    moduleId: number | string;
 }): Promise<Sims7RedirectionViewData> {
-  return (
-    await service.get(
-      `/v1/sims7-redirection/detailsbyid?ModuleId=${moduleId}`,
-      envConfig.BASE_URL
-    )
-  ).data;
+    const moduleIdStr = String(moduleId);
+    return (
+        await service.get(
+            `/v1/sims7-redirection/detailsbyid?Id=${moduleIdStr}`,
+            envConfig.BASE_URL
+        )
+    ).data;
 }
+
+// PUT API to update Sims7Redirection
+export interface UpdateSims7RedirectionRequest {
+    id: string;
+    dfeNumber: string;
+    ngModule: string;
+    ngComponent: string;
+    switchToSchool: boolean;
+    effectiveDate: string;
+    PlannedStatus: string;
+    reasonForChange: string;
+}
+
+export const updateSims7Redirection: (data: UpdateSims7RedirectionRequest) => Promise<any> = async (
+    data: UpdateSims7RedirectionRequest
+): Promise<any> => {
+    const response: AxiosResponse<any> = await service.put(
+        "/v1/sims7-redirection/update",
+        data,
+        envConfig.BASE_URL
+    );
+    return response.data;
+};
