@@ -20,6 +20,8 @@ export interface Sims7RedirectionsTableRow {
         }[];
     };
     reasonForChanges?: string;
+    dfeNumber: string;
+    ngModuleComponentUrl: string;
 }
 
 export interface Sims7RedirectionsTableHeader {
@@ -54,6 +56,18 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         text: "Next Gen module",
         isShow: true,
         showValAs: ShowValAs.CustomeComponent,
+        // anyComponent: (value: string) => {
+        //     if (!value) return null;
+        //     const isTruncated: boolean = value.length > 19;
+        //     const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
+        //     // Always use the backend URL as-is
+        //     return (
+        //         <a href={value} target="_blank" rel="noopener noreferrer">
+        //             {displayText}
+        //         </a>
+        //     );
+        // }
+
         anyComponent: (value: string) => {
             if (!value) return null;
             const isTruncated: boolean = value.length > 19;
@@ -63,7 +77,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                     <Tooltip content={<span>{value}</span>}>
                         <span>
                             <a
-                                href={`https://example.com/module/${encodeURIComponent(value)}`}
+                                href={value}
                                 target="_blank"
                                 className="truncated-link"
                                 rel="noopener noreferrer"
@@ -75,9 +89,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                 );
             }
             return (
-                <a href={`https://example.com/module/${encodeURIComponent(value)}`}
-                    target="_blank"
-                    rel="noopener noreferrer">
+                <a href={value} target="_blank" rel="noopener noreferrer">
                     {displayText}
                 </a>
             );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { getStatusTagColor, ModifiedByField, EffectiveDateField, ReasonForChangesField, EditButton } from '../Sims7RedirectionsViewHelpers';
+import { getStatusTagColor, ModifiedByField, EffectiveDateField, ReasonForChangesField, EditButton, getRedirectToNextGenText } from '../Sims7RedirectionsViewHelpers';
 
 describe('getStatusTagColor', () => {
   it('returns Success for Permanent', () => {
@@ -76,5 +76,26 @@ describe('EditButton', () => {
     const setSidePanelMode: jest.Mock<any, any> = jest.fn();
     const { container }: { container: HTMLElement } = render(<EditButton status="Permanent" t={t} setSidePanelMode={setSidePanelMode} />);
     expect(container).toBeEmptyDOMElement();
+  });
+});
+
+describe('getRedirectToNextGenText', () => {
+  it('returns Yes for migrated', () => {
+    expect(getRedirectToNextGenText('migrated')).toBe('Yes');
+  });
+  it('returns Yes for permanent', () => {
+    expect(getRedirectToNextGenText('permanent')).toBe('Yes');
+  });
+  it('returns Yes for planned', () => {
+    expect(getRedirectToNextGenText('planned')).toBe('Yes');
+  });
+  it('returns No for undefined', () => {
+    expect(getRedirectToNextGenText(undefined)).toBe('No');
+  });
+  it('returns No for not migrated', () => {
+    expect(getRedirectToNextGenText('not migrated')).toBe('No');
+  });
+  it('returns No for random status', () => {
+    expect(getRedirectToNextGenText('random')).toBe('No');
   });
 });
