@@ -400,7 +400,7 @@
     "invitationConflict": "Gwrthdaro gwahoddiad",
     "invitationConflictDescription": "Mae gwrthdaro gwahoddiad gyda rhai defnyddwyr ar y rhestr hon oherwydd maent yn gysylltiedig â mwy nag un cyfrif SIMS ID. Cysylltwch â'ch darparwr cymorth SIMS.",
     "invitationRequest": "Invitation requests",
-    "invitationRequestDescription": "There are invitation requests from some users on this list.",
+    "invitationRequestDescription": "You have pending invite requests. Use the Invitation status filters to view and take action.",
     "cancel": "Canslo",
     "save": "Arbed",
     "pleaseWaitLoader": "Arhoswch os gwelwch yn dda"
