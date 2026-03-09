@@ -1,5 +1,6 @@
 import { ShowValAs, TagColor, Tooltip } from "@essnextgen/ui-kit";
 import { ReactNode } from "react";
+import { nextGenModuleUrlMap } from './Sims7RedirectionsMapper';
 
 export interface Sims7RedirectionsTableRow {
     id: string;
@@ -70,8 +71,6 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
 
         anyComponent: (value: string) => {
             if (!value) return null;
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const { nextGenModuleUrlMap } = require('./Sims7RedirectionsMapper');
             const url = nextGenModuleUrlMap[value] || value;
             const isTruncated: boolean = value.length > 19;
             const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
