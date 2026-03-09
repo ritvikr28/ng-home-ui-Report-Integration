@@ -118,6 +118,7 @@ export function mapSims7RedirectionsItem(item: any, idx: number): Sims7Redirecti
         reasonForChanges: getFieldFromApi(item, "reasonForChanges"),
         // Always include dfeNumber for use in side panel PUT request
         dfeNumber: item.dfeNumber || item.DfeNumber || "",
-        ngModuleComponentUrl: getFieldFromApi(item, "ngModuleComponentUrl")
+        ngModuleComponentUrl: getFieldFromApi(item, "ngModuleComponentUrl"),
+        previousDate: getFieldFromApi(item, "previousDate")
     };
 }

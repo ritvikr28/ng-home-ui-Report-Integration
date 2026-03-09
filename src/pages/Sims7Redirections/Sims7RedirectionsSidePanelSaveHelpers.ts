@@ -57,9 +57,9 @@ export function buildRequest(updatedRow: any, effectiveDateStr: string, previous
   let reasonForChangeFinal = updatedRow.reasonForChanges || updatedRow.reasonForChange || "";
   const plannedStatusFinal = updatedRow.plannedStatus || getBackendStatus(updatedRow.status);
   // If previous status was 'Reversing' and plannedStatus is 'Migrated', send empty effectiveDate
-  if ((previousStatus === 'Reversing' && plannedStatusFinal === 'Migrated') ||
-      (previousStatus === 'Planned' && plannedStatusFinal === 'NotMigrated')) {
-    effectiveDateFinal = "";
+  if ((previousStatus === 'Reversing' && plannedStatusFinal === 'Migrated')) {
+    effectiveDateFinal = updatedRow.previousDate || "";
+    console.log('Using previousDate for effectiveDateFinal:', updatedRow.previousDate);
   }
   // If previous status was 'Reversing', always send empty reasonForChange
   if (previousStatus === 'Reversing') {

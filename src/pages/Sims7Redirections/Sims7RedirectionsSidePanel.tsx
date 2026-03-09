@@ -153,6 +153,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             const { getEffectiveDateStr } = require('./Sims7RedirectionsSidePanelSaveHelpers');
             const effectiveDateStr = getEffectiveDateStr(effectiveDate);
             const updatedRow = { ...selectedRow };
+            console.log('selectedRow.previousDate:', selectedRow.previousDate);
             await handleStatusLogic(updatedRow, redirectToNextGen, effectiveDate, reasonForChanges);
             const dfeNumber = updatedRow.dfeNumber || updatedRow.DfeNumber;
             if (!dfeNumber) {
