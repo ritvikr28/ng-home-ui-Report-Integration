@@ -3,12 +3,13 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const { ProvidePlugin } = require("webpack");
 const Dotenv = require("dotenv-webpack");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const webpackBaseRules = [
   {
     test: /\.s?(c|a)ss$/i,
     use: [
-      "style-loader",
+      MiniCssExtractPlugin.loader,
       "css-loader",
       "resolve-url-loader",
       {
@@ -92,6 +93,9 @@ const webpackBasePlugins = [
         to: path.resolve(__dirname, "../../public/assets/images/spritemap.svg")
       }
     ]
+  }),
+  new MiniCssExtractPlugin({
+    filename: "[name].[contenthash].css",
   })
 ];
 

@@ -44,9 +44,7 @@ import { IAppModule } from "./types/AppPermission";
 import NewHomepageView from "./pages/NewHomePage/NewHomePage.view";
 import { envConfig, isAuthzUserAdmin, service } from "./shared/utils";
 import PageNotFound from "./pages/PageNotFound/PageNotFound";
-import AdminConsole from "./features/AdminConsole/AdminConsole.view";
 import DBManagement from "./features/DBManagement/DBManagement.view";
-import SIMSIDAdminPageView from "./pages/SIMSIDAdminPage/SIMSIDAdminPage.view";
 import UnAuthorisedAccess from "./pages/AdminConsoleNoAccess/AdminConsoleNoAccess.view";
 // import UAM from "./features/AdminConsole/UAM.view";
 import {
@@ -54,16 +52,28 @@ import {
   isOrganisationInVariantForAnyOrAll
 } from "./shared/utils/flagr-utils";
 import EarlyAdpterPage from "./pages/EarlyAdopter/EarlyAdopterPage.view";
-import DocumentManagementServer from "./features/DocumentManagementServer/Views/DocumentManagementServer.view";
 import InviteUsersLogic from "./pages/InviteUsers";
 import SystemStatus from "./features/SystemStatusAlerts/SystemStatus.view";
 // import { useSimsConnectedBanner } from "./shared/hooks/useSimsConnectedBanner";
-import NotificationsLogic from "./features/MainPanel/Notifications/Notifications.logic";
-import Sims7RedirectionsLayout from "./pages/Sims7Redirections/Sims7RedirectionsLayout.logic";
 
 const NoAccess: LazyExoticComponent<FC<{}>> = lazy(
   () => import("./pages/NoAccess")
 );
+const DocumentManagementServer: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/DocumentManagementServer/Views/DocumentManagementServer.view")
+);
+const Sims7RedirectionsLayout: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./pages/Sims7Redirections/Sims7RedirectionsLayout.logic")
+);
+const NotificationsLogic: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/MainPanel/Notifications/Notifications.logic")
+);
+const AdminConsole: LazyExoticComponent<FC<{}>> = lazy(
+  () => import("./features/AdminConsole/AdminConsole.view")
+);
+
+const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view"));
+
 
 export const sendNotificationFlagr: boolean = hasFeaturePermission(
   `${envConfig.APPLICATION}`,
