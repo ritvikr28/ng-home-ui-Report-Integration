@@ -27,6 +27,10 @@ export const InviteUsersLogic: () => JSX.Element = () => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = useState<boolean>(false);
+  const [showInvitationRequestBanner, setshowInvitationRequestBanner]: [
+    boolean,
+    React.Dispatch<React.SetStateAction<boolean>>
+  ] = useState<boolean>(false);
 
   useEffect(() => {
     gtmAnalytics.pushPageViewEvent();   
@@ -38,6 +42,7 @@ export const InviteUsersLogic: () => JSX.Element = () => {
   ) => {
     setLoader(true);
     setshowInvitationConflictBanner(false);
+    setshowInvitationRequestBanner(false);
     setCurrentPage(handlepageCount);
   };
 
@@ -54,6 +59,8 @@ export const InviteUsersLogic: () => JSX.Element = () => {
       handlePageChange={handlePageChange}
       showInvitationConflictBanner={showInvitationConflictBanner}
       setshowInvitationConflictBanner={setshowInvitationConflictBanner}
+      showInvitationRequestBanner={showInvitationRequestBanner}
+      setshowInvitationRequestBanner={setshowInvitationRequestBanner}
       isSearchLoader={isSearchLoader}
       setSearchLoader={setSearchLoader}
     />

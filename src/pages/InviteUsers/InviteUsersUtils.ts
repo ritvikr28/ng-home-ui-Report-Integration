@@ -85,6 +85,7 @@ export const fetchInviteUserDetails: (props: IPaginationOptions) => Promise<any[
     setTotalPage,
     setShowErrorBanner,
     setshowInvitationConflictBanner,
+    setshowInvitationRequestBanner,
     setNoDataTextToDisplay
   }: IPaginationOptions = props;
   try {
@@ -94,6 +95,14 @@ export const fetchInviteUserDetails: (props: IPaginationOptions) => Promise<any[
       setshowInvitationConflictBanner(
         InviteUsersData[0]?.payload.some(
           (x: any) => x?.invitationStatus === "Invite conflict"
+        )
+      );
+    }
+
+    if (setshowInvitationRequestBanner) {
+      setshowInvitationRequestBanner(
+        InviteUsersData[0]?.payload.some(
+          (x: any) => x?.invitationStatus === "Invite requested"
         )
       );
     }
@@ -172,7 +181,8 @@ export const inviteUsersSorting: (options: InviteUsersSortingOptions) => Promise
       setUsersTableData,
       setLoader,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     },
     pagination: { pageNumber, pageSize }
     // searchAndStatusFilter,
@@ -205,6 +215,7 @@ export const inviteUsersSorting: (options: InviteUsersSortingOptions) => Promise
     sortDirection: options.newDirection,
     setShowErrorBanner,
     setshowInvitationConflictBanner,
+    setshowInvitationRequestBanner,
     searchAndStatusFilter: options.searchAndStatusFilter
   }).then((res) => {
     setLoader(false);
