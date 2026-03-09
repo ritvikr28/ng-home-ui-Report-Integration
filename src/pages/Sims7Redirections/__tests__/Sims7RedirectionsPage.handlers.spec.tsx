@@ -15,7 +15,8 @@ describe('handleOverflowAction', () => {
     actions: { options: [] },
     reasonForChanges: '',
     dfeNumber: '',
-    ngModuleComponentUrl: ''
+    ngModuleComponentUrl: '',
+    previousDate: ''
   };
 
   it('calls handleViewClick when action is "View"', () => {

@@ -23,6 +23,7 @@ export interface Sims7RedirectionsTableRow {
     reasonForChanges?: string;
     dfeNumber: string;
     ngModuleComponentUrl: string;
+    previousDate: string;
 }
 
 export interface Sims7RedirectionsTableHeader {

@@ -765,7 +765,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               {
                 isShow: !!showInvitationRequestBanner,
                 variant: "warning",
-                title: `${t("invitePerson.invitatioRequest")}`,
+                title: `${t("invitePerson.invitationRequest")}`,
                 message: `${t("invitePerson.invitationRequestDescription")}`,
                 autoclose: true
               },
