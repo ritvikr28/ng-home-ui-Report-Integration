@@ -1,4 +1,6 @@
 import { Sims7RedirectionsTableRow } from "./Sims7RedirectionsPage.data";
+// Global map for module name to URL
+export const nextGenModuleUrlMap: Record<string, string> = {};
 
 export function formatDateDDMMYYYY(dateStr: string): string | null {
     const match: RegExpMatchArray | null = dateStr.match(/^(\d{2}) (\d{2}) (\d{4})$/);
@@ -85,6 +87,12 @@ export function getFieldFromApi(item: any, field: string): string {
 }
 export function mapSims7RedirectionsItem(item: any, idx: number): Sims7RedirectionsTableRow {
     const ngModuleComponentUrl = getFieldFromApi(item, "ngModuleComponentUrl");
+
+    const moduleName = getFieldFromApi(item, "nextGenModule");
+    if (moduleName && ngModuleComponentUrl) {
+        nextGenModuleUrlMap[moduleName] = ngModuleComponentUrl;
+    }
+
     console.log("ngModuleComponentUrl:", ngModuleComponentUrl);
     return {
         id: getFieldFromApi(item, "id") || (item && item.moduleId ? String(item.moduleId) : (idx + 1).toString()),
@@ -110,6 +118,6 @@ export function mapSims7RedirectionsItem(item: any, idx: number): Sims7Redirecti
         reasonForChanges: getFieldFromApi(item, "reasonForChanges"),
         // Always include dfeNumber for use in side panel PUT request
         dfeNumber: item.dfeNumber || item.DfeNumber || "",
-        ngModuleComponentUrl
+        ngModuleComponentUrl: getFieldFromApi(item, "ngModuleComponentUrl")
     };
 }
