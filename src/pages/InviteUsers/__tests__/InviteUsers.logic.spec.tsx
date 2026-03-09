@@ -49,7 +49,8 @@ describe("InviteUsersLogic", () => {
       .mockImplementationOnce(() => [false, jest.fn()]) // isLoader
       .mockImplementationOnce(() => [false, jest.fn()]) // isSearchLoader
       .mockImplementationOnce(() => [[], jest.fn()]) // usersTableData
-      .mockImplementationOnce(() => [true, setBannerSpy]); // showInvitationConflictBanner
+      .mockImplementationOnce(() => [true, setBannerSpy]) // showInvitationConflictBanner
+      .mockImplementationOnce(() => [true, setBannerSpy]); // showInvitationRequestBanner
 
     render(<InviteUsersLogic />);
     // Click the button to change page

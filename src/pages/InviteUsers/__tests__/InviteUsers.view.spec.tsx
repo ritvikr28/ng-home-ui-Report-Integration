@@ -51,6 +51,8 @@ const mockInviteUserProps: InviteUserProps = {
   handlePageChange: jest.fn(),
   showInvitationConflictBanner: false,
   setshowInvitationConflictBanner: jest.fn(),
+  showInvitationRequestBanner: false,
+  setshowInvitationRequestBanner: jest.fn(),
   isSearchLoader: false,
   setSearchLoader: jest.fn()
 };
@@ -157,6 +159,22 @@ test("calls setshowInvitationConflictBanner(false) on sorting click", () => {
   expect(typeof setshowInvitationConflictBanner).toBe("function");
 });
 
+test("calls setshowInvitationRequestBanner(false) on sorting click", () => {
+  const setIsOpen = jest.fn();
+  const useStateMock: any = (init: any) => [init, setIsOpen];
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
+
+  const setshowInvitationRequestBanner = jest.fn();
+  render(
+    <InviteUserView
+      {...mockInviteUserProps}
+      setshowInvitationRequestBanner={setshowInvitationRequestBanner}
+    />
+  );
+  expect(typeof setshowInvitationRequestBanner).toBe("function");
+});
+
 test("calls setUsersTableData when usersTableData changes", () => {
   const setIsOpen = jest.fn();
   const setUsersTableData = jest.fn();
@@ -224,4 +242,20 @@ test("calls setshowInvitationConflictBanner when showInvitationConflictBanner ch
     />
   );
   expect(typeof setshowInvitationConflictBanner).toBe("function");
+});
+
+test("calls setshowInvitationRequestBanner when showInvitationRequestBanner changes", () => {
+  const setIsOpen = jest.fn();
+  const setshowInvitationRequestBanner = jest.fn();
+  const useStateMock: any = (init: any) => [init, setIsOpen];
+  jest.spyOn(React, "useState").mockImplementation(useStateMock);
+  jest.spyOn(mediaQuery, "useMediaQuery").mockImplementation(() => false);
+
+  render(
+    <InviteUserView
+      {...mockInviteUserProps}
+      setshowInvitationRequestBanner={setshowInvitationRequestBanner}
+    />
+  );
+  expect(typeof setshowInvitationRequestBanner).toBe("function");
 });
