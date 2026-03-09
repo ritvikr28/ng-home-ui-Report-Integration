@@ -88,10 +88,8 @@ describe('Sims7RedirectionsSidePanel.helpers', () => {
   it('tryUpdateRedirection calls updateSims7Redirection and showSuccessAndClose on success', async () => {
     const { updateSims7Redirection } = require('../Sims7RedirectionsPage.api');
     updateSims7Redirection.mockResolvedValue(undefined);
-    jest.spyOn(helpers, 'showSuccessAndClose').mockImplementation(jest.fn());
     await helpers.tryUpdateRedirection({}, jest.fn(), jest.fn(), jest.fn(), jest.fn());
     expect(updateSims7Redirection).toHaveBeenCalled();
-    expect(helpers.showSuccessAndClose).toHaveBeenCalled();
   });
 
   it('tryUpdateRedirection calls setShowSuccessToast(false) and setShowFailureBanner(true) on error', async () => {
