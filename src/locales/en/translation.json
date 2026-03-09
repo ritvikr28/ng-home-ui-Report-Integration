@@ -464,8 +464,8 @@
     "learnMoreInvitePerson": "Learn more about Invite Users",
     "invitationConflict": "Invitation conflict",
     "invitationConflictDescription": "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact your SIMS support provider.",
-    "invitationRequest": "Invitation requests",
-    "invitationRequestDescription": "You have pending invite requests. Use the Invitation status filters to view and take action.",
+    "invitationRequest": "Pending requests",
+    "invitationRequestDescription": "You have {0} pending invite requests. Use the Invitation status filters to view and take action.",
     "cancel": "Cancel",
     "save": "Save",
     "pleaseWaitLoader": "Please wait"
