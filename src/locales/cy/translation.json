@@ -522,7 +522,11 @@
     "privateFilesBannerTitle": "Private documents from SIMS 7 need your review",
     "privateFilesBannerDescription": "SIMS Next Gen doesn’t support the private privacy status. To access these documents in SIMS Next Gen, please review them and update their status to public or confidential. ",
     "manageDocuments": "Manage documents",
-    "managePrivateSidePanelTitle": "Manage private documents"
+    "managePrivateSidePanelTitle": "Manage private documents",
+    "privateFilesDescription": "Please review your private documents individually in the table below and update their privacy status to Public or Confidential, or delete them if they are no longer needed.",
+    "privateDocuments": "Private documents",
+    "privateDocHelpText": "Alternatively, you can update all of your private documents to Confidential status.",
+    "privateDocButtonText": "Convert all to confidential"
   },
   "Filter": {
     "heading": "Chwilio uwch",
