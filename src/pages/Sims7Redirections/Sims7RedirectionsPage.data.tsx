@@ -70,6 +70,9 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
 
         anyComponent: (value: string) => {
             if (!value) return null;
+            // eslint-disable-next-line @typescript-eslint/no-var-requires
+            const { nextGenModuleUrlMap } = require('./Sims7RedirectionsMapper');
+            const url = nextGenModuleUrlMap[value] || value;
             const isTruncated: boolean = value.length > 19;
             const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
             if (isTruncated) {
@@ -77,7 +80,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                     <Tooltip content={<span>{value}</span>}>
                         <span>
                             <a
-                                href={value}
+                                href={url}
                                 target="_blank"
                                 className="truncated-link"
                                 rel="noopener noreferrer"
@@ -89,7 +92,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                 );
             }
             return (
-                <a href={value} target="_blank" rel="noopener noreferrer">
+                <a href={url} target="_blank" rel="noopener noreferrer">
                     {displayText}
                 </a>
             );
