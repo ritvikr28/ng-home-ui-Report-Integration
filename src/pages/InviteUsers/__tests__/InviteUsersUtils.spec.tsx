@@ -304,7 +304,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -341,7 +342,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -377,7 +379,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -412,7 +415,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
