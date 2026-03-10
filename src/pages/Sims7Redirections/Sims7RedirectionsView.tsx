@@ -27,10 +27,12 @@ function renderEffectiveDate(payload: any): React.ReactNode {
 
 function renderReasonForChanges(payload: any): React.ReactNode {
   if (!["NotMigrated", "Reversing"].includes(payload.redirectStatus)) return null;
+  // Show '-' if null, undefined, or empty string
+  const reason = payload.reasonForChange == null || payload.reasonForChange === "" ? "-" : payload.reasonForChange;
   return (
     <div>
       <div className="heading-category">Reason for changes</div>
-      <div className="details-category">{payload.reasonForChange == null || payload.reasonForChange === "" ? "-" : payload.reasonForChange}</div>
+      <div className="details-category">{reason}</div>
     </div>
   );
 }

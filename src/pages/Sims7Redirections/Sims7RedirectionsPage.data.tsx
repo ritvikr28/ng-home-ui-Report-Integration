@@ -45,19 +45,21 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         text: "ID",
         isShow: false,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
     },
     {
         text: "Category",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting: true,
     },
 
     {
         text: "Next Gen module",
         isShow: true,
         showValAs: ShowValAs.CustomeComponent,
+        isColumnSorting: true,
         // anyComponent: (value: string) => {
         //     if (!value) return null;
         //     const isTruncated: boolean = value.length > 19;
@@ -105,19 +107,22 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         isTextTruncate: true,
         alignSpecific: true,
         columnWidth: "250px",
-        tagColor: TagColor.Highlight
+        tagColor: TagColor.Highlight,
+        isColumnSorting: true
     },
     {
         text: "Modified by",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting:false
     },
     {
         text: "Effective date",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting: true,
     },
     {
         text: "Status",
@@ -132,7 +137,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         },
         isTextTruncate: false,
         isColumnSorting: true,
-        isColumnSortByDefault: false
+        isColumnSortByDefault: false,
     },
     {
         text: "Reason for changes",
