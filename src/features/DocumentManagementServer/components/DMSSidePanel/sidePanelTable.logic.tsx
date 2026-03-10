@@ -78,7 +78,7 @@ export const tableHeadersData: any[] = [
     text: "Date Added",
     isShow: true,
     showValAs: ShowValAs.Text,
-    columnWidth: "100px"
+    columnWidth: "120px"
   }
 ];
 

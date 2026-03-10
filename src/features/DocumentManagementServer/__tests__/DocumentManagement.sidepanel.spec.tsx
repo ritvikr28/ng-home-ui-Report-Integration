@@ -235,8 +235,8 @@ it("renders ManageDocumentsSidePanel and click on Action menu", () => {
 	const actionButton: HTMLButtonElement = screen.getByTestId("edit-selected-btn-testid");
 	fireEvent.click(actionButton);
 
-	expect(screen.getByText("Make public")).toBeInTheDocument();
-	fireEvent.click(screen.getByText("Make public"));
+	expect(screen.getByText("Make standard")).toBeInTheDocument();
+	fireEvent.click(screen.getByText("Make standard"));
 });
 
 it("renders ManageDocumentsSidePanel and change page", () => {

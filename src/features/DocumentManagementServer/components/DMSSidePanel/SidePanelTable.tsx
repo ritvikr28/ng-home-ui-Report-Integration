@@ -38,7 +38,7 @@ export const SidePanelTable: React.FC = () => {
       paginationMinCountToHideNextPreviousBtn={1}
       editSelectedBtnTitle="Actions"
       editSelectedOptions={[
-        { text: "Make public", value: "Public", disabled: false, isSelected: false },
+        { text: "Make standard", value: "Standard", disabled: false, isSelected: false },
         { text: "Make confidential", value: "Confidential", disabled: false, isSelected: false },
         { text: "Delete", value: "Delete", disabled: false, isSelected: false }
       ]}
@@ -47,6 +47,7 @@ export const SidePanelTable: React.FC = () => {
         alert(`Selected: ${option.value}`);
       }}
       isSorting={true}
+      isIconRightAligned={true}
       onClickOverflowItem={() => {}}
       emptyStateMsg="No documents found"
       emptybtnTitle="Add Document"
