@@ -51,9 +51,9 @@ import {
 import InviteUsersDialog from "./InviteUsersDialog";
 
 function formatString(template: string, ...args: any[]): string {
-    return template.replace(/{(\d+)}/g, (match, index) => {
-        return typeof args[index] !== 'undefined' ? args[index] : match;
-    });
+    return template.replace(/{(\d+)}/g, (match, index) => (
+        typeof args[index] !== 'undefined' ? args[index] : match
+    ));
 }
 
 export const InviteUserView: React.FC<InviteUserProps> = (props) => {
