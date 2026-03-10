@@ -68,8 +68,8 @@ export function buildRequest(updatedRow: any, effectiveDateStr: string, previous
   const payload = {
     id: updatedRow.id || updatedRow.moduleId,
     dfeNumber,
-    ngModule: updatedRow.nextGenModule || updatedRow.ngModule,
-    ngComponent: updatedRow.category || updatedRow.ngComponent,
+    ngModule: updatedRow.category || updatedRow.ngModule, // swap: ngModule now maps category
+    ngComponent: updatedRow.nextGenModule || updatedRow.ngComponent, // swap: ngComponent now maps nextGenModule
     switchToSchool: updatedRow.switchToSchool ?? false,
     effectiveDate: effectiveDateFinal,
     PlannedStatus: plannedStatusFinal,

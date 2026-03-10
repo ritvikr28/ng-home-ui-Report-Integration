@@ -79,8 +79,7 @@ const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
         <div>
           <div className="heading-category">Category</div>
           <div className="details-category">
-            {" "}
-            {viewData?.payload?.ngComponent}
+            {viewData?.payload?.ngModule}
           </div>
         </div>
         <div>
@@ -91,7 +90,7 @@ const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
               target="_blank"
               rel="noopener noreferrer"
             >
-              {viewData?.payload?.ngModule}
+              {viewData?.payload?.ngComponent}
             </a>
           </div>
         </div>
