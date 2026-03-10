@@ -2,12 +2,12 @@ import React, { useState } from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
 import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
 
-export const tableHeadersData = [
+export const tableHeadersData: any[] = [
   {
     text: "Id",
     isShow: false,
     showValAs: ShowValAs.Text,
-    columnWidth: "10px",
+    columnWidth: "10px"
   },
   {
     text: "Document",
@@ -30,7 +30,7 @@ export const tableHeadersData = [
           colName="document"
         />
       </a>
-    ),
+    )
   },
   {
     text: "Related To",
@@ -38,7 +38,7 @@ export const tableHeadersData = [
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "120px",
     anyComponent: (value: any) => {
-      const related = Array.isArray(value) ? value[0] : value;
+      const related: any = Array.isArray(value) ? value[0] : value;
       return (
         <span className="relatedto-flex-row">
           <EllipsisWithTooltip
@@ -57,7 +57,7 @@ export const tableHeadersData = [
           )}
         </span>
       );
-    },
+    }
   },
   {
     text: "Added By",
@@ -72,7 +72,7 @@ export const tableHeadersData = [
         totalItems={[value]}
         colName="addedBy"
       />
-    ),
+    )
   },
   {
     text: "Date Added",
@@ -82,7 +82,7 @@ export const tableHeadersData = [
   }
 ];
 
-export const tableBodyData = [
+export const tableBodyData: any[] = [
   { id: "1", document: "PDFSample", relatedTo: [{ name: "Ramesh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
   { id: "2", document: "Long name of document with multiple words", relatedTo: [{ name: "Suresh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
   { id: "3", document: "Welsh Translation", relatedTo: [{ name: "Ganga" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
@@ -95,20 +95,30 @@ export const tableBodyData = [
   { id: "10", document: "Tenth Document", relatedTo: [{ name: "Tenth description" }], addedBy: "Toony", dateAdded: "23 Jan 2025" }
 ];
 
-export const filterDDLOptions = [
+export const filterDDLOptions: any[] = [
   { id: "1", text: "All", value: "All" },
   { id: "2", text: "James", value: "Category A" },
   { id: "3", text: "Suresh", value: "Category B" }
   // Add more as needed
 ];
 
+export interface SidePanelTableSelection {
+  selectedIds: string[];
+  setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>;
+  prevSelectedDocs: string[];
+  handlePrevSelectedDocs: (ids: string[]) => void;
+  excludedCheckBoxIds: string[];
+  setExcludedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+  handleRowCheckboxChange: (index: number, id: string) => void;
+  handleOnChangeAllCheckBox: (event: React.ChangeEvent<unknown>) => void;
+}
 
-export function useSidePanelTableSelection(tableBodyDatas: any[]) {
-  const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [prevSelectedDocs, setPrevSelectedDocs] = useState<string[]>([]);
-  const [excludedCheckBoxIds, setExcludedCheckBoxIds] = useState<string[]>([]);
+export function useSidePanelTableSelection(tableBodyDatas: any[]): SidePanelTableSelection {
+  const [selectedIds, setSelectedIds]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
+  const [prevSelectedDocs, setPrevSelectedDocs]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
+  const [excludedCheckBoxIds, setExcludedCheckBoxIds]: [string[], React.Dispatch<React.SetStateAction<string[]>>] = useState<string[]>([]);
 
-  const handleRowCheckboxChange = (index: number, id: string) => {
+  const handleRowCheckboxChange: (index: number, id: string) => void = (index: number, id: string) => {
     setSelectedIds(prev =>
       prev.includes(id)
         ? prev.filter(selectedId => selectedId !== id)
@@ -116,9 +126,9 @@ export function useSidePanelTableSelection(tableBodyDatas: any[]) {
     );
   };
 
-  const handleOnChangeAllCheckBox = (event: React.ChangeEvent<unknown>) => {
-    const target = event.target as HTMLInputElement;
-    const isChecked = target.checked;
+  const handleOnChangeAllCheckBox: (event: React.ChangeEvent<unknown>) => void = (event: React.ChangeEvent<unknown>) => {
+    const target: HTMLInputElement = event.target as HTMLInputElement;
+    const isChecked: boolean = target.checked;
     if (isChecked) {
       setSelectedIds(tableBodyDatas.map(row => row.id));
     } else {
@@ -126,8 +136,8 @@ export function useSidePanelTableSelection(tableBodyDatas: any[]) {
     }
   };
 
-  const handlePrevSelectedDocs = (ids: string[]) => {
-    const uniqueNewIds = ids.filter(id => !prevSelectedDocs.includes(id));
+  const handlePrevSelectedDocs: (ids: string[]) => void = (ids: string[]) => {
+    const uniqueNewIds: string[] = ids.filter(id => !prevSelectedDocs.includes(id));
     setPrevSelectedDocs([...prevSelectedDocs, ...uniqueNewIds]);
   };
 

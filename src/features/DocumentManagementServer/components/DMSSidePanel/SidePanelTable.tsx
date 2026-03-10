@@ -3,11 +3,11 @@ import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextg
 import { tableBodyData, useSidePanelTableSelection, tableHeadersData, filterDDLOptions } from "./sidePanelTable.logic";
 
 export const SidePanelTable: React.FC = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const itemsPerPage = 5;
   const totalPages = Math.ceil(tableBodyData.length / itemsPerPage);
 
-  const paginatedData = tableBodyData.slice(
+  const paginatedData: any[] = tableBodyData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -18,9 +18,9 @@ export const SidePanelTable: React.FC = () => {
     handleOnChangeAllCheckBox,
     handlePrevSelectedDocs,
     setExcludedCheckBoxIds
-  } = useSidePanelTableSelection(tableBodyData);
+  }: any = useSidePanelTableSelection(tableBodyData);
 
-  const handlePageChange = (_: React.ChangeEvent<unknown>, page: number) => {
+  const handlePageChange: (event: React.ChangeEvent<unknown>, page: number) => void = (_: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
   };
 
