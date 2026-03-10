@@ -50,6 +50,12 @@ import {
 } from "./InviteUsersUtils";
 import InviteUsersDialog from "./InviteUsersDialog";
 
+function formatString(template: string, ...args: any[]): string {
+    return template.replace(/{(\d+)}/g, (match, index) => (
+        typeof args[index] !== 'undefined' ? args[index] : match
+    ));
+}
+
 export const InviteUserView: React.FC<InviteUserProps> = (props) => {
   const { t }: UseTranslationResponse<"translation", undefined> =
     useTranslation();
@@ -96,8 +102,12 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setLoader,
     showInvitationConflictBanner,
     setshowInvitationConflictBanner,
+    totalConflicts,
+    setTotalConflicts,
     showInvitationRequestBanner,
     setshowInvitationRequestBanner,
+    totalRequests,
+    setTotalRequests,
     isSearchLoader,
     setSearchLoader
   }: InviteUserProps = props;
@@ -311,7 +321,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
+      setTotalConflicts,
       setshowInvitationRequestBanner,
+      setTotalRequests,
       setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
@@ -340,7 +352,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         setTotalPage,
         setShowErrorBanner,
         setshowInvitationConflictBanner,
-        setshowInvitationRequestBanner
+        setTotalConflicts,
+        setshowInvitationRequestBanner,
+        setTotalRequests,
       }).then((res) => {
         setLoader(false);
         setUsersTableData(res);
@@ -376,7 +390,9 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
+      setTotalConflicts,
       setshowInvitationRequestBanner,
+      setTotalRequests,
       setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
@@ -759,14 +775,14 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 isShow: !!showInvitationConflictBanner,
                 variant: "warning",
                 title: `${t("invitePerson.invitationConflict")}`,
-                message: `${t("invitePerson.invitationConflictDescription")}`,
+                message: formatString(`${t("invitePerson.invitationConflictDescription")}`, totalConflicts),
                 autoclose: true
               },
               {
                 isShow: !!showInvitationRequestBanner,
                 variant: "warning",
                 title: `${t("invitePerson.invitationRequest")}`,
-                message: `${t("invitePerson.invitationRequestDescription")}`,
+                message: formatString(`${t("invitePerson.invitationRequestDescription")}`, totalRequests),
                 autoclose: true
               },
               {

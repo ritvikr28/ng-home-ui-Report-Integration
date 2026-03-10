@@ -51,8 +51,12 @@ const mockInviteUserProps: InviteUserProps = {
   handlePageChange: jest.fn(),
   showInvitationConflictBanner: false,
   setshowInvitationConflictBanner: jest.fn(),
+  totalConflicts: 0,
+  setTotalConflicts: jest.fn(),
   showInvitationRequestBanner: false,
   setshowInvitationRequestBanner: jest.fn(),
+  totalRequests: 0,
+  setTotalRequests: jest.fn(),
   isSearchLoader: false,
   setSearchLoader: jest.fn()
 };
