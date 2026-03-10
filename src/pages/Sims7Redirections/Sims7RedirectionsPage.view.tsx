@@ -55,9 +55,7 @@ const dropdownItems: DropdownItemType[] = [
     { id: "2", text: "Not migrated", value: "NotMigrated" },
     { id: "3", text: "Planned", value: "Planned" },
     { id: "4", text: "Permanent", value: "Permanent" },
-    { id: "5", text: "Reversing", value: "Reversing" },
-    { id: "6", text: "Pending", value: "Pending" },
-    { id: "7", text: "Cancelled", value: "Cancelled" }
+    { id: "5", text: "Reversing", value: "Reversing" }
 ];
 
 export interface LoadSims7RedirectionsDataArgs {
@@ -345,8 +343,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     tableBodyData={paginatedTableData}
                     tableFirstColumnWidth="10px"
                     tableHeadersData={sims7RedirectionsTableHeaders}
-                    tableLastColumnWidth="10px"
-                    isSorting
+                    tableLastColumnWidth="10px"                    
                     sortByDefault={false}
                     sortAscFirst={false}
                     templatePropsConfirmation={dialogTemplateProps}

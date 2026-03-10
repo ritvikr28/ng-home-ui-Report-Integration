@@ -137,6 +137,11 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
             return;
         }
+        // Block save if reason is required and missing
+        if (requiresReason(selectedRow.status, redirectToNextGen) && !reasonForChanges.trim()) {
+            setReasonError('Reason for changes is required');
+            return;
+        }
         await saveRedirectionHandler({
             selectedRow,
             effectiveDate,
