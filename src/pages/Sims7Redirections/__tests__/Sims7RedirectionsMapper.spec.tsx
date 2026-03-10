@@ -82,8 +82,8 @@ describe('mapSims7RedirectionsItem', () => {
       id: '42',
     };
     it('returns correct fields for each mapping', () => {
-      expect(getFieldFromApi(item, 'nextGenModule')).toBe('NextGen');
-      expect(getFieldFromApi(item, 'category')).toBe('Category');
+  expect(getFieldFromApi(item, 'nextGenModule')).toBe('Category'); // now maps ngComponent
+  expect(getFieldFromApi(item, 'category')).toBe('NextGen'); // now maps ngModule
       expect(getFieldFromApi(item, 'sims7Module')).toBe('SIMS7');
       expect(getFieldFromApi(item, 'modifiedBy')).toBe('User');
       expect(getFieldFromApi(item, 'effectiveDate')).toBe('2026-03-01');
@@ -127,11 +127,11 @@ describe('mapSims7RedirectionsItem', () => {
       reasonForChanges: 'Reason'
     };
     const result = mapSims7RedirectionsItem(apiItem, 0);
-    expect(result.id).toBe('1');
-    expect(result.category).toBe('TestCat');
-    expect(result.nextGenModule).toBe('TestNextGen');
-    expect(result.sims7Module).toBe('TestSIMS7');
-    expect(result.modifiedBy).toBe('TestUser');
+  expect(result.id).toBe('1');
+  expect(result.category).toBe('TestNextGen'); // now maps ngModule
+  expect(result.nextGenModule).toBe('TestCat'); // now maps ngComponent
+  expect(result.sims7Module).toBe('TestSIMS7');
+  expect(result.modifiedBy).toBe('TestUser');
     expect(result.effectiveDate).toBe('18 Feb 2026');
     expect(result.status).toBe('Planned');
     expect(result.tooltipMessage).toBe('Test tooltip');

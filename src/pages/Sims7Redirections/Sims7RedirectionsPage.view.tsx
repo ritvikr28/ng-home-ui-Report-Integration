@@ -86,8 +86,8 @@ export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataA
 export const Sims7RedirectionsPage: React.FC = () => {
     // Column mapping: frontend to backend
     const columnMapping: Record<string, string> = {
-        "Category": "ngComponent",
-        "Next Gen module": "ngModule",
+        "Category": "ngModule",
+        "Next Gen module": "ngComponent",
         "SIMS 7 module": "sims7Module",
         "Modified by": "updatedBy",
         "Effective date": "effectiveDate",

@@ -73,8 +73,8 @@ export function getStatus(item: any): string {
 export function getFieldFromApi(item: any, field: string): string {
     if (!item) return "";
     const fieldMap: Record<string, string> = {
-        nextGenModule: "ngModule",
-        category: "ngComponent",
+        nextGenModule: "ngComponent", // swap: nextGenModule now maps ngComponent
+        category: "ngModule", // swap: category now maps ngModule
         sims7Module: "sims7Module",
         modifiedBy: "updatedByUserName",
         effectiveDate: "effectiveDate",
