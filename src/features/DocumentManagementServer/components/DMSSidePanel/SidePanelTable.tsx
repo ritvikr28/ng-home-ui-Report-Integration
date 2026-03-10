@@ -47,6 +47,7 @@ export const SidePanelTable: React.FC = () => {
         alert(`Selected: ${option.value}`);
       }}
       isSorting={true}
+      isIconRightAligned={true}
       onClickOverflowItem={() => {}}
       emptyStateMsg="No documents found"
       emptybtnTitle="Add Document"
