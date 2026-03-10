@@ -35,11 +35,11 @@ export function getNotificationMsgBannerObject(t: (key: string) => string) {
 
 export function getDialogTemplateProps(t: (key: string) => string) {
     return {
-        cancelText: "Cancel",
-        contentText: t("SIMS7Redirects.discardChangesDescription"),
+             cancelText: t("SIMS7Redirects.cancel"),
+             contentText: t("SIMS7Redirects.contentText"),
         isNotificationanner: false,
         notificationStatus: NotificationStatus.SUCCESS,
-        okText: "Discard",
+        okText: t("SIMS7Redirects.okText"),
         onCancel: () => {},
         onConfirm: () => {},
         template: DialogTemplate.Confirmation

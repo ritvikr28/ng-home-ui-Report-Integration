@@ -9,6 +9,8 @@ describe('handleDateChange', () => {
   let redirectToNextGen: string;
   let reasonForChanges: string;
 
+  const t = (key: string) => key;
+
   beforeEach(() => {
     setDateParts = jest.fn();
     setEffectiveDate = jest.fn();
@@ -19,7 +21,7 @@ describe('handleDateChange', () => {
     reasonForChanges = 'test reason';
   });
 
-  it('should set date parts and call setEffectiveDate with date if valid', () => {
+  it('should set date parts and set valid effective date', () => {
     handleDateChange({
       arg1: 5,
       arg2: 6,
@@ -30,9 +32,16 @@ describe('handleDateChange', () => {
       setIsDirty,
       selectedRow,
       redirectToNextGen,
-      reasonForChanges
+      reasonForChanges,
+      t
     });
-    expect(setDateParts).toHaveBeenCalledWith({ day: '05', month: '06', year: '2024' });
+
+    expect(setDateParts).toHaveBeenCalledWith({
+      day: '05',
+      month: '06',
+      year: '2024'
+    });
+
     expect(setEffectiveDate).toHaveBeenCalledWith(new Date(2024, 5, 5));
     expect(setDateError).toHaveBeenCalledWith('');
     expect(setIsDirty).toHaveBeenCalled();
@@ -49,29 +58,18 @@ describe('handleDateChange', () => {
       setIsDirty,
       selectedRow,
       redirectToNextGen,
-      reasonForChanges
+      reasonForChanges,
+      t
     });
-    expect(setEffectiveDate).toHaveBeenCalledWith(null);
-    expect(setDateError).not.toBe('');
-    expect(setIsDirty).toHaveBeenCalled();
-  });
 
-  it('should handle missing args', () => {
-    handleDateChange({
-      arg1: '',
-      arg2: '',
-      arg3: '',
-      setDateParts,
-      setEffectiveDate,
-      setDateError,
-      setIsDirty,
-      selectedRow,
-      redirectToNextGen,
-      reasonForChanges
+    expect(setDateParts).toHaveBeenCalledWith({
+      day: '',
+      month: '',
+      year: ''
     });
-    expect(setDateParts).toHaveBeenCalledWith({ day: '', month: '', year: '' });
+
     expect(setEffectiveDate).toHaveBeenCalledWith(null);
-    expect(setDateError).not.toBe('');
+    expect(setDateError).toHaveBeenCalled();
     expect(setIsDirty).toHaveBeenCalled();
   });
 });

@@ -21,16 +21,15 @@ describe('Sims7RedirectionsSidePanel.helpers', () => {
     expect(setReasonForChangesRaw).toHaveBeenCalledWith('reason');
     expect(validateReason).toHaveBeenCalled();
   });
-
   it('onRedirectToNextGenChangeHandler calls handleRedirectToNextGenChange', () => {
     const { handleRedirectToNextGenChange } = require('../Sims7RedirectionsSidePanelRedirect.logic');
-    helpers.onRedirectToNextGenChangeHandler({ event: {}, value: 'yes', selectedRow: {}, setRedirectToNextGen: jest.fn(), setEffectiveDate: jest.fn(), setDateParts: jest.fn(), setIsDirty: jest.fn(), effectiveDate: '', reasonForChanges: '' });
+    helpers.onRedirectToNextGenChangeHandler({event: {}, value: 'yes', selectedRow: {}, setRedirectToNextGen: jest.fn(), setEffectiveDate: jest.fn(), setDateParts: jest.fn(), setIsDirty: jest.fn(), effectiveDate: '', reasonForChanges: '' });
     expect(handleRedirectToNextGenChange).toHaveBeenCalled();
   });
 
   it('onDateChangeHandler calls handleDateChange', () => {
     const { handleDateChange } = require('../Sims7RedirectionsSidePanelDate.logic');
-    helpers.onDateChangeHandler({ arg1: 1, arg2: 2, arg3: 3, setDateParts: jest.fn(), setEffectiveDate: jest.fn(), setDateError: jest.fn(), setIsDirty: jest.fn(), selectedRow: {}, redirectToNextGen: '', reasonForChanges: '' });
+    helpers.onDateChangeHandler({t:jest.fn(), arg1: 1, arg2: 2, arg3: 3, setDateParts: jest.fn(), setEffectiveDate: jest.fn(), setDateError: jest.fn(), setIsDirty: jest.fn(), selectedRow: {}, redirectToNextGen: '', reasonForChanges: '' });
     expect(handleDateChange).toHaveBeenCalled();
   });
 

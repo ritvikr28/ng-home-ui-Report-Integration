@@ -1,6 +1,10 @@
 import React from "react";
 import { Tag, TagSize, SidePanelContent } from "@essnextgen/ui-kit";
-import { getStatusTagColor, EditButton, getRedirectToNextGenText } from "./Sims7RedirectionsViewHelpers";
+import {
+  getStatusTagColor,
+  EditButton,
+  getRedirectToNextGenText
+} from "./Sims7RedirectionsViewHelpers";
 
 function formatDate(dateVal: string | undefined): string {
   if (!dateVal) return "";
@@ -9,29 +13,48 @@ function formatDate(dateVal: string | undefined): string {
   return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
-    year: "numeric"
+    year: "numeric",
   });
 }
 
-function renderEffectiveDate(payload: any): React.ReactNode {
-  const show = ((payload.effectiveDate && payload.effectiveDate !== "-") || (payload.previousDate && payload.previousDate !== "-"));
+function renderEffectiveDate(
+  payload: any,
+  t: (key: string) => string
+): React.ReactNode {
+  const show =
+    (payload.effectiveDate && payload.effectiveDate !== "-") ||
+    (payload.previousDate && payload.previousDate !== "-");
   if (!show) return null;
-  const dateVal = payload.effectiveDate == null || payload.effectiveDate === "" ? payload.previousDate : payload.effectiveDate;
+  const dateVal =
+    payload.effectiveDate == null || payload.effectiveDate === ""
+      ? payload.previousDate
+      : payload.effectiveDate;
   return (
     <div>
-      <div className="heading-category">Effective date</div>
+      <div className="heading-category">
+        {t("SIMS7Redirects.effectiveDate")}
+      </div>
       <div className="details-category">{formatDate(dateVal)}</div>
     </div>
   );
 }
 
-function renderReasonForChanges(payload: any): React.ReactNode {
-  if (!["NotMigrated", "Reversing"].includes(payload.redirectStatus)) return null;
+function renderReasonForChanges(
+  payload: any,
+  t: (key: string) => string
+): React.ReactNode {
+  if (!["NotMigrated", "Reversing"].includes(payload.redirectStatus))
+    return null;
   // Show '-' if null, undefined, or empty string
-  const reason = payload.reasonForChange == null || payload.reasonForChange === "" ? "-" : payload.reasonForChange;
+  const reason =
+    payload.reasonForChange == null || payload.reasonForChange === ""
+      ? "-"
+      : payload.reasonForChange;
   return (
     <div>
-      <div className="heading-category">Reason for changes</div>
+      <div className="heading-category">
+        {t("SIMS7Redirects.reasonForChanges")}
+      </div>
       <div className="details-category">{reason}</div>
     </div>
   );
@@ -39,10 +62,14 @@ function renderReasonForChanges(payload: any): React.ReactNode {
 
 function renderReverseMigrationMessage(payload: any): React.ReactNode {
   if (payload.currentStatus === "P" && payload.plannedStatus === "N") {
-    const dateVal = payload.effectiveDate == null || payload.effectiveDate === "" ? payload.previousDate : payload.effectiveDate;
+    const dateVal =
+      payload.effectiveDate == null || payload.effectiveDate === ""
+        ? payload.previousDate
+        : payload.effectiveDate;
     return (
       <div className="reverse-migration-message">
-        Request have made to reverse the permanent migration on {formatDate(dateVal) || "-"}
+        Request have made to reverse the permanent migration on{" "}
+        {formatDate(dateVal) || "-"}
       </div>
     );
   }
@@ -50,12 +77,18 @@ function renderReverseMigrationMessage(payload: any): React.ReactNode {
 }
 
 function renderApplyMigrationMessage(payload: any): React.ReactNode {
-  if ((payload.currentStatus === "Y" && payload.plannedStatus === "P") ||
-      (payload.currentStatus === "N" && payload.plannedStatus === "P")) {
-    const dateVal = payload.effectiveDate == null || payload.effectiveDate === "" ? payload.previousDate : payload.effectiveDate;
+  if (
+    (payload.currentStatus === "Y" && payload.plannedStatus === "P") ||
+    (payload.currentStatus === "N" && payload.plannedStatus === "P")
+  ) {
+    const dateVal =
+      payload.effectiveDate == null || payload.effectiveDate === ""
+        ? payload.previousDate
+        : payload.effectiveDate;
     return (
       <div className="apply-migration-message">
-        Request have made to apply permanent migration on {formatDate(dateVal) || "-"}
+        Request have made to apply permanent migration on{" "}
+        {formatDate(dateVal) || "-"}
       </div>
     );
   }
@@ -71,19 +104,21 @@ export interface Sims7RedirectionsViewProps {
 const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
   viewData,
   t,
-  setSidePanelMode
+  setSidePanelMode,
 }) => (
   <SidePanelContent>
     <div className="view-mode-with-edit-button">
       <div className="view-mode-content">
         <div>
-          <div className="heading-category">Category</div>
+          <div className="heading-category">{t("SIMS7Redirects.category")}</div>
           <div className="details-category">
             {viewData?.payload?.ngModule}
           </div>
         </div>
         <div>
-          <div className="heading-category">Next Gen module</div>
+          <div className="heading-category">
+            {t("SIMS7Redirects.nextGenModule")}
+          </div>
           <div className="details-category">
             <a
               href={viewData?.payload?.nextGenComponentUrl}
@@ -95,28 +130,39 @@ const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
           </div>
         </div>
         <div>
-          <div className="heading-category">SIMS 7 module</div>
-          <div className="details-category">{viewData?.payload?.sims7Module}</div>
+          <div className="heading-category">
+            {t("SIMS7Redirects.sims7Module")}
+          </div>
+          <div className="details-category">
+            {viewData?.payload?.sims7Module}
+          </div>
         </div>
         <div>
-          <div className="heading-category">Redirect to open in Next Gen</div>
+          <div className="heading-category">
+            {t("SIMS7Redirects.redirectToNextGen")}
+          </div>
           <div className="details-category">
             {" "}
             {getRedirectToNextGenText(viewData?.payload?.redirectStatus)}
           </div>
         </div>
 
-        {viewData?.payload?.updatedByUserName && viewData?.payload?.updatedByUserName !== "-" && (
-          <div>
-            <div className="heading-category">Modified by</div>
-            <div className="details-category">{viewData?.payload?.updatedByUserName}</div>
-          </div>
-        )}
+        {viewData?.payload?.updatedByUserName &&
+          viewData?.payload?.updatedByUserName !== "-" && (
+            <div>
+              <div className="heading-category">
+                {t("SIMS7Redirects.modifiedBy")}
+              </div>
+              <div className="details-category">
+                {viewData?.payload?.updatedByUserName}
+              </div>
+            </div>
+          )}
         {/* Effective date: use previousDate if effectiveDate is null/empty */}
-        {renderEffectiveDate(viewData?.payload)}
-        {renderReasonForChanges(viewData?.payload)}
+        {renderEffectiveDate(viewData?.payload, t)}
+        {renderReasonForChanges(viewData?.payload, t)}
         <div>
-          <div className="heading-category">Status</div>
+          <div className="heading-category">{t("SIMS7Redirects.status")}</div>
           <div className="details-category">
             <Tag
               text={viewData?.payload?.redirectStatus}
@@ -128,7 +174,6 @@ const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
 
         {renderReverseMigrationMessage(viewData?.payload)}
         {renderApplyMigrationMessage(viewData?.payload)}
-
       </div>
       <EditButton
         status={viewData?.payload?.redirectStatus}

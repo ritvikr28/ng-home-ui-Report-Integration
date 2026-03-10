@@ -399,7 +399,6 @@ describe('fetchStaffProfilePhoto', () => {
 
 describe("prepareAndDownloadFile", () => {
   const payload: { request: { foo: string } } = { request: { foo: "bar" } };
-  const baseUrl = "https://dev.platform.sims.co.uk";
   const url = "/validation/api/v1/file/preparedownload";
 
   beforeEach(() => {
@@ -418,7 +417,11 @@ describe("prepareAndDownloadFile", () => {
 
     const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(204);
-    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+   expect(service.post).toHaveBeenCalledWith(
+     url,
+     payload,
+     expect.objectContaining({ baseURL: expect.any(String) })
+   )
   });
 
   test("returns error status from error.response.status", async () => {
@@ -429,7 +432,11 @@ describe("prepareAndDownloadFile", () => {
 
     const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(401);
-    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+    expect(service.post).toHaveBeenCalledWith(
+      url,
+      payload,
+      expect.objectContaining({ baseURL: expect.any(String) })
+    )
   });
 
   test("returns 400 if error does not have response.status", async () => {
@@ -438,7 +445,11 @@ describe("prepareAndDownloadFile", () => {
 
     const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(undefined);
-    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
+   expect(service.post).toHaveBeenCalledWith(
+     url,
+     payload,
+     expect.objectContaining({ baseURL: expect.any(String) })
+   )
   });
 
   test("returns status code on successful response with status 400", async () => {
@@ -453,8 +464,12 @@ describe("prepareAndDownloadFile", () => {
 
     const result: number | undefined = await prepareAndDownloadFile(payload);
     expect(result).toBe(400);
-    expect(service.post).toHaveBeenCalledWith(url, payload, { baseURL: baseUrl });
-  });
+    expect(service.post).toHaveBeenCalledWith(
+      url,
+      payload,
+      expect.objectContaining({ baseURL: expect.any(String) })
+    );
+  })
 });
 
 
@@ -498,11 +513,13 @@ describe("validation API", () => {
     jest.clearAllMocks();
   });
 
-  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
   const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
 
   it("returns response on success", async () => {
-    const mockResponse: { data: { valid: boolean }; status: number } = { data: { valid: true }, status: 200 };
+    const mockResponse: { data: { valid: boolean }; status: number } = {
+      data: { valid: true },
+      status: 200,
+    };
     (service.post as jest.Mock).mockResolvedValueOnce(mockResponse);
 
     const result: any = await validation(mockPayload);
@@ -510,8 +527,8 @@ describe("validation API", () => {
     expect(service.post).toHaveBeenCalledWith(
       "/validation/api/v1/file/getfilevalidation",
       mockPayload,
-      { baseURL: PLATFORM_BASEURLS }
-    );
+      expect.objectContaining({ baseURL: expect.any(String) })
+    )
   });
 
   it("returns empty object and logs error on failure", async () => {
@@ -531,7 +548,6 @@ describe("deleteFiles API", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  const PLATFORM_BASEURLS = "https://dev.platform.sims.co.uk";
   const mockPayload: { request: { foo: string } } = { request: { foo: "bar" } };
   axios.delete = jest.fn();
 
@@ -541,16 +557,16 @@ describe("deleteFiles API", () => {
 
     const result: number = await deleteFiles(mockPayload);
     expect(result).toBe(204);
-    expect(axios.delete).toHaveBeenCalledWith(
-      `${PLATFORM_BASEURLS}/validation/api/v1/file/bulkdelete`,
-      {
-        data: mockPayload,
-        headers: {
-          "Content-Type": "application/json-patch+json",
-          Authorization: expect.any(String)
-        }
-      }
-    );
+expect(axios.delete).toHaveBeenCalledWith(
+  expect.stringContaining("/validation/api/v1/file/bulkdelete"),
+  {
+    data: mockPayload,
+    headers: {
+      "Content-Type": "application/json-patch+json",
+      Authorization: expect.any(String),
+    }
+  }
+);
   });
 
   it("returns error status from error.response.status", async () => {

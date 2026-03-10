@@ -70,7 +70,7 @@ describe('Sims7RedirectionsSidePanel', () => {
 
   it('calls onClose when Close button is clicked', () => {
     render(<Sims7RedirectionsSidePanel {...baseProps} />);
-  const closeBtn: HTMLElement = screen.getByText('Close');
+  const closeBtn: HTMLElement = screen.getByText('SIMS7Redirects.closebtn');
     fireEvent.click(closeBtn);
     expect(baseProps.onClose).toHaveBeenCalled();
   });

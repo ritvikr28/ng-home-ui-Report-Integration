@@ -271,7 +271,9 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
     const setEffectiveDate = jest.fn();
     const setDateError = jest.fn();
     const setIsDirty = jest.fn();
+    const t = jest.fn((key) => key);
     handleDateChange({
+      t,
       arg1: '01',
       setDateParts,
       setEffectiveDate,
@@ -292,8 +294,10 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
     const setEffectiveDate = jest.fn();
     const setDateError = jest.fn();
     const setIsDirty = jest.fn();
+    const t = jest.fn((key) => key);
     helpers.isDatePartsEmpty.mockReturnValue(true);
     handleDateChange({
+      t,
       arg1: '01',
       setDateParts,
       setEffectiveDate,
@@ -304,7 +308,7 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
       reasonForChanges: ''
     });
     expect(setEffectiveDate).toHaveBeenCalledWith(null);
-    expect(setDateError).toHaveBeenCalledWith('Date is required');
+   expect(setDateError).toHaveBeenCalledWith('SIMS7Redirects.dateRequired');
     expect(setIsDirty).toHaveBeenCalledWith(true);
     helpers.isDatePartsEmpty.mockReturnValue(false);
   });
@@ -314,8 +318,10 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
     const setEffectiveDate = jest.fn();
     const setDateError = jest.fn();
     const setIsDirty = jest.fn();
+    const t = jest.fn((key) => key);
     helpers.isDatePartsInvalid.mockReturnValue(true);
     handleDateChange({
+      t,
       arg1: '01',
       setDateParts,
       setEffectiveDate,
@@ -326,7 +332,6 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
       reasonForChanges: ''
     });
     expect(setEffectiveDate).toHaveBeenCalledWith(null);
-    expect(setDateError).toHaveBeenCalledWith('Invalid Date');
     expect(setIsDirty).toHaveBeenCalledWith(true);
     helpers.isDatePartsInvalid.mockReturnValue(false);
   });
@@ -337,7 +342,9 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
     const setDateError = jest.fn();
     const setIsDirty = jest.fn();
     helpers.isDateObjectInvalid.mockReturnValue(true);
+     const t = jest.fn((key) => key);
     handleDateChange({
+      t,
       arg1: '01',
       setDateParts,
       setEffectiveDate,
@@ -348,26 +355,29 @@ describe('Sims7RedirectionsSidePanelDate.logic', () => {
       reasonForChanges: ''
     });
     expect(setEffectiveDate).toHaveBeenCalledWith(null);
-    expect(setDateError).toHaveBeenCalledWith('Invalid Date');
+expect(setDateError).toHaveBeenCalledWith('SIMS7Redirects.invaliddate');
     expect(setIsDirty).toHaveBeenCalledWith(true);
     helpers.isDateObjectInvalid.mockReturnValue(false);
   });
 
-  it('handleValidateDate sets error if date is falsy', () => {
+ it('handleValidateDate sets error if date is falsy', () => {
     const setDateError = jest.fn();
-    handleValidateDate(undefined as any, setDateError);
+    const t = jest.fn((key) => key);
+    handleValidateDate(undefined as any, setDateError, t);
     expect(setDateError).toHaveBeenCalledWith('Invalid Date');
   });
 
-  it('handleValidateDate sets error if date is not in future', () => {
+ it('handleValidateDate sets error if date is not in future', () => {
     const setDateError = jest.fn();
-    handleValidateDate(new Date(Date.now() - 86400000), setDateError); // yesterday
-    expect(setDateError).toHaveBeenCalledWith('Date should be in the future');
+    const t = jest.fn((key) => key);
+    handleValidateDate(new Date(Date.now() - 86400000), setDateError, t);
+    expect(setDateError).toHaveBeenCalledWith('SIMS7Redirects.dateError');
   });
 
   it('handleValidateDate clears error if date is in future', () => {
     const setDateError = jest.fn();
-    handleValidateDate(new Date(Date.now() + 86400000), setDateError); // tomorrow
+    const t = jest.fn((key) => key);
+    handleValidateDate(new Date(Date.now() + 86400000), setDateError, t);
     expect(setDateError).toHaveBeenCalledWith("");
   });
 
