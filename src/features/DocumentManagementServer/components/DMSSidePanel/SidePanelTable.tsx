@@ -25,6 +25,7 @@ export const SidePanelTable: React.FC = () => {
   };
 
   return (
+    <div className="manage-documents-side-panel-table">
     <ControlledList
       id="sidepanel-table"
       dataTestId="sidepanel-table"
@@ -40,7 +41,7 @@ export const SidePanelTable: React.FC = () => {
       editSelectedOptions={[
         { text: "Make standard", value: "Standard", disabled: false, isSelected: false },
         { text: "Make confidential", value: "Confidential", disabled: false, isSelected: false },
-        { text: "Delete", value: "Delete", disabled: false, isSelected: false }
+        { text: "Delete", value: "Delete", disabled: false, isSelected: false, isShowDivider: true }
       ]}
       onEditSelectedBtnClick={() => {}}
       onEditSelectedOverFlowMenu={(event, option) => {
@@ -82,5 +83,6 @@ export const SidePanelTable: React.FC = () => {
       onChangeAllCheckBox={handleOnChangeAllCheckBox}
       selectHeaderCheckbox={CheckBoxSelectedState.DeSelected}
     />
+    </div>
   );
 };
