@@ -464,6 +464,8 @@
     "learnMoreInvitePerson": "Learn more about Invite Users",
     "invitationConflict": "Invitation conflict",
     "invitationConflictDescription": "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact your SIMS support provider.",
+    "invitationRequest": "Pending requests",
+    "invitationRequestDescription": "You have {0} pending invite requests. Use the Invitation status filters to view and take action.",
     "cancel": "Cancel",
     "save": "Save",
     "pleaseWaitLoader": "Please wait"
@@ -563,6 +565,7 @@
     "documentColumn": "Document",
     "relatedColumn": "Related to",
     "categoryColumn": "Category",
+    "privacyColumn": "Privacy status",
     "addedByColumn": "Added by",
     "dateAddedColumn": "Date added",
     "formatColumn": "Format",
@@ -581,7 +584,11 @@
     "privateFilesBannerTitle": "Private documents from SIMS 7 need your review",
     "privateFilesBannerDescription": "SIMS Next Gen doesn’t support the private privacy status. To access these documents in SIMS Next Gen, please review them and update their status to standard or confidential. ",
     "manageDocuments": "Manage documents",
-    "managePrivateSidePanelTitle": "Manage private documents"
+    "managePrivateSidePanelTitle": "Manage private documents",
+    "privateFilesDescription": "Please review your private documents individually in the table below and update their privacy status to standard or confidential, or delete them if they are no longer needed.",
+    "privateDocuments": "Private documents",
+    "privateDocHelpText": "Alternatively, you can update all of your private documents to Confidential status.",
+    "privateDocButtonText": "Convert all to confidential"
   },
   "Filter": {
     "heading": "Advanced search",

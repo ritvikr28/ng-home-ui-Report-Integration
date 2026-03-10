@@ -35,6 +35,31 @@ type RelatedEntity = RelatedPupil | RelatedStaff | RelatedSchool;
 
 // Optionally, define a minimal doc type for this function
 
+ interface RefreshAfterCloseParams {
+  alreadyDeletedFileCount: number;
+  restrictedFileCount: number;
+  availableFileCount: number;
+  totalSelectedCount: number;
+  paramPage: number;
+  selectedFormats: any;
+  paramSortField: string;
+  paramSortOrder: string;
+  paramRefExternalIds: string[];
+  paramRelatedTo: number;
+  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>;
+  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>;
+  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>;
+  fetchGetDocumentDetails: (
+    page: number,
+    registrationIds: number[],
+    sortField: string,
+    sortOrder: string,
+    refExternalIds: string[],
+    relatedTo: number
+  ) => void;
+  setTableKey: React.Dispatch<React.SetStateAction<number>>
+}
+
 interface DocumentRow {
   fileId: string;
   document?: string;
@@ -47,6 +72,7 @@ interface DocumentRow {
   documentRelatedTo?: number;
   registrationId?: number;
   externalId?: string;
+  status: string;
 }
 export function mapRelatedArr(doc: DocumentRow): RelatedEntity[] {
   let relatedArr: RelatedEntity[] = [];
@@ -508,6 +534,7 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     Category: doc?.category
       ? CapitalizeFirstLetter(doc.category)
       : "",
+    documentStatus: doc?.status || "Public",
     Addedby: doc?.addedBy || "",
     "Date added":
       doc?.dateAdded
@@ -533,40 +560,39 @@ export function getSecondaryButtonTitle(
   return t("DocumentManagementServer.Close");
 }
 
-export const refreshAfterClose = (
-  alreadyDeletedFileCount: number,
-  restrictedFileCount: number,
-  availableFileCount: number,
-  totalSelectedCount: number,
-  paramPage: number,
-  selectedFormats: any,
-  paramSortField: string,
-  paramSortOrder: string,
-  paramRefExternalIds: string[],
-  paramRelatedTo: number,
-  setSelectedCheckBoxIds: React.Dispatch<React.SetStateAction<string[]>>,
-  setAllSelectedDocs: React.Dispatch<React.SetStateAction<any[]>>,
-  setIsClearSelectedCheckbox: React.Dispatch<React.SetStateAction<boolean>>,
-  fetchGetDocumentDetails: (
-    page: number,
-    registrationIds: any,
-    sortField: string,
-    sortOrder: string,
-    refExternalIds: string[],
-    relatedTo: number
-  ) => void,
-  setTableKey: React.Dispatch<React.SetStateAction<number>>
-): void => {
+
+export const refreshAfterClose: any = (params: RefreshAfterCloseParams): void => {
+  const {
+    alreadyDeletedFileCount,
+    restrictedFileCount,
+    availableFileCount,
+    totalSelectedCount,
+    paramPage,
+    selectedFormats,
+    paramSortField,
+    paramSortOrder,
+    paramRefExternalIds,
+    paramRelatedTo,
+    setSelectedCheckBoxIds,
+    setAllSelectedDocs,
+    setIsClearSelectedCheckbox,
+    fetchGetDocumentDetails,
+    setTableKey
+  }: RefreshAfterCloseParams = params;
   setSelectedCheckBoxIds([]);
   setAllSelectedDocs([]);
   setIsClearSelectedCheckbox(true);
   if (
     alreadyDeletedFileCount > 0 ||
-    totalSelectedCount - (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) > 0
+    totalSelectedCount -
+      (alreadyDeletedFileCount + restrictedFileCount + availableFileCount) >
+      0
   ) {
     fetchGetDocumentDetails(
       paramPage,
-      getAllRegistrationIds(Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]),
+      getAllRegistrationIds(
+        Array.isArray(selectedFormats) ? selectedFormats : [selectedFormats]
+      ),
       paramSortField,
       paramSortOrder,
       paramRefExternalIds,

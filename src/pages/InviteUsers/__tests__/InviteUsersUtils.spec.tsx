@@ -67,19 +67,22 @@ describe("InviteUsersUtils", () => {
       const setTotalPage = jest.fn();
       const setShowErrorBanner = jest.fn();
       const setshowInvitationConflictBanner = jest.fn();
+      const setshowInvitationRequestBanner = jest.fn();
 
       const props = {
         pageNumber: 1,
         pageSize: 10,
         setTotalPage,
         setShowErrorBanner,
-        setshowInvitationConflictBanner
+        setshowInvitationConflictBanner,
+        setshowInvitationRequestBanner
       };
 
       const result = await InviteUsersUtils.fetchInviteUserDetails(props);
 
       expect(setTotalPage).toHaveBeenCalledWith(2);
       expect(setshowInvitationConflictBanner).toHaveBeenCalledWith(false);
+      expect(setshowInvitationRequestBanner).toHaveBeenCalledWith(false);
       expect(result).toEqual([
         {
           id: "1",
@@ -114,13 +117,15 @@ describe("InviteUsersUtils", () => {
       const setTotalPage = jest.fn();
       const setShowErrorBanner = jest.fn();
       const setshowInvitationConflictBanner = jest.fn();
+      const setshowInvitationRequestBanner = jest.fn();
 
       const props = {
         pageNumber: 1,
         pageSize: 5,
         setTotalPage,
         setShowErrorBanner,
-        setshowInvitationConflictBanner
+        setshowInvitationConflictBanner,
+        setshowInvitationRequestBanner
       };
 
       const result = await InviteUsersUtils.fetchInviteUserDetails(props);
@@ -130,6 +135,7 @@ describe("InviteUsersUtils", () => {
     });
   });
 });
+
 describe("fetchInviteUserDetails", () => {
   it("should handle invitation conflict correctly", async () => {
     const mockResponse = {
@@ -155,19 +161,22 @@ describe("fetchInviteUserDetails", () => {
     const setTotalPage = jest.fn();
     const setShowErrorBanner = jest.fn();
     const setshowInvitationConflictBanner = jest.fn();
+    const setshowInvitationRequestBanner = jest.fn();
 
     const props = {
       pageNumber: 1,
       pageSize: 5,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
 
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
 
     expect(setTotalPage).toHaveBeenCalledWith(2);
     expect(setshowInvitationConflictBanner).toHaveBeenCalledWith(true);
+    expect(setshowInvitationRequestBanner).toHaveBeenCalledWith(false);
     expect(result).toEqual([
       {
         id: "2",
@@ -194,6 +203,72 @@ describe("fetchInviteUserDetails", () => {
     ]);
   });
 
+  it("should handle invitation request correctly", async () => {
+    const mockResponse = {
+      data: [
+        {
+          total: 10,
+          payload: [
+            {
+              externalId: "2",
+              forename: "Jane",
+              surname: "Smith",
+              emailId: "jane.smith@example.com",
+              userType: "User",
+              invitationStatus: "Invite requested",
+              inviteRequestDate: "26 Jan 2026"
+            }
+          ]
+        }
+      ]
+    };
+    (service.get as jest.Mock).mockResolvedValue(mockResponse);
+
+    const setTotalPage = jest.fn();
+    const setShowErrorBanner = jest.fn();
+    const setshowInvitationConflictBanner = jest.fn();
+    const setshowInvitationRequestBanner = jest.fn();
+
+    const props = {
+      pageNumber: 1,
+      pageSize: 5,
+      setTotalPage,
+      setShowErrorBanner,
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
+    };
+
+    const result = await InviteUsersUtils.fetchInviteUserDetails(props);
+
+    expect(setTotalPage).toHaveBeenCalledWith(2);
+    expect(setshowInvitationConflictBanner).toHaveBeenCalledWith(false);
+    expect(setshowInvitationRequestBanner).toHaveBeenCalledWith(true);
+    expect(result).toEqual([
+      {
+        id: "2",
+        name: "Jane Smith",
+        emailId: "jane.smith@example.com",
+        userType: "User",
+        invitationStatus: "Invite requested",
+        inviteRequestDate: "26 Jan 2026",
+        actions: {
+          options: [
+            {
+              disabled: false,
+              isSelected: false,
+              text: "Send Invite",
+              value: "SendInvite"
+            }
+          ]
+        },
+        isShowActionBtn: true,
+        isShowCheckBox: true,
+        forename: "Jane",
+        surname: "Smith"
+      }
+    ]);
+  });
+
   it("should return an empty array if no payload is present", async () => {
     const mockResponse = {
       data: [
@@ -208,19 +283,22 @@ describe("fetchInviteUserDetails", () => {
     const setTotalPage = jest.fn();
     const setShowErrorBanner = jest.fn();
     const setshowInvitationConflictBanner = jest.fn();
+    const setshowInvitationRequestBanner = jest.fn();
 
     const props = {
       pageNumber: 1,
       pageSize: 5,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
 
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
 
     expect(setTotalPage).toHaveBeenCalledWith(0);
     expect(setshowInvitationConflictBanner).toHaveBeenCalledWith(false);
+    expect(setshowInvitationRequestBanner).toHaveBeenCalledWith(false);
     expect(result).toEqual([]);
   });
 
@@ -248,19 +326,22 @@ describe("fetchInviteUserDetails", () => {
     const setTotalPage = jest.fn();
     const setShowErrorBanner = jest.fn();
     const setshowInvitationConflictBanner = jest.fn();
+    const setshowInvitationRequestBanner = jest.fn();
 
     const props = {
       pageNumber: 1,
       pageSize: 5,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
 
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
 
     expect(setTotalPage).toHaveBeenCalledWith(2);
     expect(setshowInvitationConflictBanner).toHaveBeenCalledWith(false);
+    expect(setshowInvitationRequestBanner).toHaveBeenCalledWith(false);
     expect(result).toEqual([]);
   });
 });
@@ -272,6 +353,7 @@ describe.skip("inviteUsersSorting", () => {
   let setLoader: jest.Mock;
   let setShowErrorBanner: jest.Mock;
   let setshowInvitationConflictBanner: jest.Mock;
+  let setshowInvitationRequestBanner: jest.Mock;
   let fetchInviteUserDetailsSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -281,6 +363,7 @@ describe.skip("inviteUsersSorting", () => {
     setLoader = jest.fn();
     setShowErrorBanner = jest.fn();
     setshowInvitationConflictBanner = jest.fn();
+    setshowInvitationRequestBanner = jest.fn();
 
     fetchInviteUserDetailsSpy = jest.spyOn(
       InviteUsersUtils,
@@ -304,7 +387,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -322,7 +406,8 @@ describe.skip("inviteUsersSorting", () => {
       columnName: "Forename",
       sortDirection: true,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     });
     // Wait for the .then() in inviteUsersSorting to resolve
     await Promise.resolve();
@@ -341,7 +426,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -359,7 +445,8 @@ describe.skip("inviteUsersSorting", () => {
       columnName: "EmailId",
       sortDirection: false,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     });
     await Promise.resolve();
     expect(setLoader).toHaveBeenCalledWith(false);
@@ -377,7 +464,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -395,7 +483,8 @@ describe.skip("inviteUsersSorting", () => {
       columnName: "userType",
       sortDirection: true,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     });
     await Promise.resolve();
     expect(setLoader).toHaveBeenCalledWith(false);
@@ -412,7 +501,8 @@ describe.skip("inviteUsersSorting", () => {
         setUsersTableData,
         setLoader,
         setShowErrorBanner: jest.fn(),
-        setshowInvitationConflictBanner: jest.fn()
+        setshowInvitationConflictBanner: jest.fn(),
+        setshowInvitationRequestBanner: jest.fn()
       },
       pagination: {
         pageNumber: 1,
@@ -430,6 +520,7 @@ describe.skip("inviteUsersSorting", () => {
       sortDirection: false,
       setShowErrorBanner: undefined,
       setshowInvitationConflictBanner: undefined,
+      setshowInvitationRequestBanner: undefined,
       searchAndStatusFilter: undefined
     });
     await Promise.resolve();
@@ -441,11 +532,13 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
   let setTotalPage: jest.Mock;
   let setShowErrorBanner: jest.Mock;
   let setshowInvitationConflictBanner: jest.Mock;
+  let setshowInvitationRequestBanner: jest.Mock;
 
   beforeEach(() => {
     setTotalPage = jest.fn();
     setShowErrorBanner = jest.fn();
     setshowInvitationConflictBanner = jest.fn();
+    setshowInvitationRequestBanner = jest.fn();
     jest.spyOn(InviteUsersUtils, "getUsersData");
   });
 
@@ -484,7 +577,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 2,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result).toHaveLength(1);
@@ -513,7 +607,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].emailId).toBe("Main work email unavailable");
@@ -541,7 +636,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].isShowCheckBox).toBe(false);
@@ -570,7 +666,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].isShowCheckBox).toBe(false);
@@ -599,7 +696,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].isShowCheckBox).toBe(false);
@@ -628,7 +726,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].forename).toBe("First");
@@ -658,7 +757,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].id).toBe(null);
@@ -692,7 +792,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result[0].actions).toEqual({
@@ -719,7 +820,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result).toEqual([]);
@@ -737,7 +839,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
       pageSize: 1,
       setTotalPage,
       setShowErrorBanner,
-      setshowInvitationConflictBanner
+      setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner
     };
     const result = await InviteUsersUtils.fetchInviteUserDetails(props);
     expect(result).toEqual([]);

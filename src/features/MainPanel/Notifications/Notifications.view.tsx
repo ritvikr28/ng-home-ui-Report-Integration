@@ -48,6 +48,7 @@ const NotificationView: React.FC = () => {
         selectedCount,
         isNoSelectionMode,
         filters,
+        setFilters,
         handleFilterChange,
         handleClearAllFilters,
         // searchTagList,
@@ -55,8 +56,6 @@ const NotificationView: React.FC = () => {
         sortDirection
         // handleSort
     }: UseNotificationReturnType = useNotification({ tableData, totalTableData, currentPage, setCurrentPage, setIsTableBodyLoading, setTotalTableData, setTableDataError });
-
-    console.log("filterBtnClicked---------------", filterBtnClicked)
 
     const [sideIsOpen, setSideIsOpen]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(false);
     const [selectedItem, setSelectedItem]: [any, Dispatch<SetStateAction<any>>] = useState<any>("");
@@ -143,6 +142,8 @@ const NotificationView: React.FC = () => {
                         setNotificationState={setNotificationState}
                         filterBtnClicked={filterBtnClicked}
                         setFilterBtnClicked={setFilterBtnClicked}
+                        filters={filters}
+                        setFilters={setFilters}
                     />
                     {filterBtnClicked && (
                         <FilterDialogLogic

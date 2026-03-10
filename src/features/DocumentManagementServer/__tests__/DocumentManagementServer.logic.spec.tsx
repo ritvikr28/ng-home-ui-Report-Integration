@@ -14,8 +14,8 @@ jest.mock("@essnextgen/ui-kit", () => ({
   ...jest.requireActual("@essnextgen/ui-kit"),
   useMediaQuery: jest.fn(),
   ApiService: {
-    fetchDMSSuggestions: jest.fn(),
-  },
+    fetchDMSSuggestions: jest.fn()
+  }
 }));
 
 // eslint-disable-next-line
@@ -568,7 +568,7 @@ describe('fetchDocumentCategoryData', () => {
     setCategoryError,
     setAvailableCategories,
     setLocalSelectedCategories,
-    localSelectedCategories: testLocalSelectedCategories,
+    localSelectedCategories: testLocalSelectedCategories
   });
 
   // Validate returned data
@@ -605,7 +605,7 @@ it('returns empty array and sets error when API returns non-200 and refId is emp
     setCategoryError,
     setAvailableCategories,
     setLocalSelectedCategories,
-    localSelectedCategories,
+    localSelectedCategories
   });
 
   // Refactored to avoid nested ternary in the implementation (if present)

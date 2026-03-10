@@ -289,3 +289,64 @@ export function useSetFailedFileNameOnCancelled(viewData: any[], setFailedFileNa
     }
   }, [viewData, setFailedFileName]);
 }
+
+interface UseApplySummaryTagClassOnDocDataChangeParams {
+  selectedFormats: any[],
+  isFilterDialogOpen: boolean,
+  isSearchTriggered: boolean,
+  searchText: string,
+  currentPage: number,
+  sortBy: string,
+  sortDirection: string,
+  searchRefExternalId: string[],
+  documentRelatedTo: number,
+  setIsInitialLoad: (v: boolean) => void,
+  dateRange: { fromDate: any; toDate: any } | null,
+  allRegistrationIds: any[],
+  fetchGetDocumentDetails: (
+    currentPage: number,
+    registrationIds: any[],
+    sortBy: string,
+    sortDirection: string,
+    searchRefExternalId: string[],
+    documentRelatedTo: number
+  ) => void
+}
+
+export function useApplySummaryTagClassOnDocDataChange(
+  params: UseApplySummaryTagClassOnDocDataChangeParams
+): void {
+    const {
+      selectedFormats,
+      isFilterDialogOpen,
+      isSearchTriggered,
+      searchText,
+      currentPage,
+      sortBy,
+      sortDirection,
+      searchRefExternalId,
+      documentRelatedTo,
+      setIsInitialLoad,
+      dateRange,
+      allRegistrationIds,
+      fetchGetDocumentDetails
+    }: UseApplySummaryTagClassOnDocDataChangeParams = params;
+
+    useEffect(() => {
+      const allRegistrationId: any[] = getAllRegistrationIds(selectedFormats);
+  
+      if (!isFilterDialogOpen && isSearchTriggered && searchText) {
+        setIsInitialLoad(true);
+        fetchGetDocumentDetails(currentPage, allRegistrationId, sortBy, sortDirection, searchRefExternalId, documentRelatedTo);
+  
+        setIsInitialLoad(false);
+      }
+      if (!isFilterDialogOpen && isSearchTriggered && !searchText) {
+        setIsInitialLoad(true);
+        fetchGetDocumentDetails(currentPage, allRegistrationIds, sortBy, sortDirection, searchRefExternalId, documentRelatedTo)
+        setIsInitialLoad(false);
+      }
+      applySummaryTagClass();
+    }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
+  
+}

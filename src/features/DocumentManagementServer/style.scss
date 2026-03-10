@@ -154,6 +154,41 @@
     margin-left: 0;
   }
 
+  .manage-documents-side-panel{
+    .highlight{
+      font-weight: 500;
+      margin-top: 15px;
+    }
+    .help-text{
+      margin-top: 15px;
+    }
+    .convert-doc-button{
+      margin-top: 15px;
+    }
+    .relatedto-main{
+      max-width: 180px;
+    }
+    .relatedto-flex-row {
+      display: flex;
+      align-items: center;
+      min-width: 0; /* allows truncation */
+    }
+    .ellipsis-cell {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+    }
+    .document-text {
+      max-width: 120px; /* or adjust as needed */
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+  }
+
   #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box {
     margin-top: 10px;
 
@@ -483,6 +518,9 @@
       vertical-align: middle;
       width: 2rem;
     }
+  }
+   .manage-documents-table{
+    max-width: 400px;
   }
 
   .grid-wrapper {

@@ -13,28 +13,31 @@ describe('handleOverflowAction', () => {
     tooltipMessage: '',
     cellStatus: '',
     actions: { options: [] },
-    reasonForChanges: ''
+    reasonForChanges: '',
+    dfeNumber: '',
+    ngModuleComponentUrl: '',
+    previousDate: ''
   };
 
   it('calls handleViewClick when action is "View"', () => {
-    const handleViewClick = jest.fn();
-    const handleEditClick = jest.fn();
+    const handleViewClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
+    const handleEditClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
     handleOverflowAction('View', rowData, handleViewClick, handleEditClick);
     expect(handleViewClick).toHaveBeenCalledWith(rowData);
     expect(handleEditClick).not.toHaveBeenCalled();
   });
 
   it('calls handleEditClick when action is "Edit"', () => {
-    const handleViewClick = jest.fn();
-    const handleEditClick = jest.fn();
+    const handleViewClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
+    const handleEditClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
     handleOverflowAction('Edit', rowData, handleViewClick, handleEditClick);
     expect(handleEditClick).toHaveBeenCalledWith(rowData);
     expect(handleViewClick).not.toHaveBeenCalled();
   });
 
   it('does nothing for other actions', () => {
-    const handleViewClick = jest.fn();
-    const handleEditClick = jest.fn();
+    const handleViewClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
+    const handleEditClick: (row: Sims7RedirectionsTableRow) => void = jest.fn();
     handleOverflowAction('Other', rowData, handleViewClick, handleEditClick);
     expect(handleViewClick).not.toHaveBeenCalled();
     expect(handleEditClick).not.toHaveBeenCalled();

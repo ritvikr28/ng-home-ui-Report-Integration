@@ -79,6 +79,12 @@ export interface UseNotificationReturnType {
   selectedCount: number;
   isNoSelectionMode: boolean;
   filters: any;
+  setFilters: React.Dispatch<React.SetStateAction<{
+      status?: string[] | undefined;
+      priority?: string[] | undefined;
+      startDate?: string | undefined;
+      endDate?: string | undefined;
+    }>>;
   handleFilterChange: (filters: any) => void;
   handleClearAllFilters: () => void;
   // searchTagList: any[]

@@ -96,6 +96,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
     setLoader,
     showInvitationConflictBanner,
     setshowInvitationConflictBanner,
+    showInvitationRequestBanner,
+    setshowInvitationRequestBanner,
     isSearchLoader,
     setSearchLoader
   }: InviteUserProps = props;
@@ -309,6 +311,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner,
       setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
@@ -336,7 +339,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
         searchAndStatusFilter,
         setTotalPage,
         setShowErrorBanner,
-        setshowInvitationConflictBanner
+        setshowInvitationConflictBanner,
+        setshowInvitationRequestBanner
       }).then((res) => {
         setLoader(false);
         setUsersTableData(res);
@@ -372,6 +376,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
       setTotalPage,
       setShowErrorBanner,
       setshowInvitationConflictBanner,
+      setshowInvitationRequestBanner,
       setNoDataTextToDisplay
     }).then((res) => {
       setLoader(false);
@@ -533,6 +538,7 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 columnName === `${t("invitePerson.inviteRequestDate")}`
               ) {
                 setshowInvitationConflictBanner(false);
+                setshowInvitationRequestBanner(false);
                 let apiColumnName = "EmailId";
                 if (columnName === `${t("invitePerson.name")}`) {
                   apiColumnName = "Forename";
@@ -561,7 +567,8 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                     setUsersTableData,
                     setLoader,
                     setShowErrorBanner,
-                    setshowInvitationConflictBanner
+                    setshowInvitationConflictBanner,
+                    setshowInvitationRequestBanner
                   },
                   pagination: {
                     pageNumber: currentPage,
@@ -733,7 +740,10 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
               if (index === 1) {
                 setshowInvitationConflictBanner(false);
               }
-              if (index === 2 || index === 3) {
+              if (index === 2) {
+                setshowInvitationRequestBanner(false);
+              }
+              if (index === 3 || index === 4) {
                 setShowInviteErrBanner(false);
               }
             }}
@@ -750,6 +760,13 @@ export const InviteUserView: React.FC<InviteUserProps> = (props) => {
                 variant: "warning",
                 title: `${t("invitePerson.invitationConflict")}`,
                 message: `${t("invitePerson.invitationConflictDescription")}`,
+                autoclose: true
+              },
+              {
+                isShow: !!showInvitationRequestBanner,
+                variant: "warning",
+                title: `${t("invitePerson.invitationRequest")}`,
+                message: `${t("invitePerson.invitationRequestDescription")}`,
                 autoclose: true
               },
               {

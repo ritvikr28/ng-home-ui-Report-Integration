@@ -22,6 +22,10 @@ export interface InviteUserProps {
   setshowInvitationConflictBanner: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  showInvitationRequestBanner: boolean;
+  setshowInvitationRequestBanner: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
   isSearchLoader: boolean;
   setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -63,6 +67,7 @@ export interface InviteUsersSortingOptions {
     setLoader: React.Dispatch<React.SetStateAction<boolean>>;
     setShowErrorBanner: React.Dispatch<React.SetStateAction<boolean>>;
     setshowInvitationConflictBanner: React.Dispatch<React.SetStateAction<boolean>>;
+    setshowInvitationRequestBanner: React.Dispatch<React.SetStateAction<boolean>>;
   };
   pagination: IPagination;
   searchAndStatusFilter?: {
@@ -179,6 +184,9 @@ export interface IPaginationOptions {
   setTotalPage?: React.Dispatch<React.SetStateAction<number>>;
   setShowErrorBanner?: React.Dispatch<React.SetStateAction<boolean>>;
   setshowInvitationConflictBanner?: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+  setshowInvitationRequestBanner?: React.Dispatch<
     React.SetStateAction<boolean>
   >;
   columnName?: string;

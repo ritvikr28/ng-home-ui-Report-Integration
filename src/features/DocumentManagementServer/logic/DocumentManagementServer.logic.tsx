@@ -25,7 +25,7 @@ const renderSingleValue = (
   );
 };
 
-const renderArrayValue = (
+export const renderArrayValue = (
   value: unknown,
   colName: string
 ) => {
@@ -34,7 +34,6 @@ const renderArrayValue = (
   }
 
   const firstValue = value[0];
-
   return (
     <EllipsisWithTooltip
       text={firstValue}
@@ -95,6 +94,15 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isColumnSorting: true,
     anyComponent: (e: string | undefined) =>
       renderSingleValue(e, "category"),
+  },
+  {
+    text: t("DocumentManagementServer.privacyColumn"),
+    isShow: true,
+    showValAs: ShowValAs.CustomeComponent,
+    columnWidth: "180px",
+    isColumnSorting: true,
+    anyComponent: (e: string) =>
+      renderSingleValue(e, "privacyStatus"),
   },
   {
     text: t("DocumentManagementServer.addedByColumn"),

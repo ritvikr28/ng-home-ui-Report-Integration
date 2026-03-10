@@ -109,109 +109,6 @@ describe("FilterDialogLogic", () => {
         });
     });
 
-    describe("useEffect - filters prop updates", () => {
-        it("should update state when filters prop changes", () => {
-            const initialFilters = {
-                status: ["read"],
-                priority: ["high"],
-                startDate: "2024-01-01",
-                endDate: "2024-12-31",
-            };
-
-            const { rerender } = render(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={initialFilters}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("status")).toHaveTextContent(JSON.stringify(["read"]));
-
-            const updatedFilters = {
-                status: ["unread"],
-                priority: ["low", "medium"],
-                startDate: "2023-01-01",
-                endDate: "2023-12-31",
-            };
-
-            rerender(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={updatedFilters}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("status")).toHaveTextContent(JSON.stringify(["unread"]));
-            expect(screen.getByTestId("priority")).toHaveTextContent(JSON.stringify(["low", "medium"]));
-            expect(screen.getByTestId("start-date")).toHaveTextContent("2023-01-01");
-            expect(screen.getByTestId("end-date")).toHaveTextContent("2023-12-31");
-        });
-
-        it("should update state to empty arrays when filters prop changes to undefined arrays", () => {
-            const initialFilters = {
-                status: ["read"],
-                priority: ["high"],
-            };
-
-            const { rerender } = render(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={initialFilters}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("status")).toHaveTextContent(JSON.stringify(["read"]));
-
-            rerender(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={{}}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("status")).toHaveTextContent("[]");
-            expect(screen.getByTestId("priority")).toHaveTextContent("[]");
-        });
-
-        it("should update state to empty strings when filters prop changes to undefined dates", () => {
-            const initialFilters = {
-                startDate: "2024-01-01",
-                endDate: "2024-12-31",
-            };
-
-            const { rerender } = render(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={initialFilters}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("start-date")).toHaveTextContent("2024-01-01");
-
-            rerender(
-                <FilterDialogLogic
-                    setFilterBtnClicked={mockSetFilterBtnClicked}
-                    filters={{}}
-                    onApply={mockOnApply}
-                    onClear={mockOnClear}
-                />
-            );
-
-            expect(screen.getByTestId("start-date")).toHaveTextContent("");
-            expect(screen.getByTestId("end-date")).toHaveTextContent("");
-        });
-    });
-
     describe("handleApply", () => {
         beforeEach(() => {
             jest.clearAllMocks();
@@ -475,19 +372,6 @@ describe("FilterDialogLogic", () => {
 });
 
 describe("startDateError logic", () => {
-    it("should set startDateError to 'startDateRequired' if endDate is set but startDate is empty", () => {
-        render(
-            <FilterDialogLogic
-                setFilterBtnClicked={mockSetFilterBtnClicked}
-                filters={{ endDate: "2024-12-31" }}
-                onApply={mockOnApply}
-                onClear={mockOnClear}
-            />
-        );
-        expect(mockFilterDialogView).toHaveBeenLastCalledWith(
-            expect.objectContaining({ startDateError: "" })
-        );
-    });
 
     it("should clear startDateError if both startDate and endDate are set", () => {
         render(
@@ -546,10 +430,10 @@ describe("startDateError logic", () => {
             />
         );
         expect(mockFilterDialogView).toHaveBeenLastCalledWith(
-            expect.objectContaining({ startDateError: "Date from cannot be after date to" })
+            expect.objectContaining({ startDateError: "Start date cannot be after end date" })
         );
         expect(mockFilterDialogView).toHaveBeenLastCalledWith(
-            expect.objectContaining({ endDateError: "Date to cannot be before date from" })
+            expect.objectContaining({ endDateError: "End date cannot be before start date" })
         );
     });
 

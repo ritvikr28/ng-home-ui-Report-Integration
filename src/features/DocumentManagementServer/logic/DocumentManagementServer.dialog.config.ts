@@ -306,6 +306,9 @@ export const handleSorting: any = (columnName: string, sortBy: string, setSortBy
     case t("DocumentManagementServer.categoryColumn"):
       apiColumnName = "Category";
       break;
+    case t("DocumentManagementServer.privacyColumn"):
+      apiColumnName = "PrivacyStatus";
+      break;
     default:
       return;
   }

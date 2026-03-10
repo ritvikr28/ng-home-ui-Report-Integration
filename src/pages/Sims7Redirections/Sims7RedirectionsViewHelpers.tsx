@@ -14,6 +14,15 @@ export function getStatusTagColor(status: string): TagColor {
     return TagColor.Neutral;
 }
 
+const redirectYesStatuses = new Set(["migrated", "permanent", "planned"]);
+
+export const getRedirectToNextGenText = (status?: string): "Yes" | "No" => {
+    if (status && redirectYesStatuses.has(status.toLowerCase())) {
+        return "Yes";
+    }
+    return "No";
+};
+
 export const ModifiedByField: React.FC<{ modifiedBy: string }> = ({ modifiedBy }) => (
     modifiedBy && modifiedBy !== '-' ? (
         <div>

@@ -1,5 +1,6 @@
 import { ShowValAs, TagColor, Tooltip } from "@essnextgen/ui-kit";
 import { ReactNode } from "react";
+import { nextGenModuleUrlMap } from './Sims7RedirectionsMapper';
 
 export interface Sims7RedirectionsTableRow {
     id: string;
@@ -20,6 +21,9 @@ export interface Sims7RedirectionsTableRow {
         }[];
     };
     reasonForChanges?: string;
+    dfeNumber: string;
+    ngModuleComponentUrl: string;
+    previousDate: string;
 }
 
 export interface Sims7RedirectionsTableHeader {
@@ -41,21 +45,36 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         text: "ID",
         isShow: false,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
     },
     {
         text: "Category",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting: true,
     },
 
     {
         text: "Next Gen module",
         isShow: true,
         showValAs: ShowValAs.CustomeComponent,
+        isColumnSorting: true,
+        // anyComponent: (value: string) => {
+        //     if (!value) return null;
+        //     const isTruncated: boolean = value.length > 19;
+        //     const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
+        //     // Always use the backend URL as-is
+        //     return (
+        //         <a href={value} target="_blank" rel="noopener noreferrer">
+        //             {displayText}
+        //         </a>
+        //     );
+        // }
+
         anyComponent: (value: string) => {
             if (!value) return null;
+            const url = nextGenModuleUrlMap[value] || value;
             const isTruncated: boolean = value.length > 19;
             const displayText: string = isTruncated ? `${value.slice(0, 19)}…` : value;
             if (isTruncated) {
@@ -63,7 +82,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                     <Tooltip content={<span>{value}</span>}>
                         <span>
                             <a
-                                href={`https://example.com/module/${encodeURIComponent(value)}`}
+                                href={url}
                                 target="_blank"
                                 className="truncated-link"
                                 rel="noopener noreferrer"
@@ -75,9 +94,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
                 );
             }
             return (
-                <a href={`https://example.com/module/${encodeURIComponent(value)}`}
-                    target="_blank"
-                    rel="noopener noreferrer">
+                <a href={url} target="_blank" rel="noopener noreferrer">
                     {displayText}
                 </a>
             );
@@ -90,19 +107,22 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         isTextTruncate: true,
         alignSpecific: true,
         columnWidth: "250px",
-        tagColor: TagColor.Highlight
+        tagColor: TagColor.Highlight,
+        isColumnSorting: true
     },
     {
         text: "Modified by",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting:false
     },
     {
         text: "Effective date",
         isShow: true,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false
+        isTextTruncate: false,
+        isColumnSorting: true,
     },
     {
         text: "Status",
@@ -117,7 +137,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         },
         isTextTruncate: false,
         isColumnSorting: true,
-        isColumnSortByDefault: false
+        isColumnSortByDefault: false,
     },
     {
         text: "Reason for changes",

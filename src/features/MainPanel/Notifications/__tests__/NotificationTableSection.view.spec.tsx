@@ -147,6 +147,7 @@ const getDefaultProps = (overrides = {}) => ({
     setNotificationState: jest.fn(),
     filterBtnClicked: false,
     setFilterBtnClicked: jest.fn(),
+    setFilters: jest.fn(),
     ...overrides
 });
 

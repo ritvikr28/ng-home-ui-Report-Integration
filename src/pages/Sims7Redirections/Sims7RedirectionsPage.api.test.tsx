@@ -93,11 +93,11 @@ describe('Sims7RedirectionsMapper', () => {
       ngModule: 'Admissions',
       ngComponent: 'Admissions',
       sims7Module: 'Admissions',
-      updatedBy: 'Admin',
+      updatedByUserName: 'Admin',
       effectiveDate: '2024-01-01T00:00:00',
       redirectStatus: 'Migrated',
       tooltipMessage: 'Tooltip',
-      reasonForChanges: 'Reason',
+      reasonForChanges: 'Reason'
     };
     const result = mapSims7RedirectionsItem(apiItem, 0);
     expect(result.id).toBe('123');
