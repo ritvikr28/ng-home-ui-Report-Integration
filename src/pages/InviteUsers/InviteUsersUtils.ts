@@ -85,26 +85,36 @@ export const fetchInviteUserDetails: (props: IPaginationOptions) => Promise<any[
     setTotalPage,
     setShowErrorBanner,
     setshowInvitationConflictBanner,
+    setTotalConflicts,
     setshowInvitationRequestBanner,
+    setTotalRequests,
     setNoDataTextToDisplay
   }: IPaginationOptions = props;
   try {
     const InviteUsersData: any = await getUsersData(props);
 
-    if (setshowInvitationConflictBanner) {
-      setshowInvitationConflictBanner(
-        InviteUsersData[0]?.payload.some(
-          (x: any) => x?.invitationStatus === "Invite conflict"
-        )
-      );
+    if (InviteUsersData[0]?.payload === undefined || InviteUsersData[0]?.payload === null) {
+      throw new TypeError("payload is null or undefined");
     }
 
+    const totalConflicts = InviteUsersData[0]?.conflicts;
+    if (setshowInvitationConflictBanner) {
+      setshowInvitationConflictBanner(
+        InviteUsersData[0]?.conflicts > 0
+      );
+      if (setTotalConflicts) {
+        setTotalConflicts(totalConflicts);
+      };
+    }
+
+    const totalRequests = InviteUsersData[0]?.requests;
     if (setshowInvitationRequestBanner) {
       setshowInvitationRequestBanner(
-        InviteUsersData[0]?.payload.some(
-          (x: any) => x?.invitationStatus === "Invite requested"
-        )
+        InviteUsersData[0]?.requests > 0
       );
+      if (setTotalRequests) {
+        setTotalRequests(totalRequests);
+      };
     }
 
     const totalPages = Math.ceil(InviteUsersData[0].total / pageSize);

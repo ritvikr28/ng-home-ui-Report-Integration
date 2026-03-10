@@ -463,9 +463,9 @@
     "inviteStaffDescription": "Invite Staff is being replaced",
     "learnMoreInvitePerson": "Learn more about Invite Users",
     "invitationConflict": "Invitation conflict",
-    "invitationConflictDescription": "There is an invitation conflict with some users on this list because they are associated with more than one SIMS ID account. Please contact your SIMS support provider.",
+    "invitationConflictDescription": "There are {0} invitation conflict(s) with some users on this list because they are associated with more than one SIMS ID account. Please contact your SIMS support provider.",
     "invitationRequest": "Pending requests",
-    "invitationRequestDescription": "You have {0} pending invite requests. Use the Invitation status filters to view and take action.",
+    "invitationRequestDescription": "You have {0} pending invite request(s). Use the Invitation status filters to view and take action.",
     "cancel": "Cancel",
     "save": "Save",
     "pleaseWaitLoader": "Please wait"

@@ -22,10 +22,14 @@ export interface InviteUserProps {
   setshowInvitationConflictBanner: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  totalConflicts: number;  
+  setTotalConflicts: React.Dispatch<React.SetStateAction<number>>;
   showInvitationRequestBanner: boolean;
   setshowInvitationRequestBanner: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  totalRequests: number;
+  setTotalRequests: React.Dispatch<React.SetStateAction<number>>;
   isSearchLoader: boolean;
   setSearchLoader: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -186,9 +190,11 @@ export interface IPaginationOptions {
   setshowInvitationConflictBanner?: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  setTotalConflicts?: React.Dispatch<React.SetStateAction<number>>;
   setshowInvitationRequestBanner?: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+  setTotalRequests?: React.Dispatch<React.SetStateAction<number>>;
   columnName?: string;
   sortDirection?: boolean;
   searchAndStatusFilter?: {

@@ -142,6 +142,8 @@ describe("fetchInviteUserDetails", () => {
       data: [
         {
           total: 10,
+          conflicts: 1,
+          requests: 0,
           payload: [
             {
               externalId: "2",
@@ -208,6 +210,8 @@ describe("fetchInviteUserDetails", () => {
       data: [
         {
           total: 10,
+          conflicts: 0,
+          requests: 3,
           payload: [
             {
               externalId: "2",
@@ -812,6 +816,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
     (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
       {
         total: 0,
+        conflicts: 0,
+        requests: 0,
         payload: undefined
       }
     ]);
@@ -831,6 +837,8 @@ describe("fetchInviteUserDetails - tableDataObj mapping", () => {
     (InviteUsersUtils.getUsersData as jest.Mock).mockResolvedValue([
       {
         total: 0,
+        conflicts: 0,
+        requests: 0,
         payload: null
       }
     ]);
