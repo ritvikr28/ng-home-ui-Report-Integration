@@ -13,7 +13,6 @@ export const SidePanelTable: React.FC = () => {
   );
 
   const {
-    selectedIds,
     setSelectedIds,
     handleRowCheckboxChange,
     handleOnChangeAllCheckBox,

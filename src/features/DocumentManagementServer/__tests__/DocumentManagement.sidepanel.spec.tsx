@@ -2,6 +2,11 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
 
+global.ResizeObserver = class {
+  observe() { return this; }
+  unobserve() { return this; }
+  disconnect() { return this; }
+};
 jest.mock("@essnextgen/ui-intl-kit", () => ({
 	...jest.requireActual("@essnextgen/ui-intl-kit"),
 	useTranslation: () => ({
@@ -18,6 +23,8 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
 			if (key === "DocumentManagementServer.failedDownloadTitle") return "Failed Download Title";
 			if (key === "DocumentManagementServer.failedDownloadMessage") return `Failed Download Message: ${options?.files}`;
 			if (key === "DocumentManagementServer.downloadsCleared") return "Downloads Cleared";
+			if (key === "DocumentManagementServer.managePrivateDocuments") return "Manage private documents";
+			
 			return key;
 		}
 	})
@@ -205,6 +212,28 @@ describe("DmsSidePanel", () => {
 
 it("renders ManageDocumentsSidePanel", () => {
     render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
-    expect(screen.getByText("Manage private documents")).toBeInTheDocument();
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+});
+
+it("renders ManageDocumentsSidePanel and click on Action menu", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+
+	const actionButton = screen.getByTestId("edit-selected-btn-testid");
+	fireEvent.click(actionButton);
+
+	expect(screen.getByText("Make public")).toBeInTheDocument();
+	fireEvent.click(screen.getByText("Make public"));
+});
+
+it("renders ManageDocumentsSidePanel and change page", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+
+	const nextButton = screen.getByLabelText("next page");
+	fireEvent.click(nextButton);
+
+	expect(screen.getByText("Text Document")).toBeInTheDocument();
+
 });
 });

@@ -40,8 +40,8 @@ const ConvertDocButton: React.FC<{ t: any }> = ({ t }) => (
   </Button>
 );
 
-export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t }) => {
-  return (
+export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t }) => (
+
     <div className="manage-documents-side-panel">
       <Description t={t} />
       <Highlight t={t} />
@@ -52,5 +52,4 @@ export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> =
         <SidePanelTable />
       </div>
     </div>
-  );
-};
+)

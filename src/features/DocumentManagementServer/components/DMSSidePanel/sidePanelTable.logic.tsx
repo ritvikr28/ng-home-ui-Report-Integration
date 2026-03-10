@@ -1,6 +1,6 @@
+import React, { useState } from "react";
 import { ShowValAs, Tag } from "@essnextgen/ui-kit";
 import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
-import { useState } from "react";
 
 export const tableHeadersData = [
   {
@@ -50,7 +50,7 @@ export const tableHeadersData = [
           />
           {related?.name && (
             <Tag
-              text={"Year / reg"}
+              text="Year / reg"
               className="relatedto-tag"
               dataTestId="related-to-tag"
             />
@@ -78,8 +78,8 @@ export const tableHeadersData = [
     text: "Date Added",
     isShow: true,
     showValAs: ShowValAs.Text,
-    columnWidth: "100px",
-  },
+    columnWidth: "100px"
+  }
 ];
 
 export const tableBodyData = [
@@ -92,18 +92,18 @@ export const tableBodyData = [
   { id: "7", document: "Detention Letter", relatedTo: [{ name: "James" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
   { id: "8", document: "Name what you want", relatedTo: [{ name: "Thala" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
   { id: "9", document: "Dhurandhar", relatedTo: [{ name: "Doval" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "10", document: "Tenth Document", relatedTo: [{ name: "Tenth description" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
+  { id: "10", document: "Tenth Document", relatedTo: [{ name: "Tenth description" }], addedBy: "Toony", dateAdded: "23 Jan 2025" }
 ];
 
 export const filterDDLOptions = [
   { id: "1", text: "All", value: "All" },
   { id: "2", text: "James", value: "Category A" },
-  { id: "3", text: "Suresh", value: "Category B" },
+  { id: "3", text: "Suresh", value: "Category B" }
   // Add more as needed
 ];
 
 
-export function useSidePanelTableSelection(tableBodyData: any[]) {
+export function useSidePanelTableSelection(tableBodyDatas: any[]) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [prevSelectedDocs, setPrevSelectedDocs] = useState<string[]>([]);
   const [excludedCheckBoxIds, setExcludedCheckBoxIds] = useState<string[]>([]);
@@ -120,7 +120,7 @@ export function useSidePanelTableSelection(tableBodyData: any[]) {
     const target = event.target as HTMLInputElement;
     const isChecked = target.checked;
     if (isChecked) {
-      setSelectedIds(tableBodyData.map(row => row.id));
+      setSelectedIds(tableBodyDatas.map(row => row.id));
     } else {
       setSelectedIds([]);
     }
