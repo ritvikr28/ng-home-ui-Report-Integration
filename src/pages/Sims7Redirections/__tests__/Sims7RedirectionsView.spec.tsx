@@ -52,22 +52,22 @@ describe("Sims7RedirectionsView", () => {
       />
     );
 
-    expect(screen.getByText("Category")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.category")).toBeInTheDocument();
     expect(screen.getByText("Test Category")).toBeInTheDocument();
 
-    expect(screen.getByText("Next Gen module")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.nextGenModule")).toBeInTheDocument();
     expect(screen.getByText("NextGenModule")).toBeInTheDocument();
 
-    expect(screen.getByText("SIMS 7 module")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.sims7Module")).toBeInTheDocument();
     expect(screen.getByText("SIMS7Module")).toBeInTheDocument();
 
-    expect(screen.getByText("Redirect to open in Next Gen")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.redirectToNextGen")).toBeInTheDocument();
     expect(screen.getByText("Redirected")).toBeInTheDocument();
 
-    expect(screen.getByText("Modified by")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.modifiedBy")).toBeInTheDocument();
     expect(screen.getByText("TestUser")).toBeInTheDocument();
 
-    expect(screen.getByText("Effective date")).toBeInTheDocument();
+    expect(screen.getByText("SIMS7Redirects.effectiveDate")).toBeInTheDocument();
     expect(screen.getByText("18 Feb 2026")).toBeInTheDocument();
 
     expect(screen.getByTestId("status-tag")).toHaveTextContent("PLANNED");

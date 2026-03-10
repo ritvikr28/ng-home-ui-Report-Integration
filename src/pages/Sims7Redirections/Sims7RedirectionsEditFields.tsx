@@ -1,6 +1,7 @@
 import { EffectiveDateInput, ReasonTextarea } from "./Sims7RedirectionsEditHelpers";
 
 export interface RenderEditFieldsProps {
+    t: (key: string) => string;
     selectedRow: any; // Use a more specific type if available
     redirectToNextGen: string;
     effectiveDate: Date | null;
@@ -23,6 +24,7 @@ export interface RenderEditFieldsProps {
 
 export const renderEditFields = (props: RenderEditFieldsProps) => {
     const {
+        t,
         selectedRow,
         redirectToNextGen,
         effectiveDate,
@@ -41,11 +43,11 @@ export const renderEditFields = (props: RenderEditFieldsProps) => {
     if (selectedRow.status === 'Migrated' && redirectToNextGen === 'no') {
         return <>
             <div>
-                <div className="heading-category">Effective date</div>
+                <div className="heading-category">{t("SIMS7Redirects.effectiveDate")}</div>
                 <EffectiveDateInput {...{ getDateParts, effectiveDate, handleDateChange, handleValidateDate, dateError }} />
             </div>
             <div>
-                <div className="heading-category">Reason for changes</div>
+                <div className="heading-category">{t("SIMS7Redirects.reasonForChanges")}</div>
                 <div className="details-category">
                     <ReasonTextarea {...{ reasonForChanges, setReasonForChanges, setIsDirty, isFormDirty, redirectToNextGen, effectiveDate, reasonError }} />
                 </div>
@@ -56,11 +58,11 @@ export const renderEditFields = (props: RenderEditFieldsProps) => {
     if (selectedRow.status === 'Reversing' && redirectToNextGen === 'no') {
         return <>
             <div>
-                <div className="heading-category">Effective date</div>
+                <div className="heading-category">{t("SIMS7Redirects.effectiveDate")}</div>
                 <EffectiveDateInput {...{ getDateParts, effectiveDate, handleDateChange, handleValidateDate, dateError }} />
             </div>
             <div>
-                <div className="heading-category">Reason for changes</div>
+                <div className="heading-category">{t("SIMS7Redirects.reasonForChanges")}</div>
                 <div className="details-category">
                     <ReasonTextarea {...{ reasonForChanges, setReasonForChanges, setIsDirty, isFormDirty, redirectToNextGen, effectiveDate, reasonError }} />
                 </div>
@@ -70,7 +72,7 @@ export const renderEditFields = (props: RenderEditFieldsProps) => {
     // Not migrated & yes
     if (redirectToNextGen === 'yes' && selectedRow.status === 'Not migrated') {
         return <div>
-            <div className="heading-category">Effective date</div>
+            <div className="heading-category">{t("SIMS7Redirects.effectiveDate")}</div>
             <EffectiveDateInput {...{ getDateParts, effectiveDate, handleDateChange, handleValidateDate, dateError }} />
         </div>;
     }
@@ -80,7 +82,7 @@ export const renderEditFields = (props: RenderEditFieldsProps) => {
         && selectedRow.status !== 'Not migrated'
         && selectedRow.status !== 'Reversing') {
         return <div>
-            <div className="heading-category">Effective date</div>
+            <div className="heading-category">{t("SIMS7Redirects.effectiveDate")}</div>
             <EffectiveDateInput {...{ getDateParts, effectiveDate, handleDateChange, handleValidateDate, dateError }} />
         </div>;
     }
@@ -90,7 +92,7 @@ export const renderEditFields = (props: RenderEditFieldsProps) => {
         && selectedRow.status !== 'Reversing'
         && selectedRow.reasonForChanges) {
         return <div>
-            <div className="heading-category">Reason for changes</div>
+            <div className="heading-category">{t("SIMS7Redirects.reasonForChanges")}</div>
             <div className="details-category">
                 <ReasonTextarea {...{ reasonForChanges, setReasonForChanges, setIsDirty, isFormDirty, redirectToNextGen, effectiveDate, reasonError }} />
             </div>

@@ -7,8 +7,10 @@ describe('handleValidateDate', () => {
     setDateError = jest.fn();
   });
 
+  const t = (key: string) => key;
+
   it('sets error if date is null/undefined', () => {
-    handleValidateDate(undefined as any, setDateError);
+    handleValidateDate(undefined as any, setDateError ,t);
     expect(setDateError).toHaveBeenCalledWith('Invalid Date');
   });
 
@@ -16,22 +18,22 @@ describe('handleValidateDate', () => {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0, 0, 0, 0);
-    handleValidateDate(yesterday, setDateError);
-    expect(setDateError).toHaveBeenCalledWith('Date should be in the future');
+    handleValidateDate(yesterday, setDateError ,t);
+    expect(setDateError).toHaveBeenCalledWith('SIMS7Redirects.dateError');
   });
 
   it('sets error if date is today', () => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    handleValidateDate(today, setDateError);
-    expect(setDateError).toHaveBeenCalledWith('Date should be in the future');
+    handleValidateDate(today, setDateError,t);
+    expect(setDateError).toHaveBeenCalledWith('SIMS7Redirects.dateError');
   });
 
   it('clears error if date is in the future', () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     tomorrow.setHours(0, 0, 0, 0);
-    handleValidateDate(tomorrow, setDateError);
+    handleValidateDate(tomorrow, setDateError,t);
     expect(setDateError).toHaveBeenCalledWith('');
   });
 });

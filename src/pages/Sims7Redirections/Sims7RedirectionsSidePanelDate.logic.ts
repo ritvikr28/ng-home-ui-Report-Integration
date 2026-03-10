@@ -10,6 +10,7 @@ import {
 } from "./Sims7RedirectionsDateHelpers.logic";
 
 export interface HandleDateChangeParams {
+     t: (key: string) => string;
     arg1: string | number | Date | React.ChangeEvent<HTMLInputElement>;
     arg2?: string | number | React.ChangeEvent<HTMLInputElement>;
     arg3?: string | number | React.ChangeEvent<HTMLInputElement>;
@@ -30,6 +31,7 @@ export function getTomorrow(): Date {
 }
 
 export function handleDateChange({
+    t,
     arg1,
     arg2,
     arg3,
@@ -50,20 +52,20 @@ export function handleDateChange({
     const { formattedDay, formattedMonth, formattedYear }: { formattedDay: string; formattedMonth: string; formattedYear: string } = formatDateParts(day, month, year);
     if (isDatePartsEmpty(formattedDay, formattedMonth, formattedYear)) {
         setEffectiveDate(null);
-        setDateError('Date is required');
+         setDateError(t('SIMS7Redirects.dateRequired'));
         setIsDirty(isFormDirty(selectedRow, redirectToNextGen, null, reasonForChanges));
         return;
     }
     if (isDatePartsInvalid(formattedDay, formattedMonth, formattedYear)) {
         setEffectiveDate(null);
-        setDateError('Invalid Date');
+         setDateError(t('SIMS7Redirects.invaliddate'));
         setIsDirty(isFormDirty(selectedRow, redirectToNextGen, null, reasonForChanges));
         return;
     }
     const dateObj = new Date(Number(formattedYear), Number(formattedMonth) - 1, Number(formattedDay));
     if (isDateObjectInvalid(dateObj, formattedDay, formattedMonth, formattedYear)) {
         setEffectiveDate(null);
-        setDateError('Invalid Date');
+      setDateError(t('SIMS7Redirects.invaliddate'));
         setIsDirty(isFormDirty(selectedRow, redirectToNextGen, null, reasonForChanges));
         return;
     }
@@ -72,7 +74,7 @@ export function handleDateChange({
     setIsDirty(isFormDirty(selectedRow, redirectToNextGen, dateObj, reasonForChanges));
 }
 
-export function handleValidateDate(date: Date, setDateError: (msg: string) => void): void {
+export function handleValidateDate(date: Date, setDateError: (msg: string) => void, t: (key: string) => string): void {
     if (!date) {
         setDateError('Invalid Date');
         return;
@@ -80,7 +82,7 @@ export function handleValidateDate(date: Date, setDateError: (msg: string) => vo
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     if (date <= today) {
-        setDateError('Date should be in the future');
+        setDateError(t("SIMS7Redirects.dateError"));
         return;
     }
     setDateError("");

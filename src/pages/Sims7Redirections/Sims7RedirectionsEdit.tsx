@@ -9,6 +9,7 @@ import { renderEditFields } from "./Sims7RedirectionsEditFields";
 
 const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
     const {
+        t,
         selectedRow,
         redirectToNextGen,
         effectiveDate,
@@ -29,11 +30,11 @@ const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
         <SidePanelContent>
             <div className="edit-mode-content">
                 <div>
-                    <div className="heading-category">Category</div>
+                    <div className="heading-category">{t("SIMS7Redirects.category")}</div>
                     <div className="details-category">{selectedRow.category}</div>
                 </div>
                 <div>
-                    <div className="heading-category">Next Gen module</div> {selectedRow.nextGenModule ? (
+                    <div className="heading-category">{t("SIMS7Redirects.nextGenModule")}</div> {selectedRow.nextGenModule ? (
                         <a
                             href={`https://example.com/module/${encodeURIComponent(selectedRow.nextGenModule)}`}
                             target="_blank"
@@ -44,11 +45,11 @@ const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
                     ) : null}
                 </div>
                 <div>
-                    <div className="heading-category">SIMS 7 module</div>
+                    <div className="heading-category">{t("SIMS7Redirects.sims7Module")}</div>
                     <div className="details-category">{selectedRow.sims7Module}</div>
                 </div>
                 <div>
-                    <div className="heading-category">Redirect to open in Next Gen</div>
+                    <div className="heading-category">{t("SIMS7Redirects.redirectToNextGen")}</div>
                     <div className="details-category">
                         <ReactionButtonGroup
                             dataTestId="edit-redirect-nextgen"
@@ -57,12 +58,12 @@ const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
                             onChange={handleRedirectToNextGenChange}
                         >
                             <ReactionButton
-                                label="Yes"
+                                label={t("SIMS7Redirects.yes")}
                                 value="yes"
                                 className="reaction-yes"
                             />
                             <ReactionButton
-                                label="No"
+                                label={t("SIMS7Redirects.no")}
                                 value="no"
                                 className="reaction-no"
                             />
@@ -70,6 +71,7 @@ const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
                     </div>
                 </div>
                 {renderEditFields({
+                    t,
                     selectedRow,
                     redirectToNextGen,
                     effectiveDate,

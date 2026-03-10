@@ -111,6 +111,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
 
     const onDateChange: (arg1: any, arg2?: any, arg3?: any) => void = (arg1, arg2, arg3) => {
         handleDateChange({
+            t,
             arg1,
             arg2,
             arg3,
@@ -125,7 +126,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
     };
 
     const onValidateDate: (date: Date) => void = (date) => {
-        handleValidateDate(date, setDateError);
+        handleValidateDate(date, setDateError, t);
     };
 
     // Save handler: call PUT API in edit mode
@@ -223,7 +224,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             isOpen={isOpen}
             onClose={onCancel}
             isOnClose
-            title={mode === 'view' ? 'View SIMS 7 redirects' : 'Edit SIMS 7 redirects'}
+            title={mode === 'view'? t("SIMS7Redirects.viewTitle"):t("SIMS7Redirects.editTitle")}
             alignHeading
         >
             <SidePanelContent>
@@ -279,7 +280,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
                         />
                     )}
                     {showSuccessToast && (
-                        <Notification status={NotificationStatus.SUCCESSTOAST} title="Changes saved" />
+                        <Notification status={NotificationStatus.SUCCESSTOAST} title={t("SIMS7Redirects.changesSave")} />
                     )}
                     <Dialog
                         isOpen={showCancelDialog}
@@ -291,8 +292,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
                             contentText: t("SIMS7Redirects.discardChangesDescription"),
                             onConfirm: onCancelConfirm,
                             onCancel: onCancelDialogClose,
-                            cancelText: "Cancel",
-                            okText: "Discard"
+                           cancelText: t("SIMS7Redirects.cancelbtn"),
+                            okText: t("SIMS7Redirects.discardbtn")
                         }}
                     />
                 </>
@@ -305,7 +306,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
                         className="btn-full-width"
                         onClick={onClose}
                     >
-                        Close
+                       {t("SIMS7Redirects.closebtn")}
                     </Button>
                     :
                     <>
@@ -315,7 +316,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
                             className="btn-full-width"
                             onClick={onCancel}
                         >
-                            Cancel
+                            {t("SIMS7Redirects.cancelbtn")}
                         </Button>
                         <Button
                             size={ButtonSize.Large}
@@ -323,7 +324,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
                             className="btn-full-width"
                             onClick={onSave}
                         >
-                            Save
+                            {t("SIMS7Redirects.savebtn")}
                         </Button>
                     </>
                 }

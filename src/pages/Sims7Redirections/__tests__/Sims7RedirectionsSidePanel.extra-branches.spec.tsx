@@ -97,8 +97,8 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
         selectedRow={{ ...baseProps.selectedRow, status: "Planned" }}
       />
     );
-    fireEvent.click(screen.getByLabelText("Yes"));
-    expect(screen.getByText("Effective date")).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("SIMS7Redirects.yes"));
+    expect(screen.getByText("SIMS7Redirects.effectiveDate")).toBeInTheDocument();
   });
 
   it("shows reason for changes for Not migrated and no redirect", () => {
@@ -108,8 +108,8 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
         selectedRow={{ ...baseProps.selectedRow, status: "Not migrated", reasonForChanges: "Some reason" }}
       />
     );
-    fireEvent.click(screen.getByLabelText("No"));
-    expect(screen.getByText("Reason for changes")).toBeInTheDocument();
+    fireEvent.click(screen.getByLabelText("SIMS7Redirects.no"));
+    expect(screen.getByText("SIMS7Redirects.reasonForChanges")).toBeInTheDocument();
   });
 
   it("shows dialog when cancel is clicked and form is dirty", async () => {
@@ -119,9 +119,9 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
         selectedRow={{ ...baseProps.selectedRow, status: "Migrated" }}
       />
     );
-    fireEvent.click(screen.getByLabelText("No"));
+   fireEvent.click(screen.getByLabelText("SIMS7Redirects.no"));
     fireEvent.change(screen.getByLabelText("text-aria"), { target: { value: "changed" } });
-    fireEvent.click(screen.getByText("Cancel"));
+    fireEvent.click(screen.getByText("SIMS7Redirects.cancelbtn"));
     expect(await screen.findByText("SIMS7Redirects.discardChanges")).toBeInTheDocument();
   });
 

@@ -68,6 +68,7 @@ export interface LoadSims7RedirectionsDataArgs {
     setOriginalTableData: React.Dispatch<React.SetStateAction<any[]>>;
     setTotalItems: React.Dispatch<React.SetStateAction<number>>;
     setLoading: React.Dispatch<React.SetStateAction<boolean>>;
+    t: (key: string) => string;
 }
 
 export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
@@ -130,7 +131,8 @@ export const Sims7RedirectionsPage: React.FC = () => {
             setApiFailed,
             setOriginalTableData,
             setTotalItems,
-            setLoading
+            setLoading,
+            t
         });
     }, [sortColumn, sortOrder, currentPage, searchTagList, pageSize]);
 
@@ -267,7 +269,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     </div>
                 </div>
 
-                {/* Empty state for test */}
                 {!loading && !paginatedTableData.length && (
                     <div data-testid="empty-state">
                         {t("SIMS7Redirects.emptyStateMsg")}
@@ -302,7 +303,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                                 iconColor={IconColor.Neutral800}
                                 iconPosition={ButtonIconPosition.Right}
                             >
-                                Filter
+                                 {t("SIMS7Redirects.filter")}
                             </Button>
                         </div>
                     }
@@ -361,7 +362,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     dynamicTableLoader={loading}
                     onClickSidePnlSecondaryBtn={() => { }}
                     handleCloseSidePanel={() => { }}
-                    sidePanelTitle="View"
+                     sidePanelTitle={t("SIMS7Redirects.sidePanelTitle")}
                     sidePanelSubTitle=""
                     addEditTemplateChild={() =>
                         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -383,10 +384,10 @@ export const Sims7RedirectionsPage: React.FC = () => {
                 />
 
 
-                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits title="Filter by">
+                 <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits title={t("SIMS7Redirects.filterBy")}>
                     <DialogContent className="dialog-with-dropdown">
                         <>
-                            <FormLabel>Status</FormLabel>
+                            <FormLabel>{t("SIMS7Redirects.status")}</FormLabel>
                             <Dropdown
                                 //  key={dropdownResetKey}
                                 multiSelect
@@ -412,10 +413,10 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     </DialogContent>
                     <DialogFooter className="dialog-actions">
                         <Button dataTestId="close-btn" onClick={handleClearAll} color={ButtonColor.Secondary}>
-                            Clear all
+                            {t("SIMS7Redirects.clearAll")}
                         </Button>
                         <Button dataTestId="close-btn" onClick={handleApplyDialog}>
-                            Apply
+                            {t("SIMS7Redirects.apply")}
                         </Button>
                     </DialogFooter>
                 </Dialog>

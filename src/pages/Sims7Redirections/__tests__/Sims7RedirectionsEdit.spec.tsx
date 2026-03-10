@@ -2,7 +2,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import Sims7RedirectionsEdit from '../Sims7RedirectionsEdit';
 
 describe('Sims7RedirectionsEdit', () => {
-  const tStub = () => { throw new Error('Function not implemented.'); };
+
+  const tStub = (key: string) => key;
+
   const baseProps = {
     selectedRow: {
       category: 'Student',
@@ -24,40 +26,82 @@ describe('Sims7RedirectionsEdit', () => {
   };
 
   it('renders all main fields', () => {
-  render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
-    expect(screen.getByText('Category')).toBeInTheDocument();
+
+    render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
+
+    expect(screen.getByText('SIMS7Redirects.category')).toBeInTheDocument();
     expect(screen.getByText('Student')).toBeInTheDocument();
-    expect(screen.getByText('Next Gen module')).toBeInTheDocument();
+
+    expect(screen.getByText('SIMS7Redirects.nextGenModule')).toBeInTheDocument();
     expect(screen.getByText('Pupil Data')).toBeInTheDocument();
-    expect(screen.getByText('SIMS 7 module')).toBeInTheDocument();
+
+    expect(screen.getByText('SIMS7Redirects.sims7Module')).toBeInTheDocument();
     expect(screen.getByText('Pupil Data1')).toBeInTheDocument();
-    expect(screen.getByText('Redirect to open in Next Gen')).toBeInTheDocument();
+
+    expect(screen.getByText('SIMS7Redirects.redirectToNextGen')).toBeInTheDocument();
+
   });
 
   it('renders Next Gen module as a link if present', () => {
-  render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
+
+    render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
+
     const link = screen.getByRole('link', { name: 'Pupil Data' });
-    expect(link).toHaveAttribute('href', expect.stringContaining('Pupil%20Data'));
+
+    expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('Pupil%20Data')
+    );
+
     expect(link).toHaveAttribute('target', '_blank');
-    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+
+    expect(link).toHaveAttribute(
+      'rel',
+      'noopener noreferrer'
+    );
+
   });
 
   it('does not render Next Gen module link if not present', () => {
-    const props = { ...baseProps, selectedRow: { ...baseProps.selectedRow, nextGenModule: '' } };
-  render(<Sims7RedirectionsEdit t={tStub} {...props} />);
+
+    const props = {
+      ...baseProps,
+      selectedRow: {
+        ...baseProps.selectedRow,
+        nextGenModule: ''
+      }
+    };
+
+    render(<Sims7RedirectionsEdit t={tStub} {...props} />);
+
     expect(screen.queryByRole('link')).not.toBeInTheDocument();
+
   });
 
   it('calls handleRedirectToNextGenChange when ReactionButton is clicked', () => {
-  render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
-    const yesBtn = screen.getByRole('button', { name: 'Yes' });
+
+    render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
+
+    const yesBtn = screen.getByRole('button', {
+      name: 'SIMS7Redirects.yes'
+    });
+
     fireEvent.click(yesBtn);
-    expect(baseProps.handleRedirectToNextGenChange).toHaveBeenCalled();
+
+    expect(
+      baseProps.handleRedirectToNextGenChange
+    ).toHaveBeenCalled();
+
   });
 
   it('renders edit fields via renderEditFields', () => {
-  render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
-    // The actual fields rendered depend on renderEditFields logic, but we can check for a known label
-    expect(screen.getByText('Category')).toBeInTheDocument();
-  });
+
+    render(<Sims7RedirectionsEdit t={tStub} {...baseProps} />);
+
+    expect(
+      screen.getByText('SIMS7Redirects.category')
+    ).toBeInTheDocument();
+
+  })
+
 });

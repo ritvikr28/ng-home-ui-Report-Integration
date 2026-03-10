@@ -54,6 +54,7 @@ export function onRedirectToNextGenChangeHandler({
 }
 
 export function onDateChangeHandler({
+    t,
     arg1,
     arg2,
     arg3,
@@ -66,6 +67,7 @@ export function onDateChangeHandler({
     reasonForChanges
 }: any) {
     handleDateChange({
+        t,
         arg1,
         arg2,
         arg3,
