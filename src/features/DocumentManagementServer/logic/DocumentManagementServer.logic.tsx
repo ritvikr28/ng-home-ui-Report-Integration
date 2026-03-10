@@ -25,7 +25,7 @@ const renderSingleValue = (
   );
 };
 
-const renderArrayValue = (
+export const renderArrayValue = (
   value: unknown,
   colName: string
 ) => {
@@ -34,7 +34,6 @@ const renderArrayValue = (
   }
 
   const firstValue = value[0];
-
   return (
     <EllipsisWithTooltip
       text={firstValue}

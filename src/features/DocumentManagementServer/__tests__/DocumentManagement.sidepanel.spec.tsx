@@ -2,25 +2,45 @@ import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
 
+global.ResizeObserver = class {
+  observe(): ResizeObserver { return this; }
+  unobserve(): ResizeObserver { return this; }
+  disconnect(): ResizeObserver { return this; }
+};
+const translationMap: Record<string, string | ((options?: { type?: string; files?: string }) => string)> = {
+  "DocumentManagementServer.clearAllErrorTitle": "Clear All Error",
+  "DocumentManagementServer.clearAllErrorMessage": "Clear All Error Message",
+  "DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDownloaded": "One or more selected documents cannot be downloaded.",
+  "DocumentManagementServer.downloadErrorTitle": "Download Error Title",
+  "DocumentManagementServer.downloadErrorMessage": "Download Error Message",
+  "DocumentManagementServer.emailNotificationTitle": "Email Notification Title",
+  "DocumentManagementServer.emailNotificationMessage": "Email Notification Message",
+  "DocumentManagementServer.failedDownloadTitle": "Failed Download Title",
+  "DocumentManagementServer.downloadsCleared": "Downloads Cleared",
+  "DocumentManagementServer.managePrivateDocuments": "Manage private documents",
+  "DocumentManagementServer.prepareDownloadErrorTitle": (options) =>
+    options?.type === "document"
+      ? "Prepare Download Error Title - document"
+      : "Prepare Download Error Title - documents",
+  "DocumentManagementServer.prepareDownloadErrorMessage": (options) =>
+    options?.type === "document"
+      ? "Prepare Download Error Message - document"
+      : "Prepare Download Error Message - documents",
+  "DocumentManagementServer.failedDownloadMessage": (options) =>
+    `Failed Download Message: ${options?.files}`
+};
+
 jest.mock("@essnextgen/ui-intl-kit", () => ({
-	...jest.requireActual("@essnextgen/ui-intl-kit"),
-	useTranslation: () => ({
-		t: (key: string, options?: { type?: string; files?: string }) => {
-			if (key === "DocumentManagementServer.clearAllErrorTitle") return "Clear All Error";
-			if (key === "DocumentManagementServer.clearAllErrorMessage") return "Clear All Error Message";
-			if (key === "DocumentManagementServer.prepareDownloadErrorTitle") return options?.type === "document" ? "Prepare Download Error Title - document" : "Prepare Download Error Title - documents";
-			if (key === "DocumentManagementServer.prepareDownloadErrorMessage") return options?.type === "document" ? "Prepare Download Error Message - document" : "Prepare Download Error Message - documents";
-			if (key === "DocumentManagementServer.oneOrMoreSelectedDocumentsCannotBeDownloaded") return "One or more selected documents cannot be downloaded.";
-			if (key === "DocumentManagementServer.downloadErrorTitle") return "Download Error Title";
-			if (key === "DocumentManagementServer.downloadErrorMessage") return "Download Error Message";
-			if (key === "DocumentManagementServer.emailNotificationTitle") return "Email Notification Title";
-			if (key === "DocumentManagementServer.emailNotificationMessage") return "Email Notification Message";
-			if (key === "DocumentManagementServer.failedDownloadTitle") return "Failed Download Title";
-			if (key === "DocumentManagementServer.failedDownloadMessage") return `Failed Download Message: ${options?.files}`;
-			if (key === "DocumentManagementServer.downloadsCleared") return "Downloads Cleared";
-			return key;
-		}
-	})
+  ...jest.requireActual("@essnextgen/ui-intl-kit"),
+  useTranslation: () => ({
+    t: (key: string, options?: { type?: string; files?: string }) => {
+      const value: string | ((option?: { type?: string; files?: string }) => string) | undefined = translationMap[key];
+      if (typeof value === "function") {
+        return value(options);
+      }
+      return value ?? key;
+    }
+  })
 }));
 
 const { t }: any = require("@essnextgen/ui-intl-kit").useTranslation();
@@ -205,6 +225,28 @@ describe("DmsSidePanel", () => {
 
 it("renders ManageDocumentsSidePanel", () => {
     render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
-    expect(screen.getByText("Manage private documents")).toBeInTheDocument();
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+});
+
+it("renders ManageDocumentsSidePanel and click on Action menu", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+
+	const actionButton: HTMLButtonElement = screen.getByTestId("edit-selected-btn-testid");
+	fireEvent.click(actionButton);
+
+	expect(screen.getByText("Make public")).toBeInTheDocument();
+	fireEvent.click(screen.getByText("Make public"));
+});
+
+it("renders ManageDocumentsSidePanel and change page", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
+
+	const nextButton: HTMLButtonElement = screen.getByLabelText("next page");
+	fireEvent.click(nextButton);
+
+	expect(screen.getByText("Text Document")).toBeInTheDocument();
+
 });
 });

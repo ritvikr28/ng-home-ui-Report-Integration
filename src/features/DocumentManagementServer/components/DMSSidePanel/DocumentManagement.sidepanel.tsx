@@ -58,7 +58,7 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   gtmAnalytics
 }) => {
   if (sidePanelOpenReason === "manage") {
-    return <ManageDocumentsSidePanel /* pass more props as needed */ />;
+    return (<ManageDocumentsSidePanel t={t} />);
   }
   // Default to view
   return (
