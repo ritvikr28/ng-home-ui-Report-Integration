@@ -97,7 +97,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
   },
   {
     text: t("DocumentManagementServer.privacyColumn"),
-    isShow: true,
+    isShow: false, // Set to true to show the privacy status column
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "180px",
     isColumnSorting: true,
