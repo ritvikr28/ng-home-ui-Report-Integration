@@ -1,4 +1,3 @@
-// import { Loader, LoaderType } from '@essnextgen/ui-kit';
 import { buildRequest, handleStatusLogic } from './Sims7RedirectionsSidePanelSaveHelpers';
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
@@ -142,6 +141,18 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
         if (requiresReason(selectedRow.status, redirectToNextGen) && !reasonForChanges.trim()) {
             setReasonError('Reason for changes is required');
             return;
+        }
+        // Block save if effectiveDate is in the past
+        if (effectiveDate) {
+            const now = new Date();
+            const dateToCheck = typeof effectiveDate === 'string' ? new Date(effectiveDate) : effectiveDate;
+            // Only compare date part, ignore time
+            const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const checkDate = new Date(dateToCheck.getFullYear(), dateToCheck.getMonth(), dateToCheck.getDate());
+            if (checkDate <= nowDate) {
+                setDateError('SIMS7Redirects.dateError');
+                return;
+            }
         }
         await saveRedirectionHandler({
             selectedRow,
