@@ -199,9 +199,9 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
     function showSuccessAndClose(setShowSuccessToast: Function, setShowFailureBanner: Function, setSidePanelMode: Function, onSaveSuccess?: Function) {
         setShowSuccessToast(true);
         setShowFailureBanner(false);
+        setSidePanelMode('view');
         setTimeout(() => {
             setShowSuccessToast(false);
-            setSidePanelMode('view');
             if (onSaveSuccess) onSaveSuccess();
         }, 1500);
     };
