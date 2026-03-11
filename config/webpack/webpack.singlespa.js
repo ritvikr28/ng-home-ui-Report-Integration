@@ -5,6 +5,7 @@ const path = require("path");
 const { ProvidePlugin } = require("webpack");
 const Dotenv = require("dotenv-webpack");
 const ManifestPlugin = require("webpack-assets-manifest");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const buildEnv =
   process.env.CUSTOM_ENV ||
@@ -44,7 +45,10 @@ module.exports = (webpackConfigEnv, argv) => {
              new ManifestPlugin({
                 output: 'mfe-manifest.json',
                 publicPath: true
-        })
+        }),
+        new MiniCssExtractPlugin({
+        filename: '[name].[contenthash].css'
+      }),
         ]
     });
     
