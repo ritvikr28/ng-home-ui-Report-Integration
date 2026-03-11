@@ -150,7 +150,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const checkDate = new Date(dateToCheck.getFullYear(), dateToCheck.getMonth(), dateToCheck.getDate());
             if (checkDate <= nowDate) {
-                setDateError('SIMS7Redirects.dateError');
+                setDateError(t('SIMS7Redirects.dateError'));
                 return;
             }
         }
