@@ -292,7 +292,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     isShowEditSelectedBtn={false}
                     isShowFourthElement={false}
                     filterCustumeElem2={
-                        <div className="notification-controls">
+                        <div className="filter-container">
                             <Button
                                 className="base-class"
                                 color={ButtonColor.Utility}
