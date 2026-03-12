@@ -33,7 +33,7 @@ export const tableHeadersData: any[] = [
     )
   },
   {
-    text: "Related To",
+    text: "Related to",
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "120px",
@@ -60,7 +60,7 @@ export const tableHeadersData: any[] = [
     }
   },
   {
-    text: "Added By",
+    text: "Added by",
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "120px",
@@ -75,7 +75,7 @@ export const tableHeadersData: any[] = [
     )
   },
   {
-    text: "Date Added",
+    text: "Date added",
     isShow: true,
     showValAs: ShowValAs.Text,
     columnWidth: "120px"
