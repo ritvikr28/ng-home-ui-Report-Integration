@@ -10,7 +10,7 @@ import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/Api
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
 import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, mapTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
-import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
+import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, usePrivateDocumentFetchingEffect, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
@@ -352,6 +352,15 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
   useSetTotalPageOnDocData(docData, setTotalPage, pageSizeNumber);
 
+  usePrivateDocumentFetchingEffect(
+    {
+      pageNumber: currentPage,
+      pageSize: pageSizeNumber,
+      userId: "",
+      sortBy,
+      sortDirection,
+    }
+  )
 
   return (
     <>

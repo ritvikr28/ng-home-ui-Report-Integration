@@ -45,6 +45,15 @@ export interface DocumentManagementServerProps {
   documentRelatedTo?: number;
 }
 
+export interface PrivateDocumentManagementServerProps {
+  pageNumber: number;
+  pageSize: number;
+  userId: string;
+  sortBy?: string;
+  sortDirection?: string;
+}
+
+
 export interface tableDataProps {
   id: string;
   Document: string;

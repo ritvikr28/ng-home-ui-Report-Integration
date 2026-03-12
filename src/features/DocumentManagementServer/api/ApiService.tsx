@@ -7,7 +7,8 @@ import {
   DocumentBasicDetails,
   DocumentCategoryResponse,
   DocumentManagementServerProps,
-  DocumentPrepareDownload
+  DocumentPrepareDownload,
+  PrivateDocumentManagementServerProps
 } from "../responseModel";
 import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../../ApiConfig.json";
 
@@ -233,4 +234,36 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
   const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
+};
+
+export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<DocumentBasicDetails | null> = async ({
+  pageNumber,
+  pageSize,
+  userId,
+  sortBy = "DateAdded",
+  sortDirection = "Desc"
+}: PrivateDocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
+  try {
+    const url = `validation/api/v1/file/getprivatedocumentdetails`;
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+
+    const payload: any = {
+      documentsRequest: {
+        pageNumber,
+        pageSize,
+        userId,
+        sortBy,
+        sortDirection
+      }
+    };
+
+    const responseData: AxiosResponse<DocumentBasicDetails> =
+      await service.post(url, payload, { baseURL: baseUrl });
+    if (responseData?.status === 200) {
+      return responseData?.data;
+    }
+    return null;
+  } catch (err: any) {
+    return err?.response?.data ?? { status: 500, detail: "Unknown server error" };
+  }
 };

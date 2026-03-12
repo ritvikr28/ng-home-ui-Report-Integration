@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
-import { DocumentData } from "../responseModel";
+import { DocumentBasicDetails, DocumentData, PrivateDocumentManagementServerProps } from "../responseModel";
+import { fetchPrivateDocumentDetails } from "../api/ApiService";
+
 
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
@@ -350,3 +352,15 @@ export function useApplySummaryTagClassOnDocDataChange(
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
   
 }
+
+export function usePrivateDocumentFetchingEffect(
+  props: PrivateDocumentManagementServerProps,
+  ): void {
+  useEffect(() => {
+    async function fetchData() {
+     await fetchPrivateDocumentDetails(props);
+    }
+    fetchData();
+  }, []);
+}
+  
