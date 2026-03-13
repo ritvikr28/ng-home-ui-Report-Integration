@@ -14,6 +14,8 @@ export interface IAppModule extends IModulePermission {
 export type AppPermissionState = {
   modules: Array<IAppModule>;
   isLoaded: boolean;
+  videoPlayStatus: boolean;
+  apiError: boolean;
 };
 
 export type AppPermissionAction = {

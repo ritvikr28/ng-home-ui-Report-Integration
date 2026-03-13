@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { Provider } from "react-redux";
 import { IntlProvider } from "@essnextgen/ui-intl-kit";
 import { withAITracking } from "@microsoft/applicationinsights-react-js";
 import { authService, MatchPermissions } from "@essnextgen/auth-ui";
 import FeatureFlagsProvider, { IResponse } from "@essnextgen/ui-flagr";
 import { uiAppKitTranslation } from "@essnextgen/ui-application-kit";
 import { uiKitTranslation } from "@essnextgen/ui-kit";
+import { useDispatch } from "react-redux";
 import { ILayoutProps, Layout } from "./Layout";
 import { reactPlugin } from "./shared/components/AppInsights";
 import ErrorBoundary from "./shared/components/ErrorBoundary/Index";
-import configureStore from "./redux/store";
 import translationEn from "./locales/en/translation.json";
 import translationCy from "./locales/cy/translation.json";
 import "./style.scss";
 import { envConfig, service } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
 import { useVideoPlayStatus } from "./shared/hook/useVideoPlayStatus";
+import { setVideoPlayStatus, setApiError } from "./redux/storeActions";
 
 export const hasNewHomePagePermission: boolean = authService.isAuthorised(
   [{ Securable: "NG.Homepage.Access", Operation: "View" }],
@@ -73,6 +73,8 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   const getFeatureFlags: () => Promise<IResponse> = () =>
     service.get("v1/features");
 
+  const dispatch = useDispatch();
+  
   /* istanbul ignore next */
   const fetchFeatureFlags: (() => Promise<IResponse>) | undefined =
     authService.isAuthenticated() ? getFeatureFlags : undefined;
@@ -83,13 +85,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
 
   useEffect(() => {
     if (hasNewHomePagePermission) {
-    
-      if ( isPlayed === false && apiError === false) {
+      dispatch(setVideoPlayStatus(isPlayed));
+      dispatch(setApiError(apiError));
+      if (isPlayed === false && apiError === false) {
         console.log("isPlayed apiError", { isPlayed, apiError });
         gtmAnalytics.showVideoEvent();
       }
     }
-  }, [isPlayed])
+  }, [isPlayed, apiError])
 
   if (!initialized) return null;
 
@@ -98,14 +101,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
       fetchFeatures={fetchFeatureFlags}
       applicationName={`${envConfig.APPLICATION}`}
     >
-      <Provider store={configureStore()}>
-        <ErrorBoundary>
-          <Layout
-            isStandaloneApp={isStandaloneApp}
-            baseRouteName={baseRouteName}
-          />
-        </ErrorBoundary>
-      </Provider>
+      {/* <Provider store={configureStore()}> */}
+      <ErrorBoundary>
+        <Layout
+          isStandaloneApp={isStandaloneApp}
+          baseRouteName={baseRouteName}
+        />
+      </ErrorBoundary>
+      {/* </Provider> */}
     </FeatureFlagsProvider>
   );
 };

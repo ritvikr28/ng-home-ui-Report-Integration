@@ -1,6 +1,8 @@
 import { render, waitFor } from "@testing-library/react";
 import { IntlProvider } from "@essnextgen/ui-intl-kit";
+import { Provider } from "react-redux";
 import App from "./App";
+import configureStore from "./redux/store";
 import analytics from "./shared/utils/analytics";
 
 jest.mock("@essnextgen/ui-intl-kit", () => ({
@@ -26,7 +28,11 @@ jest.mock("@essnextgen/ui-kit", () => ({
   uiKitTranslation: { en: {}, cy: {} }
 }));
 jest.mock("./Layout", () => ({
-  Layout: (props: any) => <div data-testid="layout" {...props} />,
+  Layout: (props: any) => (
+    <Provider store={configureStore()}>
+      <div data-testid="layout" {...props} />
+    </Provider>
+  ),
   homepageVideoOrgViewIncluded: true
 }));
 jest.mock("./shared/components/AppInsights", () => ({ reactPlugin: {} }));
@@ -34,7 +40,7 @@ jest.mock("./shared/components/ErrorBoundary/Index", () => ({
   __esModule: true,
   default: ({ children }: any) => <div data-testid="error-boundary">{children}</div>
 }));
-jest.mock("./redux/store", () => () => "store");
+
 jest.mock("./locales/en/translation.json", () => ({}), { virtual: true });
 jest.mock("./locales/cy/translation.json", () => ({}), { virtual: true });
 jest.mock("./style.scss", () => ({}), { virtual: true });
@@ -57,14 +63,22 @@ describe("App", () => {
   });
 
   it("renders nothing until initialized", async () => {
-    const { container } = render(<App isStandaloneApp baseRouteName="/" />);
+    const { container } = render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     // expect(container.firstChild).toBeNull();
     await waitFor(() => expect(container.firstChild).not.toBeNull());
   });
 
   it("initializes i18n with correct language from localStorage", async () => {
     localStorage.setItem("i18nextLng", "cy");
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => {
       expect(IntlProvider.init).toHaveBeenCalledWith(
         expect.objectContaining({ translation: expect.any(Object) })
@@ -75,7 +89,11 @@ describe("App", () => {
   it("initializes i18n with correct language from browser if localStorage not set", async () => {
     Object.defineProperty(window.navigator, "language", { value: "en-US", configurable: true });
     localStorage.removeItem("i18nextLng");
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => {
       expect(IntlProvider.init).toHaveBeenCalledWith(
         expect.objectContaining({ translation: expect.any(Object) })
@@ -86,7 +104,11 @@ describe("App", () => {
   it("initializes i18n with fallback language if nothing set", async () => {
     Object.defineProperty(window.navigator, "language", { value: "", configurable: true });
     localStorage.removeItem("i18nextLng");
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => {
       expect(IntlProvider.init).toHaveBeenCalledWith(
         expect.objectContaining({ translation: expect.any(Object) })
@@ -95,24 +117,40 @@ describe("App", () => {
   });
 
   it("sets initialized to true after i18n init", async () => {
-    const { container } = render(<App isStandaloneApp baseRouteName="/" />);
+    const { container } = render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => expect(container.firstChild).not.toBeNull());
   });
 
   it("pushes login event on mount", async () => {
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     expect(analytics.pushLogInEvent).toHaveBeenCalled();
   });
 
   it("triggers showVideoEvent when video not played and no error", async () => {
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => {
       expect(analytics.showVideoEvent).toHaveBeenCalled();
     });
   });
 
   it("wraps Layout in ErrorBoundary and Provider", async () => {
-    render(<App isStandaloneApp baseRouteName="/" />);
+    render(
+      <Provider store={configureStore()}>
+        <App isStandaloneApp baseRouteName="/" />
+      </Provider>
+    );
     await waitFor(() => {
       // expect(getByTestId("error-boundary")).toBeInTheDocument();
     });
