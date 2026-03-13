@@ -83,6 +83,7 @@
     align-items: center;
     display: flex;
     padding: 11px 2px 3px !important;
+    margin-left: 7px;
   }
 
   .grid-wrapper {
@@ -155,6 +156,7 @@
   }
 
   .manage-documents-side-panel{
+    margin-right: 9px;
     .highlight{
       font-weight: 500;
       margin-top: 15px;
@@ -187,6 +189,9 @@
       display: block;
     }
 
+    .essui-side-panel-content{
+      margin: 9px !important;
+    }
   }
 
   #search-autocomplete.with-suggestions #suggestions-wrapper .suggestion-box {
