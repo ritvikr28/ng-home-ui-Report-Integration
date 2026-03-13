@@ -1,6 +1,6 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { getHandleStatusChange, getHandlePriorityChange, parseDateString } from "./dialog-helper.utils";
@@ -22,14 +22,6 @@ export const DialogContent: React.FC<DialogContentProps> = ({
     const handleStatusChange: (value: string) => void = getHandleStatusChange(setStatus);
     const handlePriorityChange: (value: string) => void = getHandlePriorityChange(setPriority);
     const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
-
-    useEffect(() => {
-        const yearPlaceholder = t("NotificationCenter_T.filterDateYearPlaceholder");
-        const startYearInput = document.getElementById("start-date_year") as HTMLInputElement | null;
-        const endYearInput = document.getElementById("end-date_year") as HTMLInputElement | null;
-        if (startYearInput) startYearInput.placeholder = yearPlaceholder;
-        if (endYearInput) endYearInput.placeholder = yearPlaceholder;
-    }, [t]);
 
     const startDateParsed: {
         day?: number | undefined;

@@ -1,5 +1,5 @@
 import { SidePanel, IconColor, SidePanelContent, SidePanelFooter, Button, ButtonColor, ButtonSize, Loader, LoaderType } from "@essnextgen/ui-kit";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { NotificationSidePanelViewProps } from "./NotificationSidePanel.props";
 import { getViewData, markAsRead } from "../../../../../shared/services/notification/api";
@@ -10,7 +10,6 @@ import InformationUnavailableBanner from "./InformationUnavailableBanner";
 function useSidePanelData(sideIsOpen: boolean, notificationIdSelected: string | undefined, selectedItem: any, setSelectedItem: (item: any) => void): { loading: boolean; apiError: any } {
     const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
     const [apiError, setApiError]: [any, React.Dispatch<React.SetStateAction<any>>] = useState<any>(false);
-    const markedAsReadRef: React.MutableRefObject<string | undefined> = useRef<string | undefined>(undefined);
 
     useEffect(() => {
         if (!sideIsOpen) return;
@@ -29,8 +28,7 @@ function useSidePanelData(sideIsOpen: boolean, notificationIdSelected: string | 
         });
 
         const item: any = typeof selectedItem === "string" ? JSON.parse(selectedItem) : selectedItem;
-        if (item?.Status === "Unread" && notificationIdSelected && markedAsReadRef.current !== notificationIdSelected) {
-            markedAsReadRef.current = notificationIdSelected;
+         if (item?.Status === "Unread" && notificationIdSelected) {
             markAsRead(notificationIdSelected).then((data) => {
                 if (data.error) setApiError(data.error);
             });

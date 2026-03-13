@@ -60,7 +60,6 @@ export const markAsRead: (notificationId: string) => Promise<any> = async (notif
   try {
     const baseUrl: string = buildApplicationUrl(apiUrls);
     const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}&UserId=${userId}`;
-    //  const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
     const response: any = await service.put(path, requestData);
     return response.data;
   } catch {

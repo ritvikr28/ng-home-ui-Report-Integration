@@ -334,6 +334,10 @@ it("shows suggestions and triggers search when user clicks a suggestion", async 
   });
 
   // suggestion should appear
+   const loader: HTMLElement[] = screen.getAllByTestId("loader-arc");
+  await waitFor(() => {
+    expect(within(loader[0]).queryByTestId("loader-arc")).not.toBeInTheDocument();
+  });
   const suggestion: HTMLElement[] = await screen.findAllByText("Ben");
 
   fireEvent.click(suggestion[0]);
@@ -545,6 +549,12 @@ describe("Additional tests to increase coverage", () => {
     fireEvent.keyDown(input, { key: "Enter", code: "Enter" });
 
     // wait for suggestion to show up
+        const searchLoader: HTMLElement[] = screen.getAllByTestId("loader-arc");
+        await waitFor(() => {
+          expect(
+            within(searchLoader[0]).queryByTestId("loader-arc")
+          ).not.toBeInTheDocument();
+        });
     jest.advanceTimersByTime(3000);
 
     const suggestionNode: HTMLElement[] = await screen.findAllByText("Ben");
