@@ -23,17 +23,30 @@ export function getEffectiveDateStr(effectiveDate: any) {
   return '';
 }
 
-export async function saveRedirection(
-  updatedRow: any,
-  effectiveDateStr: string,
-  setDateError: Function,
+export interface SaveRedirectionConfig {
+  updatedRow: any;
+  effectiveDateStr: string;
+  setDateError: Function;
   // eslint-disable-next-line no-shadow
-  buildRequest: Function,
-  onSaveSuccess: Function | undefined,
-  setShowSuccessToast: Function,
-  setShowFailureBanner: Function,
-  setSidePanelMode: Function
-) {
+  buildRequest: Function;
+  onSaveSuccess?: Function;
+  setShowSuccessToast: Function;
+  setShowFailureBanner: Function;
+  setSidePanelMode: Function;
+}
+
+export async function saveRedirection(config: SaveRedirectionConfig) {
+  const {
+    updatedRow,
+    effectiveDateStr,
+    setDateError,
+    // eslint-disable-next-line
+    buildRequest,
+    onSaveSuccess,
+    setShowSuccessToast,
+    setShowFailureBanner,
+    setSidePanelMode
+  } = config;
   const dfeNumber = updatedRow.dfeNumber || updatedRow.DfeNumber;
   if (!dfeNumber) {
     setDateError('DFE Number is missing from the selected row.');
@@ -51,31 +64,120 @@ export async function saveRedirection(
   }, 1500);
 }
 export function buildRequest(updatedRow: any, effectiveDateStr: string, previousStatus?: string) {
+  let plannedStatusFinal = mapStatusToChar(updatedRow.plannedStatus || getBackendStatus(updatedRow.status));
+  let currentStatusFinal = mapStatusToChar(updatedRow.currentStatus || updatedRow.status || "");
+  // Custom logic: If status or redirectStatus is 'Reversing', backend wants currentStatus 'Y' and plannedStatus 'N'
+  if (updatedRow.status === 'Reversing' || updatedRow.redirectStatus === 'Reversing') {
+    currentStatusFinal = 'Y';
+    plannedStatusFinal = 'N';
+  }
+
   const dfeNumber = updatedRow.dfeNumber || updatedRow.DfeNumber;
-  console.log(`dfeNumber for update: ${dfeNumber}`);
   let effectiveDateFinal = effectiveDateStr;
   let reasonForChangeFinal = updatedRow.reasonForChanges || updatedRow.reasonForChange || "";
-  const plannedStatusFinal = updatedRow.plannedStatus || getBackendStatus(updatedRow.status);
-  // If previous status was 'Reversing' and plannedStatus is 'Migrated', send empty effectiveDate
+
+  // Custom logic: If redirectStatus is 'Reversing', in edit mode, and updating to Migrated, send both statuses 'Y' and effectiveDate as previousDate
+  if (
+    updatedRow.status === 'Migrated' || updatedRow.redirectStatus === 'Migrated'
+  ) {
+    currentStatusFinal = 'Y';
+    plannedStatusFinal = 'Y';
+    if (!updatedRow.previousDate) {
+      throw new Error('Previous date is required when updating from Reversing to Migrated.');
+    }
+    effectiveDateFinal = updatedRow.previousDate;
+  }
+  
+  // Custom logic: If redirectStatus is 'Migrated' and in edit mode, set currentStatus to 'Y' and plannedStatus to 'N' for reversing
+  if (updatedRow.redirectStatus === 'Migrated' && updatedRow.isEditMode) {
+    currentStatusFinal = 'Y';
+    plannedStatusFinal = 'N';
+  }
+  // ...existing code...
+  // Custom logic: If redirectStatus is 'Planned' and any of the listed status combinations, set both to 'N'
+  if (updatedRow.redirectStatus === 'Planned') {
+    const plannedScenarios = [
+      { cur: 'Y', plan: '' },
+      { cur: 'Y', plan: 'Y' },
+      { cur: 'N', plan: 'Y' }
+    ];
+    const matchesScenario = plannedScenarios.some(
+      s => currentStatusFinal === s.cur && plannedStatusFinal === s.plan
+    );
+    if (matchesScenario) {
+      currentStatusFinal = 'N';
+      plannedStatusFinal = 'N';
+    }
+    else {
+      currentStatusFinal = 'Y';
+      plannedStatusFinal = '';
+    }
+  }
+  // Custom logic: If redirectStatus is 'NotMigrated' and any of the listed status combinations, set both to 'Y'
+  if (updatedRow.redirectStatus === 'NotMigrated') {
+    const notMigratedScenarios = [
+      { cur: 'N', plan: '' },
+      { cur: 'N', plan: 'N' },
+      { cur: '', plan: 'N' }
+    ];
+    const matchesScenario = notMigratedScenarios.some(
+      s => currentStatusFinal === s.cur && plannedStatusFinal === s.plan
+    );
+    if (matchesScenario) {
+      currentStatusFinal = 'Y';
+      plannedStatusFinal = 'Y';
+    }
+  }
+  // Custom logic: If updating from NotMigrated to Planned, send 'Y' for both statuses
+  const isNotMigratedToPlanned =
+    mapStatusToChar(previousStatus || '') === 'N' && plannedStatusFinal === 'P';
+  if (isNotMigratedToPlanned) {
+    currentStatusFinal = 'Y';
+    plannedStatusFinal = 'Y';
+  }
+  // Custom logic: If currentStatus is null, plannedStatus is 'Y', and effectiveDate is future, set both statuses to 'N' for NotMigrated
+  const isPlannedToNotMigrated =
+    (currentStatusFinal === '' || currentStatusFinal === undefined || currentStatusFinal === null) &&
+    plannedStatusFinal === 'Y' &&
+    effectiveDateFinal && new Date(effectiveDateFinal) > new Date();
+  if (isPlannedToNotMigrated) {
+    plannedStatusFinal = 'N';
+    currentStatusFinal = 'N';
+  }
+function mapStatusToChar(status: string): string {
+  // Accepts full status or already mapped char
+  if (!status) return '';
+  const statusMap: Record<string, string> = {
+    'Not migrated': 'N',
+    'NotMigrated': 'N',
+    'N': 'N',
+    'Migrated': 'Y',
+    'Y': 'Y',
+    'Planned': 'Y',
+    'Permanent': 'P',
+    'P': 'P',
+    'Reversing': '',
+    '': ''
+  };
+  return statusMap[status] || '';
+}
   if ((previousStatus === 'Reversing' && plannedStatusFinal === 'Migrated')) {
     effectiveDateFinal = updatedRow.previousDate || "";
-    console.log('Using previousDate for effectiveDateFinal:', updatedRow.previousDate);
   }
-  // If previous status was 'Reversing', always send empty reasonForChange
   if (previousStatus === 'Reversing') {
     reasonForChangeFinal = "";
   }
   const payload = {
     id: updatedRow.id || updatedRow.moduleId,
     dfeNumber,
-    ngModule: updatedRow.category || updatedRow.ngModule, // swap: ngModule now maps category
-    ngComponent: updatedRow.nextGenModule || updatedRow.ngComponent, // swap: ngComponent now maps nextGenModule
+    ngModule: updatedRow.category || updatedRow.ngModule,
+    ngComponent: updatedRow.nextGenModule || updatedRow.ngComponent,
     switchToSchool: updatedRow.switchToSchool ?? false,
     effectiveDate: effectiveDateFinal,
-    PlannedStatus: plannedStatusFinal,
+    currentStatus: currentStatusFinal,
+    plannedStatus: plannedStatusFinal,
     reasonForChange: reasonForChangeFinal
   };
-  console.log(`Update API payload: previousStatus: ${previousStatus}, plannedStatus: ${plannedStatusFinal}, effectiveDate: ${effectiveDateFinal}, reasonForChange: ${reasonForChangeFinal}, fullPayload: ${JSON.stringify(payload)}`);
   return payload;
 }
 

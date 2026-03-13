@@ -1,4 +1,4 @@
-import { buildRequest, handleStatusLogic } from './Sims7RedirectionsSidePanelSaveHelpers';
+import { saveRedirectionHandler } from './Sims7RedirectionsSidePanelSaveHandler';
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
 import { Sims7RedirectionsSidePanelProps } from "./Sims7RedirectionsInterfaces";
@@ -52,7 +52,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
 
     const [viewLoading, setViewLoading] = useState(false);
     useEffect(() => {
-        if (mode !== "view" || !selectedRow?.id) return;
+        if (!selectedRow?.id) return;
         setViewLoading(true);
         fetchSims7RedirectionById({ moduleId: selectedRow.id })
             .then(setViewData)
@@ -162,40 +162,16 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             setDateError,
             setShowSuccessToast,
             setShowFailureBanner,
-            setSidePanelMode,
+            setSidePanelMode: (mode: string) => setSidePanelMode(mode as 'edit' | 'view'),
             onSaveSuccess
         });
-    async function saveRedirectionHandler({ selectedRow, effectiveDate, redirectToNextGen, reasonForChanges, setDateError, setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess }: any) {
-        try {
-            const { getEffectiveDateStr } = require('./Sims7RedirectionsSidePanelSaveHelpers');
-            const effectiveDateStr = getEffectiveDateStr(effectiveDate);
-            const updatedRow = { ...selectedRow };
-            console.log('selectedRow.previousDate:', selectedRow.previousDate);
-            await handleStatusLogic(updatedRow, redirectToNextGen, effectiveDate, reasonForChanges);
-            const dfeNumber = updatedRow.dfeNumber || updatedRow.DfeNumber;
-            if (!dfeNumber) {
-                setDateError('DFE Number is missing from the selected row.');
-                return;
-            }
-            const req = buildRequest(updatedRow, effectiveDateStr, selectedRow.status);
-            const { updateSims7Redirection } = await import('./Sims7RedirectionsPage.api');
-            await updateSims7Redirection(req);
-            showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
-        } catch (err) {
-            setShowSuccessToast(false);
-            setShowFailureBanner(true);
-        }
     }
-    };
-
     function canEditSidePanel(mode: string, selectedRow: any) {
         return mode === 'edit' && !!selectedRow;
     }
-
     function shouldShowSuccessToast(selectedRow: any, isDirty: boolean) {
         return selectedRow.status === 'Migrated' && !isDirty;
     }
-
     function showSuccessAndClose(setShowSuccessToast: Function, setShowFailureBanner: Function, setSidePanelMode: Function, onSaveSuccess?: Function) {
         setShowSuccessToast(true);
         setShowFailureBanner(false);
@@ -204,7 +180,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             setShowSuccessToast(false);
             if (onSaveSuccess) onSaveSuccess();
         }, 1500);
-    };
+    }
 
     const getDateParts: (_date: Date | null) => any = (_date) => {
         return getDatePartsLogic(dateParts);

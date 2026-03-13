@@ -89,7 +89,8 @@ export interface UpdateSims7RedirectionRequest {
     ngComponent: string;
     switchToSchool: boolean;
     effectiveDate: string;
-    PlannedStatus: string;
+    currentStatus: string;
+    plannedStatus: string;
     reasonForChange: string;
 }
 

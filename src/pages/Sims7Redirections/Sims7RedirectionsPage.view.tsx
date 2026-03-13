@@ -269,12 +269,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     </div>
                 </div>
 
-                {!loading && !paginatedTableData.length && (
-                    <div data-testid="empty-state">
-                        {t("SIMS7Redirects.emptyStateMsg")}
-                    </div>
-                )}
-
                 <ControlledList
                     sortingOnClickEvent={handleSorting}
                     tooltipBottomAligned
