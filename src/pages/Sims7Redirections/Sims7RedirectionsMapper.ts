@@ -82,13 +82,13 @@ export function getFieldFromApi(item: any, field: string): string {
         ngModuleComponentUrl: "nextGenComponentUrl"
     };
     const key = fieldMap[field] || field;
-    const value = item[key];
+    const value: string | undefined = item[key];
     return typeof value === "string" ? value : "";
 }
 export function mapSims7RedirectionsItem(item: any, idx: number): Sims7RedirectionsTableRow {
-    const ngModuleComponentUrl = getFieldFromApi(item, "ngModuleComponentUrl");
+    const ngModuleComponentUrl: string = getFieldFromApi(item, "ngModuleComponentUrl");
 
-    const moduleName = getFieldFromApi(item, "nextGenModule");
+    const moduleName: string = getFieldFromApi(item, "nextGenModule");
     if (moduleName && ngModuleComponentUrl) {
         nextGenModuleUrlMap[moduleName] = ngModuleComponentUrl;
     }

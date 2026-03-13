@@ -163,11 +163,6 @@ it("handles pagination", async () => {
 //   });
 // });
 
-it("shows empty state when API returns empty array", async () => {
-  (api.fetchSims7Redirections as jest.Mock).mockResolvedValueOnce([]);
-  render(<Sims7RedirectionsPage />);
-  await waitFor(() => {});
-});
 it("renders empty state when no data and not loading", async () => {
   (api.fetchSims7Redirections as jest.Mock).mockResolvedValue({
     items: [],

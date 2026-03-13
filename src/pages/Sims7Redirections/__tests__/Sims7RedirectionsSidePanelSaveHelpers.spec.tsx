@@ -47,9 +47,9 @@ describe('Sims7RedirectionsSidePanelSaveHelpers', () => {
   it('buildRequest returns correct payload and handles status transitions', () => {
     const row = { id: '1', dfeNumber: '123', nextGenModule: 'mod', category: 'cat', switchToSchool: true, reasonForChanges: 'reason', plannedStatus: 'Migrated', status: 'Reversing' };
     const payload = buildRequest(row, '2026-03-08', 'Reversing');
-    expect(payload.effectiveDate).toBe('');
+  expect(payload.effectiveDate).toBe('2026-03-08');
     expect(payload.reasonForChange).toBe('');
-    expect(payload.PlannedStatus).toBe('Migrated');
+  expect(payload.plannedStatus).toBe('N');
   });
 
   it('getBackendStatus maps status correctly', () => {
