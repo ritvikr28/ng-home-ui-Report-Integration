@@ -27,6 +27,7 @@ import { FilterCategoryDropdown } from "./components/FilterCategoryDropdown";
 import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
+import { FilterRadioButton } from "./components/FilterRadioButton";
 
 export interface FilterDialogProps {
   dataTestId?: string;
@@ -99,6 +100,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [filterEntities, setFilterEntities]: [any[], React.Dispatch<React.SetStateAction<any[]>>] = useState<any[]>([]);
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+
   // eslint-disable-next-line no-unused-expressions
   alreadyExistingTags;
   // eslint-disable-next-line no-unused-expressions
@@ -386,6 +389,13 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
               getValidationTextMsg={() => getValidationTextMsg(categoryError, t)}
               getValidationLevelMsg={() => getValidationLevelMsg(categoryError)}
               onSelectMultipleCategories={onSelectMultipleCategories}
+            />
+          ) : null}
+
+          { refId?.length ? (
+            <FilterRadioButton
+              t={t}
+              referenceExternalIds={refId}
             />
           ) : null}
 

@@ -234,3 +234,18 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
 };
+
+export async function fetchPrivacyFilter(referenceExternalIds: string[]) {
+  try {
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+    let url = `/validation/api/v1/file/getstatusdetails`;
+    if (referenceExternalIds && referenceExternalIds.length > 0) {
+      url += `?referenceExternalIds=${encodeURIComponent(referenceExternalIds.join(","))}`;
+    }
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response.data;
+  } catch (err: any) {
+    console.error("Error in bulk download:", err);
+    return null;
+  }
+}

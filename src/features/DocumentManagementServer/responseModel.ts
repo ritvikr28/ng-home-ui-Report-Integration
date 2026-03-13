@@ -374,3 +374,8 @@ export interface HandleTagCloseLogicParams {
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
 }
+
+export interface PrivacyFilterDetails {
+  documentStatus: string;
+  documentStatusId: number;
+}

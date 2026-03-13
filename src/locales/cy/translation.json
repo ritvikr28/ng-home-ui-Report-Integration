@@ -559,7 +559,9 @@
     "privateFilesDescription": "Please review your private documents individually in the table below and update their privacy status to standard or confidential, or delete them if they are no longer needed.",
     "privateDocuments": "Private documents",
     "privateDocHelpText": "Alternatively, you can update all of your private documents to Confidential status.",
-    "privateDocButtonText": "Convert all to confidential"
+    "privateDocButtonText": "Convert all to confidential",
+    "privacyFilterLabel": "Privacy (optional)",
+    "privacyFilterAll": "All"
   },
   "Filter": {
     "heading": "Chwilio uwch",
