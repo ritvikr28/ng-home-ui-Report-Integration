@@ -1,7 +1,8 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { FormLabel, DateInput, CheckBox, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { getHandleStatusChange, getHandlePriorityChange, parseDateString } from "./dialog-helper.utils";
 import "./style.scss";
 import { DialogContentProps } from "./FilterDialog.props";
@@ -20,6 +21,16 @@ export const DialogContent: React.FC<DialogContentProps> = ({
 }) => {
     const handleStatusChange: (value: string) => void = getHandleStatusChange(setStatus);
     const handlePriorityChange: (value: string) => void = getHandlePriorityChange(setPriority);
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
+
+    useEffect(() => {
+        const yearPlaceholder = t("NotificationCenter_T.filterDateYearPlaceholder");
+        const startYearInput = document.getElementById("start-date_year") as HTMLInputElement | null;
+        const endYearInput = document.getElementById("end-date_year") as HTMLInputElement | null;
+        if (startYearInput) startYearInput.placeholder = yearPlaceholder;
+        if (endYearInput) endYearInput.placeholder = yearPlaceholder;
+    }, [t]);
+
     const startDateParsed: {
         day?: number | undefined;
         month?: number | undefined;
@@ -170,13 +181,13 @@ export const DialogContent: React.FC<DialogContentProps> = ({
         <div className={`dialog-content-container${startDateError ? ' has-error' : ''}`}>
             <div>
                 <FormLabel forId="select" className="status-label">
-                    Status
+                    {t("NotificationCenter_T.filterStatusLabel")}
                 </FormLabel>
                 <div className="status-checkboxes">
                     <CheckBox
                         dataTestId="status-read"
                         id="status-read"
-                        label="Read"
+                        label={t("NotificationCenter_T.filterStatusRead")}
                         isSelected={status.includes("read")}
                         onChange={() => {
                             handleStatusChange("read");
@@ -186,7 +197,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                     <CheckBox
                         dataTestId="status-unread"
                         id="status-unread"
-                        label="Unread"
+                        label={t("NotificationCenter_T.filterStatusUnread")}
                         isSelected={status.includes("unread")}
                         onChange={() => {
                             handleStatusChange("unread");
@@ -196,13 +207,13 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                 </div>
                 <div style={{ marginTop: "24px" }}>
                     <FormLabel forId="select" className="priority-label">
-                        Priority
+                        {t("NotificationCenter_T.filterPriorityLabel")}
                     </FormLabel>
                     <div className="priority-checkboxes">
                         <CheckBox
                             dataTestId="priority-low"
                             id="priority-low"
-                            label="Low"
+                            label={t("NotificationCenter_T.filterPriorityLow")}
                             isSelected={priority.includes("low")}
                             onChange={() => {
                                 handlePriorityChange("low");
@@ -212,7 +223,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         <CheckBox
                             dataTestId="priority-medium"
                             id="priority-medium"
-                            label="Medium"
+                            label={t("NotificationCenter_T.filterPriorityMedium")}
                             isSelected={priority.includes("medium")}
                             onChange={() => {
                                 handlePriorityChange("medium");
@@ -222,7 +233,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                         <CheckBox
                             dataTestId="priority-high"
                             id="priority-high"
-                            label="High"
+                            label={t("NotificationCenter_T.filterPriorityHigh")}
                             isSelected={priority.includes("high")}
                             onChange={() => {
                                 handlePriorityChange("high");
@@ -235,7 +246,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
             <div className="date-selection">
                 <div className="start-end-date-container">
                     <FormLabel>
-                        Start date
+                        {t("NotificationCenter_T.filterStartDateLabel")}
                     </FormLabel>
                     <DateInput
                         dataTestId="start-date"
@@ -261,7 +272,7 @@ export const DialogContent: React.FC<DialogContentProps> = ({
                 </div>
                 <div className="start-end-date-container">
                     <FormLabel>
-                        End date
+                        {t("NotificationCenter_T.filterEndDateLabel")}
                     </FormLabel>
                     <DateInput
                         dataTestId="end-date"

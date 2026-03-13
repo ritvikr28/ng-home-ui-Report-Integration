@@ -44,10 +44,10 @@ describe("getNotificationTableHeadersData", () => {
     const headers = getNotificationTableHeadersData({ sortBy: "DateReceived", sortDirection: undefined, setNotificationIdSelected: jest.fn(), setSideIsOpen: jest.fn(), setSelectedItem: jest.fn() });
     expect(headers).toHaveLength(6);
     expect(headers[0].text).toBe("Id");
-    expect(headers[1].text).toBe("Status");
-    expect(headers[2].text).toBe("Notification");
-    expect(headers[3].text).toBe("Priority");
-    expect(headers[4].text).toBe("Date received");
+    expect(headers[1].text).toBe("NotificationCenter_T.tableHeaderStatus");
+    expect(headers[2].text).toBe("NotificationCenter_T.tableHeaderNotification");
+    expect(headers[3].text).toBe("NotificationCenter_T.tableHeaderPriority");
+    expect(headers[4].text).toBe("NotificationCenter_T.tableHeaderDateReceived");
     expect(headers[5].text).toBe("");
     expect(headers[1].showValAs).toBe(ShowValAs.CustomeComponent);
     expect(headers[2].isTextTruncate).toBe(true);
@@ -68,11 +68,12 @@ describe("getNotificationTableHeadersData", () => {
     const setSideIsOpen = jest.fn();
     const setSelectedItem = jest.fn();
     const setNotificationIdSelected = jest.fn();
-    const headers = getNotificationTableHeadersData({ sortBy: "DateReceived", sortDirection: undefined, setNotificationIdSelected, setSideIsOpen, setSelectedItem });
+    const t = (key: string) => key;
+    const headers = getNotificationTableHeadersData({ sortBy: "DateReceived", sortDirection: undefined, setNotificationIdSelected, setSideIsOpen, setSelectedItem, t });
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ id: "foo", Status: "Unread", Notification: "Test", title: "View" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    const viewLink = getByText("View");
+    const viewLink = getByText("NotificationCenter_T.viewLink");
     expect(viewLink).toBeInTheDocument();
     fireEvent.click(viewLink);
     expect(setSelectedItem).toHaveBeenCalledWith(cellData);
@@ -82,11 +83,12 @@ describe("getNotificationTableHeadersData", () => {
 
 
   it("does not throw if setSideIsOpen and setSelectedItem are undefined", () => {
-    const headers = getNotificationTableHeadersData({ sortBy: "Priority", sortDirection: undefined, setNotificationIdSelected: jest.fn(), setSideIsOpen: jest.fn(), setSelectedItem: jest.fn() });
+    const t = (key: string) => key;
+    const headers = getNotificationTableHeadersData({ sortBy: "Priority", sortDirection: undefined, setNotificationIdSelected: jest.fn(), setSideIsOpen: jest.fn(), setSelectedItem: jest.fn(), t });
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ id: "bar", Status: "Read", Notification: "Test", title: "View" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    const viewLink = getByText("View");
+    const viewLink = getByText("NotificationCenter_T.viewLink");
     expect(() => fireEvent.click(viewLink)).not.toThrow();
   });
 });
@@ -94,7 +96,12 @@ describe("getNotificationTableHeadersData", () => {
 
 describe("NoDataMessage", () => {
   it("should return correct noDataToDisplay message", () => {
-    expect(NoDataMessage.noDataToDisplay).toBe("No data to display");
+    expect(NoDataMessage.noDataToDisplay()).toBe("No data to display");
+  });
+
+  it("should return correct noDataToDisplay message with t function", () => {
+    const t = (key: string) => key;
+    expect(NoDataMessage.noDataToDisplay(t)).toBe("NotificationCenter_T.noDataToDisplay");
   });
 
   it("should return correct noDataOnSearch message with keyword", () => {
@@ -103,7 +110,13 @@ describe("NoDataMessage", () => {
       `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`
     );
   });
-});
+
+  it("should return correct noDataOnSearch message with keyword and t function", () => {
+    const keyword = "test";
+    const t = (key: string, options?: any) => `${key}:${JSON.stringify(options)}`;
+    expect(NoDataMessage.noDataOnSearch(keyword, t)).toContain("NotificationCenter_T.noDataOnSearch");
+  });
+});;
 
 describe("getNotificationTableHeadersData edge cases", () => {
   it("should handle missing options object", () => {
@@ -138,10 +151,10 @@ describe("getNotificationTableHeadersData", () => {
     const headers = getNotificationTableHeadersData({ sortBy: "Priority", sortDirection: undefined, setNotificationIdSelected: jest.fn(), setSideIsOpen: jest.fn(), setSelectedItem: jest.fn() });
     expect(headers).toHaveLength(6);
     expect(headers[0].text).toBe("Id");
-    expect(headers[1].text).toBe("Status");
-    expect(headers[2].text).toBe("Notification");
-    expect(headers[3].text).toBe("Priority");
-    expect(headers[4].text).toBe("Date received");
+    expect(headers[1].text).toBe("NotificationCenter_T.tableHeaderStatus");
+    expect(headers[2].text).toBe("NotificationCenter_T.tableHeaderNotification");
+    expect(headers[3].text).toBe("NotificationCenter_T.tableHeaderPriority");
+    expect(headers[4].text).toBe("NotificationCenter_T.tableHeaderDateReceived");
     expect(headers[5].text).toBe("");
     expect(headers[1].showValAs).toBe(ShowValAs.CustomeComponent);
     expect(headers[2].isTextTruncate).toBe(true);
@@ -209,7 +222,7 @@ describe("getNotificationTableHeadersData", () => {
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify("{\"foo\": \"bar\"}");
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    const viewLink = getByText("View");
+    const viewLink = getByText("NotificationCenter_T.viewLink");
     expect(viewLink).toBeInTheDocument();
     fireEvent.click(viewLink);
     expect(setSelectedItem).toHaveBeenCalledWith("\"{\\\"foo\\\": \\\"bar\\\"}\"");
@@ -221,7 +234,7 @@ describe("getNotificationTableHeadersData", () => {
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    const viewLink = getByText("View");
+    const viewLink = getByText("NotificationCenter_T.viewLink");
     expect(() => fireEvent.click(viewLink)).not.toThrow();
   });
 
@@ -235,7 +248,7 @@ describe("getNotificationTableHeadersData", () => {
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
     // Create a spy to ensure no global function is called
     const setNotificationIdSelected = jest.fn();
-    fireEvent.click(getByText("View"));
+    fireEvent.click(getByText("NotificationCenter_T.viewLink"));
     expect(setNotificationIdSelected).not.toHaveBeenCalled();
   });
 it("last column's anyComponent does not call setNotificationIdSelected if id is missing", () => {
@@ -246,7 +259,7 @@ it("last column's anyComponent does not call setNotificationIdSelected if id is 
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar" }); // no id
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    fireEvent.click(getByText("View"));
+    fireEvent.click(getByText("NotificationCenter_T.viewLink"));
     expect(setNotificationIdSelected).toHaveBeenCalled();
   });
 
@@ -280,7 +293,7 @@ it("last column's anyComponent does not call setNotificationIdSelected if id is 
     const LastComponent = headers[5].anyComponent;
     const cellData = JSON.stringify({ foo: "bar", id: "123" });
     const { getByText } = render(<>{LastComponent && LastComponent(cellData)}</>);
-    fireEvent.click(getByText("View"));
+    fireEvent.click(getByText("NotificationCenter_T.viewLink"));
     expect(setNotificationIdSelected).toHaveBeenCalledWith("123");
   });
 });
@@ -393,7 +406,7 @@ describe("NoDataMessage", () => {
   })
 
   it("returns correct noDataToDisplay message", () => {
-    expect(NoDataMessage.noDataToDisplay).toBe("No data to display");
+    expect(NoDataMessage.noDataToDisplay()).toBe("No data to display");
   })
 })
 

@@ -4,6 +4,41 @@ import NotificationSidePanelView from "../NotificationSidePanel.view";
 import { getViewData, markAsRead } from "../../../../../../shared/services/notification/api";
 import { formattedDate } from "../../../useNotification";
 
+jest.mock("@essnextgen/ui-kit", () => ({
+    SidePanel: ({ children, title, dataTestId, isOpen }: any) =>
+        isOpen ? (
+            <div data-testid={dataTestId} role="presentation" tabIndex={-1}>
+                <h2 data-testid="side-panel-header-title">{title}</h2>
+                {children}
+            </div>
+        ) : null,
+    SidePanelContent: ({ children }: any) => <div>{children}</div>,
+    SidePanelFooter: ({ children }: any) => <div>{children}</div>,
+    Button: ({ children, onClick, className, color, size, "data-testid": dataTestId, "aria-label": ariaLabel, ...rest }: any) => (
+        <button type="button" data-testid={dataTestId} onClick={onClick} className={className} aria-label={ariaLabel ?? (typeof children === "string" ? children : "button")} {...rest}>
+            {children}
+        </button>
+    ),
+    Loader: () => <div role="progressbar" aria-label="loading" />,
+    IconColor: { Neutral700: "neutral700" },
+    ButtonColor: { Secondary: "secondary" },
+    ButtonSize: { Large: "large" },
+    LoaderType: { Circular: "circular" },
+}));
+
+jest.mock("@essnextgen/ui-intl-kit", () => ({
+    useTranslation: () => ({
+        t: (key: string) => {
+            const translations: Record<string, string> = {
+                "NotificationCenter_T.sidePanelTitle": "Notification",
+                "NotificationCenter_T.sidePanelClose": "Close",
+            };
+            return translations[key] ?? key;
+        },
+    }),
+    UseTranslationResponse: {},
+}));
+
 // --- Mocks for external dependencies ---
 jest.mock("../../../../../../shared/services/notification/api", () => ({
     getViewData: jest.fn(),

@@ -38,19 +38,20 @@ export function getEmptyStateMessage(
     hasSearch: boolean,
     hasActiveFilters: boolean | string,
     searchTerm: string,
-    searchSuggestions: Suggestion[]
+    searchSuggestions: Suggestion[],
+    t: (key: string, options?: any) => string = (key: string) => key
 ): string {
     if (totalNotifications === 0 || tableDataError) {
-        return "No data to display";
+        return t("NotificationCenter_T.noDataToDisplay");
     }
     if (tableDataError === true) {
-        return "No data to display";
+        return t("NotificationCenter_T.noDataToDisplay");
     }
     if (totalNotifications === 0 && !isSearching && searchTerm.trim().length > 0 && !searchSuggestions.length) {
-        return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+        return t("NotificationCenter_T.resultNotFoundMessage", { searchTerm });
     }
     if (totalNotifications === 0 && !isSearching && hasActiveFilters) {
-        return "No notifications found for selected filters.";
+        return t("NotificationCenter_T.noNotificationsFoundForFilters");
     }
     return "";
 }
