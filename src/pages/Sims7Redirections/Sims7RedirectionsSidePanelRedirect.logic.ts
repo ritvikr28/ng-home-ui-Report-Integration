@@ -11,6 +11,7 @@ export interface HandleRedirectToNextGenChangeParams {
     setIsDirty: (dirty: boolean) => void;
     effectiveDate: Date | null;
     reasonForChanges: string;
+    setDateError?: (val: string) => void;
 }
 
 export function handleRedirectToNextGenChange(params: HandleRedirectToNextGenChangeParams): void {
@@ -23,8 +24,9 @@ export function handleRedirectToNextGenChange(params: HandleRedirectToNextGenCha
         setDateParts,
         setIsDirty,
         effectiveDate,
-        reasonForChanges
-    }:HandleRedirectToNextGenChangeParams = params;
+        reasonForChanges,
+        setDateError
+    }: HandleRedirectToNextGenChangeParams = params;
     const val = value as string;
     setRedirectToNextGen(val);
     if (selectedRow.status === 'Not migrated' && val === 'yes') {
@@ -37,6 +39,9 @@ export function handleRedirectToNextGenChange(params: HandleRedirectToNextGenCha
             month: (tomorrow.getMonth() + 1).toString().padStart(2, '0'),
             year: tomorrow.getFullYear().toString()
         });
+        if (typeof setDateError === 'function') {
+            setDateError("");
+        }
     }
     if (selectedRow.status === 'Migrated' && val === 'no') {
         const tomorrow: Date = new Date();

@@ -1,3 +1,4 @@
+import React from 'react';
 import { handleRedirectToNextGenChange } from './Sims7RedirectionsSidePanelRedirect.logic';
 import { handleDateChange } from './Sims7RedirectionsSidePanelDate.logic';
 import { buildRequest } from './Sims7RedirectionsSidePanelSaveHelpers';
@@ -13,7 +14,13 @@ export function setReasonForChangesHandler({
 }: {
     val: string;
     setReasonForChangesRaw: (val: string) => void;
-    validateReason: Function;
+    validateReason: (args: {
+        requiresReason: any;
+        selectedRow: any;
+        redirectToNextGen: string;
+        reasonForChanges: string;
+        setReasonError: (val: string) => void;
+    }) => void;
     requiresReason: any;
     selectedRow: any;
     redirectToNextGen: string;
@@ -39,7 +46,17 @@ export function onRedirectToNextGenChangeHandler({
     setIsDirty,
     effectiveDate,
     reasonForChanges
-}: any) {
+}: {
+    event: any;
+    value: any;
+    selectedRow: any;
+    setRedirectToNextGen: (val: any) => void;
+    setEffectiveDate: (val: any) => void;
+    setDateParts: (val: any) => void;
+    setIsDirty: (val: boolean) => void;
+    effectiveDate: any;
+    reasonForChanges: any;
+}) {
     handleRedirectToNextGenChange({
         event,
         value,
@@ -65,7 +82,19 @@ export function onDateChangeHandler({
     selectedRow,
     redirectToNextGen,
     reasonForChanges
-}: any) {
+}: {
+    t: any;
+    arg1: any;
+    arg2: any;
+    arg3: any;
+    setDateParts: (val: any) => void;
+    setEffectiveDate: (val: any) => void;
+    setDateError: React.Dispatch<React.SetStateAction<string>>;
+    setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
+    selectedRow: any;
+    redirectToNextGen: string;
+    reasonForChanges: any;
+}) {
     handleDateChange({
         t,
         arg1,
@@ -82,12 +111,17 @@ export function onDateChangeHandler({
 }
 
 export function onValidateDateHandler({
-    date,
-    setDateError,
-    handleValidateDate
-}: any) {
-    handleValidateDate(date, setDateError);
+    date: validateDate,
+    setDateError: validateDateError,
+    handleValidateDate: validateDateHandler
+}: {
+    date: any;
+    setDateError: React.Dispatch<React.SetStateAction<string>>;
+    handleValidateDate: (date: any, setDateError: React.Dispatch<React.SetStateAction<string>>) => void;
+}) {
+    validateDateHandler(validateDate, validateDateError);
 }
+
 export function canEditSidePanel(mode: string, selectedRow: any): boolean {
     return mode === 'edit' && !!selectedRow;
 }
@@ -97,10 +131,10 @@ export function shouldShowSuccessToast(selectedRow: any, isDirty: boolean): bool
 }
 
 export function showSuccessAndClose(
-    setShowSuccessToast: Function,
-    setShowFailureBanner: Function,
-    setSidePanelMode: Function,
-    onSaveSuccess?: Function
+    setShowSuccessToast: (val: boolean) => void,
+    setShowFailureBanner: (val: boolean) => void,
+    setSidePanelMode: (mode: 'view' | 'edit') => void,
+    onSaveSuccess?: () => void
 ) {
     setShowSuccessToast(true);
     setShowFailureBanner(false);
@@ -121,7 +155,21 @@ export function hasValidDfeNumber(row: any, setDateError: (val: string) => void)
     return true;
 }
 
-export function buildRedirectionRequest(row: any, effectiveDateStr: string, status: string) {
+export function buildRedirectionRequest(
+    row: any,
+    effectiveDateStr: string,
+    status: string
+): {
+    id: string;
+    dfeNumber: string;
+    ngModule: string;
+    ngComponent: string;
+    switchToSchool: boolean;
+    effectiveDate: string;
+    currentStatus: string;
+    plannedStatus: string;
+    reasonForChange: string;
+} {
     return buildRequest(row, effectiveDateStr, status);
 }
 
@@ -131,9 +179,9 @@ export async function tryUpdateRedirection(
     setShowFailureBanner: (val: boolean) => void,
     setSidePanelMode: (mode: 'view' | 'edit') => void,
     onSaveSuccess?: () => void
-) {
+): Promise<void> {
     try {
-        const { updateSims7Redirection } = await import('./Sims7RedirectionsPage.api');
+        const { updateSims7Redirection }: { updateSims7Redirection: (request: any) => Promise<void> } = await import('./Sims7RedirectionsPage.api');
         await updateSims7Redirection(req);
         showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
     } catch (err) {

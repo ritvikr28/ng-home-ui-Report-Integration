@@ -27,6 +27,13 @@ import { isFormDirty } from "./Sims7RedirectionsFormDirty.logic";
 import { useSims7RedirectionsForm, Sims7RedirectionsFormState } from "./useSims7RedirectionsForm";
 import { validateReason } from "./Sims7RedirectionsSaveValidate.logic";
 import { fetchSims7RedirectionById, Sims7RedirectionViewData } from "./Sims7RedirectionsPage.api";
+import {
+    isPanelEditable,
+    isSuccessToast,
+    isReasonMissing,
+    isDateInvalid,
+    isEffectiveDateInPast
+} from './Sims7RedirectionsSidePanelHelpers';
 
 interface Sims7RedirectionsSidePanelWithSave extends Sims7RedirectionsSidePanelProps {
     onSaveSuccess?: () => void;
@@ -50,7 +57,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
         }
     }, [mode, selectedRow]);
 
-    const [viewLoading, setViewLoading] = useState(false);
+    const [viewLoading, setViewLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
     useEffect(() => {
         if (!selectedRow?.id) return;
         setViewLoading(true);
@@ -104,7 +111,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             setDateParts,
             setIsDirty,
             effectiveDate,
-            reasonForChanges
+            reasonForChanges,
+            setDateError
         });
     };
 
@@ -129,30 +137,22 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
     };
 
     // Save handler: call PUT API in edit mode
-    const [showFailureBanner, setShowFailureBanner] = React.useState(false);
+    const [showFailureBanner, setShowFailureBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState(false);
     //const [failureMessage, setFailureMessage] = React.useState('');
+    const isSaveBlocked = () => {
+        if (isPanelEditable(mode, selectedRow)) return true;
+        if (isSuccessToast(selectedRow, isDirty)) return 'success';
+        if (isReasonMissing(selectedRow, redirectToNextGen, reasonForChanges, requiresReason, setReasonError)) return true;
+        if (isDateInvalid(effectiveDate, t, setDateError)) return true;
+        return false;
+    };
+
     const onSave: () => Promise<void> = async () => {
-        if (!canEditSidePanel(mode, selectedRow)) return;
-        if (shouldShowSuccessToast(selectedRow, isDirty)) {
+        const blocked: boolean | 'success' = isSaveBlocked();
+        if (blocked === true) return;
+        if (blocked === 'success') {
             showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
             return;
-        }
-        // Block save if reason is required and missing
-        if (requiresReason(selectedRow.status, redirectToNextGen) && !reasonForChanges.trim()) {
-            setReasonError('Reason for changes is required');
-            return;
-        }
-        // Block save if effectiveDate is in the past
-        if (effectiveDate) {
-            const now = new Date();
-            const dateToCheck = typeof effectiveDate === 'string' ? new Date(effectiveDate) : effectiveDate;
-            // Only compare date part, ignore time
-            const nowDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-            const checkDate = new Date(dateToCheck.getFullYear(), dateToCheck.getMonth(), dateToCheck.getDate());
-            if (checkDate <= nowDate) {
-                setDateError(t('SIMS7Redirects.dateError'));
-                return;
-            }
         }
         await saveRedirectionHandler({
             selectedRow,
@@ -166,13 +166,13 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             onSaveSuccess
         });
     }
-    function canEditSidePanel(mode: string, selectedRow: any) {
-        return mode === 'edit' && !!selectedRow;
-    }
-    function shouldShowSuccessToast(selectedRow: any, isDirty: boolean) {
-        return selectedRow.status === 'Migrated' && !isDirty;
-    }
-    function showSuccessAndClose(setShowSuccessToast: Function, setShowFailureBanner: Function, setSidePanelMode: Function, onSaveSuccess?: Function) {
+    // ...existing code...
+    function showSuccessAndClose(
+        setShowSuccessToast: (val: boolean) => void,
+        setShowFailureBanner: (val: boolean) => void,
+        setSidePanelMode: (mode: 'view' | 'edit') => void,
+        onSaveSuccess?: () => void
+    ): void {
         setShowSuccessToast(true);
         setShowFailureBanner(false);
         setSidePanelMode('view');

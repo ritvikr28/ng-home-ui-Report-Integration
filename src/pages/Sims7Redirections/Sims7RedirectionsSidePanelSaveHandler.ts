@@ -1,4 +1,5 @@
-import { buildRequest, handleStatusLogic } from './Sims7RedirectionsSidePanelSaveHelpers';
+import { buildRequest } from './buildRequest';
+import { handleStatusLogic } from './handleStatusLogic';
 
 export interface SaveRedirectionHandlerArgs {
     selectedRow: any;
@@ -22,12 +23,12 @@ export async function saveRedirectionHandler({
     setShowFailureBanner,
     setSidePanelMode,
     onSaveSuccess
-}: SaveRedirectionHandlerArgs) {
+}: SaveRedirectionHandlerArgs): Promise<void> {
     try {
         // eslint-disable-next-line
-        const { getEffectiveDateStr } = require('./Sims7RedirectionsSidePanelSaveHelpers');
-        const effectiveDateStr = getEffectiveDateStr(effectiveDate);
-        const updatedRow = { ...selectedRow };
+    const { getEffectiveDateStr }: { getEffectiveDateStr: (date: Date | string | null) => string } = require('./Sims7RedirectionsSidePanelSaveHelpers');
+    const effectiveDateStr: string = getEffectiveDateStr(effectiveDate);
+    const updatedRow: Record<string, any> = { ...selectedRow };
         await handleStatusLogic(updatedRow, redirectToNextGen, effectiveDate, reasonForChanges);
         if (hasMissingDFENumber(updatedRow, setDateError)) return;
         await callUpdateApi({
@@ -71,9 +72,29 @@ async function callUpdateApi({
     setSidePanelMode: (mode: string) => void;
     onSaveSuccess?: () => void;
 }): Promise<void> {
-    const req = buildRequest(updatedRow, effectiveDateStr, status);
-    const { updateSims7Redirection } = await import('./Sims7RedirectionsPage.api');
-    await updateSims7Redirection(req);
+    const apiReq: {
+        id: string;
+        dfeNumber: string;
+        ngModule: string;
+        ngComponent: string;
+        switchToSchool: boolean;
+        effectiveDate: string;
+        currentStatus: string;
+        plannedStatus: string;
+        reasonForChange: string;
+    } = buildRequest(updatedRow, effectiveDateStr, status);
+    const { updateSims7Redirection }: { updateSims7Redirection: (req: {
+        id: string;
+        dfeNumber: string;
+        ngModule: string;
+        ngComponent: string;
+        switchToSchool: boolean;
+        effectiveDate: string;
+        currentStatus: string;
+        plannedStatus: string;
+        reasonForChange: string;
+    }) => Promise<void> } = await import('./Sims7RedirectionsPage.api');
+    await updateSims7Redirection(apiReq);
     showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
 }
 
@@ -82,7 +103,7 @@ function showSuccessAndClose(
     setShowFailureBanner: (val: boolean) => void,
     setSidePanelMode: (mode: string) => void,
     onSaveSuccess?: () => void
-) {
+): void {
     setShowSuccessToast(true);
     setShowFailureBanner(false);
     setSidePanelMode('view');

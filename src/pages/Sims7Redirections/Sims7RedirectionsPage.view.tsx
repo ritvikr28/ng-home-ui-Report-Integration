@@ -74,9 +74,9 @@ export interface LoadSims7RedirectionsDataArgs {
 export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
     setLoadingTrue(args.setLoading);
     try {
-        const payload = await fetchRedirections(args);
+    const payload: unknown = await fetchRedirections(args);
         handleApiSuccess(payload, args);
-    } catch (error) {
+    } catch (error: unknown) {
         handleApiFailure(args, error);
     } finally {
         setLoadingFalse(args.setLoading);
@@ -104,7 +104,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const [sortOrder, setSortOrder]: ["asc" | "desc", React.Dispatch<React.SetStateAction<"asc" | "desc">>] = useState<"asc" | "desc">("asc");
     // Sorting handler
     // Sorting handler for ControlledList (reduced complexity)
-    const handleSorting = (_event: React.SyntheticEvent, columnName: string) => {
+    const handleSorting: (_event: React.SyntheticEvent, columnName: string) => void = (_event, columnName) => {
         handleSortingHelper({
             columnMapping,
             sortColumn,
@@ -147,12 +147,12 @@ export const Sims7RedirectionsPage: React.FC = () => {
         React.Dispatch<React.SetStateAction<boolean>>
     ] = useState<boolean>(!isMobileView);
 
-    const handleCloseSidePanel = () => {
+    const handleCloseSidePanel: () => void = () => {
         setIsSidePanelOpen(false);
         setSelectedRow(null);
     };
 
-    const handleViewClick = (rowData: Sims7RedirectionsTableRow) => {
+    const handleViewClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
         handleViewClickHelper({
             setSelectedRow,
             setSidePanelMode,
@@ -160,7 +160,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
         }, rowData);
     };
 
-    const handleEditClick = (rowData: Sims7RedirectionsTableRow) => {
+    const handleEditClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
         handleEditClickHelper({
             setSelectedRow,
             setSidePanelMode,
@@ -168,27 +168,27 @@ export const Sims7RedirectionsPage: React.FC = () => {
         }, rowData);
     };
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog: () => void = () => {
         handleOpenDialogHelper({
             setSelectedItems,
             searchTagList,
             setIsDialogOpen
         });
     };
-    const handleCloseDialog = () => {
+    const handleCloseDialog: () => void = () => {
         handleCloseDialogHelper({
             setIsDialogOpen
         });
     };
 
-    const handleClearAll = () => {
+    const handleClearAll: () => void = () => {
         handleClearAllHelper({
             setIsDialogOpen,
             setSelectedItems
         });
     };
 
-    const handleApplyDialog = () => {
+    const handleApplyDialog: () => void = () => {
         handleApplyDialogHelper({
             setSearchTagList,
             selectedItems,
@@ -214,11 +214,11 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setIsSidebarOpen((prev: boolean): boolean => !prev);
     };
 
-    const sims7RedirectionsBreadcrumbs = getBreadcrumbs(t, homeurl);
+    const sims7RedirectionsBreadcrumbs: any = getBreadcrumbs(t, homeurl);
 
     // Backend pagination: no slicing needed
     const paginatedTableData: Sims7RedirectionsTableRow[] = filteredTableData;
-    const handlePaginationChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (_event, page) => {
         handlePaginationChangeHelper({ setCurrentPage }, _event, page);
     };
 
@@ -226,9 +226,9 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setCurrentPage(1);
     }, [searchTagList]);
 
-    const NotificationMsgBannerObject = getNotificationMsgBannerObject(t);
+    const NotificationMsgBannerObject: any = getNotificationMsgBannerObject(t);
 
-    const dialogTemplateProps = getDialogTemplateProps(t);
+    const dialogTemplateProps: any = getDialogTemplateProps(t);
     return (
         <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users sims7-redirections">
             <div className="new-side-panel-invite-users">
@@ -423,7 +423,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     setSidePanelMode={setSidePanelMode}
                     onSaveSuccess={async () => {
                         setLoading(true);
-                        const payload = await fetchSims7Redirections({
+                        const payload: any = await fetchSims7Redirections({
                             SortColumnName: sortColumn,
                             SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
                             PageNumber: currentPage,
