@@ -753,7 +753,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       autoclose: false
     },
     {
-      isShow: false, // Set to true to show the private files banner
+      isShow: true, // Set to true to show the private files banner
       variant: "warning",
       title: t("DocumentManagementServer.privateFilesBannerTitle"),
       message: getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase")) ,
