@@ -71,7 +71,7 @@ export interface LoadSims7RedirectionsDataArgs {
     t: (key: string) => string;
 }
 
-export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
+export const loadSims7RedirectionsData: (args: LoadSims7RedirectionsDataArgs) => Promise<void> = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
     setLoadingTrue(args.setLoading);
     try {
     const payload: unknown = await fetchRedirections(args);
@@ -423,7 +423,12 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     setSidePanelMode={setSidePanelMode}
                     onSaveSuccess={async () => {
                         setLoading(true);
-                        const payload: any = await fetchSims7Redirections({
+                        type Sims7RedirectionsApiResponse = {
+                            items?: unknown[];
+                            totalItems?: number;
+                            [key: string]: unknown;
+                        };
+                        const payload: Sims7RedirectionsApiResponse = await fetchSims7Redirections({
                             SortColumnName: sortColumn,
                             SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
                             PageNumber: currentPage,
