@@ -2,6 +2,13 @@ import { formatDate, isFutureDate, parseDateString } from "../Sims7RedirectionsD
 import { isFormDirty } from "../Sims7RedirectionsFormDirty.logic";
 import { getNextStatus } from "../Sims7RedirectionsNextStatus.logic";
 import { requiresDate, requiresReason } from "../Sims7RedirectionsStatusHelpers";
+import {
+  isPanelEditable,
+  isSuccessToast,
+  isReasonMissing,
+  isDateInvalid,
+  isEffectiveDateInPast
+} from '../Sims7RedirectionsSidePanelHelpers';
 
 describe('Sims7RedirectionsSidePanelHelpers', () => {
   describe('formatDate', () => {
@@ -108,6 +115,83 @@ describe('Sims7RedirectionsSidePanelHelpers', () => {
     it('detects dirty form for changed reason', () => {
       const row = { status: 'Migrated', effectiveDate: '01 Dec 2025', reasonForChanges: 'old' };
       expect(isFormDirty(row, 'yes', new Date(2025, 11, 1), 'new')).toBe(true);
+    });
+  });
+
+  describe('isPanelEditable', () => {
+    it('returns false if canEditSidePanel returns true', () => {
+      expect(isPanelEditable('edit', { foo: 'bar' })).toBe(false);
+    });
+    it('returns true if canEditSidePanel returns false', () => {
+      expect(isPanelEditable('view', null)).toBe(true);
+    });
+  });
+
+  describe('isSuccessToast', () => {
+    it('returns true if shouldShowSuccessToast returns true', () => {
+      expect(isSuccessToast({ status: 'Migrated' }, false)).toBe(true);
+    });
+    it('returns false otherwise', () => {
+      expect(isSuccessToast({ status: 'Migrated' }, true)).toBe(false);
+      expect(isSuccessToast({ status: 'Not migrated' }, false)).toBe(false);
+    });
+  });
+
+  describe('isReasonMissing', () => {
+    it('returns true and sets error if reason is required and missing', () => {
+      const setReasonError = jest.fn();
+      const localRequiresReason = () => true;
+      expect(isReasonMissing({ status: 'A' }, 'B', '   ', localRequiresReason, setReasonError)).toBe(true);
+      expect(setReasonError).toHaveBeenCalledWith('Reason for changes is required');
+    });
+    it('returns false if reason is not required', () => {
+      const setReasonError = jest.fn();
+      const localRequiresReason = () => false;
+      expect(isReasonMissing({ status: 'A' }, 'B', '', localRequiresReason, setReasonError)).toBe(false);
+      expect(setReasonError).not.toHaveBeenCalled();
+    });
+    it('returns false if reason is present', () => {
+      const setReasonError = jest.fn();
+      const localRequiresReason = () => true;
+      expect(isReasonMissing({ status: 'A' }, 'B', 'something', localRequiresReason, setReasonError)).toBe(false);
+      expect(setReasonError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isDateInvalid', () => {
+    it('returns true if isEffectiveDateInPast returns true', () => {
+      const setDateError = jest.fn();
+      const t = () => 'error';
+      // Use a date in the past
+      expect(isDateInvalid(new Date(Date.now() - 86400000), t, setDateError)).toBe(true);
+      expect(setDateError).toHaveBeenCalled();
+    });
+    it('returns false if isEffectiveDateInPast returns false', () => {
+      const setDateError = jest.fn();
+      const t = () => 'error';
+      // Use a date in the future
+      expect(isDateInvalid(new Date(Date.now() + 86400000), t, setDateError)).toBe(false);
+      expect(setDateError).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('isEffectiveDateInPast', () => {
+    it('returns false if no date', () => {
+      const setDateError = jest.fn();
+      const t = () => 'error';
+      expect(isEffectiveDateInPast(null, t, setDateError)).toBe(false);
+    });
+    it('returns true and sets error if date is today or past', () => {
+      const setDateError = jest.fn();
+      const t = () => 'error';
+      expect(isEffectiveDateInPast(new Date(), t, setDateError)).toBe(true);
+      expect(setDateError).toHaveBeenCalledWith('error');
+    });
+    it('returns false if date is in the future', () => {
+      const setDateError = jest.fn();
+      const t = () => 'error';
+      expect(isEffectiveDateInPast(new Date(Date.now() + 86400000), t, setDateError)).toBe(false);
+      expect(setDateError).not.toHaveBeenCalled();
     });
   });
 });

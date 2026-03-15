@@ -53,6 +53,9 @@ export function handleRedirectToNextGenChange(params: HandleRedirectToNextGenCha
             month: (tomorrow.getMonth() + 1).toString().padStart(2, '0'),
             year: tomorrow.getFullYear().toString()
         });
+        if (typeof setDateError === 'function') {
+            setDateError("");
+        }
     }
     setIsDirty(isFormDirty(selectedRow, val, effectiveDate, reasonForChanges));
 }

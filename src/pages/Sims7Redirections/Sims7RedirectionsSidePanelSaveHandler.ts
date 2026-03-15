@@ -1,5 +1,20 @@
 import { buildRequest } from './buildRequest';
 import { handleStatusLogic } from './handleStatusLogic';
+import type { UpdateSims7RedirectionRequest } from './Sims7RedirectionsPage.api';
+
+export interface ApiRequest {
+    id: string;
+    dfeNumber: string;
+    ngModule: string;
+    ngComponent: string;
+    switchToSchool: boolean;
+    effectiveDate: string;
+    currentStatus: string;
+    plannedStatus: string;
+    reasonForChange: string;
+}
+
+const { getEffectiveDateStr }: { getEffectiveDateStr: (date: Date | string | null) => string } = require('./Sims7RedirectionsSidePanelSaveHelpers');
 
 export interface SaveRedirectionHandlerArgs {
     selectedRow: any;
@@ -25,10 +40,8 @@ export async function saveRedirectionHandler({
     onSaveSuccess
 }: SaveRedirectionHandlerArgs): Promise<void> {
     try {
-        // eslint-disable-next-line
-    const { getEffectiveDateStr }: { getEffectiveDateStr: (date: Date | string | null) => string } = require('./Sims7RedirectionsSidePanelSaveHelpers');
-    const effectiveDateStr: string = getEffectiveDateStr(effectiveDate);
-    const updatedRow: Record<string, any> = { ...selectedRow };
+        const effectiveDateStr: string = getEffectiveDateStr(effectiveDate);
+        const updatedRow: Record<string, any> = { ...selectedRow };
         await handleStatusLogic(updatedRow, redirectToNextGen, effectiveDate, reasonForChanges);
         if (hasMissingDFENumber(updatedRow, setDateError)) return;
         await callUpdateApi({
@@ -55,7 +68,8 @@ function hasMissingDFENumber(row: Record<string, any>, setDateError: (msg: strin
     return false;
 }
 
-async function callUpdateApi({
+
+export async function callUpdateApi({
     updatedRow,
     effectiveDateStr,
     status,
@@ -72,28 +86,8 @@ async function callUpdateApi({
     setSidePanelMode: (mode: string) => void;
     onSaveSuccess?: () => void;
 }): Promise<void> {
-    const apiReq: {
-        id: string;
-        dfeNumber: string;
-        ngModule: string;
-        ngComponent: string;
-        switchToSchool: boolean;
-        effectiveDate: string;
-        currentStatus: string;
-        plannedStatus: string;
-        reasonForChange: string;
-    } = buildRequest(updatedRow, effectiveDateStr, status);
-    const { updateSims7Redirection }: { updateSims7Redirection: (req: {
-        id: string;
-        dfeNumber: string;
-        ngModule: string;
-        ngComponent: string;
-        switchToSchool: boolean;
-        effectiveDate: string;
-        currentStatus: string;
-        plannedStatus: string;
-        reasonForChange: string;
-    }) => Promise<void> } = await import('./Sims7RedirectionsPage.api');
+    const apiReq: ApiRequest = buildRequest(updatedRow, effectiveDateStr, status);
+    const { updateSims7Redirection }: { updateSims7Redirection: (req: UpdateSims7RedirectionRequest) => Promise<any> } = await import('./Sims7RedirectionsPage.api');
     await updateSims7Redirection(apiReq);
     showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
 }
