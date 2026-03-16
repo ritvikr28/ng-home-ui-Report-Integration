@@ -85,7 +85,7 @@ export function getFieldFromApi(item: any, field: string): string {
     const value: string | undefined = item[key];
     return typeof value === "string" ? value : "";
 }
-export function mapSims7RedirectionsItem(item: any, idx: number): Sims7RedirectionsTableRow {
+export function mapSims7RedirectionsItem(item: any, idx: number, t: (key: string) => string = (key: string) => key): Sims7RedirectionsTableRow {
     const ngModuleComponentUrl: string = getFieldFromApi(item, "ngModuleComponentUrl");
 
     const moduleName: string = getFieldFromApi(item, "nextGenModule");
@@ -108,11 +108,11 @@ export function mapSims7RedirectionsItem(item: any, idx: number): Sims7Redirecti
             options:
                 getStatus({ status: getFieldFromApi(item, "status") }) === "Permanent"
                     ? [
-                        { disabled: false, isSelected: false, text: " View", value: "View" }
+                        { disabled: false, isSelected: false, text: t("SIMS7Redirects.viewbtn"), value: "View" }
                     ]
                     : [
-                        { disabled: false, isSelected: false, text: " View", value: "View" },
-                        { disabled: false, isSelected: false, text: "Edit", value: "Edit" }
+                        { disabled: false, isSelected: false, text: t("SIMS7Redirects.viewbtn"), value: "View" },
+                        { disabled: false, isSelected: false, text: t("SIMS7Redirects.editbtn"), value: "Edit" }
                     ]
         },
         reasonForChanges: getFieldFromApi(item, "reasonForChanges"),

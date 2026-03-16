@@ -16,7 +16,7 @@ export async function fetchRedirections(args: LoadSims7RedirectionsDataArgs): Pr
 }
 export function handleApiSuccess(payload: any, args: LoadSims7RedirectionsDataArgs): void {
   args.setApiFailed(false);
-  args.setOriginalTableData(payload.items.map(mapSims7RedirectionsItem));
+  args.setOriginalTableData(payload.items.map((item: unknown, idx: number) => mapSims7RedirectionsItem(item, idx, args.t)));
   args.setTotalItems(payload.totalItems);
 }
 export function handleApiFailure(args: LoadSims7RedirectionsDataArgs, error: unknown): void {

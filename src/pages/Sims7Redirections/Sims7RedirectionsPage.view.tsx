@@ -28,6 +28,7 @@ import { getBreadcrumbs, getNotificationMsgBannerObject, getDialogTemplateProps 
 import { homeurl } from "../InviteUsers/InviteUsersProps";
 import {
     sims7RedirectionsTableHeaders,
+    Sims7RedirectionsTableHeader,
     Sims7RedirectionsTableRow
 } from "./Sims7RedirectionsPage.data";
 import { mapSims7RedirectionsItem } from "./Sims7RedirectionsMapper";
@@ -85,15 +86,31 @@ export const loadSims7RedirectionsData: (args: LoadSims7RedirectionsDataArgs) =>
 
 
 export const Sims7RedirectionsPage: React.FC = () => {
-    // Column mapping: frontend to backend
+    const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
+    // Column mapping: frontend to backend (keys use translated labels to support all languages)
     const columnMapping: Record<string, string> = {
-        "Category": "ngModule",
-        "Next Gen module": "ngComponent",
-        "SIMS 7 module": "sims7Module",
-        "Modified by": "updatedBy",
-        "Effective date": "effectiveDate",
-        "Status": "redirectStatus"
+        [t("SIMS7Redirects.category")]: "ngModule",
+        [t("SIMS7Redirects.nextGenModule")]: "ngComponent",
+        [t("SIMS7Redirects.sims7Module")]: "sims7Module",
+        [t("SIMS7Redirects.modifiedBy")]: "updatedBy",
+        [t("SIMS7Redirects.effectiveDate")]: "effectiveDate",
+        [t("SIMS7Redirects.status")]: "redirectStatus"
     };
+    const translatedTableHeaders: Sims7RedirectionsTableHeader[] = React.useMemo(() => {
+        const headerKeyMap: Record<string, string> = {
+            "Category": "SIMS7Redirects.category",
+            "Next Gen module": "SIMS7Redirects.nextGenModule",
+            "SIMS 7 module": "SIMS7Redirects.sims7Module",
+            "Modified by": "SIMS7Redirects.modifiedBy",
+            "Effective date": "SIMS7Redirects.effectiveDate",
+            "Status": "SIMS7Redirects.status"
+        };
+        return sims7RedirectionsTableHeaders.map(header => {
+            const translationKey = headerKeyMap[header.text];
+            return translationKey ? { ...header, text: t(translationKey) } : header;
+        });
+    }, [t]);
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -202,9 +219,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const closeSidebar: () => void = () => {
         setIsSidebarOpen(false);
     };
-
-    const { t }: UseTranslationResponse<"translation", undefined> =
-        useTranslation();
 
     useEffect(() => {
         document.body.classList.add("no-scroll");
@@ -337,7 +351,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     showConfirmDialog
                     tableBodyData={paginatedTableData}
                     tableFirstColumnWidth="10px"
-                    tableHeadersData={sims7RedirectionsTableHeaders}
+                    tableHeadersData={translatedTableHeaders}
                     tableLastColumnWidth="10px"                    
                     sortByDefault={false}
                     sortAscFirst={false}
@@ -347,8 +361,8 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     isIconRightAligned
                     isShowOverflowMenuCol
                     onClickOverflowItem={(e, rowData) => {
-                        const text: string = (e.target as HTMLElement).innerText.trim();
-                        handleOverflowAction(text, rowData, handleViewClick, handleEditClick);
+                        const action: string = ((e.target as HTMLElement).closest('[data-value]') as HTMLElement | null)?.dataset.value?.trim() ?? (e.target as HTMLElement).innerText.trim();
+                        handleOverflowAction(action, rowData, handleViewClick, handleEditClick);
                     }}
                     // Helper to handle overflow actions (reduces complexity)
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
@@ -435,7 +449,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                             PageSize: pageSize,
                             SearchFilter: searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
                         });
-                        setOriginalTableData((payload.items || []).map(mapSims7RedirectionsItem));
+                        setOriginalTableData((payload.items || []).map((item: unknown, idx: number) => mapSims7RedirectionsItem(item, idx, t)));
                         setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
                         setLoading(false);
                     }}
