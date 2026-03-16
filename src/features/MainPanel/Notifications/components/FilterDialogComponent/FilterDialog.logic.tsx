@@ -1,4 +1,5 @@
 import { useState, useEffect, Dispatch, SetStateAction } from "react";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import FilterDialogView from "./FilterDialog.view";
 import { FilterStates, DateErrors } from "./FilterDialog.props";
 
@@ -20,14 +21,14 @@ interface FilterDialogLogicProps {
     onClear: () => void;
 }
 
-const validateDateRange: (from: string, to: string) => DateErrors = function (from: string, to: string): DateErrors {
-    if (!from && to) return { from: "Start date is required", to: "" };
+const validateDateRange: (from: string, to: string, t: (key: string) => string) => DateErrors = function (from: string, to: string, t: (key: string) => string): DateErrors {
+    if (!from && to) return { from: t("NotificationCenter_T.filterStartDateRequired"), to: "" };
     if (!from && !to) return { from: "", to: "" };
     if (from && to) {
         if (new Date(from) > new Date(to)) {
             return {
-                from: "Start date cannot be after end date",
-                to: "End date cannot be before start date"
+                from: t("NotificationCenter_T.filterStartDateCannotBeAfterEndDate"),
+                to: t("NotificationCenter_T.filterEndDateCannotBeBeforeStartDate")
             };
         }
     }
@@ -43,7 +44,7 @@ const getInitialState = (filters: FilterDialogLogicProps["filters"]) => ({
     endDate: filters.endDate || ""
 });
 
-const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
+const useFilterStates = (filters: FilterDialogLogicProps["filters"], t: (key: string) => string) => {
     const initial: {
         status: string[];
         priority: string[];
@@ -82,7 +83,7 @@ const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
     // }, [filters]);
 
     useEffect(() => {
-        setErrors(validateDateRange(startDate, endDate));
+        setErrors(validateDateRange(startDate, endDate, t));
     }, [startDate, endDate]);
 
     return {
@@ -95,9 +96,9 @@ const useFilterStates = (filters: FilterDialogLogicProps["filters"]) => {
     };
 };
 
-const validateStartDate: (startDate: string, endDate: string) => string = (startDate: string, endDate: string): string => {
+const validateStartDate: (startDate: string, endDate: string, t: (key: string) => string) => string = (startDate: string, endDate: string, t: (key: string) => string): string => {
     if (isNonEmptyString(endDate) && !isNonEmptyString(startDate)) {
-        return "startDateRequired";
+        return t("NotificationCenter_T.filterStartDateRequired");
     }
     return "";
 };
@@ -108,6 +109,7 @@ const FilterDialogLogic: ({ setFilterBtnClicked, filters, onApply, onClear }: Fi
     onApply,
     onClear
 }: FilterDialogLogicProps): JSX.Element => {
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
     const {
         status, setStatus,
         priority, setPriority,
@@ -115,10 +117,10 @@ const FilterDialogLogic: ({ setFilterBtnClicked, filters, onApply, onClear }: Fi
         endDate, setEndDate,
         startDateError, setStartDateError,
         errors
-    }: FilterStates = useFilterStates(filters);
+    }: FilterStates = useFilterStates(filters, t);
 
     useEffect(() => {
-        setStartDateError(validateStartDate(startDate, endDate));
+        setStartDateError(validateStartDate(startDate, endDate, t));
     }, [startDate, endDate, setStartDateError]);
 
     const handleApply: () => void

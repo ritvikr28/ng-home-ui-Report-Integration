@@ -1,5 +1,6 @@
 import { SidePanel, IconColor, SidePanelContent, SidePanelFooter, Button, ButtonColor, ButtonSize, Loader, LoaderType } from "@essnextgen/ui-kit";
 import React, { useEffect, useState } from "react";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { NotificationSidePanelViewProps } from "./NotificationSidePanel.props";
 import { getViewData, markAsRead } from "../../../../../shared/services/notification/api";
 import { formattedDate } from "../../useNotification";
@@ -27,7 +28,7 @@ function useSidePanelData(sideIsOpen: boolean, notificationIdSelected: string | 
         });
 
         const item: any = typeof selectedItem === "string" ? JSON.parse(selectedItem) : selectedItem;
-        if (item?.Status === "Unread" && notificationIdSelected) {
+         if (item?.Status === "Unread" && notificationIdSelected) {
             markAsRead(notificationIdSelected).then((data) => {
                 if (data.error) setApiError(data.error);
             });
@@ -61,6 +62,7 @@ const NotificationSidePanelView: React.FC<NotificationSidePanelViewProps> = ({
     notificationIdSelected
 }) => {
     const { loading, apiError }: { loading: boolean; apiError: any } = useSidePanelData(sideIsOpen, notificationIdSelected, selectedItem, setSelectedItem || (() => { }));
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
     const handleClose: () => void = () => {
         if (setSelectedItem) {
@@ -78,7 +80,7 @@ const NotificationSidePanelView: React.FC<NotificationSidePanelViewProps> = ({
             id="element-id"
             isOnClose
             onClose={handleClose}
-            title="Notification"
+            title={t("NotificationCenter_T.sidePanelTitle")}
             isOpen={sideIsOpen}
         >
             <SidePanelContent>
@@ -92,7 +94,7 @@ const NotificationSidePanelView: React.FC<NotificationSidePanelViewProps> = ({
                     size={ButtonSize.Large}
                     onClick={handleClose}
                 >
-                    Close
+                    {t("NotificationCenter_T.sidePanelClose")}
                 </Button>
             </SidePanelFooter>
         </SidePanel>

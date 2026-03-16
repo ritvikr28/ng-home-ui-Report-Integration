@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useSt
 import {
     Breadcrumbs
 } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "./style.scss";
 import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
@@ -12,6 +13,7 @@ import { useTableRows } from "./hooks/useNotificationHook";
 import NotificationTableSection from "./NotificationTableSection/NotificationTableSection.view";
 
 const NotificationView: React.FC = () => {
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
     const [tableData, setTableData]: [any[], Dispatch<SetStateAction<any[]>>] = useState<any[]>([]);
     const [totalTableData, setTotalTableData]: [number, Dispatch<SetStateAction<number>>] = useState<number>(0);
     const [currentPage, setCurrentPage]: [number, Dispatch<SetStateAction<number>>] = useState(1);
@@ -61,8 +63,8 @@ const NotificationView: React.FC = () => {
     const [selectedItem, setSelectedItem]: [any, Dispatch<SetStateAction<any>>] = useState<any>("");
 
     const tableHeadersData: NotificationTableData = useMemo(
-        () => getNotificationTableHeadersData({ sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem }),
-        [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
+        () => getNotificationTableHeadersData({ sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem, t }),
+        [setSideIsOpen, setSelectedItem, sortBy, sortDirection, t]
     );
 
     const hasActiveFilters: any = useMemo(
@@ -107,8 +109,8 @@ const NotificationView: React.FC = () => {
                 <div className="notification-layout-header">
                     <Breadcrumbs
                         breadcrumbActions={[
-                            { active: false, linkName: "Home", path: window.location.origin },
-                            { active: false, linkName: "Notification Centre", path: "#" }
+                            { active: false, linkName: t("NotificationCenter_T.breadcrumbHome"), path: window.location.origin },
+                            { active: false, linkName: t("NotificationCenter_T.breadcrumbNotificationCentre"), path: "#" }
                         ]}
                         className="essui-Breadcrumbs"
                         dataTestId="breadcrumb-test-id"

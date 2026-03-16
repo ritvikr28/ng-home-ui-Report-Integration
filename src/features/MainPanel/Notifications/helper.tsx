@@ -9,6 +9,7 @@ export interface NotificationTableHeadersOptions {
   setNotificationIdSelected?: (id: string) => void;
   setSideIsOpen?: (item: any) => void;
   setSelectedItem?: (item: any) => void;
+  t?: (key: string) => string;
 }
 
 export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOptions) => NotificationTableHeader[] = ({
@@ -16,7 +17,8 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
   sortDirection = false,
   setNotificationIdSelected,
   setSideIsOpen,
-  setSelectedItem
+  setSelectedItem,
+  t = (key: string) => key
 }: NotificationTableHeadersOptions = {}): {
   text: string;
   isShow: boolean;
@@ -40,7 +42,7 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
       columnWidth: "16px"
     },
     {
-      text: "Status",
+      text: t("NotificationCenter_T.tableHeaderStatus"),
       isShow: true,
       showValAs: ShowValAs.CustomeComponent,
       isTextTruncate: false,
@@ -62,7 +64,7 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
       )
     },
     {
-      text: "Notification",
+      text: t("NotificationCenter_T.tableHeaderNotification"),
       isShow: true,
       showValAs: ShowValAs.Text,
       isTextTruncate: true,
@@ -74,7 +76,7 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
       isColumnSortByDefault: false
     },
     {
-      text: "Priority",
+      text: t("NotificationCenter_T.tableHeaderPriority"),
       isShow: true,
       showValAs: ShowValAs.Text,
       isHeaderTextTruncate: true,
@@ -87,7 +89,7 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
       columnWidth: "274px"
     },
     {
-      text: "Date received",
+      text: t("NotificationCenter_T.tableHeaderDateReceived"),
       isShow: true,
       showValAs: ShowValAs.Text,
       isHeaderTextTruncate: true,
@@ -125,7 +127,7 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
               }}
               target="_self"
             >
-              View
+              {t("NotificationCenter_T.viewLink")}
             </Link>
           </>
         );
@@ -134,10 +136,11 @@ export const getNotificationTableHeadersData: (arg0: NotificationTableHeadersOpt
   ];
 
 export const NoDataMessage: {
-  noDataOnSearch: (keyword: string) => string;
-  noDataToDisplay: string;
+  noDataOnSearch: (keyword: string, t?: (key: string, options?: any) => string) => string;
+  noDataToDisplay: (t?: (key: string) => string) => string;
 } = {
-  noDataOnSearch: (keyword: string) =>
-    `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
-  noDataToDisplay: "No data to display"
+  noDataOnSearch: (keyword: string, t?: (key: string, options?: any) => string) =>
+    t ? t("NotificationCenter_T.noDataOnSearch", { keyword }) : `Your search - ${keyword} - did not match any results. Make sure that all the words are spelled correctly.`,
+  noDataToDisplay: (t?: (key: string) => string) =>
+    t ? t("NotificationCenter_T.noDataToDisplay") : "No data to display"
 };
