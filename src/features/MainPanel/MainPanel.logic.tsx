@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MainPanelView from "./MainPanel.view";
 import { ISchoolNameDataResponse } from "../../shared/model/SchoolDomain/responsemodels";
-import { useFetchSchoolNameData } from "../../shared/services/schoolDomain/schoolServices";
 import { IMainPanelProps } from "./MainPanelProps";
+import { getCachedData } from "../../shared/hooks/cacheHelperFile";
 
 const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
 
@@ -13,7 +13,8 @@ const MainPanel: React.FC<IMainPanelProps> = ({ isOpen, setIsOpen }) => {
     const fetchSchoolNames: () => Promise<void> = async () => {
       setIsError(false);
       try {
-        const schoolData: ISchoolNameDataResponse | null = await useFetchSchoolNameData();
+        const schoolData: ISchoolNameDataResponse | null = getCachedData("SCHOOL_NAME");
+        // await useFetchSchoolNameData();
         const schoolNames: string = (schoolData == null) ? "" : schoolData.schoolName;
         const isSchoolsPrimary: boolean = (schoolData == null) ? true : schoolData.isSchoolPrimary;
 

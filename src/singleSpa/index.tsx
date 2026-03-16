@@ -2,9 +2,11 @@ import React, { lazy, Suspense, useEffect } from "react";
 import ReactDOM from "react-dom";
 import singleSpaReact, { ReactAppOrParcel } from "single-spa-react";
 import singleSpaLeakedGlobals from "single-spa-leaked-globals";
+import { Provider } from "react-redux";
 import { fetchConfigData, SetupEnvConfig } from "./ConfigHelper";
 import packageJson from "../../package.json";
 import { ILayoutProps } from "../Layout";
+import configureStore from "../redux/store";
 
 // SetupEnvConfig();
 const initializeVariable:()=>void=async()=>{
@@ -42,14 +44,16 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
         console.log(error);       
       }      
     })();
-  }, [globarvar]);  
-  return(
-  <Suspense fallback={<></>}>
-    <>
-    {globarvar && <App isStandaloneApp={false} baseRouteName={baseRouteName} />}
-    </>  
-</Suspense>
-)  
+  }, [globarvar]);
+  return (
+    <Suspense fallback={<></>}>
+      <>
+        {globarvar && <Provider store={configureStore()}>
+          <App isStandaloneApp={false} baseRouteName={baseRouteName} />
+        </Provider>}
+      </>
+    </Suspense>
+  )
 };
 
 console.log('UI-Application kit (Home):^1.2.0');
