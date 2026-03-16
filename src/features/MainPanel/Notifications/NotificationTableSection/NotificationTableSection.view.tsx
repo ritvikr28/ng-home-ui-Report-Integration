@@ -1,5 +1,6 @@
 import React, { SyntheticEvent, useEffect, useMemo, useRef } from "react";
 import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, NotificationStatus, ResponseCode, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { handleSearchKeyPressed as handleSearchKeyPressedUtil, handleSearchChangeWithAutoSuggest as handleSearchChangeWithAutoSuggestUtil } from "./notificationTableHandlers";
 import { fetchNotificationTableData, fetchSearchAutoSuggestData, isShowdynamictableNoMsg, shouldFetchTableData } from "./notificationTableApiHelpers";
 import { getEmptyStateMessage } from "../hooks/useNotificationHook";
@@ -96,6 +97,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
 
     const searchTagList: SearchTag = useMemo(() => buildTags(filters), [filters]);
 
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
+
     const handleSearchKeyPressed: (inputValue: string) => void = (inputValue: string) => {
         handleSearchKeyPressedUtil({
             inputValue,
@@ -163,8 +166,8 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                         {
                             "isShow": tableDataError,
                             "variant": "warning",
-                            "title": "Information unavailable",
-                            "message": "A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists, please get in touch with our support team.",
+                            "title": t("NotificationCenter_T.informationUnavailableTitle"),
+                            "message": t("NotificationCenter_T.informationUnavailableMessage"),
                             "autoclose": false,
                             "hideCloseButton": false
                         }
@@ -190,25 +193,25 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                                 iconColor={IconColor.Neutral800}
                                 iconPosition={ButtonIconPosition.Right}
                             >
-                                Filter
+                                {t("NotificationCenter_T.filterBtn")}
                             </Button>
                         </div>
                     }
-                    editSelectedBtnTitle="Edit selected"
+                    editSelectedBtnTitle={t("NotificationCenter_T.editSelected")}
                     editSelectedOptions={[
                         {
                             "disabled": false,
                             "isSelected": false,
-                            "text": "Delete",
+                            "text": t("NotificationCenter_T.editSelectedDelete"),
                             "value": "Delete"
                         }
                     ]}
                     // onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
                     onEditSelectedBtnClick={() => { }}
-                    emptyStateMsg={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions)}
+                    emptyStateMsg={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t)}
                     onAddEventBtnClick={() => { }}
                     groupTagsEnabled
-                    headingText="Notification Centre"
+                    headingText={t("NotificationCenter_T.headingText")}
                     id="controlled-list"
                     isBreadCrumbEnable={false}
                     isOnCloseSidepnl
@@ -216,7 +219,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     lastColHeaderAlign="center"
                     paginationMinCountToHideNextPreviousBtn={0}
                     isShowPrimaryBtn={false}
-                    resultNotFoundMessage={!suggestionLoader && noResults && searchTerm.trim() ? `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.` : ""}
+                    resultNotFoundMessage={!suggestionLoader && noResults && searchTerm.trim() ? t("NotificationCenter_T.resultNotFoundMessage", { searchTerm }) : ""}
                     searchOnFocus={() => setIsAutoSuggestVisible(true)}
                     showConfirmDialog
                     subHeadingText=""
@@ -244,7 +247,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     isOpenConfirmationDialog={false}
                     isIconRightAligned
                     isShowOverflowMenuCol={false}
-                    searchHeadingText="Search by notification title"
+                    searchHeadingText={t("NotificationCenter_T.searchHeadingText")}
                     dynamicTableLoader={isTableBodyLoading}
                     onClickSidePnlSecondaryBtn={() => setSideIsOpen(false)}
                     handleCloseSidePanel={() => setSideIsOpen(false)}
@@ -260,7 +263,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                             tableDataError
                         })
                     }
-                    emptyRowResponseMessage={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions)}
+                    emptyRowResponseMessage={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t)}
                     searchIsLoader={suggestionLoader}
                     emptyRowResponseCode={ResponseCode.Info}
                     isPagination={shouldShowPagination}
@@ -314,15 +317,6 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                     onKeyUpLenght={2}
                 />
             </div>
-            {sideIsOpen && (
-                <NotificationSidePanelView
-                    sideIsOpen={sideIsOpen}
-                    setSideIsOpen={setSideIsOpen}
-                    selectedItem={selectedItem}
-                    setSelectedItem={setSelectedItem}
-                    notificationIdSelected={notificationIdSelected}
-                />
-            )}
             {renderSidePanel({ sideIsOpen, setSideIsOpen, selectedItem, setSelectedItem, notificationIdSelected: notificationIdSelected ?? null })}
         </div>
     )

@@ -14,7 +14,9 @@ import * as getAppModulesPermissions from "../actions/queries";
 const history = createBrowserHistory();
 const appPermissions: AppPermissionState = {
   modules: [],
-  isLoaded: true
+  isLoaded: true,
+  videoPlayStatus: false,
+  apiError: false
 };
 const appModules: IAppModule[] = [
   {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { MatchPermissions, Permission, authService } from "@essnextgen/auth-ui";
 import { Divider, Grid, GridItem } from "@essnextgen/ui-kit";
 import { WistiaPlayer } from "@wistia/wistia-player-react";
-import { useVideoPlayStatus } from "../../shared/hook/useVideoPlayStatus";
+import { useSelector } from "react-redux";
 import WelcomeUser from "./WelcomeUser/WelcomeUser.logic";
 import StaffTimeTableView from "./StaffTimeTable/StaffTimeTable.view";
 import TakeRegisterView from "./TakeRegisters/TakeRegister.view";
@@ -166,13 +166,11 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
     setIsOpen(!isOpen);
   };
 
-  const { isPlayed, apiError }: { isPlayed: boolean; apiError: boolean } = useVideoPlayStatus();
+  const videoPlayStatus = useSelector((state: any) => state.appPermission.videoPlayStatus);
+  const apiError = useSelector((state: any) => state.appPermission.apiError);
   const [videoStatusSaved, setVideoStatusSaved]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
 
-
-  const shouldShowVideo =
-    !apiError &&
-    isPlayed === false;
+  const shouldShowVideo = !apiError && videoPlayStatus === false;
 
   return (
     <div>
@@ -213,7 +211,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
       {canShowPupilProfile() && (
         <>
           <Search isOpen={isOpen} />
-          <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
+          <div className={!videoPlayStatus ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
             <Divider />
           </div>
         </>
@@ -223,7 +221,7 @@ const MainPanelView: (props: IMainPanelProps) => JSX.Element = (
         canShowSLTviewBETT() && (
           <>
             <SltViewBett />
-            <div className={!isPlayed ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
+            <div className={!videoPlayStatus ? "wistia-class new-divider-spacing" : "new-divider-spacing"}>
               <Divider />
             </div>
           </>

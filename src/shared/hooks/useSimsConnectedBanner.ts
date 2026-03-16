@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 
+// import { fetchLinks } from "./useSIMSNextGenLinks";
+// import { getCachedData } from "./cacheHelperFile";
+// import { fetchLinks } from "./useSIMSNextGenLinks";
 import { fetchLinks } from "./useSIMSNextGenLinks";
 
 export function useSimsConnectedBanner(): [boolean, boolean] {
@@ -10,8 +13,8 @@ export function useSimsConnectedBanner(): [boolean, boolean] {
     const fetchSimsConnectedLink: () => Promise<void> = async () => {
       setIsLoading(true);
       try {
-        const responseapidata: boolean = await fetchLinks();
-        setRenderSimsConnectedBanner(!!responseapidata);
+        const isSimsConnectedcached = await fetchLinks();
+        setRenderSimsConnectedBanner(!!isSimsConnectedcached);
       } catch (error) {
         // Optionally handle error
         console.log(error);

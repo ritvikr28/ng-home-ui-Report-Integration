@@ -13,7 +13,7 @@ function formatDate(dateVal: string | undefined): string {
   return date.toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
-    year: "numeric",
+    year: "numeric"
   });
 }
 
@@ -25,7 +25,7 @@ function renderEffectiveDate(
     (payload.effectiveDate && payload.effectiveDate !== "-") ||
     (payload.previousDate && payload.previousDate !== "-");
   if (!show) return null;
-  const dateVal =
+  const dateVal: string =
     payload.effectiveDate == null || payload.effectiveDate === ""
       ? payload.previousDate
       : payload.effectiveDate;
@@ -46,7 +46,7 @@ function renderReasonForChanges(
   if (!["NotMigrated", "Reversing"].includes(payload.redirectStatus))
     return null;
   // Show '-' if null, undefined, or empty string
-  const reason =
+  const reason: string =
     payload.reasonForChange == null || payload.reasonForChange === ""
       ? "-"
       : payload.reasonForChange;
@@ -62,7 +62,7 @@ function renderReasonForChanges(
 
 function renderReverseMigrationMessage(payload: any): React.ReactNode {
   if (payload.currentStatus === "P" && payload.plannedStatus === "N") {
-    const dateVal =
+    const dateVal: string =
       payload.effectiveDate == null || payload.effectiveDate === ""
         ? payload.previousDate
         : payload.effectiveDate;
@@ -81,7 +81,7 @@ function renderApplyMigrationMessage(payload: any): React.ReactNode {
     (payload.currentStatus === "Y" && payload.plannedStatus === "P") ||
     (payload.currentStatus === "N" && payload.plannedStatus === "P")
   ) {
-    const dateVal =
+    const dateVal: string =
       payload.effectiveDate == null || payload.effectiveDate === ""
         ? payload.previousDate
         : payload.effectiveDate;
@@ -104,7 +104,7 @@ export interface Sims7RedirectionsViewProps {
 const Sims7RedirectionsView: React.FC<Sims7RedirectionsViewProps> = ({
   viewData,
   t,
-  setSidePanelMode,
+  setSidePanelMode
 }) => (
   <SidePanelContent>
     <div className="view-mode-with-edit-button">

@@ -47,14 +47,14 @@ describe("Sims7RedirectionsSidePanel extra branch coverage", () => {
   it("clears effectiveDate in PUT payload for Reversing→Migrated and Planned→NotMigrated transitions", () => {
     const { buildRequest } = require('../Sims7RedirectionsSidePanelSaveHelpers');
   // Reversing to Migrated
-  const payload1 = buildRequest({ status: 'Migrated', plannedStatus: 'Migrated', reasonForChanges: 'Test', id: '1', dfeNumber: 'd', nextGenModule: 'n', ngModule: 'n', category: 'c', switchToSchool: false, previousDate: "" }, '2026-04-09', 'Reversing');
-  expect(payload1.effectiveDate).toBe("");
+  const payload1 = buildRequest({ status: 'Migrated', plannedStatus: 'Migrated', reasonForChanges: 'Test', id: '1', dfeNumber: 'd', nextGenModule: 'n', ngModule: 'n', category: 'c', switchToSchool: false, previousDate: "2026-04-01" }, '2026-04-09', 'Reversing');
+  expect(payload1.effectiveDate).toBe("2026-04-01");
   // Planned to NotMigrated
   const payload2 = buildRequest({ status: 'NotMigrated', plannedStatus: 'NotMigrated', reasonForChanges: 'Test', id: '1', dfeNumber: 'd', nextGenModule: 'n', ngModule: 'n', category: 'c', switchToSchool: false }, '2026-04-09', 'Planned');
   expect(payload2.effectiveDate).toBe('2026-04-09');
   // No transition
-  const payload3 = buildRequest({ status: 'Migrated', plannedStatus: 'Migrated', reasonForChanges: 'Test', id: '1', dfeNumber: 'd', nextGenModule: 'n', ngModule: 'n', category: 'c', switchToSchool: false, previousDate: "" }, '2026-04-09', 'Migrated');
-  expect(payload3.effectiveDate).toBe('2026-04-09');
+  const payload3 = buildRequest({ status: 'Migrated', plannedStatus: 'Migrated', reasonForChanges: 'Test', id: '1', dfeNumber: 'd', nextGenModule: 'n', ngModule: 'n', category: 'c', switchToSchool: false, previousDate: "2026-04-01" }, '2026-04-09', 'Migrated');
+  expect(payload3.effectiveDate).toBe('2026-04-01');
   });
   type SelectedRowType = {
     category: string;

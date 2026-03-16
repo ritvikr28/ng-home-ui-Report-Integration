@@ -27,7 +27,11 @@ export interface Sims7RedirectionsFormStateExplicit {
 export type Sims7RedirectionsFormState = ReturnType<typeof useSims7RedirectionsForm>;
 
 export function useSims7RedirectionsForm(selectedRow: any, mode: string): Sims7RedirectionsFormStateExplicit {
-    const [reasonForChanges, setReasonForChanges]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(String(selectedRow?.reasonForChanges ?? ""));
+    // Prefill logic for 'reason for changes', with explicit handling for 'Reversing' status
+    const getInitialReasonForChanges: () => string = (): string => String(selectedRow?.reasonForChanges ?? selectedRow?.reasonForChange ?? "");
+    const [reasonForChanges, setReasonForChanges]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>(
+        getInitialReasonForChanges()
+    );
     const [showSuccessToast, setShowSuccessToast]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [isDirty, setIsDirty]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [dateError, setDateError]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
@@ -38,7 +42,7 @@ export function useSims7RedirectionsForm(selectedRow: any, mode: string): Sims7R
     );
 
     useEffect(() => {
-        setReasonForChanges(selectedRow?.reasonForChanges || "");
+        setReasonForChanges(String(selectedRow?.reasonForChanges ?? selectedRow?.reasonForChange ?? ""));
     }, [selectedRow]);
 
     useEffect(() => {

@@ -28,6 +28,7 @@ import { getBreadcrumbs, getNotificationMsgBannerObject, getDialogTemplateProps 
 import { homeurl } from "../InviteUsers/InviteUsersProps";
 import {
     sims7RedirectionsTableHeaders,
+    Sims7RedirectionsTableHeader,
     Sims7RedirectionsTableRow
 } from "./Sims7RedirectionsPage.data";
 import { mapSims7RedirectionsItem } from "./Sims7RedirectionsMapper";
@@ -71,12 +72,12 @@ export interface LoadSims7RedirectionsDataArgs {
     t: (key: string) => string;
 }
 
-export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
+export const loadSims7RedirectionsData: (args: LoadSims7RedirectionsDataArgs) => Promise<void> = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
     setLoadingTrue(args.setLoading);
     try {
-        const payload = await fetchRedirections(args);
+    const payload: unknown = await fetchRedirections(args);
         handleApiSuccess(payload, args);
-    } catch (error) {
+    } catch (error: unknown) {
         handleApiFailure(args, error);
     } finally {
         setLoadingFalse(args.setLoading);
@@ -85,15 +86,31 @@ export const loadSims7RedirectionsData = async (args: LoadSims7RedirectionsDataA
 
 
 export const Sims7RedirectionsPage: React.FC = () => {
-    // Column mapping: frontend to backend
+    const { t }: UseTranslationResponse<"translation", undefined> =
+        useTranslation();
+    // Column mapping: frontend to backend (keys use translated labels to support all languages)
     const columnMapping: Record<string, string> = {
-        "Category": "ngModule",
-        "Next Gen module": "ngComponent",
-        "SIMS 7 module": "sims7Module",
-        "Modified by": "updatedBy",
-        "Effective date": "effectiveDate",
-        "Status": "redirectStatus"
+        [t("SIMS7Redirects.category")]: "ngModule",
+        [t("SIMS7Redirects.nextGenModule")]: "ngComponent",
+        [t("SIMS7Redirects.sims7Module")]: "sims7Module",
+        [t("SIMS7Redirects.modifiedBy")]: "updatedBy",
+        [t("SIMS7Redirects.effectiveDate")]: "effectiveDate",
+        [t("SIMS7Redirects.status")]: "redirectStatus"
     };
+    const translatedTableHeaders: Sims7RedirectionsTableHeader[] = React.useMemo(() => {
+        const headerKeyMap: Record<string, string> = {
+            "Category": "SIMS7Redirects.category",
+            "Next Gen module": "SIMS7Redirects.nextGenModule",
+            "SIMS 7 module": "SIMS7Redirects.sims7Module",
+            "Modified by": "SIMS7Redirects.modifiedBy",
+            "Effective date": "SIMS7Redirects.effectiveDate",
+            "Status": "SIMS7Redirects.status"
+        };
+        return sims7RedirectionsTableHeaders.map(header => {
+            const translationKey = headerKeyMap[header.text];
+            return translationKey ? { ...header, text: t(translationKey) } : header;
+        });
+    }, [t]);
     const isMobileView: boolean = useMediaQuery(
         "(min-width:320px) and (max-width: 1023.9px)"
     );
@@ -104,7 +121,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const [sortOrder, setSortOrder]: ["asc" | "desc", React.Dispatch<React.SetStateAction<"asc" | "desc">>] = useState<"asc" | "desc">("asc");
     // Sorting handler
     // Sorting handler for ControlledList (reduced complexity)
-    const handleSorting = (_event: React.SyntheticEvent, columnName: string) => {
+    const handleSorting: (_event: React.SyntheticEvent, columnName: string) => void = (_event, columnName) => {
         handleSortingHelper({
             columnMapping,
             sortColumn,
@@ -147,12 +164,12 @@ export const Sims7RedirectionsPage: React.FC = () => {
         React.Dispatch<React.SetStateAction<boolean>>
     ] = useState<boolean>(!isMobileView);
 
-    const handleCloseSidePanel = () => {
+    const handleCloseSidePanel: () => void = () => {
         setIsSidePanelOpen(false);
         setSelectedRow(null);
     };
 
-    const handleViewClick = (rowData: Sims7RedirectionsTableRow) => {
+    const handleViewClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
         handleViewClickHelper({
             setSelectedRow,
             setSidePanelMode,
@@ -160,7 +177,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
         }, rowData);
     };
 
-    const handleEditClick = (rowData: Sims7RedirectionsTableRow) => {
+    const handleEditClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
         handleEditClickHelper({
             setSelectedRow,
             setSidePanelMode,
@@ -168,27 +185,27 @@ export const Sims7RedirectionsPage: React.FC = () => {
         }, rowData);
     };
 
-    const handleOpenDialog = () => {
+    const handleOpenDialog: () => void = () => {
         handleOpenDialogHelper({
             setSelectedItems,
             searchTagList,
             setIsDialogOpen
         });
     };
-    const handleCloseDialog = () => {
+    const handleCloseDialog: () => void = () => {
         handleCloseDialogHelper({
             setIsDialogOpen
         });
     };
 
-    const handleClearAll = () => {
+    const handleClearAll: () => void = () => {
         handleClearAllHelper({
             setIsDialogOpen,
             setSelectedItems
         });
     };
 
-    const handleApplyDialog = () => {
+    const handleApplyDialog: () => void = () => {
         handleApplyDialogHelper({
             setSearchTagList,
             selectedItems,
@@ -203,9 +220,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setIsSidebarOpen(false);
     };
 
-    const { t }: UseTranslationResponse<"translation", undefined> =
-        useTranslation();
-
     useEffect(() => {
         document.body.classList.add("no-scroll");
     }, []);
@@ -214,11 +228,11 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setIsSidebarOpen((prev: boolean): boolean => !prev);
     };
 
-    const sims7RedirectionsBreadcrumbs = getBreadcrumbs(t, homeurl);
+    const sims7RedirectionsBreadcrumbs: any = getBreadcrumbs(t, homeurl);
 
     // Backend pagination: no slicing needed
     const paginatedTableData: Sims7RedirectionsTableRow[] = filteredTableData;
-    const handlePaginationChange = (_event: React.ChangeEvent<unknown>, page: number) => {
+    const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (_event, page) => {
         handlePaginationChangeHelper({ setCurrentPage }, _event, page);
     };
 
@@ -226,9 +240,9 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setCurrentPage(1);
     }, [searchTagList]);
 
-    const NotificationMsgBannerObject = getNotificationMsgBannerObject(t);
+    const NotificationMsgBannerObject: any = getNotificationMsgBannerObject(t);
 
-    const dialogTemplateProps = getDialogTemplateProps(t);
+    const dialogTemplateProps: any = getDialogTemplateProps(t);
     return (
         <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users sims7-redirections">
             <div className="new-side-panel-invite-users">
@@ -268,12 +282,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
                         />
                     </div>
                 </div>
-
-                {!loading && !paginatedTableData.length && (
-                    <div data-testid="empty-state">
-                        {t("SIMS7Redirects.emptyStateMsg")}
-                    </div>
-                )}
 
                 <ControlledList
                     sortingOnClickEvent={handleSorting}
@@ -343,7 +351,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     showConfirmDialog
                     tableBodyData={paginatedTableData}
                     tableFirstColumnWidth="10px"
-                    tableHeadersData={sims7RedirectionsTableHeaders}
+                    tableHeadersData={translatedTableHeaders}
                     tableLastColumnWidth="10px"                    
                     sortByDefault={false}
                     sortAscFirst={false}
@@ -353,8 +361,8 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     isIconRightAligned
                     isShowOverflowMenuCol
                     onClickOverflowItem={(e, rowData) => {
-                        const text: string = (e.target as HTMLElement).innerText.trim();
-                        handleOverflowAction(text, rowData, handleViewClick, handleEditClick);
+                        const action: string = ((e.target as HTMLElement).closest('[data-value]') as HTMLElement | null)?.dataset.value?.trim() ?? (e.target as HTMLElement).innerText.trim();
+                        handleOverflowAction(action, rowData, handleViewClick, handleEditClick);
                     }}
                     // Helper to handle overflow actions (reduces complexity)
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
@@ -429,14 +437,19 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     setSidePanelMode={setSidePanelMode}
                     onSaveSuccess={async () => {
                         setLoading(true);
-                        const payload = await fetchSims7Redirections({
+                        type Sims7RedirectionsApiResponse = {
+                            items?: unknown[];
+                            totalItems?: number;
+                            [key: string]: unknown;
+                        };
+                        const payload: Sims7RedirectionsApiResponse = await fetchSims7Redirections({
                             SortColumnName: sortColumn,
                             SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
                             PageNumber: currentPage,
                             PageSize: pageSize,
                             SearchFilter: searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
                         });
-                        setOriginalTableData((payload.items || []).map(mapSims7RedirectionsItem));
+                        setOriginalTableData((payload.items || []).map((item: unknown, idx: number) => mapSims7RedirectionsItem(item, idx, t)));
                         setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
                         setLoading(false);
                     }}

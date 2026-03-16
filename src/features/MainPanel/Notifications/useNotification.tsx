@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { UseNotificationReturn } from "./useNotification.props";
 import { Suggestion } from "./Notifications.props";
 
@@ -142,6 +143,8 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
         const [isAutoSuggestVisible, setIsAutoSuggestVisible]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
         const [suggestionLoader, setSuggestionLoader]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
         const [searchSuggestions, setSearchSuggestions]: [Suggestion[], Dispatch<SetStateAction<Suggestion[]>>] = useState<Array<Suggestion>>([]);
+
+        const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
 
         const totalNotifications: number = totalTableData;
@@ -327,17 +330,13 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
         const handleSort: (columnName: string) => void = (columnName: string) => {
             let apiColumnName: string = columnName;
             switch (columnName) {
-                case "Status":
-                    apiColumnName =
-                        "Status";
+                case t("NotificationCenter_T.tableHeaderStatus"):
+                    apiColumnName = "Status";
                     break;
-                case "Notification":
-                    apiColumnName = "Notification";
-                    break;
-                case "Priority":
+                case t("NotificationCenter_T.tableHeaderPriority"):
                     apiColumnName = "Priority";
                     break;
-                case "Date received":
+                case t("NotificationCenter_T.tableHeaderDateReceived"):
                     apiColumnName = "ReceivedDate";
                     break;
                 default:

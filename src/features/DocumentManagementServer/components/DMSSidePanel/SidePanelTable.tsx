@@ -52,7 +52,7 @@ export const SidePanelTable: React.FC = () => {
       onClickOverflowItem={() => {}}
       emptyStateMsg="No documents found"
       emptybtnTitle="Add Document"
-      filterDDLlabel="Added By"
+      filterDDLlabel="Added by"
       filterDDLOptions={filterDDLOptions}
       filterDDLselectedItem={{ text: 'All', value: 'All' }}
       filterDDLinputWidth={200}

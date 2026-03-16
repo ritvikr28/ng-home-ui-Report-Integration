@@ -1,5 +1,6 @@
 import { Button, ButtonColor, Dialog, DialogContent, DialogFooter, Notification, NotificationStatus, Loader, LoaderType } from "@essnextgen/ui-kit";
 import { useEffect, useRef, RefObject } from "react";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { DeleteConfirmationModalProps } from "./DeleteConfirmationModal.props";
 import "./style.scss";
 
@@ -14,6 +15,7 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
     }: DeleteConfirmationModalProps) => {
         const keepItButtonRef: RefObject<HTMLButtonElement> = useRef<HTMLButtonElement>(null);
         const okayButtonRef: RefObject<HTMLButtonElement> = useRef<HTMLButtonElement>(null);
+        const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
         useEffect(() => {
             if (isOpen) {
@@ -34,10 +36,10 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                     escapeExits
                     returnFocusOnDeactivate={false}
                     onClose={onClose}
-                    title="No items selected"
+                    title={t("NotificationCenter_T.deleteModalNoItemsTitle")}
                 >
                     <DialogContent>
-                        Please select at least one item to perform the action.
+                        {t("NotificationCenter_T.deleteModalNoItemsMessage")}
                     </DialogContent>
                     <DialogFooter>
                         <div style={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
@@ -47,7 +49,7 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                                 onClick={onClose}
                                 color={ButtonColor.Primary}
                             >
-                                Okay
+                                {t("NotificationCenter_T.deleteModalOkay")}
                             </Button>
                         </div>
                     </DialogFooter>
@@ -63,11 +65,11 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                 escapeExits={!isLoading}
                 returnFocusOnDeactivate={false}
                 onClose={isLoading ? undefined : onClose}
-                title="Delete notification?"
+                title={t("NotificationCenter_T.deleteModalTitle")}
             >
                 {isLoading ? (
                     <DialogContent>
-                        <Loader loaderType={LoaderType.Circular} loaderText="Loading" />
+                        <Loader loaderType={LoaderType.Circular} loaderText={t("NotificationCenter_T.deleteModalLoading")} />
                     </DialogContent>
                 ) : (
                     <>
@@ -75,7 +77,7 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                             <div className="delete-confirmation-content">
                                 <Notification
                                     status={NotificationStatus.WARNING}
-                                    title={`[${selectedCount}] notifications will be gone forever once deleted.`}
+                                    title={t("NotificationCenter_T.deleteModalWarning", { count: selectedCount })}
                                     hideCloseButton
                                 />
                             </div>
@@ -89,7 +91,7 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                                     color={ButtonColor.Secondary}
                                     aria-label="Keep notifications"
                                 >
-                                    Keep it
+                                    {t("NotificationCenter_T.deleteModalKeepIt")}
                                 </Button>
                                 <Button
                                     dataTestId="delete-btn"
@@ -97,7 +99,7 @@ const DeleteConfirmationModalView: ({ isOpen, onClose, onConfirm, selectedCount,
                                     color={ButtonColor.Primary}
                                     aria-label="Delete selected notifications"
                                 >
-                                    Delete
+                                    {t("NotificationCenter_T.deleteModalDelete")}
                                 </Button>
                             </div>
                         </DialogFooter>
