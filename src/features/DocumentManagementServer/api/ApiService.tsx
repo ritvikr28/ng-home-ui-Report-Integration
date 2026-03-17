@@ -242,8 +242,12 @@ export const streamDownloadFile: (fileId: string) => Promise<string> = async (
 ): Promise<string> => {
   const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
   const url = `/validation/api/v2/file/download?request.FileId=${encodeURIComponent(fileId)}`;
-  const response: AxiosResponse<string> = await service.get(url, baseUrl);
-  return response.data;
+  const response: AxiosResponse = await service.get(url, baseUrl);
+  const sasUrl: string = response.data?.payload?.sasUrl;
+  if (!sasUrl) {
+    throw new Error("No SAS URL returned from download API");
+  }
+  return sasUrl;
 };
 
 export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<PrivateDocumentBasicDetails | null> = async ({

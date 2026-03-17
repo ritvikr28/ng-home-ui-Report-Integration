@@ -850,3 +850,88 @@ describe("getTitleConfirmation", () => {
     expect(t).toHaveBeenCalledWith("DocumentManagementServer.prepareAllDocumentsTitle");
   });
 });
+
+describe("fileDownloadById", () => {
+  let originalCreateElement: typeof document.createElement;
+  let originalGetElementById: typeof document.getElementById;
+  let mockLink: any;
+  let parent: any;
+  let mockStreamDownloadFile: jest.SpyInstance;
+
+  beforeEach(() => {
+    const link: any = { click: jest.fn() };
+    let hrefValue = "";
+    let downloadValue = "";
+
+    Object.defineProperty(link, "href", {
+      get: () => hrefValue,
+      set: (val: string) => { hrefValue = val; }
+    });
+    Object.defineProperty(link, "download", {
+      get: () => downloadValue,
+      set: (val: string) => { downloadValue = val; }
+    });
+
+    mockLink = link;
+    parent = { appendChild: jest.fn(), removeChild: jest.fn() };
+
+    originalCreateElement = document.createElement;
+    document.createElement = jest.fn(() => mockLink as HTMLAnchorElement);
+
+    originalGetElementById = document.getElementById;
+    document.getElementById = jest.fn(() => ({ parentElement: parent } as HTMLElement));
+
+    mockStreamDownloadFile = jest.spyOn(ApiService, "streamDownloadFile");
+  });
+
+  afterEach(() => {
+    document.createElement = originalCreateElement;
+    document.getElementById = originalGetElementById;
+    jest.clearAllMocks();
+  });
+
+  it("fetches SAS URL and triggers download via link click", async () => {
+    const sasUrl = "https://blob.core.windows.net/file.pdf?sv=sig";
+    mockStreamDownloadFile.mockResolvedValueOnce(sasUrl);
+
+    await logicModule.fileDownloadById("file-123", "Print51_TestDMS.pdf");
+
+    expect(mockStreamDownloadFile).toHaveBeenCalledWith("file-123");
+    expect(mockLink.href).toBe(sasUrl);
+    expect(mockLink.download).toBe("Print51_TestDMS.pdf");
+    expect(document.getElementById).toHaveBeenCalledWith("file-download-file-123");
+    expect(parent.appendChild).toHaveBeenCalledWith(mockLink);
+    expect(mockLink.click).toHaveBeenCalled();
+    expect(parent.removeChild).toHaveBeenCalledWith(mockLink);
+  });
+
+  it("throws and logs if streamDownloadFile rejects", async () => {
+    mockStreamDownloadFile.mockRejectedValueOnce(new Error("API error"));
+    const errorSpy: jest.SpyInstance = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(logicModule.fileDownloadById("file-err", "file.pdf")).rejects.toThrow("API error");
+    expect(errorSpy).toHaveBeenCalledWith("Error downloading file:", expect.any(Error));
+
+    errorSpy.mockRestore();
+  });
+
+  it("throws and logs if document.createElement throws", async () => {
+    mockStreamDownloadFile.mockResolvedValueOnce("https://blob.example.com/file.pdf");
+    document.createElement = jest.fn(() => { throw new Error("DOM error"); });
+    const errorSpy: jest.SpyInstance = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(logicModule.fileDownloadById("file-dom", "file.pdf")).rejects.toThrow("DOM error");
+    expect(errorSpy).toHaveBeenCalled();
+
+    errorSpy.mockRestore();
+  });
+
+  it("still appends and clicks link even when getElementById returns null (optional chaining)", async () => {
+    mockStreamDownloadFile.mockResolvedValueOnce("https://blob.example.com/file.pdf");
+    document.getElementById = jest.fn(() => null);
+
+    // Should not throw — optional chaining guards the null case
+    await expect(logicModule.fileDownloadById("file-null", "file.pdf")).resolves.toBeUndefined();
+    expect(mockLink.click).toHaveBeenCalled();
+  });
+});
