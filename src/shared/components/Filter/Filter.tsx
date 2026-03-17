@@ -16,7 +16,7 @@ import {
 import { useTranslation, TFunction } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import "./style.scss";
-import { CategoryData } from "../../../features/DocumentManagementServer/responseModel";
+import { CategoryData, PrivacyFilterDetails } from "../../../features/DocumentManagementServer/responseModel";
 import { relatedToEnum } from "../../../../public/Constants";
 import { handleSearchChange } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
@@ -28,6 +28,7 @@ import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
 import { FilterRadioButton } from "./components/FilterRadioButton";
+import { fetchPrivacyFilter } from "../../../features/DocumentManagementServer/api/ApiService";
 
 export interface FilterDialogProps {
   dataTestId?: string;
@@ -100,6 +101,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [filterEntities, setFilterEntities]: [any[], React.Dispatch<React.SetStateAction<any[]>>] = useState<any[]>([]);
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>([]);
 
 
   // eslint-disable-next-line no-unused-expressions
@@ -107,7 +109,12 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   // eslint-disable-next-line no-unused-expressions
   showErrorBanner;
 
-
+  useEffect(() => {
+    if (!isOpen) return;
+    fetchPrivacyFilter()
+      .then((data) => setPrivacyFilter(Array.isArray(data) ? data : []))
+      .catch(() => setPrivacyFilter([]));
+  }, [isOpen]);
 
   const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
 
@@ -395,7 +402,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
           { refId?.length ? (
             <FilterRadioButton
               t={t}
-              referenceExternalIds={refId}
+              privacyFilter={privacyFilter}
             />
           ) : null}
 

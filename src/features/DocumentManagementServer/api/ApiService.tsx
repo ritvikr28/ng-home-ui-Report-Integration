@@ -235,13 +235,10 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   return response.data;
 };
 
-export async function fetchPrivacyFilter(referenceExternalIds: string[]) {
+export async function fetchPrivacyFilter() {
   try {
     const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
     let url = `/validation/api/v1/file/getstatusdetails`;
-    if (referenceExternalIds && referenceExternalIds.length > 0) {
-      url += `?referenceExternalIds=${encodeURIComponent(referenceExternalIds.join(","))}`;
-    }
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response.data;
   } catch (err: any) {

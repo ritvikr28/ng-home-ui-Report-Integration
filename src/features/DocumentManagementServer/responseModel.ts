@@ -376,6 +376,7 @@ export interface HandleTagCloseLogicParams {
 }
 
 export interface PrivacyFilterDetails {
-  documentStatus: string;
+  ngStatus: string;
   documentStatusId: number;
+  status: string;
 }

@@ -1,37 +1,20 @@
 import { ButtonSize, FormLabel, ReactionButton, ReactionButtonGroup } from "@essnextgen/ui-kit";
 import React, { useEffect, useState, useCallback } from "react";
-import { fetchPrivacyFilter } from "../../../../features/DocumentManagementServer/api/ApiService";
 import { PrivacyFilterDetails } from "../../../../features/DocumentManagementServer/responseModel";
 
 interface FilterRadioButtonProps {
   t: (key: string) => string;
-  referenceExternalIds: string[];
+  privacyFilter: PrivacyFilterDetails[];
 }
 
 function formatLabel(label: string) {
+  if (!label) return "";
   return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
 }
 
-export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, referenceExternalIds }) => {
-  const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>([]);
+export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacyFilter }) => {
   const [selectedValue, setSelectedValue] = useState<string>("all");
 
-  const fetchData = useCallback(async () => {
-    if (!referenceExternalIds || referenceExternalIds.length === 0) {
-      setPrivacyFilter([]);
-      return;
-    }
-    try {
-      const data = await fetchPrivacyFilter(referenceExternalIds);
-      setPrivacyFilter(Array.isArray(data) ? data : []);
-    } catch {
-      setPrivacyFilter([]);
-    }
-  }, [referenceExternalIds]);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
 
   const handleSelect = (value: string) => {
     setSelectedValue(value);
@@ -53,16 +36,18 @@ export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, referen
               isSelected={selectedValue === "all"}
               onClick={() => handleSelect("all")}
             />
-            {privacyFilter.map(option => (
-              <ReactionButton
-                key={option.documentStatusId}
-                label={formatLabel(option.documentStatus)}
-                value={option.documentStatusId}
-                isToggle={true}
-                isSelected={selectedValue === String(option.documentStatusId)}
-                onClick={() => handleSelect(String(option.documentStatusId))}
-              />
-            ))}
+              {privacyFilter
+              .filter(option => option.ngStatus?.toUpperCase() !== "PRIVATE")
+              .map(option => (
+                <ReactionButton
+                  key={option.documentStatusId}
+                  label={formatLabel(option.ngStatus) ?? ""}
+                  value={option.documentStatusId}
+                  isToggle={true}
+                  isSelected={selectedValue === String(option.documentStatusId)}
+                  onClick={() => handleSelect(String(option.documentStatusId))}
+                />
+              ))}
           </>
         </ReactionButtonGroup>
       </div>
