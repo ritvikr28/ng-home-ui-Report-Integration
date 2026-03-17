@@ -473,7 +473,7 @@
   "SIMS7Redirects": {
     "title": "SIMS 7 Redirects",
     "subTitle": "Manage modules that open directly into Next Gen from SIMS 7. For Redirects that are active, data will remain synced with SIMS7. Please ensure relevant users have valid NG accounts and appropriate access before activating. More modules will be available for configuration soon.",
-    "secondSubheadingwithLink": "Link for more details placeholder",
+    "secondSubheadingwithLink": "Link for more details",
     "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name",
     "emptyStateMsg": "No SIMS7 Redirect entries found.",
     "emptyRowResponseMessage": "No data to display",
