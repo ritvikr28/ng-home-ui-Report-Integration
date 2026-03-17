@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
 import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions } from "./sidePanelTable.logic";
-import { fileDownload } from "../../logic/DocumentManagementServer.logic";
+import { fileDownloadById } from "../../logic/DocumentManagementServer.logic";
 
 interface SidePanelTableProps {
   tableBodyData: any[];
@@ -24,7 +24,7 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
   const handleDocumentClick: (doc: { name: string; fileId: string; blobName: string, application: string, sectionName: string }) => Promise<void> = async (doc) => {
     try {
       onDownloadError(false);
-      await fileDownload(doc.fileId, doc.name, doc.application, doc.sectionName ?? "", doc.blobName);
+      await fileDownloadById(doc.fileId, doc.name);
     } catch {
       onDownloadError(true);
     }

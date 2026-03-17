@@ -237,6 +237,15 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   return response.data;
 };
 
+export const streamDownloadFile: (fileId: string) => Promise<string> = async (
+  fileId: string
+): Promise<string> => {
+  const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+  const url = `/validation/api/v2/file/download?request.FileId=${encodeURIComponent(fileId)}`;
+  const response: AxiosResponse<string> = await service.get(url, baseUrl);
+  return response.data;
+};
+
 export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<PrivateDocumentBasicDetails | null> = async ({
   pageNumber,
   pageSize,
