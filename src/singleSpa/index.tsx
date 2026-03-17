@@ -31,11 +31,7 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
     boolean,
     React.Dispatch<React.SetStateAction<boolean>>
   ] = React.useState<boolean>(false);
-  useEffect(() => {
-    console.log('UI-Application kit (Home):^1.2.0');
-    console.log('UI-kit(Home):"^0.24.9');
-
-    console.log('App Versions:', appVersions);
+  useEffect(() => {   
     (async () => {
       try {          
         await initializeVariable(); 
@@ -55,9 +51,6 @@ const Root: (props: any) => JSX.Element = ({ baseRouteName }: any) => {
     </Suspense>
   )
 };
-
-console.log('UI-Application kit (Home):^1.2.0');
-console.log('UI-kit(Home):^0.24.9');
 console.log('App Versions:', appVersions);
 
 const leakedGlobalsLifecycles: any = singleSpaLeakedGlobals({

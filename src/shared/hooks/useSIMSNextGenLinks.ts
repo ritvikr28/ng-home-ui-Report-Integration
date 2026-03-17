@@ -1,4 +1,3 @@
-import { hasFeaturePermission } from "@essnextgen/ui-flagr";
 import { getCachedData } from "./cacheHelperFile";
 
 export interface SIMSNextGenLink {
@@ -11,8 +10,7 @@ export interface SIMSNextGenLink {
 export const fetchLinks: () => Promise<boolean> = async () => {
   try {
     const response: any = getCachedData("SIMS_CONNECTED_PERMISSIONS")
-    // await service.get('v1/SIMSConnected/simsnextgenlinks');
-    const apiMenus = response.data || [];
+    const apiMenus = response || [];
     const launcherInApi: SIMSNextGenLink | undefined = apiMenus.find((menu: SIMSNextGenLink) => menu.code === "SIMSConnectedLauncher");
 
     if (!launcherInApi) {
@@ -20,9 +18,7 @@ export const fetchLinks: () => Promise<boolean> = async () => {
     }
 
     const hasValidLink = Boolean(launcherInApi.link && launcherInApi.link.trim());
-    const isExcluded: boolean = hasFeaturePermission("ExcludedSIMSNextGenLinks", "SIMSConnectedLauncher");
-
-    return (hasValidLink && !isExcluded);
+    return (hasValidLink);
   } catch (err) {
     console.error("Error fetching SIMS Next Gen links:", err);
     return false;
