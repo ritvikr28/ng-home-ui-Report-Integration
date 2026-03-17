@@ -9,12 +9,12 @@ import { pageSizeNumber } from "../../../../public/Constants"
 import { viewDownload, clearAllFiles, deleteFiles, validation } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { handlePageChange, handleEditSelectedOverFlowMenu, handleTagCloseLogic, handleBulkDeleteLogic, handleApply, handleClearAllConfirm, closeSidePanel, handleSuggestionClick, getNotificationMsgBannerObject, handleSearchChange } from "../logic/DocumentManagementServer.handler";
-import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, mapTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
+import { getCategoryArr, getDateTag, getVisibleTagsWithSummary, getAllRegistrationIds, getResultNotFoundMsg, filterNonEmptySuggestions, getCompletedPartitionKeys, getDeleteDialogMessages, breadcrumbActionsList, mapTableData, mapPrivateTableData, hasDMSDeletePermission, refreshAfterClose } from "../logic/DocumentManagementServer.utils";
 import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePanelOnViewDownload, usePrivateDocumentFetchingEffect, useScrollToTopOnPageChange, useSearchTermEffect, useSetFailedFileNameOnCancelled, useSetTotalPageOnDocData, useSidePanelViewDownloadEffect, useSummaryTagMutationObserver, useTotalSelectedCountEffect } from "../hooks/useDocumentManagementEffects";
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
-import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
+import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting, handleSidePanelSorting } from "../logic/DocumentManagementServer.dialog.config";
 import { DeleteSuccessToast, MainContent, SideNavigation } from "./DMSLayout";
 
 
@@ -85,6 +85,11 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const [selectedRelatedTo, setSelectedRelatedTo]: [ISelectedItem | undefined, React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>] = useState<ISelectedItem | undefined>(undefined);
   const [tagListArray, setTagListArray]: [SelectedItem[], React.Dispatch<React.SetStateAction<SelectedItem[]>>] = useState<SelectedItem[]>([]);
   const [isViewDownloadError, setIsViewDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [privateRawData, setPrivateRawData]: [any, React.Dispatch<React.SetStateAction<any>>] = useState<any>(null);
+  const [isPrivateDocError, setIsPrivateDocError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [sidePanelSortBy, setSidePanelSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("DateAdded");
+  const [sidePanelSortDirection, setSidePanelSortDirection]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Desc");
+  // const [sidePanelTableKey, setSidePanelTableKey] = useState<number>(0);
   // eslint-disable-next-line no-unused-expressions
   prevSelectedDocs
 
@@ -113,6 +118,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   const allRegistrationIds: number[] = getAllRegistrationIds(selectedFormats);
 
  const tableData: any[] = mapTableData(docData, showSearchError);
+  const privateDocData: any[] = mapPrivateTableData(privateRawData);
   
 
   const onPageChange: (event: unknown, page: number) => void = (event: unknown, page: number): void =>
@@ -316,11 +322,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
   useSetFailedFileNameOnCancelled(viewData, setFailedFileName);
 
-
   useEffect(() => {
     gtmAnalytics.pushPageViewEvent("Admin Console");
   }, []);
-
 
   const handleCloseSidePanel: () => void = () => {
     closeSidePanel(setIsSidePanelOpen, downloadPollingIntervalRef);
@@ -357,11 +361,16 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       pageNumber: currentPage,
       pageSize: pageSizeNumber,
       userId: "",
-      sortBy,
-      sortDirection,
-    }
+      sortBy: sidePanelSortBy,
+      sortDirection: sidePanelSortDirection
+    },
+    setPrivateRawData,
+    setIsPrivateDocError
   )
 
+  const handleSidePanelSortChange: (columnName: string) => void = (columnName: string): void => {
+    handleSidePanelSorting(columnName, sidePanelSortBy, setSidePanelSortBy, sidePanelSortDirection, setSidePanelSortDirection, t);
+  };
   return (
     <>
       <DeleteSuccessToast
@@ -369,7 +378,6 @@ const DocumentManagementServerView: () => JSX.Element = () => {
         availableFileCount={availableFileCount}
         t={t}
       />
-
       <Grid className="dms-layout">
         <DmsDialogs
           t={t}
@@ -572,6 +580,10 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   setFailedFileName={setFailedFileName}
                   gtmAnalytics={gtmAnalytics}
                   sidePanelOpenReason={sidePanelOpenReason}
+                  privateDocData={privateDocData}
+                  isPrivateDocError={isPrivateDocError}
+                  onSidePanelSortChange={handleSidePanelSortChange}
+                  // sidePanelTableKey={sidePanelTableKey}
                 />
               )
             }}
@@ -580,6 +592,5 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       </Grid>
     </>
   );
-
 }
 export default DocumentManagementServerView

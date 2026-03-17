@@ -1,11 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
-import { tableBodyData, useSidePanelTableSelection, tableHeadersData, filterDDLOptions } from "./sidePanelTable.logic";
+import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions } from "./sidePanelTable.logic";
+import { fileDownload } from "../../logic/DocumentManagementServer.logic";
 
-export const SidePanelTable: React.FC = () => {
+interface SidePanelTableProps {
+  tableBodyData: any[];
+  onSortChange: (columnName: string) => void;
+  onDownloadError: (hasError: boolean) => void;
+  // tableKey: number;
+}
+
+export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError }) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
-  const itemsPerPage = 5;
+  const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
+  const itemsPerPage = 40;
+
+  useEffect(() => {
+    setIsInitialLoad(false);
+  }, [tableBodyData]);
+  
   const totalPages = Math.ceil(tableBodyData.length / itemsPerPage);
+
+  const handleDocumentClick: (doc: { name: string; fileId: string; blobName: string, application: string, sectionName: string }) => Promise<void> = async (doc) => {
+    try {
+      onDownloadError(false);
+      await fileDownload(doc.fileId, doc.name, doc.application, doc.sectionName ?? "", doc.blobName);
+    } catch {
+      onDownloadError(true);
+    }
+  };
+
+  
+
+  const tableHeadersData: any = createTableHeadersData(handleDocumentClick);
 
   const paginatedData: any[] = tableBodyData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -24,13 +51,21 @@ export const SidePanelTable: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleSorting: (event: React.ChangeEvent<unknown>, columnName: string) => void = (_e: React.ChangeEvent<unknown>, columnName: string): void => {
+    setIsInitialLoad(true);
+    onSortChange(columnName);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="manage-documents-side-panel-table">
     <ControlledList
+      // key={tableKey}
       id="sidepanel-table"
       dataTestId="sidepanel-table"
       tableHeadersData={tableHeadersData}
       tableBodyData={paginatedData}
+      // tableBodyData={tableBodyData}
       totalRecords={tableBodyData.length}
       isPagination={true}
       paginationCount={totalPages}
@@ -47,7 +82,10 @@ export const SidePanelTable: React.FC = () => {
       onEditSelectedOverFlowMenu={(event, option) => {
         alert(`Selected: ${option.value}`);
       }}
-      isSorting={true}
+      isSorting={false}
+      sortAscFirst={!isInitialLoad}
+      sortByDefault={false}
+      sortingOnClickEvent={handleSorting}
       isIconRightAligned={true}
       onClickOverflowItem={() => {}}
       emptyStateMsg="No documents found"

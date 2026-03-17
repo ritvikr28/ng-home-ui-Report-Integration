@@ -30,6 +30,9 @@ interface DmsSidePanelProps {
   setFailedFileName: (v: string[]) => void;
   sidePanelOpenReason: SidePanelReason | null;
   gtmAnalytics: any;
+  privateDocData: any[];
+  isPrivateDocError: boolean;
+  onSidePanelSortChange: (columnName: string) => void;
 }
 
 
@@ -55,10 +58,13 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   setShowToastNotification,
   setFailedFileName,
   sidePanelOpenReason,
-  gtmAnalytics
+  gtmAnalytics,
+  privateDocData,
+  isPrivateDocError,
+  onSidePanelSortChange
 }) => {
   if (sidePanelOpenReason === "manage") {
-    return (<ManageDocumentsSidePanel t={t} />);
+    return (<ManageDocumentsSidePanel t={t} privateDocData={privateDocData} isPrivateDocError={isPrivateDocError} onSortChange={onSidePanelSortChange} />);
   }
   // Default to view
   return (

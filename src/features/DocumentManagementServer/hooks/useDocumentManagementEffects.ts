@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
-import { DocumentBasicDetails, DocumentData, PrivateDocumentManagementServerProps } from "../responseModel";
+import { DocumentData, PrivateDocumentManagementServerProps } from "../responseModel";
 import { fetchPrivateDocumentDetails } from "../api/ApiService";
 
 
@@ -355,12 +355,25 @@ export function useApplySummaryTagClassOnDocDataChange(
 
 export function usePrivateDocumentFetchingEffect(
   props: PrivateDocumentManagementServerProps,
-  ): void {
+  setPrivateRawData: (data: any) => void,
+  setIsPrivateDocError: (error: boolean) => void
+): void {
   useEffect(() => {
-    async function fetchData() {
-     await fetchPrivateDocumentDetails(props);
+    async function fetchData(): Promise<void> {
+      try {
+        const response: any = await fetchPrivateDocumentDetails(props);
+        const isError = !response || (response as any)?.status === 500 || !(response as any)?.data;
+        if (isError) {
+          setIsPrivateDocError(true);
+        } else {
+          setPrivateRawData(response);
+          setIsPrivateDocError(false);
+        }
+      } catch {
+        setIsPrivateDocError(true);
+      }
     }
     fetchData();
-  }, []);
+  }, [props.sortBy, props.sortDirection]);
 }
   

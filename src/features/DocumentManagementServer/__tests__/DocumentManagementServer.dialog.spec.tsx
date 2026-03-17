@@ -145,6 +145,17 @@ describe("Utility functions", () => {
     it("returns empty string if no conditions met", () => {
       expect(getRestrictedDeleteNotificationTitle(0, 0, 0, 0, 10, false, t)).toBe("");
     });
+    it("covers isHeaderBoxChecked=true branch — totalSelectedCount !== sum triggers deleted notification", () => {
+      // restrictedFileCount=0, alreadyDeletedFileCount=0 (first if skipped)
+      // totalSelected(5) !== 0+0+3=3 → TRUE, isHeaderBoxChecked=true → TRUE
+      // → enters getRestrictedDeleteNotificationForDeleted
+      expect(getRestrictedDeleteNotificationTitle(0, 0, 3, 5, 10, true, t)).not.toBe("");
+    });
+    it("returns empty string when totalSelectedCount === sum and isHeaderBoxChecked=true — covers && false branch", () => {
+      // restrictedFileCount=0, alreadyDeletedFileCount=0
+      // totalSelected(3) !== 0+0+3=3 → FALSE → whole && is FALSE → returns ""
+      expect(getRestrictedDeleteNotificationTitle(0, 0, 3, 3, 10, true, t)).toBe("");
+    });
   });
 
   describe("getRestrictedDeleteNotificationForRestricted", () => {
@@ -169,6 +180,23 @@ describe("Utility functions", () => {
     it("returns documentsAlreadyDeletedMsg otherwise", () => {
       expect(getRestrictedDeleteNotificationForDeleted(2, 0, 0, 3, 2, false, t)).toContain("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
     });
+    it("covers headerbox subtraction branch — totalSelectedCount > sum with isHeaderBoxChecked=true", () => {
+      // totalSelectedCount(10) > alreadyDeleted(2)+restricted(3)+available(4)=9 && isHeaderBoxChecked=true
+      // → deletedCount = 10 - 9 = 1 → singleDocumentAlreadyDeletedMsg
+      expect(getRestrictedDeleteNotificationForDeleted(2, 3, 4, 10, 10, true, t)).toContain("singleDocumentAlreadyDeletedMsg");
+    });
+    it("covers documentsAlreadyDeletedMsg branch — deletedCount=0 when alreadyDeletedFileCount=0", () => {
+      // alreadyDeletedFileCount=0, isHeaderBoxChecked=false → deletedCount=0
+      // none of the earlier conditions fire → falls to documentsAlreadyDeletedMsg
+      expect(getRestrictedDeleteNotificationForDeleted(0, 0, 2, 3, 5, false, t)).toContain("documentsAlreadyDeletedMsg");
+    });
+    it("covers t('DocumentManagementServer.All') branch inside documentsAlreadyDeletedMsg — alreadyDeletedFileCount === totalRecords", () => {
+      // alreadyDeletedFileCount=0, totalRecords=0 → 0===0 → all = t("All")
+      // deletedCount=0 → no earlier guards fire → reaches documentsAlreadyDeletedMsg
+      const result: string = getRestrictedDeleteNotificationForDeleted(0, 0, 0, 0, 0, false, t);
+      expect(result).toContain("documentsAlreadyDeletedMsg");
+      expect(result).toContain("DocumentManagementServer.All");
+    });
   });
 
   describe("getRestrictedDeleteMessage", () => {
@@ -189,6 +217,31 @@ describe("Utility functions", () => {
     });
     it("returns 'all' param when all deleted", () => {
       expect(getRestrictedPrepareNotificationTitle(2, 0, 0, 2, false, t)).toContain("all");
+    });
+    it("covers subtraction branch — isHeaderBoxChecked=true, totalSelectedCount > sum → deletedCount=1 → single msg", () => {
+      // totalSelected(5) > alreadyDeleted(0)+restricted(0)+available(4)=4 && isHeaderBoxChecked=true
+      // → deletedCount = 5 - 4 = 1 → documentCannotBeDownloadedMsg
+      expect(getRestrictedPrepareNotificationTitle(0, 0, 4, 5, true, t)).toContain("documentCannotBeDownloadedMsg");
+    });
+    it("covers subtraction branch — isHeaderBoxChecked=true, totalSelectedCount > sum → deletedCount>1 → plural msg", () => {
+      // totalSelected(10) > alreadyDeleted(2)+restricted(1)+available(1)=4 && isHeaderBoxChecked=true
+      // → deletedCount = 10 - 4 = 6 → documentsCannotBeDownloadedMsg
+      expect(getRestrictedPrepareNotificationTitle(2, 1, 1, 10, true, t)).toContain("documentsCannotBeDownloadedMsg");
+    });
+    it("covers (alreadyDeletedFileCount===0 && restrictedFileCount===0 && availableFileCount===0) branch — all=All", () => {
+      // alreadyDeleted=0, restricted=0, available=0, totalSelected=3, isHeaderBoxChecked=false
+      // → deletedCount = 0 (not 1) → documentsCannotBeDownloadedMsg
+      // → alreadyDeleted(0) !== totalSelected(3) → first || false
+      // → (0===0 && 0===0 && 0===0) → true → all = t("DocumentManagementServer.All") ✓
+      const result: string = getRestrictedPrepareNotificationTitle(0, 0, 0, 3, false, t);
+      expect(result).toContain("documentsCannotBeDownloadedMsg");
+      expect(result).toContain("DocumentManagementServer.All");
+    });
+    it("covers isHeaderBoxChecked=false branch when totalSelectedCount > sum — deletedCount falls back to alreadyDeletedFileCount", () => {
+      // totalSelected(5) > alreadyDeleted(1)+restricted(0)+available(0)=1 → TRUE
+      // isHeaderBoxChecked=false → whole && condition FALSE → deletedCount = alreadyDeletedFileCount = 1
+      // → deletedCount===1 → documentCannotBeDownloadedMsg
+      expect(getRestrictedPrepareNotificationTitle(1, 0, 0, 5, false, t)).toContain("documentCannotBeDownloadedMsg");
     });
   });
 });

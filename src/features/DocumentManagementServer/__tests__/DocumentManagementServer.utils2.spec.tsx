@@ -293,6 +293,32 @@ describe("handleSorting", () => {
     expect(setSortDirection).toHaveBeenCalledWith("Asc");
   });
 
+  it("handles privacyColumn — covers PrivacyStatus branch", () => {
+    handleSorting(
+      t("DocumentManagementServer.privacyColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("PrivacyStatus");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction if sortBy matches apiColumnName for privacyColumn", () => {
+    handleSorting(
+      t("DocumentManagementServer.privacyColumn"),
+      "PrivacyStatus",
+      setSortBy,
+      "Desc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("PrivacyStatus");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
   it("toggles direction if sortBy matches apiColumnName", () => {
     handleSorting(
       "DateAdded",

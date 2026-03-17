@@ -546,6 +546,26 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
   }));
 };
 
+export const mapPrivateTableData: (response: any) => any[] = (response: any): any[] => {
+  if (!response?.data?.length) {
+    return [];
+  }
+
+  return response.data.map((doc: any) => ({
+    id: doc?.fileId,
+    document: [{
+      name: doc.documentInfo?.fileName || doc.document,
+      fileId: doc?.fileId,
+      application: doc?.application,
+      sectionName: doc?.section,
+      blobName: doc?.blobName
+    }],
+    relatedTo: mapRelatedArr(doc) || "",
+    addedBy: doc?.addedBy,
+    dateAdded: doc?.dateAdded ? dayjs(doc.dateAdded).format("DD MMM YYYY") : ""
+  }));
+};
+
 export function getSecondaryButtonTitle(
   sidePanelOpenReason: SidePanelReason | null,
   hasCompletedFiles: boolean,

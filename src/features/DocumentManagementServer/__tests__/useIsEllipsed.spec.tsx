@@ -54,6 +54,73 @@ describe("EllipsisWithTooltip Component", () => {
     expect(screen.getByTestId("tooltip")).toBeInTheDocument();
   });
 
+  it("covers text?.type null branch — text is null with colName=relatedTo", () => {
+    mockEllipsed(false);
+    render(
+      <EllipsisWithTooltip
+        text={null}
+        className=""
+        isTooltipNeeded={false}
+        totalItems={[]}
+        colName="relatedTo"
+      />
+    );
+    // text?.type → undefined → no link rendered, no crash
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("covers text?.type undefined branch — text is undefined with colName=relatedTo", () => {
+    mockEllipsed(false);
+    render(
+      <EllipsisWithTooltip
+        text={undefined}
+        className=""
+        isTooltipNeeded={false}
+        totalItems={[]}
+        colName="relatedTo"
+      />
+    );
+    expect(screen.queryByRole("link")).not.toBeInTheDocument();
+  });
+
+  it("covers text?.isLeaver, text?.year, text?.reg null branches — pupil with no leaver/year/reg", () => {
+    mockEllipsed(false);
+    const text: any = { name: "Sam Smith", referenceExternalId: "456", type: "pupil" };
+    // isLeaver, year, reg are all undefined → text?.isLeaver, text?.year, text?.reg all short-circuit
+    render(
+      <EllipsisWithTooltip
+        text={text}
+        className=""
+        isTooltipNeeded={false}
+        totalItems={[text]}
+        colName="relatedTo"
+      />
+    );
+    expect(screen.getByRole("link")).toBeInTheDocument();
+    // yearRegTag is "" → Tag not rendered
+    expect(screen.queryByTestId("name")).not.toBeInTheDocument();
+  });
+
+
+
+
+
+  it("covers text?.referenceExternalId null branch — referenceExternalId is undefined → href='/'", () => {
+    mockEllipsed(false);
+    const text: any = { name: "No Id", type: "staff" }; // referenceExternalId missing
+    render(
+      <EllipsisWithTooltip
+        text={text}
+        className=""
+        isTooltipNeeded={false}
+        totalItems={[text]}
+        colName="relatedTo"
+      />
+    );
+    const link: HTMLElement = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", "/");
+  });
+
 //   it("renders staff link /", () => {
 //     mockEllipsed(true);
 //     const text = { name: "John Doe", referenceExternalId: "", type: "staff", staffCode: "A1" };

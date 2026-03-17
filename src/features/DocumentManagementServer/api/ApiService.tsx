@@ -8,6 +8,7 @@ import {
   DocumentCategoryResponse,
   DocumentManagementServerProps,
   DocumentPrepareDownload,
+  PrivateDocumentBasicDetails,
   PrivateDocumentManagementServerProps
 } from "../responseModel";
 import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../../ApiConfig.json";
@@ -236,13 +237,13 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   return response.data;
 };
 
-export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<DocumentBasicDetails | null> = async ({
+export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<PrivateDocumentBasicDetails | null> = async ({
   pageNumber,
   pageSize,
   userId,
   sortBy = "DateAdded",
   sortDirection = "Desc"
-}: PrivateDocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
+}: PrivateDocumentManagementServerProps): Promise<PrivateDocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getprivatedocumentdetails`;
     const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
@@ -257,7 +258,7 @@ export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServe
       }
     };
 
-    const responseData: AxiosResponse<DocumentBasicDetails> =
+    const responseData: AxiosResponse<PrivateDocumentBasicDetails> =
       await service.post(url, payload, { baseURL: baseUrl });
     if (responseData?.status === 200) {
       return responseData?.data;

@@ -31,6 +31,44 @@ export interface DocumentBasicDetails {
   statusCode: number;
 }
 
+export interface PrivateRelatedTo {
+  learnerExternalId?: string;
+  preferredForename?: string;
+  preferredSurname?: string;
+  legalName?: string;
+  currentYearGroup?: string;
+  currentPrimaryClass?: string;
+  admissionNumber?: string;
+  onRollState?: string;
+  imagePath?: string;
+}
+
+export interface SinglePrivateDocumentDetail {
+  organizationId: string;
+  userId: string;
+  registrationId: number;
+  fileId: string;
+  documentInfo: {
+    fileName: string;
+    isSelectedForPrepareDownload: boolean;  
+  };
+  document: string;
+  relatedTo: PrivateRelatedTo[] | string[] | null;
+  category: string;
+  addedBy: string;
+  dateAdded: string;
+  blobName: string;
+  externalId: string;
+}
+
+export interface PrivateDocumentBasicDetails {
+  pageNumber: number;
+  pageSize: number;
+  totalRecords: number;
+  statusCode: number;
+  message: string;
+  data: SinglePrivateDocumentDetail[];
+}
 
 // props
 export interface DocumentManagementServerProps {
