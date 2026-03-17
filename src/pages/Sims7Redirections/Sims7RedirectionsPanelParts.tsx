@@ -93,7 +93,7 @@ export function Sims7RedirectionsPanelContent({
           {showFailureBanner && (
             <Notification
               status={NotificationStatus.WARNING}
-              title="Unable to save changes"
+              title={t("SIMS7Redirects.informationUnavailable")}
               message="A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time."
               onClickClose={onCancelDialogClose}
             />
@@ -103,8 +103,8 @@ export function Sims7RedirectionsPanelContent({
       {mode === 'view' && showFailureBanner && (
         <Notification
           status={NotificationStatus.WARNING}
-          title="Information unavailable"
-          message="A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team. "
+          title={t("SIMS7Redirects.apiFailureMessage")}
+          message={t("SIMS7Redirects.apiFailureDescription")}
           hideCloseButton={true}
         />
       )}

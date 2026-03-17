@@ -1,5 +1,34 @@
+import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import DeleteConfirmationModalView from "./DeleteConfirmationModal.view";
+
+const mockButton = jest.fn(({ children, onClick, dataTestId, color, ...rest }: any) => (
+    <button type="button" data-testid={dataTestId} onClick={onClick} {...rest}>
+        {children}
+    </button>
+));
+const mockDialog = jest.fn(({ children, title, dataTestId, isOpen }: any) =>
+    isOpen ? (
+        <div data-testid={dataTestId}>
+            {title && <div>{title}</div>}
+            {children}
+        </div>
+    ) : null
+);
+const mockLoader = jest.fn(({ loaderText }: any) => <div>{loaderText}</div>);
+const mockNotification = jest.fn(({ title }: any) => <div>{title}</div>);
+
+jest.mock("@essnextgen/ui-kit", () => ({
+    Dialog: (props: any) => mockDialog(props),
+    DialogContent: ({ children }: any) => <div>{children}</div>,
+    DialogFooter: ({ children }: any) => <div>{children}</div>,
+    Button: (props: any) => mockButton(props),
+    Notification: (props: any) => mockNotification(props),
+    Loader: (props: any) => mockLoader(props),
+    ButtonColor: { Primary: "primary", Secondary: "secondary" },
+    LoaderType: { Circular: "circular" },
+    NotificationStatus: { WARNING: "warning" }
+}));
 
 describe("DeleteConfirmationModalView", () => {
   const defaultProps = {
