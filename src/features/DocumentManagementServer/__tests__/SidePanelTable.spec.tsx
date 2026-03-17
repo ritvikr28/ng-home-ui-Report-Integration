@@ -5,7 +5,7 @@ import * as LogicModule from "../logic/DocumentManagementServer.logic";
 
 jest.mock("../logic/DocumentManagementServer.logic", () => ({
   ...jest.requireActual("../logic/DocumentManagementServer.logic"),
-  fileDownload: jest.fn(() => Promise.resolve())
+  fileDownloadById: jest.fn(() => Promise.resolve())
 }));
 
 jest.mock("../components/EllipsisWithTooltip", () => ({
@@ -49,7 +49,7 @@ const defaultProps = {
 describe("SidePanelTable - handleDocumentClick", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (LogicModule.fileDownload as jest.Mock).mockResolvedValue(undefined);
+    (LogicModule.fileDownloadById as jest.Mock).mockResolvedValue(undefined);
   });
 
   it("calls onDownloadError(false) before initiating the download", async () => {
@@ -60,31 +60,28 @@ describe("SidePanelTable - handleDocumentClick", () => {
     });
   });
 
-  it("calls fileDownload with the correct arguments on document click", async () => {
+  it("calls fileDownloadById with the correct arguments on document click", async () => {
     render(<SidePanelTable {...defaultProps} />);
     fireEvent.click(screen.getByText("Test Document"));
     await waitFor(() => {
-      expect(LogicModule.fileDownload).toHaveBeenCalledWith(
+      expect(LogicModule.fileDownloadById).toHaveBeenCalledWith(
         "file-123",
-        "Test Document",
-        "TestApp",
-        "Section1",
-        "test-blob.pdf"
+        "Test Document"
       );
     });
   });
 
-  it("does not call onDownloadError(true) when fileDownload succeeds", async () => {
+  it("does not call onDownloadError(true) when fileDownloadById succeeds", async () => {
     render(<SidePanelTable {...defaultProps} />);
     fireEvent.click(screen.getByText("Test Document"));
     await waitFor(() => {
-      expect(LogicModule.fileDownload).toHaveBeenCalled();
+      expect(LogicModule.fileDownloadById).toHaveBeenCalled();
     });
     expect(defaultProps.onDownloadError).not.toHaveBeenCalledWith(true);
   });
 
-  it("calls onDownloadError(true) when fileDownload throws an error", async () => {
-    (LogicModule.fileDownload as jest.Mock).mockRejectedValue(new Error("Download failed"));
+  it("calls onDownloadError(true) when fileDownloadById throws an error", async () => {
+    (LogicModule.fileDownloadById as jest.Mock).mockRejectedValue(new Error("Download failed"));
     render(<SidePanelTable {...defaultProps} />);
     fireEvent.click(screen.getByText("Test Document"));
     await waitFor(() => {
@@ -94,7 +91,7 @@ describe("SidePanelTable - handleDocumentClick", () => {
   });
 
   it("calls onDownloadError(false) before onDownloadError(true) on failure", async () => {
-    (LogicModule.fileDownload as jest.Mock).mockRejectedValue(new Error("Network error"));
+    (LogicModule.fileDownloadById as jest.Mock).mockRejectedValue(new Error("Network error"));
     render(<SidePanelTable {...defaultProps} />);
     fireEvent.click(screen.getByText("Test Document"));
     await waitFor(() => {
@@ -104,17 +101,14 @@ describe("SidePanelTable - handleDocumentClick", () => {
     expect(defaultProps.onDownloadError).toHaveBeenNthCalledWith(2, true);
   });
 
-  it("uses empty string for sectionName when it is undefined", async () => {
+  it("calls fileDownloadById with only fileId and fileName", async () => {
     const docWithoutSection = { ...mockDoc, sectionName: undefined as any };
     render(<SidePanelTable {...defaultProps} tableBodyData={buildTableData(docWithoutSection)} />);
     fireEvent.click(screen.getByText("Test Document"));
     await waitFor(() => {
-      expect(LogicModule.fileDownload).toHaveBeenCalledWith(
+      expect(LogicModule.fileDownloadById).toHaveBeenCalledWith(
         "file-123",
-        "Test Document",
-        "TestApp",
-        "",
-        "test-blob.pdf"
+        "Test Document"
       );
     });
   });

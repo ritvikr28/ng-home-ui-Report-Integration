@@ -1,4 +1,4 @@
-import { getDialogConfig, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
+import { getDialogConfig, handleSorting, handleSidePanelSorting } from "../logic/DocumentManagementServer.dialog.config";
 import * as Helpers from "../logic/DocumentManagementServer.utils";
 
 jest.mock("../../../shared/utils/analytics", () => ({
@@ -334,6 +334,119 @@ describe("handleSorting", () => {
   it("returns early for unknown column", () => {
     handleSorting(
       "unknown",
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).not.toHaveBeenCalled();
+    expect(setSortDirection).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSidePanelSorting", () => {
+  const setSortBy: jest.Mock = jest.fn();
+  const setSortDirection: jest.Mock = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("handles documentColumn", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.documentColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("Document");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("handles relatedColumn", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.relatedColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("RelatedTo");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("handles addedByColumn", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.addedByColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("AddedBy");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("handles dateAddedColumn", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.dateAddedColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DateAdded");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction Desc→Asc when sortBy matches apiColumnName", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.dateAddedColumn"),
+      "DateAdded",
+      setSortBy,
+      "Desc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DateAdded");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction Asc→Desc when sortBy matches apiColumnName", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.documentColumn"),
+      "Document",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("Document");
+    expect(setSortDirection).toHaveBeenCalledWith("Desc");
+  });
+
+  it("defaults direction to Asc when sortBy does not match apiColumnName", () => {
+    handleSidePanelSorting(
+      t("DocumentManagementServer.relatedColumn"),
+      "DateAdded",
+      setSortBy,
+      "Desc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("RelatedTo");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("returns early for unknown column — does not call setSortBy or setSortDirection", () => {
+    handleSidePanelSorting(
+      "unknownColumn",
       "",
       setSortBy,
       "Asc",

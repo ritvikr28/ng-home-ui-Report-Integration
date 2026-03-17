@@ -7,7 +7,6 @@ interface SidePanelTableProps {
   tableBodyData: any[];
   onSortChange: (columnName: string) => void;
   onDownloadError: (hasError: boolean) => void;
-  // tableKey: number;
 }
 
 export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError }) => {
@@ -60,12 +59,10 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
   return (
     <div className="manage-documents-side-panel-table">
     <ControlledList
-      // key={tableKey}
       id="sidepanel-table"
       dataTestId="sidepanel-table"
       tableHeadersData={tableHeadersData}
       tableBodyData={paginatedData}
-      // tableBodyData={tableBodyData}
       totalRecords={tableBodyData.length}
       isPagination={true}
       paginationCount={totalPages}

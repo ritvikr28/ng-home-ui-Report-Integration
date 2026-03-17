@@ -86,34 +86,6 @@ export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => v
 ];
 
 
-// export const fetchTableBodyData = async (pageNumber: number, pageSize: number, userId: string): Promise<any[]> => {
-//   const response = await fetchPrivateDocumentDetails({ pageNumber, pageSize, userId });
-//   return (response?.data ?? []).map((item: SinglePrivateDocumentDetail) => ({
-//     id: item.fileId,
-//     document: item.documentInfo?.fileName || item.document,
-//     relatedTo: (item.relatedTo ?? []).map((entry: any) => ({
-//       name: typeof entry === "string"
-//         ? entry
-//         : [entry?.preferredForename, entry?.preferredSurname].filter(Boolean).join(" ") || entry?.legalName || ""
-//     })),
-//     addedBy: item.addedBy,
-//     dateAdded: item.dateAdded,
-//   }));
-// };
-
-// export const tableBodyData: any[] = [
-//   { id: "1", document: "PDFSample", relatedTo: [{ name: "Ramesh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "2", document: "Long name of document with multiple words", relatedTo: [{ name: "Suresh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "3", document: "Welsh Translation", relatedTo: [{ name: "Ganga" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "4", document: "Marathi Kadambari", relatedTo: [{ name: "Yash" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "5", document: "Hindi Ka paper", relatedTo: [{ name: "Saroj" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "6", document: "Text Document", relatedTo: [{ name: "Virat" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "7", document: "Detention Letter", relatedTo: [{ name: "James" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "8", document: "Name what you want", relatedTo: [{ name: "Thala" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "9", document: "Dhurandhar", relatedTo: [{ name: "Doval" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-//   { id: "10", document: "Tenth Document", relatedTo: [{ name: "Tenth description" }], addedBy: "Toony", dateAdded: "23 Jan 2025" }
-// ];
-
 export const filterDDLOptions: any[] = [
   { id: "1", text: "All", value: "All" },
   { id: "2", text: "James", value: "Category A" },
