@@ -481,7 +481,9 @@
     "dateRequired": "Mae arnom angen y dyddiad",
     "invaliddate": "Dyddiad annilys",
     "informationUnavailable": "Methu cadw newidiadau",
-     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time."
+     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time.",
+    "searchPart1": "Nid oedd eich chwiliad - ",
+    "searchPart2": " - yn cyfateb i unrhyw ganlyniadau. Gwnewch yn siŵr bod yr holl eiriau wedi’u sillafu’n gywi"
   },
   "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Croeso i SIMS",
