@@ -115,10 +115,6 @@ export const getMenus: (
     MatchPermissions.all
   );
 
-  console.log('hasAdminConsoleAccessPermission', hasAdminConsoleAccessPermission);
-
-  console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
-
 const AdminConsoleandSystemStatusRoutes: ({
   hasAdminConsoleFlagrPermission,
   hasAdminConsolePermissions,
@@ -380,7 +376,7 @@ const sendNotificationFlagr: boolean = hasFeaturePermission(
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-console.log('sendNotificationFlagr', sendNotificationFlagr);
+
   return (
     
     /* eslint-disable react/prop-types */

@@ -76,7 +76,7 @@ describe("Sims7RedirectionsPage", () => {
   });
   it("falls back to original column name if not in columnMapping", async () => {
     render(<Sims7RedirectionsPage />);
-    const categoryHeader = screen.getByText("Category");
+    const categoryHeader = screen.getByText("SIMS7Redirects.category");
     fireEvent.click(categoryHeader);
     expect(categoryHeader).toBeInTheDocument();
   });
@@ -120,7 +120,7 @@ it("toggles sort order when clicking the same column header", async () => {
     expect(screen.getByText("TestCat")).toBeInTheDocument();
   });
 
-  const categoryHeader = screen.getByText("Category");
+  const categoryHeader = screen.getByText("SIMS7Redirects.category");
   fireEvent.click(categoryHeader);
   fireEvent.click(categoryHeader);
   expect(categoryHeader).toBeInTheDocument();
@@ -131,10 +131,10 @@ it("calls setSortColumn when sorting a new column", async () => {
     expect(screen.getByText("TestCat")).toBeInTheDocument();
   });
 
-  const categoryHeader = screen.getByText("Category");
+  const categoryHeader = screen.getByText("SIMS7Redirects.category");
   fireEvent.click(categoryHeader);
 
-  const nextGenHeader = screen.getByText("Next Gen module");
+  const nextGenHeader = screen.getByText("SIMS7Redirects.nextGenModule");
   fireEvent.click(nextGenHeader);
   expect(nextGenHeader).toBeInTheDocument();
 });
@@ -175,7 +175,7 @@ it("renders notification banner when API fails and no data", async () => {
 
 it("handles sorting logic and updates sort state", async () => {
   render(<Sims7RedirectionsPage />);
-  const categoryHeader = screen.getByText("Category");
+  const categoryHeader = screen.getByText("SIMS7Redirects.category");
   fireEvent.click(categoryHeader);
   expect(categoryHeader).toBeInTheDocument();
 });

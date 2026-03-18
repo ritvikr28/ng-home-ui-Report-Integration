@@ -42,11 +42,10 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
   ] = useState(false);
   useEffect(() => {
     const initI18n: () => Promise<void> = async () => {
-      try {
-        console.log("[Lang Change] Setting i18nextLng in localStorage:", langCode);
+      try {        
         // Always persist chosen lang in localStorage
         localStorage.setItem("i18nextLng", langCode);
-        console.log("[i18n Init] Initializing IntlProvider with lang:", langCode);
+        
         await IntlProvider.init({
           translation: {
             en: {
@@ -61,7 +60,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
             }
           }
         }).init({ lng: langCode });
-        console.log("[i18n Init] Successfully initialized with lang:", langCode);
+        
         setInitialized(true);
       } catch (err) {
         console.error("Error initializing i18n:", err);
@@ -97,8 +96,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
     if (hasNewHomePagePermission) {
       dispatch(setVideoPlayStatus(isPlayed));
       dispatch(setApiError(apiError));
-      if (isPlayed === false && apiError === false) {
-        console.log("isPlayed apiError", { isPlayed, apiError });
+      if (isPlayed === false && apiError === false) {        
         gtmAnalytics.showVideoEvent();
       }
     }
@@ -113,8 +111,7 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
           setFlagsLoaded(true);
         });
       }
-      else {
-        console.log("Feature flags already cached, skipping fetch.");
+      else {        
         const flags = window.sessionStorage.getItem("ApplicationFrame_FEATURE_PERMISSIONS");
         if (flags) {
           window.sessionStorage.setItem("Home_FEATURE_PERMISSIONS", flags);
@@ -123,19 +120,6 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
 
       }
     }
-
-
-    // if (!getCachedData("ApplicationFrame_FEATURE_PERMISSIONS") && !getCachedData("Home_FEATURE_PERMISSIONS")) {
-    //     setFeatureFlags().then(() => {         
-    //      setFlagsLoaded(true);
-    //     });
-    //   }      
-    //   else{
-    //     console.log("Feature flags already cached, skipping fetch.");
-    //     var flags = getCachedData("ApplicationFrame_FEATURE_PERMISSIONS");
-    //      window.sessionStorage.setItem("Home_FEATURE_PERMISSIONS", flags);
-    //      window.sessionStorage.setItem("USE_ENCODED_FEATURE_PERMISSIONS", "true");
-    //   }
     return (
 
 
@@ -146,19 +130,14 @@ const App: (props: ILayoutProps) => JSX.Element | null = ({
         />
 
       </ErrorBoundary>
-
-      // </FeatureFlagsProvider>
     );
   }, [flagsLoaded]);
 
   if (!initialized) return null;
-  console.log('flagsLoaded', flagsLoaded);
   return (
     <>
       {LayoutComponent}
     </>
-
-
   );
 };
 

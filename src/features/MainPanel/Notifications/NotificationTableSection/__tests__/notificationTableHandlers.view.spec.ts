@@ -1,98 +1,117 @@
-import { SyntheticEvent } from 'react';
-import { getSearchOnClickClose } from '../notificationTableHandlers.view';
+import { getSearchOnClickClose } from "../notificationTableHandlers.view";
 
-describe('getSearchOnClickClose', () => {
-    const mockSetFilters = jest.fn();
-    const baseFilters = {
-        status: ['Open', 'Closed'],
-        priority: ['High', 'Low'],
-        startDate: '2024-01-01',
-        endDate: '2024-01-31',
-    };
-    const searchTagList = [
-        { text: 'Open', categoryName: 'Status', closeObj: { name: 'Open', id: 1 } },
-        { text: 'High', categoryName: 'Priority', closeObj: { name: 'High', id: 2 } },
-        { text: 'Date', categoryName: 'Date', closeObj: { name: 'Date', id: 3 } }
-    ];
+jest.mock("@essnextgen/ui-kit", () => ({}));
 
-    beforeEach(() => {
-        mockSetFilters.mockClear();
-    });
+const mockSetFilters = jest.fn();
+const mockEvent = {} as any;
 
-    it('returns a function', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        expect(typeof handler).toBe('function');
-    });
+const baseFilters = {
+    status: ["Active", "Read"],
+    priority: ["High", "Low"],
+    startDate: "2024-01-01",
+    endDate: "2024-12-31"
+};
 
-    it('does nothing if closeObj is falsy', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', undefined as any);
+const searchTagList = [
+    { text: "Active", categoryName: "Status", closeObj: { name: "Active", id: 1 } },
+    { text: "High", categoryName: "Priority", closeObj: { name: "High", id: 2 } },
+    { text: "Date Range", categoryName: "Date", closeObj: { name: "dateRange", id: 3 } }
+];
+
+beforeEach(() => {
+    jest.clearAllMocks();
+});
+
+describe("getSearchOnClickClose", () => {
+    it("returns early and does not call setFilters when closeObj is falsy", () => {
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", null as any);
         expect(mockSetFilters).not.toHaveBeenCalled();
     });
 
-    it('does nothing if filters is falsy', () => {
-        const handler = getSearchOnClickClose(undefined, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Open' } as any);
+    it("returns early and does not call setFilters when filters is undefined", () => {
+        const fn = getSearchOnClickClose(undefined, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", { name: "Active" } as any);
         expect(mockSetFilters).not.toHaveBeenCalled();
     });
 
-    it('removes status filter when category is Status (from closeObj)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Open', id: 1, categoryName: 'Status' } as any);
+    it("resolves category from closeObj.categoryName directly (truthy path)", () => {
+        const closeObj = { name: "Active", categoryName: "Status" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, []);
+        fn(mockEvent, "text", closeObj);
         expect(mockSetFilters).toHaveBeenCalledWith({
             ...baseFilters,
-            status: ['Closed'],
+            status: ["Read"]
         });
     });
 
-    it('removes status filter when category is Status (from searchTagList)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Open', id: 1 } as any);
+    it("resolves category from searchTagList fallback when closeObj.categoryName is falsy", () => {
+        const closeObj = { name: "Active" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
         expect(mockSetFilters).toHaveBeenCalledWith({
             ...baseFilters,
-            status: ['Closed'],
+            status: ["Read"]
         });
     });
 
-    it('removes priority filter when category is Priority (from closeObj)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'High', id: 2, categoryName: 'Priority' } as any);
+    it("calls setFilters with unchanged updated when category is unknown (no match in map)", () => {
+        const closeObj = { name: "NoMatch" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, []);
+        fn(mockEvent, "text", closeObj);
+        expect(mockSetFilters).toHaveBeenCalledWith({ ...baseFilters });
+    });
+
+    it("Status: filters out the matching status item from filters.status", () => {
+        const closeObj = { name: "read", categoryName: "Status" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
         expect(mockSetFilters).toHaveBeenCalledWith({
             ...baseFilters,
-            priority: ['Low'],
+            status: ["Active"]
         });
     });
 
-    it('removes priority filter when category is Priority (from searchTagList)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'High', id: 2 } as any);
+    it("Status: uses empty array when filters.status is undefined", () => {
+        const filtersNoStatus = { priority: ["High"], startDate: "2024-01-01", endDate: "2024-12-31" };
+        const closeObj = { name: "Active", categoryName: "Status" } as any;
+        const fn = getSearchOnClickClose(filtersNoStatus as any, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
+        expect(mockSetFilters).toHaveBeenCalledWith({
+            ...filtersNoStatus,
+            status: []
+        });
+    });
+
+    it("Priority: filters out the matching priority item from filters.priority", () => {
+        const closeObj = { name: "High", categoryName: "Priority" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
         expect(mockSetFilters).toHaveBeenCalledWith({
             ...baseFilters,
-            priority: ['Low'],
+            priority: ["Low"]
         });
     });
 
-    it('removes startDate and endDate when category is Date (from closeObj)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Date', id: 3, categoryName: 'Date' } as any);
+    it("Priority: uses empty array when filters.priority is undefined", () => {
+        const filtersNoPriority = { status: ["Active"], startDate: "2024-01-01", endDate: "2024-12-31" };
+        const closeObj = { name: "High", categoryName: "Priority" } as any;
+        const fn = getSearchOnClickClose(filtersNoPriority as any, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
         expect(mockSetFilters).toHaveBeenCalledWith({
-            status: ['Open', 'Closed'],
-            priority: ['High', 'Low'],
+            ...filtersNoPriority,
+            priority: []
         });
     });
 
-    it('removes startDate and endDate when category is Date (from searchTagList)', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Date', id: 3 } as any);
-        expect(mockSetFilters).toHaveBeenCalledWith({
-            status: ['Open', 'Closed'],
-            priority: ['High', 'Low'],
-        });
-    });
-
-    it('does nothing if category is not found', () => {
-        const handler = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
-        handler({} as SyntheticEvent, '', { name: 'Other' } as any);
-        expect(mockSetFilters).toHaveBeenCalled();
+    it("Date: deletes startDate and endDate from updated filters", () => {
+        const closeObj = { name: "dateRange", categoryName: "Date" } as any;
+        const fn = getSearchOnClickClose(baseFilters, mockSetFilters, searchTagList);
+        fn(mockEvent, "text", closeObj);
+        const result = mockSetFilters.mock.calls[0][0];
+        expect(result).not.toHaveProperty("startDate");
+        expect(result).not.toHaveProperty("endDate");
+        expect(result.status).toEqual(baseFilters.status);
+        expect(result.priority).toEqual(baseFilters.priority);
     });
 });
