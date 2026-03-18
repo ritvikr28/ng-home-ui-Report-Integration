@@ -515,7 +515,9 @@
     "dateRequired": "Date is required",
     "invaliddate": "Invalid Date",
      "informationUnavailable": "Unable to save changes",
-     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time."
+     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time.",
+    "searchPart1": "Your search - ",
+    "searchPart2": " - did not match any results. Make sure that all words are spelled correctly."
   },
   "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Welcome to SIMS",
