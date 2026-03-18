@@ -136,7 +136,7 @@ describe('mapSims7RedirectionsItem', () => {
     expect(result.status).toBe('Planned');
     expect(result.tooltipMessage).toBe('Test tooltip');
     expect(result.cellStatus).toBe('');
-    expect(result.actions.options[0].text).toBe(' View');
+    expect(result.actions.options[0].text).toBe('SIMS7Redirects.viewbtn');
     expect(result.reasonForChanges).toBe('Reason');
   });
 

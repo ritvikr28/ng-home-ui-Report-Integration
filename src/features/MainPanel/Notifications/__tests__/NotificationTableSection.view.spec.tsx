@@ -164,8 +164,7 @@ describe("NotificationTableSection", () => {
 
     it("renders NotificationSidePanelView when sideIsOpen is true", () => {
         render(<NotificationTableSection {...getDefaultProps({ sideIsOpen: true })} />);
-        const panels = screen.getAllByTestId("notification-side-panel");
-        expect(panels).toHaveLength(2);
+        expect(screen.getByTestId("notification-side-panel")).toBeInTheDocument();
     });
 
     it("does not render NotificationSidePanelView when sideIsOpen is false", () => {

@@ -1,39 +1,23 @@
-import { saveRedirectionHandler } from './Sims7RedirectionsSidePanelSaveHandler';
+import { onSaveHandler } from './Sims7RedirectionsSidePanelSaveHandlerFns';
 /* eslint-disable */
 import React, { useEffect, useState } from "react";
 import { Sims7RedirectionsSidePanelProps } from "./Sims7RedirectionsInterfaces";
-import Sims7RedirectionsView from "./Sims7RedirectionsView";
-import Sims7RedirectionsEdit from "./Sims7RedirectionsEdit";
-import {
-    Dialog,
-    DialogTemplate,
-    Notification,
-    NotificationStatus,
-    SidePanel,
-    SidePanelContent,
-    SidePanelFooter,
-    Button,
-    ButtonColor,
-    ButtonSize,
-    Loader,
-    LoaderType 
-} from "@essnextgen/ui-kit";
+import { SidePanel, SidePanelContent, SidePanelFooter } from "@essnextgen/ui-kit";
+import { Sims7RedirectionsPanelContent, Sims7RedirectionsPanelFooter } from "./Sims7RedirectionsPanelParts";
 
-import { handleDateChange, handleValidateDate, getDateParts as getDatePartsLogic } from "./Sims7RedirectionsSidePanelDate.logic";
-import { handleCancel, handleCancelConfirm, handleCancelDialogClose } from "./Sims7RedirectionsSidePanelCancel.logic";
-import { handleRedirectToNextGenChange } from "./Sims7RedirectionsSidePanelRedirect.logic";
 import { requiresReason } from "./Sims7RedirectionsStatusHelpers";
-import { isFormDirty } from "./Sims7RedirectionsFormDirty.logic";
 import { useSims7RedirectionsForm, Sims7RedirectionsFormState } from "./useSims7RedirectionsForm";
-import { validateReason } from "./Sims7RedirectionsSaveValidate.logic";
-import { fetchSims7RedirectionById, Sims7RedirectionViewData } from "./Sims7RedirectionsPage.api";
 import {
-    isPanelEditable,
-    isSuccessToast,
-    isReasonMissing,
-    isDateInvalid,
-    isEffectiveDateInPast
-} from './Sims7RedirectionsSidePanelHelpers';
+    getSetReasonForChanges,
+    getOnRedirectToNextGenChange,
+    getOnDateChange,
+    getOnValidateDate,
+    getGetDateParts,
+    getOnCancel,
+    getOnCancelConfirm,
+    getOnCancelDialogClose
+} from "./Sims7RedirectionsSidePanelHandlers";
+import { fetchSims7RedirectionById, Sims7RedirectionViewData } from "./Sims7RedirectionsPage.api";
 
 interface Sims7RedirectionsSidePanelWithSave extends Sims7RedirectionsSidePanelProps {
     onSaveSuccess?: () => void;
@@ -69,6 +53,7 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             })
             .finally(() => setViewLoading(false));
     }, [selectedRow?.id, mode]);
+    const [initialReasonForChanges, setInitialReasonForChanges]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
     const {
         reasonForChanges,
         setReasonForChanges: setReasonForChangesRaw,
@@ -90,121 +75,79 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
         setEffectiveDate
     }: Sims7RedirectionsFormState = useSims7RedirectionsForm(selectedRow, mode);
 
-    const setReasonForChanges: (val: string) => void = (val: string) => {
-        setReasonForChangesRaw(val);
-        validateReason({
-            requiresReason,
-            selectedRow,
-            redirectToNextGen,
-            reasonForChanges: val,
-            setReasonError
-        });
-    };
-
-    const onRedirectToNextGenChange: (_e: React.SyntheticEvent<Element, Event>, value: string | number) => void = (_e, value) => {
-        handleRedirectToNextGenChange({
-            event: _e,
-            value,
-            selectedRow,
-            setRedirectToNextGen,
-            setEffectiveDate,
-            setDateParts,
-            setIsDirty,
-            effectiveDate,
-            reasonForChanges,
-            setDateError
-        });
-    };
-
-    const onDateChange: (arg1: any, arg2?: any, arg3?: any) => void = (arg1, arg2, arg3) => {
-        handleDateChange({
-            t,
-            arg1,
-            arg2,
-            arg3,
-            setDateParts,
-            setEffectiveDate,
-            setDateError,
-            setIsDirty,
-            selectedRow,
-            redirectToNextGen,
-            reasonForChanges
-        });
-    };
-
-    const onValidateDate: (date: Date) => void = (date) => {
-        handleValidateDate(date, setDateError, t);
-    };
-
-    // Save handler: call PUT API in edit mode
-    const [showFailureBanner, setShowFailureBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState(false);
-    //const [failureMessage, setFailureMessage] = React.useState('');
-    const isSaveBlocked = () => {
-        if (isPanelEditable(mode, selectedRow)) return true;
-        if (isSuccessToast(selectedRow, isDirty)) return 'success';
-        if (isReasonMissing(selectedRow, redirectToNextGen, reasonForChanges, requiresReason, setReasonError)) return true;
-        if (isDateInvalid(effectiveDate, t, setDateError)) return true;
-        return false;
-    };
-
-    const onSave: () => Promise<void> = async () => {
-        const blocked: boolean | 'success' = isSaveBlocked();
-        if (blocked === true) return;
-        if (blocked === 'success') {
-            showSuccessAndClose(setShowSuccessToast, setShowFailureBanner, setSidePanelMode, onSaveSuccess);
-            return;
+    // Update reasonForChanges from API response (viewData) when loaded
+    useEffect(() => {
+        if (mode === 'edit' && viewData && (viewData as { payload?: { reasonForChanges?: string; reasonForChange?: string } }).payload) {
+            const payload: { reasonForChanges?: string; reasonForChange?: string } = (viewData as { payload?: { reasonForChanges?: string; reasonForChange?: string } }).payload || {};
+            let value = '';
+            if (typeof payload.reasonForChanges !== 'undefined') {
+                value = payload.reasonForChanges ?? '';
+            } else if (typeof payload.reasonForChange !== 'undefined') {
+                value = payload.reasonForChange ?? '';
+            }
+            setReasonForChangesRaw(value);
+            setInitialReasonForChanges(value);
         }
-        await saveRedirectionHandler({
+    }, [mode, viewData, setReasonForChangesRaw]);
+
+    // Debug: Print reasonForChanges in edit mode
+    useEffect(() => {
+        if (mode === 'edit') {
+            // eslint-disable-next-line no-console
+            console.log('[DEBUG] reasonForChanges in edit mode:', reasonForChanges);
+        }
+    }, [mode, reasonForChanges]);
+
+
+    const setReasonForChanges: (val: string) => void = getSetReasonForChanges(setReasonForChangesRaw, selectedRow, redirectToNextGen, setReasonError);
+    // Custom isFormDirty that uses initialReasonForChanges
+    const isFormDirtyWithApi: (reason: string) => boolean = (reason: string): boolean => {
+        return reason !== initialReasonForChanges;
+    };
+    const onRedirectToNextGenChange: (e: React.SyntheticEvent<Element, Event>, value: string | number) => void = getOnRedirectToNextGenChange({
+        selectedRow,
+        setRedirectToNextGen,
+        setEffectiveDate,
+        setDateParts,
+        setIsDirty,
+        effectiveDate,
+        reasonForChanges,
+        setDateError
+    });
+    const onDateChange: (arg1: any, arg2?: any, arg3?: any) => void = getOnDateChange({
+        t,
+        setDateParts,
+        setEffectiveDate,
+        setDateError,
+        setIsDirty,
+        selectedRow,
+        redirectToNextGen,
+        reasonForChanges
+    });
+    const onValidateDate: (date: Date) => void = getOnValidateDate(setDateError, t);
+    const [showFailureBanner, setShowFailureBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState(false);
+    const onSave: () => Promise<void> = async () => {
+        await onSaveHandler({
+            mode,
             selectedRow,
-            effectiveDate,
+            isDirty,
             redirectToNextGen,
             reasonForChanges,
+            requiresReason,
+            setReasonError,
+            effectiveDate,
+            t,
             setDateError,
             setShowSuccessToast,
             setShowFailureBanner,
-            setSidePanelMode: (mode: string) => setSidePanelMode(mode as 'edit' | 'view'),
+            setSidePanelMode,
             onSaveSuccess
         });
-    }
-    // ...existing code...
-    function showSuccessAndClose(
-        setShowSuccessToast: (val: boolean) => void,
-        setShowFailureBanner: (val: boolean) => void,
-        setSidePanelMode: (mode: 'view' | 'edit') => void,
-        onSaveSuccess?: () => void
-    ): void {
-        setShowSuccessToast(true);
-        setShowFailureBanner(false);
-        setSidePanelMode('view');
-        setTimeout(() => {
-            setShowSuccessToast(false);
-            if (onSaveSuccess) onSaveSuccess();
-        }, 1500);
-    }
-
-    const getDateParts: (_date: Date | null) => any = (_date) => {
-        return getDatePartsLogic(dateParts);
     };
-
-    const onCancel: () => void = () => {
-        handleCancel(isDirty, setShowCancelDialog, onClose);
-    };
-
-    const onCancelConfirm: () => void = () => {
-        handleCancelConfirm({
-            setIsDirty,
-            setShowCancelDialog,
-            setReasonForChanges,
-            selectedRow,
-            setReasonError,
-            setDateError,
-            onClose
-        });
-    };
-
-    const onCancelDialogClose: () => void = () => {
-        handleCancelDialogClose(setShowCancelDialog);
-    };
+    const getDateParts: (_date: Date | null) => any = getGetDateParts(dateParts);
+    const onCancel: () => void = getOnCancel(isDirty, setShowCancelDialog, onClose);
+    const onCancelConfirm: () => void = getOnCancelConfirm(setIsDirty, setShowCancelDialog, setReasonForChanges, selectedRow, setReasonError, setDateError, onClose);
+    const onCancelDialogClose: () => void = getOnCancelDialogClose(setShowCancelDialog);
 
     return (
         <SidePanel
@@ -215,106 +158,40 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             alignHeading
         >
             <SidePanelContent>
-                <>
-                    {mode === 'view' && viewLoading && (
-                        <Loader
-                            className="loader-wrapper"
-                            loaderText="Loading..."
-                            loaderType={LoaderType.Circular}
-                        />
-                    )}
-                    {mode === 'view' && !viewLoading && viewData && (
-                        <Sims7RedirectionsView
-                            viewData={viewData}
-                            t={t}
-                            setSidePanelMode={setSidePanelMode}
-                        />
-                    )}
-                    {mode === 'edit' && selectedRow && (
-                        <>
-                            <Sims7RedirectionsEdit
-                                selectedRow={selectedRow}
-                                redirectToNextGen={redirectToNextGen}
-                                effectiveDate={effectiveDate}
-                                reasonForChanges={reasonForChanges}
-                                dateError={dateError}
-                                reasonError={reasonError}
-                                getDateParts={getDateParts}
-                                handleRedirectToNextGenChange={onRedirectToNextGenChange}
-                                handleDateChange={onDateChange}
-                                handleValidateDate={onValidateDate}
-                                setReasonForChanges={setReasonForChanges}
-                                setIsDirty={setIsDirty}
-                                isFormDirty={(redirect, date, reason) => isFormDirty(selectedRow, redirect, date, reason)}
-                                t={t}
-                            />
-                            {showFailureBanner && (
-                                <Notification
-                                    status={NotificationStatus.WARNING}
-                                    title="Unable to save changes"
-                                    message="A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time."
-                                    onClickClose={(e: React.SyntheticEvent) => setShowFailureBanner(false)}
-                                />
-                            )}
-                        </>
-                    )}
-                    {mode === 'view' && showFailureBanner && (
-                        <Notification
-                            status={NotificationStatus.WARNING}
-                            title="Information unavailable"
-                            message="A technical issue at our end has stopped us from displaying some information. Please try again later. If the issue persists please get in touch with our support team. "
-                            hideCloseButton={true}
-                        />
-                    )}
-                    {showSuccessToast && (
-                        <Notification status={NotificationStatus.SUCCESSTOAST} title={t("SIMS7Redirects.changesSave")} />
-                    )}
-                    <Dialog
-                        isOpen={showCancelDialog}
-                        onClose={onCancelDialogClose}
-                        escapeExits={true}
-                        title={t("SIMS7Redirects.discardChanges")}
-                        templateProps={{
-                            template: DialogTemplate.Confirmation,
-                            contentText: t("SIMS7Redirects.discardChangesDescription"),
-                            onConfirm: onCancelConfirm,
-                            onCancel: onCancelDialogClose,
-                           cancelText: t("SIMS7Redirects.cancelbtn"),
-                            okText: t("SIMS7Redirects.discardbtn")
-                        }}
-                    />
-                </>
+                <Sims7RedirectionsPanelContent
+                    mode={mode}
+                    viewLoading={viewLoading}
+                    viewData={viewData}
+                    t={t}
+                    setSidePanelMode={setSidePanelMode}
+                    selectedRow={selectedRow}
+                    redirectToNextGen={redirectToNextGen}
+                    effectiveDate={effectiveDate}
+                    reasonForChanges={reasonForChanges}
+                    dateError={dateError}
+                    reasonError={reasonError}
+                    getDateParts={getDateParts}
+                    onRedirectToNextGenChange={onRedirectToNextGenChange}
+                    onDateChange={onDateChange}
+                    onValidateDate={onValidateDate}
+                    setReasonForChanges={setReasonForChanges}
+                    setIsDirty={setIsDirty}
+                    isFormDirty={isFormDirtyWithApi}
+                    showFailureBanner={showFailureBanner}
+                    showSuccessToast={showSuccessToast}
+                    showCancelDialog={showCancelDialog}
+                    onCancelDialogClose={onCancelDialogClose}
+                    onCancelConfirm={onCancelConfirm}
+                />
             </SidePanelContent>
             <SidePanelFooter>
-                {mode === 'view' ?
-                    <Button
-                        size={ButtonSize.Large}
-                        color={ButtonColor.Secondary}
-                        className="btn-full-width"
-                        onClick={onClose}
-                    >
-                       {t("SIMS7Redirects.closebtn")}
-                    </Button>
-                    :
-                    <>
-                        <Button
-                            size={ButtonSize.Large}
-                            color={ButtonColor.Secondary}
-                            className="btn-full-width"
-                            onClick={onCancel}
-                        >
-                            {t("SIMS7Redirects.cancelbtn")}
-                        </Button>
-                        <Button
-                            size={ButtonSize.Large}
-                            color={ButtonColor.Primary}
-                            className="btn-full-width"
-                            onClick={onSave}
-                        >
-                            {t("SIMS7Redirects.savebtn")}
-                        </Button>
-                    </>
-                }
+                <Sims7RedirectionsPanelFooter
+                    mode={mode}
+                    t={t}
+                    onClose={onClose}
+                    onCancel={onCancel}
+                    onSave={onSave}
+                />
             </SidePanelFooter>
         </SidePanel>
     );

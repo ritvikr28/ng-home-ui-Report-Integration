@@ -1,7 +1,26 @@
-import React from 'react';
+import React, { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { handleRedirectToNextGenChange } from './Sims7RedirectionsSidePanelRedirect.logic';
 import { handleDateChange } from './Sims7RedirectionsSidePanelDate.logic';
 import { buildRequest } from './Sims7RedirectionsSidePanelSaveHelpers';
+import type { UpdateSims7RedirectionRequest } from './Sims7RedirectionsPage.api';
+
+interface SetReasonForChangesHandlerArgs {
+    val: string;
+    setReasonForChangesRaw: (val: string) => void;
+    validateReason: (args: ValidateReasonArgs) => void;
+    requiresReason: (status: string, redirectToNextGen: string) => boolean;
+    selectedRow: { status: string };
+    redirectToNextGen: string;
+    setReasonError: (val: string) => void;
+}
+
+interface ValidateReasonArgs {
+    requiresReason: (status: string, redirectToNextGen: string) => boolean;
+    selectedRow: { status: string };
+    redirectToNextGen: string;
+    reasonForChanges: string;
+    setReasonError: (val: string) => void;
+}
 
 export function setReasonForChangesHandler({
     val: reasonVal,
@@ -11,21 +30,7 @@ export function setReasonForChangesHandler({
     selectedRow,
     redirectToNextGen,
     setReasonError
-}: {
-    val: string;
-    setReasonForChangesRaw: (val: string) => void;
-    validateReason: (args: {
-        requiresReason: any;
-        selectedRow: any;
-        redirectToNextGen: string;
-        reasonForChanges: string;
-        setReasonError: (val: string) => void;
-    }) => void;
-    requiresReason: any;
-    selectedRow: any;
-    redirectToNextGen: string;
-    setReasonError: (val: string) => void;
-}) {
+}: SetReasonForChangesHandlerArgs): void {
     setReasonForChangesRaw(reasonVal);
     validateReason({
         requiresReason,
@@ -34,6 +39,18 @@ export function setReasonForChangesHandler({
         reasonForChanges: reasonVal,
         setReasonError
     });
+}
+
+interface OnRedirectToNextGenChangeHandlerArgs {
+    event: React.SyntheticEvent<Element, Event>;
+    value: string | number;
+    selectedRow: { [key: string]: unknown };
+    setRedirectToNextGen: (val: string | number) => void;
+    setEffectiveDate: (date: Date | null) => void;
+    setDateParts: (val: unknown) => void;
+    setIsDirty: (val: boolean) => void;
+    effectiveDate: Date | null;
+    reasonForChanges: string;
 }
 
 export function onRedirectToNextGenChangeHandler({
@@ -46,17 +63,7 @@ export function onRedirectToNextGenChangeHandler({
     setIsDirty,
     effectiveDate,
     reasonForChanges
-}: {
-    event: any;
-    value: any;
-    selectedRow: any;
-    setRedirectToNextGen: (val: any) => void;
-    setEffectiveDate: (val: any) => void;
-    setDateParts: (val: any) => void;
-    setIsDirty: (val: boolean) => void;
-    effectiveDate: any;
-    reasonForChanges: any;
-}) {
+}: OnRedirectToNextGenChangeHandlerArgs): void {
     handleRedirectToNextGenChange({
         event,
         value,
@@ -68,6 +75,22 @@ export function onRedirectToNextGenChangeHandler({
         effectiveDate,
         reasonForChanges
     });
+}
+
+type DateChangeArg = string | number | ChangeEvent<HTMLInputElement>;
+
+interface OnDateChangeHandlerArgs {
+    t: (key: string) => string;
+    arg1: DateChangeArg;
+    arg2?: DateChangeArg;
+    arg3?: DateChangeArg;
+    setDateParts: (val: unknown) => void;
+    setEffectiveDate: Dispatch<SetStateAction<Date | null>>;
+    setDateError: Dispatch<SetStateAction<string>>;
+    setIsDirty: Dispatch<SetStateAction<boolean>>;
+    selectedRow: { [key: string]: unknown };
+    redirectToNextGen: string;
+    reasonForChanges: string;
 }
 
 export function onDateChangeHandler({
@@ -82,19 +105,7 @@ export function onDateChangeHandler({
     selectedRow,
     redirectToNextGen,
     reasonForChanges
-}: {
-    t: any;
-    arg1: any;
-    arg2: any;
-    arg3: any;
-    setDateParts: (val: any) => void;
-    setEffectiveDate: (val: any) => void;
-    setDateError: React.Dispatch<React.SetStateAction<string>>;
-    setIsDirty: React.Dispatch<React.SetStateAction<boolean>>;
-    selectedRow: any;
-    redirectToNextGen: string;
-    reasonForChanges: any;
-}) {
+}: OnDateChangeHandlerArgs): void {
     handleDateChange({
         t,
         arg1,
@@ -110,15 +121,17 @@ export function onDateChangeHandler({
     });
 }
 
+interface OnValidateDateHandlerArgs {
+    date: Date;
+    setDateError: React.Dispatch<React.SetStateAction<string>>;
+    handleValidateDate: (date: Date, setDateError: React.Dispatch<React.SetStateAction<string>>) => void;
+}
+
 export function onValidateDateHandler({
     date: validateDate,
     setDateError: validateDateError,
     handleValidateDate: validateDateHandler
-}: {
-    date: any;
-    setDateError: React.Dispatch<React.SetStateAction<string>>;
-    handleValidateDate: (date: any, setDateError: React.Dispatch<React.SetStateAction<string>>) => void;
-}) {
+}: OnValidateDateHandlerArgs): void {
     validateDateHandler(validateDate, validateDateError);
 }
 
@@ -135,10 +148,10 @@ export function showSuccessAndClose(
     setShowFailureBanner: (val: boolean) => void,
     setSidePanelMode: (mode: 'view' | 'edit') => void,
     onSaveSuccess?: () => void
-) {
+): void {
     setShowSuccessToast(true);
     setShowFailureBanner(false);
-    setTimeout(() => {
+    setTimeout((): void => {
         setShowSuccessToast(false);
         setSidePanelMode('view');
         if (onSaveSuccess) onSaveSuccess();
@@ -159,17 +172,7 @@ export function buildRedirectionRequest(
     row: any,
     effectiveDateStr: string,
     status: string
-): {
-    id: string;
-    dfeNumber: string;
-    ngModule: string;
-    ngComponent: string;
-    switchToSchool: boolean;
-    effectiveDate: string;
-    currentStatus: string;
-    plannedStatus: string;
-    reasonForChange: string;
-} {
+): UpdateSims7RedirectionRequest {
     return buildRequest(row, effectiveDateStr, status);
 }
 

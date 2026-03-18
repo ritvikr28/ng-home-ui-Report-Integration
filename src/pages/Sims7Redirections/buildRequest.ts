@@ -1,4 +1,4 @@
-// Clean implementation: only one of each function, all at top level
+import type { UpdateSims7RedirectionRequest } from './Sims7RedirectionsPage.api';
 
 export function getBackendStatus(status: string): string {
   const statusMap: Record<string, string> = {
@@ -67,7 +67,7 @@ function isPlannedToNotMigrated(currentStatusFinal: any, plannedStatusFinal: any
     effectiveDateFinal && new Date(effectiveDateFinal) > new Date()
   );
 }
-function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentStatusFinal, effectiveDateFinal, reasonForChangeFinal, previousStatus }: any): {
+export function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentStatusFinal, effectiveDateFinal, reasonForChangeFinal, previousStatus }: any): {
   plannedStatusFinal: string; currentStatusFinal: string; effectiveDateFinal: string; reasonForChangeFinal: string; } {
   if (isReversingScenario(updatedRow)) {
     return {
@@ -156,8 +156,11 @@ function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentStatusFi
   return { plannedStatusFinal, currentStatusFinal, effectiveDateFinal, reasonForChangeFinal };
 }
 
-export function buildRequest(updatedRow: any, effectiveDateStr: string, previousStatus?: string): {
-  id: string; dfeNumber: string; ngModule: string; ngComponent: string; switchToSchool: boolean; effectiveDate: string; currentStatus: string; plannedStatus: string; reasonForChange: string; } {
+export function buildRequest(
+  updatedRow: any,
+  effectiveDateStr: string,
+  previousStatus?: string
+): UpdateSims7RedirectionRequest {
   let plannedStatusFinal: string = mapStatusToChar(updatedRow.plannedStatus || getBackendStatus(updatedRow.status));
   let currentStatusFinal: string = mapStatusToChar(updatedRow.currentStatus || updatedRow.status || "");
   const dfeNumber = updatedRow.dfeNumber || updatedRow.DfeNumber;
@@ -173,17 +176,7 @@ export function buildRequest(updatedRow: any, effectiveDateStr: string, previous
     previousStatus
   }));
 
-  const payload: {
-    id: string;
-    dfeNumber: string;
-    ngModule: string;
-    ngComponent: string;
-    switchToSchool: boolean;
-    effectiveDate: string;
-    currentStatus: string;
-    plannedStatus: string;
-    reasonForChange: string;
-  } = {
+  const payload: UpdateSims7RedirectionRequest = {
     id: updatedRow.id || updatedRow.moduleId,
     dfeNumber,
     ngModule: updatedRow.category || updatedRow.ngModule,

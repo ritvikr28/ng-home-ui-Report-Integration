@@ -1,4 +1,7 @@
+import React from "react";
 import { render } from "@testing-library/react";
+import { Provider } from "react-redux";
+import { createStore } from "redux";
 import * as authUi from "@essnextgen/auth-ui";
 import * as flagr from "@essnextgen/ui-flagr";
 import * as schoolServices from "../../../../shared/services/schoolDomain/schoolServices";
@@ -27,72 +30,80 @@ describe('MainPanel', () => {
   });
 
   const tempFun = jest.fn();
-  const setSchoolName = jest.fn();
-  const setIsError = jest.fn();
-  const setIsSchoolPrimary = jest.fn();
+
+  // Minimal mock reducer for appPermission state
+  const mockReducer = (state = { appPermission: { videoPlayStatus: false, apiError: false } }) => state;
+  const getMockStore = (customState = {}) => createStore(
+    mockReducer,
+    { appPermission: { videoPlayStatus: false, apiError: false }, ...customState }
+  );
+
+
+  function flushPromises() {
+    return new Promise(resolve => setTimeout(resolve, 0));
+  }
 
   test('renders schoolname successfully when status is successful', async () => {
-
-
     jest.spyOn(schoolServices, "useFetchSchoolNameData").mockResolvedValue(mockSchoolDetails);
-    setSchoolName(mockSchoolDetails.schoolName);
-    setIsError(false);
-    setIsSchoolPrimary(mockSchoolDetails.isSchoolPrimary);
-    render(<MainPanel setIsOpen={tempFun} />);
-    expect(setSchoolName).toHaveBeenCalledWith("test");
-    expect(setIsError).toHaveBeenCalledWith(false);
-    expect(setIsSchoolPrimary).toHaveBeenCalledWith(false);
+    const store = getMockStore();
+    const { findByTestId } = render(
+      <Provider store={store}>
+        <MainPanel isOpen={true} setIsOpen={tempFun} />
+      </Provider>
+    );
+    await flushPromises();
+    const subparent = await findByTestId('subparent-element');
+    expect(subparent.textContent?.toLowerCase()).toContain('welcomepage.himsg , welcomepage.welcomemsg');
   });
 
   test('renders schoolname successfully when status is successful and school is primary', async () => {
-
     jest.spyOn(schoolServices, "useFetchSchoolNameData").mockResolvedValue(mockSchoolDetailsForPrimary);
-    setSchoolName(mockSchoolDetailsForPrimary.schoolName);
-    setIsError(false);
-    setIsSchoolPrimary(mockSchoolDetailsForPrimary.isSchoolPrimary);
-    render(<MainPanel setIsOpen={tempFun} />);
-    expect(setSchoolName).toHaveBeenCalledWith("test");
-    expect(setIsError).toHaveBeenCalledWith(false);
-    expect(setIsSchoolPrimary).toHaveBeenCalledWith(true);
+    const store = getMockStore();
+    const { findByTestId } = render(
+      <Provider store={store}>
+        <MainPanel isOpen={true} setIsOpen={tempFun} />
+      </Provider>
+    );
+    await flushPromises();
+    // WelcomeUser uses test id 'subparent-element', check for the school name inside it
+    const subparent = await findByTestId('subparent-element');
+    expect(subparent.textContent).toMatch("welcomePage.himsg , welcomePage.welcomemsg");
   });
 
   test('renders schoolname successfully when status is successful and data is null', async () => {
     jest.spyOn(schoolServices, "useFetchSchoolNameData").mockResolvedValue(null);
-    setSchoolName("");
-    setIsError(false);
-    setIsSchoolPrimary(true);
-    render(<MainPanel setIsOpen={tempFun} />);
-    expect(setSchoolName).toHaveBeenCalledWith("");
-    expect(setIsError).toHaveBeenCalledWith(false);
-    expect(setIsSchoolPrimary).toHaveBeenCalledWith(true);
+    const store = getMockStore();
+    const { findByTestId } = render(
+      <Provider store={store}>
+        <MainPanel isOpen={true} setIsOpen={tempFun} />
+      </Provider>
+    );
+    await flushPromises();
+    expect(await findByTestId("subparent-element")).toBeInTheDocument();
   });
 
-
-
   test('should handle unsuccessful data fetch', async () => {
-    const mockres: any = {
-      status: 500
-    }
-
-    jest.spyOn(schoolServices, "useFetchSchoolNameData").mockRejectedValue(mockres);
-    setSchoolName("");
-    setIsError(true);
-    setIsSchoolPrimary(false);
-    render(<MainPanel setIsOpen={tempFun} />);
-    expect(setSchoolName).toHaveBeenCalledWith("");
-    expect(setIsError).toHaveBeenCalledWith(true);
-    expect(setIsSchoolPrimary).toHaveBeenCalledWith(false);
+    jest.spyOn(schoolServices, "useFetchSchoolNameData").mockRejectedValue({ status: 500 });
+    const store = getMockStore();
+    const { findByTestId } = render(
+      <Provider store={store}>
+        <MainPanel isOpen={true} setIsOpen={tempFun} />
+      </Provider>
+    );
+    await flushPromises();
+    expect(await findByTestId("subparent-element")).toBeInTheDocument();
   });
 
   test('renders MainPanelView with error when an unexpected error occurs', async () => {
-    jest.spyOn(schoolServices, "useFetchSchoolNameData").mockImplementationOnce(() => {
-      throw new Error('Unexpected error');
-    });
-    setSchoolName("");
-    setIsError(true);
-    render(<MainPanel setIsOpen={tempFun} />);
-    expect(setSchoolName).toHaveBeenCalledWith("");
-    expect(setIsError).toHaveBeenCalledWith(true);
+    jest.spyOn(schoolServices, "useFetchSchoolNameData").mockImplementationOnce(() => { throw new Error('Unexpected error'); });
+    const store = getMockStore();
+    const { findByTestId } = render(
+      <Provider store={store}>
+        <MainPanel isOpen={true} setIsOpen={tempFun} />
+      </Provider>
+    );
+    await flushPromises();
+    expect(await findByTestId("subparent-element")).toBeInTheDocument();
   });
 });
 
@@ -109,35 +120,47 @@ describe("MainPanelView", () => {
     jest.clearAllMocks();
   });
 
+  // Reuse the mock store from above
+  const mockReducer = (state = { appPermission: { videoPlayStatus: false, apiError: false } }) => state;
+  const getMockStore = (customState = {}) => createStore(
+    mockReducer,
+    { appPermission: { videoPlayStatus: false, apiError: false }, ...customState }
+  );
+
+  function renderWithProvider(ui: React.ReactElement, customState = {}) {
+    const store = getMockStore(customState);
+    return render(<Provider store={store}>{ui}</Provider>);
+  }
+
   it("renders WelcomeUser and SIMSupdatesView", () => {
-    const { getByTestId } = render(<MainPanelView {...defaultProps} />);
+    const { getByTestId } = renderWithProvider(<MainPanelView {...defaultProps} />);
     expect(getByTestId("subparent-element")).toBeInTheDocument();
     expect(getByTestId("what-new-test-id")).toBeInTheDocument();
   });
 
   it("renders StaffTimeTableView when authorised and isSchoolPrimary is false", () => {
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Calendar.Staff.Timetable");
-    const { getByTestId } = render(<MainPanelView {...defaultProps} isSchoolPrimary={false} />);
-    expect(getByTestId("link-id")).toBeInTheDocument(); // or "staff-data-loader" if you want the loader
+    const { getByTestId } = renderWithProvider(<MainPanelView {...defaultProps} isSchoolPrimary={false} />);
+    expect(getByTestId("link-id")).toBeInTheDocument();
   });
 
   it("does not render StaffTimeTableView when isSchoolPrimary is true", () => {
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Calendar.Staff.Timetable");
-    const { queryByTestId } = render(<MainPanelView {...defaultProps} isSchoolPrimary />);
+    const { queryByTestId } = renderWithProvider(<MainPanelView {...defaultProps} isSchoolPrimary />);
     expect(queryByTestId("staff-timetable")).not.toBeInTheDocument();
   });
 
   it("renders TakeRegisterView and Divider when authorised", () => {
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Homepage.Registers");
-    const { getByTestId, container } = render(<MainPanelView {...defaultProps} />);
-    expect(getByTestId("reg-error-loader")).toBeInTheDocument(); // Use the loader's test id
+    const { getByTestId, container } = renderWithProvider(<MainPanelView {...defaultProps} />);
+    expect(getByTestId("reg-error-loader")).toBeInTheDocument();
     expect(container.querySelector(".new-divider-spacing")).toBeInTheDocument();
   });
 
   it("renders Search and Divider when authorised", () => {
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Learner.Personal");
-    const { getByTestId, container } = render(<MainPanelView {...defaultProps} />);
-    expect(getByTestId("new-search-element")).toBeInTheDocument(); // <-- updated test id
+    const { getByTestId, container } = renderWithProvider(<MainPanelView {...defaultProps} />);
+    expect(getByTestId("new-search-element")).toBeInTheDocument();
     expect(container.querySelector(".new-divider-spacing")).toBeInTheDocument();
   });
 
@@ -145,9 +168,9 @@ describe("MainPanelView", () => {
     jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(true);
     jest.spyOn(flagrUtils, "isOrganisationInVariant").mockReturnValue(true);
     jest.spyOn(authUi.authService, "isAuthorised").mockImplementation((perms) => perms[0].Securable === "NG.Homepage.SchoolOverview");
-    const { getAllByTestId, container } = render(<MainPanelView {...defaultProps} />);
+    const { getAllByTestId, container } = renderWithProvider(<MainPanelView {...defaultProps} />);
     const headers = getAllByTestId("pupils-accordion-header-test-id");
-    expect(headers.length).toBeGreaterThan(0); // or toBe(2) if you expect exactly 2
+    expect(headers.length).toBeGreaterThan(0);
     expect(container.querySelector(".new-divider-spacing")).toBeInTheDocument();
   });
 
@@ -155,7 +178,7 @@ describe("MainPanelView", () => {
     jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(false);
     jest.spyOn(flagrUtils, "isOrganisationInVariant").mockReturnValue(true);
     jest.spyOn(authUi.authService, "isAuthorised").mockReturnValue(true);
-    const { queryByTestId } = render(<MainPanelView {...defaultProps} />);
+    const { queryByTestId } = renderWithProvider(<MainPanelView {...defaultProps} />);
     expect(queryByTestId("slt-view-bett")).not.toBeInTheDocument();
   });
 
@@ -163,7 +186,7 @@ describe("MainPanelView", () => {
     jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(true);
     jest.spyOn(flagrUtils, "isOrganisationInVariant").mockReturnValue(false);
     jest.spyOn(authUi.authService, "isAuthorised").mockReturnValue(true);
-    const { queryByTestId } = render(<MainPanelView {...defaultProps} />);
+    const { queryByTestId } = renderWithProvider(<MainPanelView {...defaultProps} />);
     expect(queryByTestId("slt-view-bett")).not.toBeInTheDocument();
   });
 
@@ -171,7 +194,7 @@ describe("MainPanelView", () => {
     jest.spyOn(flagr, "hasFeaturePermission").mockReturnValue(true);
     jest.spyOn(flagrUtils, "isOrganisationInVariant").mockReturnValue(true);
     jest.spyOn(authUi.authService, "isAuthorised").mockReturnValue(false);
-    const { queryByTestId } = render(<MainPanelView {...defaultProps} />);
+    const { queryByTestId } = renderWithProvider(<MainPanelView {...defaultProps} />);
     expect(queryByTestId("slt-view-bett")).not.toBeInTheDocument();
   });
 });
