@@ -51,18 +51,15 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
       paginationOnChange={handlePageChange}
       paginationMinCountToHideNextPreviousBtn={1}
       editSelectedBtnTitle="Actions"
-      onEditSelectedOverFlowMenu={(event, option) => {
-        alert(`Selected: ${option.value}`);
-      }}
       editSelectedOptions={[
         { text: "Make standard", value: "Standard", disabled: false, isSelected: false },
         { text: "Make confidential", value: "Confidential", disabled: false, isSelected: false },
         { text: "Delete", value: "Delete", disabled: false, isSelected: false, isShowDivider: true }
       ]}
       onEditSelectedBtnClick={() => {}}
-      // onEditSelectedOverFlowMenu={(event, option) => {
-      //   alert(`Selected: ${option.value}`);
-      // }}
+      onEditSelectedOverFlowMenu={(event, option) => {
+        alert(`Selected: ${option.value}`);
+      }}
       isSorting={false}
       sortAscFirst={!isInitialLoad}
       sortByDefault={false}
