@@ -77,6 +77,10 @@ const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pa
 
 
 
+export const DMSPrivateDocument: boolean = isOrganisationInVariantForAnyOrAll(
+  "DmsManagePrivateDocument"
+);
+
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;

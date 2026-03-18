@@ -7,6 +7,7 @@ import gtmAnalytics from "../../../shared/utils/analytics";
 import { pageSizeNumber } from "../../../../public/Constants";
 import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
+import { DMSPrivateDocument } from "../../../Layout";
 
 const renderSingleValue = (
   value: string | undefined,
@@ -97,12 +98,12 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
   },
   {
     text: t("DocumentManagementServer.privacyColumn"),
-    isShow: false, // Set to true to show the privacy status column
+    isShow: DMSPrivateDocument ?? false,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "180px",
     isColumnSorting: true,
     anyComponent: (e: string) =>
-      renderSingleValue(e, "privacyStatus"),
+      renderSingleValue(e, "ngStatus"),
   },
   {
     text: t("DocumentManagementServer.addedByColumn"),
