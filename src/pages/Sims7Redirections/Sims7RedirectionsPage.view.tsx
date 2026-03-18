@@ -151,9 +151,9 @@ export const Sims7RedirectionsPage: React.FC = () => {
 
     useEffect(() => {
         const ignoreRef: { current: boolean } = { current: false };
-        fetchSuggestionsForSearch({ searchTerm, setSuggestionItems, setFilteredData, setApiFailed, ignoreRef, setSearchIsLoading, originalTableData });
+        fetchSuggestionsForSearch({ searchTerm, setSuggestionItems, setFilteredData, setApiFailed, ignoreRef, setSearchIsLoading, originalTableData, t });
         return () => { ignoreRef.current = true; };
-    }, [searchTerm]);
+    }, [searchTerm, originalTableData]);
 
     useEffect(() => {
         setFilteredData(originalTableData);
@@ -220,6 +220,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
 
     const handleSearchClose: () => void = () => {
         setSearchTerm("");
+        setSuggestionItems([]);
         setFilteredData(originalTableData);
     };
 
@@ -350,7 +351,6 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     onClickOverflowItem={handleOverflowItemClick}
                     // Helper to handle overflow actions (reduces complexity)
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
-                    isSearchHideClearIcon
                     dynamicTableLoader={loading}
                     onClickSidePnlSecondaryBtn={() => { }}
                     handleCloseSidePanel={() => { }}
@@ -382,7 +382,8 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     onSearchSuggestionItemClick={handleSuggestionClick}
                     searchOnClickClose={handleSearchClose}
                     searchIsLoader={searchIsLoading}
-                    isNotClearSearchTermOnItemClick = {true}
+                     isNotClearSearchTermOnItemClick = {true}
+                     isSearchHideClearIcon={searchTerm.length === 0}
                 />
 
 
