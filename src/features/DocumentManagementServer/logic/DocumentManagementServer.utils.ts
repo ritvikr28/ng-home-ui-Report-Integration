@@ -534,7 +534,9 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     Category: doc?.category
       ? CapitalizeFirstLetter(doc.category)
       : "",
-    documentStatus: doc?.ngStatus.charAt(0).toUpperCase() + doc.ngStatus.slice(1).toLowerCase(),
+    documentStatus: doc?.ngStatus
+      ? doc.ngStatus.charAt(0).toUpperCase() + doc.ngStatus.slice(1).toLowerCase()
+      : "",
     Addedby: doc?.addedBy || "",
     "Date added":
       doc?.dateAdded
