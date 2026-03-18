@@ -80,6 +80,10 @@ export const sendNotificationFlagr: boolean = hasFeaturePermission(
   "SendNotification"
 );
 
+export const DMSPrivateDocument: boolean = isOrganisationInVariantForAnyOrAll(
+  "DmsManagePrivateDocument"
+);
+
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
