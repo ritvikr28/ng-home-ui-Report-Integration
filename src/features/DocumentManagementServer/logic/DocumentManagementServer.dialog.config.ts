@@ -307,7 +307,7 @@ export const handleSorting: any = (columnName: string, sortBy: string, setSortBy
       apiColumnName = "Category";
       break;
     case t("DocumentManagementServer.privacyColumn"):
-      apiColumnName = "PrivacyStatus";
+      apiColumnName = "ngStatus";
       break;
     case t("DocumentManagementServer.addedByColumn"):
       apiColumnName = "AddedBy";

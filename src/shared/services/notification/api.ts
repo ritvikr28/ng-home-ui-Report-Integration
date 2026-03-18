@@ -87,3 +87,20 @@ export const getSearchAutoSuggestData: ({ SearchTerm }: {
     return { error: true, status: err.response.status };
   }
 }
+
+export const deleteSelectedNotifications = async (notificationsIds: string[]): Promise<any> => {
+  const orgId = getUserOrganisation();
+  const requestData = {
+    organisationId: orgId,
+    notificationsIds
+  };
+  try {
+    const baseUrl = buildApplicationUrl(apiUrls);
+    const path = `${baseUrl}/v1/notification/deletenotifications`;
+    const response = await service.delete(path, requestData);
+    console.log("Delete Notifications Response:", response.data.payload);
+    return response.data;
+  } catch {
+    return [];
+  }
+}

@@ -1,4 +1,35 @@
 {
+  "notifications": {
+    "notificationCentre": "Notification Centre",
+    "searchByNotificationTitle": "Search by notification title",
+    "filter": "Filter",
+    "filterBy": "Filter By",
+    "editSelected": "Edit selected",
+    "status": "Status",
+    "notification": "Notification",
+    "priority": "Priority",
+    "dateReceived": "Date received",
+    "view": "View",
+    "unread": "Unread",
+    "read": "Read",
+    "tag": "Tag",
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High",
+    "notifications": "Notifications",
+    "close": "Close",
+    "startDate": "Start date",
+    "endDate": "End date",
+    "dd": "DD",
+    "mm": "MM",
+    "yyyy": "YYYY",
+    "clearAll": "Clear all",
+    "apply": "Apply",
+    "deleteNotification": "Delete notification?",
+    "notificationsGoneForever": "Notifications will be gone forever once deleted.",
+    "keepIt": "Keep it",
+    "delete": "Delete"
+  },
   "homePage": {
     "appTitle": "Home",
     "headerTitle": "Welcome to SIMS Next Gen",
@@ -473,7 +504,7 @@
   "SIMS7Redirects": {
     "title": "SIMS 7 Redirects",
     "subTitle": "Manage modules that open directly into Next Gen from SIMS 7. For Redirects that are active, data will remain synced with SIMS7. Please ensure relevant users have valid NG accounts and appropriate access before activating. More modules will be available for configuration soon.",
-    "secondSubheadingwithLink": "Link for more details placeholder",
+    "secondSubheadingwithLink": "Link for more details",
     "searchHeadingText": "Search by category or Next Gen or SIMS 7 module name",
     "emptyStateMsg": "No SIMS7 Redirect entries found.",
     "emptyRowResponseMessage": "No data to display",
@@ -515,7 +546,9 @@
     "dateRequired": "Date is required",
     "invaliddate": "Invalid Date",
      "informationUnavailable": "Unable to save changes",
-     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time."
+     "technicalIssueMessage": "A technical issue at our end has stopped us from saving your changes. Please try again. We appreciate your patience and understanding during this time.",
+    "searchPart1": "Your search - ",
+    "searchPart2": " - did not match any results. Make sure that all words are spelled correctly."
   },
   "HomePageForSimsConnectedNormalPerson": {
     "welcomeToSims": "Welcome to SIMS",

@@ -31,7 +31,15 @@ export function useVisibleNotificationIds(tableRows: any[]): string[] {
     return useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
 }
 
-export function getEmptyStateMessage(
+export function getEmptyStateMessage({
+    tableDataError,
+    totalNotifications,
+    isSearching,
+    hasActiveFilters,
+    searchTerm,
+    searchSuggestions,
+    t = (key: string) => key
+}: {
     tableDataError: any,
     totalNotifications: number,
     isSearching: boolean,
@@ -39,8 +47,8 @@ export function getEmptyStateMessage(
     hasActiveFilters: boolean | string,
     searchTerm: string,
     searchSuggestions: Suggestion[],
-    t: (key: string, options?: any) => string = (key: string) => key
-): string {
+    t?: (key: string, options?: any) => string
+}): string {
     if (totalNotifications === 0 || tableDataError) {
         return t("NotificationCenter_T.noDataToDisplay");
     }

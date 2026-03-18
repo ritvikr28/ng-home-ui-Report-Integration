@@ -77,6 +77,10 @@ const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pa
 
 
 
+export const DMSPrivateDocument: boolean = isOrganisationInVariantForAnyOrAll(
+  "DmsManagePrivateDocument"
+);
+
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
@@ -114,10 +118,6 @@ export const getMenus: (
     [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
     MatchPermissions.all
   );
-
-  console.log('hasAdminConsoleAccessPermission', hasAdminConsoleAccessPermission);
-
-  console.log('hasSIMS7RedirectsOrgView', hasSIMS7RedirectsOrgView);
 
 const AdminConsoleandSystemStatusRoutes: ({
   hasAdminConsoleFlagrPermission,
@@ -380,7 +380,7 @@ const sendNotificationFlagr: boolean = hasFeaturePermission(
     requiredSystemStatusUpdatePermission,
     MatchPermissions.any
   );
-console.log('sendNotificationFlagr', sendNotificationFlagr);
+
   return (
     
     /* eslint-disable react/prop-types */

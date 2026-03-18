@@ -7,7 +7,6 @@ import {
     ButtonSize,
     ControlledList,
     IconColor,
-    ResponseCode,
     Breadcrumbs,
     useMediaQuery,
     Dropdown,
@@ -16,8 +15,7 @@ import {
     FormLabel,
     Dialog,
     DialogContent,
-    DialogFooter,
-    TableRowType
+    DialogFooter
 } from "@essnextgen/ui-kit";
 import {
     useTranslation,
@@ -27,14 +25,12 @@ import Sims7RedirectionsSidePanel from "./Sims7RedirectionsSidePanel";
 import { getBreadcrumbs, getNotificationMsgBannerObject, getDialogTemplateProps } from "./Sims7RedirectionsPage.uihelpers";
 import { homeurl } from "../InviteUsers/InviteUsersProps";
 import {
-    sims7RedirectionsTableHeaders,
     Sims7RedirectionsTableHeader,
+    sims7RedirectionsTableHeaders,
     Sims7RedirectionsTableRow
 } from "./Sims7RedirectionsPage.data";
-import { mapSims7RedirectionsItem } from "./Sims7RedirectionsMapper";
-import { fetchSims7Redirections } from "./Sims7RedirectionsPage.api";
 import { handleOverflowAction } from "./Sims7RedirectionsPage.handlers";
-import { setLoadingTrue, setLoadingFalse, fetchRedirections, handleApiSuccess, handleApiFailure } from './Sims7RedirectionsPage.view.helpers';
+import { setLoadingTrue, setLoadingFalse, fetchRedirections, handleApiSuccess, handleApiFailure, fetchSuggestionsForSearch, SuggestionGroup } from './Sims7RedirectionsPage.view.helpers';
 import {
     handleSorting as handleSortingHelper,
     handleViewClick as handleViewClickHelper,
@@ -43,7 +39,10 @@ import {
     handleCloseDialog as handleCloseDialogHelper,
     handleClearAll as handleClearAllHelper,
     handleApplyDialog as handleApplyDialogHelper,
-    handlePaginationChange as handlePaginationChangeHelper
+    handlePaginationChange as handlePaginationChangeHelper,
+    handleSuggestionItemClick,
+    getEmptyRowProps,
+    handleSaveSuccess
 } from "./Sims7RedirectionsPage.helpers";
 
 interface DropdownItemType {
@@ -75,7 +74,7 @@ export interface LoadSims7RedirectionsDataArgs {
 export const loadSims7RedirectionsData: (args: LoadSims7RedirectionsDataArgs) => Promise<void> = async (args: LoadSims7RedirectionsDataArgs): Promise<void> => {
     setLoadingTrue(args.setLoading);
     try {
-    const payload: unknown = await fetchRedirections(args);
+        const payload: unknown = await fetchRedirections(args);
         handleApiSuccess(payload, args);
     } catch (error: unknown) {
         handleApiFailure(args, error);
@@ -86,8 +85,41 @@ export const loadSims7RedirectionsData: (args: LoadSims7RedirectionsDataArgs) =>
 
 
 export const Sims7RedirectionsPage: React.FC = () => {
-    const { t }: UseTranslationResponse<"translation", undefined> =
-        useTranslation();
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
+
+    const isMobileView: boolean = useMediaQuery("(min-width:320px) and (max-width: 1023.9px)");
+
+    // State declarations
+    const [searchTerm, setSearchTerm]: [string, React.Dispatch<React.SetStateAction<string>>] = useState("");
+    const [suggestionItems, setSuggestionItems]: [SuggestionGroup[], React.Dispatch<React.SetStateAction<SuggestionGroup[]>>] = useState<SuggestionGroup[]>([]);
+    const [originalTableData, setOriginalTableData]: [Sims7RedirectionsTableRow[], React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>] = useState<Sims7RedirectionsTableRow[]>([]);
+    const [filteredData, setFilteredData]: [Sims7RedirectionsTableRow[], React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>] = useState<Sims7RedirectionsTableRow[]>([]);
+    const [totalItems, setTotalItems]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
+    const [sortColumn, setSortColumn]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+    const [sortOrder, setSortOrder]: ["asc" | "desc", React.Dispatch<React.SetStateAction<"asc" | "desc">>] = useState<"asc" | "desc">("asc");
+    const [apiFailed, setApiFailed]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
+    const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
+    const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
+    const pageSize = 40;
+    const [selectedItems, setSelectedItems]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+    const [searchTagList, setSearchTagList]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+    const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
+    const [isSidePanelOpen, setIsSidePanelOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
+    const [sidePanelMode, setSidePanelMode]: ['view' | 'edit', React.Dispatch<React.SetStateAction<'view' | 'edit'>>] = React.useState<'view' | 'edit'>('view');
+    const [selectedRow, setSelectedRow]: [Sims7RedirectionsTableRow | null, React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow | null>>] = React.useState<Sims7RedirectionsTableRow | null>(null);
+    const [isSidebarOpen, setIsSidebarOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
+    const [searchIsLoading, setSearchIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+
+    // Column mapping: frontend to backend
+    // const columnMapping: Record<string, string> = {
+    //     "Category": "ngModule",
+    //     "Next Gen module": "ngComponent",
+    //     "SIMS 7 module": "sims7Module",
+    //     "Modified by": "updatedBy",
+    //     "Effective date": "effectiveDate",
+    //     "Status": "redirectStatus"
+    // };
+
     // Column mapping: frontend to backend (keys use translated labels to support all languages)
     const columnMapping: Record<string, string> = {
         [t("SIMS7Redirects.category")]: "ngModule",
@@ -111,58 +143,34 @@ export const Sims7RedirectionsPage: React.FC = () => {
             return translationKey ? { ...header, text: t(translationKey) } : header;
         });
     }, [t]);
-    const isMobileView: boolean = useMediaQuery(
-        "(min-width:320px) and (max-width: 1023.9px)"
-    );
-    const [originalTableData, setOriginalTableData]: [Sims7RedirectionsTableRow[], React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>] = useState<Sims7RedirectionsTableRow[]>([]);
-    const [totalItems, setTotalItems]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
-    // Sorting state
-    const [sortColumn, setSortColumn]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
-    const [sortOrder, setSortOrder]: ["asc" | "desc", React.Dispatch<React.SetStateAction<"asc" | "desc">>] = useState<"asc" | "desc">("asc");
-    // Sorting handler
-    // Sorting handler for ControlledList (reduced complexity)
-    const handleSorting: (_event: React.SyntheticEvent, columnName: string) => void = (_event, columnName) => {
-        handleSortingHelper({
-            columnMapping,
-            sortColumn,
-            sortOrder,
-            setSortColumn,
-            setSortOrder
-        }, _event, columnName);
-    };
-    const [apiFailed, setApiFailed]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
-    const [loading, setLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
 
-    const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
-    const pageSize = 40;
-    const [selectedItems, setSelectedItems]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
-    const [searchTagList, setSearchTagList]: [ISelectedItem[], React.Dispatch<React.SetStateAction<ISelectedItem[]>>] = React.useState<ISelectedItem[]>([]);
+    // Effects
+    useEffect(() => {
+        document.body.classList.add("no-scroll");
+    }, []);
 
     useEffect(() => {
-        loadSims7RedirectionsData({
-            sortColumn,
-            sortOrder,
-            currentPage,
-            pageSize,
-            searchTagList,
-            setApiFailed,
-            setOriginalTableData,
-            setTotalItems,
-            setLoading,
-            t
-        });
+        const ignoreRef: { current: boolean } = { current: false };
+        fetchSuggestionsForSearch({ searchTerm, setSuggestionItems, setFilteredData, setApiFailed, ignoreRef, setSearchIsLoading, originalTableData, t });
+        return () => { ignoreRef.current = true; };
+    }, [searchTerm, originalTableData]);
+
+    useEffect(() => {
+        setFilteredData(originalTableData);
+    }, [originalTableData]);
+
+    useEffect(() => {
+        loadSims7RedirectionsData({ sortColumn, sortOrder, currentPage, pageSize, searchTagList, setApiFailed, setOriginalTableData, setTotalItems, setLoading, t });
     }, [sortColumn, sortOrder, currentPage, searchTagList, pageSize]);
 
-    const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
-    // Removed unused isDropDownOpen state to resolve Kiuwan warning
-    const [isSidePanelOpen, setIsSidePanelOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState<boolean>(false);
-    const [sidePanelMode, setSidePanelMode]: ['view' | 'edit', React.Dispatch<React.SetStateAction<'view' | 'edit'>>] = React.useState<'view' | 'edit'>('view');
-    const [selectedRow, setSelectedRow]: [Sims7RedirectionsTableRow | null, React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow | null>>] = React.useState<Sims7RedirectionsTableRow | null>(null);
-    // const [dropdownResetKey, setDropdownResetKey] = React.useState(0);
-    const [isSidebarOpen, setIsSidebarOpen]: [
-        boolean,
-        React.Dispatch<React.SetStateAction<boolean>>
-    ] = useState<boolean>(!isMobileView);
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTagList]);
+
+    // Handlers
+    const handleSorting: (_event: React.SyntheticEvent, columnName: string) => void = (_event, columnName) => {
+        handleSortingHelper({ columnMapping, sortColumn, sortOrder, setSortColumn, setSortOrder }, _event, columnName);
+    };
 
     const handleCloseSidePanel: () => void = () => {
         setIsSidePanelOpen(false);
@@ -170,78 +178,70 @@ export const Sims7RedirectionsPage: React.FC = () => {
     };
 
     const handleViewClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
-        handleViewClickHelper({
-            setSelectedRow,
-            setSidePanelMode,
-            setIsSidePanelOpen
-        }, rowData);
+        handleViewClickHelper({ setSelectedRow, setSidePanelMode, setIsSidePanelOpen }, rowData);
     };
 
     const handleEditClick: (rowData: Sims7RedirectionsTableRow) => void = (rowData) => {
-        handleEditClickHelper({
-            setSelectedRow,
-            setSidePanelMode,
-            setIsSidePanelOpen
-        }, rowData);
+        handleEditClickHelper({ setSelectedRow, setSidePanelMode, setIsSidePanelOpen }, rowData);
     };
 
     const handleOpenDialog: () => void = () => {
-        handleOpenDialogHelper({
-            setSelectedItems,
-            searchTagList,
-            setIsDialogOpen
-        });
+        handleOpenDialogHelper({ setSelectedItems, searchTagList, setIsDialogOpen });
     };
+
     const handleCloseDialog: () => void = () => {
-        handleCloseDialogHelper({
-            setIsDialogOpen
-        });
+        handleCloseDialogHelper({ setIsDialogOpen });
     };
 
     const handleClearAll: () => void = () => {
-        handleClearAllHelper({
-            setIsDialogOpen,
-            setSelectedItems
-        });
+        handleClearAllHelper({ setIsDialogOpen, setSelectedItems });
     };
 
     const handleApplyDialog: () => void = () => {
-        handleApplyDialogHelper({
-            setSearchTagList,
-            selectedItems,
-            setIsDialogOpen
-        });
+        handleApplyDialogHelper({ setSearchTagList, selectedItems, setIsDialogOpen });
     };
 
-    // Backend pagination: table data is already paginated from API
-    const filteredTableData: Sims7RedirectionsTableRow[] = React.useMemo(() => originalTableData, [originalTableData]);
-
-    const closeSidebar: () => void = () => {
-        setIsSidebarOpen(false);
+    const handleOverflowItemClick: (e: React.SyntheticEvent, rowData: Sims7RedirectionsTableRow) => void = (e, rowData) => {
+        const clickedText: string = (e.target as HTMLElement).innerText.trim();
+        const matchedOption = rowData.actions?.options?.find(
+            (opt: { text: string; value: string }) => opt.text.trim() === clickedText
+        );
+        const action: string = matchedOption ? matchedOption.value : clickedText;
+        handleOverflowAction(action, rowData, handleViewClick, handleEditClick);
     };
 
-    useEffect(() => {
-        document.body.classList.add("no-scroll");
-    }, []);
-
-    const toggleSidebar: () => void = () => {
-        setIsSidebarOpen((prev: boolean): boolean => !prev);
+    const handleSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void = (e) => {
+        setSearchTerm(e.target.value);
     };
 
-    const sims7RedirectionsBreadcrumbs: any = getBreadcrumbs(t, homeurl);
+    const handleSuggestionClick: (item: { text?: string; id?: string } | null) => void = (item) => {
+        handleSuggestionItemClick(item, originalTableData, setFilteredData);
+    };
 
-    // Backend pagination: no slicing needed
-    const paginatedTableData: Sims7RedirectionsTableRow[] = filteredTableData;
+    const handleSearchClose: () => void = () => {
+        setSearchTerm("");
+        setSuggestionItems([]);
+        setFilteredData(originalTableData);
+    };
+
+    const handleOnSaveSuccess: () => Promise<void> = async () => {
+        await handleSaveSuccess({ setLoading, sortColumn, sortOrder, currentPage, pageSize, searchTagList, setOriginalTableData, setTotalItems });
+    };
+
     const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (_event, page) => {
         handlePaginationChangeHelper({ setCurrentPage }, _event, page);
     };
 
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [searchTagList]);
+    const closeSidebar: () => void = () => { setIsSidebarOpen(false); };
+    const toggleSidebar: () => void = () => { setIsSidebarOpen((prev: boolean): boolean => !prev); };
 
+    // Derived values
+    const filteredTableData: Sims7RedirectionsTableRow[] = React.useMemo(() => filteredData, [filteredData]);
+    const paginatedTableData: Sims7RedirectionsTableRow[] = filteredTableData;
+    const sims7RedirectionsBreadcrumbs: any = getBreadcrumbs(t, homeurl);
     const NotificationMsgBannerObject: any = getNotificationMsgBannerObject(t);
-
+    const globalBannerObject: any = apiFailed && !paginatedTableData.length ? NotificationMsgBannerObject : null;
+    const mappedSearchTagList = searchTagList.map(item => ({ ...item, text: item.text ?? "" }));
     const dialogTemplateProps: any = getDialogTemplateProps(t);
     return (
         <div className="invite-user-container admin-mobile-rwaf92428 admin-console-grid-invite-users sims7-redirections">
@@ -287,11 +287,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     sortingOnClickEvent={handleSorting}
                     tooltipBottomAligned
                     data-testid="controlled-list"
-                    globalNotificationMsgBannerObject={
-                        apiFailed && !paginatedTableData.length
-                            ? NotificationMsgBannerObject
-                            : null
-                    }
+                    globalNotificationMsgBannerObject={globalBannerObject}
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
@@ -311,14 +307,11 @@ export const Sims7RedirectionsPage: React.FC = () => {
                                 iconColor={IconColor.Neutral800}
                                 iconPosition={ButtonIconPosition.Right}
                             >
-                                 {t("SIMS7Redirects.filter")}
+                                {t("SIMS7Redirects.filter")}
                             </Button>
                         </div>
                     }
-                    searchTagList={searchTagList.map(item => ({
-                        ...item,
-                        text: item.text ?? ""
-                    }))}
+                    searchTagList={mappedSearchTagList}
                     emptyStateMsg={t("SIMS7Redirects.emptyStateMsg")}
                     isShowEmptyAddBtn={false}
                     onAddEventBtnClick={() => { }}
@@ -329,7 +322,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     isShowSecondSubheadingWithLink
                     isFullWidthForSecondSubHeading
                     secondSubheadingwithLink={
-                        <a href="https://example.com" target="_blank" rel="noopener noreferrer">
+                        <a href="https://ppgsl.service-now.com/csm?id=csm_kb_article_view&sysparm_article=KB0015525" target="_blank" rel="noopener noreferrer">
                             {`${t("SIMS7Redirects.secondSubheadingwithLink")}`}
                         </a>
                     }
@@ -341,18 +334,13 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     paginationMinCountToHideNextPreviousBtn={0}
                     isShowPrimaryBtn={false}
                     isShowdynamictableNoMsg
-                    {...(apiFailed && !paginatedTableData.length ? {
-                        emptyRowType: TableRowType.Error,
-                        emptyRowResponseCode: ResponseCode.Error,
-                        emptyRowResponseMessage: t("SIMS7Redirects.apiFailureEmptyRowResponseMessage")
-                    } : {
-                        emptyRowResponseMessage: t("SIMS7Redirects.emptyRowResponseMessage")
-                    })}
+                    {...getEmptyRowProps(apiFailed, paginatedTableData, suggestionItems, t)}
                     showConfirmDialog
                     tableBodyData={paginatedTableData}
                     tableFirstColumnWidth="10px"
-                    tableHeadersData={translatedTableHeaders}
-                    tableLastColumnWidth="10px"                    
+                    // tableHeadersData={sims7RedirectionsTableHeaders}
+                     tableHeadersData={translatedTableHeaders}
+                    tableLastColumnWidth="10px"
                     sortByDefault={false}
                     sortAscFirst={false}
                     templatePropsConfirmation={dialogTemplateProps}
@@ -360,17 +348,13 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     isOpenConfirmationDialog={false}
                     isIconRightAligned
                     isShowOverflowMenuCol
-                    onClickOverflowItem={(e, rowData) => {
-                        const action: string = ((e.target as HTMLElement).closest('[data-value]') as HTMLElement | null)?.dataset.value?.trim() ?? (e.target as HTMLElement).innerText.trim();
-                        handleOverflowAction(action, rowData, handleViewClick, handleEditClick);
-                    }}
+                    onClickOverflowItem={handleOverflowItemClick}
                     // Helper to handle overflow actions (reduces complexity)
                     searchHeadingText={`${t("SIMS7Redirects.searchHeadingText")}`}
-                    isSearchHideClearIcon
                     dynamicTableLoader={loading}
                     onClickSidePnlSecondaryBtn={() => { }}
                     handleCloseSidePanel={() => { }}
-                     sidePanelTitle={t("SIMS7Redirects.sidePanelTitle")}
+                    sidePanelTitle={t("SIMS7Redirects.sidePanelTitle")}
                     sidePanelSubTitle=""
                     addEditTemplateChild={() =>
                         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
@@ -388,11 +372,22 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     paginationCount={Math.ceil(totalItems / pageSize)}
                     paginationOnChange={handlePaginationChange}
                     hideCloseBtn
-
+                    // Show suggestions from API if searchTerm has 3 or more characters
+                    isShowAutoSuggest={true}
+                    searchSuggestions={suggestionItems}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    searchOnChange={handleSearchChange}
+                    isGroupSuggestionOnItemClick={true}
+                    onSearchSuggestionItemClick={handleSuggestionClick}
+                    searchOnCloseHandle={handleSearchClose}
+                    searchIsLoader={searchIsLoading}
+                     isNotClearSearchTermOnItemClick = {true}
+                     isSearchHideClearIcon={searchTerm.length === 0}
                 />
 
 
-                 <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits title={t("SIMS7Redirects.filterBy")}>
+                <Dialog isOpen={isDialogOpen} onClose={handleCloseDialog} escapeExits title={t("SIMS7Redirects.filterBy")}>
                     <DialogContent className="dialog-with-dropdown">
                         <>
                             <FormLabel>{t("SIMS7Redirects.status")}</FormLabel>
@@ -435,24 +430,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     selectedRow={selectedRow}
                     t={t}
                     setSidePanelMode={setSidePanelMode}
-                    onSaveSuccess={async () => {
-                        setLoading(true);
-                        type Sims7RedirectionsApiResponse = {
-                            items?: unknown[];
-                            totalItems?: number;
-                            [key: string]: unknown;
-                        };
-                        const payload: Sims7RedirectionsApiResponse = await fetchSims7Redirections({
-                            SortColumnName: sortColumn,
-                            SortOrder: sortOrder ? sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
-                            PageNumber: currentPage,
-                            PageSize: pageSize,
-                            SearchFilter: searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
-                        });
-                        setOriginalTableData((payload.items || []).map((item: unknown, idx: number) => mapSims7RedirectionsItem(item, idx, t)));
-                        setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
-                        setLoading(false);
-                    }}
+                    onSaveSuccess={handleOnSaveSuccess}
                 />
             </div>
         </div>

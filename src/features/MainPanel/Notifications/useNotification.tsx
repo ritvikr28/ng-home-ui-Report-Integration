@@ -1,7 +1,23 @@
 import React, { useState, useMemo, useEffect, Dispatch, SetStateAction } from "react";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
-import { UseNotificationReturn } from "./useNotification.props";
+import { useNotificationSelection } from "./useNotificationSelection";
+import { useNotificationBulkDelete } from "./useNotificationBulkDelete";
+import { UseNotificationReturn, UseNotificationSelectionReturn } from "./useNotification.props";
 import { Suggestion } from "./Notifications.props";
+import { deleteSelectedNotifications } from "../../../shared/services/notification/api";
+
+export async function performDelete(
+    ids: string[],
+    onSuccess: () => void,
+    onError: () => void
+): Promise<void> {
+    try {
+        await deleteSelectedNotifications(ids);
+        onSuccess();
+    } catch {
+        onError();
+    }
+}
 
 export const PAGE_SIZE = 40;
 
@@ -53,7 +69,8 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
     tableData,
     totalTableData,
     currentPage,
-    setCurrentPage
+    setCurrentPage,
+    setTableDataError
 }: {
     tableData: any[];
     totalTableData: number;
@@ -64,15 +81,23 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
     setTotalTableData?: Dispatch<SetStateAction<number>>;
     setTableDataError?: Dispatch<SetStateAction<boolean>>;
 }): UseNotificationReturn => {
+        const [isClearSelectedCheckbox, setIsClearSelectedCheckbox]: [
+            boolean,
+            Dispatch<SetStateAction<boolean>>
+        ] = useState<boolean>(false);
 
         const [notifications]: [
             any[],
             Dispatch<SetStateAction<any[]>>
         ] = useState<any[]>(tableData);
-        const [selectedNotificationIds, setSelectedNotificationIds]: [
-            string[],
-            Dispatch<SetStateAction<string[]>>
-        ] = useState<string[]>([]);
+
+        const {
+            selectedNotificationIds,
+            setSelectedNotificationIds,
+            handleSelectAllChange,
+            handleSelectedCheckboxIds,
+            handleListCheckboxChange
+        }: UseNotificationSelectionReturn = useNotificationSelection(setIsClearSelectedCheckbox);
         const [isDeleteDialogOpen, setIsDeleteDialogOpen]: [
             boolean,
             Dispatch<SetStateAction<boolean>>
@@ -81,7 +106,7 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             string[],
             Dispatch<SetStateAction<string[]>>
         ] = useState<string[]>([]);
-        const [isDeleteLoading]: [
+        const [isDeleteLoading, setIsDeleteLoading]: [
             boolean,
             Dispatch<SetStateAction<boolean>>
         ] = useState<boolean>(false);
@@ -89,10 +114,7 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             boolean,
             Dispatch<SetStateAction<boolean>>
         ] = useState<boolean>(false);
-        const [isClearSelectedCheckbox, setIsClearSelectedCheckbox]: [
-            boolean,
-            Dispatch<SetStateAction<boolean>>
-        ] = useState<boolean>(false);
+
         const [isNoSelectionMode, setIsNoSelectionMode]: [
             boolean,
             Dispatch<SetStateAction<boolean>>
@@ -139,6 +161,8 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             boolean,
             Dispatch<SetStateAction<boolean>>
         ] = useState<boolean>(false);
+
+        const [isdeleted, setIsDeleted]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(false);
 
         const [isAutoSuggestVisible, setIsAutoSuggestVisible]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
         const [suggestionLoader, setSuggestionLoader]: [boolean, Dispatch<SetStateAction<boolean>>] = React.useState(false);
@@ -194,61 +218,14 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             setSearchTerm(value);
         };
 
-        // const handleSelectAllChange: (
-        //     event: any,
-        //     visibleIds: string[]
-        // ) => void = (event: any, visibleIds: string[] = []) => {
-        //     const ids: string[] = visibleIds.filter(Boolean);
-        //     if (!ids.length) {
-        //         setIsClearSelectedCheckbox(true);
-        //         return;
-        //     }
-        //     const isChecked = Boolean(event?.target?.checked);
-        //     setSelectedNotificationIds((prev) => {
-        //         let next: string[] = [];
-        //         if (isChecked) {
-        //             const merged: Set<string> = new Set([...prev, ...ids]);
-        //             next = Array.from(merged);
-        //         } else {
-        //             next = prev.filter((selectedId) => !ids.includes(selectedId));
-        //         }
-        //         setIsClearSelectedCheckbox(next.length === 0);
-        //         return next;
-        //     });
-        // };
-
-        const handleSelectedCheckboxIds: (ids: string[]) => void = (
-            ids: string[]
-        ) => {
-            if (!Array.isArray(ids)) {
-                return;
-            }
-            setSelectedNotificationIds(ids);
-            setIsClearSelectedCheckbox(ids.length === 0);
-        };
-
-        // const handleBulkAction: (
-        //     selectedItem: { value?: string | undefined } | null,
-        //     visibleIds?: string[]
-        // ) => void = (
-        //     selectedItem: { value?: string } | null,
-        //     visibleIds: string[] = []
-        // ) => {
-        //         if (!selectedItem || selectedItem.value !== "Delete") {
-        //             return;
-        //         }
-        //         const idsOnCurrentPage: string[] = selectedNotificationIds.filter((id) =>
-        //             visibleIds.includes(id)
-        //         );
-        //         if (!idsOnCurrentPage.length) {
-        //             setIsNoSelectionMode(true);
-        //             setIsDeleteDialogOpen(true);
-        //             return;
-        //         }
-        //         setIsNoSelectionMode(false);
-        //         setPendingDeletionIds(idsOnCurrentPage);
-        //         setIsDeleteDialogOpen(true);
-        //     };
+        const handleBulkAction: (selectedItem: {
+            value?: string | undefined;
+        } | null, visibleIds?: string[]) => void = useNotificationBulkDelete({
+            selectedNotificationIds,
+            setIsNoSelectionMode,
+            setIsDeleteDialogOpen,
+            setPendingDeletionIds
+        });
 
         const closeDeleteDialog: () => void = () => {
             if (isDeleteLoading) {
@@ -259,27 +236,27 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             setIsNoSelectionMode(false);
         };
 
-        // const confirmDelete: () => Promise<void> = async () => {
-        //     if (!pendingDeletionIds.length) {
-        //         setIsDeleteDialogOpen(false);
-        //         return;
-        //     }
-        //     setIsDeleteLoading(true);
-        //     await new Promise((resolve) => setTimeout(resolve, 0));
-        //     setNotifications((prev) =>
-        //         prev.filter(
-        //             (notification) => !pendingDeletionIds.includes(getNotificationId(notification))
-        //         )
-        //     );
-        //     setSelectedNotificationIds((prev) =>
-        //         prev.filter((id) => !pendingDeletionIds.includes(id))
-        //     );
-        //     setPendingDeletionIds([]);
-        //     setIsDeleteDialogOpen(false);
-        //     setIsDeleteLoading(false);
-        //     setIsClearSelectedCheckbox(true);
-        //     setShowDeleteToast(true);
-        // };
+        const confirmDelete: () => Promise<void> = async () => {
+            if (!pendingDeletionIds.length) {
+                setIsDeleteDialogOpen(false);
+                return;
+            }
+            setIsDeleteLoading(true);
+            setIsDeleteDialogOpen(false);
+            await performDelete(
+                selectedNotificationIds,
+                () => {
+                    setIsDeleted(true);
+                    setIsDeleteLoading(false);
+                    setIsClearSelectedCheckbox(true);
+                    setShowDeleteToast(true);
+                },
+                () => {
+                    if (setTableDataError) setTableDataError(true);
+                    setIsDeleteLoading(false);
+                }
+            );
+        };
 
         const handleFilterChange: (newFilters: {
             status?: string[] | undefined;
@@ -373,9 +350,9 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             isSearching,
             noResults,
             // handleListCheckboxChange,
-            // handleSelectAllChange,
+            handleSelectAllChange,
             handleSelectedCheckboxIds,
-            // handleBulkAction,
+            handleBulkAction,
             isDeleteDialogOpen,
             closeDeleteDialog,
             // confirmDelete,
@@ -396,6 +373,10 @@ export const useNotification: ({ tableData, totalTableData, currentPage, setCurr
             suggestionLoader,
             setSuggestionLoader,
             searchSuggestions,
-            setSearchSuggestions
+            setSearchSuggestions,
+            isdeleted,
+            setIsDeleted,
+            handleListCheckboxChange,
+            confirmDelete
         };
     };

@@ -101,3 +101,33 @@ export interface NotificationTableHandlerOptions {
   setTableDataError: (v: boolean) => void;
   setNoResults: (v: boolean) => void;
 }
+
+export type NotificationTableSectionFullProps = NotificationTableSectionProps & {
+    isDeleteDialogOpen: boolean;
+    handleCloseDeleteDialog: () => void;
+    handleConfirmDelete: () => void;
+    selectedCount: number;
+    isDeleteLoading: boolean;
+    isNoSelectionMode: boolean;
+    handleBulkAction: (selectedItem: { value?: string } | null, visibleIds?: string[]) => void;
+    handleSelectAllChange: (event: any, visibleIds: string[]) => void;
+    handleSelectedCheckboxIds: (ids: string[]) => void;
+    handleListCheckboxChange: (index: number, id: string) => void;
+    showDeleteToast: boolean;
+    isClearSelectedCheckbox: boolean;
+    sortBy: string;
+    sortDirection: boolean;
+    handleSort: (columnName: string) => void;
+    isAutoSuggestVisible: boolean;
+    setIsAutoSuggestVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    suggestionLoader: boolean;
+    setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
+    setSearchSuggestions: React.Dispatch<React.SetStateAction<any[]>>;
+    searchSuggestions: any[];
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+    searchTerm: string;
+    isSearching: boolean;
+    noResults: boolean;
+    totalNotifications: number;
+    totalPages: number;
+};
