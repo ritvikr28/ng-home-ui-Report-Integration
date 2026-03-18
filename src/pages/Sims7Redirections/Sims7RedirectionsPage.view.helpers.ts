@@ -19,17 +19,7 @@ export interface FetchSuggestionsArgs {
     setApiFailed: React.Dispatch<React.SetStateAction<boolean>>;
     setSearchIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     originalTableData: any[];
-    t: (key: string) => string;
     ignoreRef: { current: boolean };
-}
-
-function buildErrorSuggestion(searchTerm: string, t: (key: string) => string): SuggestionGroup[] {
-    return [
-        {
-            name: 'error',
-            values: [{ text: `${t("SIMS7Redirects.searchPart1")}${searchTerm}${t("SIMS7Redirects.searchPart2")}` }]
-        }
-    ];
 }
 
 function isAllEmpty(payload: Record<string, string[]>): boolean {
@@ -37,8 +27,7 @@ function isAllEmpty(payload: Record<string, string[]>): boolean {
 }
 
 function handleNoResults(args: FetchSuggestionsArgs): void {
-    args.setSuggestionItems(buildErrorSuggestion(args.searchTerm, args.t));
-    args.setFilteredData([]);
+    args.setSuggestionItems([]);
 }
 
 function handleSuggestionSuccess(
@@ -54,8 +43,7 @@ function handleSuggestionSuccess(
 
 function handleSuggestionApiError(args: FetchSuggestionsArgs): void {
     args.setApiFailed(true);
-    args.setSuggestionItems(buildErrorSuggestion(args.searchTerm, args.t));
-    args.setFilteredData([]);
+    args.setSuggestionItems([]);
 }
 
 async function processSuggestionResponse(args: FetchSuggestionsArgs): Promise<void> {
