@@ -109,7 +109,7 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "180px",
-    isColumnSorting: false,
+    isColumnSorting: true,
     anyComponent: (e: string) =>
       renderSingleValue(e, "addedBy"),
   },

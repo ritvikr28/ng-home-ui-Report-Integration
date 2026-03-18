@@ -1,7 +1,7 @@
-import { Button, ButtonSize, Notification, NotificationStatus } from "@essnextgen/ui-kit";
+import { Button, ButtonSize } from "@essnextgen/ui-kit";
 import React, { useState } from "react";
 import { SidePanelTable } from "./SidePanelTable";
-import { getBannerMessageWithLink } from "../../Views/DMSLayout";
+import { PrivateDocErrorNotification, DownloadErrorNotification } from "./sidePanelTable.logic";
 
 interface ManageDocumentsSidePanelProps {
   t: any;
@@ -42,26 +42,6 @@ const ConvertDocButton: React.FC<{ t: any }> = ({ t }) => (
   >
     {t("DocumentManagementServer.privateDocButtonText")}
   </Button>
-);
-
-const PrivateDocErrorNotification: React.FC<{ t: any }> = ({ t }) => (
-  <Notification
-    status={NotificationStatus.WARNING}
-    title={t("DocumentManagementServer.informationUnavailable")}
-    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocTechnicalIssue"), t("DocumentManagementServer.contactSupport"))}
-    autoclose={false}
-    hideCloseButton={true}
-  />
-);
-
-const DownloadErrorNotification: React.FC<{ t: any }> = ({ t }) => (
-  <Notification
-    status={NotificationStatus.WARNING}
-    title={t("DocumentManagementServer.privateDocDownloadFailureTitle")}
-    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocDownloadFailureMessage"), t("DocumentManagementServer.contactSupport"))}
-    autoclose={false}
-    hideCloseButton={true}
-  />
 );
 
 export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t, privateDocData = [], isPrivateDocError = false, onSortChange }) => {

@@ -309,6 +309,9 @@ export const handleSorting: any = (columnName: string, sortBy: string, setSortBy
     case t("DocumentManagementServer.privacyColumn"):
       apiColumnName = "PrivacyStatus";
       break;
+    case t("DocumentManagementServer.addedByColumn"):
+      apiColumnName = "AddedBy";
+      break;
     default:
       return;
   }
@@ -326,40 +329,6 @@ export const handleSorting: any = (columnName: string, sortBy: string, setSortBy
     elementTextOrLabel: apiColumnName?.toLowerCase() === "dateadded" ? "Date added" : apiColumnName,
     elementLocation: "body"
   });
-};
-
-export const handleSidePanelSorting: (columnName: string, sortBy: string, setSortBy: React.Dispatch<React.SetStateAction<string>>, sortDirection: string, setSortDirection: React.Dispatch<React.SetStateAction<string>>, t: TFunction<"translation", undefined>) => void = (
-  columnName: string,
-  sortBy: string,
-  setSortBy: React.Dispatch<React.SetStateAction<string>>,
-  sortDirection: string,
-  setSortDirection: React.Dispatch<React.SetStateAction<string>>,
-  t: TFunction<"translation", undefined>
-): void => {
-  let apiColumnName: string = columnName;
-  switch (columnName) {
-    case t("DocumentManagementServer.documentColumn"):
-      apiColumnName = "Document";
-      break;
-    case t("DocumentManagementServer.relatedColumn"):
-      apiColumnName = "RelatedTo";
-      break;
-    case t("DocumentManagementServer.addedByColumn"):
-      apiColumnName = "AddedBy";
-      break;
-    case t("DocumentManagementServer.dateAddedColumn"):
-      apiColumnName = "DateAdded";
-      break;
-    default:
-      return;
-  }
-
-  let newDirection = "Asc";
-  if (sortBy === apiColumnName) {
-    newDirection = sortDirection === "Desc" ? "Asc" : "Desc";
-  }
-  setSortBy(apiColumnName);
-  setSortDirection(newDirection);
 };
 
 export const handleOnChangeCheckBox: any = (

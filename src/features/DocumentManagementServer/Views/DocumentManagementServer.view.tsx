@@ -12,7 +12,7 @@ import { useApplySummaryTagClassOnDocDataChange, useBodyNoScroll, useOpenSidePan
 import { DmsDialogs } from "../components/DocumentManagementServer.dialog";
 import DmsControlledList from "../components/DocumentManagementServer.table";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
-import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting, handleSidePanelSorting } from "../logic/DocumentManagementServer.dialog.config";
+import { getDialogConfig, handleOnChangeAllCheckBox, handleOnChangeCheckBox, handleSorting } from "../logic/DocumentManagementServer.dialog.config";
 import { DeleteSuccessToast, MainContent, SideNavigation } from "./DMSLayout";
 import { useDocumentManagementState } from "../hooks/useDocumentManagementState";
 import { DialogType, ViewDownloadItem } from "../responseModel";
@@ -359,7 +359,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
   )
 
   const handleSidePanelSortChange: (columnName: string) => void = (columnName: string): void => {
-    handleSidePanelSorting(columnName, sidePanelSortBy, setSidePanelSortBy, sidePanelSortDirection, setSidePanelSortDirection, t);
+    handleSorting(columnName, sidePanelSortBy, setSidePanelSortBy, sidePanelSortDirection, setSidePanelSortDirection, t);
   };
   return (
     <>

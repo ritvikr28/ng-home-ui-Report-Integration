@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
-import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions } from "./sidePanelTable.logic";
-import { fileDownloadById } from "../../logic/DocumentManagementServer.logic";
+import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, getPaginatedData, createHandlePageChange, createHandleSorting } from "./sidePanelTable.logic";
+import { pageSizeNumber } from "../../../../../public/Constants";
 
 interface SidePanelTableProps {
   tableBodyData: any[];
@@ -12,31 +12,18 @@ interface SidePanelTableProps {
 export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError }) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
-  const itemsPerPage = 40;
 
   useEffect(() => {
     setIsInitialLoad(false);
   }, [tableBodyData]);
   
-  const totalPages = Math.ceil(tableBodyData.length / itemsPerPage);
+  const totalPages = Math.ceil(tableBodyData.length / pageSizeNumber);
 
-  const handleDocumentClick: (doc: { name: string; fileId: string; blobName: string, application: string, sectionName: string }) => Promise<void> = async (doc) => {
-    try {
-      onDownloadError(false);
-      await fileDownloadById(doc.fileId, doc.name);
-    } catch {
-      onDownloadError(true);
-    }
-  };
-
-  
+  const handleDocumentClick = createHandleDocumentClick(onDownloadError);
 
   const tableHeadersData: any = createTableHeadersData(handleDocumentClick);
 
-  const paginatedData: any[] = tableBodyData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const paginatedData: any[] = getPaginatedData(tableBodyData, currentPage, pageSizeNumber);
 
   const {
     setSelectedIds,
@@ -46,15 +33,9 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
     setExcludedCheckBoxIds
   }: any = useSidePanelTableSelection(tableBodyData);
 
-  const handlePageChange: (event: React.ChangeEvent<unknown>, page: number) => void = (_: React.ChangeEvent<unknown>, page: number) => {
-    setCurrentPage(page);
-  };
 
-  const handleSorting: (event: React.ChangeEvent<unknown>, columnName: string) => void = (_e: React.ChangeEvent<unknown>, columnName: string): void => {
-    setIsInitialLoad(true);
-    onSortChange(columnName);
-    setCurrentPage(1);
-  };
+  const handlePageChange = createHandlePageChange(setCurrentPage);
+  const handleSorting = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
 
   return (
     <div className="manage-documents-side-panel-table">
@@ -70,15 +51,18 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
       paginationOnChange={handlePageChange}
       paginationMinCountToHideNextPreviousBtn={1}
       editSelectedBtnTitle="Actions"
+      onEditSelectedOverFlowMenu={(event, option) => {
+        alert(`Selected: ${option.value}`);
+      }}
       editSelectedOptions={[
         { text: "Make standard", value: "Standard", disabled: false, isSelected: false },
         { text: "Make confidential", value: "Confidential", disabled: false, isSelected: false },
         { text: "Delete", value: "Delete", disabled: false, isSelected: false, isShowDivider: true }
       ]}
       onEditSelectedBtnClick={() => {}}
-      onEditSelectedOverFlowMenu={(event, option) => {
-        alert(`Selected: ${option.value}`);
-      }}
+      // onEditSelectedOverFlowMenu={(event, option) => {
+      //   alert(`Selected: ${option.value}`);
+      // }}
       isSorting={false}
       sortAscFirst={!isInitialLoad}
       sortByDefault={false}

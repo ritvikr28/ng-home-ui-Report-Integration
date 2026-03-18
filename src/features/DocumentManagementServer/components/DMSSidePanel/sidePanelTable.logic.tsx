@@ -1,9 +1,30 @@
 import React, { useState } from "react";
-import { ShowValAs } from "@essnextgen/ui-kit";
+import { ShowValAs, Notification, NotificationStatus } from "@essnextgen/ui-kit";
 import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
+import { fileDownloadById } from "../../logic/DocumentManagementServer.logic";
+import { getBannerMessageWithLink } from "../../Views/DMSLayout";
+
+export const PrivateDocErrorNotification: React.FC<{ t: any }> = ({ t }) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.informationUnavailable")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocTechnicalIssue"), t("DocumentManagementServer.contactSupport"))}
+    autoclose={false}
+    hideCloseButton={true}
+  />
+);
+
+export const DownloadErrorNotification: React.FC<{ t: any }> = ({ t }) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.privateDocDownloadFailureTitle")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocDownloadFailureMessage"), t("DocumentManagementServer.contactSupport"))}
+    autoclose={false}
+    hideCloseButton={true}
+  />
+);
 
  type DocumentCell = { name: string; fileId: string; blobName: string; application: string; sectionName: string };
-
 export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => void): any[] => [
   {
     text: "Id",
@@ -85,6 +106,36 @@ export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => v
   }
 ];
 
+export const createHandleDocumentClick = (
+  onDownloadError: (hasError: boolean) => void
+) => async (doc: DocumentCell): Promise<void> => {
+  try {
+    onDownloadError(false);
+    await fileDownloadById(doc.fileId, doc.name);
+  } catch {
+    onDownloadError(true);
+  }
+};
+
+export const getPaginatedData = <T,>(data: T[], currentPage: number, itemsPerPage: number): T[] =>
+  data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+export const createHandlePageChange = (
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+) => (_: React.ChangeEvent<unknown>, page: number): void => {
+  setCurrentPage(page);
+};
+
+export const createHandleSorting = (
+  setIsInitialLoad: React.Dispatch<React.SetStateAction<boolean>>,
+  onSortChange: (columnName: string) => void,
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+) => (_e: React.ChangeEvent<unknown>, columnName: string): void => {
+  setIsInitialLoad(true);
+  onSortChange(columnName);
+  setCurrentPage(1);
+};
+
 
 export const filterDDLOptions: any[] = [
   { id: "1", text: "All", value: "All" },
@@ -116,6 +167,8 @@ export function useSidePanelTableSelection(tableBodyDatas: any[]): SidePanelTabl
         : [...prev, id]
     );
   };
+
+  console.log(selectedIds, "selectedIds in logic");
 
   const handleOnChangeAllCheckBox: (event: React.ChangeEvent<unknown>) => void = (event: React.ChangeEvent<unknown>) => {
     const target: HTMLInputElement = event.target as HTMLInputElement;
