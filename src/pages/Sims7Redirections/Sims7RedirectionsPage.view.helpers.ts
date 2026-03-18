@@ -57,7 +57,7 @@ function handleSuggestionApiError(args: FetchSuggestionsArgs): void {
 }
 
 async function processSuggestionResponse(args: FetchSuggestionsArgs): Promise<void> {
-    const apiRes: AutoSuggestionsResponse = await fetchAutoSuggestions(args.searchTerm);
+    const apiRes: AutoSuggestionsResponse = await fetchAutoSuggestions(args.searchTerm.trim());
     if (!apiRes.payload) {
         if (!args.ignoreRef.current) args.setSuggestionItems([]);
         return;
@@ -70,7 +70,8 @@ async function processSuggestionResponse(args: FetchSuggestionsArgs): Promise<vo
 }
 
 export async function fetchSuggestionsForSearch(args: FetchSuggestionsArgs): Promise<void> {
-    if (args.searchTerm.length < 3) {
+    const trimmedTerm: string = args.searchTerm.trim();
+    if (trimmedTerm.length < 3) {
         args.setSuggestionItems([]);
         args.setFilteredData(args.originalTableData);
         return;

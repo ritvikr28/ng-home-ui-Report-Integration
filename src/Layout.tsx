@@ -110,8 +110,8 @@ export const getMenus: (
   const hasSIMS7RedirectsOrgView: boolean =
     isOrganisationInVariant("Sims7RedirectsFlag");
 
-  const hasAdminConsoleAccessPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.AdminConsole.Access", Operation: "View" }],
+  const hasSystemManagerAccessPermission: boolean = authService.isAuthorised(
+    [{ Securable: "NG.System.Permissions", Operation: "View" }],
     MatchPermissions.all
   );
 
@@ -177,7 +177,7 @@ const AdminConsoleandSystemStatusRoutes: ({
         />
       )}
  
-       {hasAdminConsoleAccessPermission && (
+       {hasSystemManagerAccessPermission && (
         <ProtectedRoute
           exact
           path="/sims7redirections"

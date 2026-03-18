@@ -22,7 +22,9 @@ function makeArgs(overrides: any = {}) {
     setSearchIsLoading: jest.fn(),
     originalTableData: [{ id: '1', category: 'Test' }],
     ignoreRef: { current: false },
-    ...overrides
+    ...overrides,
+    // Ensure t is always a function, even if overrides.t is null/undefined
+    t: typeof overrides.t === 'function' ? overrides.t : ((key: string) => key),
   };
 }
 
@@ -59,6 +61,27 @@ describe('fetchSuggestionsForSearch', () => {
       await fetchSuggestionsForSearch(args);
       expect(args.setSearchIsLoading).not.toHaveBeenCalled();
     });
+
+    it('does not call API when search term is only spaces', async () => {
+      const args = makeArgs({ searchTerm: '   ' });
+      await fetchSuggestionsForSearch(args);
+      expect(fetchAutoSuggestions).not.toHaveBeenCalled();
+      expect(args.setSuggestionItems).toHaveBeenCalledWith([]);
+      expect(args.setFilteredData).toHaveBeenCalledWith(args.originalTableData);
+    });
+
+    it('does not call API when 3+ chars but all spaces', async () => {
+      const args = makeArgs({ searchTerm: '     ' });
+      await fetchSuggestionsForSearch(args);
+      expect(fetchAutoSuggestions).not.toHaveBeenCalled();
+    });
+
+    it('does not call API when term has fewer than 3 non-space chars', async () => {
+      const args = makeArgs({ searchTerm: 'ab ' });
+      await fetchSuggestionsForSearch(args);
+      expect(fetchAutoSuggestions).not.toHaveBeenCalled();
+      expect(args.setSuggestionItems).toHaveBeenCalledWith([]);
+    });
   });
 
   describe('searchTerm with 3+ chars — API success', () => {
@@ -68,6 +91,13 @@ describe('fetchSuggestionsForSearch', () => {
       await fetchSuggestionsForSearch(args);
       expect(args.setSearchIsLoading).toHaveBeenNthCalledWith(1, true);
       expect(args.setSearchIsLoading).toHaveBeenNthCalledWith(2, false);
+    });
+
+    it('calls API with trimmed search term', async () => {
+      fetchAutoSuggestions.mockResolvedValue({ payload: { modules: ['ModA'] } });
+      const args = makeArgs({ searchTerm: ' abc ' });
+      await fetchSuggestionsForSearch(args);
+      expect(fetchAutoSuggestions).toHaveBeenCalledWith('abc');
     });
 
     it('sets suggestion groups from payload', async () => {
