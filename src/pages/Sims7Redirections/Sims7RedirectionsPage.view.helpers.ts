@@ -20,7 +20,17 @@ export interface FetchSuggestionsArgs {
     setSearchIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
     originalTableData: any[];
     ignoreRef: { current: boolean };
+    t: (key: string) => string;
 }
+
+const FIELD_NAME_MAP: Record<string, string> = {
+    ngModule:      'SIMS7Redirects.category',
+    ngComponent:   'SIMS7Redirects.nextGenModule',
+    sims7Module:   'SIMS7Redirects.sims7Module',
+    updatedBy:     'SIMS7Redirects.modifiedBy',
+    redirectStatus:'SIMS7Redirects.status',
+    effectiveDate: 'SIMS7Redirects.effectiveDate',
+};
 
 function isAllEmpty(payload: Record<string, string[]>): boolean {
     return Object.values(payload).every(arr => arr.length === 0);
@@ -35,7 +45,7 @@ function handleSuggestionSuccess(
     args: FetchSuggestionsArgs
 ): void {
     const groups: SuggestionGroup[] = Object.entries(payload).map(([name, values]) => ({
-        name,
+        name: FIELD_NAME_MAP[name] ? args.t(FIELD_NAME_MAP[name]) : name,
         values: values.map((text: string) => ({ text }))
     }));
     if (!args.ignoreRef.current) args.setSuggestionItems(groups);
