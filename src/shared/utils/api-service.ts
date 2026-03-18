@@ -22,7 +22,7 @@ type ServiceType = {
     data: Object,
     config?: AxiosRequestConfig
   ) => Promise<AxiosResponse<any>>;
-  delete: (path: string) => Promise<AxiosResponse<any>>;
+  delete: (path: string,data?: any) => Promise<AxiosResponse<any>>;
 };
 
 const getErrorMessage = (error: any) => {
@@ -95,8 +95,8 @@ export const service: ServiceType = {
     service.init();
     return this.instance.put(path, data, config);
   },
-  delete(path: string) {
+  delete(path: string, data?: any) {
     service.init();
-    return this.instance.delete(path);
+    return this.instance.delete(path, { data });
   }
 };

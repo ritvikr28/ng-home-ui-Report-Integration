@@ -1,15 +1,14 @@
 import React, { SyntheticEvent, useEffect, useMemo, useRef } from "react";
-import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, NotificationStatus, ResponseCode, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
+import { Button, ButtonColor, ButtonIconPosition, ButtonSize, ControlledList, DialogTemplate, IconColor, ISelectedItem, NotificationStatus, ResponseCode, SelectedItem, ValidationTextLevel } from "@essnextgen/ui-kit";
 import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { handleSearchKeyPressed as handleSearchKeyPressedUtil, handleSearchChangeWithAutoSuggest as handleSearchChangeWithAutoSuggestUtil } from "./notificationTableHandlers";
 import { fetchNotificationTableData, fetchSearchAutoSuggestData, isShowdynamictableNoMsg, shouldFetchTableData } from "./notificationTableApiHelpers";
 import { getEmptyStateMessage } from "../hooks/useNotificationHook";
-import { UseNotificationReturnType } from "../Notifications.props";
-import { useNotification } from "../useNotification";
 import NotificationSidePanelView from "../components/NotificationSidePanelComponent/NotificationSidePanel.view";
-import { NotificationTableSectionProps, SearchTag } from "./NotificationTableSection.props";
+import { NotificationTableSectionFullProps, NotificationTableSectionProps, SearchTag } from "./NotificationTableSection.props";
 import { buildTags } from "./NotificationTableSectionHelper";
 import { getSearchOnClickClose } from "./notificationTableHandlers.view";
+import DeleteConfirmationModalLogic from "../components/DeleteConfirmationModal/DeleteConfirmationModal.logic";
 
 function renderSidePanel(props: {
     sideIsOpen: boolean;
@@ -21,58 +20,77 @@ function renderSidePanel(props: {
     return props.sideIsOpen ? <NotificationSidePanelView {...props} notificationIdSelected={props.notificationIdSelected ?? undefined} /> : null;
 }
 
-const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
-    tableData,
-    totalTableData,
-    tableDataError,
-    hasSearch,
-    hasActiveFilters,
-    tableRows,
-    tableHeadersData,
-    isTableBodyLoading,
-    setSideIsOpen,
-    sideIsOpen,
-    selectedItem,
-    setSelectedItem,
-    notificationIdSelected,
-    // totalPages,
-    currentPage,
-    setCurrentPage,
-    setNoResults,
-    setTableData,
-    setTotalTableData,
-    setTableDataError,
-    setIsTableBodyLoading,
-    notificationState,
-    setNotificationState,
-    setFilterBtnClicked,
-    filters,
-    setFilters
-}) => {
+
+
+const NotificationTableSection: React.FC<NotificationTableSectionProps & {
+    isDeleteDialogOpen: boolean;
+    handleCloseDeleteDialog: () => void;
+    handleConfirmDelete: () => void;
+    selectedCount: number;
+    isDeleteLoading: boolean;
+    isNoSelectionMode: boolean;
+    handleBulkAction: (selectedItem: { value?: string } | null, visibleIds?: string[]) => void;
+    handleSelectAllChange: (event: any, visibleIds: string[]) => void;
+    handleSelectedCheckboxIds: (ids: string[]) => void;
+    handleListCheckboxChange: (index: number, id: string) => void;
+    showDeleteToast: boolean;
+    isClearSelectedCheckbox: boolean;
+    sortBy: string;
+    sortDirection: boolean;
+    handleSort: (columnName: string) => void;
+    isAutoSuggestVisible: boolean;
+    setIsAutoSuggestVisible: React.Dispatch<React.SetStateAction<boolean>>;
+    suggestionLoader: boolean;
+    setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
+    setSearchSuggestions: React.Dispatch<React.SetStateAction<any[]>>;
+    searchSuggestions: any[];
+    setSearchTerm: React.Dispatch<React.SetStateAction<string>>;
+    // isdeleted: boolean;
+    // setIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
+    searchTerm: string;
+    isSearching: boolean;
+    noResults: boolean;
+    totalNotifications: number;
+    totalPages: number;
+}> = (props) => {
+    // Destructure all props
     const {
-        totalNotifications,
-        totalPages,
-        // handlePageChange,
-        searchTerm,
-        isSearching,
-        noResults,
-        // setNoResults,
-        // handleListCheckboxChange,
-        // handleSelectAllChange,
+        totalTableData,
+        tableDataError,
+        hasSearch,
+        hasActiveFilters,
+        tableRows,
+        tableHeadersData,
+        isTableBodyLoading,
+        setSideIsOpen,
+        sideIsOpen,
+        selectedItem,
+        setSelectedItem,
+        notificationIdSelected,
+        currentPage,
+        setCurrentPage,
+        setNoResults,
+        setTableData,
+        setTotalTableData,
+        setTableDataError,
+        setIsTableBodyLoading,
+        notificationState,
+        setNotificationState,
+        setFilterBtnClicked,
+        filters,
+        setFilters,
+        isDeleteDialogOpen,
+        handleCloseDeleteDialog,
+        handleConfirmDelete,
+        selectedCount,
+        isDeleteLoading,
+        isNoSelectionMode,
+        handleBulkAction,
+        handleSelectAllChange,
         handleSelectedCheckboxIds,
-        // handleBulkAction,
-        // isDeleteDialogOpen,
-        // closeDeleteDialog,
-        // confirmDelete,
-        // isDeleteLoading,
+        handleListCheckboxChange,
         showDeleteToast,
         isClearSelectedCheckbox,
-        // selectedCount,
-        // isNoSelectionMode,
-        // filters,
-        // handleFilterChange
-        // handleClearAllFilters,
-        // searchTagList,
         sortBy,
         sortDirection,
         handleSort,
@@ -82,17 +100,13 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
         setSuggestionLoader,
         setSearchSuggestions,
         searchSuggestions,
-        setSearchTerm
-        // getSearchTagList,
-        // filters
-        // handleSearchChangeWithAutoSuggest,
-        // handleSearchKeyPressed,
-    }: UseNotificationReturnType = useNotification({
-        tableData,
-        totalTableData,
-        currentPage,
-        setCurrentPage: (value) => setCurrentPage(typeof value === "function" ? value(currentPage) : value)
-    });
+        setSearchTerm,
+        searchTerm,
+        isSearching,
+        noResults,
+        totalNotifications,
+        totalPages
+    }: NotificationTableSectionFullProps = props;
 
 
     const searchTagList: SearchTag = useMemo(() => buildTags(filters), [filters]);
@@ -121,25 +135,32 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
         );
     };
 
+    const handleBulkDeleteSelection: (_event: React.SyntheticEvent<Element, Event>, selectedItemOption: ISelectedItem) => void = (_event: React.SyntheticEvent, selectedItemOption: ISelectedItem) => {
+        console.log("Selected bulk action:", selectedItemOption);
+        handleBulkAction(selectedItemOption, visibleNotificationIds);
+    };
+
     const tableWrapperRef: React.RefObject<HTMLDivElement> = useRef<HTMLDivElement>(null);
 
     const shouldShowPagination = !tableDataError && totalTableData !== 0 && !isTableBodyLoading;
 
     useEffect(() => {
         if (shouldFetchTableData({ sideIsOpen, hasSearch, searchCleared: notificationState.searchCleared })) {
-            fetchNotificationTableData({
-                currentPage,
-                searchTerm,
-                sortBy: String(sortBy),
-                sortDirection,
-                setIsTableBodyLoading,
-                setTableData,
-                setTotalTableData,
-                setTableDataError,
-                setNoResults
-            });
+            if (!isDeleteLoading) {
+                fetchNotificationTableData({
+                    currentPage,
+                    searchTerm,
+                    sortBy: String(sortBy),
+                    sortDirection,
+                    setIsTableBodyLoading,
+                    setTableData,
+                    setTotalTableData,
+                    setTableDataError,
+                    setNoResults
+                });
+            }
         }
-    }, [notificationState, currentPage, sideIsOpen, sortBy, sortDirection]);
+    }, [notificationState, currentPage, sideIsOpen, sortBy, sortDirection, isDeleteLoading]);
 
     useEffect(() => {
         if (searchTerm.length >= 2) {
@@ -150,7 +171,11 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
             });
         }
     }, [searchTerm, isAutoSuggestVisible, sideIsOpen, hasSearch]);
+
+    const visibleNotificationIds: string[] = React.useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
+
     const searchOnClickClose: (e: React.SyntheticEvent<Element, Event>, text: string, closeObj: SelectedItem, id?: string | number) => void = getSearchOnClickClose(filters, setFilters, searchTagList);
+    console.log("tableDataError----------------->>>>>>>", tableDataError, "==================", t("NotificationCenter_T.informationUnavailableTitle"))
     return (
         <div
             className="notification-controlledlist-width"
@@ -162,7 +187,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                 <ControlledList
                     tooltipBottomAligned
                     data-testid="controlled-list"
-                    globalNotificationMsgBannerObject={[[
+                    globalNotificationMsgBannerObject={[
                         {
                             "isShow": tableDataError,
                             "variant": "warning",
@@ -171,7 +196,7 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                             "autoclose": false,
                             "hideCloseButton": false
                         }
-                    ]]}
+                    ]}
                     isAddEventBtnShow={false}
                     dataTestId="controlled-list-test-id"
                     filterDDLOptions={[]}
@@ -206,9 +231,9 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                             "value": "Delete"
                         }
                     ]}
-                    // onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
+                    onEditSelectedOverFlowMenu={handleBulkDeleteSelection}
                     onEditSelectedBtnClick={() => { }}
-                    emptyStateMsg={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t)}
+                    emptyStateMsg={getEmptyStateMessage({ tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t })}
                     onAddEventBtnClick={() => { }}
                     groupTagsEnabled
                     headingText={t("NotificationCenter_T.headingText")}
@@ -263,15 +288,15 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                             tableDataError
                         })
                     }
-                    emptyRowResponseMessage={getEmptyStateMessage(tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t)}
+                    emptyRowResponseMessage={getEmptyStateMessage({ tableDataError, totalNotifications, isSearching, hasSearch, hasActiveFilters, searchTerm, searchSuggestions, t })}
                     searchIsLoader={suggestionLoader}
                     emptyRowResponseCode={ResponseCode.Info}
                     isPagination={shouldShowPagination}
                     paginationCount={totalPages}
                     paginationOnChange={(e, page) => setCurrentPage(page)}
                     paginationPage={currentPage}
-                    // onChangeListCheckBox={(index: number, id: string) => handleListCheckboxChange(index, id)}
-                    // onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
+                    onChangeListCheckBox={handleListCheckboxChange}
+                    onChangeAllCheckBox={(event: any) => handleSelectAllChange(event, visibleNotificationIds)}
                     selectedCheckboxIds={handleSelectedCheckboxIds}
                     isClearSelectedCheckbox={isClearSelectedCheckbox}
                     showToastNotification={showDeleteToast}
@@ -291,15 +316,15 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                         setSearchTerm("");
                         setIsAutoSuggestVisible(false);
                         setNotificationState({ searchCleared: true });
-
                         handleSearchKeyPressed("");
                     }}
-                    onSearchSuggestionItemClick={(props: any | null) => {
+                    onSearchSuggestionItemClick={(prop: any | null) => {
+                        const { name } = prop;
                         if (props) {
                             // eslint-disable-next-line react/prop-types
-                            setSearchTerm(props.name);
+                            setSearchTerm(name);
                             // eslint-disable-next-line react/prop-types
-                            handleSearchKeyPressed(props.name);
+                            handleSearchKeyPressed(name);
                             setIsAutoSuggestVisible(false);
                         }
                     }}
@@ -318,6 +343,16 @@ const NotificationTableSection: React.FC<NotificationTableSectionProps> = ({
                 />
             </div>
             {renderSidePanel({ sideIsOpen, setSideIsOpen, selectedItem, setSelectedItem, notificationIdSelected: notificationIdSelected ?? null })}
+
+            {/* Delete Confirmation Modal Logic */}
+            <DeleteConfirmationModalLogic
+                isOpen={isDeleteDialogOpen}
+                onClose={handleCloseDeleteDialog}
+                onConfirm={isNoSelectionMode ? handleCloseDeleteDialog : handleConfirmDelete}
+                selectedCount={selectedCount}
+                isLoading={isDeleteLoading}
+                isNoSelection={isNoSelectionMode}
+            />
         </div>
     )
 };
