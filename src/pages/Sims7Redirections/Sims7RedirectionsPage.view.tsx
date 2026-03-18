@@ -380,7 +380,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     searchOnChange={handleSearchChange}
                     isGroupSuggestionOnItemClick={true}
                     onSearchSuggestionItemClick={handleSuggestionClick}
-                    searchOnClickClose={handleSearchClose}
+                    searchOnCloseHandle={handleSearchClose}
                     searchIsLoader={searchIsLoading}
                      isNotClearSearchTermOnItemClick = {true}
                      isSearchHideClearIcon={searchTerm.length === 0}
