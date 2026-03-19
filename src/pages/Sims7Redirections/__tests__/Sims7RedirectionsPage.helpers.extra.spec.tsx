@@ -154,6 +154,37 @@ describe('handleSuggestionItemClick', () => {
     handleSuggestionItemClick({}, tableData as any, setFilteredData);
     // expect(result).toHaveLength(tableData.length);
   });
+
+  it('calls setActiveSearchValue with the matched value when provided', () => {
+    const setFilteredData = jest.fn();
+    const setActiveSearchValue = jest.fn();
+    handleSuggestionItemClick({ text: 'Admissions' }, tableData as any, setFilteredData, setActiveSearchValue);
+    expect(setActiveSearchValue).toHaveBeenCalledWith('Admissions');
+  });
+
+  it('calls setActiveSearchValue with item.id when text is absent', () => {
+    const setFilteredData = jest.fn();
+    const setActiveSearchValue = jest.fn();
+    handleSuggestionItemClick({ id: 'Finance' }, tableData as any, setFilteredData, setActiveSearchValue);
+    expect(setActiveSearchValue).toHaveBeenCalledWith('Finance');
+  });
+
+  it('does not call setActiveSearchValue when it is not provided', () => {
+    // No 4th argument — should not throw and should still filter correctly
+    const setFilteredData = jest.fn();
+    expect(() =>
+      handleSuggestionItemClick({ text: 'Admissions' }, tableData as any, setFilteredData)
+    ).not.toThrow();
+    expect(setFilteredData).toHaveBeenCalled();
+  });
+
+  it('does not call setActiveSearchValue when item is null', () => {
+    const setFilteredData = jest.fn();
+    const setActiveSearchValue = jest.fn();
+    handleSuggestionItemClick(null, tableData as any, setFilteredData, setActiveSearchValue);
+    expect(setActiveSearchValue).not.toHaveBeenCalled();
+    expect(setFilteredData).not.toHaveBeenCalled();
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -334,5 +365,20 @@ describe('handleSaveSuccess', () => {
     expect(fetchSims7Redirections).toHaveBeenCalledWith(
       expect.objectContaining({ PageNumber: 3, PageSize: 20 })
     );
+  });
+
+  it('still calls setLoading(false) when API throws', async () => {
+    fetchSims7Redirections.mockRejectedValue(new Error('API error'));
+    const args = baseArgs();
+    await expect(handleSaveSuccess(args)).rejects.toThrow('API error');
+    expect(args.setLoading).toHaveBeenNthCalledWith(1, true);
+    expect(args.setLoading).toHaveBeenNthCalledWith(2, false);
+  });
+
+  it('returns the mapped rows on success', async () => {
+    const items = [{ id: '1' }, { id: '2' }];
+    fetchSims7Redirections.mockResolvedValue({ items, totalItems: 2 });
+    const result = await handleSaveSuccess(baseArgs());
+    expect(result).toEqual(items);
   });
 });

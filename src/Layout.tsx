@@ -74,20 +74,10 @@ const AdminConsole: LazyExoticComponent<FC<{}>> = lazy(
 
 const SIMSIDAdminPageView: LazyExoticComponent<FC<{}>> = lazy(() => import("./pages/SIMSIDAdminPage/SIMSIDAdminPage.view"));
 
-
-
-
 export interface ILayoutProps {
   isStandaloneApp: boolean;
   baseRouteName: string;
 }
-
-// declare global {
-//   interface Window {
-//     userpilot: any;
-//     sharedStorage: any;
-//   }
-// }
 
 export const getMenus: (
   data: IModulePermission[],
@@ -107,13 +97,13 @@ export const getMenus: (
   };
 
 
-  const hasSIMS7RedirectsOrgView: boolean =
-    isOrganisationInVariant("Sims7RedirectsFlag");
+const hasSIMS7RedirectsOrgView: boolean =
+  isOrganisationInVariant("Sims7RedirectsFlag");
 
-  const hasSystemManagerAccessPermission: boolean = authService.isAuthorised(
-    [{ Securable: "NG.System.Permissions", Operation: "View" }],
-    MatchPermissions.all
-  );
+const hasSystemManagerAccessPermission: boolean = authService.isAuthorised(
+  [{ Securable: "NG.System.Permissions", Operation: "View" }],
+  MatchPermissions.all
+);
 
 const AdminConsoleandSystemStatusRoutes: ({
   hasAdminConsoleFlagrPermission,
@@ -137,7 +127,7 @@ const AdminConsoleandSystemStatusRoutes: ({
   hasRefreshDBOrgPermission: boolean;
   hasRefreshDBPermission: boolean;
   hasSendNotificationFlagr: boolean;
-  }) => JSX.Element = ({
+}) => JSX.Element = ({
   hasAdminConsoleFlagrPermission,
   hasAdminConsolePermissions,
   hasDMSPermissions,
@@ -150,19 +140,19 @@ const AdminConsoleandSystemStatusRoutes: ({
   hasSendNotificationFlagr
 }): JSX.Element => (
     <>
-       
-        <ProtectedRoute
-          exact
-          path="/AdminConsole"
-          render={() =>
-            hasAdminConsolePermissions || isAuthzUserAdmin() ? (
-              <AdminConsole />
-            ) : (
-              <Redirect to="/unauthorized" />
-            )
-          }
-        />
-      
+
+      <ProtectedRoute
+        exact
+        path="/AdminConsole"
+        render={() =>
+          hasAdminConsolePermissions || isAuthzUserAdmin() ? (
+            <AdminConsole />
+          ) : (
+            <Redirect to="/unauthorized" />
+          )
+        }
+      />
+
       {hasAdminConsoleFlagrPermission && (
         <ProtectedRoute
           exact
@@ -176,35 +166,33 @@ const AdminConsoleandSystemStatusRoutes: ({
           }
         />
       )}
- 
-       {hasSystemManagerAccessPermission && (
-        <ProtectedRoute
-          exact
-          path="/sims7redirections"
-          render={() =>
-            hasSIMS7RedirectsOrgView ? (
-              <Sims7RedirectionsLayout />
-            ) : (
-              <Redirect to="/unauthorized" />
-            )
-          }
-        />
-      )}
-       
+
+      <ProtectedRoute
+        exact
+        path="/sims7redirections"
+        render={() =>
+          hasSystemManagerAccessPermission && hasSIMS7RedirectsOrgView ? (
+            <Sims7RedirectionsLayout />
+          ) : (
+            <Redirect to="/unauthorized" />
+          )
+        }
+      />
+
       <SystemStatusRoute
         hasSystemStatusPermission={hasSystemStatusPermission}
         hasSystemStatusOrgPermission={hasSystemStatusOrgPermission}
         canViewSystemStatus={canViewSystemStatus}
         canUpdateSystemStatus={canUpdateSystemStatus}
-      />       
-        <NotificationRoute sendNotificationFlagr={hasSendNotificationFlagr} />
-        <DBManagementRoute
-          hasRefreshDBOrgPermission={hasRefreshDBOrgPermission}
-          hasRefreshDBPermission={hasRefreshDBPermission}
-        />
+      />
+      <NotificationRoute sendNotificationFlagr={hasSendNotificationFlagr} />
+      <DBManagementRoute
+        hasRefreshDBOrgPermission={hasRefreshDBOrgPermission}
+        hasRefreshDBPermission={hasRefreshDBPermission}
+      />
     </>
   );
-  const DBManagementRoute: ({ hasRefreshDBOrgPermission, hasRefreshDBPermission }: {
+const DBManagementRoute: ({ hasRefreshDBOrgPermission, hasRefreshDBPermission }: {
   hasRefreshDBOrgPermission: boolean;
   hasRefreshDBPermission: boolean;
 }) => JSX.Element | null = ({
@@ -221,7 +209,7 @@ const AdminConsoleandSystemStatusRoutes: ({
         component={DBManagement}
       />
     ) : null;
-    const NotificationRoute: ({ sendNotificationFlagr }: { sendNotificationFlagr: boolean }) => JSX.Element | null = ({ sendNotificationFlagr }: { sendNotificationFlagr: boolean }): JSX.Element | null =>
+const NotificationRoute: ({ sendNotificationFlagr }: { sendNotificationFlagr: boolean }) => JSX.Element | null = ({ sendNotificationFlagr }: { sendNotificationFlagr: boolean }): JSX.Element | null =>
   sendNotificationFlagr ? (
     <ProtectedRoute
       exact
@@ -327,10 +315,10 @@ export const Layout: (props: ILayoutProps) => JSX.Element = ({
     `${envConfig.APPLICATION}`,
     "AdminConsoleView"
   );
-const sendNotificationFlagr: boolean = hasFeaturePermission(
-  `${envConfig.APPLICATION}`,
-  "SendNotification"
-);
+  const sendNotificationFlagr: boolean = hasFeaturePermission(
+    `${envConfig.APPLICATION}`,
+    "SendNotification"
+  );
   const hasRefreshDBPermission: boolean = hasFeaturePermission(
     `${envConfig.APPLICATION}`,
     "RefreshDBORG"
@@ -378,7 +366,7 @@ const sendNotificationFlagr: boolean = hasFeaturePermission(
   );
 
   return (
-    
+
     /* eslint-disable react/prop-types */
     <Router basename={baseRouteName}>
       {isStandaloneApp && (

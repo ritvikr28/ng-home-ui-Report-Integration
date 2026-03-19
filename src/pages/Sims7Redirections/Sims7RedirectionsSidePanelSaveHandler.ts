@@ -26,6 +26,7 @@ export interface SaveRedirectionHandlerArgs {
     setShowFailureBanner: (val: boolean) => void;
     setSidePanelMode: (mode: string) => void;
     onSaveSuccess?: () => void;
+    onSelectedRowUpdate?: (updatedRow: Record<string, any>) => void;
 }
 
 export async function saveRedirectionHandler({
@@ -37,13 +38,17 @@ export async function saveRedirectionHandler({
     setShowSuccessToast,
     setShowFailureBanner,
     setSidePanelMode,
-    onSaveSuccess
+    onSaveSuccess,
+    onSelectedRowUpdate
 }: SaveRedirectionHandlerArgs): Promise<void> {
     try {
         const effectiveDateStr: string = getEffectiveDateStr(effectiveDate);
         const updatedRow: Record<string, any> = { ...selectedRow };
         await handleStatusLogic(updatedRow, redirectToNextGen, effectiveDate, reasonForChanges);
         if (hasMissingDFENumber(updatedRow, setDateError)) return;
+        // Update selectedRow immediately after status logic so the panel
+        // has the correct status/effectiveDate before the 1.5s toast delay.
+        if (onSelectedRowUpdate) onSelectedRowUpdate(updatedRow);
         await callUpdateApi({
             updatedRow,
             effectiveDateStr,
