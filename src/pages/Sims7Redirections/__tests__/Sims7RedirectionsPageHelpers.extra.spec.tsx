@@ -213,4 +213,37 @@ describe('handleSaveSuccess', () => {
       })
     );
   });
+
+  it('still calls setLoading(false) when API throws', async () => {
+    fetchSims7Redirections.mockRejectedValue(new Error('network error'));
+    const setLoading = jest.fn();
+    await expect(handleSaveSuccess({
+      setLoading,
+      sortColumn: '',
+      sortOrder: 'asc',
+      currentPage: 1,
+      pageSize: 40,
+      searchTagList: [],
+      setOriginalTableData: jest.fn(),
+      setTotalItems: jest.fn()
+    })).rejects.toThrow('network error');
+    expect(setLoading).toHaveBeenNthCalledWith(1, true);
+    expect(setLoading).toHaveBeenNthCalledWith(2, false);
+  });
+
+  it('returns the mapped rows on success', async () => {
+    const items = [{ id: '1' }, { id: '2' }];
+    fetchSims7Redirections.mockResolvedValue({ items, totalItems: 2 });
+    const result = await handleSaveSuccess({
+      setLoading: jest.fn(),
+      sortColumn: '',
+      sortOrder: 'asc',
+      currentPage: 1,
+      pageSize: 40,
+      searchTagList: [],
+      setOriginalTableData: jest.fn(),
+      setTotalItems: jest.fn()
+    });
+    expect(result).toEqual(items);
+  });
 });
