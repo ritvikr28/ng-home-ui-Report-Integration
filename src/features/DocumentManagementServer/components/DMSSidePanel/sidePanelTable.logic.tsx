@@ -39,7 +39,6 @@ export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => v
     columnWidth: "100px",
     isColumnSorting: true,
     anyComponent: (value: DocumentCell[]) => {
-      console.log(value, "Document column value");
       const doc: DocumentCell = value[0];
       return (
         <button
@@ -117,7 +116,7 @@ export const createHandleDocumentClick = (
   }
 };
 
-export const getPaginatedData = <T,>(data: T[], currentPage: number, itemsPerPage: number): T[] =>
+export const getPaginatedData = <T extends unknown>(data: T[], currentPage: number, itemsPerPage: number): T[] =>
   data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
 export const createHandlePageChange = (
