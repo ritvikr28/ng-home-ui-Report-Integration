@@ -153,7 +153,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
         const ignoreRef: { current: boolean } = { current: false };
         fetchSuggestionsForSearch({ searchTerm, setSuggestionItems, setFilteredData, setApiFailed, ignoreRef, setSearchIsLoading, originalTableData, t });
         return () => { ignoreRef.current = true; };
-    }, [searchTerm, originalTableData]);
+    }, [searchTerm.trim(), originalTableData]);
 
     useEffect(() => {
         setFilteredData(originalTableData);
