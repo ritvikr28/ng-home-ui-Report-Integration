@@ -98,10 +98,12 @@ function getSuggestionValue(item: { text?: string; id?: string }): string {
 export function handleSuggestionItemClick(
     item: { text?: string; id?: string } | null,
     originalTableData: Sims7RedirectionsTableRow[],
-    setFilteredData: React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>
+    setFilteredData: React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow[]>>,
+    setActiveSearchValue?: React.Dispatch<React.SetStateAction<string>>
 ): void {
     if (!item) return;
     const value = getSuggestionValue(item);
+    if (setActiveSearchValue) setActiveSearchValue(value);
     setFilteredData(originalTableData.filter(row => rowMatchesValue(row, value)));
 }
 
@@ -143,16 +145,21 @@ export interface OnSaveSuccessArgs {
     setTotalItems: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export async function handleSaveSuccess(args: OnSaveSuccessArgs): Promise<void> {
+export async function handleSaveSuccess(args: OnSaveSuccessArgs): Promise<Sims7RedirectionsTableRow[]> {
     args.setLoading(true);
-    const payload = await fetchSims7Redirections({
-        SortColumnName: args.sortColumn,
-        SortOrder: args.sortOrder ? args.sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
-        PageNumber: args.currentPage,
-        PageSize: args.pageSize,
-        SearchFilter: args.searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
-    });
-    args.setOriginalTableData((payload.items || []).map(mapSims7RedirectionsItem));
-    args.setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
-    args.setLoading(false);
+    try {
+        const payload = await fetchSims7Redirections({
+            SortColumnName: args.sortColumn,
+            SortOrder: args.sortOrder ? args.sortOrder.toUpperCase() as 'ASC' | 'DESC' : undefined,
+            PageNumber: args.currentPage,
+            PageSize: args.pageSize,
+            SearchFilter: args.searchTagList.map(item => item.value).filter((v): v is string => typeof v === 'string')
+        });
+        const mappedRows: Sims7RedirectionsTableRow[] = (payload.items || []).map(mapSims7RedirectionsItem);
+        args.setOriginalTableData(mappedRows);
+        args.setTotalItems(payload.totalItems || (payload.items ? payload.items.length : 0));
+        return mappedRows;
+    } finally {
+        args.setLoading(false);
+    }
 }

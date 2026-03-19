@@ -109,18 +109,8 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const [selectedRow, setSelectedRow]: [Sims7RedirectionsTableRow | null, React.Dispatch<React.SetStateAction<Sims7RedirectionsTableRow | null>>] = React.useState<Sims7RedirectionsTableRow | null>(null);
     const [isSidebarOpen, setIsSidebarOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
     const [searchIsLoading, setSearchIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+    const [activeSearchValue, setActiveSearchValue]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
 
-    // Column mapping: frontend to backend
-    // const columnMapping: Record<string, string> = {
-    //     "Category": "ngModule",
-    //     "Next Gen module": "ngComponent",
-    //     "SIMS 7 module": "sims7Module",
-    //     "Modified by": "updatedBy",
-    //     "Effective date": "effectiveDate",
-    //     "Status": "redirectStatus"
-    // };
-
-    // Column mapping: frontend to backend (keys use translated labels to support all languages)
     const columnMapping: Record<string, string> = {
         [t("SIMS7Redirects.category")]: "ngModule",
         [t("SIMS7Redirects.nextGenModule")]: "ngComponent",
@@ -156,7 +146,15 @@ export const Sims7RedirectionsPage: React.FC = () => {
     }, [searchTerm.trim(), originalTableData]);
 
     useEffect(() => {
-        setFilteredData(originalTableData);
+        if (activeSearchValue) {
+            setFilteredData(originalTableData.filter(row =>
+                Object.values(row).some(
+                    val => typeof val === 'string' && val.toLowerCase().includes(activeSearchValue.toLowerCase())
+                )
+            ));
+        } else {
+            setFilteredData(originalTableData);
+        }
     }, [originalTableData]);
 
     useEffect(() => {
@@ -215,17 +213,30 @@ export const Sims7RedirectionsPage: React.FC = () => {
     };
 
     const handleSuggestionClick: (item: { text?: string; id?: string } | null) => void = (item) => {
-        handleSuggestionItemClick(item, originalTableData, setFilteredData);
+        handleSuggestionItemClick(item, originalTableData, setFilteredData, setActiveSearchValue);
     };
 
     const handleSearchClose: () => void = () => {
         setSearchTerm("");
         setSuggestionItems([]);
+        setActiveSearchValue("");
         setFilteredData(originalTableData);
     };
 
     const handleOnSaveSuccess: () => Promise<void> = async () => {
-        await handleSaveSuccess({ setLoading, sortColumn, sortOrder, currentPage, pageSize, searchTagList, setOriginalTableData, setTotalItems });
+        try {
+            const updatedRows: Sims7RedirectionsTableRow[] = await handleSaveSuccess({ setLoading, sortColumn, sortOrder, currentPage, pageSize, searchTagList, setOriginalTableData, setTotalItems });
+            // Update selectedRow with the freshly saved data so status/effectiveDate
+            // reflect the saved values when the panel re-enters edit mode.
+            if (selectedRow) {
+                const updatedRow: Sims7RedirectionsTableRow | undefined = updatedRows.find(
+                    (row: Sims7RedirectionsTableRow) => row.id === selectedRow.id
+                );
+                if (updatedRow) setSelectedRow(updatedRow);
+            }
+        } catch {
+            setLoading(false);
+        }
     };
 
     const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (_event, page) => {
@@ -431,6 +442,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
                     t={t}
                     setSidePanelMode={setSidePanelMode}
                     onSaveSuccess={handleOnSaveSuccess}
+                    setSelectedRow={setSelectedRow}
                 />
             </div>
         </div>

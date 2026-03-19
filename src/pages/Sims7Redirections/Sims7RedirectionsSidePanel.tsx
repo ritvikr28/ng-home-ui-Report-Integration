@@ -21,6 +21,7 @@ import { fetchSims7RedirectionById, Sims7RedirectionViewData } from "./Sims7Redi
 
 interface Sims7RedirectionsSidePanelWithSave extends Sims7RedirectionsSidePanelProps {
     onSaveSuccess?: () => void;
+    setSelectedRow?: (row: any) => void;
 }
 
 const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> = ({
@@ -30,7 +31,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
     selectedRow,
     t,
     setSidePanelMode,
-    onSaveSuccess
+    onSaveSuccess,
+    setSelectedRow
 }) => {
 
     const [viewData, setViewData]: [Sims7RedirectionViewData | null, React.Dispatch<React.SetStateAction<Sims7RedirectionViewData | null>>] = useState<Sims7RedirectionViewData | null>(null);
@@ -141,7 +143,8 @@ const Sims7RedirectionsSidePanel: React.FC<Sims7RedirectionsSidePanelWithSave> =
             setShowSuccessToast,
             setShowFailureBanner,
             setSidePanelMode,
-            onSaveSuccess
+            onSaveSuccess,
+            onSelectedRowUpdate: setSelectedRow
         });
     };
     const getDateParts: (_date: Date | null) => any = getGetDateParts(dateParts);
