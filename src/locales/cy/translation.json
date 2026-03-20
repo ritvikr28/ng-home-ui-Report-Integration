@@ -594,7 +594,11 @@
     "privateFilesDescription": "Please review your private documents individually in the table below and update their privacy status to standard or confidential, or delete them if they are no longer needed.",
     "privateDocuments": "Private documents",
     "privateDocHelpText": "Alternatively, you can update all of your private documents to Confidential status.",
-    "privateDocButtonText": "Convert all to confidential"
+    "privateDocButtonText": "Convert all to confidential",
+    "privateDocTechnicalIssue": "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please ",
+    "contactSupport": "get in touch with our support team.",
+    "privateDocDownloadFailureTitle": "Unable to download document",
+    "privateDocDownloadFailureMessage": "A technical issue at our end has stopped you from downloading the document. Please try again later. If the issue persists, please <link> we appreciate your patience and understanding during this time."
   },
   "Filter": {
     "heading": "Chwilio uwch",

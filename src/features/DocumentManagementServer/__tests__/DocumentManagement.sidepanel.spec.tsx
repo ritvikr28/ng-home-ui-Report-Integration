@@ -1,6 +1,7 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DmsSidePanel } from "../components/DMSSidePanel/DocumentManagement.sidepanel";
+import { fileDownload } from "../logic/DocumentManagementServer.logic";
 
 global.ResizeObserver = class {
   observe(): ResizeObserver { return this; }
@@ -18,6 +19,11 @@ const translationMap: Record<string, string | ((options?: { type?: string; files
   "DocumentManagementServer.failedDownloadTitle": "Failed Download Title",
   "DocumentManagementServer.downloadsCleared": "Downloads Cleared",
   "DocumentManagementServer.managePrivateDocuments": "Manage private documents",
+  "DocumentManagementServer.informationUnavailable": "Information Unavailable",
+  "DocumentManagementServer.privateDocTechnicalIssue": "A technical issue is preventing access to your private documents, please ",
+  "DocumentManagementServer.contactSupport": "contact support",
+  "DocumentManagementServer.privateDocDownloadFailureTitle": "Unable to download document",
+  "DocumentManagementServer.privateDocDownloadFailureMessage": "A technical issue stopped you from downloading the document. Please try again or <link> if the issue persists.",
   "DocumentManagementServer.prepareDownloadErrorTitle": (options) =>
     options?.type === "document"
       ? "Prepare Download Error Title - document"
@@ -30,7 +36,11 @@ const translationMap: Record<string, string | ((options?: { type?: string; files
     `Failed Download Message: ${options?.files}`
 };
 
-jest.mock("@essnextgen/ui-intl-kit", () => ({
+jest.mock("../logic/DocumentManagementServer.logic", () => ({
+  fileDownload: jest.fn().mockResolvedValue(undefined)
+}));
+
+jest.mock("@essnextgen/ui-intl-kit", () => ({  
   ...jest.requireActual("@essnextgen/ui-intl-kit"),
   useTranslation: () => ({
     t: (key: string, options?: { type?: string; files?: string }) => {
@@ -223,7 +233,44 @@ describe("DmsSidePanel", () => {
 		expect(setFailedFileName).toHaveBeenCalledWith([]);
 	});
 
-it("renders ManageDocumentsSidePanel", () => {
+it("shows PrivateDocErrorNotification when isPrivateDocError is true", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" isPrivateDocError={true} onSidePanelSortChange={jest.fn()} />);
+    expect(screen.getByText("Information Unavailable")).toBeInTheDocument();
+  });
+
+  it("does not show PrivateDocErrorNotification when isPrivateDocError is false", () => {
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" isPrivateDocError={false} onSidePanelSortChange={jest.fn()} />);
+    expect(screen.queryByText("Information Unavailable")).not.toBeInTheDocument();
+  });
+
+  it("shows DownloadErrorNotification when document download fails", async () => {
+    (fileDownload as jest.Mock).mockRejectedValueOnce(new Error("Download failed"));
+
+    const docRow = {
+      id: "file-1",
+      document: [{ name: "My Document", fileId: "file-1", application: "app", sectionName: "section", blobName: "blob" }],
+      relatedTo: [],
+      addedBy: "User",
+      dateAdded: "01 Jan 2025"
+    };
+    render(
+      <DmsSidePanel
+        {...defaultProps}
+        sidePanelOpenReason="manage"
+        privateDocData={[docRow]}
+        isPrivateDocError={false}
+        onSidePanelSortChange={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByText("My Document"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Unable to download document")).toBeInTheDocument();
+    });
+  });
+
+  it("renders ManageDocumentsSidePanel", () => {
     render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
     expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
 });
@@ -240,7 +287,21 @@ it("renders ManageDocumentsSidePanel and click on Action menu", () => {
 });
 
 it("renders ManageDocumentsSidePanel and change page", () => {
-    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" />);
+    const manyRows = Array.from({ length: 40 }, (_, i) => ({
+      id: `file-${i}`,
+      document: [{ name: `Document ${i + 1}`, fileId: `file-${i}`, application: "app", sectionName: "section", blobName: "blob" }],
+      relatedTo: [],
+      addedBy: "User",
+      dateAdded: "01 Jan 2025"
+    }));
+    const page2Row = {
+      id: "file-40",
+      document: [{ name: "Text Document", fileId: "file-40", application: "app", sectionName: "section", blobName: "blob" }],
+      relatedTo: [],
+      addedBy: "User",
+      dateAdded: "01 Jan 2025"
+    };
+    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" privateDocData={[...manyRows, page2Row]} isPrivateDocError={false} onSidePanelSortChange={jest.fn()} />);
     expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
 
 	const nextButton: HTMLButtonElement = screen.getByLabelText("next page");

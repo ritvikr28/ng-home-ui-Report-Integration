@@ -7,7 +7,9 @@ import {
   DocumentBasicDetails,
   DocumentCategoryResponse,
   DocumentManagementServerProps,
-  DocumentPrepareDownload
+  DocumentPrepareDownload,
+  PrivateDocumentBasicDetails,
+  PrivateDocumentManagementServerProps
 } from "../responseModel";
 import { PLATFORM_BASEURLS, STAFFPROFILE_BASEURLS } from "../../../ApiConfig.json";
 
@@ -233,4 +235,49 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   const url = `validation/api/v1/file?FileId=${fileId}&Application=${isApplication}&Section=${isSection}`;
   const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
+};
+
+export const streamDownloadFile: (fileId: string) => Promise<string> = async (
+  fileId: string
+): Promise<string> => {
+  const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+  const url = `/validation/api/v2/file/download?request.FileId=${encodeURIComponent(fileId)}`;
+  const response: AxiosResponse = await service.get(url, baseUrl);
+  const sasUrl: string = response.data?.payload?.sasUrl;
+  if (!sasUrl) {
+    throw new Error("No SAS URL returned from download API");
+  }
+  return sasUrl;
+};
+
+export const fetchPrivateDocumentDetails: (props: PrivateDocumentManagementServerProps) => Promise<PrivateDocumentBasicDetails | null> = async ({
+  pageNumber,
+  pageSize,
+  userId,
+  sortBy = "DateAdded",
+  sortDirection = "Desc"
+}: PrivateDocumentManagementServerProps): Promise<PrivateDocumentBasicDetails | null> => {
+  try {
+    const url = `validation/api/v1/file/getprivatedocumentdetails`;
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+
+    const payload: any = {
+      documentsRequest: {
+        pageNumber,
+        pageSize,
+        userId,
+        sortBy,
+        sortDirection
+      }
+    };
+
+    const responseData: AxiosResponse<PrivateDocumentBasicDetails> =
+      await service.post(url, payload, { baseURL: baseUrl });
+    if (responseData?.status === 200) {
+      return responseData?.data;
+    }
+    return null;
+  } catch (err: any) {
+    return err?.response?.data ?? { status: 500, detail: "Unknown server error" };
+  }
 };

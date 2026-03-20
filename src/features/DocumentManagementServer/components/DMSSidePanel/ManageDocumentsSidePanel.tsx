@@ -1,9 +1,13 @@
 import { Button, ButtonSize } from "@essnextgen/ui-kit";
-import React from "react";
+import React, { useState } from "react";
 import { SidePanelTable } from "./SidePanelTable";
+import { PrivateDocErrorNotification, DownloadErrorNotification } from "./sidePanelTable.logic";
 
 interface ManageDocumentsSidePanelProps {
   t: any;
+  privateDocData: any[];
+  isPrivateDocError: boolean;
+  onSortChange: (columnName: string) => void;
 }
 
 const Description: React.FC<{ t: any }> = ({ t }) => (
@@ -40,16 +44,20 @@ const ConvertDocButton: React.FC<{ t: any }> = ({ t }) => (
   </Button>
 );
 
-export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t }) => (
-
+export const ManageDocumentsSidePanel: React.FC<ManageDocumentsSidePanelProps> = ({ t, privateDocData = [], isPrivateDocError = false, onSortChange }) => {
+  const [isDownloadError, setIsDownloadError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(false);
+  return (
     <div className="manage-documents-side-panel">
+      {isPrivateDocError && <PrivateDocErrorNotification t={t} />}
+      {isDownloadError && <DownloadErrorNotification t={t} />}
       <Description t={t} />
       <Highlight t={t} />
-      <TotalCount count={444} />
+      <TotalCount count={privateDocData.length} />
       <HelpText t={t} />
       <ConvertDocButton t={t} />
       <div className="manage-documents-table">
-        <SidePanelTable />
+        <SidePanelTable tableBodyData={privateDocData} onSortChange={onSortChange} onDownloadError={setIsDownloadError} />
       </div>
     </div>
-)
+);
+};

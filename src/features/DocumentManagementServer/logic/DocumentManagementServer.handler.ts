@@ -244,6 +244,7 @@ export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
   dateRange,
   searchRefExternalId,
   documentRelatedTo,
+  documentStatusIds,
   currentPage,
   sortBy,
   sortDirection,
@@ -274,6 +275,7 @@ export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
+    documentStatusIds,
     referenceExternalIds: searchRefExternalId,
     documentRelatedTo,
     fileDetails: isHeaderBoxChecked
