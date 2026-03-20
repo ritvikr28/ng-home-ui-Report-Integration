@@ -1,8 +1,31 @@
 import React, { useState } from "react";
-import { ShowValAs, Tag } from "@essnextgen/ui-kit";
+import { ShowValAs, Notification, NotificationStatus } from "@essnextgen/ui-kit";
 import { EllipsisWithTooltip } from "../EllipsisWithTooltip";
+import { fileDownloadById } from "../../logic/DocumentManagementServer.logic";
+import { getBannerMessageWithLink } from "../../Views/DMSLayout";
 
-export const tableHeadersData: any[] = [
+export const PrivateDocErrorNotification: React.FC<{ t: any }> = ({ t }) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.informationUnavailable")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocTechnicalIssue"), t("DocumentManagementServer.contactSupport"))}
+    autoclose={false}
+    hideCloseButton={true}
+  />
+);
+
+export const DownloadErrorNotification: React.FC<{ t: any }> = ({ t }) => (
+  <Notification
+    status={NotificationStatus.WARNING}
+    title={t("DocumentManagementServer.privateDocDownloadFailureTitle")}
+    message={getBannerMessageWithLink(t("DocumentManagementServer.privateDocDownloadFailureMessage"), t("DocumentManagementServer.contactSupport"))}
+    autoclose={false}
+    hideCloseButton={true}
+  />
+);
+
+ type DocumentCell = { name: string; fileId: string; blobName: string; application: string; sectionName: string };
+export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => void): any[] => [
   {
     text: "Id",
     isShow: false,
@@ -14,29 +37,33 @@ export const tableHeadersData: any[] = [
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "100px",
-    anyComponent: (value: string) => (
-      <a
-        href={`/documents/${encodeURIComponent(value)}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="document-link"
-        style={{ textDecoration: "underline", color: "#1976d2" }}
-      >
-        <EllipsisWithTooltip
-          text={value}
-          className="relatedto-main"
-          isTooltipNeeded={true}
-          totalItems={[value]}
-          colName="document"
-        />
-      </a>
-    )
+    isColumnSorting: true,
+    anyComponent: (value: DocumentCell[]) => {
+      const doc: DocumentCell = value[0];
+      return (
+        <button
+          type="button"
+          onClick={() => onDocumentClick(doc)}
+          className="document-link"
+          style={{ textDecoration: "underline", color: "#1976d2", cursor: "pointer", background: "none", border: "none", padding: 0 }}
+        >
+          <EllipsisWithTooltip
+            text={doc?.name}
+            className="relatedto-main"
+            isTooltipNeeded={true}
+            totalItems={[doc?.name]}
+            colName="document"
+          />
+        </button>
+      );
+    }
   },
   {
     text: "Related to",
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "120px",
+    isColumnSorting: false,
     anyComponent: (value: any) => {
       const related: any = Array.isArray(value) ? value[0] : value;
       return (
@@ -48,13 +75,6 @@ export const tableHeadersData: any[] = [
             totalItems={Array.isArray(value) ? value : [value]}
             colName="relatedTo"
           />
-          {related?.name && (
-            <Tag
-              text="Year / reg"
-              className="relatedto-tag"
-              dataTestId="related-to-tag"
-            />
-          )}
         </span>
       );
     }
@@ -64,6 +84,7 @@ export const tableHeadersData: any[] = [
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "120px",
+    isColumnSorting: true,
     anyComponent: (value: string) => (
       <EllipsisWithTooltip
         text={value}
@@ -78,22 +99,42 @@ export const tableHeadersData: any[] = [
     text: "Date added",
     isShow: true,
     showValAs: ShowValAs.Text,
-    columnWidth: "120px"
+    columnWidth: "120px",
+    isColumnSorting: true,
+    isColumnSortByDefault: true
   }
 ];
 
-export const tableBodyData: any[] = [
-  { id: "1", document: "PDFSample", relatedTo: [{ name: "Ramesh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "2", document: "Long name of document with multiple words", relatedTo: [{ name: "Suresh" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "3", document: "Welsh Translation", relatedTo: [{ name: "Ganga" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "4", document: "Marathi Kadambari", relatedTo: [{ name: "Yash" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "5", document: "Hindi Ka paper", relatedTo: [{ name: "Saroj" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "6", document: "Text Document", relatedTo: [{ name: "Virat" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "7", document: "Detention Letter", relatedTo: [{ name: "James" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "8", document: "Name what you want", relatedTo: [{ name: "Thala" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "9", document: "Dhurandhar", relatedTo: [{ name: "Doval" }], addedBy: "Toony", dateAdded: "23 Jan 2025" },
-  { id: "10", document: "Tenth Document", relatedTo: [{ name: "Tenth description" }], addedBy: "Toony", dateAdded: "23 Jan 2025" }
-];
+export const createHandleDocumentClick = (
+  onDownloadError: (hasError: boolean) => void
+) => async (doc: DocumentCell): Promise<void> => {
+  try {
+    onDownloadError(false);
+    await fileDownloadById(doc.fileId, doc.name);
+  } catch {
+    onDownloadError(true);
+  }
+};
+
+export const getPaginatedData = <T extends unknown>(data: T[], currentPage: number, itemsPerPage: number): T[] =>
+  data.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+export const createHandlePageChange = (
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+) => (_: React.ChangeEvent<unknown>, page: number): void => {
+  setCurrentPage(page);
+};
+
+export const createHandleSorting = (
+  setIsInitialLoad: React.Dispatch<React.SetStateAction<boolean>>,
+  onSortChange: (columnName: string) => void,
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>
+) => (_e: React.ChangeEvent<unknown>, columnName: string): void => {
+  setIsInitialLoad(true);
+  onSortChange(columnName);
+  setCurrentPage(1);
+};
+
 
 export const filterDDLOptions: any[] = [
   { id: "1", text: "All", value: "All" },
@@ -125,6 +166,8 @@ export function useSidePanelTableSelection(tableBodyDatas: any[]): SidePanelTabl
         : [...prev, id]
     );
   };
+
+  console.log(selectedIds, "selectedIds in logic");
 
   const handleOnChangeAllCheckBox: (event: React.ChangeEvent<unknown>) => void = (event: React.ChangeEvent<unknown>) => {
     const target: HTMLInputElement = event.target as HTMLInputElement;

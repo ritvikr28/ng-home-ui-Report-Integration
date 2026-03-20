@@ -1,8 +1,8 @@
 import '@testing-library/jest-dom';
 import axios, { AxiosResponse } from 'axios';
-import { DocumentBasicDetails, SingleDocumentDetail } from '../responseModel';
+import { DocumentBasicDetails, SingleDocumentDetail, PrivateDocumentBasicDetails } from '../responseModel';
 import { service } from '../../../shared/utils';
-import { bulkDownload, deleteFiles, fetchDMSSuggestions, fetchDocumentCategory, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, validation, viewDownload } from '../api/ApiService';
+import { bulkDownload, deleteFiles, fetchDMSSuggestions, fetchDocumentCategory, fetchDocumentDetails, fetchStaffProfilePhoto, fetchPrivateDocumentDetails, prepareAndDownloadFile, validation, viewDownload } from '../api/ApiService';
 import * as ApiService from '../api/ApiService';
 
 const documentResponse: SingleDocumentDetail[] = [
@@ -624,5 +624,82 @@ describe('bulkDownload', () => {
       `/validation/api/v1/file/bulkdownload?BulkDownloadRequest.BlobName=blob%20name%20with%20spaces&BulkDownloadRequest.FileName=file%20name%20with%20spaces.txt`,
       expect.any(String)
     );
+  });
+});
+
+describe('fetchPrivateDocumentDetails', () => {
+  const baseProps = {
+    pageNumber: 1,
+    pageSize: 10,
+    userId: 'user-123',
+    sortBy: 'DateAdded',
+    sortDirection: 'Desc'
+  };
+
+  const mockPrivateResponse: AxiosResponse<PrivateDocumentBasicDetails> = {
+    data: { pageNumber: 1, pageSize: 10, totalRecords: 1, data: [] } as any,
+    status: 200,
+    statusText: 'OK',
+    headers: {},
+    config: {}
+  };
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('returns data when status is 200', async () => {
+    jest.spyOn(service, 'post').mockResolvedValueOnce(mockPrivateResponse);
+
+    const result = await fetchPrivateDocumentDetails(baseProps);
+
+    expect(result).toEqual(mockPrivateResponse.data);
+    expect(service.post).toHaveBeenCalledWith(
+      'validation/api/v1/file/getprivatedocumentdetails',
+      { documentsRequest: baseProps },
+      expect.objectContaining({ baseURL: expect.any(String) })
+    );
+  });
+
+  test('returns null when status is not 200 — covers non-200 branch', async () => {
+    jest.spyOn(service, 'post').mockResolvedValueOnce({ ...mockPrivateResponse, status: 404 });
+
+    const result = await fetchPrivateDocumentDetails(baseProps);
+
+    expect(result).toBeNull();
+  });
+
+  test('uses default sortBy and sortDirection when not provided — covers default parameter branches', async () => {
+    jest.spyOn(service, 'post').mockResolvedValueOnce(mockPrivateResponse);
+
+    await fetchPrivateDocumentDetails({ pageNumber: 1, pageSize: 10, userId: 'user-1' });
+
+    expect(service.post).toHaveBeenCalledWith(
+      'validation/api/v1/file/getprivatedocumentdetails',
+      {
+        documentsRequest: expect.objectContaining({
+          sortBy: 'DateAdded',
+          sortDirection: 'Desc'
+        })
+      },
+      expect.objectContaining({ baseURL: expect.any(String) })
+    );
+  });
+
+  test('returns err.response.data on thrown error — covers catch branch', async () => {
+    const errorData = { status: 500, detail: 'Server error' };
+    jest.spyOn(service, 'post').mockRejectedValueOnce({ response: { data: errorData } });
+
+    const result = await fetchPrivateDocumentDetails(baseProps);
+
+    expect(result).toEqual(errorData);
+  });
+
+  test('returns fallback error object when err.response.data is undefined — covers ?? branch', async () => {
+    jest.spyOn(service, 'post').mockRejectedValueOnce(new Error('Network failure'));
+
+    const result = await fetchPrivateDocumentDetails(baseProps);
+
+    expect(result).toEqual({ status: 500, detail: 'Unknown server error' });
   });
 });

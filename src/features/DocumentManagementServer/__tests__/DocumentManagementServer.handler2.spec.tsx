@@ -548,6 +548,7 @@ describe("mapToBulkDeletePayload", () => {
       categoryIds: [1, 2],
       fromDate: "2025-01-01",
       toDate: "2025-01-31",
+      documentStatusIds: [],
       referenceExternalIds: ["ref1", "ref2"],
       documentRelatedTo: 3,
       fileDetails: [
@@ -565,6 +566,7 @@ describe("mapToBulkDeletePayload", () => {
           categoryIds: [1, 2],
           fromDate: "2025-01-01",
           toDate: "2025-01-31",
+          documentStatusIds: [],
           referenceDetails: {
             referenceExternalIds: ["ref1", "ref2"],
             documentRelatedTo: 3
@@ -589,6 +591,7 @@ describe("mapToBulkDeletePayload", () => {
           categoryIds: [],
           fromDate: "",
           toDate: "",
+          documentStatusIds: [],
           referenceDetails: {
             referenceExternalIds: [],
             documentRelatedTo: 0
@@ -623,6 +626,7 @@ describe("mapToBulkDeletePayload", () => {
           categoryIds: [5],
           fromDate: "",
           toDate: "",
+          documentStatusIds: [],
           referenceDetails: {
             referenceExternalIds: [],
             documentRelatedTo: 2
@@ -640,6 +644,7 @@ describe("mapToBulkDeletePayload", () => {
       categoryIds: undefined,
       fromDate: undefined,
       toDate: undefined,
+      documentStatusIds: undefined,
       referenceExternalIds: undefined,
       documentRelatedTo: undefined,
       fileDetails: undefined,
@@ -652,6 +657,7 @@ describe("mapToBulkDeletePayload", () => {
           categoryIds: [],
           fromDate: "",
           toDate: "",
+          documentStatusIds: [],
           referenceDetails: {
             referenceExternalIds: [],
             documentRelatedTo: 0

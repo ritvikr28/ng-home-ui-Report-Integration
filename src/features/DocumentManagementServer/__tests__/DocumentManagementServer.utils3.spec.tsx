@@ -2,7 +2,13 @@ import { act } from "@testing-library/react";
 import { renderHook } from "@testing-library/react-hooks";
 import gtmAnalytics from "../../../shared/utils/analytics";
 import { getDialogConfig } from "../logic/DocumentManagementServer.dialog.config";
-import { useSidePanelViewDownloadEffect } from "../hooks/useDocumentManagementEffects";
+import { useSidePanelViewDownloadEffect, usePrivateDocumentFetchingEffect } from "../hooks/useDocumentManagementEffects";
+import { mapRelatedArr, mapTableData } from "../logic/DocumentManagementServer.utils";
+import { fetchPrivateDocumentDetails } from "../api/ApiService";
+
+jest.mock("../api/ApiService", () => ({
+  fetchPrivateDocumentDetails: jest.fn()
+}));
 
 jest.mock("../../../shared/utils/analytics", () => ({
   pushEvent: jest.fn()
@@ -23,7 +29,144 @@ describe("DocumentManagementServer.helpers", () => {
   /* mapRelatedArr                                       */
   /* -------------------------------------------------- */
 
+  it("maps pupil with missing optional fields — covers || '' fallbacks", () => {
+    const result: any = mapRelatedArr({
+      fileId: "1",
+      documentRelatedTo: 1,
+      relatedTo: [{
+        preferredForename: "A",
+        preferredSurname: "B",
+        currentYearGroup: undefined,
+        currentPrimaryClass: undefined,
+        learnerExternalId: undefined,
+        onRollState: undefined
+      }]
+    } as any);
 
+    expect(result[0]).toEqual({
+      type: "pupil",
+      name: "A B",
+      year: "",
+      reg: "",
+      referenceExternalId: "",
+      isLeaver: ""
+    });
+  });
+
+  it("maps staff with missing optional fields — covers || '' fallbacks", () => {
+    const result: any = mapRelatedArr({
+      fileId: "1",
+      documentRelatedTo: 3,
+      relatedTo: [{
+        preferredForename: "S",
+        preferredSurname: "T",
+        staffCode: undefined,
+        externalId: undefined,
+        onRollState: undefined
+      }]
+    } as any);
+
+    expect(result[0]).toEqual({
+      type: "staff",
+      name: "S T",
+      staffCode: "",
+      referenceExternalId: "",
+      isLeaver: ""
+    });
+  });
+
+  it("maps school with missing optional fields — covers || '' fallbacks", () => {
+    const result: any = mapRelatedArr({
+      fileId: "1",
+      documentRelatedTo: 2,
+      relatedTo: [{
+        schoolName: undefined,
+        organisationId: undefined
+      }]
+    } as any);
+
+    expect(result[0]).toEqual({
+      type: "school",
+      name: "",
+      referenceExternalId: ""
+    });
+  });
+
+  /* -------------------------------------------------- */
+  /* mapTableData                                        */
+  /* -------------------------------------------------- */
+
+  describe("mapTableData", () => {
+    it("returns [] when showSearchError is true — covers showSearchError branch", () => {
+      expect(mapTableData({ data: [{ fileId: "1" }] }, true)).toEqual([]);
+    });
+
+    it("returns [] when docData is null — covers docData?.data?.length falsy branch", () => {
+      expect(mapTableData(null, false)).toEqual([]);
+    });
+
+    it("returns [] when docData.data is empty array — covers !data.length branch", () => {
+      expect(mapTableData({ data: [] }, false)).toEqual([]);
+    });
+
+    it("maps doc with all fields present — covers all truthy ?. branches", () => {
+      const result: any = mapTableData({
+        data: [{
+          fileId: "f1",
+          document: "doc.pdf",
+          relatedTo: [],
+          documentRelatedTo: 1,
+          category: "report",
+          status: "Private",
+          addedBy: "John",
+          dateAdded: "2024-05-10T00:00:00Z",
+          format: "PDF",
+          size: "100KB"
+        }]
+      }, false);
+
+      expect(result[0]).toMatchObject({
+        id: "f1",
+        Document: "doc.pdf",
+        Category: "Report",
+        documentStatus: "",
+        Addedby: "John",
+        "Date added": "10 May 2024",
+        Format: "PDF",
+        Size: "100KB",
+        isShowCheckBox: true
+      });
+    });
+
+    it("maps doc with all optional fields missing — covers falsy ?. branches (status→Public, category→'', addedBy→'', dateAdded→'')", () => {
+      const result: any = mapTableData({
+        data: [{
+          fileId: undefined,
+          document: undefined,
+          relatedTo: undefined,
+          documentRelatedTo: 0,
+          category: undefined,
+          status: undefined,
+          addedBy: undefined,
+          dateAdded: undefined,
+          format: undefined,
+          size: undefined
+        }]
+      }, false);
+
+      expect(result[0]).toMatchObject({
+        id: undefined,
+        Document: undefined,
+        Category: "",
+        documentStatus: "",
+        Addedby: "",
+        "Date added": "",
+        Format: undefined,
+        Size: undefined,
+        isShowCheckBox: true
+      });
+    });
+  });
 
 describe("getExtraDeletedMessage", () => {
 
@@ -556,5 +699,120 @@ describe("useSidePanelViewDownloadEffect", () => {
         setShowEmailNotification
       })
     );
+  });
+});
+
+describe("usePrivateDocumentFetchingEffect", () => {
+  const mockFetch = fetchPrivateDocumentDetails as jest.Mock;
+
+  const baseProps = {
+    pageNumber: 1,
+    pageSize: 10,
+    userId: "user1",
+    sortBy: "DateAdded",
+    sortDirection: "Desc"
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("calls setPrivateRawData and setIsPrivateDocError(false) on successful response", async () => {
+    const response = { data: [{ fileId: "1" }] };
+    mockFetch.mockResolvedValueOnce(response);
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+      );
+    });
+
+    expect(setPrivateRawData).toHaveBeenCalledWith(response);
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(false);
+  });
+
+  it("calls setIsPrivateDocError(true) when response is null — covers !response branch", async () => {
+    mockFetch.mockResolvedValueOnce(null);
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+      );
+    });
+
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
+    expect(setPrivateRawData).not.toHaveBeenCalled();
+  });
+
+  it("calls setIsPrivateDocError(true) when response.status === 500 — covers status===500 branch", async () => {
+    mockFetch.mockResolvedValueOnce({ status: 500 });
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+      );
+    });
+
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
+    expect(setPrivateRawData).not.toHaveBeenCalled();
+  });
+
+  it("calls setIsPrivateDocError(true) when response has no data — covers !response.data branch", async () => {
+    mockFetch.mockResolvedValueOnce({ status: 200, data: null });
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+      );
+    });
+
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
+    expect(setPrivateRawData).not.toHaveBeenCalled();
+  });
+
+  it("calls setIsPrivateDocError(true) when fetchPrivateDocumentDetails throws — covers catch branch", async () => {
+    mockFetch.mockRejectedValueOnce(new Error("Network error"));
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    await act(async () => {
+      renderHook(() =>
+        usePrivateDocumentFetchingEffect(baseProps as any, setPrivateRawData, setIsPrivateDocError)
+      );
+    });
+
+    expect(setIsPrivateDocError).toHaveBeenCalledWith(true);
+    expect(setPrivateRawData).not.toHaveBeenCalled();
+  });
+
+  it("re-runs effect when sortBy changes", async () => {
+    const response = { data: [{ fileId: "1" }] };
+    mockFetch.mockResolvedValue(response);
+    const setPrivateRawData = jest.fn();
+    const setIsPrivateDocError = jest.fn();
+
+    let rerender: (props: any) => void;
+    await act(async () => {
+      ({ rerender } = renderHook(
+        (props: any) => usePrivateDocumentFetchingEffect(props, setPrivateRawData, setIsPrivateDocError),
+        { initialProps: baseProps as any }
+      ));
+    });
+
+    const firstCallCount = mockFetch.mock.calls.length;
+
+    await act(async () => {
+      rerender({ ...baseProps, sortBy: "Document" } as any);
+    });
+
+    expect(mockFetch.mock.calls.length).toBeGreaterThan(firstCallCount);
   });
 });
