@@ -401,6 +401,7 @@ describe("buildSelectedDocs", () => {
         registrationId: 123,
         relatedTo: [{ learnerExternalId: "ext1" }],
         documentRelatedTo: 1,
+        documentStatusIds: [],
         category: "Legal",
         fromDate: "2025-01-01",
         toDate: "2025-01-02",
@@ -434,7 +435,8 @@ describe("buildSelectedDocs", () => {
             documentRelatedTo: 1,
             categoryId: [1,2],
             fromDate: "2025-01-01",
-            toDate: "2025-01-02"
+            toDate: "2025-01-02",
+            documentStatusIds: []
           },
           fileDetails: [],
           excludedFileDetails: [],

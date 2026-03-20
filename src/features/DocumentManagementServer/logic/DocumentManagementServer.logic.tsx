@@ -605,7 +605,8 @@ export function buildSelectedDocs(
   allSelectedDocs: SelectedDoc[],
   dateRange: { fromDate: string; toDate: string },
   selectedEntities: any[],
-  availableFileIds: string[]
+  availableFileIds: string[],
+  documentStatusIds: number[] = []
 ): { request: any }[] {
   if (
     !isValidArray(selectedCheckBoxIds) ||
@@ -662,7 +663,8 @@ export function buildSelectedDocs(
           documentRelatedTo,
           categoryId,
           fromDate,
-          toDate
+          toDate,
+          documentStatusIds
         },
         fileDetails,
         excludedFileDetails
@@ -677,6 +679,7 @@ export function mapToBulkDeletePayload({
   categoryIds = [],
   fromDate = "",
   toDate = "",
+  documentStatusIds = [],
   referenceExternalIds = [],
   documentRelatedTo = 0,
   fileDetails = [],
@@ -686,6 +689,7 @@ export function mapToBulkDeletePayload({
   categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
+  documentStatusIds?: number[];
   referenceExternalIds?: string[];
   documentRelatedTo?: number;
   fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
@@ -698,6 +702,7 @@ export function mapToBulkDeletePayload({
         categoryIds,
         fromDate,
         toDate,
+        documentStatusIds,
         referenceDetails: {
           referenceExternalIds,
           documentRelatedTo

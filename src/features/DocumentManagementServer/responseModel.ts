@@ -325,6 +325,7 @@ export interface GetDialogConfigParams {
   sortDirection: string;
   searchRefExternalId?: string[];
   documentRelatedTo?: number;
+  documentStatusIds?: number[];
 
   selectedCheckBoxIds: string[];
   excludedCheckBoxIds: string[];

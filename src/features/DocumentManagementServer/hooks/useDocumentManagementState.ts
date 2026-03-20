@@ -77,6 +77,7 @@ export function useDocumentManagementState() {
   const [sidePanelSortBy, setSidePanelSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("DateAdded");
   const [sidePanelSortDirection, setSidePanelSortDirection]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Desc");
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
+  const [documentStatusIds, setDocumentStatusIds]: [number[], React.Dispatch<React.SetStateAction<number[]>>] = useState<number[]>([]);
 
   return {
     t,
@@ -150,5 +151,6 @@ export function useDocumentManagementState() {
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     isOpen, setIsOpen,
+    documentStatusIds, setDocumentStatusIds
   };
 }

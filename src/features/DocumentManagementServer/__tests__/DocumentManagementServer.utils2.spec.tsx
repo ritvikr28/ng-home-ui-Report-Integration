@@ -302,7 +302,7 @@ describe("handleSorting", () => {
       setSortDirection,
       t as any
     );
-    expect(setSortBy).toHaveBeenCalledWith("ngStatus");
+    expect(setSortBy).toHaveBeenCalledWith("DocumentStatus");
     expect(setSortDirection).toHaveBeenCalledWith("Asc");
   });
 
@@ -315,7 +315,7 @@ describe("handleSorting", () => {
       setSortDirection,
       t as any
     );
-    expect(setSortBy).toHaveBeenCalledWith("ngStatus");
+    expect(setSortBy).toHaveBeenCalledWith("DocumentStatus");
     expect(setSortDirection).toHaveBeenCalledWith("Asc");
   });
 

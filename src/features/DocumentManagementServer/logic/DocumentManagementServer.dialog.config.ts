@@ -178,7 +178,8 @@ export const handleDownloadConfirm: (params: GetDialogConfigParams) => Promise<v
     params.allSelectedDocs,
     params.dateRange,
     params.selectedEntities,
-    params.availableFileIds
+    params.availableFileIds,
+    params.documentStatusIds ?? []
   );
 
   try {
@@ -307,7 +308,7 @@ export const handleSorting: any = (columnName: string, sortBy: string, setSortBy
       apiColumnName = "Category";
       break;
     case t("DocumentManagementServer.privacyColumn"):
-      apiColumnName = "ngStatus";
+      apiColumnName = "DocumentStatus";
       break;
     case t("DocumentManagementServer.addedByColumn"):
       apiColumnName = "AddedBy";

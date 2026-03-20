@@ -89,7 +89,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     isPrivateDocError, setIsPrivateDocError,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
-    isOpen, setIsOpen
+    isOpen, setIsOpen,
+    documentStatusIds
   }: ReturnType<typeof useDocumentManagementState> = useDocumentManagementState();
 
   const hasDMSDeletePermissions: boolean = hasDMSDeletePermission();
@@ -268,6 +269,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       currentPage,
       sortBy,
       sortDirection,
+      documentStatusIds,
       setShowToastNotification,
       setShowConfirmDialog,
       setSelectedCheckBoxIds,
@@ -303,7 +305,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     handleBulkDelete, setPrepareDownloadError, setPrepareDownloadAbortBanner, setSidePanelOpenReason, setIsSidePanelOpen,
     buildSelectedDocs, selectedCheckBoxIds, allSelectedDocs, dateRange, selectedEntities, prepareDownload,
     totalSelectedCount, restrictedFileCount, excludedCheckBoxIds, availableFileIds,
-    fetchGetDocumentDetails, gtmAnalytics, allRegistrationIds, referenceExternalId: searchRefExternalId
+    fetchGetDocumentDetails, gtmAnalytics, allRegistrationIds, referenceExternalId: searchRefExternalId,
+    documentStatusIds
   });
 
   const handleFilterOnClick: () => void = () => {
