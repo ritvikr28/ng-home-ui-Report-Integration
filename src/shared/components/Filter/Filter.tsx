@@ -17,7 +17,7 @@ import { useTranslation, TFunction } from "@essnextgen/ui-intl-kit";
 import React, { useEffect, useState } from "react";
 import "./style.scss";
 import { CategoryData, PrivacyFilterDetails } from "../../../features/DocumentManagementServer/responseModel";
-import { relatedToEnum } from "../../../../public/Constants";
+import { DEFAULT_PRIVACY_FILTER, relatedToEnum } from "../../../../public/Constants";
 import { handleSearchChange } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.handler";
 import { ISchoolNameDataResponse } from "../../model/SchoolDomain/responsemodels";
 import { getValidationState, getAllRegistrationIds, filterNonEmptySuggestions, addUniqueTagItem } from "../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
@@ -37,7 +37,7 @@ export interface FilterDialogProps {
   onClose: () => void;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   selectedCategories: ISelectedItem[];
-  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[], entities?: any[]) => void;
+  handleApply: (referenceExternalIds: string[], categories?: ISelectedItem[], entities?: any[], documentStatusIds?: number[]) => void;
   isFilterDialogOpen: boolean;
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   isDateError: boolean;
@@ -102,6 +102,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>([]);
+  const [selectedPrivacyFilter, setSelectedPrivacyFilter] = useState<string>("all");
 
 
   // eslint-disable-next-line no-unused-expressions
@@ -112,8 +113,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   useEffect(() => {
     if (!isOpen) return;
     fetchPrivacyFilter()
-      .then((data) => setPrivacyFilter(Array.isArray(data) ? data : []))
-      .catch(() => setPrivacyFilter([]));
+      .then((data) => setPrivacyFilter(Array.isArray(data) && data.length > 0 ? data : DEFAULT_PRIVACY_FILTER))
+      .catch(() => setPrivacyFilter(DEFAULT_PRIVACY_FILTER));
   }, [isOpen]);
 
   const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
@@ -403,6 +404,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             <FilterRadioButton
               t={t}
               privacyFilter={privacyFilter}
+              onPrivacyFilterChange={setSelectedPrivacyFilter}
             />
           ) : null}
 
@@ -473,7 +475,8 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
                   handleApply,
                   refId,
                   filterEntities,
-                  setWasApplied
+                  setWasApplied,
+                  selectedPrivacyFilter
                 });
               }}
               color={ButtonColor.Primary}

@@ -1,24 +1,33 @@
 import { ButtonSize, FormLabel, ReactionButton, ReactionButtonGroup } from "@essnextgen/ui-kit";
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState } from "react";
 import { PrivacyFilterDetails } from "../../../../features/DocumentManagementServer/responseModel";
+import { formatLabel } from "../FilterDialog.utils";
 
 interface FilterRadioButtonProps {
   t: (key: string) => string;
   privacyFilter: PrivacyFilterDetails[];
+  onPrivacyFilterChange?: (value: string) => void;
 }
 
-function formatLabel(label: string) {
-  if (!label) return "";
-  return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
-}
-
-export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacyFilter }) => {
+export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacyFilter, onPrivacyFilterChange }) => {
   const [selectedValue, setSelectedValue] = useState<string>("all");
 
-
-  const handleSelect = (value: string) => {
-    setSelectedValue(value);
+  const handleChange = (e: React.SyntheticEvent, value: string | number) => {
+    e.preventDefault();
+    const strValue = String(value);
+    setSelectedValue(strValue);
+    onPrivacyFilterChange?.(strValue);
   };
+
+  const allOptions = [
+    { value: "all", label: formatLabel(t("DocumentManagementServer.privacyFilterAll")) },
+    ...privacyFilter
+      .filter(option => option.ngStatus?.toUpperCase() !== "PRIVATE")
+      .map(option => ({
+        value: String(option.documentStatusId),
+        label: formatLabel(option.ngStatus) ?? ""
+      }))
+  ];
 
   return (
     <div className="filter-radio-button">
@@ -26,29 +35,21 @@ export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacy
         {t("DocumentManagementServer.privacyFilterLabel")}
       </FormLabel>
       <div className="radio-button-group">
-        <ReactionButtonGroup name="filter-options" size={ButtonSize.Small}>
-          <>
+        <ReactionButtonGroup
+          name="filter-options"
+          size={ButtonSize.Small}
+          selectedValue={selectedValue}
+          onChange={handleChange}
+        >
+          {allOptions.map(option => (
             <ReactionButton
-              key="all"
-              label={formatLabel(t("DocumentManagementServer.privacyFilterAll"))}
-              value="all"
+              key={option.value}
+              label={option.label}
+              value={option.value}
               isToggle={true}
-              isSelected={selectedValue === "all"}
-              onClick={() => handleSelect("all")}
+              isSelected={selectedValue === option.value}
             />
-              {privacyFilter
-              .filter(option => option.ngStatus?.toUpperCase() !== "PRIVATE")
-              .map(option => (
-                <ReactionButton
-                  key={option.documentStatusId}
-                  label={formatLabel(option.ngStatus) ?? ""}
-                  value={option.documentStatusId}
-                  isToggle={true}
-                  isSelected={selectedValue === String(option.documentStatusId)}
-                  onClick={() => handleSelect(String(option.documentStatusId))}
-                />
-              ))}
-          </>
+          ))}
         </ReactionButtonGroup>
       </div>
     </div>
