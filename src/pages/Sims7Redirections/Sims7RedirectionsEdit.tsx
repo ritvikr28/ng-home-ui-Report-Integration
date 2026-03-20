@@ -2,7 +2,8 @@ import React from "react";
 import {
     ReactionButtonGroup,
     ReactionButton,
-    SidePanelContent
+    SidePanelContent,
+    ButtonSize
 } from "@essnextgen/ui-kit";
 import { Sims7RedirectionsEditProps } from "./Sims7RedirectionsInterfaces";
 import { renderEditFields } from "./Sims7RedirectionsEditFields";
@@ -56,6 +57,7 @@ const Sims7RedirectionsEdit: React.FC<Sims7RedirectionsEditProps> = (props) => {
                             id="edit-redirect-nextgen"
                             selectedValue={redirectToNextGen}
                             onChange={handleRedirectToNextGenChange}
+                            size={ButtonSize.Small}
                         >
                             <ReactionButton
                                 label={t("SIMS7Redirects.yes")}

@@ -16,7 +16,8 @@ export async function onSaveHandler({
   setShowSuccessToast,
   setShowFailureBanner,
   setSidePanelMode,
-  onSaveSuccess
+  onSaveSuccess,
+  onSelectedRowUpdate
 }: {
   mode: string;
   selectedRow: any;
@@ -33,6 +34,7 @@ export async function onSaveHandler({
   // eslint-disable-next-line no-shadow
   setSidePanelMode: (mode: 'view' | 'edit') => void;
   onSaveSuccess?: () => void;
+  onSelectedRowUpdate?: (updatedRow: Record<string, any>) => void;
 }): Promise<void> {
   const blocked: boolean | 'success' = isSaveBlocked({
     mode,
@@ -60,7 +62,8 @@ export async function onSaveHandler({
   setShowSuccessToast,
   setShowFailureBanner,
   setSidePanelMode: (panelMode: string) => setSidePanelMode(panelMode as 'edit' | 'view'),
-  onSaveSuccess
+  onSaveSuccess,
+  onSelectedRowUpdate
   });
 }
 
