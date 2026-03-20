@@ -374,6 +374,6 @@ export function usePrivateDocumentFetchingEffect(
       }
     }
     fetchData();
-  }, [props.sortBy, props.sortDirection]);
+  }, [props.pageNumber, props.sortBy, props.sortDirection]);
 }
   
