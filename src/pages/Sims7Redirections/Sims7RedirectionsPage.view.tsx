@@ -41,8 +41,7 @@ import {
     handleApplyDialog as handleApplyDialogHelper,
     handlePaginationChange as handlePaginationChangeHelper,
     handleSuggestionItemClick,
-    getEmptyRowProps,
-    handleSaveSuccess
+    getEmptyRowProps
 } from "./Sims7RedirectionsPage.helpers";
 
 interface DropdownItemType {
@@ -110,6 +109,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(!isMobileView);
     const [searchIsLoading, setSearchIsLoading]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
     const [activeSearchValue, setActiveSearchValue]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
+    const [refreshKey, setRefreshKey]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(0);
 
     const columnMapping: Record<string, string> = {
         [t("SIMS7Redirects.category")]: "ngModule",
@@ -159,7 +159,7 @@ export const Sims7RedirectionsPage: React.FC = () => {
 
     useEffect(() => {
         loadSims7RedirectionsData({ sortColumn, sortOrder, currentPage, pageSize, searchTagList, setApiFailed, setOriginalTableData, setTotalItems, setLoading, t });
-    }, [sortColumn, sortOrder, currentPage, searchTagList, pageSize]);
+    }, [sortColumn, sortOrder, currentPage, searchTagList, pageSize, refreshKey]);
 
     useEffect(() => {
         setCurrentPage(1);
@@ -223,20 +223,10 @@ export const Sims7RedirectionsPage: React.FC = () => {
         setFilteredData(originalTableData);
     };
 
-    const handleOnSaveSuccess: () => Promise<void> = async () => {
-        try {
-            const updatedRows: Sims7RedirectionsTableRow[] = await handleSaveSuccess({ setLoading, sortColumn, sortOrder, currentPage, pageSize, searchTagList, setOriginalTableData, setTotalItems });
-            // Update selectedRow with the freshly saved data so status/effectiveDate
-            // reflect the saved values when the panel re-enters edit mode.
-            if (selectedRow) {
-                const updatedRow: Sims7RedirectionsTableRow | undefined = updatedRows.find(
-                    (row: Sims7RedirectionsTableRow) => row.id === selectedRow.id
-                );
-                if (updatedRow) setSelectedRow(updatedRow);
-            }
-        } catch {
-            setLoading(false);
-        }
+    const handleOnSaveSuccess: () => void = () => {
+        // Increment refreshKey to re-trigger the table data useEffect,
+        // which calls loadSims7RedirectionsData with the full loading/error state.
+        setRefreshKey((prev: number) => prev + 1);
     };
 
     const handlePaginationChange: (_event: React.ChangeEvent<unknown>, page: number) => void = (_event, page) => {
