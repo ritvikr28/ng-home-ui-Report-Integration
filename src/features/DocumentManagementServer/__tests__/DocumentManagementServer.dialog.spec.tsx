@@ -145,6 +145,12 @@ describe("Utility functions", () => {
     it("returns empty string if no conditions met", () => {
       expect(getRestrictedDeleteNotificationTitle(0, 0, 0, 0, 10, false, t)).toBe("");
     });
+    it("covers isHeaderBoxChecked=true branch — totalSelectedCount !== sum triggers deleted notification", () => {
+      expect(getRestrictedDeleteNotificationTitle(0, 0, 3, 5, 10, true, t)).not.toBe("");
+    });
+    it("returns empty string when totalSelectedCount === sum and isHeaderBoxChecked=true — covers && false branch", () => {
+      expect(getRestrictedDeleteNotificationTitle(0, 0, 3, 3, 10, true, t)).toBe("");
+    });
   });
 
   describe("getRestrictedDeleteNotificationForRestricted", () => {
@@ -169,6 +175,17 @@ describe("Utility functions", () => {
     it("returns documentsAlreadyDeletedMsg otherwise", () => {
       expect(getRestrictedDeleteNotificationForDeleted(2, 0, 0, 3, 2, false, t)).toContain("DocumentManagementServer.allSelectedDocumentsAlreadyDeleted");
     });
+    it("covers headerbox subtraction branch — totalSelectedCount > sum with isHeaderBoxChecked=true", () => {
+      expect(getRestrictedDeleteNotificationForDeleted(2, 3, 4, 10, 10, true, t)).toContain("singleDocumentAlreadyDeletedMsg");
+    });
+    it("covers documentsAlreadyDeletedMsg branch — deletedCount=0 when alreadyDeletedFileCount=0", () => {
+      expect(getRestrictedDeleteNotificationForDeleted(0, 0, 2, 3, 5, false, t)).toContain("documentsAlreadyDeletedMsg");
+    });
+    it("covers t('DocumentManagementServer.All') branch inside documentsAlreadyDeletedMsg — alreadyDeletedFileCount === totalRecords", () => {
+      const result: string = getRestrictedDeleteNotificationForDeleted(0, 0, 0, 0, 0, false, t);
+      expect(result).toContain("documentsAlreadyDeletedMsg");
+      expect(result).toContain("DocumentManagementServer.All");
+    });
   });
 
   describe("getRestrictedDeleteMessage", () => {
@@ -189,6 +206,20 @@ describe("Utility functions", () => {
     });
     it("returns 'all' param when all deleted", () => {
       expect(getRestrictedPrepareNotificationTitle(2, 0, 0, 2, false, t)).toContain("all");
+    });
+    it("covers subtraction branch — isHeaderBoxChecked=true, totalSelectedCount > sum → deletedCount=1 → single msg", () => {
+      expect(getRestrictedPrepareNotificationTitle(0, 0, 4, 5, true, t)).toContain("documentCannotBeDownloadedMsg");
+    });
+    it("covers subtraction branch — isHeaderBoxChecked=true, totalSelectedCount > sum → deletedCount>1 → plural msg", () => {
+      expect(getRestrictedPrepareNotificationTitle(2, 1, 1, 10, true, t)).toContain("documentsCannotBeDownloadedMsg");
+    });
+    it("covers (alreadyDeletedFileCount===0 && restrictedFileCount===0 && availableFileCount===0) branch — all=All", () => {
+      const result: string = getRestrictedPrepareNotificationTitle(0, 0, 0, 3, false, t);
+      expect(result).toContain("documentsCannotBeDownloadedMsg");
+      expect(result).toContain("DocumentManagementServer.All");
+    });
+    it("covers isHeaderBoxChecked=false branch when totalSelectedCount > sum — deletedCount falls back to alreadyDeletedFileCount", () => {
+      expect(getRestrictedPrepareNotificationTitle(1, 0, 0, 5, false, t)).toContain("documentCannotBeDownloadedMsg");
     });
   });
 });

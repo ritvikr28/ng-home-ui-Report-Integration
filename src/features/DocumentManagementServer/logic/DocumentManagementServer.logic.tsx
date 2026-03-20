@@ -1,12 +1,13 @@
 
 import React from "react";
 import { ShowValAs, Tag, Suggestion, Icon, IconColor, IconSize, TagColor, TagSize, TableHeader, SuggestionItem } from "@essnextgen/ui-kit";
-import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, downloadFile, bulkDownload, fetchDocumentCategory } from "../api/ApiService";
+import { fetchDMSSuggestions, fetchDocumentDetails, fetchStaffProfilePhoto, prepareAndDownloadFile, bulkDownload, streamDownloadFile, fetchDocumentCategory, downloadFile } from "../api/ApiService";
 import gtmAnalytics from "../../../shared/utils/analytics";
  import { BuildValidationPayloadParams, FetchDocumentCategoryDataParams, FetchGetDocumentDetailsLogicParams, FetchViewDownloadDataParams } from "../responseModel";
 import { pageSizeNumber } from "../../../../public/Constants";
 import { EllipsisWithTooltip } from "../components/EllipsisWithTooltip";
 import { debounce } from "./DocumentManagementServer.utils";
+import { DMSPrivateDocument } from "../../../Layout";
 
 const renderSingleValue = (
   value: string | undefined,
@@ -97,19 +98,19 @@ export const getTableHeadersData = (t: any): TableHeader[] => [
   },
   {
     text: t("DocumentManagementServer.privacyColumn"),
-    isShow: false, // Set to true to show the privacy status column
+    isShow: DMSPrivateDocument ?? false,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "180px",
     isColumnSorting: true,
     anyComponent: (e: string) =>
-      renderSingleValue(e, "privacyStatus"),
+      renderSingleValue(e, "ngStatus"),
   },
   {
     text: t("DocumentManagementServer.addedByColumn"),
     isShow: true,
     showValAs: ShowValAs.CustomeComponent,
     columnWidth: "180px",
-    isColumnSorting: false,
+    isColumnSorting: true,
     anyComponent: (e: string) =>
       renderSingleValue(e, "addedBy"),
   },
@@ -604,7 +605,8 @@ export function buildSelectedDocs(
   allSelectedDocs: SelectedDoc[],
   dateRange: { fromDate: string; toDate: string },
   selectedEntities: any[],
-  availableFileIds: string[]
+  availableFileIds: string[],
+  documentStatusIds: number[] = []
 ): { request: any }[] {
   if (
     !isValidArray(selectedCheckBoxIds) ||
@@ -661,7 +663,8 @@ export function buildSelectedDocs(
           documentRelatedTo,
           categoryId,
           fromDate,
-          toDate
+          toDate,
+          documentStatusIds
         },
         fileDetails,
         excludedFileDetails
@@ -676,6 +679,7 @@ export function mapToBulkDeletePayload({
   categoryIds = [],
   fromDate = "",
   toDate = "",
+  documentStatusIds = [],
   referenceExternalIds = [],
   documentRelatedTo = 0,
   fileDetails = [],
@@ -685,6 +689,7 @@ export function mapToBulkDeletePayload({
   categoryIds?: number[];
   fromDate?: string;
   toDate?: string;
+  documentStatusIds?: number[];
   referenceExternalIds?: string[];
   documentRelatedTo?: number;
   fileDetails?: { fileId: string; registrationId: number; externalId: string }[];
@@ -697,6 +702,7 @@ export function mapToBulkDeletePayload({
         categoryIds,
         fromDate,
         toDate,
+        documentStatusIds,
         referenceDetails: {
           referenceExternalIds,
           documentRelatedTo
@@ -827,6 +833,24 @@ export const fileDownload: (fileId: string, fileName: string, application: strin
       window.URL.revokeObjectURL(url);
       document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
     }
+  } catch (error) {
+    console.error("Error downloading file:", error);
+    throw error;
+  }
+};
+
+export const fileDownloadById: (fileId: string, fileName: string) => Promise<void> = async (
+  fileId: string,
+  fileName: string
+) => {
+  try {
+    const sasUrl: string = await streamDownloadFile(fileId);
+    const link: HTMLAnchorElement = document.createElement("a");
+    link.href = sasUrl;
+    link.download = fileName;
+    document.getElementById(`file-download-${fileId}`)?.parentElement?.appendChild(link);
+    link.click();
+    document.getElementById(`file-download-${fileId}`)?.parentElement?.removeChild(link);
   } catch (error) {
     console.error("Error downloading file:", error);
     throw error;

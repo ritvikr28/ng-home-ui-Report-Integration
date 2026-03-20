@@ -14,6 +14,7 @@ import gtmAnalytics from "../../../shared/utils/analytics";
 import { isValidDate } from "../../../shared/utils/commonFunctions";
 import { HandleSearchChangeParams, HandleTagCloseLogicParams } from "../responseModel";
 import { getBannerMessageWithLink } from "../Views/DMSLayout";
+import { DMSPrivateDocument } from "../../../Layout";
 
 /* ------------------------------------------------------------------ */
 /* Page & Search                                                       */
@@ -243,6 +244,7 @@ export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
   dateRange,
   searchRefExternalId,
   documentRelatedTo,
+  documentStatusIds,
   currentPage,
   sortBy,
   sortDirection,
@@ -273,6 +275,7 @@ export const handleBulkDeleteLogic: (params: any) => Promise<void> = async ({
     categoryIds: allRegistrationIds,
     fromDate: dateRange.fromDate,
     toDate: dateRange.toDate,
+    documentStatusIds,
     referenceExternalIds: searchRefExternalId,
     documentRelatedTo,
     fileDetails: isHeaderBoxChecked
@@ -753,7 +756,7 @@ export function getNotificationMsgBannerObject(params: NotificationMsgBannerPara
       autoclose: false
     },
     {
-      isShow: false, // Set to true to show the private files banner
+      isShow: DMSPrivateDocument ?? false,
       variant: "warning",
       title: t("DocumentManagementServer.privateFilesBannerTitle"),
       message: getBannerMessageWithLink(t("DocumentManagementServer.privateFilesBannerDescription"), t("DocumentManagementServer.learnMoreKnowledgeBase")) ,

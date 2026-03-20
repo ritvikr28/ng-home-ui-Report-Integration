@@ -1,6 +1,7 @@
+import React from "react";
 import { act } from "@testing-library/react";
 import { renderHook } from "@testing-library/react-hooks";
-import { useNotification } from "../useNotification";
+import { useNotification, getValues, formattedDate } from "../useNotification";
 
 const mockNotifications = [
     { id: "1", Status: "Unread", Notification: "Test notification 1", Priority: "High", DateReceived: "15 Jan 2024" },
@@ -424,5 +425,70 @@ describe("useNotification", () => {
             });
             expect(result.current.currentPage === 1 || result.current.currentPage === undefined).toBe(true);
         });
+    });
+});
+
+describe("getValues", () => {
+    it("returns empty array when data is null", () => {
+        expect(getValues(null as any)).toEqual([]);
+    });
+
+    it("returns empty array when data is undefined", () => {
+        expect(getValues(undefined as any)).toEqual([]);
+    });
+
+    it("returns empty array when data is not an array (string)", () => {
+        expect(getValues("not-an-array" as any)).toEqual([]);
+    });
+
+    it("returns empty array when data is an empty array", () => {
+        expect(getValues([])).toEqual([]);
+    });
+
+    it("maps records with title and id to the correct shape", () => {
+        const data = [
+            { id: 1, title: "Notification A" },
+            { id: 2, title: "Notification B" }
+        ];
+        const result = getValues(data);
+        expect(result).toHaveLength(2);
+        expect(result[0].text).toBe("Notification A");
+        expect(result[0].props.externalId).toBe("1");
+        expect(result[0].props.name).toBe("Notification A");
+        expect(result[1].text).toBe("Notification B");
+        expect(result[1].props.externalId).toBe("2");
+        expect(result[1].props.name).toBe("Notification B");
+    });
+
+    it("uses empty string fallback when title and id are undefined", () => {
+        const data = [{}];
+        const result = getValues(data);
+        expect(result).toHaveLength(1);
+        expect(result[0].text).toBe("");
+        expect(result[0].props.externalId).toBe("");
+        expect(result[0].props.name).toBe("");
+    });
+
+    it("uses empty string fallback when title and id are null", () => {
+        const data = [{ id: null, title: null }];
+        const result = getValues(data);
+        expect(result[0].text).toBe("");
+        expect(result[0].props.externalId).toBe("");
+        expect(result[0].props.name).toBe("");
+    });
+
+    it("returns a value field that is a React element", () => {
+        const result = getValues([{ id: 1, title: "Test" }]);
+        expect(React.isValidElement(result[0].value)).toBe(true);
+    });
+});
+
+describe("formattedDate", () => {
+    it("formats a valid ISO date string to en-GB locale", () => {
+        expect(formattedDate("2024-01-15")).toBe("15 Jan 2024");
+    });
+
+    it("formats another date correctly", () => {
+        expect(formattedDate("2023-12-25")).toBe("25 Dec 2023");
     });
 });

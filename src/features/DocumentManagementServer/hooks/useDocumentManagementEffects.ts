@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
 import { Suggestion } from "@essnextgen/ui-kit";
 import { applySummaryTagClass, getAllRegistrationIds } from "../logic/DocumentManagementServer.utils";
-import { DocumentData } from "../responseModel";
+import { DocumentData, PrivateDocumentManagementServerProps } from "../responseModel";
+import { fetchPrivateDocumentDetails } from "../api/ApiService";
+
 
 
 export function useOpenSidePanelOnViewDownload(location: Location, setSidePanelOpenReason: (reason: "view" | "prepare" | null) => void, setIsSidePanelOpen: (open: boolean) => void): void {
@@ -350,3 +352,28 @@ export function useApplySummaryTagClassOnDocDataChange(
     }, [currentPage, searchText, dateRange?.fromDate, dateRange?.toDate, selectedFormats, sortBy, sortDirection, searchRefExternalId, documentRelatedTo, isSearchTriggered]);
   
 }
+
+export function usePrivateDocumentFetchingEffect(
+  props: PrivateDocumentManagementServerProps,
+  setPrivateRawData: (data: any) => void,
+  setIsPrivateDocError: (error: boolean) => void
+): void {
+  useEffect(() => {
+    async function fetchData(): Promise<void> {
+      try {
+        const response: any = await fetchPrivateDocumentDetails(props);
+        const isError = !response || (response as any)?.status === 500 || !(response as any)?.data;
+        if (isError) {
+          setIsPrivateDocError(true);
+        } else {
+          setPrivateRawData(response);
+          setIsPrivateDocError(false);
+        }
+      } catch {
+        setIsPrivateDocError(true);
+      }
+    }
+    fetchData();
+  }, [props.sortBy, props.sortDirection]);
+}
+  

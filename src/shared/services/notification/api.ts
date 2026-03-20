@@ -56,10 +56,10 @@ export const markAsRead: (notificationId: string) => Promise<any> = async (notif
     NotificationId: notificationId
   };
   const orgId: string = getUserOrganisation();
-
+  const userId: string | null = authService.getUserId();
   try {
     const baseUrl: string = buildApplicationUrl(apiUrls);
-    const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}`;
+    const path = `${baseUrl}/v1/notification/mark-as-read?NotificationId=${notificationId}&OrganisationId=${orgId}&UserId=${userId}`;
     const response: any = await service.put(path, requestData);
     return response.data;
   } catch {
@@ -85,5 +85,22 @@ export const getSearchAutoSuggestData: ({ SearchTerm }: {
  
     }
     return { error: true, status: err.response.status };
+  }
+}
+
+export const deleteSelectedNotifications = async (notificationsIds: string[]): Promise<any> => {
+  const orgId = getUserOrganisation();
+  const requestData = {
+    organisationId: orgId,
+    notificationsIds
+  };
+  try {
+    const baseUrl = buildApplicationUrl(apiUrls);
+    const path = `${baseUrl}/v1/notification/deletenotifications`;
+    const response = await service.delete(path, requestData);
+    console.log("Delete Notifications Response:", response.data.payload);
+    return response.data;
+  } catch {
+    return [];
   }
 }

@@ -72,7 +72,7 @@ interface DocumentRow {
   documentRelatedTo?: number;
   registrationId?: number;
   externalId?: string;
-  status: string;
+  ngStatus: string;
 }
 export function mapRelatedArr(doc: DocumentRow): RelatedEntity[] {
   let relatedArr: RelatedEntity[] = [];
@@ -534,7 +534,9 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     Category: doc?.category
       ? CapitalizeFirstLetter(doc.category)
       : "",
-    documentStatus: doc?.status || "Public",
+    documentStatus: doc?.ngStatus
+      ? doc.ngStatus.charAt(0).toUpperCase() + doc.ngStatus.slice(1).toLowerCase()
+      : "",
     Addedby: doc?.addedBy || "",
     "Date added":
       doc?.dateAdded
@@ -543,6 +545,26 @@ export const hasDMSDeletePermission: () => boolean = (): boolean =>
     Format: doc?.format,
     Size: doc?.size,
     isShowCheckBox: true
+  }));
+};
+
+export const mapPrivateTableData: (response: any) => any[] = (response: any): any[] => {
+  if (!response?.data?.length) {
+    return [];
+  }
+
+  return response.data.map((doc: any) => ({
+    id: doc?.fileId,
+    document: [{
+      name: doc.documentInfo?.fileName || doc.document,
+      fileId: doc?.fileId,
+      application: doc?.application,
+      sectionName: doc?.section,
+      blobName: doc?.blobName
+    }],
+    relatedTo: mapRelatedArr(doc) || "",
+    addedBy: doc?.addedBy,
+    dateAdded: doc?.dateAdded ? dayjs(doc.dateAdded).format("DD MMM YYYY") : ""
   }));
 };
 

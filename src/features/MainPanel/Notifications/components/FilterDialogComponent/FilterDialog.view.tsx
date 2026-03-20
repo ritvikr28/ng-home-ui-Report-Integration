@@ -1,5 +1,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogFooter, Button, ButtonColor } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import { DialogContent as Content } from "./dialog-helper";
 import "./style.scss";
 
@@ -36,6 +37,7 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
         onClose
     }: FilterDialogViewProps) => {
         const [isDialogOpen, setIsDialogOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = React.useState(true);
+        const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
 
         const handleClose: () => void = () => {
             setIsDialogOpen(false);
@@ -64,7 +66,7 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
                     returnFocusOnDeactivate
                     id="element-id"
                     onClose={handleClose}
-                    title="Filter by"
+                    title={t("NotificationCenter_T.filterDialogTitle")}
                 >
                     <DialogContent>
                         <Content
@@ -87,14 +89,14 @@ const FilterDialogView: ({ status, setStatus, priority, setPriority, startDate, 
                                 onClick={handleApply}
                                 color={ButtonColor.Primary}
                             >
-                                Apply
+                                {t("NotificationCenter_T.filterDialogApply")}
                             </Button>
                             <Button
                                 dataTestId="clear-all-btn"
                                 onClick={handleClear}
                                 color={ButtonColor.Secondary}
                             >
-                                Clear all
+                                {t("NotificationCenter_T.filterDialogClearAll")}
                             </Button>
                         </div>
                     </DialogFooter>

@@ -2,16 +2,17 @@ import React, { Dispatch, SetStateAction, useCallback, useEffect, useMemo, useSt
 import {
     Breadcrumbs
 } from "@essnextgen/ui-kit";
+import { useTranslation, UseTranslationResponse } from "@essnextgen/ui-intl-kit";
 import "./style.scss";
 import { getNotificationTableHeadersData } from "./helper";
 import FilterDialogLogic from "./components/FilterDialogComponent/FilterDialog.logic";
-import DeleteConfirmationModalLogic from "./components/DeleteConfirmationModal/DeleteConfirmationModal.logic";
 import { useNotification } from "./useNotification";
 import { NotificationTableData, NotificationTableRow, UseNotificationReturnType } from "./Notifications.props";
 import { useTableRows } from "./hooks/useNotificationHook";
 import NotificationTableSection from "./NotificationTableSection/NotificationTableSection.view";
 
 const NotificationView: React.FC = () => {
+    const { t }: UseTranslationResponse<"translation", undefined> = useTranslation();
     const [tableData, setTableData]: [any[], Dispatch<SetStateAction<any[]>>] = useState<any[]>([]);
     const [totalTableData, setTotalTableData]: [number, Dispatch<SetStateAction<number>>] = useState<number>(0);
     const [currentPage, setCurrentPage]: [number, Dispatch<SetStateAction<number>>] = useState(1);
@@ -25,44 +26,48 @@ const NotificationView: React.FC = () => {
     ] = useState<boolean>(false);
 
     const {
-        // filterBtnClicked,
-        // setFilterBtnClicked,
-        // currentPage,
-        // totalPages,
-        // totalNotifications,
-        // handlePageChange,
         searchTerm,
-        // isSearching,
-        // noResults,
         setNoResults,
-        // handleListCheckboxChange,
-        // handleSelectAllChange,
-        // handleSelectedCheckboxIds,
-        // handleBulkAction,
         isDeleteDialogOpen,
         closeDeleteDialog,
-        // confirmDelete,
         isDeleteLoading,
-        // showDeleteToast,
-        // isClearSelectedCheckbox,
         selectedCount,
         isNoSelectionMode,
         filters,
         setFilters,
         handleFilterChange,
         handleClearAllFilters,
-        // searchTagList,
         sortBy,
-        sortDirection
-        // handleSort
+        sortDirection,
+        confirmDelete,
+        handleBulkAction,
+        handleSelectAllChange,
+        handleSelectedCheckboxIds,
+        handleListCheckboxChange,
+        showDeleteToast,
+        isClearSelectedCheckbox,
+        handleSort,
+        isAutoSuggestVisible,
+        setIsAutoSuggestVisible,
+        suggestionLoader,
+        setSuggestionLoader,
+        setSearchSuggestions,
+        searchSuggestions,
+        setSearchTerm,
+        // isdeleted,
+        // setIsDeleted,
+        isSearching,
+        noResults,
+        totalNotifications,
+        totalPages
     }: UseNotificationReturnType = useNotification({ tableData, totalTableData, currentPage, setCurrentPage, setIsTableBodyLoading, setTotalTableData, setTableDataError });
 
     const [sideIsOpen, setSideIsOpen]: [boolean, Dispatch<SetStateAction<boolean>>] = useState(false);
     const [selectedItem, setSelectedItem]: [any, Dispatch<SetStateAction<any>>] = useState<any>("");
 
     const tableHeadersData: NotificationTableData = useMemo(
-        () => getNotificationTableHeadersData({ sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem }),
-        [setSideIsOpen, setSelectedItem, sortBy, sortDirection]
+        () => getNotificationTableHeadersData({ sortBy, sortDirection, setNotificationIdSelected, setSideIsOpen, setSelectedItem, t }),
+        [setSideIsOpen, setSelectedItem, sortBy, sortDirection, t]
     );
 
     const hasActiveFilters: any = useMemo(
@@ -79,6 +84,14 @@ const NotificationView: React.FC = () => {
     // useNotificationTableData(currentPage, sideIsOpen, setTableData, setTotalTableData, setNoResults, setTableDataError, setIsTableBodyLoading, searchTerm, sortBy, sortDirection);
 
     const tableRows: NotificationTableRow[] = useTableRows(tableData, currentPage);
+
+    const handleConfirmDelete: () => Promise<void> = async () => {
+        const deletConfirmed:void = await confirmDelete();
+        if (document.activeElement instanceof HTMLElement) {
+            document.activeElement.blur();
+        }
+        return deletConfirmed
+    };
 
     const handleCloseDeleteDialog: () => void = useCallback(() => {
         closeDeleteDialog();
@@ -107,8 +120,8 @@ const NotificationView: React.FC = () => {
                 <div className="notification-layout-header">
                     <Breadcrumbs
                         breadcrumbActions={[
-                            { active: false, linkName: "Home", path: window.location.origin },
-                            { active: false, linkName: "Notification Centre", path: "#" }
+                            { active: false, linkName: t("NotificationCenter_T.breadcrumbHome"), path: window.location.origin },
+                            { active: false, linkName: t("NotificationCenter_T.breadcrumbNotificationCentre"), path: "#" }
                         ]}
                         className="essui-Breadcrumbs"
                         dataTestId="breadcrumb-test-id"
@@ -144,6 +157,35 @@ const NotificationView: React.FC = () => {
                         setFilterBtnClicked={setFilterBtnClicked}
                         filters={filters}
                         setFilters={setFilters}
+                        isDeleteDialogOpen={isDeleteDialogOpen}
+                        handleCloseDeleteDialog={handleCloseDeleteDialog}
+                        handleConfirmDelete={handleConfirmDelete}
+                        selectedCount={selectedCount}
+                        isDeleteLoading={isDeleteLoading}
+                        isNoSelectionMode={isNoSelectionMode}
+                        handleBulkAction={(item, ids) => handleBulkAction(item, ids ?? [])}
+                        handleSelectAllChange={handleSelectAllChange}
+                        handleSelectedCheckboxIds={handleSelectedCheckboxIds}
+                        handleListCheckboxChange={handleListCheckboxChange}
+                        showDeleteToast={showDeleteToast}
+                        isClearSelectedCheckbox={isClearSelectedCheckbox}
+                        sortBy={sortBy}
+                        sortDirection={sortDirection}
+                        handleSort={handleSort}
+                        isAutoSuggestVisible={isAutoSuggestVisible}
+                        setIsAutoSuggestVisible={setIsAutoSuggestVisible}
+                        suggestionLoader={suggestionLoader}
+                        setSuggestionLoader={setSuggestionLoader}
+                        setSearchSuggestions={setSearchSuggestions}
+                        searchSuggestions={searchSuggestions}
+                        setSearchTerm={setSearchTerm}
+                        // isdeleted={isdeleted}
+                        // setIsDeleted={setIsDeleted}
+                        searchTerm={searchTerm}
+                        isSearching={isSearching}
+                        noResults={noResults}
+                        totalNotifications={totalNotifications}
+                        totalPages={totalPages}
                     />
                     {filterBtnClicked && (
                         <FilterDialogLogic
@@ -153,17 +195,6 @@ const NotificationView: React.FC = () => {
                             onClear={handleClearAllFilters}
                         />
                     )}
-
-                    <DeleteConfirmationModalLogic
-                        isOpen={isDeleteDialogOpen}
-                        onClose={handleCloseDeleteDialog}
-                        onConfirm={() => { }}
-                        // onConfirm={isNoSelectionMode ? handleCloseDeleteDialog : handleConfirmDelete}
-                        selectedCount={selectedCount}
-                        isLoading={isDeleteLoading}
-                        isNoSelection={isNoSelectionMode}
-                    />
-
                 </div>
             </div>
         </div>

@@ -1,17 +1,20 @@
 import React from "react";
 import "regenerator-runtime/runtime.js"; // Required for async/await to work with ES5 browserlist target
 import ReactDOM from "react-dom";
-
+import { Provider } from "react-redux";
 import reportWebVitals from "./reportWebVitals";
 import App from "./App";
 import { envConfig } from "./shared/utils";
 import gtmAnalytics from "./shared/utils/analytics";
+import configureStore from "./redux/store";
 // import "./appInsights"
 
 gtmAnalytics.init(envConfig.REACT_GA_TRACKING_ID);
 
 ReactDOM.render(
-  <App isStandaloneApp baseRouteName="" />,
+  <Provider store={configureStore()}>
+    <App isStandaloneApp baseRouteName="" />
+  </Provider>,
   document.getElementById("root")
 );
 

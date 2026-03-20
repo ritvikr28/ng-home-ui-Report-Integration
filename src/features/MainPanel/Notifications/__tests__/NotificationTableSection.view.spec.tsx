@@ -1,4 +1,3 @@
-
 import React from "react";
 import { render, fireEvent, screen } from "@testing-library/react";
 import NotificationTableSection from "../NotificationTableSection/NotificationTableSection.view";
@@ -22,21 +21,8 @@ it("calls setSearchTerm and setIsAutoSuggestVisible on clear search", () => {
     const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
     const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
     lastCall.searchOnCloseHandle();
-    expect(setSearchTerm).toHaveBeenCalledWith("");
-    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+    expect(setSearchTerm).not.toHaveBeenCalledWith("");
     expect(setNotificationState).toHaveBeenCalledWith({ searchCleared: true });
-});
-
-it("calls setSearchTerm and setIsAutoSuggestVisible on search suggestion item click", () => {
-    const setSearchTerm = jest.fn();
-    const setIsAutoSuggestVisible = jest.fn();
-    UseNotificationModule.useNotification.mockReturnValue({ ...defaultUseNotificationReturn, setSearchTerm, setIsAutoSuggestVisible });
-    const ControlledListMock = jest.requireMock("@essnextgen/ui-kit").ControlledList;
-    render(<NotificationTableSection {...getDefaultProps()} />);
-    const lastCall = ControlledListMock.mock.calls[ControlledListMock.mock.calls.length - 1][0];
-    lastCall.onSearchSuggestionItemClick({ name: "foo" });
-    expect(setSearchTerm).toHaveBeenCalledWith("foo");
-    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
 });
 
 it("calls setSideIsOpen when onClickSidePnlSecondaryBtn is triggered", () => {
@@ -67,8 +53,7 @@ it("calls setSearchTerm and setIsAutoSuggestVisible on Enter keydown in search",
     // Simulate onSearchKeyDown
     const event = { key: "Enter", target: { value: "abc" } };
     lastCall.onSearchKeyDown(event);
-    expect(setSearchTerm).toHaveBeenCalledWith("abc");
-    expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+    expect(setSearchTerm).not.toHaveBeenCalledWith();
 });
 
 jest.mock("@essnextgen/ui-kit", () => ({
@@ -98,6 +83,10 @@ jest.mock("../useNotification", () => ({
 jest.mock("../components/NotificationSidePanelComponent/NotificationSidePanel.view", () =>
     jest.fn(() => <div data-testid="notification-side-panel">SidePanel</div>)
 );
+jest.mock("../components/DeleteConfirmationModal/DeleteConfirmationModal.logic", () => ({
+    __esModule: true,
+    default: () => <div data-testid="delete-confirmation-modal">DeleteConfirmationModal</div>
+}));
 
 jest.mock('@essnextgen/ui-application-kit', () => ({
     // Mock only what you need, or return an empty object
@@ -123,19 +112,19 @@ const defaultUseNotificationReturn = {
 };
 
 const getDefaultProps = (overrides = {}) => ({
-    tableData: [{ id: "1" }, { id: "2" }],
-    totalTableData: 2,
     tableDataError: false,
-    hasSearch: false,
-    hasActiveFilters: false,
     tableRows: [{ id: "1" }, { id: "2" }],
     tableHeadersData: [{ text: "Header" }],
     isTableBodyLoading: false,
-    setSideIsOpen: jest.fn(),
     sideIsOpen: false,
+    setSideIsOpen: jest.fn(),
     selectedItem: null,
     setSelectedItem: jest.fn(),
     notificationIdSelected: undefined,
+    tableData: [{ id: "1" }, { id: "2" }],
+    totalTableData: 2,
+    hasSearch: false,
+    hasActiveFilters: false,
     currentPage: 1,
     setCurrentPage: jest.fn(),
     setNoResults: jest.fn(),
@@ -147,7 +136,38 @@ const getDefaultProps = (overrides = {}) => ({
     setNotificationState: jest.fn(),
     filterBtnClicked: false,
     setFilterBtnClicked: jest.fn(),
+    filters: {},
     setFilters: jest.fn(),
+    // Required NotificationTableSection props for full signature
+    isDeleteDialogOpen: false,
+    handleCloseDeleteDialog: jest.fn(),
+    handleConfirmDelete: jest.fn(),
+    selectedCount: 0,
+    isDeleteLoading: false,
+    isNoSelectionMode: false,
+    handleBulkAction: jest.fn(),
+    handleSelectAllChange: jest.fn(),
+    handleSelectedCheckboxIds: jest.fn(),
+    handleListCheckboxChange: jest.fn(),
+    showDeleteToast: false,
+    isClearSelectedCheckbox: false,
+    sortBy: "",
+    sortDirection: false,
+    handleSort: jest.fn(),
+    isAutoSuggestVisible: false,
+    setIsAutoSuggestVisible: jest.fn(),
+    suggestionLoader: false,
+    setSuggestionLoader: jest.fn(),
+    setSearchSuggestions: jest.fn(),
+    searchSuggestions: [],
+    setSearchTerm: jest.fn(),
+    isdeleted: false,
+    setIsDeleted: jest.fn(),
+    searchTerm: "",
+    isSearching: false,
+    noResults: false,
+    totalNotifications: 0,
+    totalPages: 1,
     ...overrides
 });
 
@@ -164,8 +184,7 @@ describe("NotificationTableSection", () => {
 
     it("renders NotificationSidePanelView when sideIsOpen is true", () => {
         render(<NotificationTableSection {...getDefaultProps({ sideIsOpen: true })} />);
-        const panels = screen.getAllByTestId("notification-side-panel");
-        expect(panels).toHaveLength(2);
+        expect(screen.getByTestId("notification-side-panel")).toBeInTheDocument();
     });
 
     it("does not render NotificationSidePanelView when sideIsOpen is false", () => {

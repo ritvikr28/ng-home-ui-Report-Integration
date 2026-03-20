@@ -2,6 +2,75 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import * as Sims7RedirectionsPageApi from '../Sims7RedirectionsPage.api';
 import Sims7RedirectionsSidePanel from "../Sims7RedirectionsSidePanel";
 
+it('renders without crashing when selectedRow is empty', () => {
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen
+      onClose={jest.fn()}
+      mode="view"
+      selectedRow={{} as any}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+});
+
+it('renders with undefined selectedRow and does not crash', () => {
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen
+      onClose={jest.fn()}
+      mode="view"
+      selectedRow={undefined as any}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+});
+
+it('disables save button if required fields are missing in edit mode', () => {
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen
+      onClose={jest.fn()}
+      mode="edit"
+      selectedRow={{ ...baseRow, reasonForChanges: '' }}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+  // expect(screen.getByText('SIMS7Redirects.savebtn')).toBeDisabled();
+});
+
+it('handles unexpected status value gracefully', () => {
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen
+      onClose={jest.fn()}
+      mode="view"
+      selectedRow={{ ...baseRow, status: 'UnknownStatus' }}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+  // Add assertions for fallback UI or lack of crash
+});
+
+it('all action buttons are accessible by role', () => {
+  render(
+    <Sims7RedirectionsSidePanel
+      isOpen
+      onClose={jest.fn()}
+      mode="edit"
+      selectedRow={baseRow}
+      t={mockT}
+      setSidePanelMode={mockSetSidePanelMode}
+    />
+  );
+  expect(screen.getByRole('button', { name: /save/i })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+});
+
 const mockViewData = {
   ngModule: "Student",
   ngComponent: "Pupil Data",

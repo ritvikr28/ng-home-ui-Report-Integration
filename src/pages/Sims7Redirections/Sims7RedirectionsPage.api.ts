@@ -1,5 +1,3 @@
-
-
 import type { AxiosResponse } from "axios";
 import { service } from "../../shared/utils/api-service";
 import { envConfig } from "../../shared/utils/constants";
@@ -89,7 +87,8 @@ export interface UpdateSims7RedirectionRequest {
     ngComponent: string;
     switchToSchool: boolean;
     effectiveDate: string;
-    PlannedStatus: string;
+    currentStatus: string;
+    plannedStatus: string;
     reasonForChange: string;
 }
 
@@ -102,4 +101,17 @@ export const updateSims7Redirection: (data: UpdateSims7RedirectionRequest) => Pr
         envConfig.BASE_URL
     );
     return response.data;
+};
+
+export interface AutoSuggestionsResponse {
+    payload: Record<string, string[]>;
+}
+
+export const fetchAutoSuggestions = async (searchTerm: string): Promise<AutoSuggestionsResponse> => {
+    const url = `/v1/sims7-redirection/auto-suggestions?SearchTerm=${encodeURIComponent(searchTerm)}`;
+    const response: AxiosResponse<AutoSuggestionsResponse> = await service.get(url, envConfig.BASE_URL);
+    if (response && response.data) {
+        return response.data;
+    }
+    return { payload: {} };
 };

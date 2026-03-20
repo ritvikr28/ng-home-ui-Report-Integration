@@ -66,13 +66,13 @@ export interface UseNotificationReturnType {
   isSearching: boolean;
   noResults: boolean;
   setNoResults: React.Dispatch<React.SetStateAction<boolean>>;
-  // handleListCheckboxChange: (index: number, id: string) => void;
-  // handleSelectAllChange: (event: any, ids: string[]) => void;
+  handleListCheckboxChange: (index: number, id: string) => void;
+  handleSelectAllChange: (event: any, ids: string[]) => void;
   handleSelectedCheckboxIds: (ids: string[]) => void;
-  // handleBulkAction: (item: any, ids: string[]) => void;
+  handleBulkAction: (item: any, ids: string[]) => void;
   isDeleteDialogOpen: boolean;
   closeDeleteDialog: () => void;
-  // confirmDelete: () => Promise<void>;
+  confirmDelete: () => Promise<void>;
   isDeleteLoading: boolean;
   showDeleteToast: boolean;
   isClearSelectedCheckbox: boolean;
@@ -99,6 +99,8 @@ export interface UseNotificationReturnType {
   setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
   searchSuggestions: Suggestion[];
   setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+  isdeleted: boolean;
+  setIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
 
 }
 

@@ -1,6 +1,12 @@
+import { act, renderHook } from "@testing-library/react-hooks";
 import { handleSearchKeyPressed, handleSearchChangeWithAutoSuggest } from "../notificationTableHandlers";
 import { PAGE_SIZE } from "../../useNotification";
 import { getNotificationTableData } from "../../../../../shared/services/notification/api";
+import { getSearchOnClickClose } from "../notificationTableHandlers.view";
+import { SearchTag } from "../NotificationTableSection.props";
+
+import { getBulkDeleteIds, useNotificationBulkDelete } from "../../useNotificationBulkDelete";
+import { useNotificationSelection } from "../../useNotificationSelection";
 
 jest.mock("../../../../../shared/services/notification/api");
 
@@ -94,5 +100,175 @@ describe("handleSearchChangeWithAutoSuggest", () => {
         handleSearchChangeWithAutoSuggest(" a ", setSearchTerm, setIsAutoSuggestVisible);
         expect(setSearchTerm).toHaveBeenCalledWith(" a ");
         expect(setIsAutoSuggestVisible).toHaveBeenCalledWith(false);
+    });
+});
+
+
+
+describe("getSearchOnClickClose", () => {
+    let filters: any;
+    let setFilters: jest.Mock;
+    let searchTagList: SearchTag;
+    beforeEach(() => {
+        setFilters = jest.fn();
+        filters = {
+            status: ["Open", "Closed"],
+            priority: ["High", "Low"],
+            startDate: "2024-01-01",
+            endDate: "2024-01-31"
+        };
+        searchTagList = [
+            { text: "Open", categoryName: "Status", closeObj: { name: "Open", id: 1 } },
+            { text: "High", categoryName: "Priority", closeObj: { name: "High", id: 2 } },
+            { text: "01 Jan 2024 to 31 Jan 2024", categoryName: "Date", closeObj: { name: "Date", id: 3 } }
+        ];
+    });
+
+    it("removes status tag and updates filters", () => {
+        const closeObj = { name: "Open", id: 1 };
+        const handler = getSearchOnClickClose(filters, setFilters, searchTagList);
+        handler({} as any, "Open", closeObj);
+        expect(setFilters).toHaveBeenCalledWith({
+            ...filters,
+            status: ["Closed"]
+        });
+    });
+
+    it("removes priority tag and updates filters", () => {
+        const closeObj = { name: "High", id: 2 };
+        const handler = getSearchOnClickClose(filters, setFilters, searchTagList);
+        handler({} as any, "High", closeObj);
+        expect(setFilters).toHaveBeenCalledWith({
+            ...filters,
+            priority: ["Low"]
+        });
+    });
+
+    it("removes date tag and updates filters", () => {
+        const closeObj = { name: "Date", id: 3 };
+        const handler = getSearchOnClickClose(filters, setFilters, searchTagList);
+        handler({} as any, "Date", closeObj);
+        expect(setFilters).toHaveBeenCalledWith({
+            ...filters,
+            startDate: undefined,
+            endDate: undefined
+        });
+    });
+
+    it("does nothing if closeObj or filters are missing", () => {
+        const handler = getSearchOnClickClose(undefined, setFilters, searchTagList);
+        handler({} as any, "Open", null as any);
+        expect(setFilters).not.toHaveBeenCalled();
+    });
+});
+
+
+describe("getBulkDeleteIds", () => {
+    it("returns only ids present in visibleIds", () => {
+        const selected = ["a", "b", "c"];
+        const visible = ["b", "c", "d"];
+        expect(getBulkDeleteIds(selected, visible)).toEqual(["b", "c"]);
+    });
+
+    it("returns empty array if no matches", () => {
+        expect(getBulkDeleteIds(["x"], ["y"]).length).toBe(0);
+    });
+});
+
+describe("useNotificationBulkDelete", () => {
+    let setIsNoSelectionMode: jest.Mock;
+    let setIsDeleteDialogOpen: jest.Mock;
+    let setPendingDeletionIds: jest.Mock;
+
+    beforeEach(() => {
+        setIsNoSelectionMode = jest.fn();
+        setIsDeleteDialogOpen = jest.fn();
+        setPendingDeletionIds = jest.fn();
+    });
+
+    it("does nothing if selectedItem is null or not Delete", () => {
+        const fn = useNotificationBulkDelete({
+            selectedNotificationIds: ["1"],
+            setIsNoSelectionMode,
+            setIsDeleteDialogOpen,
+            setPendingDeletionIds
+        });
+        fn(null, ["1"]);
+        fn({ value: "Other" }, ["1"]);
+        expect(setIsNoSelectionMode).not.toHaveBeenCalled();
+        expect(setIsDeleteDialogOpen).not.toHaveBeenCalled();
+        expect(setPendingDeletionIds).not.toHaveBeenCalled();
+    });
+
+    it("shows no selection mode if no ids on current page", () => {
+        const fn = useNotificationBulkDelete({
+            selectedNotificationIds: ["1"],
+            setIsNoSelectionMode,
+            setIsDeleteDialogOpen,
+            setPendingDeletionIds
+        });
+        fn({ value: "Delete" }, []);
+        expect(setIsNoSelectionMode).toHaveBeenCalledWith(true);
+        expect(setIsDeleteDialogOpen).toHaveBeenCalledWith(true);
+        expect(setPendingDeletionIds).not.toHaveBeenCalled();
+    });
+
+    it("sets pending deletion ids and opens dialog if ids exist", () => {
+        const fn = useNotificationBulkDelete({
+            selectedNotificationIds: ["1", "2"],
+            setIsNoSelectionMode,
+            setIsDeleteDialogOpen,
+            setPendingDeletionIds
+        });
+        fn({ value: "Delete" }, ["2"]);
+        expect(setIsNoSelectionMode).toHaveBeenCalledWith(false);
+        expect(setPendingDeletionIds).toHaveBeenCalledWith(["2"]);
+        expect(setIsDeleteDialogOpen).toHaveBeenCalledWith(true);
+    });
+});
+
+describe("useNotificationSelection", () => {
+    it("selects all visible ids when checked", () => {
+        const setIsClearSelectedCheckbox = jest.fn();
+        const { result } = renderHook(() => useNotificationSelection(setIsClearSelectedCheckbox));
+        act(() => {
+            result.current.handleSelectAllChange({ target: { checked: true } }, ["a", "b"]);
+        });
+        expect(result.current.selectedNotificationIds).toEqual(["a", "b"]);
+        expect(setIsClearSelectedCheckbox).toHaveBeenCalledWith(false);
+    });
+
+    it("clears all when unchecked", () => {
+        const setIsClearSelectedCheckbox = jest.fn();
+        const { result } = renderHook(() => useNotificationSelection(setIsClearSelectedCheckbox));
+        act(() => {
+            result.current.handleSelectAllChange({ target: { checked: true } }, ["a"]);
+            result.current.handleSelectAllChange({ target: { checked: false } }, ["a"]);
+        });
+        expect(result.current.selectedNotificationIds).toEqual([]);
+        expect(setIsClearSelectedCheckbox).toHaveBeenCalledWith(true);
+    });
+
+    it("handles handleSelectedCheckboxIds", () => {
+        const setIsClearSelectedCheckbox = jest.fn();
+        const { result } = renderHook(() => useNotificationSelection(setIsClearSelectedCheckbox));
+        act(() => {
+            result.current.handleSelectedCheckboxIds(["x", "y"]);
+        });
+        expect(result.current.selectedNotificationIds).toEqual(["x", "y"]);
+        expect(setIsClearSelectedCheckbox).toHaveBeenCalledWith(false);
+    });
+
+    it("handles handleListCheckboxChange add/remove", () => {
+        const setIsClearSelectedCheckbox = jest.fn();
+        const { result } = renderHook(() => useNotificationSelection(setIsClearSelectedCheckbox));
+        act(() => {
+            result.current.handleListCheckboxChange(0, "id1");
+        });
+        expect(result.current.selectedNotificationIds).toEqual(["id1"]);
+        act(() => {
+            result.current.handleListCheckboxChange(0, "id1");
+        });
+        expect(result.current.selectedNotificationIds).toEqual([]);
     });
 });

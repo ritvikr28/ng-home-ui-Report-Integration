@@ -71,6 +71,25 @@ describe('handleCancelConfirm', () => {
 
     expect(setReasonForChanges).toHaveBeenCalledWith('');
   });
+
+  it('should set reasonForChanges to empty string if selectedRow is undefined', () => {
+    const setIsDirty = jest.fn();
+    const setShowCancelDialog = jest.fn();
+    const setReasonForChanges = jest.fn();
+    const setReasonError = jest.fn();
+    const setDateError = jest.fn();
+    const onClose = jest.fn();
+    handleCancelConfirm({
+      setIsDirty,
+      setShowCancelDialog,
+      setReasonForChanges,
+      selectedRow: undefined,
+      setReasonError,
+      setDateError,
+      onClose
+    });
+    expect(setReasonForChanges).toHaveBeenCalledWith('');
+  });
 });
 
 describe('handleCancelDialogClose', () => {

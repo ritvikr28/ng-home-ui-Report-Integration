@@ -47,16 +47,16 @@ export type UseNotificationReturn = {
     // }[];
     isSearching: boolean;
     noResults: boolean;
-    // handleListCheckboxChange: (_index: number, id: string) => void;
-    // handleSelectAllChange: (event: any, visibleIds: string[]) => void;
+    handleListCheckboxChange: (_index: number, id: string) => void;
+    handleSelectAllChange: (event: any, visibleIds: string[]) => void;
     handleSelectedCheckboxIds: (ids: string[]) => void;
-    // handleBulkAction: (
-    //     selectedItem: { value?: string } | null,
-    //     visibleIds?: string[]
-    // ) => void;
+    handleBulkAction: (
+        selectedItem: { value?: string } | null,
+        visibleIds?: string[]
+    ) => void;
     isDeleteDialogOpen: boolean;
     closeDeleteDialog: () => void;
-    // confirmDelete: () => Promise<void>;
+    confirmDelete: () => Promise<void>;
     isDeleteLoading: boolean;
     showDeleteToast: boolean;
     isClearSelectedCheckbox: boolean;
@@ -75,5 +75,16 @@ export type UseNotificationReturn = {
     setSuggestionLoader: React.Dispatch<React.SetStateAction<boolean>>;
     searchSuggestions: Suggestion[];
     setSearchSuggestions: React.Dispatch<React.SetStateAction<Suggestion[]>>;
+    isdeleted: boolean;
+    setIsDeleted: React.Dispatch<React.SetStateAction<boolean>>;
 
+};
+
+export type UseNotificationSelectionReturn = {
+  selectedNotificationIds: string[];
+  setSelectedNotificationIds: React.Dispatch<React.SetStateAction<string[]>>;
+  isClearSelectedCheckboxState: boolean;
+  handleSelectAllChange: (event: any, visibleIds?: string[]) => void;
+  handleSelectedCheckboxIds: (ids: string[]) => void;
+  handleListCheckboxChange: (_index: number, id: string) => void;
 };

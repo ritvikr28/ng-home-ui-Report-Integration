@@ -293,6 +293,32 @@ describe("handleSorting", () => {
     expect(setSortDirection).toHaveBeenCalledWith("Asc");
   });
 
+  it("handles privacyColumn — covers PrivacyStatus branch", () => {
+    handleSorting(
+      t("DocumentManagementServer.privacyColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DocumentStatus");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction if sortBy matches apiColumnName for privacyColumn", () => {
+    handleSorting(
+      t("DocumentManagementServer.privacyColumn"),
+      "PrivacyStatus",
+      setSortBy,
+      "Desc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DocumentStatus");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
   it("toggles direction if sortBy matches apiColumnName", () => {
     handleSorting(
       "DateAdded",
@@ -308,6 +334,119 @@ describe("handleSorting", () => {
   it("returns early for unknown column", () => {
     handleSorting(
       "unknown",
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).not.toHaveBeenCalled();
+    expect(setSortDirection).not.toHaveBeenCalled();
+  });
+});
+
+describe("handleSorting (side panel columns)", () => {
+  const setSortBy: jest.Mock = jest.fn();
+  const setSortDirection: jest.Mock = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("handles documentColumn", () => {
+    handleSorting(
+      t("DocumentManagementServer.documentColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("Document");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  // it("handles relatedColumn", () => {
+  //   handleSorting(
+  //     t("DocumentManagementServer.relatedColumn"),
+  //     "",
+  //     setSortBy,
+  //     "Asc",
+  //     setSortDirection,
+  //     t as any
+  //   );
+  //   expect(setSortBy).toHaveBeenCalledWith("RelatedTo");
+  //   expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  // });
+
+  it("handles addedByColumn", () => {
+    handleSorting(
+      t("DocumentManagementServer.addedByColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("AddedBy");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("handles dateAddedColumn", () => {
+    handleSorting(
+      t("DocumentManagementServer.dateAddedColumn"),
+      "",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DateAdded");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction Desc→Asc when sortBy matches apiColumnName", () => {
+    handleSorting(
+      t("DocumentManagementServer.dateAddedColumn"),
+      "DateAdded",
+      setSortBy,
+      "Desc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("DateAdded");
+    expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  });
+
+  it("toggles direction Asc→Desc when sortBy matches apiColumnName", () => {
+    handleSorting(
+      t("DocumentManagementServer.documentColumn"),
+      "Document",
+      setSortBy,
+      "Asc",
+      setSortDirection,
+      t as any
+    );
+    expect(setSortBy).toHaveBeenCalledWith("Document");
+    expect(setSortDirection).toHaveBeenCalledWith("Desc");
+  });
+
+  // it("defaults direction to Asc when sortBy does not match apiColumnName", () => {
+  //   handleSorting(
+  //     t("DocumentManagementServer.relatedColumn"),
+  //     "DateAdded",
+  //     setSortBy,
+  //     "Desc",
+  //     setSortDirection,
+  //     t as any
+  //   );
+  //   expect(setSortBy).toHaveBeenCalledWith("RelatedTo");
+  //   expect(setSortDirection).toHaveBeenCalledWith("Asc");
+  // });
+
+  it("returns early for unknown column — does not call setSortBy or setSortDirection", () => {
+    handleSorting(
+      "unknownColumn",
       "",
       setSortBy,
       "Asc",

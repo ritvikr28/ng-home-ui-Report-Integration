@@ -21,7 +21,15 @@ export function getBreadcrumbs(t: (key: string) => string, homeurl: string): IBr
     ];
 }
 
-export function getNotificationMsgBannerObject(t: (key: string) => string) {
+export function getNotificationMsgBannerObject(
+    t: (key: string) => string
+): Array<{
+    isShow: boolean;
+    variant: string;
+    title: string;
+    message: string;
+    autoclose: boolean;
+}> {
     return [
         {
             isShow: true,
@@ -33,10 +41,21 @@ export function getNotificationMsgBannerObject(t: (key: string) => string) {
     ];
 }
 
-export function getDialogTemplateProps(t: (key: string) => string) {
+export function getDialogTemplateProps(
+    t: (key: string) => string
+): {
+    cancelText: string;
+    contentText: string;
+    isNotificationanner: boolean;
+    notificationStatus: NotificationStatus;
+    okText: string;
+    onCancel: () => void;
+    onConfirm: () => void;
+    template: DialogTemplate;
+} {
     return {
-             cancelText: t("SIMS7Redirects.cancel"),
-             contentText: t("SIMS7Redirects.contentText"),
+        cancelText: t("SIMS7Redirects.cancel"),
+        contentText: t("SIMS7Redirects.contentText"),
         isNotificationanner: false,
         notificationStatus: NotificationStatus.SUCCESS,
         okText: t("SIMS7Redirects.okText"),

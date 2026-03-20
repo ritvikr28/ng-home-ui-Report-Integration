@@ -6,13 +6,13 @@ export function isFormDirty(
     date: Date | null,
     reason: string
 ): boolean {
-    if (selectedRow.status === 'Not migrated') {
-        return (redirect !== (selectedRow.status === 'Not migrated' || selectedRow.status === 'Reversing' ? 'no' : 'yes'));
+    if (selectedRow.status === 'Not migrated' || selectedRow.status === 'Reversing') {
+        return redirect !== 'no';
     }
     const origDate: Date | null = parseDateString(selectedRow.effectiveDate);
     const dateChanged = date && origDate && date.toDateString() !== origDate.toDateString();
     return (
-        redirect !== (selectedRow.status === 'Not migrated' || selectedRow.status === 'Reversing' ? 'no' : 'yes') ||
+        redirect !== 'yes' ||
         dateChanged ||
         (reason !== (selectedRow.reasonForChanges || ''))
     );

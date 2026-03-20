@@ -31,26 +31,35 @@ export function useVisibleNotificationIds(tableRows: any[]): string[] {
     return useMemo(() => tableRows.map((notification: any) => notification.id).filter(Boolean), [tableRows]);
 }
 
-export function getEmptyStateMessage(
+export function getEmptyStateMessage({
+    tableDataError,
+    totalNotifications,
+    isSearching,
+    hasActiveFilters,
+    searchTerm,
+    searchSuggestions,
+    t = (key: string) => key
+}: {
     tableDataError: any,
     totalNotifications: number,
     isSearching: boolean,
     hasSearch: boolean,
     hasActiveFilters: boolean | string,
     searchTerm: string,
-    searchSuggestions: Suggestion[]
-): string {
+    searchSuggestions: Suggestion[],
+    t?: (key: string, options?: any) => string
+}): string {
     if (totalNotifications === 0 || tableDataError) {
-        return "No data to display";
+        return t("NotificationCenter_T.noDataToDisplay");
     }
     if (tableDataError === true) {
-        return "No data to display";
+        return t("NotificationCenter_T.noDataToDisplay");
     }
     if (totalNotifications === 0 && !isSearching && searchTerm.trim().length > 0 && !searchSuggestions.length) {
-        return `Your search - ${searchTerm} - did not match any results. Make sure that all words are spelled correctly.`;
+        return t("NotificationCenter_T.resultNotFoundMessage", { searchTerm });
     }
     if (totalNotifications === 0 && !isSearching && hasActiveFilters) {
-        return "No notifications found for selected filters.";
+        return t("NotificationCenter_T.noNotificationsFoundForFilters");
     }
     return "";
 }

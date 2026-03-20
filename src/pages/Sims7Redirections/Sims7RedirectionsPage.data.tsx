@@ -45,14 +45,14 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         text: "ID",
         isShow: false,
         showValAs: ShowValAs.Text,
-        isTextTruncate: false,
+        isTextTruncate: false
     },
     {
         text: "Category",
         isShow: true,
         showValAs: ShowValAs.Text,
         isTextTruncate: false,
-        isColumnSorting: true,
+        isColumnSorting: true
     },
 
     {
@@ -122,7 +122,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         isShow: true,
         showValAs: ShowValAs.Text,
         isTextTruncate: false,
-        isColumnSorting: true,
+        isColumnSorting: true
     },
     {
         text: "Status",
@@ -137,7 +137,7 @@ export const sims7RedirectionsTableHeaders: Sims7RedirectionsTableHeader[] = [
         },
         isTextTruncate: false,
         isColumnSorting: true,
-        isColumnSortByDefault: false,
+        isColumnSortByDefault: false
     },
     {
         text: "Reason for changes",

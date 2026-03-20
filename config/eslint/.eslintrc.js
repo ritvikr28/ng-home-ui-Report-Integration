@@ -31,6 +31,8 @@ module.exports = {
     "packages/**/*/dist",
   ],
   rules: {
+    "no-else-return": "warn",
+    "react/prop-types": "off",
     "no-console": "warn",
     "react/no-array-index-key": "warn",
     "react/jsx-boolean-value": "warn",
