@@ -38,5 +38,5 @@ function canEditSidePanel(mode: string, selectedRow: any): boolean {
 }
 
 function shouldShowSuccessToast(selectedRow: any, isDirty: boolean): boolean {
-    return selectedRow.status === 'Migrated' && !isDirty;
+    return !isDirty;
 }

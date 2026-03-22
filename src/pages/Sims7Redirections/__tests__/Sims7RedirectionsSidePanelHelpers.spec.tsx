@@ -133,7 +133,7 @@ describe('Sims7RedirectionsSidePanelHelpers', () => {
     });
     it('returns false otherwise', () => {
       expect(isSuccessToast({ status: 'Migrated' }, true)).toBe(false);
-      expect(isSuccessToast({ status: 'Not migrated' }, false)).toBe(false);
+      expect(isSuccessToast({ status: 'Not migrated' }, false)).toBe(true);
     });
   });
 
