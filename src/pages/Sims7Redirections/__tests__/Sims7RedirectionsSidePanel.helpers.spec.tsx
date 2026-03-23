@@ -71,10 +71,13 @@ describe('Sims7RedirectionsSidePanel.helpers', () => {
     expect(helpers.canEditSidePanel('edit', null)).toBe(false);
   });
 
-  it('shouldShowSuccessToast returns true for Migrated and not dirty', () => {
+  it('shouldShowSuccessToast returns true for any status when not dirty', () => {
     expect(helpers.shouldShowSuccessToast({ status: 'Migrated' }, false)).toBe(true);
+    expect(helpers.shouldShowSuccessToast({ status: 'Not migrated' }, false)).toBe(false);
+    expect(helpers.shouldShowSuccessToast({ status: 'Planned' }, false)).toBe(true);
+    expect(helpers.shouldShowSuccessToast({ status: 'Reversing' }, false)).toBe(true);
     expect(helpers.shouldShowSuccessToast({ status: 'Migrated' }, true)).toBe(false);
-    expect(helpers.shouldShowSuccessToast({ status: 'Planned' }, false)).toBe(false);
+    expect(helpers.shouldShowSuccessToast({ status: 'Not migrated' }, true)).toBe(false);
   });
 
   it('showSuccessAndClose calls all callbacks and onSaveSuccess', () => {
