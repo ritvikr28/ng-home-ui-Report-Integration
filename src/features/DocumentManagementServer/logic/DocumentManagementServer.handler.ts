@@ -604,6 +604,8 @@ export function handleApply({
   setReferenceExternalIds,
   setSelectedEntities,
   selectedEntity,
+  documentStatusIds,
+  setDocumentStatusIds,
   setTableKey,
   setSearchTerm,
   setSearchText,
@@ -615,6 +617,8 @@ export function handleApply({
   selectedDateRange: any,
   isDateError: boolean,
   selectedEntity?: any[],
+  documentStatusIds?: number[],
+  setDocumentStatusIds: (v: number[]) => void
   setIsDateError: (v: boolean) => void,
   setIsFilterLoading: (v: boolean) => void,
   setDateRange: (v: any) => void,
@@ -670,6 +674,7 @@ export function handleApply({
   setSelectedCheckBoxIds([]);
   setPrevSelectedDocs([]);
   setSelectedEntities(selectedEntity ?? []);
+  setDocumentStatusIds(documentStatusIds ?? []);
   setSearchTerm("");
   setSearchText("");
   setIsInitialLoad(true);

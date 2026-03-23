@@ -4,6 +4,8 @@ import { fetchDocumentCategoryData } from "../../../../features/DocumentManageme
 // import { UseFilterDialogLogicProps } from "../useFilterDialogLogicProps";
 import { getAllRegistrationIds } from "../../../../features/DocumentManagementServer/logic/DocumentManagementServer.utils";
 import { ISchoolNameDataResponse } from "../../../model/SchoolDomain/responsemodels";
+import { fetchPrivacyFilter } from "../../../../features/DocumentManagementServer/api/ApiService";
+import { DEFAULT_PRIVACY_FILTER } from "../../../../../public/Constants";
 
 
 export const useFetchSchoolEffect: any = (
@@ -230,3 +232,14 @@ export const useBuildRefIdsEffect: any = (
   }, [selectedKey, localTagListArray, schoolData, isOpen]);
 };
 
+export const usePrivacyFilterEffect: any = (
+  selectedKey: string,
+  setPrivacyFilter: (val: any) => void
+) => {
+  useEffect(() => {
+    if (!selectedKey) return;
+    fetchPrivacyFilter()
+      .then((data) => setPrivacyFilter(Array.isArray(data) && data.length > 0 ? data : DEFAULT_PRIVACY_FILTER))
+      .catch(() => setPrivacyFilter(DEFAULT_PRIVACY_FILTER));
+  }, [selectedKey]);
+}

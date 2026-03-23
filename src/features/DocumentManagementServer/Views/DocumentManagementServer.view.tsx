@@ -90,7 +90,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
     isOpen, setIsOpen,
-    documentStatusIds
+    documentStatusIds, setDocumentStatusIds,
+    selectedPrivacyFilter, setSelectedPrivacyFilter
   }: ReturnType<typeof useDocumentManagementState> = useDocumentManagementState();
 
   const hasDMSDeletePermissions: boolean = hasDMSDeletePermission();
@@ -128,7 +129,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     relatedTo: number = documentRelatedTo
   ): void => {
     fetchGetDocumentDetailsLogic({
-      page, categories, sortByCol, sortOrder, dateRange, refExternalId, relatedTo, setDocData, setCurrentPage, setTotalPage, setShowSearchError,
+      page, categories, sortByCol, sortOrder, dateRange, refExternalId, relatedTo, documentStatusIds, setDocData, setCurrentPage, setTotalPage, setShowSearchError,
       setIsSearchLoading, setIsSearchDataLoading, setPrepareDownloadAbortBanner, setShowDeleteAbortBanner, setShowDeleteErrorBanner, setSuggestions
     });
   };
@@ -286,9 +287,9 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       availableFileIds
     });
 
-  const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
+  const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[], documentStatusIds?: number[]) => {
     handleApply({
-      referenceExternalIds, categories, selectedCategories: categories ?? [], selectedDateRange, isDateError, selectedEntity, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
+      referenceExternalIds, categories, selectedCategories: categories ?? [], selectedDateRange, isDateError, selectedEntity, documentStatusIds, setDocumentStatusIds, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
       setIsFilterDialogOpen, setCurrentPage, setExcludedCheckBoxIds, setAllSelectedDocs, setSearchInput, setSearchTerm, setSearchText, setTableKey, setIsSearchTriggered, setSelectedCategories, setSearchRefExternalId,
       setIsHeaderBoxChecked, setSelectedCheckBoxIds, setPrevSelectedDocs, setSelectedEntities, setSortBy, setSortDirection, setIsInitialLoad, setReferenceExternalIds: setSearchRefExternalId
     });
@@ -509,6 +510,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
               tagListArray,
               setTagListArray,
               handleApplyWrapper,
+              selectedPrivacyFilter,
+              setSelectedPrivacyFilter,
               handleFilterOnClick,
               isSidePanelOpen,
               isSidePanelLoader,

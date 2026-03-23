@@ -26,9 +26,10 @@ import { FilterDateSection } from "./components/FilterDateSection";
 import { FilterCategoryDropdown } from "./components/FilterCategoryDropdown";
 import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
-import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect } from "./hook/useFilterDialogLogic";
+import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect, usePrivacyFilterEffect } from "./hook/useFilterDialogLogic";
 import { FilterRadioButton } from "./components/FilterRadioButton";
 import { fetchPrivacyFilter } from "../../../features/DocumentManagementServer/api/ApiService";
+import { DMSPrivateDocument } from "../../../Layout";
 
 export interface FilterDialogProps {
   dataTestId?: string;
@@ -50,6 +51,8 @@ export interface FilterDialogProps {
   setSelectedRelatedTo: React.Dispatch<React.SetStateAction<ISelectedItem | undefined>>;
   tagListArray: SelectedItem[];
   setTagListArray: React.Dispatch<React.SetStateAction<SelectedItem[]>>;
+  selectedPrivacyFilter?: string;
+  setSelectedPrivacyFilter?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const FilterDialog: React.FC<FilterDialogProps> = ({
@@ -71,7 +74,9 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   selectedRelatedTo,
   setSelectedRelatedTo,
   tagListArray,
-  setTagListArray
+  setTagListArray,
+  selectedPrivacyFilter,
+  setSelectedPrivacyFilter
 }: FilterDialogProps) => {
   const { t }: { t: TFunction } = useTranslation();
   const [fromDateError, setFromDateError]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("");
@@ -101,8 +106,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   const [filterEntities, setFilterEntities]: [any[], React.Dispatch<React.SetStateAction<any[]>>] = useState<any[]>([]);
   const [categoryError, setCategoryError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [showErrorBanner, setShowErrorBanner]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
-  const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>([]);
-  const [selectedPrivacyFilter, setSelectedPrivacyFilter] = useState<string>("all");
+  const [privacyFilter, setPrivacyFilter] = useState<PrivacyFilterDetails[]>(DEFAULT_PRIVACY_FILTER);
 
 
   // eslint-disable-next-line no-unused-expressions
@@ -110,12 +114,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
   // eslint-disable-next-line no-unused-expressions
   showErrorBanner;
 
-  useEffect(() => {
-    if (!isOpen) return;
-    fetchPrivacyFilter()
-      .then((data) => setPrivacyFilter(Array.isArray(data) && data.length > 0 ? data : DEFAULT_PRIVACY_FILTER))
-      .catch(() => setPrivacyFilter(DEFAULT_PRIVACY_FILTER));
-  }, [isOpen]);
+  usePrivacyFilterEffect(selectedKey, setPrivacyFilter);
 
   const { validationText, validationTextLevel }: { validationText: string; validationTextLevel: ValidationTextLevel | null } = getValidationState(searchSelectionError, showSearchError, t);
 
@@ -400,11 +399,12 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             />
           ) : null}
 
-          { refId?.length ? (
+          { (DMSPrivateDocument && (refId?.length || selectedKey == 'Organisation')) ? (
             <FilterRadioButton
               t={t}
               privacyFilter={privacyFilter}
               onPrivacyFilterChange={setSelectedPrivacyFilter}
+              selectedValue={selectedPrivacyFilter} 
             />
           ) : null}
 

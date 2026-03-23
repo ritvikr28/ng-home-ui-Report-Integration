@@ -25,7 +25,8 @@ export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Pro
   sortBy = "DateAdded",
   sortDirection = "Desc",
   referenceExternalId = [],
-  documentRelatedTo = 0
+  documentRelatedTo = 0,
+  documentStatusId = []
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
@@ -41,7 +42,8 @@ export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Pro
         sortBy,
         sortDirection,
         referenceExternalId,
-        documentRelatedTo
+        documentRelatedTo,
+        documentStatusId
       }
     };
 

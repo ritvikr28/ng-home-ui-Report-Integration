@@ -7,15 +7,14 @@ interface FilterRadioButtonProps {
   t: (key: string) => string;
   privacyFilter: PrivacyFilterDetails[];
   onPrivacyFilterChange?: (value: string) => void;
+  selectedValue?: string;
 }
 
-export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacyFilter, onPrivacyFilterChange }) => {
-  const [selectedValue, setSelectedValue] = useState<string>("all");
+export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacyFilter, onPrivacyFilterChange, selectedValue }) => {
 
   const handleChange = (e: React.SyntheticEvent, value: string | number) => {
     e.preventDefault();
     const strValue = String(value);
-    setSelectedValue(strValue);
     onPrivacyFilterChange?.(strValue);
   };
 
