@@ -249,7 +249,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     showDeleteAbortBanner,
     availableFileCount,
     setShowDeleteErrorBanner,
-    setShowDeleteAbortBanner
+    setShowDeleteAbortBanner,
+    privateRawData,
   });
   useSearchTermEffect({
     searchTerm, selectedFormats, selectedDateRange, showSearchError, isSearchTriggered, handleSearchChange,
