@@ -342,7 +342,10 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             setSelectedDateRange={setSelectedDateRange}
             setSearchKey={setSearchKey}
             relatedToError={relatedToError}
-            onRelatedToChange={setSelectedKey}
+            onRelatedToChange={(key: string) => {
+              setSelectedKey(key);
+              setSelectedPrivacyFilter?.("all");  
+            }}
           />
 
           {["Pupil", "Staff"].includes(selectedDisplayKey) && (
