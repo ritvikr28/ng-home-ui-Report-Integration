@@ -45,6 +45,10 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
   })
 }));
 
+jest.mock("../../../../Layout", () => ({
+  DMSPrivateDocument: true
+}));
+
 const mockHandleApply: jest.Mock = jest.fn();
 const mockOnClose: jest.Mock = jest.fn();
 const mockSetSelectedCategories: jest.Mock = jest.fn();

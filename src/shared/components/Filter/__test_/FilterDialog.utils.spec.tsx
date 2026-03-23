@@ -309,7 +309,8 @@ describe("FilterDialog.utils", () => {
         handleApply: jest.fn(),
         refId: 1,
         filterEntities: [],
-        setWasApplied: jest.fn()
+        setWasApplied: jest.fn(),
+        selectedPrivacyFilter: "all"
       };
     });
 
@@ -336,7 +337,7 @@ describe("FilterDialog.utils", () => {
       expect(params.setTagListArray).toHaveBeenCalledWith(params.localTagListArray);
       expect(params.setSelectedRelatedTo).toHaveBeenCalledWith(params.localSelectedRelatedTo);
       expect(params.setDocumentRelatedTo).toHaveBeenCalledWith(Number(params.localSelectedRelatedTo.value));
-      expect(params.handleApply).toHaveBeenCalledWith(params.refId, params.localSelectedCategories, params.filterEntities);
+      expect(params.handleApply).toHaveBeenCalledWith(params.refId, params.localSelectedCategories, params.filterEntities, []);
       expect(params.setWasApplied).toHaveBeenCalledWith(true);
     });
   });
