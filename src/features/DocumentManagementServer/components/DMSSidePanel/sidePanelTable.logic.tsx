@@ -49,7 +49,7 @@ export const createTableHeadersData = (onDocumentClick: (doc: DocumentCell) => v
         >
           <EllipsisWithTooltip
             text={doc?.name}
-            className="relatedto-main"
+            className="document"
             isTooltipNeeded={true}
             totalItems={[doc?.name]}
             colName="document"

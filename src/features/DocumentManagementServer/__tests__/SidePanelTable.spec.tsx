@@ -43,7 +43,9 @@ const buildTableData = (doc: any) => [
 const defaultProps = {
   tableBodyData: buildTableData(mockDoc),
   onSortChange: jest.fn(),
-  onDownloadError: jest.fn()
+  onDownloadError: jest.fn(),
+  totalRecords: 1,
+  onPageChange: jest.fn()
 };
 
 describe("SidePanelTable - handleDocumentClick", () => {
