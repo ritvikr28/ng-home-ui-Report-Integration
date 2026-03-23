@@ -1,11 +1,12 @@
 import { buildRequest, getBackendStatus, handleStatusScenarios } from './buildRequest';
 
 describe('buildRequest', () => {
-  it('handles Not migrated scenario', () => {
-    const row = { status: 'Not migrated', dfeNumber: '123', id: '1' };
+  it('handles Not migrated scenario with redirectStatus field (NotMigrated API key)', () => {
+    // Table rows with redirectStatus = 'NotMigrated' hit isNotMigratedScenario → cur=Y, plan=Y
+    const row = { redirectStatus: 'NotMigrated', status: 'Not migrated', dfeNumber: '123', id: '1' };
     const payload = buildRequest(row, '2026-03-10', 'Not migrated');
-    expect(payload.currentStatus).toBe('N');
-    expect(payload.plannedStatus).toBe('N');
+    expect(payload.currentStatus).toBe('Y');
+    expect(payload.plannedStatus).toBe('Y');
     expect(payload.effectiveDate).toBe('2026-03-10');
   });
 
@@ -135,5 +136,135 @@ describe('buildRequest edge cases', () => {
     const row = { status: 'Not migrated', id: '1' };
     const payload = buildRequest(row, '2026-03-10');
     expect(payload.switchToSchool).toBe(false);
+  });
+});
+
+describe('buildRequest — NotMigrated Yes with future date', () => {
+  it('sends currentStatus=N and plannedStatus=Y when previousStatus is Not migrated and status mutated to Planned', () => {
+    // Real-world: selectedRow.status = 'Not migrated' → passed as previousStatus
+    // handleFutureDateStatus mutates updatedRow.status → 'Planned'
+    const row = {
+      status: 'Planned',       // mutated by handleFutureDateStatus
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: false
+    };
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    const payload = buildRequest(row, futureDate, 'Not migrated'); // previousStatus = original
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('Y');
+    expect(payload.effectiveDate).toBe(futureDate);
+    expect(payload.switchToSchool).toBe(true); // shouldSwitchToSchool('N','Y', futureDate) = true
+  });
+
+  it('does NOT match this branch when status is still Not migrated (no change, past date)', () => {
+    const row = {
+      redirectStatus: 'NotMigrated',
+      status: 'Not migrated',
+      dfeNumber: '123',
+      id: '1'
+    };
+    // Past date + status not mutated to Planned → isNotMigratedScenario fires → cur=Y, plan=Y
+    const payload = buildRequest(row, '2026-03-10', 'Not migrated');
+    expect(payload.currentStatus).toBe('Y');
+    expect(payload.plannedStatus).toBe('Y');
+  });
+});
+
+describe('buildRequest — switchToSchool logic', () => {
+  it('forces switchToSchool=true when currentStatus=Y and plannedStatus=Y (Migrated scenario)', () => {
+    const row = {
+      status: 'Migrated',
+      dfeNumber: '123',
+      id: '1',
+      previousDate: '2026-03-09',
+      switchToSchool: false
+    };
+    const payload = buildRequest(row, '2026-03-10', 'Migrated');
+    expect(payload.currentStatus).toBe('Y');
+    expect(payload.plannedStatus).toBe('Y');
+    expect(payload.switchToSchool).toBe(true);
+  });
+
+  it('forces switchToSchool=true when currentStatus=N, plannedStatus=Y and effectiveDate is future (NotMigrated+Yes scenario)', () => {
+    const row = {
+      status: 'Planned',
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: false
+    };
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    const payload = buildRequest(row, futureDate, 'Not migrated');
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('Y');
+    expect(payload.switchToSchool).toBe(true);
+  });
+
+  it('does NOT force switchToSchool=true when currentStatus=N, plannedStatus=Y but effectiveDate is past', () => {
+    const row = {
+      status: 'Planned',
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: false
+    };
+    const payload = buildRequest(row, '2020-01-01', 'Not migrated');
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('Y');
+    expect(payload.switchToSchool).toBe(false); // past date → fallback to row value
+  });
+
+  it('uses row switchToSchool value as fallback when neither condition is met', () => {
+    const row = {
+      status: 'Reversing',
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: true
+    };
+    const payload = buildRequest(row, '2026-03-10', 'Reversing');
+    expect(payload.switchToSchool).toBe(true); // fallback to row value
+  });
+});
+
+describe('buildRequest — Planned edit mode, date-only change', () => {
+  it('sends currentStatus=N and plannedStatus=Y when redirectStatus is Planned, previousStatus is Planned, and effectiveDate is future', () => {
+    // Scenario: user opened Planned row in edit mode, only changed effective date to a future date
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    const row = {
+      redirectStatus: 'Planned',
+      status: 'Planned',
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: false
+    };
+    const payload = buildRequest(row, futureDate, 'Planned');
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('Y');
+    expect(payload.effectiveDate).toBe(futureDate);
+  });
+
+  it('also works using previousStatus alone (table row without redirectStatus field)', () => {
+    const futureDate = new Date(Date.now() + 86400000).toISOString();
+    const row = {
+      status: 'Planned',   // no redirectStatus field (table row)
+      dfeNumber: '123',
+      id: '1',
+      switchToSchool: false
+    };
+    const payload = buildRequest(row, futureDate, 'Planned');
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('Y');
+  });
+
+  it('does NOT match when effectiveDate is past (past-date edit)', () => {
+    const row = {
+      redirectStatus: 'Planned',
+      status: 'Planned',
+      dfeNumber: '123',
+      id: '1'
+    };
+    // Past date → falls into isPlannedScenario (cur=Y, plan=Y) → N/N
+    const payload = buildRequest(row, '2020-01-01', 'Planned');
+    expect(payload.currentStatus).toBe('N');
+    expect(payload.plannedStatus).toBe('N');
   });
 });
