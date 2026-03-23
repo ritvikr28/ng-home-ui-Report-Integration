@@ -57,6 +57,24 @@ function isNotMigratedScenario(updatedRow: any, currentStatusFinal: any, planned
     s => currentStatusFinal === s.cur && plannedStatusFinal === s.plan
   );
 }
+function isNotMigratedYesWithFutureDate(updatedRow: any, previousStatus?: string): boolean {
+  const wasNotMigrated =
+    updatedRow.redirectStatus === 'NotMigrated' ||
+    previousStatus === 'Not migrated' ||
+    previousStatus === 'NotMigrated';
+  return wasNotMigrated && updatedRow.status === 'Planned';
+}
+function isPlannedEditDateOnly(updatedRow: any, previousStatus: any, effectiveDateFinal: string): boolean {
+  const wasPlanned =
+    updatedRow.redirectStatus === 'Planned' ||
+    previousStatus === 'Planned';
+  return (
+    wasPlanned &&
+    updatedRow.status === 'Planned' &&
+    !!effectiveDateFinal &&
+    new Date(effectiveDateFinal) > new Date()
+  );
+}
 function isNotMigratedToPlanned(previousStatus: any, plannedStatusFinal: any): boolean {
   return mapStatusToChar(previousStatus || '') === 'N' && plannedStatusFinal === 'P';
 }
@@ -67,11 +85,19 @@ function isPlannedToNotMigrated(currentStatusFinal: any, plannedStatusFinal: any
     effectiveDateFinal && new Date(effectiveDateFinal) > new Date()
   );
 }
-function shouldSwitchToSchool(currentStatusFinal: string, plannedStatusFinal: string): boolean {
-  return (
-    currentStatusFinal === 'Y' &&
-    plannedStatusFinal === 'Y'
-  );
+function shouldSwitchToSchool(currentStatusFinal: string, plannedStatusFinal: string, effectiveDateFinal: string): boolean {
+  if (currentStatusFinal === 'Y' && plannedStatusFinal === 'Y') {
+    return true;
+  }
+  if (
+    currentStatusFinal === 'N' &&
+    plannedStatusFinal === 'Y' &&
+    !!effectiveDateFinal &&
+    new Date(effectiveDateFinal) > new Date()
+  ) {
+    return true;
+  }
+  return false;
 }
 export function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentStatusFinal, effectiveDateFinal, reasonForChangeFinal, previousStatus }: any): {
   plannedStatusFinal: string; currentStatusFinal: string; effectiveDateFinal: string; reasonForChangeFinal: string; } {
@@ -102,6 +128,14 @@ export function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentS
       reasonForChangeFinal
     };
   }
+  if (isPlannedEditDateOnly(updatedRow, previousStatus, effectiveDateFinal)) {
+    return {
+      plannedStatusFinal: 'Y',
+      currentStatusFinal: 'N',
+      effectiveDateFinal,
+      reasonForChangeFinal
+    };
+  }
   if (isPlannedScenario(updatedRow, currentStatusFinal, plannedStatusFinal)) {
     return {
       plannedStatusFinal: 'N',
@@ -115,6 +149,14 @@ export function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentS
     return {
       plannedStatusFinal: '',
       currentStatusFinal: 'Y',
+      effectiveDateFinal,
+      reasonForChangeFinal
+    };
+  }
+  if (isNotMigratedYesWithFutureDate(updatedRow, previousStatus)) {
+    return {
+      plannedStatusFinal: 'Y',
+      currentStatusFinal: 'N',
       effectiveDateFinal,
       reasonForChangeFinal
     };
@@ -187,7 +229,7 @@ export function buildRequest(
     dfeNumber,
     ngModule: updatedRow.category || updatedRow.ngModule,
     ngComponent: updatedRow.nextGenModule || updatedRow.ngComponent,
-    switchToSchool: shouldSwitchToSchool(currentStatusFinal, plannedStatusFinal)
+    switchToSchool: shouldSwitchToSchool(currentStatusFinal, plannedStatusFinal, effectiveDateFinal)
       ? true
       : (updatedRow.switchToSchool ?? false),
     effectiveDate: effectiveDateFinal,

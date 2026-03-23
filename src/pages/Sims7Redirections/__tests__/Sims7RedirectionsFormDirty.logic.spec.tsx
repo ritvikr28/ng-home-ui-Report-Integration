@@ -20,24 +20,28 @@ describe('isFormDirty', () => {
   describe('Reversing status', () => {
     const row = { status: 'Reversing', effectiveDate: '21 Mar 2026', reasonForChanges: 'original reason' };
 
-    it('returns false when redirect is "no" (original value)', () => {
+    it('returns false when redirect is "no" and date unchanged', () => {
+      expect(isFormDirty(row, 'no', new Date('2026-03-21'), 'original reason')).toBe(false);
+    });
+
+    it('returns false when redirect is "no" and date is null (no change to compare)', () => {
       expect(isFormDirty(row, 'no', null, 'original reason')).toBe(false);
     });
 
-    it('returns true when redirect is "yes" (changed)', () => {
+    it('returns true when redirect changes to "yes"', () => {
       expect(isFormDirty(row, 'yes', null, 'original reason')).toBe(true);
     });
 
-    it('ignores date changes for Reversing', () => {
-      expect(isFormDirty(row, 'no', new Date(), 'original reason')).toBe(false);
+    it('returns true when effective date changes', () => {
+      expect(isFormDirty(row, 'no', new Date('2026-04-01'), 'original reason')).toBe(true);
     });
 
     it('ignores reason changes for Reversing', () => {
       expect(isFormDirty(row, 'no', null, 'different reason')).toBe(false);
     });
 
-    it('returns false when going No → Yes → No (toggle back)', () => {
-      expect(isFormDirty(row, 'no', new Date('2026-03-21'), 'some reason')).toBe(false);
+    it('returns true when both redirect and date change', () => {
+      expect(isFormDirty(row, 'yes', new Date('2026-04-01'), 'original reason')).toBe(true);
     });
   });
 
