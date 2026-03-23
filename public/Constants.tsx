@@ -1,3 +1,4 @@
+import { PrivacyFilterDetails } from '../src/features/DocumentManagementServer/responseModel';
 import {envConfig} from '../src/shared/utils/constants';
 
 export const pageSizeNumber = 40;
@@ -8,3 +9,12 @@ export const relatedToEnum = {
     "Staff": 3,
     "Organisation": 2
 };
+export enum PrivacyFilterStatus {
+  STANDARD = "STANDARD",
+  CONFIDENTIAL = "CONFIDENTIAL"
+}
+
+export const DEFAULT_PRIVACY_FILTER: PrivacyFilterDetails[] = [
+  { documentStatusId: 1, status: "PUBLIC", ngStatus: "STANDARD" },
+  { documentStatusId: 3, status: "CONFIDENTIAL", ngStatus: "CONFIDENTIAL" }
+];

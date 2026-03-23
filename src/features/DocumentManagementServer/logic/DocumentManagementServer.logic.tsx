@@ -195,6 +195,7 @@ export async function fetchGetDocumentDetailsLogic({
   dateRange,
   refExternalId,
   relatedTo,
+  documentStatusIds,
   setDocData,
   setCurrentPage,
   setTotalPage,
@@ -221,7 +222,8 @@ export async function fetchGetDocumentDetailsLogic({
       sortBy: sortByCol,
       sortDirection: sortOrder,
       referenceExternalId: refExternalId,
-      documentRelatedTo: relatedTo || 0
+      documentRelatedTo: relatedTo || 0,
+      documentStatusId: documentStatusIds || []
     });
     if (result && typeof (result as any).statusCode === "number" && (result as any).statusCode === 200) {
       setDocData(result);

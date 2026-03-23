@@ -81,6 +81,7 @@ export interface DocumentManagementServerProps {
   sortDirection?: string;
   referenceExternalId?: string[];
   documentRelatedTo?: number;
+  documentStatusId?: number[];
 }
 
 export interface PrivateDocumentManagementServerProps {
@@ -273,6 +274,7 @@ export type FetchGetDocumentDetailsLogicParams = {
   dateRange: { fromDate?: string; toDate?: string };
   refExternalId: string[];
   relatedTo: number;
+  documentStatusIds?: number[];
   setDocData: (v: any) => void;
   setCurrentPage: (v: number) => void;
   setTotalPage: (v: number) => void;
@@ -421,4 +423,10 @@ export interface HandleTagCloseLogicParams {
   setIsDateError: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedCategories: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
   setSelectedFormats: React.Dispatch<React.SetStateAction<ISelectedItem[]>>;
+}
+
+export interface PrivacyFilterDetails {
+  ngStatus: string;
+  documentStatusId: number;
+  status: string;
 }

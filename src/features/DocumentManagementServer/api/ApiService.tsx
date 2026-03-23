@@ -25,7 +25,8 @@ export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Pro
   sortBy = "DateAdded",
   sortDirection = "Desc",
   referenceExternalId = [],
-  documentRelatedTo = 0
+  documentRelatedTo = 0,
+  documentStatusId = []
 }: DocumentManagementServerProps): Promise<DocumentBasicDetails | null> => {
   try {
     const url = `validation/api/v1/file/getdocumentdetails`;
@@ -41,7 +42,8 @@ export const fetchDocumentDetails: (props: DocumentManagementServerProps) => Pro
         sortBy,
         sortDirection,
         referenceExternalId,
-        documentRelatedTo
+        documentRelatedTo,
+        documentStatusId
       }
     };
 
@@ -236,6 +238,18 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
   const response: AxiosResponse<Blob> = await fileDownloadInstance.get(url);
   return response.data;
 };
+
+export async function fetchPrivacyFilter() {
+  try {
+    const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
+    const url = `/validation/api/v1/file/getstatusdetails`;
+    const response: AxiosResponse = await service.get(url, baseUrl);
+    return response.data;
+  } catch (err: any) {
+    console.error("Error in bulk download:", err);
+    return null;
+  }
+}
 
 export const streamDownloadFile: (fileId: string) => Promise<string> = async (
   fileId: string

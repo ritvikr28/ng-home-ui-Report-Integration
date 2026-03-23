@@ -79,6 +79,7 @@ export function useDocumentManagementState() {
   const [sidePanelCurrentPage, setSidePanelCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [documentStatusIds, setDocumentStatusIds]: [number[], React.Dispatch<React.SetStateAction<number[]>>] = useState<number[]>([]);
+  const [selectedPrivacyFilter, setSelectedPrivacyFilter]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("all");
 
   return {
     t,
@@ -153,6 +154,7 @@ export function useDocumentManagementState() {
     sidePanelSortDirection, setSidePanelSortDirection,
     sidePanelCurrentPage, setSidePanelCurrentPage,
     isOpen, setIsOpen,
-    documentStatusIds, setDocumentStatusIds
+    documentStatusIds, setDocumentStatusIds,
+    selectedPrivacyFilter, setSelectedPrivacyFilter
   };
 }

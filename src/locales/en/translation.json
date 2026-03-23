@@ -655,6 +655,8 @@
     "privateDocuments": "Private documents",
     "privateDocHelpText": "Alternatively, you can update all of your private documents to Confidential status.",
     "privateDocButtonText": "Convert all to confidential",
+    "privacyFilterLabel": "Privacy (optional)",
+    "privacyFilterAll": "All",
     "privateDocTechnicalIssue": "A technical issue at our end has stopped us from displaying all information. Please try again later. If the issue persists, please ",
     "contactSupport": "get in touch with our support team.",
     "privateDocDownloadFailureTitle": "Unable to download document",

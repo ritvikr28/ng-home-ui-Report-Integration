@@ -45,6 +45,10 @@ jest.mock("@essnextgen/ui-intl-kit", () => ({
   })
 }));
 
+jest.mock("../../../../Layout", () => ({
+  DMSPrivateDocument: true
+}));
+
 const mockHandleApply: jest.Mock = jest.fn();
 const mockOnClose: jest.Mock = jest.fn();
 const mockSetSelectedCategories: jest.Mock = jest.fn();
@@ -673,4 +677,78 @@ it("sets selected item state when Related To is changed", async () => {
 })
 
 });
+
+it("render privacy status button and click on option", async () => {
+  jest.useFakeTimers();
+  
+  const mockData: any[] = [
+    {
+      application: "Apple",
+      category: "Apple",
+      categoryId: 8,
+      code: "APPL6",
+      section: "Section5"
+    },
+    {
+      application: "HR",
+      category: "HR",
+      categoryId: 1,
+      code: "APPL6",
+      section: "Section5"
+    }
+  ];
+
+  (logic.fetchDocumentCategoryData as jest.Mock).mockResolvedValueOnce(mockData);
+
+  jest.spyOn(ApiService, "fetchDMSSuggestions").mockResolvedValue(mockSuggestions);
+
+   renderComponent(
+    {
+   
+    selectedCategories: mockData,
+    tagListArray: [
+      { text: "Test Pupil", learnerExternalId: "123", id: "123" }
+    ]
+  }
+);
+
+  // Open dropdown
+  fireEvent.click(
+    screen.getByTestId("text-input-dms-filter-dialog-related-to-icon-btn")
+  );
+
+  await waitFor(() => {
+    expect(
+      screen.getAllByTestId("menu-dms-filter-dialog-related-to")[0]
+    ).toBeInTheDocument();
+  });
+
+  fireEvent.click(
+    screen.getByTestId("menu-option-dms-filter-dialog-related-to-1")
+  );
+
+  // ✅ TYPE INTO REAL INPUT
+  const input: HTMLElement = await screen.findByTestId("search-autocomplete-input");
+
+  fireEvent.change(input, {
+    target: { value: "Alfie" }
+  });
+
+  // flush debounce
+  act(() => {
+    jest.runAllTimers();
+  });
+
+  // wait for suggestion
+  const suggestion: HTMLElement[] = await screen.findAllByText("Alfie");
+
+  fireEvent.click(suggestion[0]);
+  
+  const AllRadioButton = await screen.findByTestId("undefined-all");
+  fireEvent.click(AllRadioButton);
+
+  // await waitFor(() => {
+  //   expect(handleChange).toHaveBeenCalledWith("All");
+  // });
+})
 })

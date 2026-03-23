@@ -99,6 +99,8 @@ interface Props {
   setSearchInput: React.Dispatch<React.SetStateAction<string>>;
   globalNotificationBannerOnClickAction: () => void;
   sidePanelOpenReason: SidePanelReason | null;
+  selectedPrivacyFilter?: string;
+  setSelectedPrivacyFilter?: React.Dispatch<React.SetStateAction<string>>;
 }
 
 function handleSuggestionItemClick(
@@ -262,7 +264,9 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
     selectedRelatedTo,
     setSelectedRelatedTo,
     tagListArray,
-    setTagListArray
+    setTagListArray,
+    selectedPrivacyFilter,
+    setSelectedPrivacyFilter
   }: Props = props;
 
   return (
@@ -294,6 +298,8 @@ function getFilterCustomElem2(props: Props): React.ReactNode {
         setSelectedRelatedTo={setSelectedRelatedTo}
         tagListArray={tagListArray}
         setTagListArray={setTagListArray}
+        selectedPrivacyFilter={selectedPrivacyFilter}
+        setSelectedPrivacyFilter={setSelectedPrivacyFilter}
       />
     </>
   );
@@ -526,7 +532,9 @@ const DmsControlledList: React.FC<Props> = (props) =>
   <ControlledList {...getControlledListProps(props)} />;
 
 DmsControlledList.defaultProps = {
-  onChangeAllCheckBox: undefined
+  onChangeAllCheckBox: undefined,
+  selectedPrivacyFilter: "all",
+  setSelectedPrivacyFilter: () => { }
 };
 
 export default DmsControlledList;

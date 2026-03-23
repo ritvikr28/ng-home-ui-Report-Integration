@@ -329,6 +329,7 @@ export interface HandleApplyWrapperParams {
   refId: any;
   filterEntities: any;
   setWasApplied: any;
+  selectedPrivacyFilter?: string;
 }
 const validateApply = (params: HandleApplyWrapperParams): boolean => {
   if (!params.localSelectedRelatedTo) {
@@ -351,6 +352,7 @@ const validateApply = (params: HandleApplyWrapperParams): boolean => {
   return true;
 };
 
+
 export async function handleApplyWrapper(params: HandleApplyWrapperParams): Promise<void> {
   if (!validateApply(params)) return;
 
@@ -366,7 +368,12 @@ export async function handleApplyWrapper(params: HandleApplyWrapperParams): Prom
   params.setSelectedRelatedTo(params.localSelectedRelatedTo);
   params.setDocumentRelatedTo(Number(params.localSelectedRelatedTo?.value));
 
-  params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities);
+  const documentStatusIds: number[] =
+    params.selectedPrivacyFilter && params.selectedPrivacyFilter !== "all"
+      ? [Number(params.selectedPrivacyFilter)]
+      : [];
+
+  params.handleApply(params.refId, params.localSelectedCategories, params.filterEntities, documentStatusIds);
   params.setWasApplied(true);
 
   gtmAnalytics.pushEvent({
@@ -584,3 +591,9 @@ export const shouldShowWarningNotification = (
     !["Pupil", "Staff", "Organisation", "School"].includes(
       localSelectedRelatedTo?.data?.data?.key ?? ""
     ));
+
+
+export function formatLabel(label: string) {
+  if (!label) return "";
+  return label.charAt(0).toUpperCase() + label.slice(1).toLowerCase();
+}
