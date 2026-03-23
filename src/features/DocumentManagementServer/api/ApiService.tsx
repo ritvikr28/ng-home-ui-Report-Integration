@@ -242,7 +242,7 @@ export const downloadFile: (isApplication?: string, isSection?: string, fileId?:
 export async function fetchPrivacyFilter() {
   try {
     const baseUrl: string = buildApplicationUrl(PLATFORM_BASEURLS);
-    let url = `/validation/api/v1/file/getstatusdetails`;
+    const url = `/validation/api/v1/file/getstatusdetails`;
     const response: AxiosResponse = await service.get(url, baseUrl);
     return response.data;
   } catch (err: any) {

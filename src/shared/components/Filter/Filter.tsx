@@ -28,7 +28,6 @@ import { FilterRelatedToDropdown } from "./components/FilterRelatedToDropdown";
 import {  handleDateChange, handleApplyWrapper, onSelectMultipleCategories, getEntityLabel, fetchSchoolData, clearAll, handleDialogClose, handleRemoveTag, getValidationLevelMsg, getValidationTextMsg, shouldShowWarningNotification } from "./FilterDialog.utils";
 import { useFetchSchoolEffect, useSyncSelectedKeyEffect, useFetchCategoriesEffect, useResetCategoryErrorEffect, useDateSyncEffect, useDropdownSyncEffect, useResetOnCloseEffect, useEscapeKeyEffect, useSearchEffect, useBuildRefIdsEffect, usePrivacyFilterEffect } from "./hook/useFilterDialogLogic";
 import { FilterRadioButton } from "./components/FilterRadioButton";
-import { fetchPrivacyFilter } from "../../../features/DocumentManagementServer/api/ApiService";
 import { DMSPrivateDocument } from "../../../Layout";
 
 export interface FilterDialogProps {
@@ -399,7 +398,7 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
             />
           ) : null}
 
-          { (DMSPrivateDocument && (refId?.length || selectedKey == 'Organisation')) ? (
+          { (DMSPrivateDocument && (refId?.length || selectedKey === 'Organisation')) ? (
             <FilterRadioButton
               t={t}
               privacyFilter={privacyFilter}
@@ -494,7 +493,9 @@ const FilterDialog: React.FC<FilterDialogProps> = ({
 FilterDialog.defaultProps = {
   dataTestId: "dms-filter-dialog",
   isLoading: false,
-  setReferenceExternalIds: () => { }
+  setReferenceExternalIds: () => { },
+  selectedPrivacyFilter: "all",
+  setSelectedPrivacyFilter: () => { }
 };
 
 export default FilterDialog;

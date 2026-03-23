@@ -1,5 +1,5 @@
 import { ButtonSize, FormLabel, ReactionButton, ReactionButtonGroup } from "@essnextgen/ui-kit";
-import React, { useState } from "react";
+import React from "react";
 import { PrivacyFilterDetails } from "../../../../features/DocumentManagementServer/responseModel";
 import { formatLabel } from "../FilterDialog.utils";
 
@@ -53,4 +53,8 @@ export const FilterRadioButton: React.FC<FilterRadioButtonProps> = ({ t, privacy
       </div>
     </div>
   );
+};
+FilterRadioButton.defaultProps = {
+  onPrivacyFilterChange: () => { },
+  selectedValue: "all"
 };

@@ -532,7 +532,9 @@ const DmsControlledList: React.FC<Props> = (props) =>
   <ControlledList {...getControlledListProps(props)} />;
 
 DmsControlledList.defaultProps = {
-  onChangeAllCheckBox: undefined
+  onChangeAllCheckBox: undefined,
+  selectedPrivacyFilter: "all",
+  setSelectedPrivacyFilter: () => { }
 };
 
 export default DmsControlledList;

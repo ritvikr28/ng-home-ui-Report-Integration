@@ -681,7 +681,6 @@ it("sets selected item state when Related To is changed", async () => {
 it("render privacy status button and click on option", async () => {
   jest.useFakeTimers();
   
-  const handleChange = jest.fn();
   const mockData: any[] = [
     {
       application: "Apple",

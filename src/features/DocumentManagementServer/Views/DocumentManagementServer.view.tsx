@@ -288,7 +288,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
       availableFileIds
     });
 
-  const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[], documentStatusIds?: number[]) => {
+  const handleApplyWrapper: (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => void = (referenceExternalIds: string[], categories?: ISelectedItem[], selectedEntity?: any[]) => {
     handleApply({
       referenceExternalIds, categories, selectedCategories: categories ?? [], selectedDateRange, isDateError, selectedEntity, documentStatusIds, setDocumentStatusIds, setIsDateError, setIsFilterLoading, setDateRange, setSelectedFormats,
       setIsFilterDialogOpen, setCurrentPage, setExcludedCheckBoxIds, setAllSelectedDocs, setSearchInput, setSearchTerm, setSearchText, setTableKey, setIsSearchTriggered, setSelectedCategories, setSearchRefExternalId,
