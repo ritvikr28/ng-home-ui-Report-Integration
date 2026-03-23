@@ -67,6 +67,12 @@ function isPlannedToNotMigrated(currentStatusFinal: any, plannedStatusFinal: any
     effectiveDateFinal && new Date(effectiveDateFinal) > new Date()
   );
 }
+function shouldSwitchToSchool(currentStatusFinal: string, plannedStatusFinal: string): boolean {
+  return (
+    currentStatusFinal === 'Y' &&
+    plannedStatusFinal === 'Y'
+  );
+}
 export function handleStatusScenarios({ updatedRow, plannedStatusFinal, currentStatusFinal, effectiveDateFinal, reasonForChangeFinal, previousStatus }: any): {
   plannedStatusFinal: string; currentStatusFinal: string; effectiveDateFinal: string; reasonForChangeFinal: string; } {
   if (isReversingScenario(updatedRow)) {
@@ -181,7 +187,9 @@ export function buildRequest(
     dfeNumber,
     ngModule: updatedRow.category || updatedRow.ngModule,
     ngComponent: updatedRow.nextGenModule || updatedRow.ngComponent,
-    switchToSchool: updatedRow.switchToSchool ?? false,
+    switchToSchool: shouldSwitchToSchool(currentStatusFinal, plannedStatusFinal)
+      ? true
+      : (updatedRow.switchToSchool ?? false),
     effectiveDate: effectiveDateFinal,
     currentStatus: currentStatusFinal,
     plannedStatus: plannedStatusFinal,
