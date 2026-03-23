@@ -89,6 +89,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
     isPrivateDocError, setIsPrivateDocError,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
+    sidePanelCurrentPage, setSidePanelCurrentPage,
     isOpen, setIsOpen,
     documentStatusIds
   }: ReturnType<typeof useDocumentManagementState> = useDocumentManagementState();
@@ -351,7 +352,7 @@ const DocumentManagementServerView: () => JSX.Element = () => {
 
   usePrivateDocumentFetchingEffect(
     {
-      pageNumber: currentPage,
+      pageNumber: sidePanelCurrentPage,
       pageSize: pageSizeNumber,
       userId: "",
       sortBy: sidePanelSortBy,
@@ -574,6 +575,8 @@ const DocumentManagementServerView: () => JSX.Element = () => {
                   privateDocData={privateDocData}
                   isPrivateDocError={isPrivateDocError}
                   onSidePanelSortChange={handleSidePanelSortChange}
+                  privateTotalRecords={privateRawData?.totalRecords ?? 0}
+                  onSidePanelPageChange={setSidePanelCurrentPage}
                 />
               )
             }}

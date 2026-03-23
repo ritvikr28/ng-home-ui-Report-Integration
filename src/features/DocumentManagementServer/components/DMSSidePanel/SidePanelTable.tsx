@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { ControlledList, DialogTemplate, CheckBoxSelectedState } from "@essnextgen/ui-kit";
-import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, getPaginatedData, createHandlePageChange, createHandleSorting } from "./sidePanelTable.logic";
+import { useSidePanelTableSelection, createTableHeadersData, filterDDLOptions, createHandleDocumentClick, createHandleSorting } from "./sidePanelTable.logic";
 import { pageSizeNumber } from "../../../../../public/Constants";
 
 interface SidePanelTableProps {
   tableBodyData: any[];
   onSortChange: (columnName: string) => void;
   onDownloadError: (hasError: boolean) => void;
+  totalRecords: number;
+  onPageChange: (page: number) => void;
 }
 
-export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError }) => {
+export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, onSortChange, onDownloadError, totalRecords, onPageChange }) => {
   const [currentPage, setCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState(1);
   const [isInitialLoad, setIsInitialLoad]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState(true);
 
@@ -17,13 +19,11 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
     setIsInitialLoad(false);
   }, [tableBodyData]);
   
-  const totalPages = Math.ceil(tableBodyData.length / pageSizeNumber);
+  const totalPages = Math.ceil(totalRecords / pageSizeNumber);
 
   const handleDocumentClick = createHandleDocumentClick(onDownloadError);
 
   const tableHeadersData: any = createTableHeadersData(handleDocumentClick);
-
-  const paginatedData: any[] = getPaginatedData(tableBodyData, currentPage, pageSizeNumber);
 
   const {
     setSelectedIds,
@@ -34,7 +34,10 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
   }: any = useSidePanelTableSelection(tableBodyData);
 
 
-  const handlePageChange = createHandlePageChange(setCurrentPage);
+  const handlePageChange = (_: React.ChangeEvent<unknown>, page: number): void => {
+    setCurrentPage(page);
+    onPageChange(page);
+  };
   const handleSorting = createHandleSorting(setIsInitialLoad, onSortChange, setCurrentPage);
 
   return (
@@ -43,8 +46,8 @@ export const SidePanelTable: React.FC<SidePanelTableProps> = ({ tableBodyData, o
       id="sidepanel-table"
       dataTestId="sidepanel-table"
       tableHeadersData={tableHeadersData}
-      tableBodyData={paginatedData}
-      totalRecords={tableBodyData.length}
+      tableBodyData={tableBodyData}
+      totalRecords={totalRecords}
       isPagination={true}
       paginationCount={totalPages}
       paginationPage={currentPage}

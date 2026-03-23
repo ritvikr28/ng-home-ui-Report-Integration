@@ -33,6 +33,8 @@ interface DmsSidePanelProps {
   privateDocData: any[];
   isPrivateDocError: boolean;
   onSidePanelSortChange: (columnName: string) => void;
+  privateTotalRecords: number;
+  onSidePanelPageChange: (page: number) => void;
 }
 
 
@@ -61,10 +63,12 @@ export const DmsSidePanel: React.FC<DmsSidePanelProps> = ({
   gtmAnalytics,
   privateDocData,
   isPrivateDocError,
-  onSidePanelSortChange
+  onSidePanelSortChange,
+  privateTotalRecords,
+  onSidePanelPageChange
 }) => {
   if (sidePanelOpenReason === "manage") {
-    return (<ManageDocumentsSidePanel t={t} privateDocData={privateDocData} isPrivateDocError={isPrivateDocError} onSortChange={onSidePanelSortChange} />);
+    return (<ManageDocumentsSidePanel t={t} privateDocData={privateDocData} isPrivateDocError={isPrivateDocError} onSortChange={onSidePanelSortChange} totalRecords={privateTotalRecords} onPageChange={onSidePanelPageChange} />);
   }
   // Default to view
   return (

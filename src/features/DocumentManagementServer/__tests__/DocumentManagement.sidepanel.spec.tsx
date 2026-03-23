@@ -294,20 +294,22 @@ it("renders ManageDocumentsSidePanel and change page", () => {
       addedBy: "User",
       dateAdded: "01 Jan 2025"
     }));
-    const page2Row = {
-      id: "file-40",
-      document: [{ name: "Text Document", fileId: "file-40", application: "app", sectionName: "section", blobName: "blob" }],
-      relatedTo: [],
-      addedBy: "User",
-      dateAdded: "01 Jan 2025"
-    };
-    render(<DmsSidePanel {...defaultProps} sidePanelOpenReason="manage" privateDocData={[...manyRows, page2Row]} isPrivateDocError={false} onSidePanelSortChange={jest.fn()} />);
+    const onSidePanelPageChange: jest.Mock = jest.fn();
+    render(<DmsSidePanel
+      {...defaultProps}
+      sidePanelOpenReason="manage"
+      privateDocData={manyRows}
+      isPrivateDocError={false}
+      onSidePanelSortChange={jest.fn()}
+      privateTotalRecords={41}
+      onSidePanelPageChange={onSidePanelPageChange}
+    />);
     expect(screen.getByText("DocumentManagementServer.privateFilesDescription")).toBeInTheDocument();
 
 	const nextButton: HTMLButtonElement = screen.getByLabelText("next page");
 	fireEvent.click(nextButton);
 
-	expect(screen.getByText("Text Document")).toBeInTheDocument();
+	expect(onSidePanelPageChange).toHaveBeenCalledWith(2);
 
 });
 });

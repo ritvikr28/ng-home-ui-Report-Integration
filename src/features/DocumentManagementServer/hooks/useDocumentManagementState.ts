@@ -76,6 +76,7 @@ export function useDocumentManagementState() {
   const [isPrivateDocError, setIsPrivateDocError]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [sidePanelSortBy, setSidePanelSortBy]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("DateAdded");
   const [sidePanelSortDirection, setSidePanelSortDirection]: [string, React.Dispatch<React.SetStateAction<string>>] = useState<string>("Desc");
+  const [sidePanelCurrentPage, setSidePanelCurrentPage]: [number, React.Dispatch<React.SetStateAction<number>>] = useState<number>(1);
   const [isOpen, setIsOpen]: [boolean, React.Dispatch<React.SetStateAction<boolean>>] = useState<boolean>(false);
   const [documentStatusIds, setDocumentStatusIds]: [number[], React.Dispatch<React.SetStateAction<number[]>>] = useState<number[]>([]);
 
@@ -150,6 +151,7 @@ export function useDocumentManagementState() {
     isPrivateDocError, setIsPrivateDocError,
     sidePanelSortBy, setSidePanelSortBy,
     sidePanelSortDirection, setSidePanelSortDirection,
+    sidePanelCurrentPage, setSidePanelCurrentPage,
     isOpen, setIsOpen,
     documentStatusIds, setDocumentStatusIds
   };
