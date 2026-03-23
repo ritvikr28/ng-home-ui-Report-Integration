@@ -443,6 +443,7 @@ describe("handleApply", () => {
       selectedCategories: [],
       selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
       isDateError: true, // <-- Fix: set to true to match the tested logic
+      documentStatusIds: [],
       setIsDateError,
       setIsFilterLoading,
       setDateRange,
@@ -465,7 +466,8 @@ describe("handleApply", () => {
       setSelectedEntities: jest.fn(),
       setSortBy: jest.fn(),
       setSortDirection: jest.fn(),
-      setIsInitialLoad: jest.fn()
+      setIsInitialLoad: jest.fn(),
+      setDocumentStatusIds: jest.fn()
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalledWith(true);
@@ -480,6 +482,7 @@ describe("handleApply", () => {
       selectedCategories: [],
       selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
       isDateError: true,
+      documentStatusIds: [],
       setIsDateError,
       setIsFilterLoading,
       setDateRange,
@@ -502,7 +505,8 @@ describe("handleApply", () => {
       setSelectedEntities: jest.fn(),
       setSortBy: jest.fn(),
       setSortDirection: jest.fn(),
-      setIsInitialLoad: jest.fn()
+      setIsInitialLoad: jest.fn(),
+      setDocumentStatusIds: jest.fn()
     });
     expect(setIsDateError).toHaveBeenCalledWith(true);
     expect(setIsFilterLoading).not.toHaveBeenCalledWith(true);
@@ -518,6 +522,7 @@ it("applies filter when dates are valid and no error", () => {
     ],
     selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
     isDateError: false,
+    documentStatusIds: [],
     setIsDateError,
     setIsFilterLoading,
     setDateRange,
@@ -540,7 +545,8 @@ it("applies filter when dates are valid and no error", () => {
     setSelectedEntities: jest.fn(),
     setSortBy: jest.fn(),
     setSortDirection: jest.fn(),
-    setIsInitialLoad: jest.fn()
+    setIsInitialLoad: jest.fn(),
+    setDocumentStatusIds: jest.fn()
   });
 
   expect(setIsFilterLoading).toHaveBeenCalledWith(true);
@@ -566,6 +572,7 @@ it("applies filter when dates are valid and no error", () => {
   selectedCategories: [],
   selectedDateRange: { fromDate: "2024-01-01", toDate: "2024-01-02" },
   isDateError: false,
+  documentStatusIds: [],
   setIsDateError,
   setIsFilterLoading,
   setDateRange,
@@ -588,7 +595,8 @@ it("applies filter when dates are valid and no error", () => {
   setSelectedEntities: jest.fn(),
   setSortBy: jest.fn(),
   setSortDirection: jest.fn(),
-  setIsInitialLoad: jest.fn()
+  setIsInitialLoad: jest.fn(),
+  setDocumentStatusIds: jest.fn()
 });
     expect(setReferenceExternalIds).toHaveBeenCalledWith([]);
   });
